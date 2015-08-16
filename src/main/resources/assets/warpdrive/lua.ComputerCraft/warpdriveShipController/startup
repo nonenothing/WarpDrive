@@ -271,8 +271,8 @@ end
 
 function SetDimensions()
  Clear()
- sleep(0.3)
  ShowTitle("<==== Set dimensions ====>")
+ sleep(0.3)
  term.write(" Front ("..GFront..") : ")
  GFront = tonumber(read())
  term.write(" Right ("..GRight..") : ")
@@ -368,8 +368,6 @@ else
  }
 end
 
-SetColorDeflt()
-
 Side = { "bottom", "top", "back", "left", "right" }
 for i = 1,5 do
  if peripheral.getType(Side[i]) == "warpdriveShipController" then
@@ -381,10 +379,13 @@ for i = 1,5 do
 end
 
 if warp == nil then
- ShowWarning("No warpcore controller detected")
+ ShowWarning("No ship controller detected")
  os.pullEvent("key")
  os.reboot()
 end
+print("Ship controller detected...")
+
+SetColorDeflt()
 
 if SData.Shipname == "" then
  SetShipName()
@@ -400,19 +401,23 @@ GFront, GRight, GUp = warp.dim_positive()
 GBack, GLeft, GDown = warp.dim_negative()
 IsInHyper = warp.isInHyperspace()
 repeat
+ sleep(0.3)
  pos = warp.pos()
- sleep(0.3)
 until pos ~= nil
+print("Ship core detected...")
 X, Y, Z = warp.pos()
-repeat
- isAttached = warp.isAttached()
- sleep(0.3)
-until isAttached ~= false
 
 repeat
- Weight = warp.getShipSize()
  sleep(0.3)
-until Weight ~= nil 
+ isAttached = warp.isAttached()
+until not isAttached
+print("Ship core linked...")
+
+repeat
+ sleep(0.3)
+ Weight = warp.getShipSize()
+until Weight ~= nil
+print("Ship weight updated...")
 
 CalcRealDistance()
 
@@ -427,7 +432,7 @@ while(mainloop) do
  ShowMenu("D - Dimensions, M - Toggle summon, N - Ship name")
  ShowMenu("S - Set Warp Data, J - Jump, G - Jump to JumpGate")
  ShowMenu("B - Jump to Beacon, H - Jump to Hyperspace")
- ShowMenu("C - Summon crew, X - Shutdown WarpCore and Exit")
+ ShowMenu("C - Summon crew, X - Shutdown Controller and Exit")
  SetColorDeflt()
  local event, keycode = os.pullEvent("key")
  if keycode == 31 then

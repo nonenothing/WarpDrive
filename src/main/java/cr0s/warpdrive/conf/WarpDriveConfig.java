@@ -4,6 +4,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -16,6 +20,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.conf.structures.StructureManager;
 import cr0s.warpdrive.data.TransitionPlane;
 // FIXME import dan200.computercraft.ComputerCraft;
 
@@ -44,7 +49,7 @@ public class WarpDriveConfig {
 	public static Method forgeMultipart_helper_createTileFromNBT = null;
 	public static Method forgeMultipart_helper_sendDescPacket = null;
 	public static Method forgeMultipart_tileMultipart_onChunkLoad = null;
-
+	
 	public static ItemStack IC2_air;
 	public static ItemStack IC2_empty;
 	public static ItemStack IC2_rubberWood;
@@ -91,13 +96,15 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_FREQUENCY = false;
 	public static boolean LOGGING_TARGETTING = false;
 	public static boolean LOGGING_WEAPON = false;
+	public static boolean LOGGING_CAMERA = false;
 	public static boolean LOGGING_BUILDING = false;
 	public static boolean LOGGING_COLLECTION = false;
 	public static boolean LOGGING_TRANSPORTER = false;
 	public static boolean LOGGING_LUA = false;
 	public static boolean LOGGING_RADAR = false;
 	public static boolean LOGGING_BREATHING = false;
-	
+	public static boolean LOGGING_WORLDGEN = false;
+
 	// Transition planes
 	public static TransitionPlane[] G_TRANSITIONPLANES = null;
 
@@ -118,6 +125,7 @@ public class WarpDriveConfig {
 	public static int WC_WARMUP_LONGJUMP_SECONDS = 30;
 	public static int WC_WARMUP_RANDOM_TICKS = 60;
 	public static int WC_CORES_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
+	public static int WC_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
 	public static int WC_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
 	public static String[] WC_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
 	public static boolean WC_WARMUP_SICKNESS = true;
@@ -208,7 +216,7 @@ public class WarpDriveConfig {
 	public static int AG_EU_PER_EXISTINGAIRBLOCK = 4;
 	public static int AG_MAX_ENERGY = 4000;
 	public static int AG_AIR_GENERATION_TICKS = 40;
-
+	
 	// IC2 Reactor monitor
 	public static int RM_MAX_ENERGY = 1000000;
 	public static double RM_EU_PER_HEAT = 2;
@@ -237,7 +245,9 @@ public class WarpDriveConfig {
 	public static int CL_MAX_ENERGY = 1000000;
 	public static int CL_MAX_DISTANCE = 2;
 	public static int CL_RF_PER_CHUNKTICK = 320;
-	
+
+	private static DocumentBuilder xmlDocumentBuilder;
+
 	public static Block getModBlock(final String mod, final String id) {
 		try {
 			return GameRegistry.findBlock(mod, id);
@@ -247,7 +257,7 @@ public class WarpDriveConfig {
 		}
 		return null;
 	}
-	
+
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
 		try {
 			ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
@@ -304,17 +314,19 @@ public class WarpDriveConfig {
 			LOGGING_TARGETTING = false;
 		}
 		LOGGING_WEAPON = config.get("Logging", "enable_weapon_logs", LOGGING_WEAPON, "Detailled weapon logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_CAMERA = config.get("Logging", "enable_camera_logs", LOGGING_CAMERA, "Detailled camera logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_BUILDING = config.get("Logging", "enable_building_logs", LOGGING_BUILDING, "Detailled building logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_COLLECTION = config.get("Logging", "enable_collection_logs", LOGGING_COLLECTION, "Detailled collection logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_TRANSPORTER = config.get("Logging", "enable_transporter_logs", LOGGING_TRANSPORTER, "Detailled transporter logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_LUA = config.get("Logging", "enable_LUA_logs", LOGGING_LUA, "Detailled LUA logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_RADAR = config.get("Logging", "enable_radar_logs", LOGGING_RADAR, "Detailled radar logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_BREATHING = config.get("Logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailled breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-			
+		LOGGING_WORLDGEN = config.get("Logging", "enable_worldgen_logs", LOGGING_WORLDGEN, "Detailled world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		
 		// TransitionPlane
 		config.addCustomCategoryComment("TransitionPlane",
-				  "Transition planes defines which region in space allows to go to other dimensions, default is overworld with 100k radius.\n"
-				+ "Each plane is square shaped and defined as a list of 7 integers (all measured in blocks, border is the radius from center)");
+				"Transition planes defines which region in space allows to go to other dimensions, default is overworld with 100k radius.\n"
+						+ "Each plane is square shaped and defined as a list of 7 integers (all measured in blocks, border is the radius from center)");
 		String[] transitionNames = { "overworld" };
 		transitionNames = config.get("TransitionPlane", "names", transitionNames, "this is the list of transition planes defined hereafter").getStringList();
 		int[] defaultPlane = { 0, 0, 0, 30000000, 30000000, 0, 0 }; // 30000000 is Minecraft limit for SetBlock
@@ -358,6 +370,8 @@ public class WarpDriveConfig {
 		WC_WARMUP_SICKNESS = config.get("WarpCore", "warmup_sickness", true, "Enable warp sickness during warmup").getBoolean(true);
 
 		WC_CORES_REGISTRY_UPDATE_INTERVAL_SECONDS = config.get("WarpCore", "cores_registry_update_interval", WC_CORES_REGISTRY_UPDATE_INTERVAL_SECONDS,
+				"(measured in seconds)").getInt();
+		WC_CONTROLLER_UPDATE_INTERVAL_SECONDS = config.get("WarpCore", "controller_update_interval", WC_CONTROLLER_UPDATE_INTERVAL_SECONDS,
 				"(measured in seconds)").getInt();
 		WC_ISOLATION_UPDATE_INTERVAL_SECONDS = config.get("WarpCore", "isolation_update_interval", WC_ISOLATION_UPDATE_INTERVAL_SECONDS,
 				"(measured in seconds)").getInt();
@@ -452,7 +466,7 @@ public class WarpDriveConfig {
 		AG_EU_PER_EXISTINGAIRBLOCK = config.get("Air Generator", "eu_per_existing_air_block", AG_EU_PER_EXISTINGAIRBLOCK).getInt();
 		AG_MAX_ENERGY = config.get("Air Generator", "max_energy", AG_MAX_ENERGY).getInt();
 		AG_AIR_GENERATION_TICKS = config.get("Air Generator", "air_generation_ticks", AG_AIR_GENERATION_TICKS).getInt();
-
+		
 		// Reactor monitor
 		RM_MAX_ENERGY = config.get("Reactor Monitor", "max_rm_energy", RM_MAX_ENERGY).getInt();
 		RM_EU_PER_HEAT = config.get("Reactor Monitor", "eu_per_heat", RM_EU_PER_HEAT).getDouble(2);
@@ -500,37 +514,32 @@ public class WarpDriveConfig {
 		if (isForgeMultipartLoaded) {
 			loadForgeMultipart();
 		}
-
+		
 		isIndustrialCraft2loaded = Loader.isModLoaded("IC2");
 		if (isIndustrialCraft2loaded) {
 			loadIC2();
 		}
-
+		
 		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
 		if (isComputerCraftLoaded) {
 			loadCC();
 		}
-
+		
 		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
 		if (isAdvancedSolarPanelLoaded) {
 			loadASP();
 		}
-
+		
 		isAtomicScienceLoaded = Loader.isModLoaded("ResonantInduction|Atomic");
 		if (isAtomicScienceLoaded) {
 			loadAtomicScience();
-		}
-
-		isICBMLoaded = Loader.isModLoaded("ICBM|Explosion");
-		if (isICBMLoaded) {
-			loadICBM();
 		}
 
 		isMFFSLoaded = Loader.isModLoaded("MFFS");
 		if (isMFFSLoaded) {
 			loadMFFS();
 		}
-
+		
 		isGraviSuiteLoaded = Loader.isModLoaded("GraviSuite");
 		if (isGraviSuiteLoaded) {
 			loadGraviSuite();
@@ -551,7 +560,7 @@ public class WarpDriveConfig {
 		isMagicalCropsLoaded = Loader.isModLoaded("MagicalCrops");
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
-		
+
 		//
 		minerOres.add(WarpDrive.blockIridium);
 		minerOres.add(Blocks.coal_ore);
@@ -572,7 +581,7 @@ public class WarpDriveConfig {
 		if (isIndustrialCraft2loaded) {
 			// Metadata: 0 Batbox, 1 MFE, 2 MFSU, 3 LV transformer, 4 MV transformer, 5 HV transformer, 6 EV transformer, 7 CESU
 			scannerIgnoreBlocks.add(Block.getBlockFromName("IC2:blockElectric"));
-			
+
 			// Metadata: 0 Batbox, 1 CESU, 2 MFE, 3 MFSU
 			scannerIgnoreBlocks.add(Block.getBlockFromName("IC2:blockChargepad"));
 		}
@@ -643,18 +652,18 @@ public class WarpDriveConfig {
 	private static void loadIC2() {
 		try {
 			IC2_solarPanel = getModItemStack("IC2", "blockGenerator", 3);
-			
+
 			spaceHelmets.add(getModItemStack("IC2", "itemArmorHazmatHelmet", -1).getItem());
 			spaceHelmets.add(getModItemStack("IC2", "itemSolarHelmet", -1).getItem());
 			spaceHelmets.add(getModItemStack("IC2", "itemArmorNanoHelmet", -1).getItem());
 			spaceHelmets.add(getModItemStack("IC2", "itemArmorQuantumHelmet", -1).getItem());
-			
+
 			jetpacks.add(getModItemStack("IC2", "itemArmorJetpack", -1).getItem());
 			jetpacks.add(getModItemStack("IC2", "itemArmorJetpackElectric", -1).getItem());
-			
+
 			IC2_empty = getModItemStack("IC2", "itemCellEmpty", -1);
 			IC2_air = getModItemStack("IC2", "itemCellEmpty", 5);
-			
+
 			ItemStack rubberWood = getModItemStack("IC2", "blockRubWood", -1);
 			IC2_Resin = getModItemStack("IC2", "itemHarz", -1);
 			if (rubberWood != null) {
@@ -677,7 +686,7 @@ public class WarpDriveConfig {
 			if (ore != null) {
 				commonWorldGenOres.add(Block.getBlockFromItem(ore.getItem()));
 			}
-			
+
 			IC2_fluidCell = getModItemStack("IC2", "itemFluidCell", -1).getItem();
 		} catch (Exception exception) {
 			WarpDrive.logger.error("WarpDriveConfig Error loading IndustrialCraft2 classes");
@@ -687,7 +696,7 @@ public class WarpDriveConfig {
 
 	private static void loadCC() {
 		try {
-/*
+			/*
 			CC_Computer = ComputerCraft.Blocks.computer;
 			CC_peripheral = ComputerCraft.Blocks.peripheral;
 			CC_Floppy = ComputerCraft.Items.disk;
@@ -861,5 +870,26 @@ public class WarpDriveConfig {
 			return commonWorldGenOres.get(random.nextInt(commonWorldGenOres.size()));
 		}
 		return def;
+	}
+	
+	public static void loadWorldGen() {
+		OreManager.loadOres("config/warpdrive/");
+		StructureManager.loadStructures("config/warpdrive/");
+	}
+
+	public static DocumentBuilder getXmlDocumentBuilder() {
+		if (xmlDocumentBuilder == null) {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setIgnoringComments(false);
+			dbf.setValidating(true);
+			try {
+				xmlDocumentBuilder = dbf.newDocumentBuilder();
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return xmlDocumentBuilder;
+		
 	}
 }
