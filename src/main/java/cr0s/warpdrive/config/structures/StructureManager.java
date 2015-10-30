@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.NavigableMap;
 import java.util.Random;
+import java.util.TreeMap;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,7 +25,9 @@ public class StructureManager {
 	private static ArrayList<Star> stars = new ArrayList<Star>();
 	private static ArrayList<Planetoid> moons = new ArrayList<Planetoid>();
 	private static ArrayList<Planetoid> gasClouds = new ArrayList<Planetoid>();
+	
 	private static ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
+	private static RandomCollection<Asteroid> randomAsteroids = new RandomCollection<Asteroid>();
 	
 	public static void loadStructures(String structureConfDir) {
 		loadStructures(new File(structureConfDir));
@@ -100,6 +104,20 @@ public class StructureManager {
 				Asteroid as = new Asteroid();
 				as.loadFromXmlElement(struct);
 				asteroids.add(as);
+				
+				// Load weighted collection to query it later
+				try {
+					int weight = 1;
+					String weightStr = struct.getAttribute("weight");
+					if(!weightStr.isEmpty()) {
+						weight = Integer.parseInt(struct.getAttribute("weight"));
+					}
+					
+					weight = Math.max(1, weight);
+					randomAsteroids.add(weight, as);
+				} catch (NumberFormatException gdbg) {
+					throw new InvalidXmlException("Asteroid weight must be int!");
+				}
 			}
 		}
 	}
@@ -113,7 +131,7 @@ public class StructureManager {
 			} else if (type.equalsIgnoreCase("moon")) {
 				return moons.get(random.nextInt(moons.size()));
 			} else if (type.equalsIgnoreCase("asteroid")) {
-				return asteroids.get(random.nextInt(asteroids.size()));
+				return randomAsteroids.next(random);
 			}
 		} else {
 			for (Star star : stars) {
@@ -140,5 +158,28 @@ public class StructureManager {
 	
 	public static DeployableStructure getGasCloud(Random random, final String name) {
 		return getStructure(random, name, "cloud");
+	}
+	
+	/**
+	 * Collection of elements with weights. Helps to select element with controlled odds.
+	 * 
+	 * @author ncrashed
+	 *
+	 * @param <E>
+	 */
+	private static class RandomCollection<E> {
+	    private final NavigableMap<Double, E> map = new TreeMap<Double, E>();
+	    private double total = 0;
+
+	    public void add(double weight, E result) {
+	        if (weight <= 0) return;
+	        total += weight;
+	        map.put(total, result);
+	    }
+
+	    public E next(Random random) {
+	        double value = random.nextDouble() * total;
+	        return map.ceilingEntry(value).getValue();
+	    }
 	}
 }

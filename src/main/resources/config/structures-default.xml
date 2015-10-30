@@ -68,21 +68,24 @@
         </shell>
     </structure>
     
-    <structure group="asteroid" name="asteroid" coreBlock="minecraft:iron_ore" maxCoreSize="10" minCoreSize="6">
-        
-        <shell name="mantle" minThickness="2" maxThickness="10" fillerSets="commonOres,uncommonOres">
+    <structure group="asteroid" name="ClusteredAsteroid" weight="3" coreBlock="minecraft:iron_ore" maxCoreSize="10" minCoreSize="6" coreRad="0.5">
+        <shell name="mantle" minThickness="5" maxThickness="15" fillerSets="commonOres,uncommonOres">
             <filler weight="10" block="minecraft:stone" />
             <filler weight="5" block="minecraft:cobblestone" />
         </shell>
-        
-     </structure>
-     
-     <structure group="asteroid" name="diamondGeode" coreBlock="minecraft:diamond_ore" maxCoreSize="2" minCoreSize="1">
-        
-        <shell name="mantle" minThickness="5" maxThickness="25" fillerSets="commonOres">
+    </structure>
+
+    <structure group="asteroid" name="SphericalAsteroid" weight="10" coreBlock="minecraft:iron_ore" maxCoreSize="3" minCoreSize="1" coreRad="0.1">
+        <shell name="mantle" minThickness="5" maxThickness="10" fillerSets="commonOres,uncommonOres">
             <filler weight="10" block="minecraft:stone" />
             <filler weight="5" block="minecraft:cobblestone" />
         </shell>
-        
-     </structure>
+    </structure>
+    
+    <structure group="asteroid" name="diamondGeode" weight="2" coreBlock="minecraft:diamond_ore" maxCoreSize="2" minCoreSize="1" coreRad="0.1">
+        <shell name="mantle" minThickness="5" maxThickness="10" fillerSets="commonOres">
+            <filler weight="10" block="minecraft:stone" />
+            <filler weight="5" block="minecraft:cobblestone" />
+        </shell>
+    </structure>
 </warpdriveWorldGeneration>
