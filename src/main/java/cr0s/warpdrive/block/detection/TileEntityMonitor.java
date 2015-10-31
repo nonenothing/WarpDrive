@@ -38,6 +38,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
 				PacketHandler.sendFreqPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
 			}
+			
 			return;
 		}
 	}

@@ -124,8 +124,7 @@ public class LivingHandler {
 							int airTicks = breathHelmet.ticksPerCanDamage();
 							if (breathHelmet.canBreath(player)) {
 								hasHelmet = true;
-								if (air == null) {// new player in space =>
-									// grace period
+								if (air == null) {// new player in space => grace period
 									player_airTank.put(playerName, airTicks);
 								} else if (air <= 1) {
 									if (breathHelmet.removeAir(player)) {

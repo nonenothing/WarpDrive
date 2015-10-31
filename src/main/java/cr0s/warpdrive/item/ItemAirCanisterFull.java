@@ -31,9 +31,9 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 
 	@Override
 	public ItemStack emptyDrop(ItemStack is) {
- 		return WarpDrive.itemComponent.getISNoCache(1, 8);
- 	}
- 
+		return WarpDrive.itemComponent.getISNoCache(1, 8);
+	}
+	
 	@Override
 	public ItemStack fullDrop(ItemStack can) {
 		return new ItemStack(WarpDrive.itemAirCanisterFull,1);
@@ -46,7 +46,7 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean containsAir(ItemStack can) {
 		return true;
