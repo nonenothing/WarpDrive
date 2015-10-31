@@ -21,7 +21,7 @@ end
 
 energy, energyMax = radar.energy()
 if energy < radius * radius then
-  print("Low energy level... (" + energy + "/" + radius * radius + ")")
+  print("Low energy level... (" .. energy .. "/" .. radius * radius .. ")")
   return
 end
 radar.radius(radius)
