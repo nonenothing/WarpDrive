@@ -88,6 +88,6 @@ public class ItemHelmet extends ItemArmor implements IBreathingHelmet {
 
 	@Override
 	public int ticksPerCanDamage() {
-		return 40;
+		return 300;
 	}
 }
