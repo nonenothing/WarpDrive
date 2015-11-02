@@ -64,7 +64,7 @@ public class Asteroid extends Orb {
 	@Override
 	public boolean generate(World world, Random rand, int x, int y, int z) {
 		int randRadius = MIN_RADIUS + rand.nextInt(Math.max(1, getRadius() - MIN_RADIUS));
-		int numberCoreBlocks = minCoreSize + rand.nextInt(maxCoreSize - minCoreSize);
+		int numberCoreBlocks = minCoreSize + rand.nextInt(Math.max(1, maxCoreSize - minCoreSize));
 				
 		WarpDrive.logger.info("Asteroid generation: radius=" + randRadius + ", numCoreBlocks=" + numberCoreBlocks + ", coreRad=" + coreRad);
 

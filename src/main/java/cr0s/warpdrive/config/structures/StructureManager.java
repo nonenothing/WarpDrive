@@ -18,16 +18,15 @@ import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlPreprocessor;
 import cr0s.warpdrive.config.XmlPreprocessor.ModCheckResults;
+import cr0s.warpdrive.config.XmlRepresentable;
 
 
 public class StructureManager {
 	
-	private static ArrayList<Star> stars = new ArrayList<Star>();
-	private static ArrayList<Planetoid> moons = new ArrayList<Planetoid>();
-	private static ArrayList<Planetoid> gasClouds = new ArrayList<Planetoid>();
-	
-	private static ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
-	private static RandomCollection<Asteroid> randomAsteroids = new RandomCollection<Asteroid>();
+	private static RandomCollection<Star> stars = new RandomCollection<Star>();
+	private static RandomCollection<Planetoid> moons = new RandomCollection<Planetoid>();
+	private static RandomCollection<Planetoid> gasClouds = new RandomCollection<Planetoid>();
+	private static RandomCollection<Asteroid> asteroids = new RandomCollection<Asteroid>();
 	
 	public static void loadStructures(String structureConfDir) {
 		loadStructures(new File(structureConfDir));
@@ -93,31 +92,11 @@ public class StructureManager {
 			int radius = 0;
 			
 			if (group.equalsIgnoreCase("star")) {
-				Star s = new Star(radius);
-				s.loadFromXmlElement(struct);
-				stars.add(s);
+				stars.loadFromXML(new Star(radius), struct);
 			} else if (group.equalsIgnoreCase("moon")) {
-				Planetoid pl = new Planetoid(radius);
-				pl.loadFromXmlElement(struct);
-				moons.add(pl);
+				moons.loadFromXML(new Planetoid(radius), struct);
 			} else if (group.equalsIgnoreCase("asteroid")) {
-				Asteroid as = new Asteroid();
-				as.loadFromXmlElement(struct);
-				asteroids.add(as);
-				
-				// Load weighted collection to query it later
-				try {
-					int weight = 1;
-					String weightStr = struct.getAttribute("weight");
-					if(!weightStr.isEmpty()) {
-						weight = Integer.parseInt(struct.getAttribute("weight"));
-					}
-					
-					weight = Math.max(1, weight);
-					randomAsteroids.add(weight, as);
-				} catch (NumberFormatException gdbg) {
-					throw new InvalidXmlException("Asteroid weight must be int!");
-				}
+				asteroids.loadFromXML(new Asteroid(), struct);
 			}
 		}
 	}
@@ -125,16 +104,16 @@ public class StructureManager {
 	public static DeployableStructure getStructure(Random random, final String name, final String type) {
 		if (name == null || name.length() == 0) {
 			if (type == null || type.length() == 0) {
-				return stars.get(random.nextInt(stars.size()));
+				return stars.next(random);
 			} else if (type.equalsIgnoreCase("star")) {
-				return stars.get(random.nextInt(stars.size()));
+				return stars.next(random);
 			} else if (type.equalsIgnoreCase("moon")) {
-				return moons.get(random.nextInt(moons.size()));
+				return moons.next(random);
 			} else if (type.equalsIgnoreCase("asteroid")) {
-				return randomAsteroids.next(random);
+				return asteroids.next(random);
 			}
 		} else {
-			for (Star star : stars) {
+			for (Star star : stars.elements()) {
 				if (star.getName().equals(name))
 					return star;
 			}
@@ -167,19 +146,104 @@ public class StructureManager {
 	 *
 	 * @param <E>
 	 */
-	private static class RandomCollection<E> {
-	    private final NavigableMap<Double, E> map = new TreeMap<Double, E>();
-	    private double total = 0;
-
-	    public void add(double weight, E result) {
-	        if (weight <= 0) return;
-	        total += weight;
-	        map.put(total, result);
+	private static class RandomCollection<E extends XmlRepresentable> {
+	    private final NavigableMap<Double, E> weightMap = new TreeMap<Double, E>();
+	    private double totalWeight = 0;
+	    private final NavigableMap<Double, E> ratioMap = new TreeMap<Double, E>();
+	    private double totalRatio = 0;
+	    private final ArrayList<E> list = new ArrayList<E>();
+	 
+	    
+	    /**
+	     * Add new object and its weight.
+	     * @param weight Used for random pick. The higher the value is relatively to others, the higher odds of choosing the object.
+	     * @param obj Object to add 
+	     */
+	    public void add(double weight, E obj) {
+	        if (weight <= 0) {
+	        	WarpDrive.logger.warn("Structure weight is negative or zero, skipping");
+	        	return;
+	        }
+	        totalWeight += weight;
+	        weightMap.put(totalWeight, obj);
+	        list.add(obj);
 	    }
 
+	    /**
+	     * Add new object and its ratio.
+	     * Warning: if total ratio goes higher than 1.0, element won't be added to collection.
+	     * @param ratio Chance of random pick in range (0, 1.0]. In contrast to weights, ratio is fixed and chances don't change if you add more elements. 
+	     * @param obj Object to add
+	     */
+	    public void addRatio(double ratio, E obj) {
+	    	if (ratio <= 0 || ratio >= 1.0) {
+	    		WarpDrive.logger.warn("Structure ratio isn't in (0, 1.0] bounds, skipping");
+	    		return;
+	    	}
+	    	
+	    	if (totalRatio + ratio > 1.0) {
+	    		WarpDrive.logger.warn("Structures total ratio is greater than 1.0, skipping");
+	    		return;
+	    	}
+	    	totalRatio += ratio;
+	    	ratioMap.put(totalRatio, obj);
+	    	list.add(obj);
+	    }
+	    
+	    /**
+	     * Pick random object according their weights
+	     * @param random
+	     * @return Random object or null if there is no objects to pick.
+	     */
 	    public E next(Random random) {
-	        double value = random.nextDouble() * total;
-	        return map.ceilingEntry(value).getValue();
+	        double value = random.nextDouble();
+	        
+	        if (value < totalRatio) { // hit ratio part of values
+	        	return ratioMap.ceilingEntry(value).getValue();
+	        } else { // hit dynamic part of values, weighted ones
+	        	double weight = (value - totalRatio)*totalWeight;
+	        	return weightMap.ceilingEntry(weight).getValue();
+	        }
+	    }
+	    
+	    /**
+	     * @return All registered objects
+	     */
+	    public ArrayList<E> elements() {
+	    	return list;
+	    }
+	    
+	    /**
+	     * Loads object from given XML element and parses configurations for weighted pick.
+	     * @param obj Object to load from *struct*
+	     * @param struct Part of XML config
+	     * @throws InvalidXmlException
+	     */
+	    public void loadFromXML(E obj, Element struct) throws InvalidXmlException {
+	    	obj.loadFromXmlElement(struct);
+			
+	    	try {
+	    		String ratioStr = struct.getAttribute("ratio");
+	    		if(!ratioStr.isEmpty()) {
+	    			double ratio = Double.parseDouble(ratioStr);
+	    			this.addRatio(ratio, obj);
+	    		} else { // try weight
+	    			try {
+	    				int weight = 1;
+	    				String weightStr = struct.getAttribute("weight");
+	    				if(!weightStr.isEmpty()) {
+	    					weight = Integer.parseInt(weightStr);
+	    					weight = Math.max(1, weight);
+	    				}
+	    				
+	    				this.add(weight, obj);
+	    			} catch (NumberFormatException gdbg) {
+	    				throw new InvalidXmlException("Weight must be int!");
+	    			}
+	    		}
+	    	} catch (NumberFormatException gdbg) {
+				throw new InvalidXmlException("Ratio must be double!");
+			}
 	    }
 	}
 }
