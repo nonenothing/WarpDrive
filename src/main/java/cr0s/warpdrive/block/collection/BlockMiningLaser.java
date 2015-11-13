@@ -21,8 +21,8 @@ public class BlockMiningLaser extends BlockContainer {
 	public final static int ICON_MININGPOWERED = 2;
 	public final static int ICON_SCANNINGLOWPOWER = 3;
 	public final static int ICON_SCANNINGPOWERED = 4;
-	private final static int ICON_TOP = 5;
-	private final static int ICON_BOTTOM = 6;
+	private final static int ICON_BOTTOM = 5;
+	private final static int ICON_TOP = 6;
 	
 	public BlockMiningLaser() {
 		super(Material.rock);
@@ -40,13 +40,16 @@ public class BlockMiningLaser extends BlockContainer {
 		iconBuffer[ICON_MININGPOWERED   ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
 		iconBuffer[ICON_SCANNINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
 		iconBuffer[ICON_SCANNINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
-		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserTop");
 		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserBottom");
+		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserTop");
 	}
 	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		if (side == 0 || side == 1) {
+		if (side == 0) {
+			return iconBuffer[ICON_BOTTOM];
+		}
+		if (side == 1) {
 			return iconBuffer[ICON_TOP];
 		}
 		if (metadata < iconBuffer.length) {

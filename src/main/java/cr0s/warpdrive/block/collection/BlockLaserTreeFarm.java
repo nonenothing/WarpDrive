@@ -14,6 +14,12 @@ import cr0s.warpdrive.WarpDrive;
 
 public class BlockLaserTreeFarm extends BlockContainer {
 	private IIcon[] iconBuffer;
+	public final static int ICON_IDLE = 0;
+	public final static int ICON_FARNINGLOWPOWER = 1;
+	public final static int ICON_FARMINGPOWERED = 2;
+	// 3 & 4 are reserved
+	private final static int ICON_BOTTOM = 5;
+	private final static int ICON_TOP = 6;
 	
 	public BlockLaserTreeFarm() {
 		super(Material.rock);
@@ -25,18 +31,26 @@ public class BlockLaserTreeFarm extends BlockContainer {
 	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = new IIcon[2];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:laserMediumTopBottom");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide0");
+		iconBuffer = new IIcon[16];
+		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
+		iconBuffer[ICON_FARNINGLOWPOWER ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
+		iconBuffer[ICON_FARMINGPOWERED  ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
+		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
+		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
 	}
 	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		if (side == 0 || side == 1) {
-			return iconBuffer[0];
+		if (side == 0) {
+			return iconBuffer[ICON_BOTTOM];
 		}
-		
-		return iconBuffer[1];
+		if (side == 1) {
+			return iconBuffer[ICON_TOP];
+		}
+		if (metadata < iconBuffer.length) {
+			return iconBuffer[metadata];
+		}
+		return null;
 	}
 	
 	@Override
