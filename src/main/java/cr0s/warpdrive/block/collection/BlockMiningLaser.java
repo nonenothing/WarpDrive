@@ -22,6 +22,7 @@ public class BlockMiningLaser extends BlockContainer {
 	public final static int ICON_SCANNINGLOWPOWER = 3;
 	public final static int ICON_SCANNINGPOWERED = 4;
 	private final static int ICON_TOP = 5;
+	private final static int ICON_BOTTOM = 6;
 	
 	public BlockMiningLaser() {
 		super(Material.rock);
@@ -34,13 +35,13 @@ public class BlockMiningLaser extends BlockContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[16];
-		// Solid textures
-		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:laserMediumTopBottom");
-		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaser_idle");
-		iconBuffer[ICON_MININGLOWPOWER  ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaser_miningLowPower");
-		iconBuffer[ICON_MININGPOWERED   ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaser_miningPowered");
-		iconBuffer[ICON_SCANNINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaser_scanningLowPower");
-		iconBuffer[ICON_SCANNINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaser_scanningPowered");
+		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_idle");
+		iconBuffer[ICON_MININGLOWPOWER  ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningLowPower");
+		iconBuffer[ICON_MININGPOWERED   ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
+		iconBuffer[ICON_SCANNINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
+		iconBuffer[ICON_SCANNINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
+		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserTop");
+		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserBottom");
 	}
 	
 	@Override
@@ -50,9 +51,8 @@ public class BlockMiningLaser extends BlockContainer {
 		}
 		if (metadata < iconBuffer.length) {
 			return iconBuffer[metadata];
-		} else {
-			return null;
 		}
+		return null;
 	}
 	
 	@Override
