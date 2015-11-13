@@ -61,10 +61,8 @@ public class BlockShipController extends BlockContainer {
 		if (metadata == 0) { // Inactive state
 			return iconBuffer[ICON_INACTIVE_SIDE];
 		} else if (metadata > 0) { // Activated, in metadata stored mode number
-			if (ICON_SIDE_ACTIVATED + metadata - 1 < iconBuffer.length) {
+			if (ICON_SIDE_ACTIVATED + metadata < iconBuffer.length) {
 				return iconBuffer[ICON_SIDE_ACTIVATED + metadata];
-			} else {
-				return null;
 			}
 		}
 		
