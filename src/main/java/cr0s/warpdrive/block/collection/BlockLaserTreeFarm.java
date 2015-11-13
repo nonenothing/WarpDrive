@@ -14,7 +14,7 @@ import cr0s.warpdrive.WarpDrive;
 
 public class BlockLaserTreeFarm extends BlockContainer {
 	private IIcon[] iconBuffer;
-
+	
 	public BlockLaserTreeFarm() {
 		super(Material.rock);
 		setHardness(0.5F);
@@ -22,39 +22,35 @@ public class BlockLaserTreeFarm extends BlockContainer {
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		this.setBlockName("warpdrive.collection.LaserTreeFarm");
 	}
-
+	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[2];
-		// Solid textures
 		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:laserMediumTopBottom");
 		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide0");
 	}
-
+	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0 || side == 1) {
 			return iconBuffer[0];
 		}
-
+		
 		return iconBuffer[1];
 	}
-
+	
 	@Override
 	public TileEntity createNewTileEntity(World var1, int i) {
 		return new TileEntityLaserTreeFarm();
 	}
-
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
+	
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
 	}
-
+	
 	/**
-	 * Returns the ID of the items to drop on destruction.
+	 * Returns the item to drop on destruction.
 	 */
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
