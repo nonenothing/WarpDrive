@@ -23,6 +23,7 @@ import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.data.Planet;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -998,6 +999,16 @@ public class WarpDriveConfig {
 		WarpDrive.logger.info("- " + ITEMS_FLYINSPACE.size() + " allowing fly in space: " + getHashMessage(ITEMS_FLYINSPACE));
 		WarpDrive.logger.info("- " + ITEMS_NOFALLDAMAGE.size() + " absorbing fall damages: " + getHashMessage(ITEMS_NOFALLDAMAGE));
 		WarpDrive.logger.info("- " + ITEMS_BREATHINGIC2.size() + " allowing breathing compressed air: " + getHashMessage(ITEMS_BREATHINGIC2));
+		
+		// Apply hardness adjustments
+		Blocks.obsidian.setResistance(60.0F);
+		Blocks.enchanting_table.setResistance(60.0F);
+		Blocks.ender_chest.setResistance(60.0F);
+		Blocks.anvil.setResistance(60.0F);
+		Blocks.water.setResistance(30.0F);
+		Blocks.flowing_water.setResistance(30.0F);
+		Blocks.lava.setResistance(30.0F);
+		Blocks.flowing_lava.setResistance(30.0F);
 	}
 	
 	private static String getHashMessage(HashSet hashSet) {
