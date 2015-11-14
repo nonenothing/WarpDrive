@@ -15,26 +15,29 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private boolean active = false;
-
+	
+	private final int MODE_SCANNING = 0;
+	private final int MODE_HARVESTING = 1;
+	private final int MODE_TAPPING = 2;
 	private int mode = 0;
 	private boolean doLeaves = false;
 	private boolean silkTouchLeaves = false;
 	private boolean treeTap = false;
-
+	
 	private final int radiusDefault = 8;
 	private final int scanWait = 40;
 	private final int mineWait = 4;
 	private int delayMul = 4;
-
+	
 	private int totalHarvested = 0;
-
+	
 	private int scan = 0;
 	private int radiusX = radiusDefault;
 	private int radiusZ = radiusDefault;
-
+	
 	LinkedList<VectorI> logs;
 	private int logIndex = 0;
-
+	
 	public TileEntityLaserTreeFarm() {
 		super();
 		laserOutputSide = ForgeDirection.UP;
@@ -50,19 +53,20 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				"state"
 		});
 	}
-
+	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-
+		
 		if (active) {
 			scan++;
-			if (mode == 0) {
+			if (mode == MODE_SCANNING) {
 				if (scan >= scanWait) {
 					scan = 0;
 					logs = scanTrees();
-					if(logs.size() > 0)
-						mode = treeTap ? 2 : 1;
+					if (logs.size() > 0) {
+						mode = treeTap ? MODE_TAPPING : MODE_HARVESTING;
+					}
 					logIndex = 0;
 				}
 			} else {
@@ -70,13 +74,13 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					scan = 0;
 					
 					if (logIndex >= logs.size()) {
-						mode = 0;
+						mode = MODE_SCANNING;
 						return;
 					}
 					VectorI pos = logs.get(logIndex);
 					Block block = worldObj.getBlock(pos.x, pos.y, pos.z);
 					
-					if (mode == 1) {
+					if (mode == MODE_HARVESTING) {
 						int cost = calculateBlockCost(block);
 						if (consumeEnergyFromLaserMediums(cost, true)) {
 							if (isLog(block) || (doLeaves && isLeaf(block))) {
@@ -97,7 +101,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							}
 							logIndex++;
 						}
-					} else if(mode == 2) {
+					} else if (mode == MODE_TAPPING) {
 						int cost = calculateBlockCost(block);
 						if (consumeEnergyFromLaserMediums(cost, true)) {
 							if (isRoomForHarvest()) {
@@ -147,22 +151,22 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			}
 		}
 	}
-
+	
 	private static boolean isLog(Block block) {
 		return WarpDriveConfig.BLOCKS_LOGS.contains(block);
 	}
-
+	
 	private static boolean isLeaf(Block block) {
 		return WarpDriveConfig.BLOCKS_LEAVES.contains(block);
 	}
-
+	
 	private static void addTree(LinkedList<VectorI> list, VectorI newTree) {
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info("Adding tree position:" + newTree.x + "," + newTree.y + "," + newTree.z);
 		}
 		list.add(newTree);
 	}
-
+	
 	private LinkedList<VectorI> scanTrees() {
 		int xmax, zmax;
 		int xmin, zmin;
@@ -185,7 +189,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		}
 		return logPositions;
 	}
-
+	
 	private void scanNearby(LinkedList<VectorI> current, int x, int y, int z, int d) {
 		int[] deltas = {0, -1, 1};
 		for(int dx : deltas) {
@@ -205,7 +209,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			}
 		}
 	}
-
+	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
@@ -216,7 +220,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		tag.setBoolean("treetap", treeTap);
 		tag.setBoolean("silkTouchLeaves", silkTouchLeaves);
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
@@ -236,10 +240,10 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		treeTap  = tag.getBoolean("treetap");
 		silkTouchLeaves = tag.getBoolean("silkTouchLeaves");
 	}
-
+	
 	// OpenComputer callback methods
 	// FIXME: implement OpenComputers...
-
+	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
@@ -248,7 +252,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		
 		if (methodName.equals("start")) {
 			if (!active) {
-				mode = 0;
+				mode = MODE_SCANNING;
 				totalHarvested = 0;
 				active = true;
 			}
@@ -256,6 +260,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			
 		} else if (methodName.equals("stop")) {
 			active = false;
+			return new Boolean[] { false };
 			
 		} else if (methodName.equals("radius")) {
 			try {
@@ -311,13 +316,13 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			return new Object[] { treeTap };
 			
 		} else if (methodName.equals("state")) {
-			String state = active ? (mode==0?"scanning" : (mode == 1 ? "harvesting" : "tapping")) : "inactive";
+			String state = active ? (mode == MODE_SCANNING ? "scanning" : (mode == MODE_HARVESTING ? "harvesting" : (mode == MODE_TAPPING ? "tapping" : "<invalid>" + mode))) : "inactive";
 			return new Object[] { state, radiusX, radiusZ, energy(), totalHarvested };
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
 	}
-
+	
 	//ABSTRACT LASER IMPLEMENTATION
 	@Override
 	protected boolean silkTouch(Block block) {
@@ -326,32 +331,32 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		}
 		return silkTouch();
 	}
-
+	
 	@Override
 	protected boolean canSilkTouch() {
 		return true;
 	}
-
+	
 	@Override
 	protected int minFortune() {
 		return 0;
 	}
-
+	
 	@Override
 	protected int maxFortune() {
 		return 0;
 	}
-
+	
 	@Override
 	protected float getColorR() {
 		return 0.2f;
 	}
-
+	
 	@Override
 	protected float getColorG() {
 		return 0.7f;
 	}
-
+	
 	@Override
 	protected float getColorB() {
 		return 0.4f;
