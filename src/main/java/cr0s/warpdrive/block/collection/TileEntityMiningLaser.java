@@ -32,26 +32,28 @@ public class TileEntityMiningLaser extends TileEntityAbstractLaser {
 	private boolean isMining() {
 		return currentState != STATE_IDLE;
 	}
-
+	
 	private boolean isQuarry = false;
 	private boolean enableSilktouch = false;
-
+	
 	private int delayTicksWarmup = 0;
 	private int delayTicksScan = 0;
 	private int delayTicksMine = 0;
+	
 	private final int STATE_IDLE = 0;
 	private final int STATE_WARMUP = 1;
 	private final int STATE_SCANNING = 2;
 	private final int STATE_MINING = 3;
-	private int currentState = 0; // 0 - scan next layer, 1 - collect valuables
+	private int currentState = 0;
+	
 	private boolean enoughPower = false;
 	private int currentLayer;
-
+	
 	private ArrayList<VectorI> valuablesInLayer = new ArrayList<VectorI>();
 	private int valuableIndex = 0;
-
+	
 	private int layerOffset = 1;
-
+	
 	public TileEntityMiningLaser() {
 		super();
 		peripheralName = "warpdriveMiningLaser";
