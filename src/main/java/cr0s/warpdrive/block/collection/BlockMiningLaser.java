@@ -59,12 +59,12 @@ public class BlockMiningLaser extends BlockContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntityMiningLaser();
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(Random random) {
 		return 1;
 	}
 	
@@ -72,20 +72,20 @@ public class BlockMiningLaser extends BlockContainer {
 	 * Returns the item to drop on destruction.
 	 */
 	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
+	public Item getItemDropped(int par1, Random random, int par3) {
 		return Item.getItemFromBlock(this);
 	}
 	
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		TileEntityMiningLaser miningLaser = (TileEntityMiningLaser)par1World.getTileEntity(par2, par3, par4);
+		TileEntityMiningLaser miningLaser = (TileEntityMiningLaser)world.getTileEntity(x, y, z);
 		
-		if (miningLaser != null && (par5EntityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(par5EntityPlayer, miningLaser.getStatus());
+		if (miningLaser != null && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, miningLaser.getStatus());
 			return true;
 		}
 		
