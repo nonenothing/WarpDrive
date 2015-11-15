@@ -149,9 +149,10 @@ public class WarpDriveConfig {
 	private static HashMap<String, String> taggedItems = null;
 	
 	// Blocks dictionary
-	public static HashSet<Block> BLOCKS_ORES;
-	public static HashSet<Block> BLOCKS_LOGS;
-	public static HashSet<Block> BLOCKS_LEAVES;
+	public static HashSet<Block> BLOCKS_ORES = null;
+	public static HashSet<Block> BLOCKS_SOILS = null;
+	public static HashSet<Block> BLOCKS_LOGS = null;
+	public static HashSet<Block> BLOCKS_LEAVES = null;
 	public static HashSet<Block> BLOCKS_ANCHOR = null;
 	public static HashSet<Block> BLOCKS_NOMASS = null;
 	public static HashSet<Block> BLOCKS_LEFTBEHIND = null;
@@ -480,19 +481,35 @@ public class WarpDriveConfig {
 			config.addCustomCategoryComment("block_tags",
 					  "Use this section to enable special behavior on blocks using tags.\n"
 					+ "Most blocks are already supported automatically. Only modify this section when something doesn't work!\n" + "\n"
-					+ "Tags shall be separated by at least one space, comma or tabulation.\n" + "Invalid tags will be ignored silently. Tags and block names are case sensitive.\n"
-					+ "In case of conflicts, the latest tag overwrite the previous ones.\n" + "- Anchor: ship can't move with this block aboard (default: bedrock and assimilated).\n"
+					+ "Tags shall be separated by at least one space, comma or tabulation.\n"
+					+ "Invalid tags will be ignored silently. Tags and block names are case sensitive.\n"
+					+ "In case of conflicts, the latest tag overwrite the previous ones.\n"
+					+ "- Soil: this block is a soil for plants (default: dirt, farmland, grass, sand & soul sand).\n"
+					+ "- Log: this block is harvestable as a wood log (default: all 'log*', '*log' & '*logs' blocks from the ore dictionnary).\n"
+					+ "- Leaf: this block is harvestable as a leaf (default: all 'leave*', '*leave' & '*leaves' blocks from the ore dictionnary).\n"
+					+ "- Anchor: ship can't move with this block aboard (default: bedrock and assimilated).\n"
 					+ "- NoMass: this block doesn't count when calculating ship volume/mass (default: leaves, all 'air' blocks).\n"
-					+ "- LeftBehind: this block won't move with your ship (default: RailCraft heat, WarpDrive gases).\n" + "- Expandable: this block will be squished/ignored in case of collision.\n"
-					+ "- Mining: this block is mineable (default: all 'ore' blocks from the ore dictionnary).\n" + "- NoMining: this block is non-mineable (default: forcefields).\n"
+					+ "- LeftBehind: this block won't move with your ship (default: RailCraft heat, WarpDrive gases).\n"
+					+ "- Expandable: this block will be squished/ignored in case of collision.\n"
+					+ "- Mining: this block is mineable (default: all 'ore' blocks from the ore dictionnary).\n"
+					+ "- NoMining: this block is non-mineable (default: forcefields).\n"
 					+ "- PlaceEarliest: this block will be removed last and placed first (default: ship hull and projectors).\n"
-					+ "- PlaceEarlier: this block will be placed fairly soon (default: forcefield blocks).\n" + "- PlaceNormal: this block will be removed and placed with non-tile entities.\n"
+					+ "- PlaceEarlier: this block will be placed fairly soon (default: forcefield blocks).\n"
+					+ "- PlaceNormal: this block will be removed and placed with non-tile entities.\n"
 					+ "- PlaceLater: this block will be placed fairly late (default: IC2 Reactor core).\n"
 					+ "- PlaceLatest: this block will be removed first and placed last (default: IC2 Reactor chamber).");
 			
 			ConfigCategory categoryBlockTags = config.getCategory("block_tags");
 			String[] taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			if (taggedBlocksName.length == 0) {
+				// farming
+				config.get("block_tags", "minecraft:dirt"                   , "Soil").getString();
+				config.get("block_tags", "minecraft:farmland"               , "Soil").getString();
+				config.get("block_tags", "minecraft:grass"                  , "Soil").getString();
+				config.get("block_tags", "minecraft:sand"                   , "Soil").getString();
+				config.get("block_tags", "minecraft:soul_sand"              , "Soil").getString();
+				config.get("block_tags", "IC2:blockRubWood"                 , "Log").getString();
+				
 				// anchors
 				config.get("block_tags", "minecraft:bedrock"                , "Anchor NoMining").getString();
 				config.get("block_tags", "Artifacts:invisible_bedrock"      , "Anchor NoMining").getString();
@@ -896,6 +913,7 @@ public class WarpDriveConfig {
 		}
 		
 		// translate tagged blocks
+		BLOCKS_SOILS = new HashSet(taggedBlocks.size());
 		BLOCKS_ANCHOR = new HashSet(taggedBlocks.size());
 		BLOCKS_NOMASS = new HashSet(taggedBlocks.size() + BLOCKS_LEAVES.size());
 		BLOCKS_NOMASS.addAll(BLOCKS_LEAVES);
@@ -913,6 +931,9 @@ public class WarpDriveConfig {
 			}
 			for (String tag : taggedBlock.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
 				switch (tag) {
+				case "Soil"         : BLOCKS_SOILS.add(block); break;
+				case "Log"          : BLOCKS_LOGS.add(block); break;
+				case "Leaf"         : BLOCKS_LEAVES.add(block); break;
 				case "Anchor"       : BLOCKS_ANCHOR.add(block); break;
 				case "NoMass"       : BLOCKS_NOMASS.add(block); break;
 				case "LeftBehind"   : BLOCKS_LEFTBEHIND.add(block); break;
@@ -932,6 +953,7 @@ public class WarpDriveConfig {
 		}
 		WarpDrive.logger.info("Active blocks dictionnary:");
 		WarpDrive.logger.info("- " + BLOCKS_ORES.size() + " ores: " + getHashMessage(BLOCKS_ORES));
+		WarpDrive.logger.info("- " + BLOCKS_SOILS.size() + " soils: " + getHashMessage(BLOCKS_SOILS));
 		WarpDrive.logger.info("- " + BLOCKS_LOGS.size() + " logs: " + getHashMessage(BLOCKS_LOGS));
 		WarpDrive.logger.info("- " + BLOCKS_LEAVES.size() + " leaves: " + getHashMessage(BLOCKS_LEAVES));
 		WarpDrive.logger.info("- " + BLOCKS_ANCHOR.size() + " anchors: " + getHashMessage(BLOCKS_ANCHOR));
