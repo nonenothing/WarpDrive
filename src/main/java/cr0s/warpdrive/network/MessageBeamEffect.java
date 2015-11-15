@@ -68,7 +68,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 		red = buffer.readFloat();
 		green = buffer.readFloat();
 		blue = buffer.readFloat();
-		age = buffer.readByte();
+		age = buffer.readShort();
 		energy = buffer.readInt();
 	}
 	
@@ -83,7 +83,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 		buffer.writeFloat(red);
 		buffer.writeFloat(green);
 		buffer.writeFloat(blue);
-		buffer.writeByte(age);
+		buffer.writeShort(Math.min(32767, age));
 		buffer.writeInt(energy);
 	}
 	
