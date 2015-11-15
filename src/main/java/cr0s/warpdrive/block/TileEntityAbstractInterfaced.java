@@ -189,7 +189,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	// Return version
 	public Object[] version(Object[] arguments) {
-		String[] strings = WarpDrive.VERSION.split(".");
+		String[] strings = WarpDrive.VERSION.split("-")[0].split("\\.");
 		ArrayList<Integer> integers = new ArrayList(strings.length);
 		for (String string : strings) {
 			integers.add(Integer.parseInt(string));
