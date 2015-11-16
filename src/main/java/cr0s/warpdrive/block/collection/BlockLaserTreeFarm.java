@@ -2,10 +2,12 @@ package cr0s.warpdrive.block.collection;
 
 import java.util.Random;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -15,11 +17,14 @@ import cr0s.warpdrive.WarpDrive;
 public class BlockLaserTreeFarm extends BlockContainer {
 	private IIcon[] iconBuffer;
 	public final static int ICON_IDLE = 0;
-	public final static int ICON_FARNINGLOWPOWER = 1;
+	public final static int ICON_FARMINGLOWPOWER = 1;
 	public final static int ICON_FARMINGPOWERED = 2;
-	// 3 & 4 are reserved
-	private final static int ICON_BOTTOM = 5;
-	private final static int ICON_TOP = 6;
+	public final static int ICON_SCANNINGLOWPOWER = 3;
+	public final static int ICON_SCANNINGPOWERED = 4;
+	public final static int ICON_PLANTINGLOWPOWER = 5;
+	public final static int ICON_PLANTINGPOWERED = 6;
+	private final static int ICON_BOTTOM = 7;
+	private final static int ICON_TOP = 8;
 	
 	public BlockLaserTreeFarm() {
 		super(Material.rock);
@@ -33,8 +38,12 @@ public class BlockLaserTreeFarm extends BlockContainer {
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[16];
 		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
-		iconBuffer[ICON_FARNINGLOWPOWER ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
+		iconBuffer[ICON_FARMINGLOWPOWER ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
 		iconBuffer[ICON_FARMINGPOWERED  ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
+		iconBuffer[ICON_SCANNINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
+		iconBuffer[ICON_SCANNINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
+		iconBuffer[ICON_PLANTINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
+		iconBuffer[ICON_PLANTINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
 		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
 		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
 	}
@@ -54,12 +63,12 @@ public class BlockLaserTreeFarm extends BlockContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntityLaserTreeFarm();
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(Random random) {
 		return 1;
 	}
 	
@@ -67,7 +76,23 @@ public class BlockLaserTreeFarm extends BlockContainer {
 	 * Returns the item to drop on destruction.
 	 */
 	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
+	public Item getItemDropped(int par1, Random random, int par3) {
 		return Item.getItemFromBlock(this);
+	}
+	
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
+		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+			return false;
+		}
+		
+		TileEntityLaserTreeFarm treeFarm = (TileEntityLaserTreeFarm)world.getTileEntity(x, y, z);
+		
+		if (treeFarm != null && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, treeFarm.getStatus());
+			return true;
+		}
+		
+		return false;
 	}
 }
