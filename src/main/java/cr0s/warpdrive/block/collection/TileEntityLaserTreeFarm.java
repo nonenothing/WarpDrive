@@ -115,6 +115,14 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			delayTicks = 0;
 			delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
 			updateMetadata(BlockLaserTreeFarm.ICON_IDLE);
+			
+			// force start if no computer control is available
+			if (!WarpDriveConfig.isComputerCraftLoaded && !WarpDriveConfig.isOpenComputersLoaded) {
+				breakLeaves = true;
+				enableSilktouch = false;
+				tapTrees = true;
+				start(null);
+			}
 			return;
 		}
 		

@@ -76,6 +76,14 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			delayTicksScan = 0;
 			delayTicksMine = 0;
 			updateMetadata(BlockMiningLaser.ICON_IDLE);
+			
+			// force start if no computer control is available
+			if (!WarpDriveConfig.isComputerCraftLoaded && !WarpDriveConfig.isOpenComputersLoaded) {
+				enableSilktouch = false;
+				layerOffset = 1;
+				mineAllBlocks = true;
+				start(null);
+			}
 			return;
 		}
 		
