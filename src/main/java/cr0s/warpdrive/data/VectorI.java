@@ -84,9 +84,17 @@ public class VectorI implements Cloneable {
 		return new VectorI(-x, -y, -z);
 	}
 	
+	// clone in a given direction
+	public VectorI clone(final ForgeDirection side) {
+		return new VectorI(x + side.offsetX, y + side.offsetY, z + side.offsetZ);
+	}
 	
 	public Block getBlock(IBlockAccess world) {
 		return world.getBlock(x, y, z);
+	}
+	
+	public Block getBlock_noChunkLoading(IBlockAccess world, ForgeDirection side) {
+		return getBlock_noChunkLoading(world, x + side.offsetX, y + side.offsetY, z + side.offsetZ);
 	}
 	
 	public Block getBlock_noChunkLoading(IBlockAccess world) {
@@ -191,7 +199,6 @@ public class VectorI implements Cloneable {
 		z += side.offsetZ;
 		return this;
 	}
-
 	
 	// return a new vector adding both parts
 	public static VectorI add(final VectorI vector1, final VectorI vector2) {

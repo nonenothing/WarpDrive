@@ -1,5 +1,8 @@
 package cr0s.warpdrive.block.collection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import li.cil.oc.api.machine.Arguments;
@@ -40,7 +43,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private boolean enoughPower = false;
 	
 	private final int TREE_FARM_MAX_MEDIUMS_COUNT = 1;
-	private final int TREE_FARM_MAX_LOG_DISTANCE = 200;
+	private final int TREE_FARM_MAX_LOG_DISTANCE = 8;
+	private final int TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
+	private final int TREE_FARM_MAX_RADIUS_PER_MEDIUM = 2;
 	
 	private final int TREE_FARM_WARMUP_DELAY_TICKS = 40;
 	private final int TREE_FARM_SCAN_DELAY_TICKS = 40;
@@ -72,7 +77,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	LinkedList<VectorI> soils;
 	private int soilIndex = 0;
-	LinkedList<VectorI> valuables;
+	ArrayList<VectorI> valuables;
 	private int valuableIndex = 0;
 	
 	public TileEntityLaserTreeFarm() {
@@ -88,7 +93,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				"silktouch",
 				"tapTrees"
 		});
-		countMaxLaserMediums = TREE_FARM_MAX_MEDIUMS_COUNT;
+		laserMediumMaxCount = 3 + 0 * TREE_FARM_MAX_MEDIUMS_COUNT;
 	}
 	
 	@Override
@@ -101,7 +106,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		
 		if (bScanOnReload) {
 			soils = scanSoils();
-			valuables = scanTrees();
+			valuables = new ArrayList<VectorI>(scanTrees());
 			bScanOnReload = false;
 			return;
 		}
@@ -176,7 +181,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				soils = scanSoils();
 				soilIndex = 0;
 				
-				valuables = scanTrees();
+				valuables = new ArrayList<VectorI>(scanTrees());
 				valuableIndex = 0;
 				if (valuables != null && valuables.size() > 0) {
 					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
@@ -434,7 +439,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		return soilPositions;
 	}
 	
-	private LinkedList<VectorI> scanTrees() {
+	private Collection<VectorI> scanTrees() {
 		int xmin = xCoord - radiusX;
 		int xmax = xCoord + radiusX;
 		int ymin = yCoord + 1;
@@ -442,10 +447,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		int zmin = zCoord - radiusZ;
 		int zmax = zCoord + radiusZ;
 		
-		LinkedList<VectorI> logPositions = new LinkedList<VectorI>();
+		Collection<VectorI> logPositions = new HashSet<VectorI>();
 		
 		for(int y = ymin; y <= ymax; y++) {
-			WarpDrive.logger.info("Checking for tree base at altitude " + y);
 			for(int x = xmin; x <= xmax; x++) {
 				for(int z = zmin; z <= zmax; z++) {
 					Block block = worldObj.getBlock(x, y, z);
@@ -456,42 +460,22 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 								WarpDrive.logger.info("Found tree base at " + x + "," + y + "," + z);
 							}
 							logPositions.add(pos);
-							scanBranches(logPositions, x, y, z, 0);
 						}
 					}
 				}
 			}
+		}
+		if (logPositions.size() > 0) {
+			HashSet<Block> whitelist = (HashSet<Block>) WarpDriveConfig.BLOCKS_LOGS.clone();
+			if (breakLeaves) {
+				// whitelist.addAll(WarpDriveConfig.BLOCKS_LEAVES);
+			}
+			logPositions = getConnectedBlocks(worldObj, logPositions, UP_DIRECTIONS, whitelist, TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
 		}
 		return logPositions;
-	}
-	
-	private void scanBranches(LinkedList<VectorI> logPositions, int x, int y, int z, int distance) {
-		int[] deltas = {0, -1, 1};
-		for(int dx : deltas) {
-			for(int dy = 1; dy >= 0; dy--) {
-				for(int dz : deltas) {
-					if (dx == 0 && dy == 0 && dz == 0) {
-						continue;
-					}
-					Block block = worldObj.getBlock(x + dx, y + dy, z + dz);
-					if (isLog(block) || (breakLeaves && isLeaf(block))) {
-						VectorI pos = new VectorI(x + dx, y + dy, z + dz);
-						if (!logPositions.contains(pos)) {
-							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								WarpDrive.logger.info("Found tree branch at " + pos.x + "," + pos.y + "," + pos.z + " from tree base at " + x + "," + y + "," + z);
-							}
-							logPositions.add(pos);
-							if (distance < TREE_FARM_MAX_LOG_DISTANCE) {
-								scanBranches(logPositions, pos.x, pos.y, pos.z, distance + 1);
-							}
-						}
-					}
-				}
-			}
-		}
 	}
 	
 	@Override

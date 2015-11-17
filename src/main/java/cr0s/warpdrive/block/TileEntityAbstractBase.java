@@ -1,15 +1,22 @@
 package cr0s.warpdrive.block;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.VectorI;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector {
@@ -27,6 +34,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 2);
 		}
 	}
+	
 	
 	// Inventory management methods
 	
@@ -131,6 +139,53 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		
 		return qtyLeft;
 	}
+	
+	
+	// searching methods
+	
+	public static final ForgeDirection[] UP_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
+	public static Set<VectorI> getConnectedBlocks(World world, VectorI start, ForgeDirection[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
+		return getConnectedBlocks(world, Arrays.asList(start), directions, whitelist, maxRange, ignore);
+	}
+	public static Set<VectorI> getConnectedBlocks(World world, Collection<VectorI> start, ForgeDirection[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
+		Set<VectorI> toIgnore = new HashSet<VectorI>();
+		if (ignore != null) {
+			toIgnore.addAll(Arrays.asList(ignore));
+		}
+		
+		Set<VectorI> toIterate = new HashSet<VectorI>();
+		toIterate.addAll(start);
+		
+		Set<VectorI> toIterateNext = null;
+		
+		Set<VectorI> iterated = new HashSet<VectorI>();
+		
+		int range = 0;
+		while(!toIterate.isEmpty() && range < maxRange) {
+			toIterateNext = new HashSet<VectorI>();
+			for (VectorI current : toIterate) {
+				if (whitelist.contains(current.getBlock_noChunkLoading(world))) {
+					iterated.add(current);
+				}
+				
+				for(ForgeDirection direction : directions) {
+					VectorI next = current.clone(direction);
+					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
+						if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
+							toIterateNext.add(next);
+						}
+					}
+				}
+			}
+			toIterate = toIterateNext;
+			range++;
+		}
+		
+		return iterated;
+	}
+	
+	
+	// data manipulation methods
 	
 	protected static int toInt(double d) {
 		return (int) Math.round(d);
