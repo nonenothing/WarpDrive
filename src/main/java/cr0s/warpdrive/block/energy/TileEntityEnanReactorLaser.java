@@ -32,7 +32,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 				"stabilize"
 		});
 		peripheralName = "warpdriveEnanReactorLaser";
-		countMaxLaserMediums = 1;
+		laserMediumMaxCount = 1;
 		directionsValidLaserMedium = new ForgeDirection[] { ForgeDirection.UP, ForgeDirection.DOWN };
 	}
 	

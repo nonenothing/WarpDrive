@@ -24,7 +24,7 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private final boolean canSilktouch = (WarpDriveConfig.MINING_LASER_SILKTOUCH_DEUTERIUM_L <= 0 || FluidRegistry.isFluidRegistered("deuterium"));
 	
-	private boolean isMining() {
+	private boolean isActive() {
 		return currentState != STATE_IDLE;
 	}
 	
@@ -60,7 +60,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				"silktouch"
 		});
 		CC_scripts = Arrays.asList("mine", "stop");
-		countMaxLaserMediums = WarpDriveConfig.MINING_LASER_MAX_MEDIUMS_COUNT;
+		laserMediumMaxCount = WarpDriveConfig.MINING_LASER_MAX_MEDIUMS_COUNT;
 	}
 	
 	@Override
@@ -375,7 +375,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	// Common OC/CC methods
 	private Object[] start(Object[] arguments) {
-		if (isMining()) {
+		if (isActive()) {
 			return new Object[] { false, "Already started" };
 		}
 		
@@ -390,13 +390,13 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		int energy = getEnergyStored();
 		String status = getStatus();
 		Integer retValuablesInLayer, retValuablesMined;
-		if (isMining()) {
+		if (isActive()) {
 			retValuablesInLayer = valuablesInLayer.size();
 			retValuablesMined = valuableIndex;
 			
-			return new Object[] { status, isMining(), energy, currentLayer, retValuablesMined, retValuablesInLayer };
+			return new Object[] { status, isActive(), energy, currentLayer, retValuablesMined, retValuablesInLayer };
 		}
-		return new Object[] { status, isMining(), energy, currentLayer, 0, 0 };
+		return new Object[] { status, isActive(), energy, currentLayer, 0, 0 };
 	}
 	
 	private Object[] onlyOres(Object[] arguments) {

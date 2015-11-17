@@ -77,7 +77,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser {
 			"getScanResult",
 			"videoChannel"
 		});
-		countMaxLaserMediums = WarpDriveConfig.LASER_CANNON_MAX_MEDIUMS_COUNT;
+		laserMediumMaxCount = WarpDriveConfig.LASER_CANNON_MAX_MEDIUMS_COUNT;
 	}
 	
 	@Override
