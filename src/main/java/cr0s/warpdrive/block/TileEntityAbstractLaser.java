@@ -8,6 +8,7 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -66,12 +67,12 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 			if (tileEntity != null && tileEntity instanceof TileEntityLaserMedium) {
 				directionLaserMedium = direction;
 				laserMediumCount = 0;
-				while(tileEntity != null && tileEntity instanceof TileEntityLaserMedium && laserMediumCount < laserMediumMaxCount) {
+				while(tileEntity != null && (tileEntity instanceof TileEntityLaserMedium) && laserMediumCount < laserMediumMaxCount) {
 					laserMediumCount++;
 					tileEntity = worldObj.getTileEntity(
-							xCoord + laserMediumMaxCount * direction.offsetX,
-							yCoord + laserMediumMaxCount * direction.offsetY,
-							zCoord + laserMediumMaxCount * direction.offsetZ);
+							xCoord + (laserMediumCount + 1) * direction.offsetX,
+							yCoord + (laserMediumCount + 1) * direction.offsetY,
+							zCoord + (laserMediumCount + 1) * direction.offsetZ);
 				}
 				return;
 			}
