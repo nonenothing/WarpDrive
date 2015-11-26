@@ -163,8 +163,6 @@ public class WarpDrive implements LoadingCallback {
 	public static BiomeGenBase spaceBiome;
 	public SpaceWorldGenerator spaceWorldGenerator;
 	public HyperSpaceWorldGenerator hyperSpaceWorldGenerator;
-	public World space;
-	public World hyperSpace;
 	
 	// Client settings
 	public static CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive("WarpDrive", "WarpDrive").setBackgroundImageName("warpdrive:creativeTab");
@@ -404,8 +402,8 @@ public class WarpDrive implements LoadingCallback {
 	
 	@EventHandler
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
-		space = DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID);
-		hyperSpace = DimensionManager.getWorld(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+		DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+		DimensionManager.getWorld(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
 		
 		WarpDriveConfig.onFMLPostInitialization();
 		
@@ -485,7 +483,7 @@ public class WarpDrive implements LoadingCallback {
 				int z = data.getInteger("ticketZ");
 				if (w != 0 || x != 0 || y != 0 || z != 0) {
 					WorldServer worldServer = DimensionManager.getWorld(w);
-					if (worldServer != null) {
+					if (worldServer != null) {// skip non-loaded worlds
 						TileEntity tileEntity = worldServer.getTileEntity(x, y, z);
 						if (tileEntity != null && tileEntity instanceof TileEntityAbstractChunkLoading) {
 							if (((TileEntityAbstractChunkLoading) tileEntity).shouldChunkLoad()) {

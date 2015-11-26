@@ -2,6 +2,7 @@ package cr0s.warpdrive;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -10,10 +11,8 @@ import java.util.TreeSet;
 import blusunrize.immersiveengineering.api.energy.IImmersiveConnectable;
 import blusunrize.immersiveengineering.api.energy.ImmersiveNetHandler;
 import blusunrize.immersiveengineering.api.energy.ImmersiveNetHandler.Connection;
-
 import am2.api.power.IPowerNode;
 import am2.power.PowerNodeRegistry;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -351,7 +350,7 @@ public class EntityJump extends Entity {
 		betweenWorlds = fromSpace || toSpace || isHyperspaceJump;
 		moveX = moveY = moveZ = 0;
 		
-		if (toSpace) {
+		if (!isHyperspaceJump && toSpace) {
 			Boolean planetFound = false;
 			Boolean planetValid = false;
 			int closestPlanetDistance = Integer.MAX_VALUE;
@@ -365,7 +364,14 @@ public class EntityJump extends Entity {
 						planetValid = true;
 						moveX = planet.spaceCenterX - planet.dimensionCenterX;
 						moveZ = planet.spaceCenterZ - planet.dimensionCenterZ;
-						targetWorld = DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+						targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+						if (targetWorld == null) {
+							LocalProfiler.stop();
+							String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting jump.";
+							messageToAllPlayersOnShip(msg);
+							killEntity(msg);
+							return;
+						}
 					} else if (closestPlanetDistance > planetDistance) {
 						closestPlanetDistance = planetDistance;
 						closestPlanet = planet;
@@ -393,7 +399,7 @@ public class EntityJump extends Entity {
 				killEntity(msg);
 				return;
 			}
-		} else if (fromSpace) {
+		} else if (!isHyperspaceJump && fromSpace) {
 			Boolean planeFound = false;
 			int closestPlaneDistance = Integer.MAX_VALUE;
 			Planet closestTransitionPlane = null;
@@ -404,7 +410,14 @@ public class EntityJump extends Entity {
 					planeFound = true;
 					moveX = planet.dimensionCenterX - planet.spaceCenterX;
 					moveZ = planet.dimensionCenterZ - planet.spaceCenterZ;
-					targetWorld = DimensionManager.getWorld(planet.dimensionId);
+					targetWorld = MinecraftServer.getServer().worldServerForDimension(planet.dimensionId);
+					if (targetWorld == null) {
+						LocalProfiler.stop();
+						String msg = "Undefined dimension " + planet.dimensionId + ", aborting jump. Check your server configuration!";
+						messageToAllPlayersOnShip(msg);
+						killEntity(msg);
+						return;
+					}
 				} else if (closestPlaneDistance > planeDistance) {
 					closestPlaneDistance = planeDistance;
 					closestTransitionPlane = planet;
@@ -414,7 +427,7 @@ public class EntityJump extends Entity {
 				LocalProfiler.stop();
 				String msg = "";
 				if (closestTransitionPlane == null) {
-					msg = "No transition plane defined, unable to enter atmosphere!";
+					msg = "No planet defined, unable to enter atmosphere!";
 				} else {
 					msg = "No planet in range, unable to enter atmosphere!\nClosest transition plane is " + closestPlaneDistance + " m away ("
 							+ (closestTransitionPlane.spaceCenterX - closestTransitionPlane.borderSizeX) + ", 250,"
@@ -427,9 +440,23 @@ public class EntityJump extends Entity {
 				return;
 			}
 		} else if (isHyperspaceJump && isInHyperSpace) {
-			targetWorld = DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+			targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+			if (targetWorld == null) {
+				LocalProfiler.stop();
+				String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting jump.";
+				messageToAllPlayersOnShip(msg);
+				killEntity(msg);
+				return;
+			}
 		} else if (isHyperspaceJump && isInSpace) {
-			targetWorld = DimensionManager.getWorld(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+			targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+			if (targetWorld == null) {
+				LocalProfiler.stop();
+				String msg = "Unable to load Hyperspace dimension " + WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID + ", aborting jump.";
+				messageToAllPlayersOnShip(msg);
+				killEntity(msg);
+				return;
+			}
 		} else {
 			targetWorld = worldObj;
 		}
@@ -853,7 +880,7 @@ public class EntityJump extends Entity {
 	private void immersiveEngineering_energySave(TileEntity tileEntity, JumpBlock jumpBlock) {
 		if (tileEntity instanceof IImmersiveConnectable) {
 			ChunkCoordinates node = new ChunkCoordinates(jumpBlock.blockTileEntity.xCoord, jumpBlock.blockTileEntity.yCoord, jumpBlock.blockTileEntity.zCoord);
-			List<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorldObj(), node);
+			Collection<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorldObj(), node);
 			if (connections != null) {
 				jumpBlock.nbtImmersiveEngineering = new NBTTagList();
 				for (Connection connection : connections) {
