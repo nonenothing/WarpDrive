@@ -248,8 +248,12 @@ public class WarpDriveConfig {
 	public static double MINING_LASER_FORTUNE_ENERGY_FACTOR = 1.5;
 	
 	// Tree farm
-	public static int TREE_FARM_MIN_RADIUS = 5;
-	public static int TREE_FARM_MAX_RADIUS = 16;
+	public static int TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = 3;
+	public static int TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = 2;
+	public static int TREE_FARM_totalMaxRadius = 0;
+	public static int TREE_FARM_MAX_MEDIUMS_COUNT = 5;
+	public static int TREE_FARM_MAX_LOG_DISTANCE = 8;
+	public static int TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
 	
 	// Cloaking
 	public static int CLOAKING_MAX_ENERGY_STORED = 500000000;
@@ -727,7 +731,7 @@ public class WarpDriveConfig {
 		
 		// Mining Laser
 		MINING_LASER_MAX_MEDIUMS_COUNT = clamp(1, 64,
-				config.get("mining_laser", "max_mediums_count", MINING_LASER_MAX_MEDIUMS_COUNT).getInt());
+				config.get("mining_laser", "max_mediums_count", MINING_LASER_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
 		MINING_LASER_RADIUS_BLOCKS = clamp(1, 64,
 				config.get("mining_laser", "radius_blocks", MINING_LASER_RADIUS_BLOCKS).getInt());
 		
@@ -757,10 +761,18 @@ public class WarpDriveConfig {
 				config.get("mining_laser", "fortune_energy_factor", MINING_LASER_FORTUNE_ENERGY_FACTOR).getDouble(2.5D));
 		
 		// Tree Farm
-		TREE_FARM_MIN_RADIUS = clamp(1, 30,
-				config.get("tree_farm", "min_radius", TREE_FARM_MIN_RADIUS, "Minimum radius on X and Z axis, measured in blocks").getInt());
-		TREE_FARM_MAX_RADIUS = clamp(TREE_FARM_MIN_RADIUS, 30,
-				config.get("tree_farm", "max_radius", TREE_FARM_MAX_RADIUS, "Maximum radius on X and Z axis, measured in blocks").getInt());
+		TREE_FARM_MAX_MEDIUMS_COUNT = clamp(1, 10,
+				config.get("tree_farm", "max_mediums_count", TREE_FARM_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
+		TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = clamp(1, 30,
+				config.get("tree_farm", "max_scan_radius_no_laser_medium", TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM, "Maximum scan radius without any laser medium, on X and Z axis, measured in blocks").getInt());
+		TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = clamp(0, 5,
+				config.get("tree_farm", "max_scan_radius_per_laser_medium", TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM, "Bonus to maximum scan radius per laser medium, on X and Z axis, measured in blocks").getInt());
+		TREE_FARM_totalMaxRadius = TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + TREE_FARM_MAX_MEDIUMS_COUNT * TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		
+		TREE_FARM_MAX_LOG_DISTANCE = clamp(1, 64,
+				config.get("tree_farm", "max_reach_distance", TREE_FARM_MAX_LOG_DISTANCE, "Maximum reach distance of the laser without any laser medium, measured in blocks").getInt());
+		TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = clamp(0, 16,
+				config.get("tree_farm", "max_reach_distance_per_laser_medium", TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM, "Bonus to maximum reach distance per laser medium, measured in blocks").getInt());
 		
 		// Cloaking
 		CLOAKING_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,

@@ -42,11 +42,6 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	private boolean enoughPower = false;
 	
-	private final int TREE_FARM_MAX_MEDIUMS_COUNT = 1;
-	private final int TREE_FARM_MAX_LOG_DISTANCE = 8;
-	private final int TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
-	private final int TREE_FARM_MAX_RADIUS_PER_MEDIUM = 2;
-	
 	private final int TREE_FARM_WARMUP_DELAY_TICKS = 40;
 	private final int TREE_FARM_SCAN_DELAY_TICKS = 40;
 	private final int TREE_FARM_HARVEST_LOG_DELAY_TICKS = 4;
@@ -71,9 +66,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private boolean bScanOnReload = false;
 	private int delayTicks = 0;
 	
-	private final int RADIUS_DEFAULT = 8;
-	private int radiusX = RADIUS_DEFAULT;
-	private int radiusZ = RADIUS_DEFAULT;
+	private int radiusX = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
+	private int radiusZ = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
 	
 	LinkedList<VectorI> soils;
 	private int soilIndex = 0;
@@ -93,7 +87,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				"silktouch",
 				"tapTrees"
 		});
-		laserMediumMaxCount = 3 + 0 * TREE_FARM_MAX_MEDIUMS_COUNT;
+		laserMediumMaxCount = WarpDriveConfig.TREE_FARM_MAX_MEDIUMS_COUNT;
 	}
 	
 	@Override
@@ -416,12 +410,13 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private LinkedList<VectorI> scanSoils() {
-		int xmin = xCoord - radiusX;
-		int xmax = xCoord + radiusX;
+		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		int xmin = xCoord - Math.min(radiusX, maxRadius);
+		int xmax = xCoord + Math.min(radiusX, maxRadius);
 		int ymin = yCoord + 0;
 		int ymax = yCoord + 8;
-		int zmin = zCoord - radiusZ;
-		int zmax = zCoord + radiusZ;
+		int zmin = zCoord - Math.min(radiusZ, maxRadius);
+		int zmax = zCoord + Math.min(radiusZ, maxRadius);
 		
 		LinkedList<VectorI> soilPositions = new LinkedList<VectorI>();
 		
@@ -448,12 +443,13 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Collection<VectorI> scanTrees() {
-		int xmin = xCoord - radiusX;
-		int xmax = xCoord + radiusX;
+		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		int xmin = xCoord - Math.min(radiusX, maxRadius);
+		int xmax = xCoord + Math.min(radiusX, maxRadius);
 		int ymin = yCoord + 1;
 		int ymax = yCoord + 1 + (tapTrees ? 8 : 0);
-		int zmin = zCoord - radiusZ;
-		int zmax = zCoord + radiusZ;
+		int zmin = zCoord - Math.min(radiusZ, maxRadius);
+		int zmax = zCoord + Math.min(radiusZ, maxRadius);
 		
 		Collection<VectorI> logPositions = new HashSet<VectorI>();
 		
@@ -478,7 +474,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			if (breakLeaves) {
 				// whitelist.addAll(WarpDriveConfig.BLOCKS_LEAVES);
 			}
-			logPositions = getConnectedBlocks(worldObj, logPositions, UP_DIRECTIONS, whitelist, TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
+			logPositions = getConnectedBlocks(worldObj, logPositions, UP_DIRECTIONS, whitelist, WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
@@ -501,14 +497,14 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		super.readFromNBT(tag);
 		radiusX = tag.getInteger("radiusX");
 		if (radiusX == 0) {
-			radiusX = RADIUS_DEFAULT;
+			radiusX = 1;
 		}
-		radiusX = clamp(WarpDriveConfig.TREE_FARM_MIN_RADIUS, WarpDriveConfig.TREE_FARM_MAX_RADIUS, radiusX);
+		radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusX);
 		radiusZ = tag.getInteger("radiusZ");
 		if (radiusZ == 0) {
-			radiusZ = RADIUS_DEFAULT;
+			radiusZ = 1;
 		}
-		radiusZ = clamp(WarpDriveConfig.TREE_FARM_MIN_RADIUS, WarpDriveConfig.TREE_FARM_MAX_RADIUS, radiusZ);
+		radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusZ);
 		
 		breakLeaves     = tag.getBoolean("breakLeaves");
 		tapTrees        = tag.getBoolean("tapTrees");
@@ -590,15 +586,15 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private Object[] radius(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				radiusX = clamp(WarpDriveConfig.TREE_FARM_MIN_RADIUS, WarpDriveConfig.TREE_FARM_MAX_RADIUS, toInt(arguments[0]));
+				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
 				radiusZ = radiusX;
 			} else if (arguments.length == 2) {
-				radiusX = clamp(WarpDriveConfig.TREE_FARM_MIN_RADIUS, WarpDriveConfig.TREE_FARM_MAX_RADIUS, toInt(arguments[0]));
-				radiusZ = clamp(WarpDriveConfig.TREE_FARM_MIN_RADIUS, WarpDriveConfig.TREE_FARM_MAX_RADIUS, toInt(arguments[1]));
+				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
+				radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[1]));
 			}
 		} catch(NumberFormatException exception) {
-			radiusX = RADIUS_DEFAULT;
-			radiusZ = RADIUS_DEFAULT;
+			radiusX = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
+			radiusZ = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
 		}
 		return new Integer[] { radiusX , radiusZ };
 	}
