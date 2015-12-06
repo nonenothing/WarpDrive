@@ -10,47 +10,44 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.ComponentType;
+import cr0s.warpdrive.data.DecorativeType;
 
 public class BlockDecorative extends Block {
-	public static enum decorativeTypes {
-		Plain, Energized, Network
-	};
-	
-	private static ItemStack[] isCache = new ItemStack[decorativeTypes.values().length];
-	private static IIcon[] iconBuffer = new IIcon[decorativeTypes.values().length];
+	private static IIcon[] icons;
+	private static ItemStack[] itemStackCache;
 	
 	public BlockDecorative() {
 		super(Material.iron);
 		setHardness(0.5f);
 		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.Plain");
-	}
-	
-	private static boolean isValidDamage(final int damage) {
-		return damage >= 0 && damage < decorativeTypes.values().length;
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		
+		icons = new IIcon[DecorativeType.length];
+		itemStackCache = new ItemStack[DecorativeType.length];
 	}
 	
 	@Override
-	public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		for (decorativeTypes val : decorativeTypes.values()) {
-			par3List.add(new ItemStack(par1, 1, val.ordinal()));
+	public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list) {
+		for (DecorativeType decorativeType : DecorativeType.values()) {
+			list.add(new ItemStack(item, 1, decorativeType.ordinal()));
 		}
 	}
 	
 	@Override
-	public void registerBlockIcons(IIconRegister ir) {
-		for (decorativeTypes val : decorativeTypes.values()) {
-			iconBuffer[val.ordinal()] = ir.registerIcon("warpdrive:passive/decorative" + val.toString());
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		for (DecorativeType decorativeType : DecorativeType.values()) {
+			icons[decorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:passive/decorative" + decorativeType.unlocalizedName);
 		}
 	}
 	
 	@Override
 	public IIcon getIcon(int side, int damage) {
-		if (isValidDamage(damage)) {
-			return iconBuffer[damage];
+		if (damage >= 0 && damage < ComponentType.length) {
+			return icons[damage];
 		}
-		return iconBuffer[0];
+		return icons[0];
 	}
 	
 	@Override
@@ -58,22 +55,18 @@ public class BlockDecorative extends Block {
 		return damage;
 	}
 	
-	public static ItemStack getItemStack(int damage) {
-		if (!isValidDamage(damage)) {
-			return null;
+	public static ItemStack getItemStack(DecorativeType decorativeType) {
+		if (decorativeType != null) {
+			int damage = decorativeType.ordinal();
+			if (itemStackCache[damage] == null) {
+				itemStackCache[damage] = new ItemStack(WarpDrive.blockDecorative, 1, damage);
+			}
+			return itemStackCache[damage];
 		}
-		
-		if (isCache[damage] == null) {
-			isCache[damage] = getItemStackNoCache(damage, 1);
-		}
-		return isCache[damage];
+		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(int damage, int amount) {
-		if (!isValidDamage(damage)) {
-			return null;
-		}
-		
-		return new ItemStack(WarpDrive.blockDecorative, amount, damage);
+	public static ItemStack getItemStackNoCache(DecorativeType decorativeType, int amount) {
+		return new ItemStack(WarpDrive.blockDecorative, amount, decorativeType.ordinal());
 	}
 }

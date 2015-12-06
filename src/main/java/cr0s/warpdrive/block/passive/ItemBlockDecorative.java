@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.passive;
 
 import java.util.List;
 
+import cr0s.warpdrive.data.DecorativeType;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -22,17 +23,17 @@ public class ItemBlockDecorative extends ItemBlock {
 	}
 	
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		for (int i = 0; i < BlockDecorative.decorativeTypes.values().length; i++) {
-			par3List.add(new ItemStack(par1, 1, i));
+	public void getSubItems(Item item, CreativeTabs creativeTabs, List list) {
+		for (DecorativeType decorativeType : DecorativeType.values()) {
+			list.add(new ItemStack(item, 1, decorativeType.ordinal()));
 		}
 	}
 	
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
-		if (itemstack == null)
+		if (itemstack == null) {
 			return getUnlocalizedName();
-		return "tile.warpdrive.passive." + BlockDecorative.decorativeTypes.values()[itemstack.getItemDamage()].toString();
+		}
+		return "tile.warpdrive.passive." + DecorativeType.get(itemstack.getItemDamage()).unlocalizedName;
 	}
-
 }
