@@ -17,7 +17,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumUpgradeTypes;
+import cr0s.warpdrive.data.UpgradeType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
@@ -38,7 +38,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	private Object[] cofhEnergyHandlers;
 	
-	protected HashMap<EnumUpgradeTypes,Integer> upgrades = new HashMap<EnumUpgradeTypes,Integer>();
+	protected HashMap<UpgradeType,Integer> upgrades = new HashMap<UpgradeType,Integer>();
 	
 	public TileEntityAbstractEnergy() {
 		super();
@@ -50,8 +50,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	public Object[] getUpgrades()
 	{
-		Object[] retVal = new Object[EnumUpgradeTypes.values().length];
-		for(EnumUpgradeTypes type : EnumUpgradeTypes.values())
+		Object[] retVal = new Object[UpgradeType.values().length];
+		for(UpgradeType type : UpgradeType.values())
 		{
 			int am = 0;
 			if(upgrades.containsKey(type))
@@ -125,18 +125,18 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 */
 	public boolean consumeEnergy(int amount_internal, boolean simulate) {
 		int amountUpgraded = amount_internal;
-		if (upgrades.containsKey(EnumUpgradeTypes.Power)) {
-			double valueMul = Math.pow(0.8, upgrades.get(EnumUpgradeTypes.Power));
+		if (upgrades.containsKey(UpgradeType.Power)) {
+			double valueMul = Math.pow(0.8, upgrades.get(UpgradeType.Power));
 			amountUpgraded = (int) Math.ceil(valueMul * amountUpgraded);
 		}
 		
-		if (upgrades.containsKey(EnumUpgradeTypes.Range)) {
-			double valueMul = Math.pow(1.2, upgrades.get(EnumUpgradeTypes.Range));
+		if (upgrades.containsKey(UpgradeType.Range)) {
+			double valueMul = Math.pow(1.2, upgrades.get(UpgradeType.Range));
 			amountUpgraded = (int) Math.ceil(valueMul * amountUpgraded);
 		}
 		
-		if (upgrades.containsKey(EnumUpgradeTypes.Speed)) {
-			double valueMul = Math.pow(1.2, upgrades.get(EnumUpgradeTypes.Speed));
+		if (upgrades.containsKey(UpgradeType.Speed)) {
+			double valueMul = Math.pow(1.2, upgrades.get(UpgradeType.Speed));
 			amountUpgraded = (int) Math.ceil(valueMul * amountUpgraded);
 		}
 		// FIXME: upgrades balancing & implementation to be done...
@@ -412,7 +412,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 		if (tag.hasKey("upgrades")) {
 			NBTTagCompound upgradeTag = tag.getCompoundTag("upgrades");
-			for (EnumUpgradeTypes type : EnumUpgradeTypes.values()) {
+			for (UpgradeType type : UpgradeType.values()) {
 				if (upgradeTag.hasKey(type.toString()) && upgradeTag.getInteger(type.toString()) != 0) {
 					upgrades.put(type, upgradeTag.getInteger(type.toString()));
 				}
@@ -429,7 +429,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		tag.setInteger("energy", this.energyStored_internal);
 		if (upgrades.size() > 0) {
 			NBTTagCompound upgradeTag = new NBTTagCompound();
-			for (EnumUpgradeTypes type : EnumUpgradeTypes.values()) {
+			for (UpgradeType type : UpgradeType.values()) {
 				if (upgrades.containsKey(type)) {
 					upgradeTag.setInteger(type.toString(), upgrades.get(type));
 				}

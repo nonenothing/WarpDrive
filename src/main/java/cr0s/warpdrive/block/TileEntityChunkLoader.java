@@ -8,7 +8,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
 import cr0s.warpdrive.api.IUpgradable;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumUpgradeTypes;
+import cr0s.warpdrive.data.UpgradeType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
@@ -167,12 +167,12 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	}
 
 	@Override
-	public boolean takeUpgrade(EnumUpgradeTypes upgradeType, boolean simulate)
+	public boolean takeUpgrade(UpgradeType upgradeType, boolean simulate)
 	{
 		int max = 0;
-		if(upgradeType == EnumUpgradeTypes.Energy)
+		if(upgradeType == UpgradeType.Energy)
 			max = 2;
-		else if(upgradeType == EnumUpgradeTypes.Power)
+		else if(upgradeType == UpgradeType.Power)
 			max = 2;
 
 		if(max == 0)
@@ -193,7 +193,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	}
 
 	@Override
-	public Map<EnumUpgradeTypes, Integer> getInstalledUpgrades()
+	public Map<UpgradeType, Integer> getInstalledUpgrades()
 	{
 		return upgrades;
 	}
