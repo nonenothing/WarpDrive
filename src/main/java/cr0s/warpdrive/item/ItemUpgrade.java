@@ -5,106 +5,96 @@ import java.util.List;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.EnumUpgradeTypes;
+import cr0s.warpdrive.data.UpgradeType;
 
 public class ItemUpgrade extends Item {
-	private ItemStack[] isCache = new ItemStack[EnumUpgradeTypes.values().length];
-	private IIcon[] iconBuffer = new IIcon[EnumUpgradeTypes.values().length];
-
+	private static ItemStack[] isCache = new ItemStack[UpgradeType.values().length];
+	private static IIcon[] iconBuffer = new IIcon[UpgradeType.values().length];
+	
 	public ItemUpgrade() {
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.upgrade.Malformed");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}
-
-	private boolean isValidDamage(int damage) {
-		return damage >= 0 && damage < EnumUpgradeTypes.values().length;
+	
+	private static boolean isValidDamage(int damage) {
+		return damage >= 0 && damage < UpgradeType.values().length;
 	}
-
-	public ItemStack getIS(int damage) {
-		if (!isValidDamage(damage))
+	
+	public static ItemStack getItemStack(UpgradeType energy) {
+		if (!isValidDamage(energy.ordinal())) {
 			return null;
-
-		if (isCache[damage] == null)
-			isCache[damage] = getISNoCache(damage);
-		return isCache[damage];
+		}
+		
+		if (isCache[energy.ordinal()] == null) {
+			isCache[energy.ordinal()] = getItemStackNoCache(energy);
+		}
+		return isCache[energy.ordinal()];
 	}
-
-	public ItemStack getISNoCache(int damage) {
-		if (!isValidDamage(damage))
+	
+	public static ItemStack getItemStackNoCache(UpgradeType energy) {
+		if (!isValidDamage(energy.ordinal())) {
 			return null;
-
-		return new ItemStack(WarpDrive.itemUpgrade, 1, damage);
+		}
+		
+		return new ItemStack(WarpDrive.itemUpgrade, 1, energy.ordinal());
 	}
-
+	
 	@Override
-	public String getUnlocalizedName(ItemStack is) {
-		if (is == null)
+	public String getUnlocalizedName(ItemStack itemStack) {
+		if (itemStack == null) {
 			return null;
-
-		int damage = is.getItemDamage();
-		if (isValidDamage(damage))
-			return "item.warpdrive.upgrade." + EnumUpgradeTypes.values()[damage].toString();
-
+		}
+		
+		int damage = itemStack.getItemDamage();
+		if (isValidDamage(damage)) {
+			return "item.warpdrive.upgrade." + UpgradeType.values()[damage].toString();
+		}
+		
 		return null;
 	}
-
+	
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		for (int i = 0; i < EnumUpgradeTypes.values().length; i++)
-			par3List.add(getIS(i));
+		for (UpgradeType upgradeType : UpgradeType.values()) {
+			par3List.add(getItemStack(upgradeType));
+		}
 	}
-
+	
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer pl, List list, boolean par4) {
-		if (is == null)
+		if (is == null) {
 			return;
-
+		}
+		
 		int damage = is.getItemDamage();
-		if (damage == EnumUpgradeTypes.Energy.ordinal())
+		if (damage == UpgradeType.Energy.ordinal()) {
 			list.add("Increases the max energy of the machine");
-		else if (damage == EnumUpgradeTypes.Power.ordinal())
+		} else if (damage == UpgradeType.Power.ordinal()) {
 			list.add("Decreases the power usage of the machine");
-		else if (damage == EnumUpgradeTypes.Speed.ordinal())
+		} else if (damage == UpgradeType.Speed.ordinal()) {
 			list.add("Increases the speed of the machine");
-		else if (damage == EnumUpgradeTypes.Range.ordinal())
+		} else if (damage == UpgradeType.Range.ordinal()) {
 			list.add("Increases the range of the machine");
+		}
 	}
-
-	public void initRecipes() {
-		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(EnumUpgradeTypes.Energy.ordinal()), false, "c", "e", "r", 'c', WarpDrive.itemComponent.getItemStack(0), 'e',
-				WarpDrive.itemComponent.getItemStack(7), 'r', Items.redstone));
-
-		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(EnumUpgradeTypes.Power.ordinal()), false, "c", "e", "r", 'c', WarpDrive.itemComponent.getItemStack(0), 'e',
-				WarpDrive.itemComponent.getItemStack(6), 'r', Items.redstone));
-
-		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(EnumUpgradeTypes.Speed.ordinal()), false, "c", "e", "r", 'c', WarpDrive.itemComponent.getItemStack(0), 'e',
-				Items.sugar, 'r', Items.redstone));
-
-		GameRegistry.addRecipe(new ShapedOreRecipe(getIS(EnumUpgradeTypes.Range.ordinal()), false, "c", "e", "r", 'c', WarpDrive.itemComponent.getItemStack(0), 'e',
-				WarpDrive.blockTransportBeacon, 'r', Items.redstone));
-
-	}
-
+	
 	@Override
 	public void registerIcons(IIconRegister ir) {
-		for (EnumUpgradeTypes val : EnumUpgradeTypes.values()) {
+		for (UpgradeType val : UpgradeType.values()) {
 			iconBuffer[val.ordinal()] = ir.registerIcon("warpdrive:upgrade" + val.toString());
 		}
 	}
-
+	
 	@Override
 	public IIcon getIconFromDamage(int damage) {
-		if (damage >= 0 && damage < EnumUpgradeTypes.values().length)
+		if (damage >= 0 && damage < UpgradeType.values().length) {
 			return iconBuffer[damage];
+		}
 		return iconBuffer[0];
 	}
-
 }
