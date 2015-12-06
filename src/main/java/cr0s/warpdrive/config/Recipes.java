@@ -870,7 +870,7 @@ public class Recipes {
 			OreDictionary.registerOre("plateAlloyIridium", itemStackFranckNZombie);
 			oreDiamondOrReinforcedIridiumPlate = "plateAlloyIridium";
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			// TODO
+			oreDiamondOrReinforcedIridiumPlate = "ingotLumium";
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWarpIsolation), false, "iii", "imi", "iii",
 				'i', oreDiamondOrReinforcedIridiumPlate,
@@ -1081,9 +1081,9 @@ public class Recipes {
 		// Cloaking coil is 1 Titanium plate, 4 reinforced iridium plate, 1x EV Machine casing (Ti) or 1 Beacon, 4 emerald, 4 diamond
 		ItemStack itemStackGoldIngotOrCoil = new ItemStack(Items.gold_ingot);
 		if (WarpDriveConfig.isGregTech5loaded) {
-			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 14);	// TODO: what's that?
+			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 14);	// Nichrome Coil block
 		} else if (WarpDriveConfig.isIndustrialCraft2loaded) {
-			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 0);	// TODO: what's that?
+			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 0);	// Coil
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("ThermalExpansion", "material", 3);	// Redstone conductance coil
 		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
@@ -1147,5 +1147,12 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(BlockDecorative.getItemStackNoCache(DecorativeType.NETWORK, 8), false, "sss", "scs", "sss",
 				's', "warpDecorative",
 				'c', "dyeBlue"));
+		
+		// Armor
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemHelmet), false, "iii", "iwi", "gcg",
+				'i', Items.iron_ingot,
+				'w', Blocks.wool,
+				'g', "blockGlassColorless",
+				'c', ItemComponent.getItemStack(ComponentType.AIR_CANISTER)));
 	}
 }
