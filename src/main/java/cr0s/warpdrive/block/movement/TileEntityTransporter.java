@@ -18,7 +18,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IUpgradable;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumUpgradeTypes;
+import cr0s.warpdrive.data.UpgradeType;
 import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -341,8 +341,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	private double getLockStrength() {
 		if (isLocked) {
 			double upgradeBoost = 1;
-			if (upgrades.containsKey(EnumUpgradeTypes.Range))
-				upgradeBoost = Math.pow(1.2, upgrades.get(EnumUpgradeTypes.Range));
+			if (upgrades.containsKey(UpgradeType.Range))
+				upgradeBoost = Math.pow(1.2, upgrades.get(UpgradeType.Range));
 			return clamp(0, 1, baseLockStrength * lockStrengthMul * Math.pow(2, powerBoost - 1) * upgradeBoost * (1 + beaconEffect));
 		}
 		return -1;
@@ -412,8 +412,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	@Override
 	public int getMaxEnergyStored() {
 		int max = WarpDriveConfig.TRANSPORTER_MAX_ENERGY;
-		if (upgrades.containsKey(EnumUpgradeTypes.Energy)) {
-			max = (int) Math.floor(max * Math.pow(1.2, upgrades.get(EnumUpgradeTypes.Energy)));
+		if (upgrades.containsKey(UpgradeType.Energy)) {
+			max = (int) Math.floor(max * Math.pow(1.2, upgrades.get(UpgradeType.Energy)));
 		}
 		return max;
 	}
@@ -460,13 +460,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	}
 
 	@Override
-	public boolean takeUpgrade(EnumUpgradeTypes upgradeType, boolean simulate) {
+	public boolean takeUpgrade(UpgradeType upgradeType, boolean simulate) {
 		int max = 0;
-		if (upgradeType == EnumUpgradeTypes.Energy)
+		if (upgradeType == UpgradeType.Energy)
 			max = 2;
-		else if (upgradeType == EnumUpgradeTypes.Power)
+		else if (upgradeType == UpgradeType.Power)
 			max = 4;
-		else if (upgradeType == EnumUpgradeTypes.Range)
+		else if (upgradeType == UpgradeType.Range)
 			max = 4;
 
 		if (max == 0)
@@ -486,7 +486,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	}
 
 	@Override
-	public Map<EnumUpgradeTypes, Integer> getInstalledUpgrades() {
+	public Map<UpgradeType, Integer> getInstalledUpgrades() {
 		return upgrades;
 	}
 }
