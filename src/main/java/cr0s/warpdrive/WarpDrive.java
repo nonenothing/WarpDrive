@@ -115,7 +115,7 @@ import cr0s.warpdrive.world.SpaceWorldProvider;
 import cr0s.warpdrive.world.SpaceWorldGenerator;
 
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2API;" + " after:CoFHCore;" + " after:ComputerCraft;"
-		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech_addon;" + " after:AppliedEnergistics;")
+		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;")
 /**
  * @author Cr0s
  */
@@ -295,11 +295,9 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockIridium, "blockIridium");
 		
 		// HIGHLY ADVANCED MACHINE BLOCK
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
-			blockHighlyAdvancedMachine = new BlockHighlyAdvancedMachine();
-			
-			GameRegistry.registerBlock(blockHighlyAdvancedMachine, "blockHighlyAdvancedMachine");
-		}
+		blockHighlyAdvancedMachine = new BlockHighlyAdvancedMachine();
+		
+		GameRegistry.registerBlock(blockHighlyAdvancedMachine, "blockHighlyAdvancedMachine");
 		
 		// SHIP SCANNER
 		blockShipScanner = new BlockShipScanner();
@@ -374,8 +372,10 @@ public class WarpDrive implements LoadingCallback {
 		itemAirCanisterFull = new ItemAirCanisterFull();
 		GameRegistry.registerItem(itemAirCanisterFull, "itemAirCanisterFull");
 		
-		itemUpgrade = new ItemUpgrade();
-		GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
+		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
+			itemUpgrade = new ItemUpgrade();
+			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
+		}
 		
 		
 		proxy.registerEntities();
@@ -407,14 +407,18 @@ public class WarpDrive implements LoadingCallback {
 		
 		WarpDriveConfig.onFMLPostInitialization();
 		
-		if (WarpDriveConfig.isIndustrialCraft2loaded && WarpDriveConfig.RECIPES_ENABLE_IC2) {
-			Recipes.initIC2();
-		}
-		if (WarpDriveConfig.isIndustrialCraft2loaded && WarpDriveConfig.RECIPES_ENABLE_HARD_IC2) {
-			Recipes.initHardIC2();
-		}
-		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
-			Recipes.initVanilla();
+		if (WarpDriveConfig.RECIPES_ENABLE_DYNAMIC) {
+			Recipes.initDynamic();
+		} else {
+			if (WarpDriveConfig.isIndustrialCraft2loaded && WarpDriveConfig.RECIPES_ENABLE_IC2) {
+				Recipes.initIC2();
+			}
+			if (WarpDriveConfig.isIndustrialCraft2loaded && WarpDriveConfig.RECIPES_ENABLE_HARD_IC2) {
+				Recipes.initHardIC2();
+			}
+			if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
+				Recipes.initVanilla();
+			}
 		}
 		
 		// Registers

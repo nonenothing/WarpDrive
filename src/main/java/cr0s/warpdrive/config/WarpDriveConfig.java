@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -55,8 +56,11 @@ public class WarpDriveConfig {
 	public static boolean isComputerCraftLoaded = false;
 	public static boolean isOpenComputersLoaded = false;
 	public static boolean isThermalExpansionLoaded = false;
-	public static boolean isArsMagica2loaded = false;
-	public static boolean isImmersiveEngineeringloaded = false;
+	public static boolean isArsMagica2Loaded = false;
+	public static boolean isImmersiveEngineeringLoaded = false;
+	public static boolean isGregTech5loaded = false;
+	public static boolean isEnderIOloaded = false;
+	public static boolean isAdvancedRepulsionSystemLoaded = false;
 	
 	// ForgeMultipart (microblocks) support
 	public static Method forgeMultipart_helper_createTileFromNBT = null;
@@ -93,10 +97,10 @@ public class WarpDriveConfig {
 	public static String G_SCHEMALOCATION = "warpDrive_schematics";
 	public static int G_BLOCKS_PER_TICK = 3500;
 	
-	public static boolean RECIPES_ENABLE_IC2 = true;
+	public static boolean RECIPES_ENABLE_DYNAMIC = true;
+	public static boolean RECIPES_ENABLE_IC2 = false;
 	public static boolean RECIPES_ENABLE_HARD_IC2 = false;
 	public static boolean RECIPES_ENABLE_VANILLA = false;
-	public static boolean RECIPES_ENABLE_MIXED = false;
 	
 	// Logging
 	public static boolean LOGGING_JUMP = false;
@@ -370,11 +374,11 @@ public class WarpDriveConfig {
 						"Number of blocks to move per ticks, too high will cause lag spikes on ship jumping or deployment, too low may break the ship wirings").getInt());
 		
 		// Recipes
-		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk").getBoolean(false);
-		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCrat2 by Cr0s").getBoolean(true);
-		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ").getBoolean(false);
-		RECIPES_ENABLE_MIXED = config.get("recipes", "enable_mixed", RECIPES_ENABLE_MIXED,
-				"Mixed recipes for Lem'ADEC's packs (currently requires at least AppliedEnergistics, Extracells, AtomicScience, IndustrialCraft2, GraviSuite and ThermalExpansion").getBoolean(false);
+		RECIPES_ENABLE_DYNAMIC = config.get("recipes", "enable_dynamic", RECIPES_ENABLE_DYNAMIC,
+				"Mixed recipes dynamicaly integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
+		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
+		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCrat2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
+		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
 		
 		// Logging
 		LOGGING_JUMP = config.get("logging", "enable_jump_logs", LOGGING_JUMP, "Basic jump logs, should always be enabled").getBoolean(true);
@@ -867,8 +871,15 @@ public class WarpDriveConfig {
 		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
-		isArsMagica2loaded = Loader.isModLoaded("arsmagica2");
-		isImmersiveEngineeringloaded = Loader.isModLoaded("ImmersiveEngineering");
+		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
+		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
+		isGregTech5loaded = false;
+		if (Loader.isModLoaded("gregtech")) {
+			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			isGregTech5loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+		}
+		isEnderIOloaded = Loader.isModLoaded("EnderIO");
+		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 	}
 	
 	public static void onFMLPostInitialization() {

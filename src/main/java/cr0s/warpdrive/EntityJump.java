@@ -686,10 +686,10 @@ public class EntityJump extends Entity {
 								JumpBlock jumpBlock = new JumpBlock(block, blockMeta, tileEntity, x, y, z);
 								
 								// save energy network
-								if (WarpDriveConfig.isArsMagica2loaded) {
+								if (WarpDriveConfig.isArsMagica2Loaded) {
 									arsMagica2_energySave(tileEntity, jumpBlock);
 								}
-								if (WarpDriveConfig.isImmersiveEngineeringloaded) {
+								if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
 									immersiveEngineering_energySave(tileEntity, jumpBlock);
 								}
 								
