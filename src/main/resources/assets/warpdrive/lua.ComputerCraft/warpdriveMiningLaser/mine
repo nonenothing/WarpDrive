@@ -57,21 +57,23 @@ if #mininglasers == 0 then
 end
 if noExit then
   for key,mininglaser in pairs(mininglasers) do
-    if not mininglaser.isMining() then
+    statusString, isActive = mininglaser.state()
+    if not isActive then
       mininglaser.offset(layerOffset)
+	  
       if mineAll then
-        if useDeuterium then
-          mininglaser.quarry(useDeuterium)
-        else
-          mininglaser.quarry()
-        end
+        mininglaser.onlyOres(false)
       else
-        if useDeuterium then
-          mininglaser.mine(useDeuterium)
-        else
-          mininglaser.mine()
-        end
+        mininglaser.onlyOres(true)
       end
+	  
+      if useDeuterium then
+        mininglaser.silktouch(useDeuterium)
+      else
+        mininglaser.silktouch(false)
+      end
+	  
+      mininglaser.start()
 	end
   end
   sleep(1)
@@ -86,10 +88,10 @@ end
 term.setTextColor(colors.blue)
 if noExit then
   repeat
-    isMining = false
+    isActive = false
     for key,mininglaser in pairs(mininglasers) do
-      status, energy, currentLayer, mined, total = mininglaser.state()
-  
+      status, isActive, energy, currentLayer, mined, total = mininglaser.state()
+      
       term.setBackgroundColor(colors.black)
       term.clear()
       term.setBackgroundColor(colors.lime)
@@ -103,15 +105,14 @@ if noExit then
       term.write("Energy level is " .. energy .. " EU")
       term.setCursorPos(1, 7)
       term.write("Mined " .. mined .. " out of " .. total .. " blocks at layer " .. currentLayer .. "   ")
-
-      if mininglaser.isMining() then
+      
+      if isActive then
         sleep(1)
-		isMining = true
-	  else
-	    sleep(0.1)
+      else
+        sleep(0.1)
       end
-	end
-  until not isMining
+    end
+  until not isActive
 end
 
 term.setBackgroundColor(colors.black)

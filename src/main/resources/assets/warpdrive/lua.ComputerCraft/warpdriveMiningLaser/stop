@@ -30,7 +30,8 @@ if #mininglasers == 0 then
 else
   for key,mininglaser in pairs(mininglasers) do
     term.setCursorPos(1, 2 + key)
-    if not mininglaser.isMining() then
+	statusString, isActive = mininglaser.state()
+    if not isActive then
       term.setBackgroundColor(colors.red)
       term.setTextColor(colors.white)
       term.write("Mining laser " .. key .. " of " .. #mininglasers .. " is already stopped")
