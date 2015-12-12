@@ -8,6 +8,9 @@ import java.util.Set;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -21,6 +24,8 @@ import cr0s.warpdrive.network.PacketHandler;
 
 public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	private int ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;
+	private byte activeSides = 0;
+	private boolean updateFlag = false;
 	
 	public TileEntityIC2reactorLaserMonitor() {
 		super();
@@ -31,12 +36,26 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	private static int[] deltaX = {-2, 2, 0, 0, 0, 0};
 	private static int[] deltaY = { 0, 0,-2, 2, 0, 0};
 	private static int[] deltaZ = { 0, 0, 0, 0,-2, 2};
+	private static byte[] deltaSides = { 1, 2, 4, 8, 16, 32 };
+	
+	protected boolean isSideActive(int side) {
+		switch (side) {
+		case 4: return (deltaSides[0] & activeSides) != 0;
+		case 5: return (deltaSides[1] & activeSides) != 0;
+		case 0: return (deltaSides[2] & activeSides) != 0;
+		case 1: return (deltaSides[3] & activeSides) != 0;
+		case 2: return (deltaSides[4] & activeSides) != 0;
+		case 3: return (deltaSides[5] & activeSides) != 0;
+		default: return false;
+		}
+	}
 	
 	// returns IReactor tile entities
 	@Optional.Method(modid = "IC2")
 	private Set<IReactor> findReactors() {
 		Set<IReactor> output = new HashSet<IReactor>();
 		
+		byte newActiveSides = 0;
 		for(int i = 0; i < deltaX.length; i++) {
 			TileEntity tileEntity = worldObj.getTileEntity(xCoord + deltaX[i], yCoord + deltaY[i], zCoord + deltaZ[i]);
 			if (tileEntity == null) {
@@ -44,6 +63,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 			}
 			
 			if (tileEntity instanceof IReactor) {
+				newActiveSides |= deltaSides[i];
 				output.add((IReactor)tileEntity);
 				
 			} else if (tileEntity instanceof IReactorChamber) {
@@ -60,8 +80,13 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 					continue;
 				}
 				
+				newActiveSides |= deltaSides[i];
 				output.add(reactor);
 			}
+		}
+		if (activeSides != newActiveSides) {
+			updateFlag = !updateFlag;
+			activeSides = newActiveSides;
 		}
 		return output;
 	}
@@ -103,6 +128,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 			ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;
 			Vector3 myPos = new Vector3(this).translate(0.5);
 			Set<IReactor> reactors = findReactors();
+			setMetadata();
 			if (reactors.size() == 0) {
 				return;
 			}
@@ -115,14 +141,39 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 		}
 	}
 	
+	private void setMetadata() {
+		int metadata = (updateFlag ? 0 : 1) | (activeSides != 0 ? 2 : 0);
+		if (getEnergyStored() >= WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT) {
+			metadata |= 8;
+		}
+		if (getBlockMetadata() != metadata) {
+			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 3);
+		}
+	}
+	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
+		tag.setByte("activeSides", activeSides);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
+		activeSides = tag.getByte("activeSides");
+	}
+	
+	@Override
+	public Packet getDescriptionPacket() {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		writeToNBT(tagCompound);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+		NBTTagCompound tag = packet.func_148857_g();
+		readFromNBT(tag);
 	}
 	
 	@Override
@@ -130,8 +181,8 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	public String getStatus() {
 		Set<IReactor> reactors = findReactors();
 		return getBlockType().getLocalizedName()
-			+ String.format(" energy level is %.0f/%.0f EU.", convertInternalToEU(getEnergyStored()), convertInternalToEU(getMaxEnergyStored()))
-			+ ((reactors == null || reactors.size() == 0) ? " No reactor found!" : " " + reactors.size() + " reactor(s) connected.");
+			+ String.format("\nEnergy level is %.0f/%.0f EU.", convertInternalToEU(getEnergyStored()), convertInternalToEU(getMaxEnergyStored()))
+			+ "\n" + ((reactors == null || reactors.size() == 0) ? "No reactor found!" : reactors.size() + " reactor(s) connected.");
 	}
 	
 	@Override
