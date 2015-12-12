@@ -548,17 +548,31 @@ public class Recipes {
 		ItemStack itemMachineCasingMV = null;
 		ItemStack itemMachineCasingHV = null;
 		ItemStack itemMachineCasingEV = null;
+		ItemStack itemMotorLV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		ItemStack itemMotorMV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		ItemStack itemMotorHV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		@SuppressWarnings("unused")
+		ItemStack itemMotorEV = ItemComponent.getItemStack(ComponentType.MOTOR);
 		
 		if (WarpDriveConfig.isGregTech5loaded) {
 			itemMachineCasingLV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 1);
 			itemMachineCasingMV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 2);
 			itemMachineCasingHV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 3);
 			itemMachineCasingEV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 4);
+			
+			itemMotorLV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32600);	// LV Motor
+			itemMotorMV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32601);	// MV Motor
+			itemMotorHV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32602);	// HV Motor
+			itemMotorEV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32603);	// EV Motor
+			
 		} else if (WarpDriveConfig.isIndustrialCraft2loaded) {
 			itemMachineCasingLV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 0);	// Basic machine casing
 			itemMachineCasingMV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 12);	// Advanced machine casing
 			itemMachineCasingHV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
 			itemMachineCasingEV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
+			
+			itemMotorHV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);			// Electric motor
+			itemMotorEV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);
 			
 			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
 			GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine), "iii", "imi", "iii",
@@ -747,7 +761,7 @@ public class Recipes {
 				'r', Items.redstone,
 				'i', Items.iron_ingot,
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
-				't', ItemComponent.getItemStack(ComponentType.MOTOR),
+				't', itemMotorLV,
 				'd', "dye"));
 		
 		// Glass tank is 4 slime balls, 4 glass
@@ -853,7 +867,7 @@ public class Recipes {
 			oreAntenna = "nuggetPulsatingIron";
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockRadar), false, "PAP", "PtP", "pmc",
-			't', ItemComponent.getItemStack(ComponentType.MOTOR),
+			't', itemMotorHV,
 			'P', oreCloakingPlate,
 			'A', oreAntenna,
 			'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
@@ -890,14 +904,14 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "ata", "ama", "gpc",
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
 				'a', ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON),
-				't', ItemComponent.getItemStack(ComponentType.MOTOR),
+				't', itemMotorMV,
 				'g', ItemComponent.getItemStack(ComponentType.GLASS_TANK),
 				'm', itemMachineCasingMV,
 				'c', itemStackCompressorOrTank));
 		
 		// Laser cannon is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 HV Machine casing, 1 redstone dust, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaser), false, "gtr", "ldm", "gtc",
-				't', ItemComponent.getItemStack(ComponentType.MOTOR),
+				't', itemMotorHV,
 				'd', ItemComponent.getItemStack(ComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
@@ -913,7 +927,7 @@ public class Recipes {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "gtr", "ldm", "gtc",
-				't', ItemComponent.getItemStack(ComponentType.MOTOR),
+				't', itemMotorMV,
 				'd', ItemComponent.getItemStack(ComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
@@ -1003,7 +1017,7 @@ public class Recipes {
 		
 		// Camera is 1 daylight sensor, 2 motors, 1 computer interface, 2 glass panel, 1 Tuning diamond, 1 LV Machine casing
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCamera), false, "gtd", "zlm", "gtc",
-				't', ItemComponent.getItemStack(ComponentType.MOTOR),
+				't', itemMotorLV,
 				'z', ItemComponent.getItemStack(ComponentType.ZOOM),
 				'd', ItemComponent.getItemStack(ComponentType.DIAMOND_CRYSTAL),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
@@ -1029,7 +1043,7 @@ public class Recipes {
 		
 		// Laser tree farm is 2 motors, 2 lenses, 1 computer interface, 1 LV Machine casing, 1 diamond axe, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserTreeFarm), false, "glg", "tlt", "amc",
-				't', ItemComponent.getItemStack(ComponentType.MOTOR),
+				't', itemMotorLV,
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
 				'm', itemMachineCasingLV,
