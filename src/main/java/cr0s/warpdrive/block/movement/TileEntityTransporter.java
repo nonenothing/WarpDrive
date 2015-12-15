@@ -147,8 +147,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] help(Context context, Arguments arguments) {
 		return new Object[] {
-				helpStr(argumentsOCtoCC(arguments)),
-				argumentsOCtoCC(arguments)
+				helpStr(argumentsOCtoCC(arguments))
 		};
 	}
 	
@@ -156,9 +155,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 
 	// ComputerCraft IPeripheral methods implementation
 	private static String helpStr(Object[] function) {
-		return "function.length > 0: " + (function.length > 0) + "\n"
-					+ "method name: " + function[0].toString().toLowerCase();
-		/*if (function != null && function.length > 0) {
+		if (function != null && function.length > 0) {
 			String methodName = function[0].toString().toLowerCase();
 			if (methodName.equals("source")) {
 				if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
@@ -182,11 +179,11 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 				return "energize(): attempts to teleport all entities at source to dest. Returns the number of entities transported (-1 indicates a problem).";
 			} else if (methodName.equals("powerboost")) {
 				return "powerBoost(boostAmount): sets the level of power to use (1 being default), returns the level of power\npowerBoost(): returns the level of power";
-			} else if (methodName.equals("energycost")) {
-				return "energyCost(): returns the amount of energy it will take for a single entity to transport with the current settings";
+			} else if (methodName.equals("getEnergyRequired")) {
+				return "getEnergyRequired(): returns the amount of energy it will take for a single entity to transport with the current settings";
 			}
 		}
-		return null;*/
+		return null;
 	}
 
 	private Object[] setVec3(boolean src, Object... arguments) {
