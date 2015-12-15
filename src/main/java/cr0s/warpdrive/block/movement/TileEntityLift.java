@@ -194,7 +194,11 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] mode(Context context, Arguments arguments) {
-		return mode(argumentsOCtoCC(arguments));
+		return mode(
+				new Object[] {
+						arguments.checkString(0)
+				}
+		);
 	}
 	
 	@Callback
@@ -216,12 +220,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				computerMode = MODE_REDSTONE;
 			}
 		}
+		
 		switch (computerMode) {
-		case -1:
+		case MODE_REDSTONE:
 			return new Object[] { "redstone" };
-		case 1:
+		case MODE_UP:
 			return new Object[] { "up" };
-		case 2:
+		case MODE_DOWN:
 			return new Object[] { "down" };
 		default:
 			break;
