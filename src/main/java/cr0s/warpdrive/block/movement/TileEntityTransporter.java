@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -73,12 +76,89 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		}
 	}
 
+	
+	
+	
+	
 	// OpenComputer callback methods
-	// FIXME: implement OpenComputers...
+	// ------------------------------------------------------------------------------------------
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] source(Context context, Arguments arguments) {
+		return setVec3(true, argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] dest(Context context, Arguments arguments) {
+		return setVec3(false, argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] lock(Context context, Arguments arguments) {
+		return new Object[] {
+				lock(sourceVec, destVec)
+		};
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] release(Context context, Arguments arguments) {
+		unlock();
+		return new Object[] {
+				null
+		};
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] lockStrength(Context context, Arguments arguments) {
+		return new Object[] {
+				getLockStrength()
+		};
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] energize(Context context, Arguments arguments) {
+		return new Object[] {
+				energize()
+		};
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] powerBoost(Context context, Arguments arguments) {
+		return new Object[] {
+				powerBoost(argumentsOCtoCC(arguments))
+		};
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+		return new Object[] {
+				getEnergyRequired()
+		};
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] help(Context context, Arguments arguments) {
+		return new Object[] {
+				helpStr(argumentsOCtoCC(arguments)),
+				argumentsOCtoCC(arguments)
+		};
+	}
+	
+	
 
 	// ComputerCraft IPeripheral methods implementation
 	private static String helpStr(Object[] function) {
-		if (function != null && function.length > 0) {
+		return "function.length > 0: " + (function.length > 0) + "\n"
+					+ "method name: " + function[0].toString().toLowerCase();
+		/*if (function != null && function.length > 0) {
 			String methodName = function[0].toString().toLowerCase();
 			if (methodName.equals("source")) {
 				if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
@@ -106,7 +186,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 				return "energyCost(): returns the amount of energy it will take for a single entity to transport with the current settings";
 			}
 		}
-		return null;
+		return null;*/
 	}
 
 	private Object[] setVec3(boolean src, Object... arguments) {
@@ -170,14 +250,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			return new Object[] { energize() };
 			
 		} else if (methodName.equals("powerBoost")) {
-			try {
-				if (arguments.length >= 1) {
-					powerBoost = clamp(1, WarpDriveConfig.TRANSPORTER_MAX_BOOST_MUL, toDouble(arguments[0]));
-				}
-			} catch (NumberFormatException e) {
-				powerBoost = 1;
-			}
-			return new Object[] { powerBoost };
+			return new Object[] { powerBoost(arguments) };
 			
 		} else if (methodName.equals("getEnergyRequired")) {
 			return new Object[] { getEnergyRequired() };
@@ -195,6 +268,19 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		}
 		return null;
 	}
+	
+	private double powerBoost(Object[] arguments) {
+		try {
+			if (arguments.length >= 1) {
+				powerBoost = clamp(1, WarpDriveConfig.TRANSPORTER_MAX_BOOST_MUL, toDouble(arguments[0]));
+			}
+		} catch (NumberFormatException e) {
+			powerBoost = 1;
+		}
+		
+		return powerBoost;
+	}
+	
 
 	private int energize() {
 		if (isLocked) {
