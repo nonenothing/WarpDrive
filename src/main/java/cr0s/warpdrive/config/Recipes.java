@@ -631,30 +631,28 @@ public class Recipes {
 				'm', itemMachineCasingHV));
 		
 		
-		// Computer interface is 4 gold nugget, 4 redstone, 1 lead/tin ingot
+		// Computer interface is 2 gold ingot, 2 wired modems (or redstone), 1 lead/tin ingot
 		{
 			Object redstoneOrModem = Items.redstone;
 			if (WarpDriveConfig.isComputerCraftLoaded) {
 				redstoneOrModem = WarpDriveConfig.getModItemStack("ComputerCraft", "CC-Cable", 1); // Wired modem
 			}
 			// if (OreDictionary.doesOreNameExist("circuitPrimitive") && !OreDictionary.getOres("circuitPrimitive").isEmpty()) { // Gregtech
-			String oreGoldNuggetOrAdapter = "nuggetGold";
-			String oreGoldNuggetOrCircuit = "nuggetGold";
+			Object oreCircuitOrHeavyPressurePlate = Blocks.heavy_weighted_pressure_plate;
 			int outputFactor = 1;
 			if (OreDictionary.doesOreNameExist("oc:materialCU") && !OreDictionary.getOres("oc:materialCU").isEmpty()) {
-				oreGoldNuggetOrAdapter = "oc:materialCU";
+				oreCircuitOrHeavyPressurePlate = "oc:materialCU";	// Control circuit is 5 redstone, 5 gold ingot, 3 paper
 				outputFactor = 2;
 			} else if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustricalCraft2
-				oreGoldNuggetOrAdapter = "circuitBasic";
-				oreGoldNuggetOrCircuit = "circuitBasic";
+				oreCircuitOrHeavyPressurePlate = "circuitBasic";
 				outputFactor = 2;
 			}
 			String oreSlimeOrTinOrLead = "slimeball";
 			// Computer interface: double output with Soldering alloy
 			if (OreDictionary.doesOreNameExist("ingotSolderingAlloy") && !OreDictionary.getOres("ingotSolderingAlloy").isEmpty()) {
 				GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.COMPUTER_INTERFACE, 2 * outputFactor), false, "   ", "rar", "gGg",
-						'G', oreGoldNuggetOrAdapter,
-						'g', oreGoldNuggetOrCircuit,
+						'G', oreCircuitOrHeavyPressurePlate,
+						'g', "ingotGold",
 						'r', redstoneOrModem,
 						'a', "ingotSolderingAlloy"));
 			}
@@ -665,18 +663,10 @@ public class Recipes {
 				oreSlimeOrTinOrLead = "ingotLead";
 			}
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.COMPUTER_INTERFACE, outputFactor), false, "   ", "rar", "gGg",
-					'G', oreGoldNuggetOrAdapter,
-					'g', oreGoldNuggetOrCircuit,
+					'G', oreCircuitOrHeavyPressurePlate,
+					'g', "ingotGold",
 					'r', redstoneOrModem,
 					'a', oreSlimeOrTinOrLead));
-			// Computer interface: double output with advanced circuit
-			if (OreDictionary.doesOreNameExist("circuitAdvanced") && !OreDictionary.getOres("circuitAdvanced").isEmpty()) {// comes with IndustricalCraft2
-				GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.COMPUTER_INTERFACE, 2 * outputFactor), false, "   ", "rar", "gGg",
-						'G', "circuitAdvanced",
-						'g', "nuggetGold",
-						'r', redstoneOrModem,
-						'a', oreSlimeOrTinOrLead));
-			}
 		}
 		
 		// Power interface is 4 redstone, 2 iron ingot, 3 gold ingot
@@ -686,10 +676,11 @@ public class Recipes {
 				'i', Items.iron_ingot));
 		
 		// Capacitive crystal is 3 redstone block, 3 paper, 3 lapis block or 1 HV capacitor from IE or 1 MFE from IC2
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
-			ItemStack itemStackMFE = WarpDriveConfig.getModItemStack("IC2", "blockElectric", 1);
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.CAPACITIVE_CRYSTAL, 2), false, " m ", "ppp", " m ",
-					'm', itemStackMFE,
+		if (OreDictionary.doesOreNameExist("dustLithium") && !OreDictionary.getOres("dustLithium").isEmpty()) {// comes with GregTech and Industrial Craft 2
+			// (Lithium is processed from nether quartz)
+			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.CAPACITIVE_CRYSTAL, 2), false, "plp", "lRl", "plp",
+					'R', new ItemStack(Items.potionitem, 1, 8225),	// Regeneration II
+					'l', "dustLithium",
 					'p', Items.paper));
 		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
 			ItemStack itemStackCapacitorHV = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "metalDevice", 7);
@@ -707,10 +698,11 @@ public class Recipes {
 					'm', itemStackBasicCapacitorBank,
 					'p', Items.paper));
 		} else {// Vanilla
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.CAPACITIVE_CRYSTAL, 2), false, "rrr", "ppp", "lll",
+			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.CAPACITIVE_CRYSTAL, 2), false, "qrq", "pSp", "qrq",
+					'S', new ItemStack(Items.potionitem, 1, 8265),	// Strength I long (blaze powder + redstone)
 					'r', Blocks.redstone_block,
 					'p', Items.paper,
-					'l', Blocks.lapis_block));
+					'q', Items.quartz));
 		}
 		
 		// Air canister is ...
@@ -814,13 +806,13 @@ public class Recipes {
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON), false, "lll", "aaa", "fwf",
 					'l', "treeLeaves",
 					'a', ItemComponent.getItemStack(ComponentType.BONE_CHARCOAL),
-					'w', new ItemStack(Items.potionitem, 0),
+					'w', new ItemStack(Items.potionitem, 1, 0),
 					'f', "dustSulfur"));
 		} else {
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON), false, "lll", "aaa", "wgw",
 					'l', "treeLeaves",
 					'a', ItemComponent.getItemStack(ComponentType.BONE_CHARCOAL),
-					'w', new ItemStack(Items.potionitem, 0),
+					'w', new ItemStack(Items.potionitem, 1, 0),
 					'g', Items.gunpowder));
 		}
 		
