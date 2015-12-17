@@ -18,7 +18,6 @@ public class BlockTransporter extends BlockAbstractContainer {
 	public BlockTransporter() {
 		super(Material.rock);
 		setBlockName("warpdrive.movement.Transporter");
-		setStepSound(Block.soundTypeMetal);
 	}
 
 	@Override
