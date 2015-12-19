@@ -2,7 +2,7 @@ item.warpdrive.crafting.Malformed.name=Bad Item
 item.warpdrive.crafting.EmeraldCrystal.name=Emerald Tuned Crystal
 item.warpdrive.crafting.EnderCrystal.name=Ender Tuned Crystal
 item.warpdrive.crafting.DiamondCrystal.name=Diamond Tuned Crystal
-item.warpdrive.crafting.DiffrationGrating.name=Diffration Grating
+item.warpdrive.crafting.DiffrationGrating.name=Diffraction Grating
 item.warpdrive.crafting.ReactorCore.name=Reactor Core
 item.warpdrive.crafting.ComputerInterface.name=Computer Interface
 item.warpdrive.crafting.PowerInterface.name=Power Interface
@@ -55,7 +55,7 @@ tile.warpdrive.detection.Radar.name=Radar
 tile.warpdrive.detection.WarpIsolation.name=Warp-field Isolation Block
 
 tile.warpdrive.energy.EnanReactorCore.name=Enantiomorphic Reactor Core
-tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorphic Reactor Stabilisation Laser
+tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorphic Reactor Stabilization Laser
 tile.warpdrive.energy.EnergyBank.name=Anuic Energy Bank
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reactor Laser Monitor
 
