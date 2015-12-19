@@ -705,7 +705,7 @@ public class Recipes {
 					'q', Items.quartz));
 		}
 		
-		// Air canister is ...
+		// Air canister is 4 iron bars, 2 leather/rubber, 2 yellow wool, 1 tank
 		Object rubberOrLeather = Items.leather;
 		if (OreDictionary.doesOreNameExist("plateRubber") && !OreDictionary.getOres("plateRubber").isEmpty()) {// comes with GregTech
 			rubberOrLeather = "plateRubber";
@@ -716,7 +716,7 @@ public class Recipes {
 		if (OreDictionary.doesOreNameExist("blockWoolYellow") && !OreDictionary.getOres("blockWoolYellow").isEmpty()) {
 			woolYellow = "blockWoolYellow";
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 3), false, "iii", "rgr", "ryr",
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 4), false, "iyi", "rgr", "iyi",
 				'r', rubberOrLeather,
 				'g', ItemComponent.getItemStack(ComponentType.GLASS_TANK),
 				'y', woolYellow,
