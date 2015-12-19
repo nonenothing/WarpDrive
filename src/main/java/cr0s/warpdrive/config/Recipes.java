@@ -893,7 +893,7 @@ public class Recipes {
 		} else if (WarpDriveConfig.isEnderIOloaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("EnderIO", "blockReservoir", 5);
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "ata", "ama", "gpc",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "aca", "ata", "gmp",
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
 				'a', ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON),
 				't', itemMotorMV,
