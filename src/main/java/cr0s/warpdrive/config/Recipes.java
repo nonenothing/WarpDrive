@@ -868,18 +868,18 @@ public class Recipes {
 		
 		// Warp isolation is 1 EV Machine casing (Ti), 8 Iridium reinforced plate
 		// or 1 Nether star, 8 diamond
-		String oreDiamondOrReinforcedIridiumPlate = "gemDiamond";
+		String oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
 		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2 and Gregtech
-			oreDiamondOrReinforcedIridiumPlate = "plateAlloyIridium";
+			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
 		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
 			ItemStack itemStackFranckNZombie = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
 			OreDictionary.registerOre("plateAlloyIridium", itemStackFranckNZombie);
-			oreDiamondOrReinforcedIridiumPlate = "plateAlloyIridium";
+			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			oreDiamondOrReinforcedIridiumPlate = "ingotLumium";
+			oreEmeraldOrReinforcedIridiumPlate = "ingotLumium";
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWarpIsolation), false, "iii", "imi", "iii",
-				'i', oreDiamondOrReinforcedIridiumPlate,
+				'i', oreEmeraldOrReinforcedIridiumPlate,
 				'm', itemMachineCasingEV));
 		
 		// Air generator is 1 power interface, 4 activated carbon, 1 motor, 1 MV Machine casing, 2 tanks
@@ -1115,7 +1115,7 @@ public class Recipes {
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCloakingCoil), false, "iti", "cmc", "iti",
 				't', oreEmeraldOrTitaniumPlate,
-				'i', oreDiamondOrReinforcedIridiumPlate,
+				'i', oreEmeraldOrReinforcedIridiumPlate,
 				'c', itemStackGoldIngotOrCoil,
 				'm', itemMachineCasingEV )); 
 		

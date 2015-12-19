@@ -164,12 +164,18 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		return new Object[] { getEnergyStored(), getMaxEnergyStored() };
 	}
 	
-	public String getStatus() {
-		if (getMaxEnergyStored() != 0) {
-			return getBlockType().getLocalizedName() + String.format(" energy level is %.0f/%.0f EU.", convertInternalToEU(getEnergyStored()), convertInternalToEU(getMaxEnergyStored()));
-		} else {
-			return getBlockType().getLocalizedName();
+	public String getEnergyStatus() {
+		if (getMaxEnergyStored() == 0) {
+			return "";
 		}
+		return String.format("\nEnergy level is %1$.0f/%2$.0f EU.",
+				convertInternalToEU(getEnergyStored()),
+				convertInternalToEU(getMaxEnergyStored()));
+	}
+	
+	public String getStatus() {
+		return getBlockType().getLocalizedName()
+				+ getEnergyStatus();
 	}
 	
 	// OpenComputer callback methods

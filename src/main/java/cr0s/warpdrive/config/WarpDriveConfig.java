@@ -180,7 +180,7 @@ public class WarpDriveConfig {
 	public static int RADAR_MAX_ENERGY_STORED = 100000000; // 100kk eU
 	public static int RADAR_MAX_ISOLATION_RANGE = 2;
 	public static int RADAR_MIN_ISOLATION_BLOCKS = 5;
-	public static int RADAR_MAX_ISOLATION_BLOCKS = 132;
+	public static int RADAR_MAX_ISOLATION_BLOCKS = 60;
 	public static double RADAR_MIN_ISOLATION_EFFECT = 0.12;
 	public static double RADAR_MAX_ISOLATION_EFFECT = 1.00;
 	
@@ -647,8 +647,8 @@ public class WarpDriveConfig {
 		
 		RADAR_MIN_ISOLATION_BLOCKS = clamp(0, 20,
 				config.get("radar", "min_isolation_blocks", RADAR_MIN_ISOLATION_BLOCKS, "number of isolation blocks required to get some isolation (0 to 20)").getInt());
-		RADAR_MAX_ISOLATION_BLOCKS = clamp(5, 100,
-				config.get("radar", "max_isolation_blocks", RADAR_MAX_ISOLATION_BLOCKS, "number of isolation blocks required to reach maximum effect (5 to 100)").getInt());
+		RADAR_MAX_ISOLATION_BLOCKS = clamp(5, 94,
+				config.get("radar", "max_isolation_blocks", RADAR_MAX_ISOLATION_BLOCKS, "number of isolation blocks required to reach maximum effect (5 to 94)").getInt());
 		
 		RADAR_MIN_ISOLATION_EFFECT = clamp(0.01D, 0.95D,
 				config.get("radar", "min_isolation_effect", RADAR_MIN_ISOLATION_EFFECT, "isolation effect achieved with min number of isolation blocks (0.01 to 0.95)").getDouble(0.12D));

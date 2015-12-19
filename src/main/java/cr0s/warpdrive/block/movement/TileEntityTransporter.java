@@ -79,10 +79,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	@Override
 	public String getStatus() {
 		return getBlockType().getLocalizedName()
-			+ String.format("Energy level is %.0f/%.0f EU.",
-				convertInternalToEU(getEnergyStored()),
-				convertInternalToEU(getMaxEnergyStored())
-			)
+			+ getEnergyStatus()
 			+ String.format("\nSource: %.0f %.0f %.0f",
 					sourceVec.x,
 					sourceVec.y,

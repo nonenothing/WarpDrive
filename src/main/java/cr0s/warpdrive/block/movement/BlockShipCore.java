@@ -81,15 +81,15 @@ public class BlockShipCore extends BlockContainer {
 	 * Called upon block activation (right click on the block.)
 	 */
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		if (par5EntityPlayer.getHeldItem() == null) {
-			TileEntity te = par1World.getTileEntity(par2, par3, par4);
-			if (te != null && te instanceof TileEntityShipCore) {
-				WarpDrive.addChatMessage(par5EntityPlayer, ((TileEntityShipCore)te).getStatus());
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipCore)tileEntity).getStatus());
 				return true;
 			}
 		}

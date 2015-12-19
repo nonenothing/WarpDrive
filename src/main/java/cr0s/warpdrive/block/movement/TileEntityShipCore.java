@@ -23,7 +23,6 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.EntityJump;
-import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -377,15 +376,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 		isolationBlocksCount = newCount;
 		if (isolationBlocksCount >= WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS) {
-			isolationRate = WarpDriveConfig.RADAR_MIN_ISOLATION_EFFECT
+			isolationRate = Math.min(1.0, WarpDriveConfig.RADAR_MIN_ISOLATION_EFFECT
 					+ (isolationBlocksCount - WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS) // bonus blocks
 					* (WarpDriveConfig.RADAR_MAX_ISOLATION_EFFECT - WarpDriveConfig.RADAR_MIN_ISOLATION_EFFECT)
-					/ (WarpDriveConfig.RADAR_MAX_ISOLATION_BLOCKS - WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS);
+					/ (WarpDriveConfig.RADAR_MAX_ISOLATION_BLOCKS - WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS));
 		} else {
 			isolationRate = 0.0D;
 		}
 		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info(this + " Isolation updated to " + isolationBlocksCount + " (" + String.format("%.1f", isolationRate * 100) + "%)");
+			WarpDrive.logger.info(this + " Isolation updated to " + isolationBlocksCount + " (" + String.format("%.1f", isolationRate * 100.0) + "%)");
 		}
 	}
 	
@@ -988,13 +987,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String getStatus() {
-		return getBlockType().getLocalizedName()
-			+ String.format(" '%s' energy level is %.0f/%.0f EU.",
-				shipName,
-				convertInternalToEU(getEnergyStored()),
-				convertInternalToEU(getMaxEnergyStored()))
-			+ ((cooldownTime > 0) ? ("\n" + (cooldownTime / 20) + " s left of cooldown.")
-				: ((isolationBlocksCount > 0) ? ("\n" + isolationBlocksCount + " active isolation blocks") : ""));
+		return getBlockType().getLocalizedName() + " '" + shipName + "'"  
+			+ getEnergyStatus()
+			+ ((cooldownTime > 0) ? String.format("\n%1$d s left of cooldown.", cooldownTime / 20) : ""
+			+ ((isolationBlocksCount > 0) ? String.format("\n%1$d active isolation blocks providing %2$2.1f%% absorption.", isolationBlocksCount, isolationRate * 100.0) : ""));
 	}
 	
 	public static int calculateRequiredEnergy(ShipCoreMode shipCoreMode, int shipVolume, int jumpDistance) {

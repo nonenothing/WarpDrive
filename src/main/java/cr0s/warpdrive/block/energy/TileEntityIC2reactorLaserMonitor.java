@@ -181,7 +181,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	public String getStatus() {
 		Set<IReactor> reactors = findReactors();
 		return getBlockType().getLocalizedName()
-			+ String.format("\nEnergy level is %.0f/%.0f EU.", convertInternalToEU(getEnergyStored()), convertInternalToEU(getMaxEnergyStored()))
+			+ getEnergyStatus()
 			+ "\n" + ((reactors == null || reactors.size() == 0) ? "No reactor found!" : reactors.size() + " reactor(s) connected.");
 	}
 	
