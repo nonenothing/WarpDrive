@@ -388,9 +388,6 @@ public class BlockAir extends Block {
 		}
 	}
 	
-	/**
-	 * Returns if this block is collidable. Args: x, y, z
-	 */
 	@Override
 	public boolean isCollidable() {
 		return false;
