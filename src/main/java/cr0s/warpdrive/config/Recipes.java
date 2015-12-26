@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.data.ComponentType;
 import cr0s.warpdrive.data.DecorativeType;
 import cr0s.warpdrive.data.UpgradeType;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemUpgrade;
+import net.minecraft.block.BlockColored;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -538,7 +540,7 @@ public class Recipes {
 		}
 		
 		// Add Reinforced iridium plate to ore registry as applicable (it's missing in IC2 without GregTech)
-		if (WarpDriveConfig.isIndustrialCraft2loaded && !OreDictionary.doesOreNameExist("plateAlloyIridium")) {
+		if (WarpDriveConfig.isIndustrialCraft2loaded && (!OreDictionary.doesOreNameExist("plateAlloyIridium") || OreDictionary.getOres("plateAlloyIridium").isEmpty())) {
 			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
 			OreDictionary.registerOre("plateAlloyIridium", iridiumAlloy);
 		}
@@ -1160,5 +1162,122 @@ public class Recipes {
 				'w', Blocks.wool,
 				'g', "blockGlassColorless",
 				'c', ItemComponent.getItemStack(ComponentType.AIR_CANISTER)));
+		
+		// HULL blocks and variations
+		initDynamicHull();
+	}
+	
+	private static void initDynamicHull() {
+		// Hull ore dictionary
+		for(int tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
+			for (int woolColor = 0; woolColor < 16; woolColor++) {
+				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
+			}
+		}
+		
+		// Hull blocks plain
+		// (BlockColored.func_150031_c is converting wool metadata into dye metadata)
+		// Tier 1 = 5 stone + 4 iron ingots or 5 stone + 4 steel ingots or 5 reinforced stone + 4 obsidian
+		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("IC2", "blockAlloy", -1);
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+					'b', "blockObsidian",
+					'c', reinforcedStone ));
+		} else if (OreDictionary.doesOreNameExist("ingotSteel") && !OreDictionary.getOres("ingotSteel").isEmpty()) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+					'b', "ingotSteel",
+					'c', "stone" ));
+		} else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+					'b', "ingotIron",
+					'c', "stone" ));
+		}
+		// Tier 2 = 4 Tier 1 + 4 obsidian or 4x Tier 1 + 4x Carbon plates or 4x Tier 1 + 1 Gregtech 5 Tungstensteel reinforced block
+		for (int woolColor = 0; woolColor < 16; woolColor++) {
+			if (WarpDriveConfig.isGregTech5loaded) {
+				ItemStack tungstensteelReinforcedBlock = WarpDriveConfig.getModItemStack("gregtech", "gt.blockreinforced", 3);
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+						'c', tungstensteelReinforcedBlock ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "Xb ", "bcb", " b ",
+						'b', "blockHull1_plain",
+						'c', tungstensteelReinforcedBlock,
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			} else if (WarpDriveConfig.isIndustrialCraft2loaded) {
+				ItemStack carbonPlate = WarpDriveConfig.getModItemStack("IC2", "itemPartCarbonPlate", -1);
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+						'c', carbonPlate ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+						'b', "blockHull1_plain",
+						'c', carbonPlate,
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			} else {
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+						'c', "blockObsidian" ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+						'b', "blockHull1_plain",
+						'c', "blockObsidian",
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			}
+		}
+		// Tier 3 = 4 Tier 2 + 4 diamond or 4x Tier 2 + 4x Iridium plate or 4x Tier 2 + 1 Naquadah plate
+		for (int woolColor = 0; woolColor < 16; woolColor++) {
+			if (OreDictionary.doesOreNameExist("plateNaquadah") && !OreDictionary.getOres("plateNaquadah").isEmpty()) {
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+						'c', "plateNaquadah" ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "Xb ", "bcb", " b ",
+						'b', "blockHull2_plain",
+						'c', "plateNaquadah",
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			} else if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+						'c', "plateAlloyIridium" ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+						'b', "blockHull2_plain",
+						'c', "plateAlloyIridium",
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			} else {
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+						'c', "gemDiamond" ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+						'b', "blockHull2_plain",
+						'c', "gemDiamond",
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			}
+		}
+		
+		// Hull blocks variation
+		for(int tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
+			for (int woolColor = 0; woolColor < 16; woolColor++) {
+				
+				// crafting glass
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 4, BlockColored.func_150031_c(woolColor)), false, "gpg", "pFp", "gpg",
+						'g', "blockGlass",
+						'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, BlockColored.func_150031_c(woolColor)),
+						'F', "dustGlowstone" ));
+				
+				// changing colors
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 1, BlockColored.func_150031_c(woolColor)),
+						"dye" + BlockHullPlain.getDyeColorName(woolColor),
+						"blockHull" + tier + "_plain"));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 1, BlockColored.func_150031_c(woolColor)),
+						"dye" + BlockHullPlain.getDyeColorName(woolColor),
+						"blockHull" + tier + "_glass"));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",
+						'#', "blockHull" + tier + "_plain",
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",
+						'#', "blockHull" + tier + "_glass",
+						'X', new ItemStack(Items.dye, 1, woolColor) ));
+			}
+		}
 	}
 }

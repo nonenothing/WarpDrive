@@ -70,6 +70,9 @@ import cr0s.warpdrive.block.energy.TileEntityEnanReactorCore;
 import cr0s.warpdrive.block.energy.TileEntityEnanReactorLaser;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
 import cr0s.warpdrive.block.energy.TileEntityIC2reactorLaserMonitor;
+import cr0s.warpdrive.block.hull.BlockHullGlass;
+import cr0s.warpdrive.block.hull.BlockHullPlain;
+import cr0s.warpdrive.block.hull.ItemBlockHull;
 import cr0s.warpdrive.block.movement.BlockLift;
 import cr0s.warpdrive.block.movement.BlockShipController;
 import cr0s.warpdrive.block.movement.BlockShipCore;
@@ -151,6 +154,10 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockTransportBeacon;
 	public static Block blockChunkLoader;
 	public static BlockDecorative blockDecorative;
+	public static Block[] blockHulls_plain;
+	public static Block[] blockHulls_glass;
+	public static Block[] blockHulls_stair;
+	public static Block[] blockHulls_slab;
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
@@ -355,6 +362,21 @@ public class WarpDrive implements LoadingCallback {
 		// DECORATIVE
 		blockDecorative = new BlockDecorative();
 		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
+		
+		// HULL BLOCKS
+		blockHulls_plain = new Block[3];
+		blockHulls_glass = new Block[3];
+		blockHulls_stair = new Block[3 * 16];
+		blockHulls_slab = new Block[3 * 16];
+		
+		for(int tier = 1; tier <= 3; tier++) {
+			logger.info("Registering hull tier " + tier);
+			int index = tier - 1;
+			blockHulls_plain[index] = new BlockHullPlain(tier);
+			blockHulls_glass[index] = new BlockHullGlass(tier);
+			GameRegistry.registerBlock(blockHulls_plain[index], ItemBlockHull.class, "blockHull" + tier + "_plain");
+			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
+		}
 		
 		// REACTOR LASER FOCUS
 		if (WarpDriveConfig.isIndustrialCraft2loaded) {

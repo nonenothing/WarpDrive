@@ -28,6 +28,7 @@ item.warpdrive.upgrade.Range.name=Range Upgrade
 item.warpdrive.upgrade.Energy.name=Energy Upgrade
 
 
+
 tile.warpdrive.passive.Air.name=Air Block
 tile.warpdrive.passive.Energized.name=Energized Block
 tile.warpdrive.passive.Gas.name=Gas Block
@@ -65,3 +66,107 @@ tile.warpdrive.movement.ShipCore.name=Ship Core
 tile.warpdrive.movement.Transporter.name=Transporter
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Camera
+
+
+
+tile.warpdrive.hull1.plain.white.name=White Stained Basic Hull
+tile.warpdrive.hull1.plain.orange.name=Orange Stained Basic Hull
+tile.warpdrive.hull1.plain.magenta.name=Magenta Stained Basic Hull
+tile.warpdrive.hull1.plain.lightBlue.name=Light Blue Stained Basic Hull
+tile.warpdrive.hull1.plain.yellow.name=Yellow Stained Basic Hull
+tile.warpdrive.hull1.plain.lime.name=Lime Stained Basic Hull
+tile.warpdrive.hull1.plain.pink.name=Pink Stained Basic Hull
+tile.warpdrive.hull1.plain.gray.name=Gray Stained Basic Hull
+tile.warpdrive.hull1.plain.silver.name=Silver Stained Basic Hull
+tile.warpdrive.hull1.plain.cyan.name=Cyan Stained Basic Hull
+tile.warpdrive.hull1.plain.purple.name=Purple Stained Basic Hull
+tile.warpdrive.hull1.plain.blue.name=Blue Stained Basic Hull
+tile.warpdrive.hull1.plain.brown.name=Brown Stained Basic Hull
+tile.warpdrive.hull1.plain.green.name=Green Stained Basic Hull
+tile.warpdrive.hull1.plain.red.name=Red Stained Basic Hull
+tile.warpdrive.hull1.plain.black.name=Black Stained Basic Hull
+
+tile.warpdrive.hull1.glass.white.name=White Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.orange.name=Orange Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.magenta.name=Magenta Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.lightBlue.name=Light Blue Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.yellow.name=Yellow Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.lime.name=Lime Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.pink.name=Pink Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.gray.name=Gray Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.silver.name=Silver Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.cyan.name=Cyan Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.purple.name=Purple Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.blue.name=Blue Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.brown.name=Brown Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.green.name=Green Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.red.name=Red Stained Basic Hull Glass
+tile.warpdrive.hull1.glass.black.name=Black Stained Basic Hull Glass
+
+tile.warpdrive.hull2.plain.white.name=White Stained Advanced Hull
+tile.warpdrive.hull2.plain.orange.name=Orange Stained Advanced Hull
+tile.warpdrive.hull2.plain.magenta.name=Magenta Stained Advanced Hull
+tile.warpdrive.hull2.plain.lightBlue.name=Light Blue Stained Advanced Hull
+tile.warpdrive.hull2.plain.yellow.name=Yellow Stained Advanced Hull
+tile.warpdrive.hull2.plain.lime.name=Lime Stained Advanced Hull
+tile.warpdrive.hull2.plain.pink.name=Pink Stained Advanced Hull
+tile.warpdrive.hull2.plain.gray.name=Gray Stained Advanced Hull
+tile.warpdrive.hull2.plain.silver.name=Silver Stained Advanced Hull
+tile.warpdrive.hull2.plain.cyan.name=Cyan Stained Advanced Hull
+tile.warpdrive.hull2.plain.purple.name=Purple Stained Advanced Hull
+tile.warpdrive.hull2.plain.blue.name=Blue Stained Advanced Hull
+tile.warpdrive.hull2.plain.brown.name=Brown Stained Advanced Hull
+tile.warpdrive.hull2.plain.green.name=Green Stained Advanced Hull
+tile.warpdrive.hull2.plain.red.name=Red Stained Advanced Hull
+tile.warpdrive.hull2.plain.black.name=Black Stained Advanced Hull
+
+tile.warpdrive.hull2.glass.white.name=White Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.orange.name=Orange Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.magenta.name=Magenta Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.lightBlue.name=Light Blue Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.yellow.name=Yellow Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.lime.name=Lime Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.pink.name=Pink Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.gray.name=Gray Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.silver.name=Silver Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.cyan.name=Cyan Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.purple.name=Purple Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.blue.name=Blue Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.brown.name=Brown Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.green.name=Green Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.red.name=Red Stained Advanced Hull Glass
+tile.warpdrive.hull2.glass.black.name=Black Stained Advanced Hull Glass
+
+tile.warpdrive.hull3.plain.white.name=White Stained Superior Hull
+tile.warpdrive.hull3.plain.orange.name=Orange Stained Superior Hull
+tile.warpdrive.hull3.plain.magenta.name=Magenta Stained Superior Hull
+tile.warpdrive.hull3.plain.lightBlue.name=Light Blue Stained Superior Hull
+tile.warpdrive.hull3.plain.yellow.name=Yellow Stained Superior Hull
+tile.warpdrive.hull3.plain.lime.name=Lime Stained Superior Hull
+tile.warpdrive.hull3.plain.pink.name=Pink Stained Superior Hull
+tile.warpdrive.hull3.plain.gray.name=Gray Stained Superior Hull
+tile.warpdrive.hull3.plain.silver.name=Silver Stained Superior Hull
+tile.warpdrive.hull3.plain.cyan.name=Cyan Stained Superior Hull
+tile.warpdrive.hull3.plain.purple.name=Purple Stained Superior Hull
+tile.warpdrive.hull3.plain.blue.name=Blue Stained Superior Hull
+tile.warpdrive.hull3.plain.brown.name=Brown Stained Superior Hull
+tile.warpdrive.hull3.plain.green.name=Green Stained Superior Hull
+tile.warpdrive.hull3.plain.red.name=Red Stained Superior Hull
+tile.warpdrive.hull3.plain.black.name=Black Stained Superior Hull
+
+tile.warpdrive.hull3.glass.white.name=White Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.orange.name=Orange Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.magenta.name=Magenta Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.lightBlue.name=Light Blue Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.yellow.name=Yellow Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.lime.name=Lime Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.pink.name=Pink Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.gray.name=Gray Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.silver.name=Silver Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.cyan.name=Cyan Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.purple.name=Purple Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.blue.name=Blue Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.brown.name=Brown Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.green.name=Green Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.red.name=Red Stained Superior Hull Glass
+tile.warpdrive.hull3.glass.black.name=Black Stained Superior Hull Glass
