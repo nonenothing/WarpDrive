@@ -20,7 +20,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class Dictionary {
-	private static boolean forceResistance = false;
+	private static boolean adjustResistance = false;
 	
 	// Tagged blocks and entities (loaded from configuration file at PreInit, parsed at PostInit)
 	private static HashMap<String, String> taggedBlocks = null;
@@ -406,12 +406,10 @@ public class Dictionary {
 			}
 		}
 		
-		// TODO adjust IC2 Reinforced stone stats
+		// adjust IC2 Reinforced stone stats
 		if (WarpDriveConfig.isIndustrialCraft2loaded) {
-			ItemStack itemStackReinforcedStone = WarpDriveConfig.getModItemStack("IC2", "blockAlloy", -1);
-			WarpDrive.logger.info("Item " + Item.itemRegistry.getObject("IC2:blockAlloy"));
-			WarpDrive.logger.info("Block " + Block.blockRegistry.getObject("IC2:blockAlloy"));
 			Block blockReinforcedStone = (Block) Block.blockRegistry.getObject("IC2:blockAlloy");
+			// TODO
 		}
 		
 		// scan blocks registry
@@ -439,17 +437,14 @@ public class Dictionary {
 				if (hardness != -2.0F) {
 					if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
 						WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-						// WarpDrive.logger.error("Blacklisting block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-						// BLOCKS_ANCHOR.add((Block)block);
-						// BLOCKS_NOMINING.add((Block)block);
 					} else if (hardness > WarpDriveConfig.HULL_HARDNESS[0] && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || BLOCKS_ANCHOR.contains(block))) {
-						
+						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
 					}
 				}
 				if (blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0] && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || BLOCKS_ANCHOR.contains(block))) {
 					((Block)block).setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
-					WarpDrive.logger.warn("Warning: non-anchor block with crazt blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
-					if (forceResistance) {
+					WarpDrive.logger.warn("Warning: non-anchor block with crazy blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
+					if (adjustResistance) {
 						WarpDrive.logger.warn("Adjusting blast resistance of '" + blockKey + "' " + block + " from " + blastResistance + " to " + ((Block)block).getExplosionResistance(null));
 						if (((Block)block).getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
 							WarpDrive.logger.error("Blacklisting block with crazy blast resistance '" + blockKey + "' " + block + " (" + blastResistance + ")");
@@ -458,8 +453,11 @@ public class Dictionary {
 						}
 					}
 				}
-				WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
-					+ " with hardness " + (fieldHardness != null ? hardness : "-") + " resistance " + ((Block)block).getExplosionResistance(null)); 
+				
+				if (WarpDriveConfig.LOGGING_DICTIONARY) {
+					WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
+						+ " with hardness " + (fieldHardness != null ? hardness : "-") + " resistance " + ((Block)block).getExplosionResistance(null));
+				}
 			}
 		}
 	}

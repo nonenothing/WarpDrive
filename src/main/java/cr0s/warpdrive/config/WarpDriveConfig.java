@@ -112,6 +112,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_BREATHING = false;
 	public static boolean LOGGING_WORLDGEN = false;
 	public static boolean LOGGING_PROFILING = true;
+	public static boolean LOGGING_DICTIONARY = false;
 	
 	// Planets
 	public static Planet[] PLANETS = null;
@@ -375,6 +376,7 @@ public class WarpDriveConfig {
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailled breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_WORLDGEN = config.get("logging", "enable_worldgen_logs", LOGGING_WORLDGEN, "Detailled world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
+		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_PROFILING, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		
 		// Planets
 		{
