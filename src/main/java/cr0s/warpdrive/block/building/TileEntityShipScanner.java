@@ -23,6 +23,7 @@ import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.Vector3;
@@ -167,9 +168,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				// Deploy single block
 				JumpBlock jb = blocksToDeploy[currentDeployIndex];
 				
-				if (jb != null && !WarpDriveConfig.BLOCKS_ANCHOR.contains(jb.block)) {
+				if (jb != null && !Dictionary.BLOCKS_ANCHOR.contains(jb.block)) {
 					Block blockAtTarget = worldObj.getBlock(targetX + jb.x, targetY + jb.y, targetZ + jb.z);
-					if (blockAtTarget == Blocks.air || WarpDriveConfig.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
+					if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
 						jb.deploy(worldObj, targetX, targetY, targetZ);
 						
 						if (worldObj.rand.nextInt(100) <= 10) {
@@ -270,7 +271,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					Block block = worldObj.getBlock(shipCore.minX + x, shipCore.minY + y, shipCore.minZ + z);
 					
 					// Skip leftBehind and anchor blocks
-					if (WarpDriveConfig.BLOCKS_LEFTBEHIND.contains(block) || WarpDriveConfig.BLOCKS_ANCHOR.contains(block)) {
+					if (Dictionary.BLOCKS_LEFTBEHIND.contains(block) || Dictionary.BLOCKS_ANCHOR.contains(block)) {
 						block = Blocks.air;
 					}
 					

@@ -1,5 +1,6 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -45,7 +46,7 @@ public class GravityManager {
 						for (int i = 0; i < 4; i++) {
 							ItemStack armor = player.getCurrentArmor(i);
 							if (armor != null) {
-								if (WarpDriveConfig.ITEMS_FLYINSPACE.contains(armor.getItem())) {
+								if (Dictionary.ITEMS_FLYINSPACE.contains(armor.getItem())) {
 									return SPACE_VOID_GRAVITY_JETPACKSNEAK;
 								}
 							}

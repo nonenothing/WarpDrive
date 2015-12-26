@@ -19,6 +19,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBreathingHelmet;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
@@ -137,7 +138,7 @@ public class LivingHandler {
 									player_airTank.put(playerName, air - 1);
 								}
 							}
-						} else if (WarpDriveConfig.ITEMS_BREATHINGIC2.contains(helmet)) {
+						} else if (Dictionary.ITEMS_BREATHINGIC2.contains(helmet)) {
 							hasHelmet = true;
 							if (air == null) {// new player in space => grace period
 								player_airTank.put(playerName, AIR_TANK_TICKS);
@@ -238,7 +239,7 @@ public class LivingHandler {
 				for (int i = 0; i < 4; i++) {
 					ItemStack armor = player.getCurrentArmor(i);
 					if (armor != null) {
-						if (WarpDriveConfig.ITEMS_NOFALLDAMAGE.contains(armor.getItem())) {
+						if (Dictionary.ITEMS_NOFALLDAMAGE.contains(armor.getItem())) {
 							event.setCanceled(true); // Don't damage player
 						}
 					}

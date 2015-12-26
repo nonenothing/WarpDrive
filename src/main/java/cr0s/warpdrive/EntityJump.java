@@ -36,6 +36,7 @@ import net.minecraftforge.common.util.Constants;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.MovingEntity;
@@ -582,7 +583,7 @@ public class EntityJump extends Entity {
 					Block block = worldObj.getBlock(x, y, z);
 					
 					// Skipping vanilla air & ignored blocks
-					if (block == Blocks.air || WarpDriveConfig.BLOCKS_LEFTBEHIND.contains(block)) {
+					if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 						continue;
 					}
 					
@@ -593,7 +594,7 @@ public class EntityJump extends Entity {
 					}
 					
 					// Stop on non-movable blocks
-					if (WarpDriveConfig.BLOCKS_ANCHOR.contains(block)) {
+					if (Dictionary.BLOCKS_ANCHOR.contains(block)) {
 						reason.append(block.getUnlocalizedName() + " detected onboard at " + x + ", " + y + ", " + z + ". Aborting.");
 						LocalProfiler.stop();
 						return -1;
@@ -619,12 +620,12 @@ public class EntityJump extends Entity {
 					Block block = worldObj.getBlock(x, y, z);
 					
 					// Skipping any air block & ignored blocks
-					if (worldObj.isAirBlock(x, y, z) || WarpDriveConfig.BLOCKS_LEFTBEHIND.contains(block)) {
+					if (worldObj.isAirBlock(x, y, z) || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 						continue;
 					}
 					
 					// Skipping non-movable blocks
-					if (WarpDriveConfig.BLOCKS_ANCHOR.contains(block)) {
+					if (Dictionary.BLOCKS_ANCHOR.contains(block)) {
 						continue;
 					}
 					
@@ -676,7 +677,7 @@ public class EntityJump extends Entity {
 								Block block = worldObj.getBlock(x, y, z);
 								
 								// Skipping vanilla air & ignored blocks
-								if (block == Blocks.air || WarpDriveConfig.BLOCKS_LEFTBEHIND.contains(block)) {
+								if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 									continue;
 								}
 								
@@ -693,7 +694,7 @@ public class EntityJump extends Entity {
 								}
 								
 								// default priority is 2 for block, 3 for tile entities
-								Integer placeTime = WarpDriveConfig.BLOCKS_PLACE.get(block);
+								Integer placeTime = Dictionary.BLOCKS_PLACE.get(block);
 								if (placeTime == null) {
 									if (tileEntity == null) {
 										placeTime = 2;
@@ -1092,12 +1093,12 @@ public class EntityJump extends Entity {
 			}
 			
 			String id = EntityList.getEntityString(entity);
-			if (WarpDriveConfig.ENTITIES_ANCHOR.contains(id)) {
+			if (Dictionary.ENTITIES_ANCHOR.contains(id)) {
 				result = "Anchor entity " + id + " detected at " + Math.floor(entity.posX) + ", " + Math.floor(entity.posY) + ", " + Math.floor(entity.posZ) + ", aborting jump...";
 				// we need to continue so players are added so they can see the message...
 				continue;
 			}
-			if (WarpDriveConfig.ENTITIES_LEFTBEHIND.contains(id)) {
+			if (Dictionary.ENTITIES_LEFTBEHIND.contains(id)) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Leaving entity " + id + " behind: " + entity);
 				}
@@ -1287,7 +1288,7 @@ public class EntityJump extends Entity {
 					
 					blockSource = worldObj.getBlock(x, y, z);
 					blockTarget = worldObj.getBlock(newX, newY, newZ);
-					if (WarpDriveConfig.BLOCKS_ANCHOR.contains(blockTarget)) {
+					if (Dictionary.BLOCKS_ANCHOR.contains(blockTarget)) {
 						result.add(x, y, z,
 							newX + 0.5D - movementVector[0] * 1.0D,
 							newY + 0.5D - movementVector[1] * 1.0D,
@@ -1299,9 +1300,9 @@ public class EntityJump extends Entity {
 					}
 					
 					if ( blockSource != Blocks.air
-					  && !WarpDriveConfig.BLOCKS_EXPANDABLE.contains(blockSource)
+					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockSource)
 					  && blockTarget != Blocks.air
-					  && !WarpDriveConfig.BLOCKS_EXPANDABLE.contains(blockTarget)) {
+					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockTarget)) {
 						result.add(x, y, z,
 							newX + 0.5D + movementVector[0] * 0.1D,
 							newY + 0.5D + movementVector[1] * 0.1D,

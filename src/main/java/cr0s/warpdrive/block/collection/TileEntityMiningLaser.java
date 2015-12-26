@@ -14,6 +14,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
@@ -224,12 +225,12 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return false;
 		}
 		// check blacklist
-		if (WarpDriveConfig.BLOCKS_NOMINING.contains(block)) {
+		if (Dictionary.BLOCKS_NOMINING.contains(block)) {
 			stop();
 			return false;
 		}
 		// check whitelist
-		if (WarpDriveConfig.BLOCKS_MINING.contains(block) || WarpDriveConfig.BLOCKS_ORES.contains(block)) {
+		if (Dictionary.BLOCKS_MINING.contains(block) || Dictionary.BLOCKS_ORES.contains(block)) {
 			return true;
 		}
 		// check default (explosion resistance is used to test for force fields and reinforced blocks, basically preventing mining a base or ship) 
@@ -256,7 +257,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		z = zCoord;
 		block = worldObj.getBlock(x, currentLayer, z);
 		if (canDig(block, x, currentLayer, z)) {
-			if (mineAllBlocks || WarpDriveConfig.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
+			if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
 				valuablesInLayer.add(new VectorI(x, currentLayer, z));
 			}
 		}
@@ -270,7 +271,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			for (; x <= xmax; x++) {
 				block = worldObj.getBlock(x, currentLayer, z);
 				if (canDig(block, x, currentLayer, z)) {
-					if (mineAllBlocks || WarpDriveConfig.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
+					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(new VectorI(x, currentLayer, z));
 					}
 				}
@@ -280,7 +281,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			for (; z <= zmax; z++) {
 				block = worldObj.getBlock(x, currentLayer, z);
 				if (canDig(block, x, currentLayer, z)) {
-					if (mineAllBlocks || WarpDriveConfig.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
+					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(new VectorI(x, currentLayer, z));
 					}
 				}
@@ -290,7 +291,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			for (; x >= xmin; x--) {
 				block = worldObj.getBlock(x, currentLayer, z);
 				if (canDig(block, x, currentLayer, z)) {
-					if (mineAllBlocks || WarpDriveConfig.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
+					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(new VectorI(x, currentLayer, z));
 					}
 				}
@@ -300,7 +301,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			for (; z > zmin; z--) {
 				block = worldObj.getBlock(x, currentLayer, z);
 				if (canDig(block, x, currentLayer, z)) {
-					if (mineAllBlocks || WarpDriveConfig.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
+					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(new VectorI(x, currentLayer, z));
 					}
 				}
@@ -310,7 +311,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			for (; x < xCoord; x++) {
 				block = worldObj.getBlock(x, currentLayer, z);
 				if (canDig(block, x, currentLayer, z)) {
-					if (mineAllBlocks || WarpDriveConfig.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
+					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(block)) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(new VectorI(x, currentLayer, z));
 					}
 				}

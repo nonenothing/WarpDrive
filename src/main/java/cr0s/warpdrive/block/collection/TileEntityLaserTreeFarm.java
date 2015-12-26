@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
@@ -398,15 +399,15 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private static boolean isSoil(Block block) {
-		return WarpDriveConfig.BLOCKS_SOILS.contains(block);
+		return Dictionary.BLOCKS_SOILS.contains(block);
 	}
 	
 	private static boolean isLog(Block block) {
-		return WarpDriveConfig.BLOCKS_LOGS.contains(block);
+		return Dictionary.BLOCKS_LOGS.contains(block);
 	}
 	
 	private static boolean isLeaf(Block block) {
-		return WarpDriveConfig.BLOCKS_LEAVES.contains(block);
+		return Dictionary.BLOCKS_LEAVES.contains(block);
 	}
 	
 	private LinkedList<VectorI> scanSoils() {
@@ -470,7 +471,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			}
 		}
 		if (logPositions.size() > 0) {
-			HashSet<Block> whitelist = (HashSet<Block>) WarpDriveConfig.BLOCKS_LOGS.clone();
+			HashSet<Block> whitelist = (HashSet<Block>) Dictionary.BLOCKS_LOGS.clone();
 			if (breakLeaves) {
 				// whitelist.addAll(WarpDriveConfig.BLOCKS_LEAVES);
 			}

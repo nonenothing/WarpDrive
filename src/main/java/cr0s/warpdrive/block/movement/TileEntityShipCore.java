@@ -25,6 +25,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.EntityJump;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Jumpgate;
 import cr0s.warpdrive.data.StarMapEntry;
@@ -635,10 +636,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 					Block block = worldObj.getBlock(x, y, z);
 					
 					// Skipping vanilla air & ignored blocks
-					if (block == Blocks.air || WarpDriveConfig.BLOCKS_LEFTBEHIND.contains(block)) {
+					if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 						continue;
 					}
-					if (WarpDriveConfig.BLOCKS_NOMASS.contains(block)) {
+					if (Dictionary.BLOCKS_NOMASS.contains(block)) {
 						continue;
 					}
 					
@@ -696,9 +697,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 					// not vanilla air nor ignored blocks at source
 					// not vanilla air nor expandable blocks are target location
 					if ( blockSource != Blocks.air
-					  && !WarpDriveConfig.BLOCKS_EXPANDABLE.contains(blockSource)
+					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockSource)
 					  && blockTarget != Blocks.air
-					  && !WarpDriveConfig.BLOCKS_EXPANDABLE.contains(blockTarget)) {
+					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockTarget)) {
 						return false;
 					}
 				}
@@ -1030,12 +1031,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 						Block block = worldObj.getBlock(x, y, z);
 						
 						// Skipping vanilla air & ignored blocks
-						if (block == Blocks.air || WarpDriveConfig.BLOCKS_LEFTBEHIND.contains(block)) {
+						if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 							continue;
 						}
 						newVolume++;
 						
-						if (WarpDriveConfig.BLOCKS_NOMASS.contains(block)) {
+						if (Dictionary.BLOCKS_NOMASS.contains(block)) {
 							continue;
 						}
 						newMass++;
