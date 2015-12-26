@@ -228,8 +228,8 @@ public class JumpBlock {
 				WarpDrive.logger.error("Patched IC2 API, new instance is '" + NetworkManager_instance + "'");
 			}
 			// IC2 hack ends here
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Exception exception) {
+			throw new RuntimeException(exception);
 		}
 	}
 	
