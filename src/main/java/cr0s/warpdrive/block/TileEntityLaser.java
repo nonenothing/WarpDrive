@@ -24,6 +24,7 @@ import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
@@ -239,7 +240,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser {
 						}
 					} else {
 						String entityId = EntityList.getEntityString(mopEntity.entityHit);
-						if (!WarpDriveConfig.ENTITIES_NONLIVINGTARGET.contains(entityId)) {
+						if (!Dictionary.ENTITIES_NONLIVINGTARGET.contains(entityId)) {
 							if (WarpDriveConfig.LOGGING_WEAPON) {
 								WarpDrive.logger.info("Entity is an invalid target (non-living " + entityId + ") " + mopEntity.entityHit);
 							}
