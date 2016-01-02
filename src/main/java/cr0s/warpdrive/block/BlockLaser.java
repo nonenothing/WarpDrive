@@ -75,7 +75,7 @@ public class BlockLaser extends BlockContainer {
 			int beamFrequency = ((TileEntityLaser)tileEntity).getBeamFrequency();
 			
 			WarpDrive.addChatMessage(entityPlayer, getLocalizedName()
-					+ ": Beam frequency " + beamFrequency + " is " + ((beamFrequency < 0) ? "invalid!" : "valid."));
+					+ "\nBeam frequency " + beamFrequency + " is " + ((beamFrequency < 0) ? "invalid!" : "valid."));
 			return true;
 		}
 		

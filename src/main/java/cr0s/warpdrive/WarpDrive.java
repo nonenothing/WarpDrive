@@ -107,6 +107,7 @@ import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemHelmet;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.item.ItemUpgrade;
+import cr0s.warpdrive.item.ItemTuningRod;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
 import cr0s.warpdrive.render.RenderBlockStandard;
@@ -162,6 +163,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
 	public static ItemUpgrade itemUpgrade;
+	public static ItemTuningRod itemWarptuner;
 	
 	public static ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 5, new int[] { 1, 3, 2, 1 }, 15);
 	public static ItemHelmet itemHelmet;
@@ -399,6 +401,9 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
 		}
 		
+		itemWarptuner = new ItemTuningRod();
+		GameRegistry.registerItem(itemWarptuner, "itemWarptuner");
+		
 		
 		proxy.registerEntities();
 		
@@ -532,6 +537,7 @@ public class WarpDrive implements LoadingCallback {
 		for (String line : lines) {
 			sender.addChatMessage(new ChatComponentText(line));
 		}
+		// logger.info(message);
 	}
 	
 	@Mod.EventHandler
@@ -664,6 +670,29 @@ public class WarpDrive implements LoadingCallback {
 					mapping.remap(blockShipCore);
 				}
 			}
+		}
+	}
+	
+	// add tooltip information with text formating and line splitting
+	// will ensure it fits on minimum screen width
+	public static void addTooltip(List list, String tooltip) {
+		tooltip = tooltip.replace("§", "" + (char)167).replace("\\n", "\n");
+		
+		String[] split = tooltip.split("\n");
+		for (String line : split) {
+			String lineRemaining = line;
+			while (lineRemaining.length() > 38) {
+				int index = lineRemaining.substring(0, 38).lastIndexOf(' ');
+				if (index == -1) {
+					list.add(lineRemaining);
+					lineRemaining = "";
+				} else {
+					list.add(lineRemaining.substring(0, index));
+					lineRemaining = lineRemaining.substring(index + 1);
+				}
+			}
+			
+			list.add(lineRemaining);
 		}
 	}
 }

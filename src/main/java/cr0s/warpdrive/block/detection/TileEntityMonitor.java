@@ -7,13 +7,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityMonitor extends TileEntityAbstractInterfaced {
+public class TileEntityMonitor extends TileEntityAbstractInterfaced implements IVideoChannel {
 	private int videoChannel = -1;
 	
 	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
@@ -43,10 +44,12 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced {
 		}
 	}
 	
+	@Override
 	public int getVideoChannel() {
 		return videoChannel;
 	}
 	
+	@Override
 	public void setVideoChannel(int parVideoChannel) {
 		if (videoChannel != parVideoChannel) {
 			videoChannel = parVideoChannel;

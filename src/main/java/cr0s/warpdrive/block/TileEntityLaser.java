@@ -24,6 +24,8 @@ import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -32,7 +34,7 @@ import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityLaser extends TileEntityAbstractLaser {
+public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFrequency, IVideoChannel {
 	private final int BEAM_FREQUENCY_SCANNING = 1420;
 	private final int BEAM_FREQUENCY_MAX = 65000;
 	
@@ -294,7 +296,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser {
 			// int blockMeta = worldObj.getBlockMetadata(hit.blockX, hit.blockY, hit.blockZ);
 			float resistance = block.getExplosionResistance(null);
 			
-			if (block.isAssociatedBlock(Blocks.bedrock)) {
+			if (block.isAssociatedBlock(Blocks.bedrock)) { // FIXME: should check block hardness instead?
 				vHitPoint = new Vector3(blockHit.hitVec);
 				break;
 			}
@@ -398,10 +400,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser {
 		return (getBlockType().isAssociatedBlock(WarpDrive.blockLaserCamera));
 	}
 	
+	@Override
 	public int getBeamFrequency() {
 		return beamFrequency;
 	}
 	
+	@Override
 	public void setBeamFrequency(int parBeamFrequency) {
 		if (beamFrequency != parBeamFrequency && (parBeamFrequency <= BEAM_FREQUENCY_MAX) && (parBeamFrequency > 0)) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
@@ -412,10 +416,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser {
 		updateColor();
 	}
 	
+	@Override
 	public int getVideoChannel() {
 		return videoChannel;
 	}
 	
+	@Override
 	public void setVideoChannel(int parVideoChannel) {
 		if (videoChannel != parVideoChannel) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
