@@ -15,16 +15,15 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 
-public class BlockRadar extends BlockContainer
-{
+public class BlockRadar extends BlockContainer {
 	private IIcon[] iconBuffer;
-
+	
 	private final int ICON_SIDE_INACTIVE = 0;
 	private final int ICON_BOTTOM = 1;
 	private final int ICON_TOP = 2;
 	private final int ICON_SIDE_ACTIVATED = 3;
 	private final int ICON_SIDE_ACTIVATED_SCAN = 4;
-
+	
 	public BlockRadar() {
 		super(Material.rock);
 		setHardness(0.5F);
@@ -32,7 +31,7 @@ public class BlockRadar extends BlockContainer
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.detection.Radar");
 	}
-
+	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[16];
@@ -42,7 +41,7 @@ public class BlockRadar extends BlockContainer
 		iconBuffer[ICON_SIDE_ACTIVATED] = par1IconRegister.registerIcon("warpdrive:detection/radarSideActive");
 		iconBuffer[ICON_SIDE_ACTIVATED_SCAN] = par1IconRegister.registerIcon("warpdrive:detection/radarSideActiveScan");
 	}
-
+	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0) {
@@ -50,7 +49,7 @@ public class BlockRadar extends BlockContainer
 		} else if (side == 1) {
 			return iconBuffer[ICON_TOP];
 		}
-
+		
 		if (metadata == 0) {// Inactive state
 			return iconBuffer[ICON_SIDE_INACTIVE];
 		} else if (metadata == 1) { // Attached state
@@ -58,15 +57,15 @@ public class BlockRadar extends BlockContainer
 		} else if (metadata == 2) { // Scanning state
 			return iconBuffer[ICON_SIDE_ACTIVATED_SCAN];
 		}
-
+		
 		return iconBuffer[ICON_SIDE_INACTIVE];
 	}
-
+	
 	@Override
 	public TileEntity createNewTileEntity(World var1, int i) {
 		return new TileEntityRadar();
 	}
-
+	
 	/**
 	 * Returns the quantity of items to drop on block destruction.
 	 */
@@ -74,7 +73,7 @@ public class BlockRadar extends BlockContainer
 	public int quantityDropped(Random par1Random) {
 		return 1;
 	}
-
+	
 	/**
 	 * Returns the ID of the items to drop on destruction.
 	 */
@@ -82,19 +81,19 @@ public class BlockRadar extends BlockContainer
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);
 	}
-
+	
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
-
-		TileEntityAbstractEnergy te = (TileEntityAbstractEnergy)par1World.getTileEntity(par2, par3, par4);
-		if (te != null && (par5EntityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(par5EntityPlayer, te.getStatus());
+		
+		TileEntityAbstractEnergy abstractEnergy = (TileEntityAbstractEnergy) world.getTileEntity(x, y, z);
+		if (abstractEnergy != null && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, abstractEnergy.getStatus());
 			return true;
 		}
-
+		
 		return false;
 	}
 }
