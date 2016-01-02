@@ -379,31 +379,27 @@ public class Dictionary {
 		
 		// open access to Block.blockHardness
 		Field fieldHardness = null;
-		Class<?> classBlock = null;
-		try {
-			classBlock = Class.forName("net.minecraft.block.Block");
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
+		Class<?> classBlock = Block.class;
 		
-		if (classBlock != null) {
+		try {
+			fieldHardness = classBlock.getDeclaredField("blockHardness");
+		} catch (Exception exception1) {
 			try {
-				fieldHardness = classBlock.getDeclaredField("blockHardness");
-			} catch (Exception exception1) {
-				try {
-					fieldHardness = classBlock.getDeclaredField("field_149782_v");
-				} catch (Exception exception2) {
-					exception2.printStackTrace();
-					String map = "";
-					for(Field field : classBlock.getDeclaredFields()) {
-						if (!map.isEmpty()) {
-							map += ", ";
-						}
-						map += field.getName();
+				fieldHardness = classBlock.getDeclaredField("field_149782_v");
+			} catch (Exception exception2) {
+				exception2.printStackTrace();
+				String map = "";
+				for(Field field : classBlock.getDeclaredFields()) {
+					if (!map.isEmpty()) {
+						map += ", ";
 					}
-					WarpDrive.logger.error("Unable to find blockHardness field in " + Blocks.air.getClass() + " class. Available fields are: " + map);
+					map += field.getName();
 				}
+				WarpDrive.logger.error("Unable to find blockHardness field in " + classBlock + " class. Available fields are: " + map);
 			}
+		}
+		if (fieldHardness != null) {
+			fieldHardness.setAccessible(true);
 		}
 		
 		// adjust IC2 Reinforced stone stats
