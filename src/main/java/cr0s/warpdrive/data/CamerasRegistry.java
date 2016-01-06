@@ -32,12 +32,12 @@ public class CamerasRegistry {
 				}
 			}
 		}
-
+		
 		// not found => dump registry
 		printRegistry(worldObj);
 		return null;
 	}
-
+	
 	private CameraRegistryItem getCamByPosition(World worldObj, ChunkPosition position) {
 		CameraRegistryItem cam = null;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {

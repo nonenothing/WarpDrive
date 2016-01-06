@@ -86,372 +86,382 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
     public void updateEntity() {
 		super.updateEntity();
 		
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-            return;
-        }
-
-        // accelerate update ticks during boot
-        if (bootTicks > 0) {
-            bootTicks--;
-            if (core == null) {
-            	updateTicks = 1;
-            }
-        }
-        updateTicks--;
-        if (updateTicks <= 0) {
-            updateTicks = updateInterval_ticks;
-            
-            core = findCoreBlock();
-            if (core != null) {
-            	if (mode.getCode() != getBlockMetadata()) {
-            		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, mode.getCode(), 1 + 2);  // Activated
-            	}
-            } else if (getBlockMetadata() != 0) {
-                worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);  // Inactive
-            }
-        }
-    }
-
-    private void setMode(int mode) {
-    	ShipCoreMode[] modes = ShipCoreMode.values();
-    	if (mode >= 0 && mode <= modes.length) {
-    		this.mode = modes[mode];
-    		if (WarpDriveConfig.LOGGING_JUMP) {
-    			WarpDrive.logger.info(this + " Mode set to " + this.mode + " (" + this.mode.getCode() + ")");
-    		}
-    	}
-    }
-
-    private void setDirection(int dir) {
-        if (dir == 1) {
-        	this.direction = -1;
-        } else if (dir == 2) {
-        	this.direction = -2;
-        } else if (dir == 255) {
-        	this.direction = 270;
-        } else {
-        	this.direction = dir;
-        }
-        if (WarpDriveConfig.LOGGING_JUMP) {
-        	WarpDrive.logger.info(this + " Direction set to " + direction);
-        }
-    }
-
-    private void doJump() {
-        if (core != null) {
-            // Adding random ticks to warmup
-            core.randomWarmupAddition = worldObj.rand.nextInt(WarpDriveConfig.SHIP_WARMUP_RANDOM_TICKS);
-        } else {
-        	WarpDrive.logger.error(this + " doJump without a core");
-        }
-
-        setJumpFlag(true);
-    }
-
-    @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        setMode(tag.getInteger("mode"));
-        setFront(tag.getInteger("front"));
-        setRight(tag.getInteger("right"));
-        setUp(tag.getInteger("up"));
-        setBack(tag.getInteger("back"));
-        setLeft(tag.getInteger("left"));
-        setDown(tag.getInteger("down"));
-        setDistance(tag.getInteger("distance"));
-        setDirection(tag.getInteger("direction"));
-        playersString = tag.getString("players");
-        updatePlayersList();
-        setBeaconFrequency(tag.getString("bfreq"));
-    }
-
-    @Override
-    public void writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        updatePlayersString();
-        tag.setString("players", playersString);
-        tag.setInteger("mode", this.mode.getCode());
-        tag.setInteger("front", this.front);
-        tag.setInteger("right", this.right);
-        tag.setInteger("up", this.up);
-        tag.setInteger("back", this.back);
-        tag.setInteger("left", this.left);
-        tag.setInteger("down", this.down);
-        tag.setInteger("distance", this.distance);
-        tag.setInteger("direction", this.direction);
-        tag.setString("bfreq", getBeaconFrequency());
-        // FIXME: shouldn't we save boolean jumpFlag, boolean summonFlag, String toSummon, String targetJumpgateName?
-    }
-
-    public String attachPlayer(EntityPlayer entityPlayer) {
-    	for (int i = 0; i < players.size(); i++) {
-            String name = players.get(i);
-            
-            if (entityPlayer.getDisplayName().equals(name)) {
-            	players.remove(i);
-            	return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-            			getBlockType().getLocalizedName())
-            		+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
-            				core != null && !core.shipName.isEmpty() ? core.shipName : "-",
-            				getAttachedPlayersList());
-            }
-        }
-        
-        entityPlayer.attackEntityFrom(DamageSource.generic, 1);
-        players.add(entityPlayer.getDisplayName());
-        updatePlayersString();
-    	return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-    					getBlockType().getLocalizedName())
-    			+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
-    					core != null && !core.shipName.isEmpty() ? core.shipName : "-",
-    					getAttachedPlayersList());
-    }
-    
-    public String getStatus() {
+		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+			return;
+		}
+		
+		// accelerate update ticks during boot
+		if (bootTicks > 0) {
+			bootTicks--;
+			if (core == null) {
+				updateTicks = 1;
+			}
+		}
+		updateTicks--;
+		if (updateTicks <= 0) {
+			updateTicks = updateInterval_ticks;
+			
+			core = findCoreBlock();
+			if (core != null) {
+				if (mode.getCode() != getBlockMetadata()) {
+					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, mode.getCode(), 1 + 2);  // Activated
+				}
+			} else if (getBlockMetadata() != 0) {
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);  // Inactive
+			}
+		}
+	}
+	
+	private void setMode(int mode) {
+		ShipCoreMode[] modes = ShipCoreMode.values();
+		if (mode >= 0 && mode <= modes.length) {
+			this.mode = modes[mode];
+			if (WarpDriveConfig.LOGGING_JUMP) {
+				WarpDrive.logger.info(this + " Mode set to " + this.mode + " (" + this.mode.getCode() + ")");
+			}
+		}
+	}
+	
+	private void setDirection(int dir) {
+		if (dir == 1) {
+			this.direction = -1;
+		} else if (dir == 2) {
+			this.direction = -2;
+		} else if (dir == 255) {
+			this.direction = 270;
+		} else {
+			this.direction = dir;
+		}
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " Direction set to " + direction);
+		}
+	}
+	
+	private void doJump() {
+		if (core != null) {
+			// Adding random ticks to warmup
+			core.randomWarmupAddition = worldObj.rand.nextInt(WarpDriveConfig.SHIP_WARMUP_RANDOM_TICKS);
+		} else {
+			WarpDrive.logger.error(this + " doJump without a core");
+		}
+		
+		setJumpFlag(true);
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound tag) {
+		super.readFromNBT(tag);
+		setMode(tag.getInteger("mode"));
+		setFront(tag.getInteger("front"));
+		setRight(tag.getInteger("right"));
+		setUp(tag.getInteger("up"));
+		setBack(tag.getInteger("back"));
+		setLeft(tag.getInteger("left"));
+		setDown(tag.getInteger("down"));
+		setDistance(tag.getInteger("distance"));
+		setDirection(tag.getInteger("direction"));
+		playersString = tag.getString("players");
+		updatePlayersList();
+		setBeaconFrequency(tag.getString("bfreq"));
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound tag) {
+		super.writeToNBT(tag);
+		updatePlayersString();
+		tag.setString("players", playersString);
+		tag.setInteger("mode", this.mode.getCode());
+		tag.setInteger("front", this.front);
+		tag.setInteger("right", this.right);
+		tag.setInteger("up", this.up);
+		tag.setInteger("back", this.back);
+		tag.setInteger("left", this.left);
+		tag.setInteger("down", this.down);
+		tag.setInteger("distance", this.distance);
+		tag.setInteger("direction", this.direction);
+		tag.setString("bfreq", getBeaconFrequency());
+		// FIXME: shouldn't we save boolean jumpFlag, boolean summonFlag, String toSummon, String targetJumpgateName?
+	}
+	
+	public String attachPlayer(EntityPlayer entityPlayer) {
+		for (int i = 0; i < players.size(); i++) {
+			String name = players.get(i);
+			
+			if (entityPlayer.getDisplayName().equals(name)) {
+				players.remove(i);
+				return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+						getBlockType().getLocalizedName())
+					+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
+							core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+							getAttachedPlayersList());
+			}
+		}
+		
+		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
+		players.add(entityPlayer.getDisplayName());
+		updatePlayersString();
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+				+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
+						core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+						getAttachedPlayersList());
+	}
+	
+	public String getStatus() {
 		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
 				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
 						getAttachedPlayersList());
-    }
-    
-    public void updatePlayersString() {
-        String nick;
-        this.playersString = "";
-
-        for (int i = 0; i < players.size(); i++) {
-            nick = players.get(i);
-            this.playersString += nick + "|";
-        }
-    }
-
-    public void updatePlayersList() {
-        String[] playersArray = playersString.split("\\|");
-
-        for (int i = 0; i < playersArray.length; i++) {
-            String nick = playersArray[i];
-
-            if (!nick.isEmpty()) {
-                players.add(nick);
-            }
-        }
-    }
-
-    public String getAttachedPlayersList() {
-        StringBuilder list = new StringBuilder("");
-
-        for (int i = 0; i < players.size(); i++) {
-            String nick = players.get(i);
-            list.append(nick + ((i == players.size() - 1) ? "" : ", "));
-        }
-
-        if (players.isEmpty()) {
-            list = new StringBuilder("<nobody>");
-        }
-
-        return list.toString();
-    }
-
-    /**
-     * @return the jumpFlag
-     */
-    public boolean isJumpFlag() {
-        return jumpFlag;
-    }
-
-    /**
-     * @param jumpFlag the jumpFlag to set
-     */
-    public void setJumpFlag(boolean jumpFlag) {
-    	if (WarpDriveConfig.LOGGING_JUMP) {
-    		WarpDrive.logger.info(this + " setJumpFlag(" + jumpFlag + ")");
-    	}
-        this.jumpFlag = jumpFlag;
-    }
-
-    /**
-     * @return front size
-     */
-    public int getFront() {
-        return front;
-    }
-
-    /**
-     * @param front new front size
-     * @return front size
-     */
-    private void setFront(int front) {
-        this.front = front;
-    }
-
-    /**
-     * @return right size
-     */
-    public int getRight() {
-        return right;
-    }
-
-    /**
-     * @param right new right size
-     * @return right size
-     */
-    private void setRight(int right) {
-        this.right = right;
-    }
-
-    /**
-     * @return up size
-     */
-    public int getUp() {
-        return up;
-    }
-
-    /**
-     * @param up new up size
-     * @return up size
-     */
-    private void setUp(int up) {
-        this.up = up;
-    }
-
-    /**
-     * @return back size
-     */
-    public int getBack() {
-        return back;
-    }
-
-    /**
-     * @param back new back size
-     * @return back size
-     */
-    private void setBack(int back) {
-        this.back = back;
-    }
-
-    /**
-     * @return left size
-     */
-    public int getLeft() {
-        return left;
-    }
-
-    /**
-     * @param left new left size
-     * @return left size
-     */
-    private void setLeft(int left) {
-        this.left = left;
-    }
-
-    /**
-     * @return down size
-     */
-    public int getDown() {
-        return down;
-    }
-
-    /**
-     * @param down new down size
-     * @return down size
-     */
-    private void setDown(int down) {
-        this.down = down;
-    }
-
-    private void setDistance(int distance) {
-        this.distance = Math.max(1, Math.min(WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE, distance));
-        if (WarpDriveConfig.LOGGING_JUMP) {
-        	WarpDrive.logger.info(this + " Jump distance set to " + distance);
-        }
-    }
-
-    public int getDistance() {
-        return this.distance;
-    }
-
-    /**
-     * @return current reactor mode
-     */
-    public ShipCoreMode getMode() {
-        return mode;
-    }
-
-    /**
-     * @return the direction
-     */
-    public int getDirection() {
-        return direction;
-    }
-
-    /**
-     * @return the summonFlag
-     */
-    public boolean isSummonAllFlag() {
-        return summonFlag;
-    }
-
-    /**
-     * @param summonFlag to set
-     */
-    public void setSummonAllFlag(boolean summonFlag) {
-        this.summonFlag = summonFlag;
-    }
-
-    /**
-     * @return the toSummon
-     */
-    public String getToSummon() {
-        return toSummon;
-    }
-
-    /**
-     * @param toSummon the toSummon to set
-     */
-    public void setToSummon(String toSummon) {
-        this.toSummon = toSummon;
-    }
-
-    /**
-     * @return the beaconFrequency
-     */
-    public String getBeaconFrequency() {
-        return beaconFrequency;
-    }
-
-    /**
-     * @param beaconFrequency the beaconFrequency to set
-     */
-    public void setBeaconFrequency(String beaconFrequency) {
-        //WarpDrive.debugPrint("Setting beacon frequency: " + beaconFrequency);
-        this.beaconFrequency = beaconFrequency;
-    }
-
-    private TileEntityShipCore findCoreBlock() {
-    	TileEntity tileEntity;
-
-    	tileEntity = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
-        if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
-            return (TileEntityShipCore)tileEntity;
-        }
-
-        tileEntity = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
-        if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
-            return (TileEntityShipCore)tileEntity;
-        }
-
-        tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
-        if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
-            return (TileEntityShipCore)tileEntity;
-        }
-
-        tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
-        if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
-            return (TileEntityShipCore)tileEntity;
-        }
-
-        return null;
-    }
-
+	}
+	
+	public void updatePlayersString() {
+		String nick;
+		this.playersString = "";
+		
+		for (int i = 0; i < players.size(); i++) {
+			nick = players.get(i);
+			this.playersString += nick + "|";
+		}
+	}
+	
+	public void updatePlayersList() {
+		String[] playersArray = playersString.split("\\|");
+		
+		for (int i = 0; i < playersArray.length; i++) {
+			String nick = playersArray[i];
+			
+			if (!nick.isEmpty()) {
+				players.add(nick);
+			}
+		}
+	}
+	
+	public String getAttachedPlayersList() {
+		StringBuilder list = new StringBuilder("");
+		
+		for (int i = 0; i < players.size(); i++) {
+			String nick = players.get(i);
+			list.append(nick + ((i == players.size() - 1) ? "" : ", "));
+		}
+		
+		if (players.isEmpty()) {
+			list = new StringBuilder("<nobody>");
+		}
+		
+		return list.toString();
+	}
+	
+	/**
+	 * @return the jumpFlag
+	 */
+	public boolean isJumpFlag() {
+		return jumpFlag;
+	}
+	
+	/**
+	 * @param jumpFlag
+	 *            the jumpFlag to set
+	 */
+	public void setJumpFlag(boolean jumpFlag) {
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " setJumpFlag(" + jumpFlag + ")");
+		}
+		this.jumpFlag = jumpFlag;
+	}
+	
+	/**
+	 * @return front size
+	 */
+	public int getFront() {
+		return front;
+	}
+	
+	/**
+	 * @param front
+	 *            new front size
+	 * @return front size
+	 */
+	private void setFront(int front) {
+		this.front = front;
+	}
+	
+	/**
+	 * @return right size
+	 */
+	public int getRight() {
+		return right;
+	}
+	
+	/**
+	 * @param right
+	 *            new right size
+	 * @return right size
+	 */
+	private void setRight(int right) {
+		this.right = right;
+	}
+	
+	/**
+	 * @return up size
+	 */
+	public int getUp() {
+		return up;
+	}
+	
+	/**
+	 * @param up
+	 *            new up size
+	 * @return up size
+	 */
+	private void setUp(int up) {
+		this.up = up;
+	}
+	
+	/**
+	 * @return back size
+	 */
+	public int getBack() {
+		return back;
+	}
+	
+	/**
+	 * @param back
+	 *            new back size
+	 * @return back size
+	 */
+	private void setBack(int back) {
+		this.back = back;
+	}
+	
+	/**
+	 * @return left size
+	 */
+	public int getLeft() {
+		return left;
+	}
+	
+	/**
+	 * @param left
+	 *            new left size
+	 * @return left size
+	 */
+	private void setLeft(int left) {
+		this.left = left;
+	}
+	
+	/**
+	 * @return down size
+	 */
+	public int getDown() {
+		return down;
+	}
+	
+	/**
+	 * @param down
+	 *            new down size
+	 * @return down size
+	 */
+	private void setDown(int down) {
+		this.down = down;
+	}
+	
+	private void setDistance(int distance) {
+		this.distance = Math.max(1, Math.min(WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE, distance));
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " Jump distance set to " + distance);
+		}
+	}
+	
+	public int getDistance() {
+		return this.distance;
+	}
+	
+	/**
+	 * @return current reactor mode
+	 */
+	public ShipCoreMode getMode() {
+		return mode;
+	}
+	
+	/**
+	 * @return the direction
+	 */
+	public int getDirection() {
+		return direction;
+	}
+	
+	/**
+	 * @return the summonFlag
+	 */
+	public boolean isSummonAllFlag() {
+		return summonFlag;
+	}
+	
+	/**
+	 * @param summonFlag
+	 *            to set
+	 */
+	public void setSummonAllFlag(boolean summonFlag) {
+		this.summonFlag = summonFlag;
+	}
+	
+	/**
+	 * @return the toSummon
+	 */
+	public String getToSummon() {
+		return toSummon;
+	}
+	
+	/**
+	 * @param toSummon
+	 *            the toSummon to set
+	 */
+	public void setToSummon(String toSummon) {
+		this.toSummon = toSummon;
+	}
+	
+	/**
+	 * @return the beaconFrequency
+	 */
+	public String getBeaconFrequency() {
+		return beaconFrequency;
+	}
+	
+	/**
+	 * @param beaconFrequency
+	 *            the beaconFrequency to set
+	 */
+	public void setBeaconFrequency(String beaconFrequency) {
+		//WarpDrive.debugPrint("Setting beacon frequency: " + beaconFrequency);
+		this.beaconFrequency = beaconFrequency;
+	}
+	
+	private TileEntityShipCore findCoreBlock() {
+		TileEntity tileEntity;
+		
+		tileEntity = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
+		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+			return (TileEntityShipCore) tileEntity;
+		}
+		
+		tileEntity = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
+		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+			return (TileEntityShipCore) tileEntity;
+		}
+		
+		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
+		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+			return (TileEntityShipCore) tileEntity;
+		}
+		
+		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
+		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+			return (TileEntityShipCore) tileEntity;
+		}
+		
+		return null;
+	}
+	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
@@ -470,7 +480,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	public Object[] mode(Context context, Arguments arguments) {
 		return mode(argumentsOCtoCC(arguments));
 	}
-
+	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] distance(Context context, Arguments arguments) {
@@ -566,13 +576,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	public Object[] coreFrequency(Context context, Arguments arguments) {
 		return shipName(argumentsOCtoCC(arguments));
 	}
-
+	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInSpace(Context context, Arguments arguments) {
 		return new Boolean[] { worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID };
 	}
-
+	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInHyperspace(Context context, Arguments arguments) {
@@ -847,28 +857,28 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		
 		return super.callMethod(computer, context, method, arguments);
 	}
-
-    /**
-     * @return the targetJumpgateName
-     */
-    public String getTargetJumpgateName()
-    {
-        return targetJumpgateName;
-    }
-
-    /**
-     * @param targetJumpgateName the targetJumpgateName to set
-     */
-    public void setTargetJumpgateName(String parTargetJumpgateName) {
-        targetJumpgateName = parTargetJumpgateName;
-    }
+	
+	/**
+	 * @return the targetJumpgateName
+	 */
+	public String getTargetJumpgateName() {
+		return targetJumpgateName;
+	}
+	
+	/**
+	 * @param targetJumpgateName
+	 *            the targetJumpgateName to set
+	 */
+	public void setTargetJumpgateName(String parTargetJumpgateName) {
+		targetJumpgateName = parTargetJumpgateName;
+	}
 	
 	@Override
 	public String toString() {
-        return String.format("%s \'%s\' @ \'%s\' %d, %d, %d", new Object[] {
-       		getClass().getSimpleName(),
-       		core == null ? beaconFrequency : core.shipName,
-       		worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-       		Integer.valueOf(xCoord), Integer.valueOf(yCoord), Integer.valueOf(zCoord)});
+		return String.format("%s \'%s\' @ \'%s\' %d, %d, %d", new Object[] {
+				getClass().getSimpleName(),
+				core == null ? beaconFrequency : core.shipName,
+				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+				Integer.valueOf(xCoord), Integer.valueOf(yCoord), Integer.valueOf(zCoord)});
 	}
 }
