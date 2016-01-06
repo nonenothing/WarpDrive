@@ -1,5 +1,6 @@
 package cr0s.warpdrive;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -100,6 +101,7 @@ import cr0s.warpdrive.data.CamerasRegistry;
 import cr0s.warpdrive.data.CloakManager;
 import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
 import cr0s.warpdrive.item.ItemAirCanisterFull;
@@ -126,6 +128,7 @@ import cr0s.warpdrive.world.SpaceWorldGenerator;
 public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
+	public static final boolean isDev = VERSION.equals("@version@") || VERSION.contains("-dev");
 	
 	public static Block blockShipCore;
 	public static Block blockShipController;
@@ -173,6 +176,8 @@ public class WarpDrive implements LoadingCallback {
 	public SpaceWorldGenerator spaceWorldGenerator;
 	public HyperSpaceWorldGenerator hyperSpaceWorldGenerator;
 	
+	public static Field fieldBlockHardness = null;
+	
 	// Client settings
 	public static CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive("WarpDrive", "WarpDrive").setBackgroundImageName("warpdrive:creativeTab");
 	
@@ -211,6 +216,9 @@ public class WarpDrive implements LoadingCallback {
 		PacketHandler.init();
 		
 		WarpDriveConfig.onFMLInitialization();
+		
+		// open access to Block.blockHardness
+		fieldBlockHardness = WarpDrive.getField(Block.class, "blockHardness", "field_149782_v");
 		
 		// CORE CONTROLLER
 		blockShipController = new BlockShipController();
@@ -455,9 +463,7 @@ public class WarpDrive implements LoadingCallback {
 		cameras = new CamerasRegistry();
 		
 		// Event handlers
-		WorldHandler worldHandler = new WorldHandler();
-		MinecraftForge.EVENT_BUS.register(worldHandler);
-		FMLCommonHandler.instance().bus().register(worldHandler);
+		MinecraftForge.EVENT_BUS.register(new ClientHandler());
 		
 		MinecraftForge.EVENT_BUS.register(new LivingHandler());
 		
@@ -465,6 +471,10 @@ public class WarpDrive implements LoadingCallback {
 			peripheralHandler = new WarpDrivePeripheralHandler();
 			peripheralHandler.register();
 		}
+		
+		WorldHandler worldHandler = new WorldHandler();
+		MinecraftForge.EVENT_BUS.register(worldHandler);
+		FMLCommonHandler.instance().bus().register(worldHandler);
 	}
 	
 	@EventHandler
@@ -695,5 +705,32 @@ public class WarpDrive implements LoadingCallback {
 			
 			list.add(lineRemaining);
 		}
+	}
+	
+	public static Field getField(Class<?> clazz, String deofuscatedName, String obfuscatedName) {
+		Field fieldToReturn = null;
+		
+		try {
+			fieldToReturn = clazz.getDeclaredField(deofuscatedName);
+		} catch (Exception exception1) {
+			try {
+				fieldToReturn = clazz.getDeclaredField(obfuscatedName);
+			} catch (Exception exception2) {
+				exception2.printStackTrace();
+				String map = "";
+				for(Field fieldDeclared : clazz.getDeclaredFields()) {
+					if (!map.isEmpty()) {
+						map += ", ";
+					}
+					map += fieldDeclared.getName();
+				}
+				WarpDrive.logger.error(String.format("Unable to find %1$s field in %2$s class. Available fields are: %3$s",
+						deofuscatedName, clazz.toString(), map));
+			}
+		}
+		if (fieldToReturn != null) {
+			fieldToReturn.setAccessible(true);
+		}
+		return fieldToReturn;
 	}
 }

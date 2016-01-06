@@ -377,31 +377,6 @@ public class Dictionary {
 		Blocks.lava.setResistance(30.0F);
 		Blocks.flowing_lava.setResistance(30.0F);
 		
-		// open access to Block.blockHardness
-		Field fieldHardness = null;
-		Class<?> classBlock = Block.class;
-		
-		try {
-			fieldHardness = classBlock.getDeclaredField("blockHardness");
-		} catch (Exception exception1) {
-			try {
-				fieldHardness = classBlock.getDeclaredField("field_149782_v");
-			} catch (Exception exception2) {
-				exception2.printStackTrace();
-				String map = "";
-				for(Field field : classBlock.getDeclaredFields()) {
-					if (!map.isEmpty()) {
-						map += ", ";
-					}
-					map += field.getName();
-				}
-				WarpDrive.logger.error("Unable to find blockHardness field in " + classBlock + " class. Available fields are: " + map);
-			}
-		}
-		if (fieldHardness != null) {
-			fieldHardness.setAccessible(true);
-		}
-		
 		// adjust IC2 Reinforced stone stats
 		if (WarpDriveConfig.isIndustrialCraft2loaded) {
 			Block blockReinforcedStone = (Block) Block.blockRegistry.getObject("IC2:blockAlloy");
@@ -417,10 +392,10 @@ public class Dictionary {
 			} else {
 				// get hardness and blast resistance
 				float hardness = -2.0F;
-				if (fieldHardness != null) {
-					fieldHardness.setAccessible(true);
+				if (WarpDrive.fieldBlockHardness != null) {
+					// WarpDrive.fieldBlockHardness.setAccessible(true);
 					try {
-						hardness = (float)fieldHardness.get(block);
+						hardness = (float)WarpDrive.fieldBlockHardness.get(block);
 					} catch (IllegalArgumentException | IllegalAccessException exception) {
 						exception.printStackTrace();
 						WarpDrive.logger.error("Unable to access block hardness value '" + blockKey + "' " + block);
@@ -452,7 +427,7 @@ public class Dictionary {
 				
 				if (WarpDriveConfig.LOGGING_DICTIONARY) {
 					WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
-						+ " with hardness " + (fieldHardness != null ? hardness : "-") + " resistance " + ((Block)block).getExplosionResistance(null));
+						+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + ((Block)block).getExplosionResistance(null));
 				}
 			}
 		}
