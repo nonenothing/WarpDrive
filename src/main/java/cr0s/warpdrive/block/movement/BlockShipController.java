@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
@@ -89,19 +88,20 @@ public class BlockShipController extends BlockContainer {
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		// Report status
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (tileEntity != null && tileEntity instanceof TileEntityShipController && (entityPlayer.getHeldItem() == null)) {
-			if (entityPlayer.isSneaking()) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).getStatus());
-			} else {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).attachPlayer(entityPlayer));
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityShipController) {
+				if (entityPlayer.isSneaking()) {
+					WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).getStatus());
+				} else {
+					WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).attachPlayer(entityPlayer));
+				}
+				return true;
 			}
-			return true;
 		}
 		
 		return false;

@@ -9,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.TileEntityLaser;
@@ -63,15 +62,16 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	 */
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		// Report status
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (!ClientCameraHandler.isOverlayEnabled && tileEntity != null && tileEntity instanceof TileEntityLaser && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser)tileEntity).getStatus());
-			return true;
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityLaser && !ClientCameraHandler.isOverlayEnabled) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser) tileEntity).getStatus());
+				return true;
+			}
 		}
 		
 		return false;

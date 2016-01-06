@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 
 public class BlockMiningLaser extends BlockContainer {
@@ -77,16 +76,17 @@ public class BlockMiningLaser extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntityMiningLaser miningLaser = (TileEntityMiningLaser)world.getTileEntity(x, y, z);
-		
-		if (miningLaser != null && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, miningLaser.getStatus());
-			return true;
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityMiningLaser) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityMiningLaser)tileEntity).getStatus());
+				return true;
+			}
 		}
 		
 		return false;

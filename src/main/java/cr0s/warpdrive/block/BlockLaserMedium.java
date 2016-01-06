@@ -8,7 +8,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 
 public class BlockLaserMedium extends BlockContainer {
@@ -54,15 +53,15 @@ public class BlockLaserMedium extends BlockContainer {
 	 * Called upon block activation (right click on the block.)
 	 */
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity != null && tileEntity instanceof TileEntityAbstractEnergy) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityAbstractEnergy) tileEntity).getStatus());
+			if (tileEntity instanceof TileEntityLaserMedium) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaserMedium) tileEntity).getStatus());
 				return true;
 			}
 		}

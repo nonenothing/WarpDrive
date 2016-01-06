@@ -2,7 +2,6 @@ package cr0s.warpdrive.block;
 
 import java.util.Random;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -65,15 +64,16 @@ public class BlockLaser extends BlockContainer {
 	 */
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		// Report status
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (tileEntity != null && tileEntity instanceof TileEntityLaser && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser)tileEntity).getStatus());
-			return true;
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityLaser) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser)tileEntity).getStatus());
+				return true;
+			}
 		}
 		
 		return false;

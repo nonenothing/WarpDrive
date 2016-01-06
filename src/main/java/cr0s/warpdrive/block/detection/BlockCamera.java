@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 
 public class BlockCamera extends BlockContainer {
@@ -55,16 +54,17 @@ public class BlockCamera extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		// Get camera frequency
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (tileEntity != null && tileEntity instanceof TileEntityCamera && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, ((TileEntityCamera)tileEntity).getStatus());
-			return true;
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityCamera) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityCamera)tileEntity).getStatus());
+				return true;
+			}
 		}
 		
 		return false;

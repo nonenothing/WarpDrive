@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.energy;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -59,14 +58,14 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {// TODO
 	 * Called upon block activation (right click on the block.)
 	 */
 	@Override
-	public boolean onBlockActivated(World par1World, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = par1World.getTileEntity(x, y, z);
-			if (tileEntity != null && tileEntity instanceof TileEntityIC2reactorLaserMonitor) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityIC2reactorLaserMonitor) {
 				WarpDrive.addChatMessage(entityPlayer, ((TileEntityIC2reactorLaserMonitor) tileEntity).getStatus());
 				return true;
 			}

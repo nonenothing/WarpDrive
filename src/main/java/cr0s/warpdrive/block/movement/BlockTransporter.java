@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.movement;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.material.Material;
@@ -48,13 +47,13 @@ public class BlockTransporter extends BlockAbstractContainer {
 	 */
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (world.isRemote) {
 			return false;
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity != null && tileEntity instanceof TileEntityTransporter) {
+			if (tileEntity instanceof TileEntityTransporter) {
 				WarpDrive.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
 				return true;
 			}

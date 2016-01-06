@@ -2,7 +2,6 @@ package cr0s.warpdrive.block.collection;
 
 import java.util.Random;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -81,16 +80,17 @@ public class BlockLaserTreeFarm extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntityLaserTreeFarm treeFarm = (TileEntityLaserTreeFarm)world.getTileEntity(x, y, z);
-		
-		if (treeFarm != null && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, treeFarm.getStatus());
-			return true;
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityLaserTreeFarm) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm)tileEntity).getStatus());
+				return true;
+			}
 		}
 		
 		return false;

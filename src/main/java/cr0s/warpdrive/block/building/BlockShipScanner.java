@@ -11,9 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 
 public class BlockShipScanner extends BlockContainer {
 	private IIcon[] iconBuffer;
@@ -68,15 +66,17 @@ public class BlockShipScanner extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntityAbstractEnergy abstractEnergy = (TileEntityAbstractEnergy)world.getTileEntity(x, y, z);
-		if (abstractEnergy != null && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, abstractEnergy.getStatus());
-			return true;
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityShipScanner) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipScanner)tileEntity).getStatus());
+				return true;
+			}
 		}
 		
 		return false;
