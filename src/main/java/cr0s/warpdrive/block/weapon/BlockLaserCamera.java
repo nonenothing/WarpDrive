@@ -2,8 +2,6 @@ package cr0s.warpdrive.block.weapon;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,21 +11,18 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.TileEntityLaser;
-import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.render.ClientCameraHandler;
 
-public class BlockLaserCamera extends BlockContainer {
+public class BlockLaserCamera extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
 	private final int ICON_SIDE = 0;
 	
 	public BlockLaserCamera() {
 		super(Material.rock);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		this.setBlockName("warpdrive.weapon.LaserCamera");
+		setBlockName("warpdrive.weapon.LaserCamera");
 	}
 	
 	@Override
@@ -67,21 +62,15 @@ public class BlockLaserCamera extends BlockContainer {
 	 * Called upon block activation (right click on the block.)
 	 */
 	@Override
-	public boolean onBlockActivated(World par1World, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		// Get camera frequency
-		TileEntity tileEntity = par1World.getTileEntity(x, y, z);
+		// Report status
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!ClientCameraHandler.isOverlayEnabled && tileEntity != null && tileEntity instanceof TileEntityLaser && (entityPlayer.getHeldItem() == null)) {
-			int beamFrequency = ((TileEntityLaser)tileEntity).getBeamFrequency();
-			int videoChannel = ((TileEntityLaser)tileEntity).getVideoChannel();
-			
-			CameraRegistryItem cam = WarpDrive.instance.cameras.getCameraByFrequency(par1World, videoChannel);
-			WarpDrive.addChatMessage(entityPlayer, getLocalizedName()
-					+ ": Beam frequency " + beamFrequency + " is " + ((beamFrequency < 0) ? "invalid!" : "valid.")
-					+ " Video channel " + videoChannel + " is " + ((cam == null) ? "invalid!" : "valid for laser-camera at " + cam.position.chunkPosX + ", " + cam.position.chunkPosY + ", " + cam.position.chunkPosZ));
+			WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser)tileEntity).getStatus());
 			return true;
 		}
 		

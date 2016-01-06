@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
@@ -50,27 +51,31 @@ public class BlockMonitor extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World par1World, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		// Monitor is only reacting client side
 		if (!FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
 		// Get camera frequency
-		TileEntity tileEntity = par1World.getTileEntity(x, y, z);
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityMonitor && (entityPlayer.getHeldItem() == null)) {
-			int frequency = ((TileEntityMonitor)tileEntity).getVideoChannel();
-			CameraRegistryItem cam = WarpDrive.instance.cameras.getCameraByFrequency(par1World, frequency);
-			if (cam == null) {
-				WarpDrive.addChatMessage(entityPlayer, getLocalizedName() + " frequency '" + frequency + "' is invalid or camera is too far!");
-				return false;
+			int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
+			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(world, videoChannel);
+			if (camera == null || entityPlayer.isSneaking()) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
+				return true;
 			} else {
-				WarpDrive.addChatMessage(entityPlayer, "Viewing camera at " + cam.position.chunkPosX + ", " + cam.position.chunkPosY + ", " + cam.position.chunkPosZ + " on frequency " + frequency);
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.monitor.viewingCamera",
+						videoChannel,
+						camera.position.chunkPosX,
+						camera.position.chunkPosY,
+						camera.position.chunkPosZ ));
 				ClientCameraHandler.setupViewpoint(
-						cam.type, entityPlayer, entityPlayer.rotationYaw, entityPlayer.rotationPitch,
+						camera.type, entityPlayer, entityPlayer.rotationYaw, entityPlayer.rotationPitch,
 						x, y, z, this,
-						cam.position.chunkPosX, cam.position.chunkPosY, cam.position.chunkPosZ, par1World.getBlock(cam.position.chunkPosX, cam.position.chunkPosY, cam.position.chunkPosZ));
+						camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ, world.getBlock(camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ));
 			}
 		}
 		

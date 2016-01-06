@@ -8,6 +8,7 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
@@ -356,6 +357,25 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		minZ =               zCoord - outerCoilsDistance[4] - WarpDriveConfig.CLOAKING_COIL_CAPTURE_BLOCKS;
 		maxZ =               zCoord + outerCoilsDistance[5] + WarpDriveConfig.CLOAKING_COIL_CAPTURE_BLOCKS;
 		return true;
+	}
+	
+	@Override
+	public String getStatus() {
+		String unlocalizedStatus = "warpdrive.cloakingCore.invalidAssembly";
+		if (!isValid) {
+			unlocalizedStatus = "warpdrive.cloakingCore.invalidAssembly";
+		} else if (!isEnabled) {
+			unlocalizedStatus = "warpdrive.cloakingCore.disabled";
+		} else if (!isCloaking) {
+			unlocalizedStatus = "warpdrive.cloakingCore.lowPower";
+		} else {
+			unlocalizedStatus = "warpdrive.cloakingCore.cloaking";
+		}
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				getBlockType().getLocalizedName())
+				+ StatCollector.translateToLocalFormatted(unlocalizedStatus,
+						tier,
+						volume);
 	}
 	
 	// OpenComputer callback methods

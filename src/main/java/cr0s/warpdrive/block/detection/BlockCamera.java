@@ -13,7 +13,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.CameraRegistryItem;
 
 public class BlockCamera extends BlockContainer {
 	private IIcon[] iconBuffer;
@@ -56,23 +55,15 @@ public class BlockCamera extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World par1World, int x, int y, int z, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float par7, float par8, float par9) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
 		// Get camera frequency
-		TileEntity te = par1World.getTileEntity(x, y, z);
-		if (te != null && te instanceof TileEntityCamera && (par5EntityPlayer.getHeldItem() == null)) {
-			int frequency = ((TileEntityCamera)te).getVideoChannel();
-			
-			CameraRegistryItem cam = WarpDrive.instance.cameras.getCameraByFrequency(par1World, frequency);
-			if (cam == null) {
-				WarpDrive.instance.cameras.printRegistry(par1World);
-				WarpDrive.addChatMessage(par5EntityPlayer, getLocalizedName() + " Frequency '" + frequency + "' is invalid!");
-			} else {
-				WarpDrive.addChatMessage(par5EntityPlayer, getLocalizedName() + " Frequency '" + frequency + "' is valid for camera at " + cam.position.chunkPosX + ", " + cam.position.chunkPosY + ", " + cam.position.chunkPosZ);
-			}
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity != null && tileEntity instanceof TileEntityCamera && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, ((TileEntityCamera)tileEntity).getStatus());
 			return true;
 		}
 		

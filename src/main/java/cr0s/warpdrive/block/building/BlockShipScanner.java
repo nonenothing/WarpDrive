@@ -73,9 +73,9 @@ public class BlockShipScanner extends BlockContainer {
 			return false;
 		}
 		
-		TileEntityAbstractEnergy te = (TileEntityAbstractEnergy)world.getTileEntity(x, y, z);
-		if (te != null && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, te.getStatus());
+		TileEntityAbstractEnergy abstractEnergy = (TileEntityAbstractEnergy)world.getTileEntity(x, y, z);
+		if (abstractEnergy != null && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, abstractEnergy.getStatus());
 			return true;
 		}
 		

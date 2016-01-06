@@ -17,6 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
@@ -124,8 +125,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			if (getBlockMetadata() != 0) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);
 			}
-		} else if (controller.isJumpFlag() || this.controller.isSummonAllFlag() || !this.controller.getToSummon().isEmpty()) { // active
-			// (1)
+		} else if (controller.isJumpFlag() || this.controller.isSummonAllFlag() || !this.controller.getToSummon().isEmpty()) { // active (1)
 			if (getBlockMetadata() != 1) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 1 + 2);
 			}
@@ -344,7 +344,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				continue;
 			}
 			
-			WarpDrive.addChatMessage((EntityPlayer) object, "[" + (shipName.length() > 0 ? shipName : "WarpCore") + "] " + msg);
+			WarpDrive.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "WarpCore") + "] " + msg);
 		}
 	}
 
@@ -988,10 +988,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String getStatus() {
-		return getBlockType().getLocalizedName() + " '" + shipName + "'"  
-			+ getEnergyStatus()
-			+ ((cooldownTime > 0) ? String.format("\n%1$d s left of cooldown.", cooldownTime / 20) : ""
-			+ ((isolationBlocksCount > 0) ? String.format("\n%1$d active isolation blocks providing %2$2.1f%% absorption.", isolationBlocksCount, isolationRate * 100.0) : ""));
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				getBlockType().getLocalizedName())
+			+ "\n" + getEnergyStatus()
+			+ ((cooldownTime > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.cooling", cooldownTime / 20) : "")
+			+ ((isolationBlocksCount > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
 	}
 	
 	public static int calculateRequiredEnergy(ShipCoreMode shipCoreMode, int shipVolume, int jumpDistance) {

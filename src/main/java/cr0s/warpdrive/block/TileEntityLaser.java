@@ -19,6 +19,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -28,6 +29,7 @@ import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
@@ -416,6 +418,16 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		updateColor();
 	}
 	
+	public String getBeamFrequencyStatus() {
+		if (beamFrequency < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid",
+					beamFrequency );
+		} else {
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid",
+					beamFrequency );
+		}
+	}
+	
 	@Override
 	public int getVideoChannel() {
 		return videoChannel;
@@ -431,6 +443,44 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			// force update through main thread since CC runs on server as 'client'
 			packetSendTicks = 0;
 			registryUpdateTicks = 0;
+		}
+	}
+	
+	public String getVideoChannelStatus() {
+		if (!isWithCamera()) {
+			return "";
+		}
+		if (videoChannel < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
+					videoChannel );
+		} else {
+			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(worldObj, videoChannel);
+			if (camera == null) {
+				WarpDrive.instance.cameras.printRegistry(worldObj);
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
+						videoChannel );
+			} else if (camera.isTileEntity(this)) {
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid",
+						videoChannel );
+			} else {
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+						videoChannel,
+						camera.position.chunkPosX,
+						camera.position.chunkPosY,
+						camera.position.chunkPosZ );
+			}
+		}
+	}
+
+	public String getStatus() {
+		if (!isWithCamera()) {
+			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+					+ getBeamFrequencyStatus();
+		} else {
+			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+					+ getBeamFrequencyStatus() + "\n" + getVideoChannelStatus();
 		}
 	}
 	

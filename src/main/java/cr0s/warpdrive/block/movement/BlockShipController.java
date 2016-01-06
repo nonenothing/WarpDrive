@@ -88,18 +88,20 @@ public class BlockShipController extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		if (par5EntityPlayer.getHeldItem() == null) {
-			TileEntityShipController controller = (TileEntityShipController)par1World.getTileEntity(par2, par3, par4);
-			if (controller != null) {
-				controller.attachPlayer(par5EntityPlayer);
-				WarpDrive.addChatMessage(par5EntityPlayer, controller.getBlockType().getLocalizedName() + " Attached players: " + controller.getAttachedPlayersList());
-				return true;
+		// Report status
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity != null && tileEntity instanceof TileEntityShipController && (entityPlayer.getHeldItem() == null)) {
+			if (entityPlayer.isSneaking()) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).getStatus());
+			} else {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).attachPlayer(entityPlayer));
 			}
+			return true;
 		}
 		
 		return false;

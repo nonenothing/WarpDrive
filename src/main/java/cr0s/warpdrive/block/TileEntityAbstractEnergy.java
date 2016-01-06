@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -12,6 +13,7 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -168,13 +170,14 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (getMaxEnergyStored() == 0) {
 			return "";
 		}
-		return String.format("\nEnergy level is %1$.0f/%2$.0f EU.",
-				convertInternalToEU(getEnergyStored()),
-				convertInternalToEU(getMaxEnergyStored()));
+		return StatCollector.translateToLocalFormatted("warpdrive.energy.statusLine",
+				BigDecimal.valueOf(convertInternalToEU(getEnergyStored())).toPlainString(),
+				BigDecimal.valueOf(convertInternalToEU(getMaxEnergyStored())).toPlainString() );
 	}
 	
 	public String getStatus() {
-		return getBlockType().getLocalizedName()
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				getBlockType().getLocalizedName())
 				+ getEnergyStatus();
 	}
 	

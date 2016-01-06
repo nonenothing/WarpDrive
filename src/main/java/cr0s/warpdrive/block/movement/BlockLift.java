@@ -81,14 +81,14 @@ public class BlockLift extends BlockContainer
 	 * Called upon block activation (right click on the block.)
 	 */
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 
-		TileEntityAbstractEnergy te = (TileEntityAbstractEnergy)par1World.getTileEntity(par2, par3, par4);
-		if (te != null && (par5EntityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(par5EntityPlayer, te.getStatus());
+		TileEntityAbstractEnergy abstractEnergy = (TileEntityAbstractEnergy)world.getTileEntity(x, y, z);
+		if (abstractEnergy != null && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, abstractEnergy.getStatus());
 			return true;
 		}
 

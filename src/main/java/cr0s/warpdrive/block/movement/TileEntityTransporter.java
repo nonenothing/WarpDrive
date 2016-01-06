@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IUpgradable;
@@ -75,23 +76,16 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			}
 		}
 	}
-
+	
 	@Override
 	public String getStatus() {
-		return getBlockType().getLocalizedName()
-			+ getEnergyStatus()
-			+ String.format("\nSource: %.0f %.0f %.0f",
-					sourceVec.x,
-					sourceVec.y,
-					sourceVec.z
-			)
-			+ String.format("\nDestination: %.0f %.0f %.0f",
-					destVec.x,
-					destVec.y,
-					destVec.z
-			);
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				getBlockType().getLocalizedName())
+				+ "\n" + getEnergyStatus()
+				+ "\n" + StatCollector.translateToLocalFormatted("warpdrive.transporter.status",
+						sourceVec.x, sourceVec.y, sourceVec.z,
+						destVec.x, destVec.y, destVec.z);
 	}
-	
 	
 	
 	

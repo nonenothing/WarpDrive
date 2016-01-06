@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -182,23 +183,37 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
         // FIXME: shouldn't we save boolean jumpFlag, boolean summonFlag, String toSummon, String targetJumpgateName?
     }
 
-    public void attachPlayer(EntityPlayer entityPlayer) {
-        for (int i = 0; i < players.size(); i++) {
+    public String attachPlayer(EntityPlayer entityPlayer) {
+    	for (int i = 0; i < players.size(); i++) {
             String name = players.get(i);
-
+            
             if (entityPlayer.getDisplayName().equals(name)) {
-            	WarpDrive.addChatMessage(entityPlayer, getBlockType().getLocalizedName() + " Detached.");
-                players.remove(i);
-                return;
+            	players.remove(i);
+            	return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+            			getBlockType().getLocalizedName())
+            		+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
+            				core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+            				getAttachedPlayersList());
             }
         }
-
+        
         entityPlayer.attackEntityFrom(DamageSource.generic, 1);
         players.add(entityPlayer.getDisplayName());
         updatePlayersString();
-        WarpDrive.addChatMessage(entityPlayer, getBlockType().getLocalizedName() + " Successfully attached.");
+    	return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+    					getBlockType().getLocalizedName())
+    			+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
+    					core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+    					getAttachedPlayersList());
     }
-
+    
+    public String getStatus() {
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				getBlockType().getLocalizedName())
+				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
+						getAttachedPlayersList());
+    }
+    
     public void updatePlayersString() {
         String nick;
         this.playersString = "";
@@ -224,9 +239,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
     public String getAttachedPlayersList() {
         StringBuilder list = new StringBuilder("");
 
-        for (int i = 0; i < this.players.size(); i++) {
-            String nick = this.players.get(i);
-            list.append(nick + ((i == this.players.size() - 1) ? "" : ", "));
+        for (int i = 0; i < players.size(); i++) {
+            String nick = players.get(i);
+            list.append(nick + ((i == players.size() - 1) ? "" : ", "));
         }
 
         if (players.isEmpty()) {

@@ -4,6 +4,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
@@ -11,6 +12,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -71,6 +73,35 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 			packetSendTicks = 0;
 			registryUpdateTicks = 0;
 		}
+	}
+	
+	public String getVideoChannelStatus() {
+		if (videoChannel < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
+					videoChannel );
+		} else {
+			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(worldObj, videoChannel);
+			if (camera == null) {
+				WarpDrive.instance.cameras.printRegistry(worldObj);
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
+						videoChannel );
+			} else if (camera.isTileEntity(this)) {
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid",
+						videoChannel );
+			} else {
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+						videoChannel,
+						camera.position.chunkPosX,
+						camera.position.chunkPosY,
+						camera.position.chunkPosZ );
+			}
+		}
+	}
+	
+	public String getStatus() {
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+				+ getVideoChannelStatus();
 	}
 	
 	@Override

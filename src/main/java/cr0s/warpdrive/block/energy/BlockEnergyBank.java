@@ -34,18 +34,15 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		iconBuffer = par1IconRegister.registerIcon("warpdrive:energy/energyBank");
 	}
 	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		TileEntityAbstractEnergy tileEntity = (TileEntityAbstractEnergy) world.getTileEntity(x, y, z);
-		if (tileEntity != null && (entityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(entityPlayer, tileEntity.getStatus());
+		TileEntityAbstractEnergy abstractEnergy = (TileEntityAbstractEnergy) world.getTileEntity(x, y, z);
+		if (abstractEnergy != null && (entityPlayer.getHeldItem() == null)) {
+			WarpDrive.addChatMessage(entityPlayer, abstractEnergy.getStatus());
 			return true;
 		}
 		

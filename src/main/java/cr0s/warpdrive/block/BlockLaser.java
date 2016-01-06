@@ -64,18 +64,15 @@ public class BlockLaser extends BlockContainer {
 	 * Called upon block activation (right click on the block.)
 	 */
 	@Override
-	public boolean onBlockActivated(World par1World, int x, int y, int z, EntityPlayer entityPlayer, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		// Get camera frequency
-		TileEntity tileEntity = par1World.getTileEntity(x, y, z);
+		// Report status
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity != null && tileEntity instanceof TileEntityLaser && (entityPlayer.getHeldItem() == null)) {
-			int beamFrequency = ((TileEntityLaser)tileEntity).getBeamFrequency();
-			
-			WarpDrive.addChatMessage(entityPlayer, getLocalizedName()
-					+ "\nBeam frequency " + beamFrequency + " is " + ((beamFrequency < 0) ? "invalid!" : "valid."));
+			WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser)tileEntity).getStatus());
 			return true;
 		}
 		

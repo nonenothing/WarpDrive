@@ -82,22 +82,22 @@ public class BlockAirGenerator extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer player, int par6, float par7, float par8, float par9) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			return false;
 		}
 		
-		TileEntityAbstractEnergy te = (TileEntityAbstractEnergy) par1World.getTileEntity(par2, par3, par4);
-		if (te != null) {
+		TileEntityAbstractEnergy tileEntity = (TileEntityAbstractEnergy) world.getTileEntity(x, y, z);
+		if (tileEntity != null) {
 			ItemStack heldItemStack = player.getHeldItem();
 			if (heldItemStack == null) {
-				WarpDrive.addChatMessage(player, te.getStatus());
+				WarpDrive.addChatMessage(player, tileEntity.getStatus());
 				return true;
 			} else {
 				Item heldItem = heldItemStack.getItem();
 				if (heldItem != null && (heldItem instanceof IAirCanister)) {
 					IAirCanister airCanister = (IAirCanister) heldItem;
-					if (airCanister.canContainAir(heldItemStack) && te.consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, true)) {
+					if (airCanister.canContainAir(heldItemStack) && tileEntity.consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, true)) {
 						player.inventory.decrStackSize(player.inventory.currentItem, 1);
 						ItemStack toAdd = airCanister.fullDrop(heldItemStack);
 						if (toAdd != null) {
@@ -105,7 +105,7 @@ public class BlockAirGenerator extends BlockContainer {
 								EntityItem ie = new EntityItem(player.worldObj, player.posX, player.posY, player.posZ, toAdd);
 								player.worldObj.spawnEntityInWorld(ie);
 							}
-							te.consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, false);
+							tileEntity.consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, false);
 						}
 					}
 				}

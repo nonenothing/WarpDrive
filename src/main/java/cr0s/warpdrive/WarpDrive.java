@@ -533,10 +533,11 @@ public class WarpDrive implements LoadingCallback {
 	}
 	
 	public static void addChatMessage(final ICommandSender sender, final String message) {
-		String[] lines = message.split("\n");
+		String[] lines = message.replace("\\n", "\n").split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new ChatComponentText(line));
 		}
+		
 		// logger.info(message);
 	}
 	

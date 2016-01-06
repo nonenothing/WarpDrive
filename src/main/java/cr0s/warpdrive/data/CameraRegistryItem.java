@@ -1,5 +1,7 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.api.IVideoChannel;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 
@@ -14,5 +16,15 @@ public class CameraRegistryItem {
         position = parPosition;
         dimensionId = parWorldObj.provider.dimensionId;
         type = parType;
+    }
+    
+    public boolean isTileEntity(TileEntity tileEntity) {
+    	return tileEntity != null
+    		&& tileEntity instanceof IVideoChannel
+    		&& dimensionId == tileEntity.getWorldObj().provider.dimensionId
+    		&& position.chunkPosX == tileEntity.xCoord
+    		&& position.chunkPosY == tileEntity.yCoord
+    		&& position.chunkPosZ == tileEntity.zCoord
+    		&& frequency == ((IVideoChannel)tileEntity).getVideoChannel();
     }
 }

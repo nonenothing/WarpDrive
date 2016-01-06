@@ -13,6 +13,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
@@ -180,9 +181,16 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	@Optional.Method(modid = "IC2")
 	public String getStatus() {
 		Set<IReactor> reactors = findReactors();
-		return getBlockType().getLocalizedName()
-			+ getEnergyStatus()
-			+ "\n" + ((reactors == null || reactors.size() == 0) ? "No reactor found!" : reactors.size() + " reactor(s) connected.");
+		if (reactors != null && reactors.size() > 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+					+ StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.multipleReactors",
+							reactors.size());
+		} else {
+			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+					+ StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.noReactor");
+		}
 	}
 	
 	@Override
