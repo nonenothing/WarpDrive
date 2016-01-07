@@ -2,8 +2,10 @@ package cr0s.warpdrive.block.hull;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
+import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -35,12 +37,16 @@ public class BlockHullGlass extends BlockColored {
 	
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		Block sideBlock = world.getBlock(x, y, z);
-		if (sideBlock == this) {
-			return false;
+		if (world.isAirBlock(x, y, z)) {
+			return true;
 		}
-		
-		return world.isAirBlock(x, y, z);
+		ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
+		Block sideBlock = world.getBlock(x, y, z);
+		if (sideBlock instanceof BlockGlass || sideBlock instanceof BlockHullGlass) {
+			return world.getBlockMetadata(x, y, z)
+				!= world.getBlockMetadata(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
+		}
+		return !world.isSideSolid(x, y, z, direction, false);
 	}
 	
 	@Override
