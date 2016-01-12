@@ -65,9 +65,9 @@ public class ItemComponent extends Item implements IAirCanister {
 	}
 	
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
 		for(ComponentType componentType : ComponentType.values()) {
-			par3List.add(new ItemStack(par1, 1, componentType.ordinal()));
+			list.add(new ItemStack(item, 1, componentType.ordinal()));
 		}
 	}
 	

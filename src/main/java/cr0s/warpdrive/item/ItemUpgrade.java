@@ -59,9 +59,9 @@ public class ItemUpgrade extends Item {
 	}
 	
 	@Override
-	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
+	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
 		for (UpgradeType upgradeType : UpgradeType.values()) {
-			par3List.add(getItemStack(upgradeType));
+			list.add(getItemStack(upgradeType));
 		}
 	}
 	
