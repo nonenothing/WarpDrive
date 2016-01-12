@@ -28,12 +28,10 @@ item.warpdrive.upgrade.Range.name=Range Upgrade
 item.warpdrive.upgrade.Energy.name=Energy Upgrade
 
 item.warpdrive.tool.TuningRod.name=Tuning rod
-item.warpdrive.tool.TuningRod.tooltip.videoChannel=Video channel set to %1$d
-item.warpdrive.tool.TuningRod.tooltip.beamFrequency=Laser frequency set to %1$d
-item.warpdrive.tool.TuningRod.tooltip.usage=\n\n§bRight click a block§7 to tune its crystals\n§bSneak right click a block§7 to fetch its frequency\n§bRight click in air§7 to change mode\n§bSneak right click§7 in air to generate a random frequency
-item.warpdrive.tool.TuningRod.use.getVideoChannel=Tuning rod is now tuned to Video channel %1$d
+item.warpdrive.tool.TuningRod.tooltip.videoChannel=Video channel is set to %1$d
+item.warpdrive.tool.TuningRod.tooltip.beamFrequency=Beam frequency is set to %1$d
+item.warpdrive.tool.TuningRod.tooltip.usage=\n\n§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
 item.warpdrive.tool.TuningRod.use.setVideoChannel=%1$s is now tuned to Video channel %2$d
-item.warpdrive.tool.TuningRod.use.getBeamFrequency=Tuning rod is now aligned with Beam frequency %1$d
 item.warpdrive.tool.TuningRod.use.setBeamFrequency=%1$s is now aligned with Beam frequency %2$d
 
 

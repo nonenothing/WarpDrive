@@ -26,7 +26,25 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
  *
  */
 public class Recipes {
-
+	public static final String[] oreDyes = {
+		"dyeBlack",
+		"dyeRed",
+		"dyeGreen",
+		"dyeBrown",
+		"dyeBlue",
+		"dyePurple",
+		"dyeCyan",
+		"dyeLightGray",
+		"dyeGray",
+		"dyePink",
+		"dyeLime",
+		"dyeYellow",
+		"dyeLightBlue",
+		"dyeMagenta",
+		"dyeOrange",
+		"dyeWhite"
+	};
+	
 	public static void initVanilla() {
 		// Components recipes
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL), false, "nrn", "r r", "nrn",
@@ -258,7 +276,7 @@ public class Recipes {
 				'g', Blocks.glass,
 				'c', ItemComponent.getItemStack(ComponentType.AIR_CANISTER)));
 	}
-
+	
 	public static void initIC2() {
 		ItemStack advancedAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartAlloy", -1);
 		ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
@@ -1162,6 +1180,26 @@ public class Recipes {
 				'w', Blocks.wool,
 				'g', "blockGlassColorless",
 				'c', ItemComponent.getItemStack(ComponentType.AIR_CANISTER)));
+		
+		// Tuning rod ore dictionary
+		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
+			OreDictionary.registerOre("itemTuningRod", new ItemStack(WarpDrive.itemTuningRod, 1, dyeColor));
+		}
+		
+		// Tuning rod variations
+		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
+			
+			// crafting tuning rod
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemTuningRod, 1, dyeColor), false, "  q", "iD ", " i ",
+					'q', Items.quartz, // "gemQuartz", // Items.quartz,
+					'i', Items.iron_ingot, // "ingotIron",
+					'D', oreDyes[dyeColor] ));
+			
+			// changing colors
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.itemTuningRod, 1, dyeColor),
+					oreDyes[dyeColor],
+					"itemTuningRod"));
+		}
 		
 		// HULL blocks and variations
 		initDynamicHull();

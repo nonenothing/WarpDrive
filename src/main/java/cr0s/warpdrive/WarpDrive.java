@@ -166,7 +166,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
 	public static ItemUpgrade itemUpgrade;
-	public static ItemTuningRod itemWarptuner;
+	public static ItemTuningRod itemTuningRod;
 	
 	public static ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 5, new int[] { 1, 3, 2, 1 }, 15);
 	public static ItemHelmet itemHelmet;
@@ -409,8 +409,8 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
 		}
 		
-		itemWarptuner = new ItemTuningRod();
-		GameRegistry.registerItem(itemWarptuner, "itemWarptuner");
+		itemTuningRod = new ItemTuningRod();
+		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
 		
 		
 		proxy.registerEntities();
