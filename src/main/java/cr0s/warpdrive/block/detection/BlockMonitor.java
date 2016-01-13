@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.CameraRegistryItem;
@@ -28,25 +29,52 @@ public class BlockMonitor extends BlockContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int parMetadata) {
-		int meta = parMetadata & 3;
-		return side == 2 ? (meta == 0 ? iconFront : iconSide) : (side == 3 ? (meta == 2 ? iconFront : iconSide) : (side == 4 ? (meta == 3 ? iconFront : iconSide) : (side == 5 ? (meta == 1 ? iconFront : iconSide) : iconSide)));
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int meta  = world.getBlockMetadata(x, y, z);
+		return side == meta ? iconFront : iconSide;
 	}
 	
-	/**
-	 * When this method is called, your block should register all the icons it needs with the given IconRegister. This
-	 * is the only chance you get to register icons.
-	 */
 	@Override
-	public void registerBlockIcons(IIconRegister reg) {
-		iconFront = reg.registerIcon("warpdrive:detection/monitorFront");
-		iconSide = reg.registerIcon("warpdrive:detection/monitorSide");
+	public IIcon getIcon(int side, int metadata) {
+		return side == 3 ? iconFront : iconSide;
+	}
+	
+	@Override
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
+		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
 	}
 	
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack itemstack) {
-		int dir = Math.round(entityliving.rotationYaw / 90.0F) & 3;
-		world.setBlockMetadataWithNotify(x, y, z, dir, 3);
+		int metadata = 2;
+		if (entityliving != null) {
+			if (entityliving.rotationPitch > 65) {
+				metadata = 1;
+			} else if (entityliving.rotationPitch < -65) {
+				metadata = 0;
+			} else {
+				int direction = Math.round(entityliving.rotationYaw / 90.0F) & 3;
+				switch (direction) {
+				case 0:
+					metadata = 2;
+					break;
+				case 1: 
+					metadata = 5;
+					break;
+				case 2:
+					metadata = 3;
+					break;
+				case 3: 
+					metadata = 4;
+					break;
+				default:
+					metadata = 2;
+					break;
+				}
+			}
+			world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
+		}
 	}
 	
 	@Override
@@ -83,7 +111,7 @@ public class BlockMonitor extends BlockContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(World world, int metadata) {
 		return new TileEntityMonitor();
 	}
 }
