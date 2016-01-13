@@ -109,7 +109,7 @@ import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemHelmet;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.item.ItemUpgrade;
-import cr0s.warpdrive.item.ItemTuningRod;
+import cr0s.warpdrive.item.ItemTuningFork;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
 import cr0s.warpdrive.render.RenderBlockStandard;
@@ -166,7 +166,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
 	public static ItemUpgrade itemUpgrade;
-	public static ItemTuningRod itemTuningRod;
+	public static ItemTuningFork itemTuningRod;
 	
 	public static ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 5, new int[] { 1, 3, 2, 1 }, 15);
 	public static ItemHelmet itemHelmet;
@@ -409,7 +409,7 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
 		}
 		
-		itemTuningRod = new ItemTuningRod();
+		itemTuningRod = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
 		
 		

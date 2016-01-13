@@ -17,15 +17,15 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IVideoChannel;
 
-public class ItemTuningRod extends Item {
+public class ItemTuningFork extends Item {
 	private IIcon icons[];
 	
-	public ItemTuningRod() {
+	public ItemTuningFork() {
 		super();
 		setMaxDamage(0);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.tool.TuningRod");
+		setUnlocalizedName("warpdrive.tool.TuningFork");
 		setFull3D();
 		setHasSubtypes(true);
 	}
@@ -35,7 +35,7 @@ public class ItemTuningRod extends Item {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {
-			this.icons[i] = iconRegister.registerIcon("warpdrive:toolTuningRod_" + getDyeColorName(i));
+			this.icons[i] = iconRegister.registerIcon("warpdrive:tool/tuningFork_" + getDyeColorName(i));
 		}
 	}
 	
@@ -62,20 +62,20 @@ public class ItemTuningRod extends Item {
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < 16) {
-			return "item.warpdrive.cratool.TuningRod." + getDyeColorName(damage);
+			return getUnlocalizedName() + "." + ItemDye.field_150923_a[damage];
 		}
 		return getUnlocalizedName();
 	}
 	
 	public static int getVideoChannel(ItemStack itemStack) {
-		if (!(itemStack.getItem() instanceof ItemTuningRod)) {
+		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
 		return (itemStack.getItemDamage() % 16) + 100;
 	}
 	
 	public static int getBeamFrequency(ItemStack itemStack) {
-		if (!(itemStack.getItem() instanceof ItemTuningRod)) {
+		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
 		return ((itemStack.getItemDamage() % 16) + 1) * 10;
@@ -98,13 +98,13 @@ public class ItemTuningRod extends Item {
 		}
 		if (hasVideoChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
 			((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningRod.use.setVideoChannel",
+			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.use.setVideoChannel",
 					tileEntity.getBlockType().getLocalizedName(),
 					getVideoChannel(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
 		} else if (hasBeamFrequency) {
 			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningRod.use.setBeamFrequency",
+			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.use.setBeamFrequency",
 					tileEntity.getBlockType().getLocalizedName(),
 					getBeamFrequency(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
@@ -121,10 +121,10 @@ public class ItemTuningRod extends Item {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
-		tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningRod.tooltip.videoChannel", getVideoChannel(itemStack));
-		tooltip += "\n" + StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningRod.tooltip.beamFrequency", getBeamFrequency(itemStack));
+		tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.videoChannel", getVideoChannel(itemStack));
+		tooltip += "\n" + StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.beamFrequency", getBeamFrequency(itemStack));
 		
-		tooltip += StatCollector.translateToLocal("item.warpdrive.tool.TuningRod.tooltip.usage");
+		tooltip += StatCollector.translateToLocal("item.warpdrive.tool.TuningFork.tooltip.usage");
 		
 		WarpDrive.addTooltip(list, tooltip);
 	}

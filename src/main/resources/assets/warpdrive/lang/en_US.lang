@@ -27,12 +27,28 @@ item.warpdrive.upgrade.Speed.name=Speed Upgrade
 item.warpdrive.upgrade.Range.name=Range Upgrade
 item.warpdrive.upgrade.Energy.name=Energy Upgrade
 
-item.warpdrive.tool.TuningRod.name=Tuning rod
-item.warpdrive.tool.TuningRod.tooltip.videoChannel=Video channel is set to %1$d
-item.warpdrive.tool.TuningRod.tooltip.beamFrequency=Beam frequency is set to %1$d
-item.warpdrive.tool.TuningRod.tooltip.usage=\n\n§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
-item.warpdrive.tool.TuningRod.use.setVideoChannel=%1$s is now tuned to Video channel %2$d
-item.warpdrive.tool.TuningRod.use.setBeamFrequency=%1$s is now aligned with Beam frequency %2$d
+item.warpdrive.tool.TuningFork.name=Tuning Fork
+item.warpdrive.tool.TuningFork.white.name=White Tuning Fork
+item.warpdrive.tool.TuningFork.orange.name=Orange Tuning Fork
+item.warpdrive.tool.TuningFork.magenta.name=Magenta Tuning Fork
+item.warpdrive.tool.TuningFork.lightBlue.name=Light Blue Tuning Fork
+item.warpdrive.tool.TuningFork.yellow.name=Yellow Tuning Fork
+item.warpdrive.tool.TuningFork.lime.name=Lime Tuning Fork
+item.warpdrive.tool.TuningFork.pink.name=Pink Tuning Fork
+item.warpdrive.tool.TuningFork.gray.name=Gray Tuning Fork
+item.warpdrive.tool.TuningFork.silver.name=Silver Tuning Fork
+item.warpdrive.tool.TuningFork.cyan.name=Cyan Tuning Fork
+item.warpdrive.tool.TuningFork.purple.name=Purple Tuning Fork
+item.warpdrive.tool.TuningFork.blue.name=Blue Tuning Fork
+item.warpdrive.tool.TuningFork.brown.name=Brown Tuning Fork
+item.warpdrive.tool.TuningFork.green.name=Green Tuning Fork
+item.warpdrive.tool.TuningFork.red.name=Red Tuning Fork
+item.warpdrive.tool.TuningFork.black.name=Black Tuning Fork
+item.warpdrive.tool.TuningFork.tooltip.videoChannel=Video channel is set to %1$d
+item.warpdrive.tool.TuningFork.tooltip.beamFrequency=Beam frequency is set to %1$d
+item.warpdrive.tool.TuningFork.tooltip.usage=\n\n§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
+item.warpdrive.tool.TuningFork.use.setVideoChannel=%1$s is now tuned to Video channel %2$d
+item.warpdrive.tool.TuningFork.use.setBeamFrequency=%1$s is now aligned with Beam frequency %2$d
 
 
 tile.warpdrive.passive.Air.name=Air Block
