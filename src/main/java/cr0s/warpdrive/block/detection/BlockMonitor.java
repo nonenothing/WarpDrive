@@ -96,7 +96,7 @@ public class BlockMonitor extends BlockContainer {
 			
 			if (tileEntity instanceof TileEntityMonitor) {
 				int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
-				CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(world, videoChannel);
+				CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
 					WarpDrive.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
 					return true;

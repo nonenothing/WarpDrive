@@ -6,7 +6,6 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
@@ -18,7 +17,7 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityCamera extends TileEntityAbstractInterfaced implements IVideoChannel {
-	private int videoChannel = -1;	// beam frequency
+	private int videoChannel = -1;
 
 	private final static int REGISTRY_UPDATE_INTERVAL_TICKS = 15 * 20;
 	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
@@ -38,12 +37,12 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	public void updateEntity() {
 		super.updateEntity();
 		
-		// Update frequency on clients (recovery mechanism, no need to go too fast)
-		if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
+		// Update video channel on clients (recovery mechanism, no need to go too fast)
+		if (!worldObj.isRemote) {
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendFreqPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
+				PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
 			}
 		} else {
 			registryUpdateTicks--;
@@ -80,7 +79,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
 		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(worldObj, videoChannel);
+			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.instance.cameras.printRegistry(worldObj);
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",

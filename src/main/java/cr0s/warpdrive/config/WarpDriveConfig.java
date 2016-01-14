@@ -359,7 +359,7 @@ public class WarpDriveConfig {
 		if (WarpDrive.isDev) {// disabled in production, for obvious reasons :)
 			LOGGING_EFFECTS = config.get("logging", "enable_effects_logs", LOGGING_EFFECTS, "Detailled effects logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_CLOAKING = config.get("logging", "enable_cloaking_logs", LOGGING_CLOAKING, "Detailled cloaking logs to help debug the mod, will spam your console!").getBoolean(false);
-			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_frequency_logs", LOGGING_VIDEO_CHANNEL, "Detailled frequency logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_frequency_logs", LOGGING_VIDEO_CHANNEL, "Detailled video channel logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_TARGETTING = config.get("logging", "enable_targetting_logs", LOGGING_TARGETTING, "Detailled targetting logs to help debug the mod, will spam your console!").getBoolean(false);
 		} else {
 			LOGGING_EFFECTS = false;

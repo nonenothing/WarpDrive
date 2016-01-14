@@ -90,12 +90,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		super.updateEntity();
 		
 		if (isWithCamera()) {
-			// Update frequency on clients (recovery mechanism, no need to go too fast)
+			// Update video channel on clients (recovery mechanism, no need to go too fast)
 			if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
 				packetSendTicks--;
 				if (packetSendTicks <= 0) {
 					packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-					PacketHandler.sendFreqPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
+					PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
 				}
 			} else {
 				registryUpdateTicks--;
@@ -454,7 +454,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
 		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(worldObj, videoChannel);
+			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.instance.cameras.printRegistry(worldObj);
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",

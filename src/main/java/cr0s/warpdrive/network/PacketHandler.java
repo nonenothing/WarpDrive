@@ -18,7 +18,7 @@ import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cr0s.warpdrive.network.MessageCloak;
-import cr0s.warpdrive.network.MessageFrequency;
+import cr0s.warpdrive.network.MessageVideoChannel;
 import cr0s.warpdrive.network.MessageBeamEffect;
 import cr0s.warpdrive.network.MessageTargeting;
 import cr0s.warpdrive.WarpDrive;
@@ -33,7 +33,7 @@ public class PacketHandler {
 	public static void init() {
 		// Forge packets
 		simpleNetworkManager.registerMessage(MessageBeamEffect.class, MessageBeamEffect.class, 0, Side.CLIENT);
-		simpleNetworkManager.registerMessage(MessageFrequency.class , MessageFrequency.class , 1, Side.CLIENT);
+		simpleNetworkManager.registerMessage(MessageVideoChannel.class , MessageVideoChannel.class , 1, Side.CLIENT);
 		simpleNetworkManager.registerMessage(MessageCloak.class     , MessageCloak.class     , 2, Side.CLIENT);
 		
 		simpleNetworkManager.registerMessage(MessageTargeting.class , MessageTargeting.class , 100, Side.SERVER);
@@ -94,12 +94,12 @@ public class PacketHandler {
 		}
 	}
 	
-	// Monitor/Laser/Camera updating its frequency to client side
-	public static void sendFreqPacket(int dimensionId, int xCoord, int yCoord, int zCoord, int frequency) {
-		MessageFrequency frequencyMessage = new MessageFrequency(xCoord, yCoord, zCoord, frequency);
-		simpleNetworkManager.sendToAllAround(frequencyMessage, new TargetPoint(dimensionId, xCoord, yCoord, zCoord, 100));
+	// Monitor/Laser/Camera updating its video channel to client side
+	public static void sendVideoChannelPacket(int dimensionId, int xCoord, int yCoord, int zCoord, int videoChannel) {
+		MessageVideoChannel videoChannelMessage = new MessageVideoChannel(xCoord, yCoord, zCoord, videoChannel);
+		simpleNetworkManager.sendToAllAround(videoChannelMessage, new TargetPoint(dimensionId, xCoord, yCoord, zCoord, 100));
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-			WarpDrive.logger.info("Sent frequency packet (" + xCoord + ", " + yCoord + ", " + zCoord + ") frequency " + frequency);
+			WarpDrive.logger.info("Sent video channel packet (" + xCoord + ", " + yCoord + ", " + zCoord + ") video channel " + videoChannel);
 		}
 	}
 	

@@ -39,7 +39,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendFreqPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
+				PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
 			}
 			
 			return;
@@ -56,7 +56,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		if (videoChannel != parVideoChannel) {
 			videoChannel = parVideoChannel;
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info(this + " Monitor frequency set to " + videoChannel);
+				WarpDrive.logger.info(this + " Monitor video channel set to " + videoChannel);
 			}
 			// force update through main thread since CC runs on server as 'client'
 			packetSendTicks = 0;
@@ -68,7 +68,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
 		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByFrequency(worldObj, videoChannel);
+			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.instance.cameras.printRegistry(worldObj);
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalidOrNotLoaded",
