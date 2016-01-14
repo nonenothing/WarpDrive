@@ -15,7 +15,7 @@ public class ClientHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onTooltipEvent(ItemTooltipEvent event) {
-		if (!event.entityPlayer.capabilities.isCreativeMode) {
+		if (event.entityPlayer == null || !event.entityPlayer.capabilities.isCreativeMode) {
 			return;
 		}
 		if (WarpDrive.isDev) {// disabled in production
