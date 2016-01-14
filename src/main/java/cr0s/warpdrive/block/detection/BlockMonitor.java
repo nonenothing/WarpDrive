@@ -12,6 +12,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.render.ClientCameraHandler;
@@ -75,6 +76,12 @@ public class BlockMonitor extends BlockContainer {
 			}
 			world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
 		}
+	}
+	
+	@Override
+	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+		world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
+		return true;
 	}
 	
 	@Override
