@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 
@@ -41,7 +42,8 @@ public class BlockRadar extends BlockContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -57,6 +59,18 @@ public class BlockRadar extends BlockContainer {
 		}
 		
 		return iconBuffer[ICON_SIDE_INACTIVE];
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		if (side == 0) {
+			return iconBuffer[ICON_BOTTOM];
+		} else if (side == 1) {
+			return iconBuffer[ICON_TOP];
+		}
+		
+		// return iconBuffer[ICON_SIDE_ACTIVATED];
+		return iconBuffer[ICON_SIDE_ACTIVATED_SCAN];
 	}
 	
 	@Override

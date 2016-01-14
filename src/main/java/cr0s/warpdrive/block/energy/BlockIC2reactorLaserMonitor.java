@@ -51,12 +51,13 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {// TODO
 	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		return iconBuffer[1];
+		if (side == 4) {
+			return iconBuffer[1];
+		} else {
+			return iconBuffer[0];
+		}
 	}
 	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {

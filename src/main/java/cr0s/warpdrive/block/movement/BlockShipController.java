@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -50,7 +51,8 @@ public class BlockShipController extends BlockContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -66,6 +68,17 @@ public class BlockShipController extends BlockContainer {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		if (side == 0) {
+			return iconBuffer[ICON_BOTTOM];
+		} else if (side == 1) {
+			return iconBuffer[ICON_TOP];
+		}
+		
+		return iconBuffer[ICON_SIDE_ACTIVATED + 5];
 	}
 	
 	@Override

@@ -30,8 +30,8 @@ public class BlockMonitor extends BlockContainer {
 	
 	@Override
 	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int meta  = world.getBlockMetadata(x, y, z);
-		return side == meta ? iconFront : iconSide;
+		int metadata  = world.getBlockMetadata(x, y, z);
+		return side == metadata ? iconFront : iconSide;
 	}
 	
 	@Override

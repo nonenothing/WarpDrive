@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 
@@ -44,7 +45,8 @@ public class BlockMiningLaser extends BlockContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		}
@@ -55,6 +57,17 @@ public class BlockMiningLaser extends BlockContainer {
 			return iconBuffer[metadata];
 		}
 		return null;
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		if (side == 0) {
+			return iconBuffer[ICON_BOTTOM];
+		}
+		if (side == 1) {
+			return iconBuffer[ICON_TOP];
+		}
+		return iconBuffer[ICON_SCANNINGLOWPOWER];
 	}
 	
 	@Override

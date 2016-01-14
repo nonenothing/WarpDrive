@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 
@@ -36,12 +37,22 @@ public class BlockLaserMedium extends BlockContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[8];
 		}
 		
 		return iconBuffer[Math.min(metadata, 7)];
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		if (side == 0 || side == 1) {
+			return iconBuffer[8];
+		}
+		
+		return iconBuffer[6];
 	}
 	
 	@Override

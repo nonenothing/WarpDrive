@@ -11,6 +11,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 
@@ -33,12 +34,18 @@ public class BlockCloakingCore extends BlockContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (metadata < iconBuffer.length) {
 			return iconBuffer[metadata];
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		return iconBuffer[1];
 	}
 	
 	@Override

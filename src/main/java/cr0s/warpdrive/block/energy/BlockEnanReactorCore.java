@@ -6,6 +6,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockEnanReactorCore extends BlockAbstractContainer {
@@ -36,14 +37,23 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(int side, int meta) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[16];
 		}
-		if (meta >= 0 && meta < 16) {
-			return iconBuffer[meta];
+		if (metadata >= 0 && metadata < 16) {
+			return iconBuffer[metadata];
 		}
 		return iconBuffer[0];
+	}
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		if (side == 0 || side == 1) {
+			return iconBuffer[16];
+		}
+		return iconBuffer[7];
 	}
 	
 	@Override
