@@ -21,29 +21,29 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.ChunkPosition;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.block.weapon.BlockLaserCamera;
+import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFrequency, IVideoChannel {
+public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFrequency {
 	private final int BEAM_FREQUENCY_SCANNING = 1420;
 	private final int BEAM_FREQUENCY_MAX = 65000;
 	
+	private int legacyVideoChannel = -1;
+	private boolean legacyCheck = !(this instanceof TileEntityLaserCamera);
+	
 	private float yaw, pitch; // laser direction
 	
-	private int beamFrequency = -1;
-	private int videoChannel = -1;
+	protected int beamFrequency = -1;
 	private float r, g, b; // beam color (corresponds to frequency)
 	
 	public boolean isEmitting = false;
@@ -66,12 +66,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	private int scanResult_blockMetadata = 0;
 	private float scanResult_blockResistance = -2;
 	
-	private final static int REGISTRY_UPDATE_INTERVAL_TICKS = 15 * 20;
-	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
-	
-	private int registryUpdateTicks = 20;
-	private int packetSendTicks = 20;
-	
 	public TileEntityLaser() {
 		super();
 		
@@ -79,8 +73,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		addMethods(new String[] {
 			"emitBeam",
 			"beamFrequency",
-			"getScanResult",
-			"videoChannel"
+			"getScanResult"
 		});
 		laserMediumMaxCount = WarpDriveConfig.LASER_CANNON_MAX_MEDIUMS_COUNT;
 	}
@@ -89,21 +82,26 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	public void updateEntity() {
 		super.updateEntity();
 		
-		if (isWithCamera()) {
-			// Update video channel on clients (recovery mechanism, no need to go too fast)
-			if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-				packetSendTicks--;
-				if (packetSendTicks <= 0) {
-					packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-					PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
-				}
-			} else {
-				registryUpdateTicks--;
-				if (registryUpdateTicks <= 0) {
-					registryUpdateTicks = REGISTRY_UPDATE_INTERVAL_TICKS;
-					WarpDrive.instance.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, 1);
+		// Legacy tile entity
+		if (legacyCheck) {
+			if (worldObj.getBlock(xCoord, yCoord, zCoord) instanceof BlockLaserCamera) {
+				try {
+					WarpDrive.logger.info("Self-upgrading legacy tile entity " + this);
+					NBTTagCompound oldnbt = new NBTTagCompound();
+					writeToNBT(oldnbt);
+					TileEntityLaserCamera newTileEntity = new TileEntityLaserCamera(); // id has changed, we can't directly call createAndLoadEntity
+					newTileEntity.readFromNBT(oldnbt);
+					newTileEntity.setWorldObj(worldObj);
+					newTileEntity.validate();
+					invalidate();
+					worldObj.removeTileEntity(xCoord, yCoord, zCoord);
+					worldObj.setTileEntity(xCoord, yCoord, zCoord, newTileEntity);
+					newTileEntity.setVideoChannel(legacyVideoChannel);
+				} catch (Exception exception) {
+					exception.printStackTrace();
 				}
 			}
+			legacyCheck = false;
 		}
 		
 		// Frequency is not set
@@ -398,10 +396,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		return new TreeMap(entityHits);
 	}
 	
-	public boolean isWithCamera() {
-		return (getBlockType().isAssociatedBlock(WarpDrive.blockLaserCamera));
-	}
-	
 	@Override
 	public int getBeamFrequency() {
 		return beamFrequency;
@@ -428,60 +422,10 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 	}
 	
-	@Override
-	public int getVideoChannel() {
-		return videoChannel;
-	}
-	
-	@Override
-	public void setVideoChannel(int parVideoChannel) {
-		if (videoChannel != parVideoChannel) {
-			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info(this + " Video channel updated from " + videoChannel + " to " + parVideoChannel);
-			}
-			videoChannel = parVideoChannel;
-			// force update through main thread since CC runs on server as 'client'
-			packetSendTicks = 0;
-			registryUpdateTicks = 0;
-		}
-	}
-	
-	public String getVideoChannelStatus() {
-		if (!isWithCamera()) {
-			return "";
-		}
-		if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
-					videoChannel );
-		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
-			if (camera == null) {
-				WarpDrive.instance.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
-						videoChannel );
-			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid",
-						videoChannel );
-			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
-						videoChannel,
-						camera.position.chunkPosX,
-						camera.position.chunkPosY,
-						camera.position.chunkPosZ );
-			}
-		}
-	}
-
 	public String getStatus() {
-		if (!isWithCamera()) {
-			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-					+ getBeamFrequencyStatus();
-		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-					+ getBeamFrequencyStatus() + "\n" + getVideoChannelStatus();
-		}
+		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				getBlockType().getLocalizedName())
+				+ getBeamFrequencyStatus();
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {
@@ -539,25 +483,22 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		setBeamFrequency(tag.getInteger("beamFrequency"));
-		setVideoChannel(tag.getInteger("cameraFrequency") + tag.getInteger("videoChannel"));
+		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger("videoChannel");
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		tag.setInteger("beamFrequency", beamFrequency);
-		tag.setInteger("videoChannel", videoChannel);
 	}
 	
 	@Override
 	public void invalidate() {
-		WarpDrive.instance.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
 		super.invalidate();
 	}
 	
 	@Override
 	public void onChunkUnload() {
-		WarpDrive.instance.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
 		super.onChunkUnload();
 	}
 	
@@ -581,18 +522,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] getScanResult(Context context, Arguments arguments) {
 		return getScanResult();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] videoChannel(Context context, Arguments arguments) {
-		if (isWithCamera()) {
-			if (arguments.count() == 1) {
-				setVideoChannel(arguments.checkInteger(0));
-			}
-			return new Integer[] { videoChannel };
-		}
-		return null;
 	}
 	
 	private Object[] emitBeam(Object[] arguments) {
@@ -660,15 +589,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		} else if (methodName.equals("getScanResult")) {
 			return getScanResult();
 			
-		} else if (methodName.equals("videoChannel")) {
-			// Only valid for lasers with camera
-			if (isWithCamera()) {
-				if (arguments.length == 1) {
-					setVideoChannel(toInt(arguments[0]));
-				}
-				return new Integer[] { videoChannel };
-			}
-			return null;
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
@@ -676,7 +596,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	
 	@Override
 	public String toString() {
-		return String.format("%s Beam \'%d\' Camera \'%d\' @ \'%s\' %d, %d, %d", new Object[] { getClass().getSimpleName(),
-				beamFrequency, videoChannel, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord });
+		return String.format("%s Beam \'%d\' @ \'%s\' %d, %d, %d", new Object[] { getClass().getSimpleName(),
+				beamFrequency, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord });
 	}
 }

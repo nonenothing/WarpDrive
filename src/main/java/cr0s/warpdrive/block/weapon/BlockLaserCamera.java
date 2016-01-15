@@ -8,10 +8,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.render.ClientCameraHandler;
 
 public class BlockLaserCamera extends BlockAbstractContainer {
@@ -38,7 +38,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	
 	@Override
 	public TileEntity createNewTileEntity(World parWorld, int i) {
-		return new TileEntityLaser();
+		return new TileEntityLaserCamera();
 	}
 	
 	/**
@@ -68,8 +68,14 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 		
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity instanceof TileEntityLaser && !ClientCameraHandler.isOverlayEnabled) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaser) tileEntity).getStatus());
+			if (!ClientCameraHandler.isOverlayEnabled) {
+				if (tileEntity instanceof TileEntityLaserCamera) {
+					WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaserCamera) tileEntity).getStatus());
+				} else {
+					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+							getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
+					WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
+				}
 				return true;
 			}
 		}

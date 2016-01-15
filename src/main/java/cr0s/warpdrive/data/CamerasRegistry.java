@@ -11,11 +11,11 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class CamerasRegistry {
 	private LinkedList<CameraRegistryItem> registry;
-
+	
 	public CamerasRegistry() {
 		registry = new LinkedList<CameraRegistryItem>();
 	}
-
+	
 	public CameraRegistryItem getCameraByVideoChannel(World world, int videoChannel) {
 		CameraRegistryItem cam = null;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
@@ -47,16 +47,16 @@ public class CamerasRegistry {
 				return cam;
 			}
 		}
-
+		
 		return null;
 	}
-
+	
 	private static boolean isCamAlive(World world, CameraRegistryItem cam) {
 		if (world.provider.dimensionId != cam.dimensionId) {
 			WarpDrive.logger.error("Inconsistent worldObj with camera " + world.provider.dimensionId + " vs " + cam.dimensionId);
 			return false;
 		}
-
+		
 		if (!world.getChunkFromBlockCoords(cam.position.chunkPosX, cam.position.chunkPosZ).isChunkLoaded) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info("Reporting an 'unloaded' camera in dimension " + cam.dimensionId + " at "
@@ -72,13 +72,13 @@ public class CamerasRegistry {
 			}
 			return false;
 		}
-
+		
 		return true;
 	}
-
+	
 	private void removeDeadCams(World world) {
 		// LocalProfiler.start("CamRegistry Removing dead cameras");
-
+		
 		CameraRegistryItem cam = null;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
@@ -90,10 +90,10 @@ public class CamerasRegistry {
 				it.remove();
 			}
 		}
-
+		
 		// LocalProfiler.stop();
 	}
-
+	
 	public void removeFromRegistry(World world, ChunkPosition position) {
 		CameraRegistryItem cam = getCamByPosition(world, position);
 		if (cam != null) {
@@ -104,12 +104,12 @@ public class CamerasRegistry {
 			registry.remove(cam);
 		}
 	}
-
-	public void updateInRegistry(World world, ChunkPosition position, int videoChannel, int type) {
-		CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, type);
+	
+	public void updateInRegistry(World world, ChunkPosition position, int videoChannel, CameraType cameraType) {
+		CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, cameraType);
 		// WarpDrive.debugPrint("updateInRegistry " + cam.position.x + ", " + cam.position.y + ", " + cam.position.z);
 		removeDeadCams(world);
-
+		
 		if (isCamAlive(world, cam)) {
 			CameraRegistryItem existingCam = getCamByPosition(world, cam.position);
 			if (existingCam == null) {
@@ -133,10 +133,10 @@ public class CamerasRegistry {
 			}
 		}
 	}
-
+	
 	public void printRegistry(World world) {
 		WarpDrive.logger.info("Cameras registry for dimension " + world.provider.dimensionId + ":");
-
+		
 		for (CameraRegistryItem cam : registry) {
 			WarpDrive.logger.info("- " + cam.videoChannel + " (" + cam.position.chunkPosX + ", " + cam.position.chunkPosY + ", " + cam.position.chunkPosZ + ")");
 		}

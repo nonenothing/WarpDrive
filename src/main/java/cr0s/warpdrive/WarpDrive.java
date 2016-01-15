@@ -90,6 +90,7 @@ import cr0s.warpdrive.block.passive.BlockIridium;
 import cr0s.warpdrive.block.passive.BlockTransportBeacon;
 import cr0s.warpdrive.block.passive.ItemBlockDecorative;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
+import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.command.CommandDebug;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandInvisible;
@@ -269,6 +270,7 @@ public class WarpDrive implements LoadingCallback {
 		blockLaserCamera = new BlockLaserCamera();
 		
 		GameRegistry.registerBlock(blockLaserCamera, "blockLaserCamera");
+		GameRegistry.registerTileEntity(TileEntityLaserCamera.class, MODID + ":blockLaserCamera");
 		
 		// CAMERA
 		blockCamera = new BlockCamera();

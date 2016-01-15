@@ -55,7 +55,7 @@ public class BlockCamera extends BlockContainer {
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
+		if (!world.isRemote) {
 			return false;
 		}
 		

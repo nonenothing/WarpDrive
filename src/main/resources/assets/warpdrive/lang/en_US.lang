@@ -195,6 +195,7 @@ tile.warpdrive.hull3.glass.black.name=Black Stained Superior Hull Glass
 
 
 warpdrive.guide.prefix=%1$s: 
+warpdrive.error.badTileEntity=§cthis block needs an update by breaking and placing it. 
 warpdrive.monitor.viewingCamera=Viewing camera at %2$d, %3$d, %4$d on video channel %1$d
 warpdrive.ship.attachedPlayers=Attached players: %1$s
 warpdrive.ship.playerAttached=You're now attached to ship %1$s.\nAttached players are %2$s
