@@ -233,14 +233,14 @@ public class JumpBlock {
 		}
 	}
 	
-	public static void NetworkHelper_updateTileEntityField(TileEntity te, String field) {
+	public static void NetworkHelper_updateTileEntityField(TileEntity tileEntity, String field) {
 		try {
 			if (NetworkManager_instance == null) {
 				NetworkHelper_init();
 			}
-			NetworkManager_updateTileEntityField.invoke(NetworkManager_instance, new Object[] { te, field });
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+			NetworkManager_updateTileEntityField.invoke(NetworkManager_instance, tileEntity, field);
+		} catch (Exception exception) {
+			throw new RuntimeException(exception);
 		}
 	}
 	// IC2 support ends here
@@ -342,7 +342,7 @@ public class JumpBlock {
 			if (block1 != Blocks.air) {
 				if (!c.worldObj.isRemote) {
 					block1.breakBlock(c.worldObj, l1, y, i2, block1, k1);
-					// After breakBlock a phantom TE might have been created with incorrect meta. This attempts to kill that phantom TE so the normal one can be create properly later
+					// After breakBlock a phantom TE might have been created with incorrect meta. This attempts to kill that phantom TE so the normal one can be created properly later
 					TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
 					if (te != null && te.shouldRefresh(block1, c.getBlock(x & 0x0F, y, z & 0x0F), k1, c.getBlockMetadata(x & 0x0F, y, z & 0x0F), c.worldObj, l1, y, i2)) {
 						c.removeTileEntity(x & 0x0F, y, z & 0x0F);

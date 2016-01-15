@@ -1369,11 +1369,11 @@ public class EntityJump extends Entity {
 	
 	@Override
 	public String toString() {
-		return String.format("%s/%d \'%s\' @ \'%s\' %.2f, %.2f, %.2f #%d", new Object[] {
+		return String.format("%s/%d \'%s\' @ \'%s\' %.2f, %.2f, %.2f #%d",
 			getClass().getSimpleName(), Integer.valueOf(getEntityId()),
 			shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.shipName),
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
 			Double.valueOf(posX), Double.valueOf(posY), Double.valueOf(posZ),
-			Integer.valueOf(ticks)});
+			Integer.valueOf(ticks));
 	}
 }

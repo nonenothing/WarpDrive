@@ -173,7 +173,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 
 			if (WarpDriveConfig.LOGGING_WORLDGEN) {
 				WarpDrive.logger.info(String.format("Big asteroid: %.3f %.3f r %.3f r makes %3d, %3d, %3d",
-						new Object[] { Double.valueOf(binomial), Double.valueOf(bearing), Double.valueOf(yawn), Integer.valueOf(aX), Integer.valueOf(aY), Integer.valueOf(aZ) }));
+						Double.valueOf(binomial), Double.valueOf(bearing), Double.valueOf(yawn), Integer.valueOf(aX), Integer.valueOf(aY), Integer.valueOf(aZ) ));
 			}
 
 			// Place an asteroid
