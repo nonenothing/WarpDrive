@@ -36,10 +36,6 @@ public class FillerManager {
 	public static final String END = "end";
 	/**/
 	
-	public static void loadOres(String oreConfDirectory) {
-		loadOres(new File(oreConfDirectory));
-	}
-	
 	public static void loadOres(File dir) {
 		// directory is created by caller, so it can copy default files if any
 		
@@ -58,12 +54,12 @@ public class FillerManager {
 			try {
 				WarpDrive.logger.info("Loading filler data file " + file.getName() + "...");
 				loadXmlFillerFile(file);
-				WarpDrive.logger.info("Loading filler data file " + file.getName() + " done");
 			} catch (Exception exception) {
-				WarpDrive.logger.error("Error loading file " + file.getName() + ": " + exception.getMessage());
+				WarpDrive.logger.error("Error loading filler data file " + file.getName() + ": " + exception.getMessage());
 				exception.printStackTrace();
 			}
 		}
+		WarpDrive.logger.info("Loading filler data files done");
 	}
 	
 	private static void loadXmlFillerFile(File file) throws InvalidXmlException, SAXException, IOException {
@@ -73,7 +69,7 @@ public class FillerManager {
 		ModCheckResults res = XmlPreprocessor.checkModRequirements(base.getDocumentElement());
 		
 		if (!res.isEmpty()) {
-			WarpDrive.logger.info("Skippping filler data file " + file.getName() + " because of: " + res);
+			WarpDrive.logger.info("Skippping filler data file " + file.getName() + " due to " + res);
 			return;
 		}
 		
@@ -133,7 +129,7 @@ public class FillerManager {
 				
 				if (!fillerSets.containsKey(dep)) {
 					
-					WarpDrive.logger.error("A fillerSet " + entry.getKey() + " has a dependency that doesnt exist!");
+					WarpDrive.logger.error("Skipping FillerSet " + entry.getKey() + " due to missing dependency " + dep);
 					fillerSets.remove(entry.getKey().getName());
 					toRemove.add(entry.getKey());
 					
@@ -155,14 +151,4 @@ public class FillerManager {
 	public static FillerSet getFillerSet(String name) {
 		return fillerSets.get(name);
 	}
-	
-	/* TODO dead code?
-	public static class BlockComparator implements Comparator<Block> {
-
-		@Override
-		public int compare(Block arg0, Block arg1) {
-			return arg0.getUnlocalizedName().compareTo(arg1.getUnlocalizedName());
-		}
-	}
-	/**/
 }

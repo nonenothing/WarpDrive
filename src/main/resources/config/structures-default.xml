@@ -48,7 +48,7 @@
         
         <shell name="surface" minThickness="10" maxThickness="20" fillerSets="overworld,commonOres">
             <filler weight="3" block="minecraft:clay" />
-            <filler ratio=".05" block="minecraft:brick" />
+            <filler ratio=".05" block="minecraft:brick_block" />
             <filler ratio=".5" block="minecraft:air" />
         </shell>
     </structure>
@@ -63,7 +63,7 @@
     
     <structure name="end_moon" group="moon" >
         <shell name="substance"  minThickness="10" maxThickness="30">
-            <filler block="minecraft:whiteStone" weight="1"/>
+            <filler block="minecraft:end_stone" weight="1"/>
             <filler block="minecraft:bedrock" ratio=".001" />
         </shell>
     </structure>

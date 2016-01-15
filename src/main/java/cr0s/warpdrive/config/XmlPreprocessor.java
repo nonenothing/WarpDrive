@@ -19,16 +19,16 @@ public class XmlPreprocessor {
 	/**
 	 * Will check the given element for a mod attribute and return a string of all the ones that are not loaded, separated by commas
 	 *
-	 * @param e
+	 * @param element
 	 *            Element to check
 	 * @return A string, which is empty if all the mods are loaded.
 	 * @throws InvalidXmlException
 	 */
-	public static ModCheckResults checkModRequirements(Element e) {
+	public static ModCheckResults checkModRequirements(Element element) {
 		
 		ModCheckResults modErrors = new ModCheckResults();
 		
-		for (String mod : e.getAttribute("mods").split(",")) {
+		for (String mod : element.getAttribute("mods").split(",")) {
 			
 			//TODO: add version check
 			
@@ -63,29 +63,25 @@ public class XmlPreprocessor {
 			Node child = children.item(i);
 			
 			if (child instanceof Element) {
-				
-				ModCheckResults res = checkModRequirements((Element) child);
-				
+				Element elementChild = (Element) child;
+				ModCheckResults res = checkModRequirements(elementChild);
 				if (!res.isEmpty()) {
+					WarpDrive.logger.info("Skipping " + base.getNodeName() + "/" + elementChild.getNodeName()
+							+ " " + elementChild.getAttribute("group") + elementChild.getAttribute("name") + elementChild.getAttribute("block")
+							+ " due to " + res);
 					base.removeChild(child);
-					WarpDrive.logger.info("Removed child element " + child.getBaseURI() + " of element " + base.getBaseURI() + ", results: " + res);
 				} else {
-					
 					doModReqSanitation(child);
-					
 				}
-				
 			}
 		}
-		
 	}
 	
 	public static void doLogicPreprocessing(Node root) throws InvalidXmlException {
-
-		
 		NodeList children = root.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++)
+		for (int i = 0; i < children.getLength(); i++) {
 			doLogicPreprocessing(children.item(i));
+		}
 
 		if (root.getNodeType() == Node.ELEMENT_NODE && ((Element) root).getTagName().equalsIgnoreCase("for")) {
 			
@@ -235,15 +231,18 @@ public class XmlPreprocessor {
 		
 		@Override
 		public String toString() {
-			String s = "{";
+			String string = (mods.size() > 1 ? "{" : "");
+			boolean isFirst = true;
+			for (Entry<String, String> entry : mods.entrySet()) {
+				if (isFirst) {
+					isFirst = false;
+				} else {
+					string += ", ";
+				}
+				string += entry.getKey() + ": " + entry.getValue();
+			}
 			
-			for (Entry<String, String> e : mods.entrySet())
-				s = s + e.getKey() + ": " + e.getValue() + ", ";
-			
-			return s + "}";
-			
+			return string + (mods.size() > 1 ? "}" : "");
 		}
-		
 	}
-	
 }

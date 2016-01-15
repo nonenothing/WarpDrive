@@ -19,7 +19,7 @@ import cr0s.warpdrive.world.EntitySphereGen;
 public abstract class Orb extends DeployableStructure implements XmlRepresentable {
 
 	private OrbShell[] shellRelative;
-	private ArrayList<OrbShell> shells;
+	// private ArrayList<OrbShell> shells;
 	private String name;
 
 	/**
@@ -55,23 +55,22 @@ public abstract class Orb extends DeployableStructure implements XmlRepresentabl
 	}
 
 	@Override
-	public void loadFromXmlElement(Element e) throws InvalidXmlException {
+	public void loadFromXmlElement(Element element) throws InvalidXmlException {
 
-		this.name = e.getAttribute("name");
+		name = element.getAttribute("name");
 
 		ArrayList<OrbShell> newShells = new ArrayList<OrbShell>();
 		int totalThickness = 0;
 
-		NodeList shells = e.getElementsByTagName("shell");
+		NodeList shells = element.getElementsByTagName("shell");
 		for (int i = 0; i < shells.getLength(); i++) {
-			Element tmp = (Element) shells.item(i);
+			Element elementShell = (Element) shells.item(i);
 
 			OrbShell shell = new OrbShell();
-			shell.loadFromXmlElement(tmp);
+			shell.loadFromXmlElement(elementShell);
 			shell.finishContruction();
 			totalThickness += shell.thickness;
 			newShells.add(shell);
-
 		}
 
 		int index = 0;
@@ -84,28 +83,27 @@ public abstract class Orb extends DeployableStructure implements XmlRepresentabl
 		}
 
 		setRadius(totalThickness - 1);
-
-
 	}
 
 	@Override
-	public void saveToXmlElement(Element e, Document d) {
+	public void saveToXmlElement(Element element, Document document) {
+		/* TODO: dead code?
 		for (OrbShell shell : shells) {
-			Element tmp = d.createElement("shell");
-			shell.saveToXmlElement(tmp, d);
-			e.appendChild(tmp);
+			Element tmp = document.createElement("shell");
+			shell.saveToXmlElement(tmp, document);
+			element.appendChild(tmp);
 		}
-
+		/**/
 	}
 
 	@Override
-	public boolean generate(World world, Random p_76484_2_, int x, int y, int z) {
+	public boolean generate(World world, Random random, int x, int y, int z) {
 		EntitySphereGen entitySphereGen = new EntitySphereGen(world, x, y, z, getRadius(), this, true);
 		world.spawnEntityInWorld(entitySphereGen);
 		return false;
 	}
 
-	public boolean generate(World world, Random p_76484_2_, int x, int y, int z, final int radius) {
+	public boolean generate(World world, Random random, int x, int y, int z, final int radius) {
 		EntitySphereGen entitySphereGen = new EntitySphereGen(world, x, y, z, radius, this, true);
 		world.spawnEntityInWorld(entitySphereGen);
 		return false;
@@ -140,15 +138,15 @@ public abstract class Orb extends DeployableStructure implements XmlRepresentabl
 		}
 
 		@Override
-		public void loadFromXmlElement(Element e) throws InvalidXmlException {
+		public void loadFromXmlElement(Element element) throws InvalidXmlException {
 
-			WarpDrive.logger.info("Loading shell " + e.getAttribute("name"));
-			name = e.getAttribute("name");
+			WarpDrive.logger.info("Loading shell " + element.getAttribute("name"));
+			name = element.getAttribute("name");
 
-			super.loadFromXmlElement(e);
+			super.loadFromXmlElement(element);
 
-			if (e.hasAttribute("fillerSets")) {
-				String[] imports = e.getAttribute("fillerSets").split(",");
+			if (element.hasAttribute("fillerSets")) {
+				String[] imports = element.getAttribute("fillerSets").split(",");
 
 				for (String imp : imports) {
 					FillerSet fillSet = FillerManager.getFillerSet(imp);
@@ -161,7 +159,7 @@ public abstract class Orb extends DeployableStructure implements XmlRepresentabl
 			}
 
 			try {
-				thickness = Integer.parseInt(e.getAttribute("maxThickness"));
+				thickness = Integer.parseInt(element.getAttribute("maxThickness"));
 			} catch (NumberFormatException ex) {
 				throw new InvalidXmlException("MaxThickness is not valid!");
 			}

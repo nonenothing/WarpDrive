@@ -56,20 +56,20 @@ public class StructureManager {
 				
 				WarpDrive.logger.info("Finished loading structure data file " + file.getName());
 				
-			} catch (Exception e) {
-				WarpDrive.logger.error("Error loading file " + file.getName() + ": " + e.getMessage());
-				e.printStackTrace();
+			} catch (Exception exception) {
+				WarpDrive.logger.error("Error loading file " + file.getName() + ": " + exception.getMessage());
+				exception.printStackTrace();
 			}
 		}
 	}
 	
-	private static void loadXmlStructureFile(File f) throws SAXException, IOException, InvalidXmlException {
-		Document base = WarpDriveConfig.getXmlDocumentBuilder().parse(f);
+	private static void loadXmlStructureFile(File file) throws SAXException, IOException, InvalidXmlException {
+		Document base = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
 		
 		ModCheckResults res = XmlPreprocessor.checkModRequirements(base.getDocumentElement());
 		
 		if (!res.isEmpty()) {
-			WarpDrive.logger.info("Skippping structure data file " + f.getName() + " because of: " + res);
+			WarpDrive.logger.info("Skippping structure " + file.getName() + " due to " + res);
 			return;
 		}
 		

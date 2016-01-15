@@ -18,18 +18,13 @@ import net.minecraft.init.Blocks;
  *
  * If FillerSet(blocks[]) is called, that is not necessary.
  *
- *
  */
 public class FillerSet implements XmlRepresentable, Comparable {
 
 	private MetaBlock[] weightedFillerBlocks;
 	private FillerFactory factory;
-	private String name;
+	protected String name;
 
-
-	/**
-	 * @return the name
-	 */
 	public String getName() {
 		return name;
 	}
@@ -60,24 +55,24 @@ public class FillerSet implements XmlRepresentable, Comparable {
 
 			// Check there is a block name
 			if (!filler.hasAttribute("block")) {
-				throw new InvalidXmlException("Filler " + filler.getBaseURI() + " is missing a block tag!");
+				throw new InvalidXmlException("Filler " + filler + " is missing a block tag!");
 			}
 
 			String blockName = filler.getAttribute("block");
 			Block block = Block.getBlockFromName(blockName);
 			if (block == null) {
-				WarpDrive.logger.warn("Filler " + filler.getBaseURI() + " refers to missing block " + blockName + ": ignoring that entry...");
+				WarpDrive.logger.warn("Skipping missing block " + blockName);
 				continue;
 			}
 
 			// Get metadata attribute, defaults to 0
-			int metadata = 0;
-			String metaString = filler.getAttribute("metadata");
-			if (!metaString.isEmpty()) {
+			int intMetadata = 0;
+			String stringMetadata = filler.getAttribute("metadata");
+			if (!stringMetadata.isEmpty()) {
 				try {
-					metadata = Integer.parseInt(metaString);
+					intMetadata = Integer.parseInt(stringMetadata);
 				} catch (NumberFormatException exception) {
-					throw new InvalidXmlException("Filler " + filler.getBaseURI() + " metadata attribute is NaN!");
+					throw new InvalidXmlException("Invalid metadata for block " + blockName);
 				}
 			}
 
@@ -95,10 +90,10 @@ public class FillerSet implements XmlRepresentable, Comparable {
 				try {
 					weight = Integer.parseInt(stringWeight);
 
-					factory.addWeightedBlock(block, metadata, weight);
+					factory.addWeightedBlock(block, intMetadata, weight);
 
 				} catch (NumberFormatException exception) {
-					throw new InvalidXmlException("Filler " + filler.getBaseURI() + " weight is NaN!");
+					throw new InvalidXmlException("Invalid weight for block " + blockName);
 				} catch (IllegalArgumentException exception) {
 					throw new InvalidXmlException(exception.getMessage());
 				}
@@ -110,21 +105,21 @@ public class FillerSet implements XmlRepresentable, Comparable {
 				hasWeightOrRatio = true;
 
 				try {
-					factory.addRatioBlock(block, metadata, stringRatio);
+					factory.addRatioBlock(block, intMetadata, stringRatio);
 
-				} catch (IllegalArgumentException ex) {
-					throw new InvalidXmlException(ex.getMessage());
+				} catch (IllegalArgumentException exception) {
+					throw new InvalidXmlException(exception.getMessage());
 				}
 			}
 
 			if (!hasWeightOrRatio) {
-				throw new InvalidXmlException("Filler " + filler.getBaseURI() + " is missing a weight or a ratio!");
+				throw new InvalidXmlException("No ratio nor weight defined for block " + blockName + " " + stringMetadata);
 			}
 		}
 	}
 
 	@Override
-	public void saveToXmlElement(Element e, Document d) throws InvalidXmlException {
+	public void saveToXmlElement(Element element, Document document) throws InvalidXmlException {
 		throw new InvalidXmlException("Not supported");
 	}
 
@@ -134,7 +129,7 @@ public class FillerSet implements XmlRepresentable, Comparable {
 	 * Clears the memory used for construction
 	 */
 	public void finishContruction() {
-		WarpDrive.logger.info("Finishing construction of FillerSet " + name);
+		WarpDrive.logger.info("Finishing construction of " + name);
 		weightedFillerBlocks = factory.constructWeightedMetaBlockList();
 
 		//For some reason some entries are null, so replace them with air
@@ -148,8 +143,8 @@ public class FillerSet implements XmlRepresentable, Comparable {
 	}
 
 	@Override
-	public int compareTo(Object obj) {
-		return name.compareTo(((FillerSet) obj).name);
+	public int compareTo(Object object) {
+		return name.compareTo(((FillerSet) object).name);
 	}
 
 	@Override
