@@ -10,7 +10,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -170,7 +169,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	public void updateEntity() {
 		super.updateEntity();
 		
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			return;
 		}
 		
@@ -295,6 +294,10 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	// OpenComputer callback methods
+	@Override
+	public Object[] energy() {
+		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };	}
+	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] active(Context context, Arguments arguments) throws Exception {
@@ -418,7 +421,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 				return active(arguments);
 				
 			} else if (methodName.equals("energy")) {
-				return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
+				return energy();
 				
 			} else if (methodName.equals("instability")) {
 				Object[] retVal = new Object[4];

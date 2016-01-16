@@ -271,6 +271,11 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				comp.queueEvent(eventName, arguments);
 			}
 		}
+		if (WarpDriveConfig.isOpenComputersLoaded) {
+			if (OC_node != null && OC_node.network() != null) {
+				OC_node.sendToReachable(eventName, arguments);
+			}
+		}
 	}
 	
 	// OpenComputers methods

@@ -2,6 +2,7 @@ local component = require("component")
 local computer = require("computer")
 local term = require("term")
 local event = require("event")
+local fs = require("filesystem")
 monitor_textScale = 0.5
 
 Style = {
@@ -32,20 +33,22 @@ end
 local gpu_frontColor = 0xFFFFFF
 local gpu_backgroundColor = 0x000000
 function SetMonitorColorFrontBack(frontColor, backgroundColor)
-  gpu_frontColor = frontColor
-  gpu_backgroundColor = backgroundColor
+	gpu_frontColor = frontColor
+	gpu_backgroundColor = backgroundColor
 end
 
 function Write(text)
-  if term.isAvailable() then
-    local w, h = component.gpu.getResolution()
-    if w then
-      component.gpu.setBackground(gpu_backgroundColor)
-      component.gpu.setForeground(gpu_frontColor)
-      component.gpu.write(text)
-      component.gpu.setBackground(0x000000)
-    end
-  end
+	if term.isAvailable() then
+		local w, h = component.gpu.getResolution()
+		if w then
+			local xt, yt = term.getCursor()
+			component.gpu.setBackground(gpu_backgroundColor)
+			component.gpu.setForeground(gpu_frontColor)
+			component.gpu.set(xt, yt, text)
+			SetCursorPos(xt + #text, yt)
+			component.gpu.setBackground(0x000000)
+		end
+	end
 end
 
 function SetCursorPos(x, y)
@@ -72,18 +75,13 @@ function SetColorDisabled()
 	SetMonitorColorFrontBack(Style.CDisabled, Style.BGDisabled)
 end
 
-function SetColorRadarmap()
-	SetMonitorColorFrontBack(Style.CRadarmap, Style.BGRadarmap)
-end
-
-function SetColorRadarborder()
-	SetMonitorColorFrontBack(Style.CRadarborder, Style.BGRadarborder)
-end
-
 function Clear()
 	clearWarningTick = -1
 	SetColorDefault()
+	component.gpu.setBackground(gpu_backgroundColor)
+	component.gpu.setForeground(gpu_frontColor)
 	term.clear()
+	component.gpu.setBackground(0x000000)
 	SetCursorPos(1, 1)
 end
 
@@ -96,7 +94,7 @@ end
 function WriteLn(text)
 	Write(text)
 	local x, y = term.getCursor()
-	local width, height = term.getSize()
+	local width, height = component.gpu.getResolution()
 	if y > height - 1 then
 		y = 1
 	end
@@ -109,8 +107,7 @@ function WriteCentered(y, text)
 		if sizeX then
 			component.gpu.setBackground(gpu_backgroundColor)
 			component.gpu.setForeground(gpu_frontColor)
-			component.gpu.setCursor((sizeX - text:len()) / 2, y)
-			component.gpu.write(text)
+			component.gpu.set((sizeX - text:len()) / 2, y, text)
 			component.gpu.setBackground(0x000000)
 		end
 	end
@@ -127,8 +124,9 @@ end
 
 function ShowMenu(text)
 	Write(text)
+    local sizeX, sizeY = component.gpu.getResolution()
 	local xt, yt = term.getCursor()
-	for i = xt, 51 do
+	for i = xt, sizeX do
 		Write(" ")
 	end
 	SetCursorPos(1, yt + 1)
@@ -136,8 +134,9 @@ end
 
 local clearWarningTick = -1
 function ShowWarning(text)
+    local sizeX, sizeY = component.gpu.getResolution()
 	SetColorWarning()
-	SetCursorPos((51 - text:len() - 2) / 2, 19)
+	SetCursorPos((sizeX - text:len() - 2) / 2, sizeY)
 	Write(" " .. text .. " ")
 	SetColorDefault()
 	clearWarningTick = 5
@@ -147,7 +146,8 @@ function ClearWarning()
 		clearWarningTick = clearWarningTick - 1
 	elseif clearWarningTick == 0 then
 		SetColorDefault()
-		SetCursorPos(1, 19)
+		local sizeX, sizeY = component.gpu.getResolution()
+		SetCursorPos(1, sizeY)
 		ClearLine()
 	end
 end
@@ -157,7 +157,7 @@ end
 function FormatFloat(value, nbchar)
 	local str = "?"
 	if value ~= nil then
-		str = string.format("%f", value)
+		str = string.format("%g", value)
 	end
 	if nbchar ~= nil then
 		str = string.sub("               " .. str, -nbchar)
@@ -199,37 +199,30 @@ function readInputNumber(currentValue)
 		
 		local params = { event.pull() }
 		local eventName = params[1]
-		local side = params[2]
-		if side == nil then side = "none" end
-		if eventName == "key" then
-			local keycode = params[2]
-			if keycode >= 2 and keycode <= 10 then -- 1 to 9
-				input = input .. string.format(keycode - 1)
-			elseif keycode == 11 or keycode == 82 then -- 0 & keypad 0
+		local address = params[2]
+		if address == nil then address = "none" end
+		if eventName == "key_down" then
+			local char = params[3]
+			local keycode = params[4]
+			if char >= 49 and char <= 57 then -- 1 to 9
+				input = input .. string.format(char - 48)
+			elseif char == 48 then -- 0
 				input = input .. "0"
-			elseif keycode >= 79 and keycode <= 81 then -- keypad 1 to 3
-				input = input .. string.format(keycode - 78)
-			elseif keycode >= 75 and keycode <= 87 then -- keypad 4 to 6
-				input = input .. string.format(keycode - 71)
-			elseif keycode >= 71 and keycode <= 73 then -- keypad 7 to 9
-				input = input .. string.format(keycode - 64)
-			elseif keycode == 14 then -- Backspace
+			elseif char == 8 then -- Backspace
 				input = string.sub(input, 1, string.len(input) - 1)
-			elseif keycode == 211 then -- Delete
+			elseif char == 0 and keycode == 211 then -- Delete
 				input = ""
-			elseif keycode == 28 then -- Enter
+			elseif char == 13 then -- Enter
 				inputAbort = true
 			else
-				ShowWarning("Key " .. keycode .. " is invalid")
+				ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
 			end
-		elseif eventName == "char" then
-			-- drop it
 		elseif eventName == "key_up" then
 			-- drop it
 		elseif eventName == "terminate" then
 			inputAbort = true
-		elseif not common_event(eventName, params[2]) then
-			ShowWarning("Event '" .. eventName .. "', " .. side .. " is unsupported")
+		elseif not common_event(eventName, params[3]) then
+			ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
 		end
 	until inputAbort
 	SetCursorPos(1, y + 1)
@@ -253,32 +246,30 @@ function readInputText(currentValue)
 		
 		local params = { event.pull() }
 		local eventName = params[1]
-		local side = params[2]
-		if side == nil then side = "none" end
+		local address = params[2]
+		if address == nil then address = "none" end
 		if eventName == "key" then
-			local keycode = params[2]
-			if keycode == 14 then -- Backspace
-				input = string.sub(input, 1, string.len(input) - 1)
-			elseif keycode == 211 then -- Delete
-				input = ""
-			elseif keycode == 28 then -- Enter
-				inputAbort = true
-			else
-				-- ShowWarning("Key " .. keycode .. " is invalid")
-			end
-		elseif eventName == "char" then
-			local char = params[2]
+			local char = params[3]
+			local keycode = params[4]
 			if char >= ' ' and char <= '~' then -- 1 to 9
 				input = input .. char
-			else
+			elseif char ~= 0 then
 				ShowWarning("Char #" .. string.byte(char) .. " is invalid")
+			elseif char == 8 then -- Backspace
+				input = string.sub(input, 1, string.len(input) - 1)
+			elseif char == 0 and keycode == 211 then -- Delete
+				input = ""
+			elseif char == 13 then -- Enter
+				inputAbort = true
+			else
+				-- ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
 			end
 		elseif eventName == "key_up" then
 			-- drop it
 		elseif eventName == "terminate" then
 			inputAbort = true
-		elseif not common_event(eventName, params[2]) then
-			ShowWarning("Event '" .. eventName .. "', " .. side .. " is unsupported")
+		elseif not common_event(eventName, params[3]) then
+			ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
 		end
 	until inputAbort
 	SetCursorPos(1, y + 1)
@@ -294,23 +285,21 @@ function readConfirmation()
 	repeat
 		local params = { event.pull() }
 		local eventName = params[1]
-		local side = params[2]
-		if side == nil then side = "none" end
-		if eventName == "key" then
-			local keycode = params[2]
-			if keycode == 21 then -- Y
+		local address = params[3]
+		if address == nil then address = "none" end
+		if eventName == "key_down" then
+			local char = params[3]
+			if char == 89 or char == 121 then -- Y
 				return true
 			else
 				return false
 			end
-		elseif eventName == "char" then
-			-- drop it
 		elseif eventName == "key_up" then
 			-- drop it
 		elseif eventName == "terminate" then
 			return false
-		elseif not common_event(eventName, params[2]) then
-			ShowWarning("Event '" .. eventName .. "', " .. side .. " is unsupported")
+		elseif not common_event(eventName, params[3]) then
+			ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
 		end
 	until false
 end
@@ -343,8 +332,12 @@ end
 
 function data_save()
 	local file = fs.open("shipdata.txt", "w")
-	file.writeLine(textutils.serialize(data))
-	file.close()
+	if file ~= nil then
+		file.writeLine(textutils.serialize(data))
+		file.close()
+	else
+		ShowWarning("No file system")
+	end
 end
 
 function data_read()
@@ -393,52 +386,52 @@ function reactor_boot()
 	end
 end
 
-function reactor_key(keycode)
-	if keycode == 31 then -- S
+function reactor_key(char, keycode)
+	if char == 83 or char == 115 then -- S
 		reactor_start()
 		return true
-	elseif keycode == 25 then -- P
+	elseif char == 80 or char == 112 then -- P
 		reactor_stop()
 		return true
-	elseif keycode == 38 then -- L
+	elseif char == 76 or char == 108 then -- L
 		reactor_laser()
 		return true
-	elseif keycode == 24 then -- O
+	elseif char == 79 or char == 111 then -- O
 		data.reactor_mode = (data.reactor_mode + 1) % 4
 		reactor_setMode()
 		data_save()
 		return true
-	elseif keycode == 34 then -- G
+	elseif char == 71 or char == 103 then -- G
 		data.reactor_rate = data.reactor_rate / 10
 		reactor_setMode()
 		data_save()
 		return true
-	elseif keycode == 20 then -- T
+	elseif char == 84 or char == 116 then -- T
 		data.reactor_rate = data.reactor_rate * 10
 		reactor_setMode()
 		data_save()
 		return true
-	elseif keycode == 36 then -- J
+	elseif char == 74 or char == 106 then -- J
 		data.reactor_laserAmount = data.reactor_laserAmount / 10
 		reactor_setLaser()
 		data_save()
 		return true
-	elseif keycode == 22 then -- U
+	elseif char == 85 or char == 117 then -- U
 		data.reactor_laserAmount = data.reactor_laserAmount * 10
 		reactor_setLaser()
 		data_save()
 		return true
-	elseif keycode == 74 then -- -
+	elseif char == 45 then -- -
 		data.reactor_targetStability = data.reactor_targetStability - 1
 		reactor_setTargetStability()
 		data_save()
 		return true
-	elseif keycode == 78 then -- +
+	elseif char == 43 then -- +
 		data.reactor_targetStability = data.reactor_targetStability + 1
 		reactor_setTargetStability()
 		data_save()
 		return true
-	elseif keycode == 46 then -- C
+	elseif char == 67 or char == 99 then -- C
 		reactor_config()
 		data_save()
 		return true
@@ -475,14 +468,14 @@ function reactor_page()
 		local energy = { reactor.energy() }
 		SetCursorPos(1, 7)
 		Write("Energy   : ")
-		if energy[1] ~= nil then
+		if energy[2] ~= nil then
 			Write(FormatInteger(energy[1], 10) .. " / " .. energy[2] .. " RF +" .. FormatInteger(reactor_output, 5) .. " RF/t")
 		else
 			Write("???")
 		end
 		SetCursorPos(1, 8)
 		Write("Outputing: ")
-		if energy[1] ~= nil then
+		if energy[3] ~= nil then
 			Write(energy[3] .. " RF/t")
 		end
 
@@ -674,7 +667,7 @@ WriteLn("")
 reactor = nil
 reactorlasers = {}
 for address, componentType in component.list() do
-	sleep(0)
+	os.sleep(0)
 	if componentType == "warpdriveEnanReactorCore" then
 		WriteLn("Wrapping " .. componentType)
 		reactor =  component.proxy(address)
@@ -683,7 +676,7 @@ for address, componentType in component.list() do
 		table.insert(reactorlasers, component.proxy(address))
 	end
 end
--- sleep(1)
+-- os.sleep(1)
 
 if not computer.address() and reactor ~= nil then
 	data_setName()
@@ -719,9 +712,9 @@ Clear()
 connections_page()
 SetColorDefault()
 WriteLn("")
-sleep(0)
+os.sleep(0)
 reactor_boot()
-sleep(0)
+os.sleep(0)
 
 -- main loop
 abort = false
@@ -738,25 +731,32 @@ repeat
 	end
 	params = { event.pull() }
 	eventName = params[1]
-	side = params[2]
-	if side == nil then side = "none" end
-	if eventName == "key" then
-		keycode = params[2]
-		if keycode == 45 then -- x for eXit
+	address = params[2]
+	if address == nil then address = "none" end
+		WriteLn("...")
+		WriteLn("Event '" .. eventName .. "', " .. address .. ", " .. params[3] .. " received")
+		os.sleep(0.2)
+	if eventName == "key_down" then
+		char = params[3]
+		keycode = params[4]
+		if char == 88 or char == 120 then -- x for eXit
 			abort = true
-		elseif keycode == 11 or keycode == 82 then -- 0
+		elseif char == 48 then -- 0
 			page = connections_page
 			keyHandler = nil
 			refresh = true
-		elseif keycode == 2 or keycode == 79 then -- 1
+		elseif char == 49 then -- 1
 			page = reactor_page
 			keyHandler = reactor_key
 			refresh = true
-		elseif keyHandler ~= nil and keyHandler(keycode) then
+		elseif keyHandler ~= nil and keyHandler(char, keycode) then
 			refresh = true
 			os.sleep(0)
+		elseif char == 0 then -- control chars
+			refresh = false
+			os.sleep(0)
 		else
-			ShowWarning("Key " .. keycode .. " is invalid")
+			ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
 			os.sleep(0.2)
 		end
 		-- func(unpack(params))
@@ -766,12 +766,13 @@ repeat
 	elseif eventName == "key_up" then
 		-- drop it
 	elseif eventName == "reactorPulse" then
-		reactor_pulse(params[2])
+		ShowWarning("reactorPulse")
+		reactor_pulse(params[3])
 		refresh = (page == reactor_page)
 	elseif eventName == "terminate" then
 		abort = true
-	elseif not common_event(eventName, params[2]) then
-		ShowWarning("Event '" .. eventName .. "', " .. side .. " is unsupported")
+	elseif not common_event(eventName, params[3]) then
+		ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
 		refresh = true
 		os.sleep(0.2)
 	end

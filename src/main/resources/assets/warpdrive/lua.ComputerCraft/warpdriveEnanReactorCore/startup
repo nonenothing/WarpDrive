@@ -534,14 +534,14 @@ function reactor_page()
 		local energy = { reactor.energy() }
 		SetCursorPos(1, 7)
 		Write("Energy   : ")
-		if energy[1] ~= nil then
+		if energy[2] ~= nil then
 			Write(FormatInteger(energy[1], 10) .. " / " .. energy[2] .. " RF +" .. FormatInteger(reactor_output, 5) .. " RF/t")
 		else
 			Write("???")
 		end
 		SetCursorPos(1, 8)
 		Write("Outputing: ")
-		if energy[1] ~= nil then
+		if energy[3] ~= nil then
 			Write(energy[3] .. " RF/t")
 		end
 
