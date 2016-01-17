@@ -11,7 +11,6 @@ import li.cil.oc.api.machine.Context;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
-import net.minecraft.block.IGrowable;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -236,7 +235,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 						int metadata = worldObj.getBlockMetadata(valuable.x, valuable.y, valuable.z);
 						if (metadata >= 2 && metadata <= 5) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								WarpDrive.logger.debug("Tap found rubber wood wetspot at " + valuable + " with metadata " + metadata);
+								WarpDrive.logger.info("Tap found rubber wood wetspot at " + valuable + " with metadata " + metadata);
 							}
 							
 							// consume power
@@ -329,19 +328,31 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				boolean found = false;
 				int plantableCount = 0;
 				ItemStack itemStack = null;
+				Block plant = null;
+				int plantMetadata = -1;
 				while (slotIndex < inventory.getSizeInventory() && !found) {
 					itemStack = inventory.getStackInSlot(slotIndex);
-					if (itemStack != null) {
-						WarpDrive.logger.debug("- " + slotIndex + ": " + itemStack + " => " + itemStack.getItem() + " Plantable: " + (itemStack.getItem() instanceof IPlantable) + " Growable: " + (itemStack.getItem() instanceof IGrowable));
+					if (itemStack == null || itemStack.stackSize <= 0) {
+						slotIndex++;
+						continue;
 					}
-					if (itemStack == null || itemStack.stackSize <= 0 || !(itemStack.getItem() instanceof IPlantable)) {
+					Block blockFromItem = Block.getBlockFromItem(itemStack.getItem());
+					if (!(itemStack.getItem() instanceof IPlantable) && !(blockFromItem instanceof IPlantable)) {
 						slotIndex++;
 						continue;
 					}
 					plantableCount++;
-					WarpDrive.logger.debug("IPlantable found: " + itemStack);
+					IPlantable plantable = (IPlantable)((itemStack.getItem() instanceof IPlantable) ? itemStack.getItem() : blockFromItem);
+					plant = plantable.getPlant(worldObj, soil.x, soil.y + 1, soil.z);
+					plantMetadata = plantable.getPlantMetadata(worldObj, soil.x, soil.y + 1, soil.z);
+					if (plantMetadata == 0 && itemStack.getItemDamage() != 0) {
+						plantMetadata = itemStack.getItemDamage();
+					}
+					if (WarpDriveConfig.LOGGING_COLLECTION) {
+						WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant + ":" + plantMetadata);
+					}
 					
-					if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, (IPlantable)itemStack.getItem())) {
+					if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, plantable)) {
 						slotIndex++;
 						continue;
 					}
@@ -362,7 +373,6 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					WarpDrive.logger.debug("No sapling found");
 					return;
 				}
-				WarpDrive.logger.debug("Sapling found: " + itemStack);
 				
 				// consume power
 				double energyCost = TREE_FARM_ENERGY_PER_SAPLING;
@@ -387,6 +397,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(soil.x, soil.y + 1, soil.z).translate(0.5D),
 						0.2F, 0.7F, 0.4F, age, 0, 50);
 				worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+				worldObj.setBlock(soil.x, soil.y + 1, soil.z, plant, plantMetadata, 3);
 			}
 		}
 	}
@@ -429,7 +440,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 						if (isSoil(block)) {
 							VectorI pos = new VectorI(x, y, z);
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								WarpDrive.logger.info("Found soil at " + x + "," + y + "," + z);
+								// WarpDrive.logger.info("Found soil at " + x + "," + y + "," + z);
 							}
 							soilPositions.add(pos);
 						}
@@ -473,7 +484,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		if (logPositions.size() > 0) {
 			HashSet<Block> whitelist = (HashSet<Block>) Dictionary.BLOCKS_LOGS.clone();
 			if (breakLeaves) {
-				// whitelist.addAll(WarpDriveConfig.BLOCKS_LEAVES);
+				whitelist.addAll(Dictionary.BLOCKS_LEAVES);
 			}
 			logPositions = getConnectedBlocks(worldObj, logPositions, UP_DIRECTIONS, whitelist, WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
 		}
