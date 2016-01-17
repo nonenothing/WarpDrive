@@ -1,8 +1,15 @@
 package cr0s.warpdrive.config;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -13,44 +20,48 @@ import org.w3c.dom.NodeList;
 import cpw.mods.fml.common.Loader;
 import cr0s.warpdrive.WarpDrive;
 
+import javax.xml.transform.dom.DOMSource;
+
 
 public class XmlPreprocessor {
+	static boolean enableOuput = false;
+	static int outputCount = 1;
 	
 	/**
-	 * Will check the given element for a mod attribute and return a string of all the ones that are not loaded, separated by commas
+	 * Check the given element for a mod attribute and return a string of all the ones that are not loaded, separated by commas
 	 *
 	 * @param element
 	 *            Element to check
 	 * @return A string, which is empty if all the mods are loaded.
 	 * @throws InvalidXmlException
 	 */
-	public static ModCheckResults checkModRequirements(Element element) {
+	public static String checkModRequirements(Element element) {
 		
-		ModCheckResults modErrors = new ModCheckResults();
+		ModCheckResults modCheckResults = new ModCheckResults();
 		
 		for (String mod : element.getAttribute("mods").split(",")) {
 			
 			//TODO: add version check
 			
-			
-			if (mod.isEmpty())
+			if (mod.isEmpty()) {
 				continue;
+			}
 			
 			if (mod.startsWith("!")) {
+				if (Loader.isModLoaded(mod.substring(1))) {
+					modCheckResults.addMod(mod, "loaded");
+				}
 				
-				if (Loader.isModLoaded(mod.substring(1)))
-					modErrors.addMod(mod, "loaded");
-				
-			} else if (!Loader.isModLoaded(mod))
-				modErrors.addMod(mod, "not loaded");
-			
+			} else if (!Loader.isModLoaded(mod)) {
+				modCheckResults.addMod(mod, "not loaded");
+			}
 		}
 		
-		return modErrors;
+		return modCheckResults.toString();
 	}
 	
 	/**
-	 * Goes through every child node of the given node, and if it is an element and fails checkModRequirements() it is removed
+	 * Goes through every child node of the given node, and remove elements failing to checkModRequirements()
 	 *
 	 * @param base
 	 * @throws InvalidXmlException
@@ -64,11 +75,11 @@ public class XmlPreprocessor {
 			
 			if (child instanceof Element) {
 				Element elementChild = (Element) child;
-				ModCheckResults res = checkModRequirements(elementChild);
-				if (!res.isEmpty()) {
+				String result = checkModRequirements(elementChild);
+				if (!result.isEmpty()) {
 					WarpDrive.logger.info("Skipping " + base.getNodeName() + "/" + elementChild.getNodeName()
 							+ " " + elementChild.getAttribute("group") + elementChild.getAttribute("name") + elementChild.getAttribute("block")
-							+ " due to " + res);
+							+ " due to " + result);
 					base.removeChild(child);
 				} else {
 					doModReqSanitation(child);
@@ -77,163 +88,171 @@ public class XmlPreprocessor {
 		}
 	}
 	
+	/**
+	 * Develop 'for' elements
+	 *
+	 * @param base
+	 * @throws InvalidXmlException
+	 */
 	public static void doLogicPreprocessing(Node root) throws InvalidXmlException {
+		// process child first
 		NodeList children = root.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			doLogicPreprocessing(children.item(i));
 		}
-
-		if (root.getNodeType() == Node.ELEMENT_NODE && ((Element) root).getTagName().equalsIgnoreCase("for")) {
+		
+		// only process 'for' elements
+		if (root.getNodeType() != Node.ELEMENT_NODE || !((Element) root).getTagName().equalsIgnoreCase("for")) {
+			return;
+		}
+		Element elementFor = (Element) root;
+		
+		// get variable name
+		String variableName = elementFor.getAttribute("variable");
+		if(variableName.isEmpty()) {
+			throw new InvalidXmlException("A for tag must include a variable attribute!");
+		}
+		
+		// 'in' takes precedence over 'from' attribute
+		if (elementFor.hasAttribute("in")) {
+			String[] inOptions = elementFor.getAttribute("in").split(",");
 			
-			Element forTag = (Element) root;
-
-			String varName = forTag.getAttribute("variable");
-			if(varName.isEmpty())
-				throw new InvalidXmlException("A for tag must include a variable attribute!");
-
-			//In supersedes from
-			if (forTag.hasAttribute("in")) {
-				String inOptions = forTag.getAttribute("in");
-
-				for(String input : inOptions.split(",")) {
-					
-					NodeList allChildren = root.getChildNodes();
-					for(int chI = 0; chI < allChildren.getLength(); chI ++) {
-						
-						Node copy = getCopyVarReplace(allChildren.item(chI), varName, input);
-						root.getParentNode().appendChild(copy);
-						
-					}
-					
+			// copy children with replaced variable
+			for(String variableValue : inOptions) {
+				NodeList allChildren = root.getChildNodes();
+				for(int childIndex = 0; childIndex < allChildren.getLength(); childIndex ++) {
+					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, variableValue);
+					root.getParentNode().appendChild(copy);
 				}
-
-			} else {
-
-				String fromStr = forTag.getAttribute("from");
-				String toStr = forTag.getAttribute("to");
+			}
+			
+		} else {
+			String stringFrom = elementFor.getAttribute("from");
+			String stringTo = elementFor.getAttribute("to");
+			
+			if (stringTo.isEmpty() || stringFrom.isEmpty()) {
+				throw new InvalidXmlException("For element with no 'in' attribute requires both 'from' and 'to' attributes! " + variableName);
+			}
+			
+			int intFrom;
+			int intTo;
+			try {
+				intFrom = Integer.parseInt(stringFrom);
+				intTo = Integer.parseInt(stringTo);
+			} catch (NumberFormatException exception) {
+				throw new InvalidXmlException(exception);
+			}
+			
+			// copy children with replaced variable
+			for (int variableValue = intFrom; variableValue <= intTo; variableValue++) {
+				NodeList allChildren = root.getChildNodes();
+				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex++) {
+					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, "" + variableValue);
+					root.getParentNode().appendChild(copy);
+				}
+			}
+		}
+		
+		//Remove the old node
+		root.getParentNode().removeChild(root);
+		
+		if (enableOuput) {
+			try {
+				Transformer transformer = TransformerFactory.newInstance().newTransformer();
+				Result output = new StreamResult(new File("output" + outputCount + ".xml"));
+				Source input = new DOMSource(root.getOwnerDocument());
 				
-				if (toStr.isEmpty() || fromStr.isEmpty())
-					throw new InvalidXmlException("If a for doesnt have an in attr, it must have a from and to!");
-
-				int from, to;
-				try {
-					from = Integer.parseInt(fromStr);
-					to = Integer.parseInt(toStr);
-				} catch (NumberFormatException e) {
-					throw new InvalidXmlException(e);
-				}
-
-				for (; from <= to; from++) {
-					
-					NodeList allChildren = root.getChildNodes();
-					for (int chI = 0; chI < allChildren.getLength(); chI++) {
-						
-						Node copy = getCopyVarReplace(allChildren.item(chI), varName, "" + from);
-						root.getParentNode().appendChild(copy);
-						
-					}
-					
-				}
-
+				transformer.transform(input, output);
+				outputCount++;
+			} catch (Exception exception) {
+				exception.printStackTrace();
 			}
-			
-			//Remove the old node
-			root.getParentNode().removeChild(root);
-
-
 		}
-		
 	}
-
-	private static Node getCopyVarReplace(Node toCopy, String varName, String value) {
-
-		Node copy = toCopy.cloneNode(true);
-		replaceVar(copy, varName, value);
+	
+	private static Node copyNodeAndReplaceVariable(Node nodeOriginal, String variableName, String variableValue) {
+		Node nodeCopy = nodeOriginal.cloneNode(true);
+		replaceVariable(nodeCopy, "%" + variableName + "%", variableValue);
 		
-		return copy;
+		return nodeCopy;
 	}
-
-	private static void replaceVar(Node root, String varName, String value) {
-
-		ArrayList<String> toRemove = new ArrayList<String>();
-		ArrayList<Attr> toAdd = new ArrayList<Attr>();
-
-		if (root.getNodeType() == Node.ELEMENT_NODE) {
+	
+	private static void replaceVariable(Node node, String keyword, String value) {
+		ArrayList<String> nameToRemove = new ArrayList<String>();
+		ArrayList<Attr> attrToAdd = new ArrayList<Attr>();
+		
+		// process element's attributes first
+		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			
-			//First replace attributes
-			NamedNodeMap attrs = root.getAttributes();
-			for (int i = 0; i < attrs.getLength(); i++) {
-
-				Attr attr = (Attr) attrs.item(i);
-				String name = attr.getName();
-				String newName = name.replace("%" + varName + "%", value);
-
-				if (name.equals(newName)) {
-
-					//Easy, just adjust value
-					attr.setValue(attr.getValue().replace("%" + varName + "%", value));
-
-				} else {
-
-					//The name changed
-					toRemove.add(name);
-
-					Attr newAttr = attr.getOwnerDocument().createAttribute(newName);
-					newAttr.setValue(attr.getValue().replace("%" + varName + "%", value));
-					toAdd.add(newAttr);
-
+			// compute the changes
+			NamedNodeMap attrs = node.getAttributes();
+			for (int indexAttr = 0; indexAttr < attrs.getLength(); indexAttr++) {
+				Attr oldAttr = (Attr) attrs.item(indexAttr);
+				String oldName = oldAttr.getName();
+				String newName = oldName.replace(keyword, value);
+				
+				if (oldName.equals(newName)) {// same name, just adjust the value
+					oldAttr.setValue(oldAttr.getValue().replace(keyword, value));
+					
+				} else {// different name, needs to defer the add/remove
+					nameToRemove.add(oldName);
+					
+					Attr newAttr = oldAttr.getOwnerDocument().createAttribute(newName);
+					newAttr.setValue(oldAttr.getValue().replace(keyword, value));
+					attrToAdd.add(newAttr);
 				}
-
 			}
-
-			//Now do the adds and removals
-			for (String attr : toRemove)
+			
+			// then apply them
+			for (String attr : nameToRemove) {
 				attrs.removeNamedItem(attr);
+			}
 			
-			for (Attr attr : toAdd)
+			for (Attr attr : attrToAdd) {
 				attrs.setNamedItem(attr);
-		}
-		
-		//Now that Attributes are done, go through all of the children
-
-		NodeList children = root.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-
-			switch (child.getNodeType()) {
-			case Node.ELEMENT_NODE://Recurse on the element
-				replaceVar(child, varName, value);
-				break;
-			case Node.TEXT_NODE:
-				child.setTextContent(child.getTextContent().replace("%" + varName + "%", value));
-				break;
-
 			}
 		}
-
+		
+		// attributes are done, moving through child elements now
+		NodeList children = node.getChildNodes();
+		for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
+			Node nodeChild = children.item(childIndex);
+			
+			switch (nodeChild.getNodeType()) {
+			case Node.ELEMENT_NODE: // recurse through elements
+				replaceVariable(nodeChild, keyword, value);
+				break;
+			case Node.TEXT_NODE: // replace text in place
+				nodeChild.setTextContent(nodeChild.getTextContent().replace(keyword, value));
+				break;
+			default: // ignore others
+				// no operation
+				break;
+			}
+		}
 	}
 	
 	public static class ModCheckResults {
 		
-		private TreeMap<String, String> mods;
+		private TreeMap<String, String> modResults;
 		
 		public ModCheckResults() {
-			mods = new TreeMap<String, String>();
+			modResults = new TreeMap<String, String>();
 		}
 		
 		public void addMod(String name, String error) {
-			mods.put(name, error);
+			modResults.put(name, error);
 		}
 		
 		public boolean isEmpty() {
-			return mods.isEmpty();
+			return modResults.isEmpty();
 		}
 		
 		@Override
 		public String toString() {
-			String string = (mods.size() > 1 ? "{" : "");
+			String string = (modResults.size() > 1 ? "{" : "");
 			boolean isFirst = true;
-			for (Entry<String, String> entry : mods.entrySet()) {
+			for (Entry<String, String> entry : modResults.entrySet()) {
 				if (isFirst) {
 					isFirst = false;
 				} else {
@@ -242,7 +261,7 @@ public class XmlPreprocessor {
 				string += entry.getKey() + ": " + entry.getValue();
 			}
 			
-			return string + (mods.size() > 1 ? "}" : "");
+			return string + (modResults.size() > 1 ? "}" : "");
 		}
 	}
 }

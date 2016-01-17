@@ -3,7 +3,7 @@
 
 <warpdriveWorldGeneration version="1">
 
-	<FillerSet group="stone_ores">
+	<FillerSet group="stone_ores" name="default_stone_ores">
 		<filler block="minecraft:coal_ore" ratio=".08" />
 		<filler block="minecraft:iron_ore" ratio=".05" />
 		<filler block="minecraft:redstone_ore" ratio=".05" />
@@ -32,20 +32,20 @@
 		<filler block="minecraft:bedrock" ratio=".001" />
 	</FillerSet>
 	
-	<FillerSet group="commonOres">
+	<FillerSet group="commonOres" name="default_commonOres">
 		<filler block="minecraft:coal_ore" ratio=".08" />
 		<filler block="minecraft:iron_ore" ratio=".05" />
 		<filler block="IC2:blockOreTin" ratio=".05" />
 		<filler block="IC2:blockOreCopper" ratio=".06" />
 	</FillerSet>
 	
-	<FillerSet group="uncommonOres">
+	<FillerSet group="uncommonOres" name="default_uncommonOres">
 		<filler block="minecraft:redstone_ore" ratio=".02" />
 		<filler block="IC2:blockOreUran" ratio=".001" mods="IC2" />
 		<filler block="ae2:quartz" ratio=".01" mods="appliedenergistics2" />
 	</FillerSet>
 	
-	<FillerSet group="rareOres">
+	<FillerSet group="rareOres" name="default_rareOres">
 		<filler block="minecraft:gold_ore" ratio=".008" />
 		<filler block="minecraft:diamond_ore" ratio=".001" />
 		<filler block="minecraft:lapis_ore" ratio=".005" />
@@ -53,19 +53,19 @@
 		<filler block="warpdrive:iridiumBlock" ratio=".0001" />
 	</FillerSet>
 	
-	<FillerSet group="overworld">
+	<FillerSet group="overworld" name="default_overworld">
 		<filler block="minecraft:stone" weight="200" />
 		<filler block="minecraft:sand" weight="30" />
 		<filler block="minecraft:dirt" weight="50" />
 	</FillerSet>
 	
-	<FillerSet group="end">
+	<FillerSet group="end" name="default_end">
 		<filler block="minecraft:end_stone" weight="200" />
 		<filler block="minecraft:sand" weight="20" />
 		<filler block="minecraft:obsidian" weight="20" />
 	</FillerSet>
 	
-	<FillerSet group="nether">
+	<FillerSet group="nether" name="default_nether">
 		<filler block="minecraft:netherrack" weight="300" />
 		<filler block="minecraft:quartz_ore" weight="20" />
 		<filler block="minecraft:glowstone" weight="40" />

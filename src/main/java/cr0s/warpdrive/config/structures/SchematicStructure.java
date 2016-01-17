@@ -6,8 +6,8 @@ import net.minecraft.world.World;
 
 public class SchematicStructure extends DeployableStructure {
 	
-	public SchematicStructure(int height, int width, int length) {
-		super(height, width, length);
+	public SchematicStructure(final String name) {
+		super(name);
 		// TODO Auto-generated constructor stub
 	}
 	

@@ -3,7 +3,7 @@
 
 <warpdriveWorldGeneration version="1" mods="netherores">
     
-    <FillerSet group="nether" >
+    <FillerSet group="nether" name="netherores_nether">
         <filler block="netherores:ore" metadata="0" weight="50" />
         <filler block="netherores:ore" metadata="0" weight="40" />
         <filler block="netherores:ore" metadata="0" weight="30" />

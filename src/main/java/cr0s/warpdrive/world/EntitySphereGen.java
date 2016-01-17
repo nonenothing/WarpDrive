@@ -65,13 +65,14 @@ public final class EntitySphereGen extends Entity {
 	
 	private ArrayList<JumpBlock> blocks;
 	private Orb orb;
+	private int[] thicknesses;
 	private boolean replace;
 	
 	public EntitySphereGen(World world) {
 		super(world);
 	}
 	
-	public EntitySphereGen(World world, int x, int y, int z, int radius, Orb orb, boolean replace) {
+	public EntitySphereGen(World world, int x, int y, int z, Orb orb, int[] thicknesses, int radius, boolean replace) {
 		super(world);
 		this.xCoord = x;
 		this.posX = x;
@@ -86,6 +87,7 @@ public final class EntitySphereGen extends Entity {
 		blocks = new ArrayList<JumpBlock>(this.pregenSize);
 		this.ticksDelay = world.rand.nextInt(60);
 		this.orb = orb;
+		this.thicknesses = thicknesses;
 		this.replace = replace;
 	}
 	
@@ -97,10 +99,10 @@ public final class EntitySphereGen extends Entity {
 	
 	@Override
 	public void onUpdate() {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			return;
 		}
-		
+		 
 		if (ticksDelay > 0) {
 			ticksDelay--;
 			return;
@@ -171,10 +173,10 @@ public final class EntitySphereGen extends Entity {
 					if (dSq > radius)
 						continue;
 					
-					int rad = (int) Math.ceil(dSq);
+					int range = (int) Math.ceil(dSq);
 					
 					// Add blocks to memory
-					OrbShell orbShell = orb.getShellForRadius(rad);
+					OrbShell orbShell = orb.getShellForRadius(thicknesses, range);
 					MetaBlock metablock = orbShell.getRandomBlock(rand);
 					addBlock(new JumpBlock(metablock.block, metablock.metadata, xCoord + x, yCoord + y, zCoord + z));
 					
@@ -208,8 +210,9 @@ public final class EntitySphereGen extends Entity {
 	}
 	
 	private void addBlock(JumpBlock jb) {
-		if (blocks == null)
+		if (blocks == null) {
 			return;
+		}
 		// Replace water with random gas (ship in moon)
 		if (worldObj.getBlock(jb.x, jb.y, jb.z).isAssociatedBlock(Blocks.water)) {
 			if (worldObj.rand.nextInt(50) != 1) {
@@ -220,8 +223,9 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Do not replace existing blocks if fillingSphere is true
-		if (!replace && !worldObj.isAirBlock(jb.x, jb.y, jb.z))
+		if (!replace && !worldObj.isAirBlock(jb.x, jb.y, jb.z)) {
 			return;
+		}
 		blocks.add(jb);
 	}
 	

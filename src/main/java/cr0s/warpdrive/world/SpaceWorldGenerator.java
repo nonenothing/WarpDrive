@@ -269,7 +269,6 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	public static void generateRandomAsteroid(World world, int x, int y, int z) {
 		
 		DeployableStructure asteroid = StructureManager.getAsteroid(world.rand, null);
-		WarpDrive.logger.info("Generating asteroid (class " + asteroid + ") at " + x + " " + y + " " + z);
 		
 		asteroid.generate(world, world.rand, x, y, z);
 		
@@ -296,34 +295,37 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 		}
 		 */
 	}
-
+	
 	public static void generateSphereDirect(
-			World world, int xCoord, int yCoord, int zCoord, Orb orb, Random rand) {
-		double radiusC = orb.getHeight() / 2 + 0.5D; // Radius from center of block
+			final int[] thicknesses, Orb orb, World world, int xCoord, int yCoord, int zCoord) {
+		int totalThickness = 0;
+		for (int thickness : thicknesses) {
+			totalThickness += thickness;
+		}
+		double radiusC = totalThickness + 0.5D; // Radius from center of block
 		double radiusSq = radiusC * radiusC; // Optimization to avoid sqrts...
 		// sphere
 		int ceilRadius = (int) Math.ceil(radiusC);
-
+		
 		// Pass the cube and check points for sphere equation x^2 + y^2 + z^2 = r^2
 		for (int x = 0; x <= ceilRadius; x++) {
-			double x2 = (x + 0.5D) * (x + 0.5D);
+			double dX2 = (x + 0.5D) * (x + 0.5D);
 			for (int y = 0; y <= ceilRadius; y++) {
-				double y2 = (y + 0.5D) * (y + 0.5D);
+				double dX2Y2 = dX2 + (y + 0.5D) * (y + 0.5D);
 				for (int z = 0; z <= ceilRadius; z++) {
-					double z2 = (z + 0.5D) * (z + 0.5D);
-					int dSq = (int) Math.sqrt(x2 + y2 + z2); // Distance from current position
-					//TODO: Find quicker form of sqrt
-
+					double dZ2 = (z + 0.5D) * (z + 0.5D);
+					double dSq = dX2Y2 + dZ2; // squared distance from current position
+					
 					// Skip too far blocks
 					if (dSq > radiusSq) {
 						continue;
 					}
-
+					
 					// Place blocks
 					// cheat by using axial symmetry so we don't create random numbers too frequently
-
-					OrbShell orbShell = orb.getShellForRadius(dSq);
-					MetaBlock metablock = orbShell.getRandomBlock(rand);
+					
+					OrbShell orbShell = orb.getShellForRadius(thicknesses, (int)Math.sqrt(dSq));
+					MetaBlock metablock = orbShell.getRandomBlock(world.rand);
 					world.setBlock(xCoord + x, yCoord + y, zCoord + z, metablock.block, metablock.metadata, 2);
 					world.setBlock(xCoord - x, yCoord + y, zCoord + z, metablock.block, metablock.metadata, 2);
 					world.setBlock(xCoord + x, yCoord - y, zCoord + z, metablock.block, metablock.metadata, 2);

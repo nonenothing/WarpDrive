@@ -15,16 +15,17 @@ import org.xml.sax.SAXException;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.config.RandomCollection;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlPreprocessor;
-import cr0s.warpdrive.config.XmlPreprocessor.ModCheckResults;
 
 public class FillerManager {
 	
-	private static TreeMap<String, FillerSet> fillerSets = new TreeMap<String, FillerSet>();
+	private static TreeMap<String, FillerSet> fillerSetsByName = new TreeMap<String, FillerSet>();
+	private static TreeMap<String, RandomCollection<FillerSet>> fillerSetsByGroup = new TreeMap<String, RandomCollection<FillerSet>>();
 	
 	// Stores extra dependency information
-	static TreeMap<FillerSet, ArrayList<String>> fillerSetsAdditions = new TreeMap<FillerSet, ArrayList<String>>();
+	static TreeMap<FillerSet, ArrayList<String>> fillerSetsDependencies = new TreeMap<FillerSet, ArrayList<String>>();
 	
 	/* TODO dead code?
 	// FillerSets that are guaranteed to exist
@@ -52,7 +53,6 @@ public class FillerManager {
 		
 		for(File file : files) {
 			try {
-				WarpDrive.logger.info("Loading filler data file " + file.getName() + "...");
 				loadXmlFillerFile(file);
 			} catch (Exception exception) {
 				WarpDrive.logger.error("Error loading filler data file " + file.getName() + ": " + exception.getMessage());
@@ -63,44 +63,57 @@ public class FillerManager {
 	}
 	
 	private static void loadXmlFillerFile(File file) throws InvalidXmlException, SAXException, IOException {
+		WarpDrive.logger.info("Loading filler data file " + file.getName());
+		Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
 		
-		Document base = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
-		
-		ModCheckResults res = XmlPreprocessor.checkModRequirements(base.getDocumentElement());
-		
-		if (!res.isEmpty()) {
-			WarpDrive.logger.info("Skippping filler data file " + file.getName() + " due to " + res);
+		// pre-process the file
+		String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
+		if (!result.isEmpty()) {
+			WarpDrive.logger.info("Skipping filler data file " + file.getName() + " due to " + result);
 			return;
 		}
 		
-		// Remove elements based on mod reqs sanitation
-		XmlPreprocessor.doModReqSanitation(base);
-		XmlPreprocessor.doLogicPreprocessing(base);
+		XmlPreprocessor.doModReqSanitation(document);
+		XmlPreprocessor.doLogicPreprocessing(document);
 		
-		// Initially add FillerSets
-		NodeList nodesFillerSet = base.getElementsByTagName("FillerSet");
-		for (int i = 0; i < nodesFillerSet.getLength(); i++) {
+		// only add FillerSets
+		NodeList nodesFillerSet = document.getElementsByTagName("FillerSet");
+		for (int fillerSetIndex = 0; fillerSetIndex < nodesFillerSet.getLength(); fillerSetIndex++) {
 			
-			Element elementFillerSet = (Element) nodesFillerSet.item(i);
+			Element elementFillerSet = (Element) nodesFillerSet.item(fillerSetIndex);
 			
 			String group = elementFillerSet.getAttribute("group");
 			if (group.isEmpty()) {
-				throw new InvalidXmlException("FillerSet " + i + " is missing a group attribute!");
+				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodesFillerSet.getLength() + " is missing a group attribute!");
 			}
 			
-			FillerSet fillerSet = fillerSets.get(group);
-			if (fillerSet == null) {
-				fillerSet = new FillerSet(group);
-				fillerSets.put(group, fillerSet);
+			String name = elementFillerSet.getAttribute("name");
+			if (name.isEmpty()) {
+				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodesFillerSet.getLength() + " is missing a name attribute!");
 			}
+			
+			WarpDrive.logger.info("- found FillerSet " + group + ":" + name);
+			
+			FillerSet fillerSet = fillerSetsByName.get(name);
+			if (fillerSet == null) {
+				fillerSet = new FillerSet(group, name);
+				fillerSetsByName.put(name, fillerSet);
+			}
+			
+			RandomCollection randomCollection = fillerSetsByGroup.get(group);
+			if (randomCollection == null) {
+				randomCollection = new RandomCollection<FillerSet>();
+				fillerSetsByGroup.put(group, randomCollection);
+			}
+			randomCollection.loadFromXML(fillerSet, elementFillerSet);
 			
 			if (elementFillerSet.hasAttribute("fillerSets")) {
-				ArrayList<String> setUnresolvedDeps = fillerSetsAdditions.get(fillerSet);
-				if (setUnresolvedDeps == null) {
-					setUnresolvedDeps = new ArrayList<String>();
-					fillerSetsAdditions.put(fillerSet, setUnresolvedDeps);
+				ArrayList<String> dependencies = fillerSetsDependencies.get(fillerSet);
+				if (dependencies == null) {
+					dependencies = new ArrayList<String>();
+					fillerSetsDependencies.put(fillerSet, dependencies);
 				}
-				setUnresolvedDeps.addAll(Arrays.asList(elementFillerSet.getAttribute("import").split(",")));
+				dependencies.addAll(Arrays.asList(elementFillerSet.getAttribute("fillerSets").split(",")));
 			}
 			
 			fillerSet.loadFromXmlElement(elementFillerSet);
@@ -108,47 +121,48 @@ public class FillerManager {
 	}
 	
 	public static void finishLoading() {
+		// import fillerSets into each others
+		propagateFillerSets();
 		
-		while (!fillerSetsAdditions.isEmpty()) {
-			attemptDependencyFilling(fillerSetsAdditions);
-		}
-		
-		// When everything is done, finalize
-		for (FillerSet fillerSet : fillerSets.values()) {
+		// compute fillerSets randomization tables
+		for (FillerSet fillerSet : fillerSetsByName.values()) {
 			fillerSet.finishContruction();
 		}
+		
+		// compute groups randomization tables
+		for (RandomCollection randomCollection : fillerSetsByGroup.values()) {
+			// randomCollection.finishContruction();
+		}
 	}
 	
-	private static void attemptDependencyFilling(TreeMap<FillerSet, ArrayList<String>> fillerSetsDeps) {
-		
-		ArrayList<FillerSet> toRemove = new ArrayList<FillerSet>();
-		
-		for (Entry<FillerSet, ArrayList<String>> entry : fillerSetsDeps.entrySet()) {
+	private static void propagateFillerSets() {
+		while (!fillerSetsDependencies.isEmpty()) {
+			TreeMap<FillerSet, ArrayList<String>> fillerSetsLeftToImport = new TreeMap<FillerSet, ArrayList<String>>();
 			
-			for (String dep : entry.getValue()) {
-				
-				if (!fillerSets.containsKey(dep)) {
-					
-					WarpDrive.logger.error("Skipping FillerSet " + entry.getKey() + " due to missing dependency " + dep);
-					fillerSets.remove(entry.getKey().getName());
-					toRemove.add(entry.getKey());
-					
-				} else if (fillerSetsDeps.containsKey(fillerSets.get(dep))) {
-					//Skip until it is loaded
-				} else {
-					
-					entry.getKey().loadFrom(fillerSets.get(dep));
-					toRemove.add(entry.getKey());
+			for (Entry<FillerSet, ArrayList<String>> entry : fillerSetsDependencies.entrySet()) {
+				ArrayList<String> newDependencies = new ArrayList();
+				for (String dependency : entry.getValue()) {
+					if (!fillerSetsByName.containsKey(dependency)) {
+						WarpDrive.logger.error("Ignoring FillerSet " + dependency + " dependency in FillerSet " + entry.getKey());
+						
+					} else if (fillerSetsDependencies.containsKey(fillerSetsByName.get(dependency))) {
+						// skip until it is loaded
+						newDependencies.add(dependency);
+						
+					} else {
+						entry.getKey().loadFrom(fillerSetsByName.get(dependency));
+					}
+				}
+				if (!newDependencies.isEmpty()) {
+					fillerSetsLeftToImport.put(entry.getKey(), newDependencies);
 				}
 			}
-		}
-		
-		for (FillerSet set : toRemove) {
-			fillerSetsDeps.remove(set);
+			
+			fillerSetsDependencies = fillerSetsLeftToImport;
 		}
 	}
 	
-	public static FillerSet getFillerSet(String name) {
-		return fillerSets.get(name);
+	public static boolean doesFillerSetExist(String groupOrName) {
+		return fillerSetsByName.containsKey(groupOrName) || fillerSetsByName.containsKey(groupOrName);
 	}
 }
