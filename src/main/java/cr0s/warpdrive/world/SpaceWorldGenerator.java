@@ -79,13 +79,6 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 		moon.generate(world, world.rand, x, y, z);
 	}
 
-	public void generateStar(World world, int x, int y, int z, final String starName) {
-		DeployableStructure star = StructureManager.getStar(world.rand, starName);
-		WarpDrive.logger.info("Generating star (class " + star + ") at " + x + " " + y + " " + z);
-
-		star.generate(world, world.rand, x, y, z);
-	}
-
 	private static void generateSmallShip(World world, int x, int y, int z, int jitter) {
 		int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
@@ -274,12 +267,12 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	 *            coordinate of center
 	 */
 	public static void generateRandomAsteroid(World world, int x, int y, int z) {
-
+		
 		DeployableStructure asteroid = StructureManager.getAsteroid(world.rand, null);
 		WarpDrive.logger.info("Generating asteroid (class " + asteroid + ") at " + x + " " + y + " " + z);
-
+		
 		asteroid.generate(world, world.rand, x, y, z);
-
+		
 		/*
 		int asteroidSize = 1 + world.rand.nextInt(6);
 		if (asteroidSizeMax != 0) {
