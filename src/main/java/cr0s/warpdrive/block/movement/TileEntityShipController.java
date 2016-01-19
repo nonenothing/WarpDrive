@@ -722,9 +722,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] getEnergyRequired(Object[] arguments) {
 		try {
 			if (arguments.length == 1 && core != null) {
-				return new Object[] { (int) (core.calculateRequiredEnergy(getMode(), core.shipMass, toInt(arguments[0]))) };
+				return new Object[] { core.calculateRequiredEnergy(getMode(), core.shipMass, toInt(arguments[0])) };
 			}
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Integer[] { -1 };
 		}
 		return new Integer[] { -1 };

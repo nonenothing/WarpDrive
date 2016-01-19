@@ -67,7 +67,8 @@ end
 
 function scanAndDraw()
   local energy, energyMax = radar.energy()
-  if (energy < radius * radius) then
+  local energyRequired = radar.getEnergyRequired(radius)
+  if (energy < energyRequired) then
     hh = math.floor(h / 2)
     hw = math.floor(w / 2)
     
@@ -79,7 +80,8 @@ function scanAndDraw()
   end
   radar.radius(radius)
   radar.start()
-  os.sleep(2)
+  local scanDuration = radar.getScanDuration(radius)
+  os.sleep(scanDuration)
   
   redraw()
   
@@ -104,7 +106,7 @@ function redraw()
   drawBox(1, h, w, 1, 0x000000)
   drawBox(w, 1, w, h, 0x000000)
   
-  textOut((w / 2) - 8, 1, "= Q-Radar v0.1 =", 0xFFFFFF, 0x000000)
+  textOut((w / 2) - 8, 1, "= Q-Radar v0.2 =", 0xFFFFFF, 0x000000)
   
   textOut(w - 3, 1, "[X]", 0xFFFFFF, 0xFF0000)
   

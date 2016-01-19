@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -143,6 +144,10 @@ public class WarpDriveConfig {
 	
 	// Radar
 	public static int RADAR_MAX_ENERGY_STORED = 100000000; // 100kk eU
+	public static int RADAR_SCAN_MIN_ENERGY_COST = 10000;
+	public static double[] RADAR_SCAN_ENERGY_COST_FACTORS = { 0.0, 0.0, 0.0, 0.0001 };
+	public static int RADAR_SCAN_MIN_DELAY_SECONDS = 1;
+	public static double[] RADAR_SCAN_DELAY_FACTORS_SECONDS = { 1.0, 0.001, 0.0, 0.0 };
 	public static int RADAR_MAX_ISOLATION_RANGE = 2;
 	public static int RADAR_MIN_ISOLATION_BLOCKS = 5;
 	public static int RADAR_MAX_ISOLATION_BLOCKS = 60;
@@ -151,8 +156,7 @@ public class WarpDriveConfig {
 	
 	// Ship Scanner
 	public static int SS_MAX_ENERGY_STORED = 500000000;
-	public static int SS_ENERGY_PER_BLOCK_SCAN = 100; // eU per block of ship volume
-	// (including air)
+	public static int SS_ENERGY_PER_BLOCK_SCAN = 100; // eU per block of ship volume (including air)
 	public static int SS_ENERGY_PER_BLOCK_DEPLOY = 5000;
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	
@@ -459,7 +463,27 @@ public class WarpDriveConfig {
 		
 		// Radar
 		RADAR_MAX_ENERGY_STORED = clamp(0, Integer.MAX_VALUE,
-				config.get("radar", "max_energy_stored", RADAR_MAX_ENERGY_STORED).getInt());
+				config.get("radar", "max_energy_stored", RADAR_MAX_ENERGY_STORED, "maximum energy stored").getInt());
+		
+		RADAR_SCAN_MIN_ENERGY_COST = clamp(0, Integer.MAX_VALUE,
+				config.get("radar", "min_energy_cost", RADAR_SCAN_MIN_ENERGY_COST, "minimum energy cost per scan (0+), independantly of radius").getInt());
+		RADAR_SCAN_ENERGY_COST_FACTORS = 
+				config.get("radar", "factors_energy_cost", RADAR_SCAN_ENERGY_COST_FACTORS, "energy cost factors {a, b, c, d}. You need to provide exactly 4 values.\n"
+						+ "The equation used is a + b * radius + c * radius^2 + d * radius^3").getDoubleList();
+		if (RADAR_SCAN_ENERGY_COST_FACTORS.length != 4) {
+			RADAR_SCAN_ENERGY_COST_FACTORS = new double[4];
+			Arrays.fill(RADAR_SCAN_ENERGY_COST_FACTORS, 1.0);
+		}
+		RADAR_SCAN_MIN_DELAY_SECONDS = clamp(1, Integer.MAX_VALUE,
+				config.get("radar", "scan_min_delay_seconds", RADAR_SCAN_MIN_DELAY_SECONDS, "minimum scan delay per scan (1+), (measured in seconds)").getInt());
+		RADAR_SCAN_DELAY_FACTORS_SECONDS = 
+				config.get("radar", "scan_delay_factors_seconds", RADAR_SCAN_DELAY_FACTORS_SECONDS, "scan delay factors {a, b, c, d}. You need to provide exactly 4 values.\n"
+						+ "The equation used is a + b * radius + c * radius^2 + d * radius^3, (measured in seconds)").getDoubleList();
+		if (RADAR_SCAN_DELAY_FACTORS_SECONDS.length != 4) {
+			RADAR_SCAN_DELAY_FACTORS_SECONDS = new double[4];
+			Arrays.fill(RADAR_SCAN_DELAY_FACTORS_SECONDS, 1.0);
+		}
+		
 		RADAR_MAX_ISOLATION_RANGE = clamp(2, 8,
 				config.get("radar", "max_isolation_range", RADAR_MAX_ISOLATION_RANGE, "radius around core where isolation blocks count (2 to 8), higher is lagger").getInt());
 		

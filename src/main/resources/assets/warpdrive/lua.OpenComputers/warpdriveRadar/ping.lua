@@ -20,33 +20,35 @@ if radius < 1 or radius > 9999 then
 end
 
 energy, energyMax = radar.energy()
-if energy < radius * radius then
-  print("Low energy level... (" .. energy .. "/" .. radius * radius .. ")")
+energyRequired = radar.getEnergyRequired(radius)
+scanDuration = radar.getScanDuration(radius)
+if energy < energyRequired then
+  print("Low energy level... (" .. energy .. "/" .. energyRequired .. ")")
   return
 end
 radar.radius(radius)
 radar.start()
 os.sleep(0.5)
 
-print("Scanning...")
+print("Scanning... (" .. scanDuration .. " s)")
+os.sleep(scanDuration)
 
-local seconds = 0
+local delay = 0
 local count = nil
 repeat
   count = radar.getResultsCount()
-  os.sleep(1)
-  seconds = seconds + 1
-until (count ~= nil and count ~= -1) or seconds > 10
-print("took " .. seconds .. " seconds")
+  os.sleep(0.1)
+  delay = delay + 1
+until (count ~= nil and count ~= -1) or delay > 10
 
 if count ~= nil and count > 0 then
   for i=0, count-1 do
     success, type, name, x, y, z = radar.getResult(i)
-	if success then
+    if success then
       print(type .. " " .. name .. " @ (" .. x .. " " .. y .. " " .. z .. ")")
-	else
-	  print("Error " .. type)
-	end
+    else
+      print("Error " .. type)
+    end
   end
 else
   print("Nothing was found =(")
