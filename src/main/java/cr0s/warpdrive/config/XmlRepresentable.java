@@ -6,7 +6,8 @@ import org.w3c.dom.Element;
 public interface XmlRepresentable {
 	public String getName();
 	
-	public void loadFromXmlElement(Element element) throws InvalidXmlException;
+	// Load the XML element, return true if successful
+	public boolean loadFromXmlElement(Element element) throws InvalidXmlException;
 	
 	public void saveToXmlElement(Element element, Document document) throws InvalidXmlException;
 }

@@ -11,6 +11,9 @@ import java.util.Arrays;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
@@ -36,7 +39,6 @@ public class WarpDriveConfig {
 			"filler-default.xml", "filler-netherores.xml", "filler-undergroundbiomes.xml",
 			// structures
 			"structures-default.xml", "structures-netherores.xml",
-	// done
 	};
 	
 	/*
@@ -275,7 +277,6 @@ public class WarpDriveConfig {
 	// Hull
 	public static float[] HULL_HARDNESS = { 25.0F, 50.0F, 80.0F };
 	public static float[] HULL_BLAST_RESISTANCE = { 60.0F, 90.0F, 120.0F };
-	
 	
 	
 	
@@ -728,7 +729,7 @@ public class WarpDriveConfig {
 	}
 	
 	public static void onFMLPostInitialization() {
-		// read XML files
+		// unpack default XML files if none are defined
 		File[] files = configDirectory.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File file_notUsed, String name) {
@@ -741,12 +742,14 @@ public class WarpDriveConfig {
 			}
 		}
 		
-		FillerManager.loadOres(configDirectory);
-		StructureManager.loadStructures(configDirectory);
+		// always unpack the XML Schema
+		unpackResourceToFolder("WarpDrive.xsd", "config", configDirectory);
+		
+		// load XML files
+		FillerManager.load(configDirectory);
+		StructureManager.load(configDirectory);
 		
 		Dictionary.apply();
-		
-		FillerManager.finishLoading();
 	}
 	
 	private static void loadForgeMultipart() {
@@ -791,22 +794,47 @@ public class WarpDriveConfig {
 	
 	public static DocumentBuilder getXmlDocumentBuilder() {
 		if (xmlDocumentBuilder == null) {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			dbf.setIgnoringComments(false);
-			dbf.setValidating(true);
+			
+			ErrorHandler xmlErrorHandler = new ErrorHandler() {
+				@Override
+				public void warning(SAXParseException exception) throws SAXException {
+					WarpDrive.logger.warn("XML warning: " + exception.getLocalizedMessage());
+					// exception.printStackTrace();
+				}
+				
+				@Override
+				public void fatalError(SAXParseException exception) throws SAXException {
+					WarpDrive.logger.warn("XML fatal error: " + exception.getLocalizedMessage());
+					// exception.printStackTrace();
+				}
+				
+				@Override
+				public void error(SAXParseException exception) throws SAXException {
+					WarpDrive.logger.warn("XML error: " + exception.getLocalizedMessage());
+					// exception.printStackTrace();
+				}
+			};
+			
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			documentBuilderFactory.setIgnoringComments(false);
+			documentBuilderFactory.setNamespaceAware(true);
+			documentBuilderFactory.setValidating(true);
+			documentBuilderFactory.setAttribute("http://java.sun.com/xml/jaxp/properties/schemaLanguage", "http://www.w3.org/2001/XMLSchema");
+			
 			try {
-				xmlDocumentBuilder = dbf.newDocumentBuilder();
+				xmlDocumentBuilder = documentBuilderFactory.newDocumentBuilder();
 			} catch (ParserConfigurationException exception) {
 				exception.printStackTrace();
 			}
+			xmlDocumentBuilder.setErrorHandler(xmlErrorHandler);
 		}
 		
 		return xmlDocumentBuilder;
 	}
 	
-	/*
+	/**
 	 * Copy a default configuration file from the mod's resources to the specified configuration folder
-	 */
+	 **/
 	public static void unpackResourceToFolder(final String filename, final String sourceResourcePath, File targetFolder) {
 		// targetFolder is already created by caller
 		

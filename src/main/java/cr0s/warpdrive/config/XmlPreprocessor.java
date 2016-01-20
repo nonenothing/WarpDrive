@@ -119,6 +119,9 @@ public class XmlPreprocessor {
 			
 			// copy children with replaced variable
 			for(String variableValue : inOptions) {
+				if (WarpDriveConfig.LOGGING_WORLDGEN) {
+					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
+				}
 				NodeList allChildren = root.getChildNodes();
 				for(int childIndex = 0; childIndex < allChildren.getLength(); childIndex ++) {
 					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, variableValue);
@@ -143,8 +146,12 @@ public class XmlPreprocessor {
 				throw new InvalidXmlException(exception);
 			}
 			
+			
 			// copy children with replaced variable
 			for (int variableValue = intFrom; variableValue <= intTo; variableValue++) {
+				if (WarpDriveConfig.LOGGING_WORLDGEN) {
+					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
+				}
 				NodeList allChildren = root.getChildNodes();
 				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex++) {
 					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, "" + variableValue);

@@ -3,8 +3,10 @@ package cr0s.warpdrive.config.structures;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Random;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -22,13 +24,14 @@ public class StructureManager {
 	public static final String GROUP_MOONS = "moon";
 	public static final String GROUP_GASCLOUDS = "gascloud";
 	public static final String GROUP_ASTEROIDS = "asteroid";
+	public static final String GROUP_ASTFIELDS_BIG = "astfield_big";
+	public static final String GROUP_ASTFIELDS_SMALL = "astfield_small";
 	
-	private static RandomCollection<Star> stars = new RandomCollection<Star>();
-	private static RandomCollection<Planetoid> moons = new RandomCollection<Planetoid>();
-	private static RandomCollection<Asteroid> gasClouds = new RandomCollection<Asteroid>();
-	private static RandomCollection<Asteroid> asteroids = new RandomCollection<Asteroid>();
+	private static HashMap<String, RandomCollection<AbstractStructure>> structuresByGroup;
 	
-	public static void loadStructures(File dir) {
+	private static final String[] REQUIRED_GROUPS = { GROUP_STARS, GROUP_MOONS, GROUP_GASCLOUDS, GROUP_ASTEROIDS, GROUP_ASTFIELDS_BIG, GROUP_ASTFIELDS_SMALL };
+	
+	public static void load(File dir) {
 		
 		dir.mkdir();
 		if (!dir.isDirectory()) {
@@ -42,6 +45,7 @@ public class StructureManager {
 			}
 		});
 		
+		structuresByGroup = new HashMap<String, RandomCollection<AbstractStructure>>();
 		for (File file : files) {
 			try {
 				loadXmlStructureFile(file);
@@ -50,16 +54,24 @@ public class StructureManager {
 				exception.printStackTrace();
 			}
 		}
+		
+		for (String group : REQUIRED_GROUPS) {
+			if (!structuresByGroup.containsKey(group)) {
+				WarpDrive.logger.error("Error: no structure defined for mandatory group " + group);
+			}
+		}
+		
+		WarpDrive.logger.info("Loading structure data files done");
 	}
 	
-	private static void loadXmlStructureFile(File file) throws SAXException, IOException, InvalidXmlException {
+	private static void loadXmlStructureFile(File file) throws InvalidXmlException, SAXException, IOException  {
 		WarpDrive.logger.info("Loading structure data file " + file.getName());
 		Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
 		
 		// pre-process the file
 		String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
 		if (!result.isEmpty()) {
-			WarpDrive.logger.info("Skipping structure " + file.getName() + " due to " + result);
+			WarpDrive.logger.info("Skipping structure data file " + file.getName() + " due to " + result);
 			return;
 		}
 		
@@ -82,68 +94,54 @@ public class StructureManager {
 				throw new InvalidXmlException("Structure " + (structureIndex + 1) + "/" + nodeListStructures.getLength() + " is missing a name attribute!");
 			}
 			
-			WarpDrive.logger.info("- found structure " + group + ":" + name);
+			WarpDrive.logger.info("- found Structure " + group + ":" + name);
 			
-			switch (group) {
-			case GROUP_STARS:
-				stars.loadFromXML(new Star(name), elementStructure);
-				break;
-			case GROUP_MOONS:
-				moons.loadFromXML(new Planetoid(name), elementStructure);
-				break;
-			case GROUP_ASTEROIDS:
-				asteroids.loadFromXML(new Asteroid(name), elementStructure);
-				break;
-			case GROUP_GASCLOUDS:
-				gasClouds.loadFromXML(new Asteroid(name), elementStructure);
-				break;
-			default:
-				throw new InvalidXmlException("Structure " + (structureIndex + 1) + "/" + nodeListStructures.getLength() + " has invalid group " + group);
-				// break;
+			RandomCollection<AbstractStructure> randomCollection = structuresByGroup.get(group);
+			if (randomCollection == null) {
+				randomCollection = new RandomCollection<AbstractStructure>();
+				structuresByGroup.put(group, randomCollection);
 			}
+			
+			AbstractStructure abstractStructure = randomCollection.getNamedEntry(name);
+			if (abstractStructure == null) {
+				if (group.equals(GROUP_STARS)) {
+					abstractStructure = new Star(group, name);
+				} else if (group.equals(GROUP_MOONS)) {
+					abstractStructure = new Orb(group, name);
+				} else {
+					abstractStructure = new MetaOrb(group, name);
+				}
+			}
+			randomCollection.loadFromXML(abstractStructure, elementStructure);
 		}
 	}
 	
-	public static DeployableStructure getStructure(Random random, final String group, final String name) {
-		if (name == null || name.length() == 0) {
-			if (group == null || group.isEmpty()) {
-				return null;
-			} else if (group.equalsIgnoreCase(GROUP_STARS)) {
-				return stars.getRandomEntry(random);
-			} else if (group.equalsIgnoreCase(GROUP_MOONS)) {
-				return moons.getRandomEntry(random);
-			} else if (group.equalsIgnoreCase(GROUP_ASTEROIDS)) {
-				return asteroids.getRandomEntry(random);
-			}
-		} else {
-			if (group == null || group.isEmpty()) {
-				return null;
-			} else if (group.equalsIgnoreCase(GROUP_STARS)) {
-				return stars.getNamedEntry(name);
-			} else if (group.equalsIgnoreCase(GROUP_MOONS)) {
-				return moons.getNamedEntry(name);
-			} else if (group.equalsIgnoreCase(GROUP_ASTEROIDS)) {
-				return asteroids.getNamedEntry(name);
-			}
+	public static AbstractStructure getStructure(Random random, final String group, final String name) {
+		if (group == null || group.isEmpty()) {
+			return null;
 		}
 		
-		// not found or nothing defined
-		return null;
+		RandomCollection<AbstractStructure> randomCollection = structuresByGroup.get(group);
+		if (randomCollection == null) {
+			return null;
+		}
+		
+		if (name == null || name.length() == 0) {
+			return randomCollection.getRandomEntry(random);
+		} else {
+			return randomCollection.getNamedEntry(name);
+		}
 	}
 	
-	public static DeployableStructure getStar(Random random, final String name) {
-		return getStructure(random, GROUP_STARS, name);
-	}
-	
-	public static DeployableStructure getMoon(Random random, final String name) {
-		return getStructure(random, GROUP_MOONS, name);
-	}
-	
-	public static DeployableStructure getAsteroid(Random random, final String name) {
-		return getStructure(random, GROUP_ASTEROIDS, name);
-	}
-	
-	public static DeployableStructure getGasCloud(Random random, final String name) {
-		return getStructure(random, GROUP_GASCLOUDS, name);
+	public static String getStructureNames(final String group) {
+		if (group == null || group.isEmpty()) {
+			// no operation
+		} else {
+			RandomCollection<AbstractStructure> randomCollection = structuresByGroup.get(group);
+			if (randomCollection != null) {
+				return randomCollection.getNames();
+			}
+		}
+		return "Error: group '" + group + "' isn't defined. Try one of: " + StringUtils.join(structuresByGroup.keySet(), ", ");
 	}
 }

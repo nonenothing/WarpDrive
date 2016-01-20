@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.Random;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,25 +20,13 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlPreprocessor;
 
 public class FillerManager {
+	// all fillerSets
+	private static HashMap<String, RandomCollection<FillerSet>> fillerSetsByGroup;
 	
-	private static TreeMap<String, FillerSet> fillerSetsByName = new TreeMap<String, FillerSet>();
-	private static TreeMap<String, RandomCollection<FillerSet>> fillerSetsByGroup = new TreeMap<String, RandomCollection<FillerSet>>();
+	private static final String[] REQUIRED_GROUPS = { };
 	
-	// Stores extra dependency information
-	static TreeMap<FillerSet, ArrayList<String>> fillerSetsDependencies = new TreeMap<FillerSet, ArrayList<String>>();
-	
-	/* TODO dead code?
-	// FillerSets that are guaranteed to exist
-	public static final String COMMON_ORES = "commonOres";
-	public static final String UNCOMMON_ORES = "uncommonOres";
-	public static final String RARE_ORES = "rareOres";
-	public static final String OVERWORLD = "overworld";
-	public static final String NETHER = "nether";
-	public static final String END = "end";
-	/**/
-	
-	public static void loadOres(File dir) {
-		// directory is created by caller, so it can copy default files if any
+	public static void load(File dir) {
+		// (directory is created by caller, so it can copy default files if any)
 		
 		if (!dir.isDirectory()) {
 			throw new IllegalArgumentException("File path " + dir.getName() + " must be a directory!");
@@ -51,6 +39,7 @@ public class FillerManager {
 			}
 		});
 		
+		fillerSetsByGroup = new HashMap<String, RandomCollection<FillerSet>>();
 		for(File file : files) {
 			try {
 				loadXmlFillerFile(file);
@@ -59,6 +48,15 @@ public class FillerManager {
 				exception.printStackTrace();
 			}
 		}
+		
+		for (String group : REQUIRED_GROUPS) {
+			if (!fillerSetsByGroup.containsKey(group)) {
+				WarpDrive.logger.error("Error: no fillerSet defined for mandatory group " + group);
+			}
+		}
+		
+		propagateFillerSets();
+		
 		WarpDrive.logger.info("Loading filler data files done");
 	}
 	
@@ -77,80 +75,80 @@ public class FillerManager {
 		XmlPreprocessor.doLogicPreprocessing(document);
 		
 		// only add FillerSets
-		NodeList nodesFillerSet = document.getElementsByTagName("FillerSet");
-		for (int fillerSetIndex = 0; fillerSetIndex < nodesFillerSet.getLength(); fillerSetIndex++) {
+		NodeList nodeListFillerSet = document.getElementsByTagName("fillerSet");
+		for (int fillerSetIndex = 0; fillerSetIndex < nodeListFillerSet.getLength(); fillerSetIndex++) {
 			
-			Element elementFillerSet = (Element) nodesFillerSet.item(fillerSetIndex);
+			Element elementFillerSet = (Element) nodeListFillerSet.item(fillerSetIndex);
 			
 			String group = elementFillerSet.getAttribute("group");
 			if (group.isEmpty()) {
-				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodesFillerSet.getLength() + " is missing a group attribute!");
+				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodeListFillerSet.getLength() + " is missing a group attribute!");
 			}
 			
 			String name = elementFillerSet.getAttribute("name");
 			if (name.isEmpty()) {
-				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodesFillerSet.getLength() + " is missing a name attribute!");
+				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodeListFillerSet.getLength() + " is missing a name attribute!");
 			}
 			
-			WarpDrive.logger.info("- found FillerSet " + group + ":" + name);
-			
-			FillerSet fillerSet = fillerSetsByName.get(name);
-			if (fillerSet == null) {
-				fillerSet = new FillerSet(group, name);
-				fillerSetsByName.put(name, fillerSet);
+			if (WarpDriveConfig.LOGGING_WORLDGEN) {
+				WarpDrive.logger.info("- found FillerSet " + group + ":" + name);
 			}
 			
-			RandomCollection randomCollection = fillerSetsByGroup.get(group);
+			RandomCollection<FillerSet> randomCollection = fillerSetsByGroup.get(group);
 			if (randomCollection == null) {
 				randomCollection = new RandomCollection<FillerSet>();
 				fillerSetsByGroup.put(group, randomCollection);
 			}
-			randomCollection.loadFromXML(fillerSet, elementFillerSet);
 			
-			if (elementFillerSet.hasAttribute("fillerSets")) {
+			FillerSet fillerSet = randomCollection.getNamedEntry(name);
+			if (fillerSet == null) {
+				fillerSet = new FillerSet(group, name);
+			}
+			randomCollection.loadFromXML(fillerSet, elementFillerSet);
+		}
+	}
+	
+	private static void propagateFillerSets() {
+		HashMap<FillerSet, ArrayList<String>> fillerSetsDependencies = new HashMap<FillerSet, ArrayList<String>>();
+		
+		// scan for static import dependencies
+		for (RandomCollection<FillerSet> fillerSets : fillerSetsByGroup.values()) {
+			for (FillerSet fillerSet : fillerSets.elements()) {
 				ArrayList<String> dependencies = fillerSetsDependencies.get(fillerSet);
 				if (dependencies == null) {
 					dependencies = new ArrayList<String>();
 					fillerSetsDependencies.put(fillerSet, dependencies);
 				}
-				dependencies.addAll(Arrays.asList(elementFillerSet.getAttribute("fillerSets").split(",")));
+				dependencies.addAll(fillerSet.getImportGroupNames());
 			}
-			
-			fillerSet.loadFromXmlElement(elementFillerSet);
-		}
-	}
-	
-	public static void finishLoading() {
-		// import fillerSets into each others
-		propagateFillerSets();
-		
-		// compute fillerSets randomization tables
-		for (FillerSet fillerSet : fillerSetsByName.values()) {
-			fillerSet.finishContruction();
 		}
 		
-		// compute groups randomization tables
-		for (RandomCollection randomCollection : fillerSetsByGroup.values()) {
-			// randomCollection.finishContruction();
-		}
-	}
-	
-	private static void propagateFillerSets() {
-		while (!fillerSetsDependencies.isEmpty()) {
-			TreeMap<FillerSet, ArrayList<String>> fillerSetsLeftToImport = new TreeMap<FillerSet, ArrayList<String>>();
+		// resolve
+		int iterationCount = 0;
+		while (!fillerSetsDependencies.isEmpty() && iterationCount++ < 10) {
+			HashMap<FillerSet, ArrayList<String>> fillerSetsLeftToImport = new HashMap<FillerSet, ArrayList<String>>();
 			
 			for (Entry<FillerSet, ArrayList<String>> entry : fillerSetsDependencies.entrySet()) {
 				ArrayList<String> newDependencies = new ArrayList();
 				for (String dependency : entry.getValue()) {
-					if (!fillerSetsByName.containsKey(dependency)) {
-						WarpDrive.logger.error("Ignoring FillerSet " + dependency + " dependency in FillerSet " + entry.getKey());
+					FillerSet fillerSet = getFillerSet(dependency);
+					if (fillerSet == null) {
+						WarpDrive.logger.error("Ignoring missing FillerSet " + dependency + " dependency in FillerSet " + entry.getKey());
 						
-					} else if (fillerSetsDependencies.containsKey(fillerSetsByName.get(dependency))) {
+					} else if (fillerSetsDependencies.containsKey(fillerSet)) {
 						// skip until it is loaded
 						newDependencies.add(dependency);
 						
 					} else {
-						entry.getKey().loadFrom(fillerSetsByName.get(dependency));
+						try {
+							if (WarpDriveConfig.LOGGING_WORLDGEN) {
+								WarpDrive.logger.info("Importing FillerSet " + fillerSet.getFullName() + " in " + entry.getKey().getFullName());
+							}
+							entry.getKey().loadFrom(fillerSet);
+						} catch (InvalidXmlException exception) {
+							exception.printStackTrace();
+							WarpDrive.logger.error("While importing " + dependency + " into FillerSet " + entry.getKey().getFullName());
+						}
 					}
 				}
 				if (!newDependencies.isEmpty()) {
@@ -160,9 +158,42 @@ public class FillerManager {
 			
 			fillerSetsDependencies = fillerSetsLeftToImport;
 		}
+		
+		// recursion has reach the limit?
+		if (!fillerSetsDependencies.isEmpty()) {
+			WarpDrive.logger.error("Too many import recursions, ignoring the remaining ones:");
+			for (Entry<FillerSet, ArrayList<String>> entry : fillerSetsDependencies.entrySet()) {
+				WarpDrive.logger.warn("- FillerSet " + entry.getKey() + " is pending:");
+				for (String dependency : entry.getValue()) {
+					WarpDrive.logger.warn(" + " + dependency);
+				}
+			}
+		}
 	}
 	
-	public static boolean doesFillerSetExist(String groupOrName) {
-		return fillerSetsByName.containsKey(groupOrName) || fillerSetsByName.containsKey(groupOrName);
+	public static boolean doesGroupExist(final String groupName) {
+		return fillerSetsByGroup.get(groupName) != null;
+	}
+	
+	public static FillerSet getRandomFillerSetFromGroup(Random random, final String groupName) {
+		RandomCollection<FillerSet> group = fillerSetsByGroup.get(groupName);
+		if (group == null) {
+			return null;
+		}
+		FillerSet fillerSet = group.getRandomEntry(random);
+		return fillerSet;
+	}
+	
+	public static FillerSet getFillerSet(final String groupAndName) {
+		String[] parts = groupAndName.split(":");
+		if (parts.length != 2) {
+			WarpDrive.logger.error("Invalid FillerSet '" + groupAndName + "'. Expecting '{group}:{name}'");
+			return null;
+		}
+		RandomCollection<FillerSet> group = fillerSetsByGroup.get(parts[0]);
+		if (group == null) {
+			return null;
+		}
+		return group.getNamedEntry(parts[1]);
 	}
 }

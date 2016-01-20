@@ -4,11 +4,10 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 
-public class SchematicStructure extends DeployableStructure {
+public class Schematic extends AbstractStructure {
 	
-	public SchematicStructure(final String name) {
-		super(name);
-		// TODO Auto-generated constructor stub
+	public Schematic(final String group, final String name) {
+		super(group, name);
 	}
 	
 	@Override
@@ -16,5 +15,10 @@ public class SchematicStructure extends DeployableStructure {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
+	@Override
+	public AbstractInstance instantiate(Random random) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

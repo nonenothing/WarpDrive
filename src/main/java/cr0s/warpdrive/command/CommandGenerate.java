@@ -7,7 +7,7 @@ import net.minecraft.util.MathHelper;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.structures.DeployableStructure;
+import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.world.JumpgateGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
@@ -52,11 +52,7 @@ public class CommandGenerate extends CommandBase {
 			int z = MathHelper.floor_double(player.posZ);
 
 			if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-				if (struct.equals("moon")) {
-					WarpDrive.logger.info("/generate: generating moon at " + x + ", " + (y - 16) + ", " + z);
-					WarpDrive.instance.spaceWorldGenerator.generateMoon(player.worldObj, x, y - 16, z, null);
-					
-				} else if (struct.equals("ship")) {
+				if (struct.equals("ship")) {
 					WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
 					new WorldGenSmallShip(false).generate(player.worldObj, player.worldObj.rand, x, y, z);
 					
@@ -65,30 +61,29 @@ public class CommandGenerate extends CommandBase {
 					new WorldGenStation(false).generate(player.worldObj, player.worldObj.rand, x, y, z);
 					
 				} else if (struct.equals("asteroid")) {
-					WarpDrive.logger.info("/generate: generating asteroid at " + x + ", " + (y - 10) + ", " + z);
-					WarpDrive.instance.spaceWorldGenerator.generateRandomAsteroid(player.worldObj, x, y - 10, z);
+					String name = (params.length > 1) ? params[1] : null;
+					generateStructure(player, StructureManager.GROUP_ASTEROIDS, name, x, y - 10, z);
 					
 				} else if (struct.equals("astfield")) {
 					WarpDrive.logger.info("/generate: generating asteroid field at " + x + ", " + y + ", " + z);
 					WarpDrive.instance.spaceWorldGenerator.generateAsteroidField(player.worldObj, x, y, z);
 					
 				} else if (struct.equals("gascloud")) {
-					WarpDrive.logger.info("/generate: generating gas cloud at " + x + ", " + y + ", " + z);
-					String type = (params.length > 1) ? params[1] : null;
-					WarpDrive.instance.spaceWorldGenerator.generateGasCloudOfColor(player.worldObj, x, y, z, 15, 20, type);
+					String name = (params.length > 1) ? params[1] : null;
+					generateStructure(player, StructureManager.GROUP_GASCLOUDS, name, x, y, z);
+					
+				} else if (struct.equals("moon")) {
+					String name = (params.length > 1) ? params[1] : null;
+					generateStructure(player, StructureManager.GROUP_MOONS, name, x, y - 16, z);
 					
 				} else if (struct.equals("star")) {
-					String type = (params.length > 1) ? params[1] : null;
-					DeployableStructure star = StructureManager.getStar(player.worldObj.rand, type);
-					if (star == null) {
-						WarpDrive.addChatMessage(player, "Invalid star type '" + type + "'");
-					} else {
-						WarpDrive.logger.info("/generate: Generating star (class " + star + ") at " + x + " " + y + " " + z);
-						star.generate(player.worldObj, player.worldObj.rand, x, y, z);
-					}
+					String name = (params.length > 1) ? params[1] : null;
+					generateStructure(player, StructureManager.GROUP_STARS, name, x, y, z);
 					
 				} else if (struct.equals("jumpgate")) {
-					if (params.length == 2) {
+					if (params.length != 2) {
+						WarpDrive.addChatMessage(player, "Missing jumpgate name");
+					} else {
 						WarpDrive.logger.info("/generate: creating jumpgate at " + x + ", " + y + ", " + z);
 						
 						if (WarpDrive.jumpgates.addGate(params[1], x, y, z)) {
@@ -103,6 +98,23 @@ public class CommandGenerate extends CommandBase {
 			}
 		} else {
 			WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+		}
+	}
+	
+	private void generateStructure(EntityPlayerMP player, final String group, final String name, final int x, final int y, final int z) {
+		AbstractStructure structure = StructureManager.getStructure(player.worldObj.rand, group, name);
+		if (structure == null) {
+			WarpDrive.addChatMessage(player, "Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group));
+		} else {
+			WarpDrive.logger.info("/generate: Generating " + group + ":" + structure.getName() + " at " + x + " " + y + " " + z);
+			structure.generate(player.worldObj, player.worldObj.rand, x, y, z);
+			
+			// do a weak attempt to extract player (ideally, it should be delayed after generation, but that's too complicated)
+			int newY = y + 1;
+			while (newY < 256 && !player.worldObj.isAirBlock(x, newY, z)) {
+				newY++;
+			}
+			player.setPosition(player.posX, newY, player.posZ);
 		}
 	}
 }

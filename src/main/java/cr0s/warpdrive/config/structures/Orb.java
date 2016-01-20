@@ -1,156 +1,153 @@
 package cr0s.warpdrive.config.structures;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.world.World;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.XmlRepresentable;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.filler.FillerSet;
-import cr0s.warpdrive.world.EntitySphereGen;
-import cr0s.warpdrive.world.EntityStarCore;
 
-public abstract class Orb extends DeployableStructure implements XmlRepresentable {
+public class Orb extends AbstractStructure {
 	
-	private OrbShell[] orbShells;
+	protected OrbShell[] orbShells;
 	protected boolean hasStarCore = false;
-	private ArrayList<String> fillerSetGroupOrNames = new ArrayList<String>(); 
+	protected String schematicName;
 	
-	public Orb(final String name) {
-		super(name);
+	public Orb(final String group, final String name) {
+		super(group, name);
 	}
 	
 	@Override
-	public String getName() {
-		return name;
-	}
-	
-	@Override
-	public void loadFromXmlElement(Element element) throws InvalidXmlException {
-		
-		int maxThickness = 0;
+	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+		super.loadFromXmlElement(element);
 		
 		NodeList nodeListShells = element.getElementsByTagName("shell");
 		orbShells = new OrbShell[nodeListShells.getLength()];
-		for (int shellIndex = 0; shellIndex < nodeListShells.getLength(); shellIndex++) {
-			Element elementShell = (Element) nodeListShells.item(shellIndex);
-			String orbShellName = element.getAttribute("name");
+		int shellIndexOut = 0;
+		for (int shellIndexIn = 0; shellIndexIn < nodeListShells.getLength(); shellIndexIn++) {
+			Element elementShell = (Element) nodeListShells.item(shellIndexIn);
+			String orbShellName = elementShell.getAttribute("name");
 			
-			orbShells[shellIndex] = new OrbShell(name, orbShellName);
-			orbShells[shellIndex].loadFromXmlElement(elementShell);
-			orbShells[shellIndex].finishContruction();
-			maxThickness += orbShells[shellIndex].maxThickness;
+			orbShells[shellIndexOut] = new OrbShell(getFullName(), orbShellName);
+			try {
+				orbShells[shellIndexOut].loadFromXmlElement(elementShell);
+				shellIndexOut++;
+			} catch (InvalidXmlException exception) {
+				exception.printStackTrace();
+				WarpDrive.logger.error("Skipping invalid shell " + orbShellName);
+			}
 		}
 		
-		setRadius(maxThickness - 1);
-	}
-	
-	/**
-	 * @deprecated Not implemented
-	 **/
-	@Deprecated
-	@Override
-	public void saveToXmlElement(Element element, Document document) throws InvalidXmlException {
-		throw new InvalidXmlException("Not implemented");
+		NodeList nodeListSchematic = element.getElementsByTagName("schematic");
+		if (nodeListSchematic.getLength() > 1) {
+			WarpDrive.logger.error("Too many schematic defined, only first one will be used in structure " + getFullName());
+		}
+		if (nodeListSchematic.getLength() > 0) {
+			schematicName = ((Element)nodeListSchematic.item(0)).getAttribute("group");
+		}
+		
+		return true;
 	}
 	
 	@Override
 	public boolean generate(World world, Random random, int x, int y, int z) {
-		int[] thicknesses = randomize(random);
-		int totalThickness = 0;
-		for (int thickness : thicknesses) {
-			totalThickness += thickness;
-		}
-		EntitySphereGen entitySphereGen = new EntitySphereGen(world, x, y, z, this, thicknesses, totalThickness, true);
-		world.spawnEntityInWorld(entitySphereGen);
-		if (hasStarCore) {
-			return world.spawnEntityInWorld(new EntityStarCore(world, x, y, z, totalThickness));
-		}
-		return false;
+		return instantiate(random).generate(world, random, x, y, z);
 	}
 	
-	/**
-	 * 
-	 * @Deprecated pending addition of variables offsets in structure XML attributes
-	 */
-	@Deprecated
-	public boolean generate(World world, Random random, int x, int y, int z, final int radius) {
-		EntitySphereGen entitySphereGen = new EntitySphereGen(world, x, y, z, this, null, radius, true);
-		world.spawnEntityInWorld(entitySphereGen);
-		return false;
-	}
-	
-	public int[] randomize(Random random) {
-		int[] thicknesses = new int[orbShells.length];
-		for(int orbShellIndex = 0; orbShellIndex < orbShells.length; orbShellIndex++) {
-			OrbShell orbShell = orbShells[orbShellIndex];
-			thicknesses[orbShellIndex] = orbShell.minThickness
-					+ ((orbShell.maxThickness - orbShell.minThickness > 0) ? random.nextInt(orbShell.maxThickness - orbShell.minThickness) : 0);
-		}
-		return thicknesses;
-	}
-	
-	public OrbShell getShellForRadius(final int[] thicknesses, final int range) {
-		int cumulatedRange = 0;
-		for (int shellIndex = 0; shellIndex < orbShells.length; shellIndex++) {
-			cumulatedRange += thicknesses[shellIndex];
-			if (range <= cumulatedRange) {
-				return orbShells[shellIndex];
-			}
-		}
-		return null;
+	@Override
+	public AbstractInstance instantiate(Random random) {
+		return new OrbInstance(this, random);
 	}
 	
 	public class OrbShell extends FillerSet {
-		private String parentName;
-		private int minThickness;
-		private int maxThickness;
+		private String parentFullName;
+		protected int minThickness;
+		protected int maxThickness;
 		
-		public OrbShell(String parentName, String name) {
+		public OrbShell(final String parentFullName, final String name) {
 			super(null, name);
-			this.parentName = parentName;
+			this.parentFullName = parentFullName;
 		}
 		
 		@Override
-		public void loadFromXmlElement(Element element) throws InvalidXmlException {
-			WarpDrive.logger.info("Loading shell " + element.getAttribute("name"));
+		public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+			if (WarpDriveConfig.LOGGING_WORLDGEN) {
+				WarpDrive.logger.info("  + found shell " + element.getAttribute("name"));
+			}
 			
 			super.loadFromXmlElement(element);
 			
-			if (element.hasAttribute("fillerSets")) {
-				String[] allFillerSetGroupOrNames = element.getAttribute("fillerSets").split(",");
-				
-				for (String fillerSetGroupOrName : allFillerSetGroupOrNames) {
-					if (!FillerManager.doesFillerSetExist(fillerSetGroupOrName)) {
-						WarpDrive.logger.warn("Skipping missing FillerSet " + fillerSetGroupOrName + " in shell " + name);
-					} else {
-						fillerSetGroupOrNames.add(fillerSetGroupOrName);
-					}
+			// resolve static imports
+			for (String importGroupName : getImportGroupNames()) {
+				FillerSet fillerSet = FillerManager.getFillerSet(importGroupName);
+				if (fillerSet == null) {
+					WarpDrive.logger.warn("Skipping missing FillerSet " + importGroupName + " in shell " + parentFullName + ":" + name);
+				} else {
+					loadFrom(fillerSet);
 				}
 			}
 			
+			// validate dynamic imports
+			for (String importGroup : getImportGroups()) {
+				if (!FillerManager.doesGroupExist(importGroup)) {
+					WarpDrive.logger.warn("An invalid FillerSet group " + importGroup + " is referenced in shell " + parentFullName + ":" + name);
+				}
+			}
+			
+			// shell thickness
 			try {
 				minThickness = Integer.parseInt(element.getAttribute("minThickness"));
-			} catch (NumberFormatException ex) {
-				throw new InvalidXmlException("Invalid minThickness in shell " + name + " of orb " + parentName);
+			} catch (NumberFormatException exception) {
+				throw new InvalidXmlException("Invalid minThickness in shell " + name + " of structure " + parentFullName);
 			}
 			
 			try {
 				maxThickness = Integer.parseInt(element.getAttribute("maxThickness"));
-			} catch (NumberFormatException ex) {
-				throw new InvalidXmlException("Invalid maxThickness in shell " + name + " of orb " + parentName);
+			} catch (NumberFormatException exception) {
+				throw new InvalidXmlException("Invalid maxThickness in shell " + name + " of structure " + parentFullName);
 			}
 			
 			if (maxThickness < minThickness) {
-				throw new InvalidXmlException("Invalid maxThickness " + maxThickness + " lower than minThickness " + minThickness + " in shell " + name + " of orb " + parentName);
+				throw new InvalidXmlException("Invalid maxThickness " + maxThickness + " lower than minThickness " + minThickness + " in shell " + name + " of orb " + parentFullName);
 			}
+			
+			return true;
+		}
+		
+		public OrbShell instantiate(Random random) {
+			OrbShell orbShell = new OrbShell(parentFullName, name);
+			orbShell.minThickness = minThickness;
+			orbShell.maxThickness = maxThickness;
+			try {
+				orbShell.loadFrom(this);
+				for (String importGroup : getImportGroups()) {
+					FillerSet fillerSet = FillerManager.getRandomFillerSetFromGroup(random, importGroup);
+					if (fillerSet == null) {
+						WarpDrive.logger.info("Ignoring invalid group " + importGroup + " in shell " + name + " of structure " + parentFullName);
+						continue;
+					}
+					if (WarpDriveConfig.LOGGING_WORLDGEN) {
+						WarpDrive.logger.info("Filling " + parentFullName + ":" + name + " with " + importGroup + ":" + fillerSet.getName());
+					}
+					orbShell.loadFrom(fillerSet);
+				}
+			} catch (InvalidXmlException exception) {
+				exception.printStackTrace();
+				WarpDrive.logger.error("Failed to instantiate shell " + name + " from structure " + parentFullName);
+			}
+			if (orbShell.isEmpty()) {
+				if (WarpDriveConfig.LOGGING_WORLDGEN) {
+					WarpDrive.logger.info("Ignoring empty shell " + name + " in structure " + parentFullName + "");
+				}
+				return null;
+			}
+			return orbShell;
 		}
 	}
 }

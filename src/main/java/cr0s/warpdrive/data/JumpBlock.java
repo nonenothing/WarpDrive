@@ -13,6 +13,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.config.filler.Filler;
 
 public class JumpBlock {
 	public Block block;
@@ -41,6 +42,19 @@ public class JumpBlock {
 		this.block = block;
 		this.blockMeta = blockMeta;
 		blockTileEntity = tileEntity;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+	
+	public JumpBlock(Filler filler, int x, int y, int z) {
+		if (filler.block == null) {
+			WarpDrive.logger.info("Forcing glass for invalid filler with null block at " + x + " " + y + " " + z);
+			filler.block = Blocks.glass;
+		}
+		this.block = filler.block;
+		this.blockMeta = filler.metadata;
+		blockNBT = (filler.tag != null) ? (NBTTagCompound) filler.tag.copy() : null;
 		this.x = x;
 		this.y = y;
 		this.z = z;

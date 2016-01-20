@@ -7,11 +7,11 @@ import net.minecraft.world.chunk.IChunkProvider;
 import cpw.mods.fml.common.IWorldGenerator;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.MetaBlock;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.structures.DeployableStructure;
-import cr0s.warpdrive.config.structures.Orb;
+import cr0s.warpdrive.config.filler.Filler;
+import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
+import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureManager;
 
 /**
@@ -58,25 +58,22 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 			int y = Y_LIMIT_SOFT_MIN + random.nextInt(Y_LIMIT_SOFT_MAX - Y_LIMIT_SOFT_MIN);
 			// Moon setup
 			if (random.nextInt(700) == 1) {
-				generateMoon(world, x, y, z, null);
-				// Simple asteroids
+				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_MOONS, null);
+				moon.generate(world, world.rand, x, y, z);
+				
+			// Simple asteroids
 			} else if (random.nextInt(150) == 1) {
-				generateRandomAsteroid(world, x, y, z);
-				// Random asteroid of block
+				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+				moon.generate(world, world.rand, x, y, z);
+				
+			// Random asteroid of block
 			} else if (random.nextInt(500) == 1) {// Asteroid field
 				generateAsteroidField(world, x, y, z);
 			}
 
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
-	}
-
-	public static void generateMoon(World world, int x, int y, int z, final String moonName) {
-		DeployableStructure moon = StructureManager.getMoon(world.rand, moonName);
-		WarpDrive.logger.info("Generating moon (class " + moon + ") at " + x + " " + y + " " + z);
-
-		moon.generate(world, world.rand, x, y, z);
 	}
 
 	private static void generateSmallShip(World world, int x, int y, int z, int jitter) {
@@ -170,7 +167,8 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 			}
 
 			// Place an asteroid
-			generateRandomAsteroid(world, aX, aY, aZ);
+			AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+			moon.generate(world, world.rand, aX, aY, aZ);
 		}
 
 		// Setting up small asteroids
@@ -187,7 +185,8 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 
 			// Placing
 			if (world.rand.nextInt(400) != 1) {
-				generateRandomAsteroid(world, aX, aY, aZ);
+				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+				moon.generate(world, world.rand, aX, aY, aZ);
 			} else {
 				if (world.rand.nextInt(20) != 1) {
 					generateSmallShip(world, aX, aY, aZ, 8);
@@ -211,98 +210,24 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 
 			// Placing
 			if (world.rand.nextBoolean()) {
-				generateGasCloudOfColor(world, aX, aY, aZ, 12, 15, null);
+				AbstractStructure gasCloud = StructureManager.getStructure(world.rand, StructureManager.GROUP_GASCLOUDS, null);
+				if (gasCloud != null) {
+					gasCloud.generate(world, world.rand, aX, aY, aZ);
+				}
 			}
 		}
 
 		LocalProfiler.stop();
 	}
-
-	/**
-	 * Gas cloud generator
-	 *
-	 * @param x
-	 *            coordinate of center
-	 * @param y
-	 *            coordinate of center
-	 * @param z
-	 *            coordinate of center
-	 * @param cloudSizeMax
-	 *            maximum gas cloud size (by number of balls it consists)
-	 * @param centerRadiusMax
-	 *            maximum radius of central ball
-	 */
-	public static void generateGasCloudOfColor(World world, int x, int y, int z, int cloudSizeMax, int centerRadiusMax, final String type) {
-		int cloudSize = 1 + world.rand.nextInt(20);
-		if (cloudSizeMax != 0)
-			cloudSize = Math.min(cloudSizeMax, cloudSize);
-		int centerRadius = 1 + world.rand.nextInt(20);
-		if (centerRadiusMax != 0)
-			centerRadius = Math.min(centerRadiusMax, centerRadius);
-		final int CENTER_SHIFT = 2; // Offset from center of central ball
-
-		DeployableStructure cloud = StructureManager.getGasCloud(world.rand, type);
-		if (cloud == null) {
-			WarpDrive.logger.error("No gaz cloud defined, cancelling world generation");
-			return;
-		}
-
-		for (int i = 1; i <= cloudSize; i++) {
-			int radius = 2 + world.rand.nextInt(centerRadius);
-			int newX = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(CENTER_SHIFT + centerRadius / 2));
-			int newY = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(CENTER_SHIFT + centerRadius / 2));
-			int newZ = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(CENTER_SHIFT + centerRadius / 2));
-			((Orb)cloud).generate(world, world.rand, newX, newY, newZ, radius);
-		}
-	}
-
-	/**
-	 * Asteroid of block generator
-	 *
-	 * @param x
-	 *            coordinate of center
-	 * @param y
-	 *            coordinate of center
-	 * @param z
-	 *            coordinate of center
-	 */
-	public static void generateRandomAsteroid(World world, int x, int y, int z) {
-		
-		DeployableStructure asteroid = StructureManager.getAsteroid(world.rand, null);
-		
-		asteroid.generate(world, world.rand, x, y, z);
-		
-		/*
-		int asteroidSize = 1 + world.rand.nextInt(6);
-		if (asteroidSizeMax != 0) {
-			asteroidSize = Math.min(asteroidSizeMax, asteroidSize);
-		}
-		int centerRadius = 1 + world.rand.nextInt(6);
-		if (centerRadiusMax != 0) {
-			centerRadius = Math.min(centerRadiusMax, centerRadius);
-		}
-		final int CENTER_SHIFT = 2; // Offset from center of central ball
-		// Asteroid's center
-		Block t = WarpDriveConfig.getDefaultSurfaceBlock(world.rand, true, false);
-		generateSphereDirect(world, x, y, z, centerRadius, true, ice, meta, false, t, 0);
-		// Asteroids knolls
-		for (int i = 1; i <= asteroidSize; i++) {
-			int radius = 1 + world.rand.nextInt(centerRadius);
-			int newX = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(CENTER_SHIFT + centerRadius / 2));
-			int newY = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(CENTER_SHIFT + centerRadius / 2));
-			int newZ = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(CENTER_SHIFT + centerRadius / 2));
-			generateSphereDirect(world, newX, newY, newZ, radius, true, ice, meta, false, t, 0);
-		}
-		 */
-	}
 	
+	/**
+	 * 
+	 * @deprecated reference design for EntitySphereGenerator
+	 **/
+	@Deprecated
 	public static void generateSphereDirect(
-			final int[] thicknesses, Orb orb, World world, int xCoord, int yCoord, int zCoord) {
-		int totalThickness = 0;
-		for (int thickness : thicknesses) {
-			totalThickness += thickness;
-		}
-		double radiusC = totalThickness + 0.5D; // Radius from center of block
+			OrbInstance orbInstance, World world, int xCoord, int yCoord, int zCoord) {
+		double radiusC = orbInstance.getTotalThickness() + 0.5D; // Radius from center of block
 		double radiusSq = radiusC * radiusC; // Optimization to avoid sqrts...
 		// sphere
 		int ceilRadius = (int) Math.ceil(radiusC);
@@ -324,16 +249,16 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 					// Place blocks
 					// cheat by using axial symmetry so we don't create random numbers too frequently
 					
-					OrbShell orbShell = orb.getShellForRadius(thicknesses, (int)Math.sqrt(dSq));
-					MetaBlock metablock = orbShell.getRandomBlock(world.rand);
-					world.setBlock(xCoord + x, yCoord + y, zCoord + z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord - x, yCoord + y, zCoord + z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord + x, yCoord - y, zCoord + z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord + x, yCoord + y, zCoord - z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord - x, yCoord - y, zCoord + z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord + x, yCoord - y, zCoord - z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord - x, yCoord + y, zCoord - z, metablock.block, metablock.metadata, 2);
-					world.setBlock(xCoord - x, yCoord - y, zCoord - z, metablock.block, metablock.metadata, 2);
+					OrbShell orbShell = orbInstance.getShellForSqRadius(dSq);
+					Filler filler = orbShell.getRandomBlock(world.rand);
+					filler.setBlock(world, xCoord + x, yCoord + y, zCoord + z);
+					filler.setBlock(world, xCoord - x, yCoord + y, zCoord + z);
+					filler.setBlock(world, xCoord + x, yCoord - y, zCoord + z);
+					filler.setBlock(world, xCoord + x, yCoord + y, zCoord - z);
+					filler.setBlock(world, xCoord - x, yCoord - y, zCoord + z);
+					filler.setBlock(world, xCoord + x, yCoord - y, zCoord - z);
+					filler.setBlock(world, xCoord - x, yCoord + y, zCoord - z);
+					filler.setBlock(world, xCoord - x, yCoord - y, zCoord - z);
 				}
 			}
 		}
