@@ -751,7 +751,7 @@ function core_boot()
 		return
 	end
 
-	Write("Booting Warpdrive Core")
+	Write("Booting Ship Core")
 	
 	if data.core_summon then
 		ship.summon_all()
@@ -764,10 +764,10 @@ function core_boot()
 	
 	Write(".")
 	repeat
-		pos = ship.pos()
+		pos = ship.position()
 		sleep(0.3)
 	until pos ~= nil
-	X, Y, Z = ship.pos()
+	X, Y, Z = ship.position()
 	Write(".")
 	repeat
 		isAttached = ship.isAttached()
@@ -951,7 +951,7 @@ function core_page_summon()
 	ShowTitle("<==== Summon players ====>")
 	local playersString, playersArray = ship.getAttachedPlayers()
 	for i = 1, #playersArray do
-		Show(i..". "..playersArray[i])
+		WriteLn(i..". "..playersArray[i])
 	end
 	SetColorTitle()
 	ShowMenu("Enter player number")
@@ -1033,7 +1033,7 @@ function core_page()
 	ShowMenu("D - Dimensions, M - Toggle summon, N - Ship name")
 	ShowMenu("S - Set Warp Data, J - Jump, G - Jump to JumpGate")
 	ShowMenu("B - Jump to Beacon, H - Jump to Hyperspace")
-	ShowMenu("C - core_page_summon crew")
+	ShowMenu("C - summon Crew") -- FIXME overlap to fix
 end
 
 function core_key(keycode)
