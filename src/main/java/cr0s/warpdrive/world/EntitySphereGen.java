@@ -90,7 +90,17 @@ public final class EntitySphereGen extends Entity {
 	
 	public void killEntity() {
 		this.state = STATE_STOP;
-		worldObj.markBlockRangeForRenderUpdate(xCoord - radius, yCoord - radius, zCoord - radius, xCoord + radius, yCoord + radius, zCoord + radius);
+		int minYclamped = Math.max(0, yCoord - radius);
+		int maxYclamped = Math.min(255, yCoord + radius);
+		for (int x = xCoord - radius; x <= xCoord + radius; x++) {
+			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
+				for (int y = minYclamped; y <= maxYclamped; y++) {
+					if (worldObj.getBlock(x, y, z) != Blocks.air) {
+						worldObj.markBlockForUpdate(x, y, z);
+					}
+				}
+			}
+		}
 		worldObj.removeEntity(this);
 	}
 	

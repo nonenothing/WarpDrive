@@ -182,7 +182,7 @@ public class CloakedArea {
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				for (int y = minYclamped; y <= maxYclamped; y++) {
-					if (!player.worldObj.getBlock(x, y, z).isAssociatedBlock(Blocks.air)) {
+					if (player.worldObj.getBlock(x, y, z) != Blocks.air) {
 						player.worldObj.markBlockForUpdate(x, y, z);
 						
 						JumpBlock.refreshBlockStateOnClient(player.worldObj, x, y, z);

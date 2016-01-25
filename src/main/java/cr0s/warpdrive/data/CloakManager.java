@@ -81,22 +81,22 @@ public class CloakManager {
 		return false;
 	}
 	
-	public boolean isAreaExists(World worldObj, int x, int y, int z) {
-		return (getCloakedArea(worldObj, x, y, z) != null);
+	public boolean isAreaExists(World world, int x, int y, int z) {
+		return (getCloakedArea(world, x, y, z) != null);
 	}
 	
 	public void updateCloakedArea(
-			World worldObj,
+			World world,
 			final int dimensionId, final int coreX, final int coreY, final int coreZ, final byte tier,
 			final int minX, final int minY, final int minZ,
 			final int maxX, final int maxY, final int maxZ) {
-		CloakedArea newArea = new CloakedArea(worldObj, dimensionId, coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
+		CloakedArea newArea = new CloakedArea(world, dimensionId, coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
 		
 		// find existing one
 		int index = -1;
 		for (int i = 0; i < cloaks.size(); i++) {
 			CloakedArea area = cloaks.get(i);
-			if ( area.dimensionId == worldObj.provider.dimensionId
+			if ( area.dimensionId == world.provider.dimensionId
 			  && area.coreX == coreX
 			  && area.coreY == coreY
 			  && area.coreZ == coreZ ) {
@@ -109,7 +109,7 @@ public class CloakManager {
 		} else {
 			cloaks.add(newArea);
 		}
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (world.isRemote) {
 			newArea.clientCloak();
 		}
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Cloak count is " + cloaks.size()); }
@@ -138,9 +138,9 @@ public class CloakManager {
 		}
 	}
 	
-	public CloakedArea getCloakedArea(World worldObj, int x, int y, int z) {
+	public CloakedArea getCloakedArea(World world, int x, int y, int z) {
 		for (CloakedArea area : cloaks) {
-			if (area.dimensionId == worldObj.provider.dimensionId && area.coreX == x && area.coreY == y && area.coreZ == z)
+			if (area.dimensionId == world.provider.dimensionId && area.coreX == x && area.coreY == y && area.coreZ == z)
 				return area;
 		}
 		
