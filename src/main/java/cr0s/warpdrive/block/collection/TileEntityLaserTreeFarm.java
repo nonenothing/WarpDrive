@@ -12,6 +12,7 @@ import li.cil.oc.api.machine.Context;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -355,6 +356,11 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					}
 					
 					if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, plantable)) {
+						slotIndex++;
+						continue;
+					}
+					
+					if (!plant.canPlaceBlockAt(worldObj, soil.x, soil.y + 1, soil.z)) {
 						slotIndex++;
 						continue;
 					}

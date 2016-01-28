@@ -1,6 +1,5 @@
 package cr0s.warpdrive.config;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,6 +84,7 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:dirt"                   , "Soil").getString();
 				config.get("block_tags", "minecraft:farmland"               , "Soil").getString();
 				config.get("block_tags", "minecraft:grass"                  , "Soil").getString();
+				config.get("block_tags", "minecraft:mycelium"               , "Soil").getString();
 				config.get("block_tags", "minecraft:sand"                   , "Soil").getString();
 				config.get("block_tags", "minecraft:soul_sand"              , "Soil").getString();
 				config.get("block_tags", "IC2:blockRubWood"                 , "Log").getString();
