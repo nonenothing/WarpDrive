@@ -934,7 +934,7 @@ public class Recipes {
 		// Mining laser is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 MV Machine casing, 1 diamond pick, 2 glass pane
 		ItemStack itemStackDiamondPick = new ItemStack(Items.diamond_pickaxe);
 		if (WarpDriveConfig.isGregTech5loaded) {
-			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", -1); // Mining laser
+			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", 1); // Mining laser
 		} else if (WarpDriveConfig.isIndustrialCraft2loaded) {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
@@ -1123,7 +1123,7 @@ public class Recipes {
 			oreEmeraldOrTitaniumPlate = itemStackTitaniumPlates.get(0);
 		} else if (WarpDriveConfig.isAdvancedSolarPanelLoaded) {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("AdvancedSolarPanel", "asp_crafting_items", 0);	// Sunnarium
-		} else if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		} else if (OreDictionary.doesOreNameExist("plateDenseSteel") && !OreDictionary.getOres("plateDenseSteel").isEmpty()) {// IndustrialCraft2
 			ArrayList<ItemStack> itemStackPlateDenseSteel = OreDictionary.getOres("plateDenseSteel");
 			oreEmeraldOrTitaniumPlate = itemStackPlateDenseSteel.get(0);
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
