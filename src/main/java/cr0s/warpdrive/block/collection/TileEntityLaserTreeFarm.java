@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.collection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -88,6 +89,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				"tapTrees"
 		});
 		laserMediumMaxCount = WarpDriveConfig.TREE_FARM_MAX_MEDIUMS_COUNT;
+		CC_scripts = Arrays.asList("farm", "stop");
 	}
 	
 	@Override
