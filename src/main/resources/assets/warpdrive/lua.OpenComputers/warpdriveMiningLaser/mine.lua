@@ -28,12 +28,12 @@ end
 
 noExit = true
 layerOffset = 1
-mineAll = true
+onlyOres = true
 silktouch = false
 args = {...}
 if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
-    print("Usage: mine <layerOffset> <oreOnly> <silktouch>")
+    print("Usage: mine <layerOffset> <onlyOres> <silktouch>")
     print()
     print("Miner always mine below it, down to bedrock.")
 	print("Set layerOffset to define starting level.")
@@ -48,8 +48,8 @@ if #args > 0 then
   end
   
   if #args > 1 then
-    if args[2] == "false" or args[2] == "0" then
-      mineAll = false
+    if args[2] == "true" or args[2] == "1" then
+      onlyOres = true
     end
   end
   
@@ -70,19 +70,9 @@ if noExit then
     statusString, isActive = mininglaser.state()
     if not isActive then
       mininglaser.offset(layerOffset)
-	  
-      if mineAll then
-        mininglaser.onlyOres(false)
-      else
-        mininglaser.onlyOres(true)
-      end
-	  
-      if silktouch then
-        mininglaser.silktouch(silktouch)
-      else
-        mininglaser.silktouch(false)
-      end
-	  
+      mininglaser.onlyOres(onlyOres)
+      mininglaser.silktouch(silktouch)
+      
       mininglaser.start()
 	end
   end
