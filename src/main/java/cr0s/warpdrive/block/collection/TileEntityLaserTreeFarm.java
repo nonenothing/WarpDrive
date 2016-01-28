@@ -588,7 +588,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		int energy = getEnergyStored();
 		String status = getStatus();
 		Integer retValuables, retValuablesIndex;
-		if (isFarming()) {
+		if (isFarming() && valuables != null) {
 			retValuables = valuables.size();
 			retValuablesIndex = valuableIndex;
 			
