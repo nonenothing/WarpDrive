@@ -219,6 +219,7 @@ public class LivingHandler {
 						EntityItem itemEnt = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
 						entityPlayer.worldObj.spawnEntityInWorld(itemEnt);
 					}
+					entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				}
 				return true;
 			}

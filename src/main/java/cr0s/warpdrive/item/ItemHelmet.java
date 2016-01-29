@@ -72,6 +72,7 @@ public class ItemHelmet extends ItemArmor implements IBreathingHelmet {
 								EntityItem ie = new EntityItem(pl.worldObj, pl.posX, pl.posY, pl.posZ, toAdd);
 								pl.worldObj.spawnEntityInWorld(ie);
 							}
+							pl.sendContainerToPlayer(pl.inventoryContainer);
 						} else {
 							is.setItemDamage(is.getItemDamage() + 1); // bypass unbreaking enchantment
 							if (is.getItemDamage() >= is.getMaxDamage()) {
