@@ -42,7 +42,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 			}
 			int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER + random.nextInt(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_CENTER - WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER);
 			// Moon setup
-			if (random.nextInt(700) == 1) {
+			if (random.nextInt(800) == 1) {
 				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_MOONS, null);
 				moon.generate(world, world.rand, x, y, z);
 				
@@ -52,7 +52,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 				moon.generate(world, world.rand, x, y, z);
 				
 			// Random asteroid of block
-			} else if (random.nextInt(500) == 1) {// Asteroid field
+			} else if (random.nextInt(600) == 1) {// Asteroid field
 				generateAsteroidField(world, x, y, z);
 			}
 
