@@ -273,7 +273,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		}
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (OC_node != null && OC_node.network() != null) {
-				OC_node.sendToReachable(eventName, arguments);
+				OC_node.sendToReachable("computer.signal", eventName, arguments);
 			}
 		}
 	}
