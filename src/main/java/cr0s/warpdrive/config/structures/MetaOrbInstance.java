@@ -30,15 +30,17 @@ public class MetaOrbInstance extends OrbInstance {
 		}
 		LocalProfiler.start("[AsteroidInstance] Generating MetaOrb " + structure.name + " of " + metashell.count + " cores with radius of " + totalThickness);
 		
+		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness - (int)metashell.radius,
+			  Math.max(y, WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness + (int)metashell.radius));
 		if (((MetaOrb)structure).metashell == null) {
-			return super.generate(world, random, x, y, z);
+			return super.generate(world, random, x, y2, z);
 		}
 		
 		// generate an abstract form for the core
 		for (VectorI location: metashell.locations) {
 			// place core block
 			if (metashell.block != null) {
-				world.setBlock(x + location.x, y + location.y, z + location.z, metashell.block, metashell.metadata, 2);
+				world.setBlock(x + location.x, y2 + location.y, z + location.z, metashell.block, metashell.metadata, 2);
 			}
 			
 			// calculate distance to borders of generation area
@@ -52,7 +54,7 @@ public class MetaOrbInstance extends OrbInstance {
 			maxLocalRadius = Math.max(minThickness, maxLocalRadius);
 			
 			// Generate shell
-			addShell(world, new VectorI(x, y, z).add(location), maxLocalRadius);
+			addShell(world, new VectorI(x, y2, z).add(location), maxLocalRadius);
 		}
 		
 		LocalProfiler.stop();

@@ -18,21 +18,6 @@ import cr0s.warpdrive.config.structures.StructureManager;
  * @author Cr0s
  */
 public class SpaceWorldGenerator implements IWorldGenerator {
-	// Radius of simple moon
-	public final int MOON_RADIUS = 32;
-	public final int MOON_CORE_RADIUS = 10;
-
-	// Star radius
-	public final int RED_DWARF_RADIUS = 42;
-	public final int YELLOW_GIANT_RADIUS = 64;
-	public final int YELLOW_SUPERGIANT_RADIUS = 80;
-
-	// Upper than 200 nothing should generate naturally (safe place)
-	public static int Y_LIMIT_HARD_MAX = 200;
-	// Upper than 128 almost nothing will be generated
-	public static int Y_LIMIT_SOFT_MAX = 128;
-	// Lower limit
-	public static int Y_LIMIT_SOFT_MIN = 55;
 
 	/**
 	 * Generator for chunk
@@ -55,7 +40,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 			if (WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS > 0 && (Math.abs(x) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS || Math.abs(z) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS)) {
 				return;
 			}
-			int y = Y_LIMIT_SOFT_MIN + random.nextInt(Y_LIMIT_SOFT_MAX - Y_LIMIT_SOFT_MIN);
+			int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER + random.nextInt(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_CENTER - WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER);
 			// Moon setup
 			if (random.nextInt(700) == 1) {
 				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_MOONS, null);
@@ -145,7 +130,8 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 		int numOfSmallAsteroids = Math.round((1.0F - bigRatio) * surfaceSmall / surfacePerAsteroid);
 		int numOfClouds = Math.round(numOfBigAsteroids * 1.0F / (10.0F + world.rand.nextInt(10)));
 		int maxHeight = 70 + world.rand.nextInt(50);
-		int y2 = Math.min(Y_LIMIT_HARD_MAX - maxHeight, Math.max(y1, maxHeight));
+		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - maxHeight,
+			 Math.max(y1, WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + maxHeight));
 		WarpDrive.logger.info("Generating asteroid field at " + x + "," + y2 + "," + z + " qty " + numOfBigAsteroids + ", " + numOfSmallAsteroids + ", "
 				+ numOfClouds + " over " + maxDistance + ", " + maxHeight + " surfacePerAsteroid " + String.format("%.1f", surfacePerAsteroid));
 

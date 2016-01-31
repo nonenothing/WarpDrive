@@ -11,6 +11,7 @@ import java.util.Arrays;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -21,6 +22,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.config.structures.StructureReference;
 import cr0s.warpdrive.data.Planet;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -120,6 +122,13 @@ public class WarpDriveConfig {
 	
 	// Planets
 	public static Planet[] PLANETS = null;
+	
+	// Space generator
+	public static int SPACE_GENERATOR_Y_MIN_CENTER = 55;
+	public static int SPACE_GENERATOR_Y_MAX_CENTER = 128;
+	public static int SPACE_GENERATOR_Y_MIN_BORDER = 5;
+	public static int SPACE_GENERATOR_Y_MAX_BORDER = 200;
+	public static RandomCollection<StructureReference> SPACE_GENERATOR_STRUCTURES_CHANCES = null;
 	
 	// Ship
 	public static int SHIP_MAX_ENERGY_STORED = 100000000;
