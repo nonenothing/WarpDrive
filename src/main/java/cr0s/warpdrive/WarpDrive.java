@@ -92,6 +92,7 @@ import cr0s.warpdrive.block.passive.ItemBlockDecorative;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.command.CommandDebug;
+import cr0s.warpdrive.command.CommandEntity;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandInvisible;
 import cr0s.warpdrive.command.CommandJumpgates;
@@ -487,6 +488,7 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandInvisible());
 		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandDebug());
+		event.registerServerCommand(new CommandEntity());
 	}
 	
 	public Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {
