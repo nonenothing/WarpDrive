@@ -84,7 +84,10 @@ public class CommandEntity extends CommandBase {
 		HashMap<String, Integer> counts = new HashMap<String, Integer>(entities.size());
 		for (Object object : entities) {
 			if (object instanceof Entity) {
-				String name = object.getClass().getTypeName();
+				String name = object.getClass().getCanonicalName();
+				if (name == null) {
+					name = "-null-";
+				}
 				if (filter.isEmpty() || name.contains(filter)) {
 					if (!counts.containsKey(name)) {
 						counts.put(name, 1);
