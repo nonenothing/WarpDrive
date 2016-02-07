@@ -820,7 +820,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				StringBuilder reason = new StringBuilder();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
 					this.messageToAllPlayersOnShip("Ship is too small (" + shipMass + "/" + WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE
-							+ "). Insufficient ship mass to open hyperspace portal. Use a jumpgate to reach or exit hyperspace.");
+							+ ").\nInsufficient ship mass to open hyperspace portal.\nUse a jumpgate to reach or exit hyperspace.");
 					this.controller.setJumpFlag(false);
 					return;
 				}
