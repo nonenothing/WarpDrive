@@ -774,6 +774,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		return new Object[] { targetJumpgateName };
 	}
 	
+	protected void cooldownDone() {
+		sendEvent("shipCoreCooldownDone", null);
+	}
+	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")

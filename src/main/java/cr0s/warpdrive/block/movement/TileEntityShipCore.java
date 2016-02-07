@@ -113,6 +113,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		if (cooldownTime > 0) {
 			cooldownTime--;
 			warmupTime = 0;
+			if (cooldownTime == 0) {
+				controller.cooldownDone();
+			}
 		}
 		
 		// Update state
@@ -322,7 +325,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				}
 				
 				doJump();
-				cooldownTime = WarpDriveConfig.SHIP_COOLDOWN_INTERVAL_SECONDS * 20;
+				cooldownTime = Math.max(1, WarpDriveConfig.SHIP_COOLDOWN_INTERVAL_SECONDS * 20);
 				controller.setJumpFlag(false);
 			} else {
 				warmupTime = 0;
