@@ -3,6 +3,7 @@ local computer = require("computer")
 local term = require("term")
 local event = require("event")
 local fs = require("filesystem")
+local serialization = require("serialization")
 
 Style = {
   CDefault = 0xFFFFFF,
@@ -326,20 +327,23 @@ end
 function data_save()
   local file = fs.open("shipdata.txt", "w")
   if file ~= nil then
-    file.writeLine(textutils.serialize(data))
-    file.close()
+    file:write(serialization.serialize(data))
+    file:close()
   else
     ShowWarning("No file system")
   end
 end
 
 function data_read()
+  data = { }
   if fs.exists("shipdata.txt") then
     local file = fs.open("shipdata.txt", "r")
-    data = textutils.unserialize(file.readAll())
-    file.close()
-  else
-    data = { }
+    local size = fs.size("shipdata.txt")
+    local rawData = file:read(size)
+    if rawData ~= nil then
+      data = serialization.unserialize(rawData)
+    end
+    file:close()
   end
   if data.core_summon == nil then data.core_summon = false; end
   if data.core_distance == nil then data.core_distance = 0; end
@@ -435,7 +439,7 @@ function core_computeRealDistance()
   if core_isInHyper then
     core_shipLength = 0
     core_realDistance = data.core_distance * 100 + core_shipLength
-    core_jumpCost = (1000 * core_shipSize) + (1000 * data.core_distance)
+    ship.mode(2)
   else
     if data.core_direction == 1 or data.core_direction == 2 then
       core_shipLength = core_up + core_down + 1
@@ -445,8 +449,9 @@ function core_computeRealDistance()
       core_shipLength = core_left + core_right + 1
     end
     core_realDistance = data.core_distance + core_shipLength - 1
-    core_jumpCost = (10 * core_shipSize) + (100 * data.core_distance)
+    ship.mode(1)
   end
+  core_jumpCost = ship.getEnergyRequired(core_realDistance)
 end
 
 function core_computeNewCoordinates(cx, cy, cz)
@@ -493,7 +498,7 @@ function core_warp()
       ship.mode(1)
     end
     ship.jump()
-    ship = nil
+    -- ship = nil
   end
   -- rs.setOutput(alarm_side, false)
 end
@@ -623,7 +628,7 @@ function core_page_jumpToBeacon()
     ship.mode(4)
     ship.beaconFrequency(freq)
     ship.jump()
-    ship = nil
+    -- ship = nil
   end
   -- rs.setOutput(alarm_side, false)
 end
@@ -639,7 +644,7 @@ function core_page_jumpToGate()
     ship.mode(6)
     ship.targetJumpgate(name)
     ship.jump()
-    ship = nil
+    -- ship = nil
   end
   -- rs.setOutput(alarm_side, false)
 end
@@ -721,7 +726,7 @@ function core_key(char, keycode)
       rs.setOutput(alarm_side, false)
       ship.mode(5)
       ship.jump()
-      ship = nil
+      -- ship = nil
     end
     -- rs.setOutput(alarm_side, false)
     return true
