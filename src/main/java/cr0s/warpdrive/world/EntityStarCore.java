@@ -9,7 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 
 public final class EntityStarCore extends Entity
@@ -119,7 +118,7 @@ public final class EntityStarCore extends Entity
     @Override
     public void onUpdate()
     {
-        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+        if (worldObj.isRemote)
         {
             return;
         }

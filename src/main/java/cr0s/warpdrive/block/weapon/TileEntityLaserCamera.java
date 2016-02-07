@@ -6,7 +6,6 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
@@ -41,7 +40,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		super.updateEntity();
 		
 		// Update video channel on clients (recovery mechanism, no need to go too fast)
-		if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
+		if (!worldObj.isRemote) {
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;

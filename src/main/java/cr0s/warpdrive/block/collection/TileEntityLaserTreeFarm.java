@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
@@ -96,7 +95,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	public void updateEntity() {
 		super.updateEntity();
 		
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			return;
 		}
 		

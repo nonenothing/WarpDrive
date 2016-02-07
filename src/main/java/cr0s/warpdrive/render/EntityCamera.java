@@ -13,7 +13,6 @@ import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.network.PacketHandler;
 
@@ -65,7 +64,7 @@ public final class EntityCamera extends EntityLivingBase {
 	
 	@Override
 	public void onEntityUpdate() {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			if (player == null || player.isDead) {
 				WarpDrive.logger.error(this + " Player is null or dead, closing camera...");
 				closeCamera();

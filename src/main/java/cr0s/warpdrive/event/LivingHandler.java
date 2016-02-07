@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBreathingHelmet;
@@ -45,7 +44,7 @@ public class LivingHandler {
 	
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (event.entityLiving == null || event.entityLiving.worldObj.isRemote) {
 			return;
 		}
 		

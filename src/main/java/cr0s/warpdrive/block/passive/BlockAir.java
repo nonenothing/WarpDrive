@@ -2,7 +2,6 @@ package cr0s.warpdrive.block.passive;
 
 import java.util.Random;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -127,22 +126,22 @@ public class BlockAir extends Block {
 	 * Ticks the block if it's been scheduled
 	 */
 	@Override
-	public void updateTick(World par1World, int x, int y, int z, Random par5Random) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public void updateTick(World world, int x, int y, int z, Random par5Random) {
+		if (world.isRemote) {
 			return;
 		}
 		
-		int concentration = par1World.getBlockMetadata(x, y, z);
-		boolean isInSpaceWorld = par1World.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID || par1World.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
+		int concentration = world.getBlockMetadata(x, y, z);
+		boolean isInSpaceWorld = world.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID || world.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || !isInSpaceWorld) {
-			par1World.setBlock(x, y, z, Blocks.air, 0, 3); // replace our air block to vacuum block
+			world.setBlock(x, y, z, Blocks.air, 0, 3); // replace our air block to vacuum block
 		} else {
 			// Try to spread the air
-			spreadAirBlock(par1World, x, y, z, concentration);
+			spreadAirBlock(world, x, y, z, concentration);
 		}
-		par1World.scheduleBlockUpdate(x, y, z, this, 30 + 2 * concentration);
+		world.scheduleBlockUpdate(x, y, z, this, 30 + 2 * concentration);
 	}
 	
 	@Override

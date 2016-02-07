@@ -22,7 +22,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.EntityJump;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -106,7 +105,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public void updateEntity() {
 		super.updateEntity();
 		
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			return;
 		}
 		
@@ -1130,7 +1129,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public void validate() {
 		super.validate();
 		
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			return;
 		}
 		
@@ -1139,7 +1138,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public void invalidate() {
-		if (!FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (!worldObj.isRemote) {
 			WarpDrive.starMap.removeFromRegistry(new StarMapEntry(this));
 		}
 		super.invalidate();

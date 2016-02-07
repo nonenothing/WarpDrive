@@ -12,7 +12,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -49,7 +48,7 @@ public class PacketHandler {
 	
 	// Beam effect sent to client side
 	public static void sendBeamPacket(World worldObj, Vector3 source, Vector3 target, float red, float green, float blue, int age, int energy, int radius) {
-		assert(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER);
+		assert(!worldObj.isRemote);
 		
 		MessageBeamEffect beamMessage = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		
@@ -82,7 +81,7 @@ public class PacketHandler {
 	}
 	
 	public static void sendBeamPacketToPlayersInArea(World worldObj, Vector3 source, Vector3 target, float red, float green, float blue, int age, int energy, AxisAlignedBB aabb) {
-		assert(FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER);
+		assert(!worldObj.isRemote);
 		
 		MessageBeamEffect beamMessage = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		// Send packet to all players within cloaked area
