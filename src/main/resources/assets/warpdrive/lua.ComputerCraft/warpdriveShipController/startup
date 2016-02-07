@@ -166,6 +166,7 @@ end
 
 function ShowInfo()
  ShowTitle(Title)
+ X, Y, Z = ship.position()
  Show("Core:")
  Show(" x, y, z          = "..X..", "..Y..", "..Z)
  local energy, energyMax = ship.energy()

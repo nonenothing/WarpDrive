@@ -505,7 +505,7 @@ end
 
 function core_page_setDistance()
   ShowTitle("<==== Set distance ====>")
-
+  
   core_computeRealDistance()
   local maximumDistance = core_shipLength + 127
   local userEntry = core_realDistance
@@ -653,6 +653,7 @@ function core_page()
   ShowTitle(label .. " - Ship status")
   if ship ~= nil then
     WriteLn("")
+    X, Y, Z = ship.position()
     WriteLn("Core:")
     WriteLn(" x, y, z          = " .. X .. ", " .. Y .. ", " .. Z)
     local energy, energyMax = ship.energy()
@@ -723,7 +724,7 @@ function core_key(char, keycode)
   elseif char == 72 or char == 104 then -- H
     -- rs.setOutput(alarm_side, true)
     if readConfirmation() then
-      rs.setOutput(alarm_side, false)
+      -- rs.setOutput(alarm_side, false)
       ship.mode(5)
       ship.jump()
       -- ship = nil
