@@ -339,17 +339,17 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public void messageToAllPlayersOnShip(String msg) {
 		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(this.minX, this.minY, this.minZ, this.maxX + 0.99D, this.maxY + 0.99D, this.maxZ + 0.99D);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-
+		
 		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + msg);
 		for (Object object : list) {
-			if (object == null || !(object instanceof EntityPlayer)) {
+			if (!(object instanceof EntityPlayer)) {
 				continue;
 			}
 			
-			WarpDrive.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "WarpCore") + "] " + msg);
+			WarpDrive.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + msg);
 		}
 	}
-
+	
 	private void updateIsolationState() {
 		// Search block in cube around core
 		int xmax, ymax, zmax;
