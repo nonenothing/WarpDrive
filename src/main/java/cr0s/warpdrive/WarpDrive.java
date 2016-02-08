@@ -130,7 +130,7 @@ import cr0s.warpdrive.world.SpaceWorldGenerator;
 public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
-	public static final boolean isDev = VERSION.equals("@version@") || VERSION.contains("-dev");
+	public static final boolean isDev = VERSION.equals("@" + "version" + "@") || VERSION.contains("-dev");
 	
 	public static Block blockShipCore;
 	public static Block blockShipController;
