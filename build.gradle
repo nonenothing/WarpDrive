@@ -86,6 +86,7 @@ processResources
 
 jar {
     manifest {
+        attributes 'FMLAT': 'CoFH_at.cfg'
         attributes 'FMLCorePlugin': 'cr0s.warpdrive.core.FMLLoadingPlugin',
                         'FMLCorePluginContainsFMLMod': 'true'
     }
