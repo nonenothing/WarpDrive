@@ -631,16 +631,20 @@ public class WorldGenSmallShip extends WorldGenerator {
 		while (!isDone) {
 			switch (rand.nextInt(14)) {
 			case 0: // Mass fabricator
-				res = WarpDriveConfig.getModItemStack("IC2", "blockMachine", -1);
-				res.setItemDamage(14);
-				res.stackSize = 1; // + rand.nextInt(2);
-				isDone = true;
+				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+					res = WarpDriveConfig.getModItemStack("IC2", "blockMachine", -1);
+					res.setItemDamage(14);
+					res.stackSize = 1; // + rand.nextInt(2);
+					isDone = true;
+				}
 				break;
 
 			case 1:
-				res = WarpDriveConfig.getModItemStack("IC2", "blockNuke", -1);
-				res.stackSize = 1 + rand.nextInt(2);
-				isDone = true;
+				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+					res = WarpDriveConfig.getModItemStack("IC2", "blockNuke", -1);
+					res.stackSize = 1 + rand.nextInt(2);
+					isDone = true;
+				}
 				break;
 
 			case 2: // Quantum armor bonuses
@@ -651,17 +655,21 @@ public class WorldGenSmallShip extends WorldGenerator {
 				break;// skipped
 
 			case 6:// Glass fiber cable item
-				res = WarpDriveConfig.getModItemStack("IC2", "itemCable", -1);
-				res.setItemDamage(9);
-				res.stackSize = 2 + rand.nextInt(12);
-				isDone = true;
+				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+					res = WarpDriveConfig.getModItemStack("IC2", "itemCable", -1);
+					res.setItemDamage(9);
+					res.stackSize = 2 + rand.nextInt(12);
+					isDone = true;
+				}
 				break;
 			
 			case 7:// UU matter cell
-				res = WarpDriveConfig.getModItemStack("IC2", "itemCellEmpty", -1);
-				res.setItemDamage(3);
-				res.stackSize = 2 + rand.nextInt(14);
-				isDone = true;
+				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+					res = WarpDriveConfig.getModItemStack("IC2", "itemCellEmpty", -1);
+					res.setItemDamage(3);
+					res.stackSize = 2 + rand.nextInt(14);
+					isDone = true;
+				}
 				break;
 			
 			case 8:
