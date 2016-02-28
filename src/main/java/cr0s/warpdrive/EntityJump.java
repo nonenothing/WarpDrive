@@ -470,8 +470,8 @@ public class EntityJump extends Entity {
 			distance = 0;
 			if (!isInSpace && !isInHyperSpace) {
 				String msg = "Unable to reach hyperspace from a planet";
-				killEntity(msg);
 				messageToAllPlayersOnShip(msg);
+				killEntity(msg);
 				LocalProfiler.stop();
 				return;
 			}
