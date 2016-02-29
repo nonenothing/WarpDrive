@@ -376,7 +376,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 		} while (true);
 		
-		if (injectedCount != operationCount) {
+		if (injectedCount < operationCount) {// https://github.com/micdoodle8/Galacticraft/commit/d0e7e9ae932092e8a4584bac43338d2dc1bbfe23 added 2 occurrences
 			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
 		} else {
 			ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
