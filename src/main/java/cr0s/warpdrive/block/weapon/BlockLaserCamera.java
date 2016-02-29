@@ -62,10 +62,6 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	 */
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (!ClientCameraHandler.isOverlayEnabled) {
@@ -76,7 +72,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 							getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
 					WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 				}
-				return true;
+				return false;
 			}
 		}
 		

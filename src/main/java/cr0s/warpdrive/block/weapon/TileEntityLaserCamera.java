@@ -100,7 +100,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	public String getStatus() {
 		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
-				+ getBeamFrequencyStatus() + "\n" + getVideoChannelStatus();
+				+ (worldObj.isRemote ? getVideoChannelStatus() : getBeamFrequencyStatus());
 	}
 	
 	@Override
