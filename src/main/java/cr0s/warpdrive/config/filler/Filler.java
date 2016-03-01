@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.XmlRepresentable;
+import cr0s.warpdrive.data.JumpBlock;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -68,7 +69,8 @@ public class Filler implements XmlRepresentable {
 	}
 
 	public void setBlock(World world, int x, int y, int z) {
-		world.setBlock(x, y, z, block, metadata, 2);
+		JumpBlock.setBlockNoLight(world, x, y, z, block, metadata, 2);
+		// world.setBlock(x, y, z, block, metadata, 2);
 		// TODO set NBT data
 	}
 	

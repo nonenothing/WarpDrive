@@ -57,6 +57,18 @@ public class MetaOrbInstance extends OrbInstance {
 			addShell(world, new VectorI(x, y2, z).add(location), maxLocalRadius);
 		}
 		
+		int minYclamped = Math.max(0, y2 - totalThickness);
+		int maxYclamped = Math.min(255, y2 + totalThickness);
+		for (int xIndex = x - totalThickness; xIndex <= x + totalThickness; xIndex++) {
+			for (int zIndex = z - totalThickness; zIndex <= z + totalThickness; zIndex++) {
+				for (int yIndex = minYclamped; yIndex <= maxYclamped; yIndex++) {
+					if (world.getBlock(xIndex, yIndex, zIndex) != Blocks.air) {
+						world.markBlockForUpdate(xIndex, yIndex, zIndex);
+					}
+				}
+			}
+		}
+		
 		LocalProfiler.stop();
 		return false;
 	}
