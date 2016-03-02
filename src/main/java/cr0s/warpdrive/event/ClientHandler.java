@@ -22,6 +22,15 @@ public class ClientHandler {
 			Block block = Block.getBlockFromItem(event.itemStack.getItem());
 			if (block != Blocks.air) {
 				try {
+					String uniqueName = Block.blockRegistry.getNameForObject(block);
+					if (uniqueName != null) {
+						event.toolTip.add("" + uniqueName + "");
+					}
+				} catch(Exception exception) {
+					// no operation
+				}
+				
+				try {
 					String harvestTool = block.getHarvestTool(event.itemStack.getItemDamage());
 					if (harvestTool != null) {
 						event.toolTip.add("Harvest with " + harvestTool + " (" + block.getHarvestLevel(event.itemStack.getItemDamage()) + ")");
