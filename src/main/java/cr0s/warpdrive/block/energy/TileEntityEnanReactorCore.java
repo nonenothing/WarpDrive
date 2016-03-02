@@ -537,10 +537,10 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String toString() {
-		return String.format("%s \'%s\' @ \'%s\' %.2f, %.2f, %.2f", new Object[] {
+		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)",
 			getClass().getSimpleName(),
 			connectedComputers == null ? "~NULL~" : connectedComputers,
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			Double.valueOf(xCoord), Double.valueOf(yCoord), Double.valueOf(zCoord) });
+			Integer.valueOf(xCoord), Integer.valueOf(yCoord), Integer.valueOf(zCoord));
 	}
 }

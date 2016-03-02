@@ -383,7 +383,6 @@ public class WarpDrive implements LoadingCallback {
 		blockHulls_slab = new Block[3 * 16];
 		
 		for(int tier = 1; tier <= 3; tier++) {
-			logger.info("Registering hull tier " + tier);
 			int index = tier - 1;
 			blockHulls_plain[index] = new BlockHullPlain(tier);
 			blockHulls_glass[index] = new BlockHullGlass(tier);
