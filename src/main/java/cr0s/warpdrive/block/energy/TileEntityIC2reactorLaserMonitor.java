@@ -16,6 +16,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -26,6 +27,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	private int ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;
 	private byte activeSides = 0;
 	private boolean updateFlag = false;
+	private boolean isFirstTick = true;
 	
 	public TileEntityIC2reactorLaserMonitor() {
 		super();
@@ -121,6 +123,12 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 		
 		if (worldObj.isRemote) {
 			return;
+		}
+		
+		if (isFirstTick) {
+			isFirstTick = false;
+			updateFlag = (getBlockMetadata() & 1) == 0;
+			WarpDrive.logger.info("" + this + " isFirstTick " + activeSides + " " + updateFlag);
 		}
 		
 		ticks--;
