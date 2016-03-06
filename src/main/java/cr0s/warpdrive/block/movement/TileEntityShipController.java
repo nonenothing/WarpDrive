@@ -878,7 +878,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	@Override
 	public String toString() {
-		return String.format("%s \'%s\' @ \'%s\' %d, %d, %d", new Object[] {
+		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)", new Object[] {
 				getClass().getSimpleName(),
 				core == null ? beaconFrequency : core.shipName,
 				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),

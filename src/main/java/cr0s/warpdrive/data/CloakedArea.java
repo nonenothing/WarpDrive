@@ -288,7 +288,7 @@ public class CloakedArea {
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ DIM%d %d, %d, %d (%d %d %d) -> (%d %d %d)",
+		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
 				getClass().getSimpleName(), Integer.valueOf(dimensionId),
 				Integer.valueOf(coreX), Integer.valueOf(coreY), Integer.valueOf(coreZ),
 				Integer.valueOf(minX), Integer.valueOf(minY), Integer.valueOf(minZ),

@@ -131,7 +131,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	
 	@Override
 	public String toString() {
-		return String.format("%s %d @ \'%s\' %d, %d, %d", 
+		return String.format("%s %d @ \'%s\' (%d %d %d)", 
 				getClass().getSimpleName(),
 				videoChannel,
 				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
