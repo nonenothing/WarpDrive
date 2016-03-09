@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import cpw.mods.fml.common.Optional;
+
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -33,14 +33,12 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
 	public NBTBase saveExternals(final TileEntity tileEntity) {
 		// nothing to do
 		return null;
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
 	public void remove(TileEntity tileEntity) {
 		// nothing to do
 	}
@@ -69,7 +67,6 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
 	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
 		// nothing to do
 	}
