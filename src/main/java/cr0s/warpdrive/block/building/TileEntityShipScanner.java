@@ -25,6 +25,7 @@ import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.JumpBlock;
+import cr0s.warpdrive.data.Transformation;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -159,25 +160,26 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			
 			for (int index = 0; index < blocks; index++) {
 				if (currentDeployIndex >= blocksToDeployCount) {
-		isDeploying = false;
+					isDeploying = false;
 					setActive(false); // disable scanner
 					break;
 				}
 				
 				// Deploy single block
-				JumpBlock jb = blocksToDeploy[currentDeployIndex];
+				JumpBlock jumpBlock = blocksToDeploy[currentDeployIndex];
 				
-				if (jb != null && !Dictionary.BLOCKS_ANCHOR.contains(jb.block)) {
-					Block blockAtTarget = worldObj.getBlock(targetX + jb.x, targetY + jb.y, targetZ + jb.z);
+				if (jumpBlock != null && !Dictionary.BLOCKS_ANCHOR.contains(jumpBlock.block)) {
+					Block blockAtTarget = worldObj.getBlock(targetX + jumpBlock.x, targetY + jumpBlock.y, targetZ + jumpBlock.z);
 					if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
-						jb.deploy(worldObj, targetX, targetY, targetZ);
+						Transformation transformation = new Transformation(null, worldObj, targetX, targetY, targetZ, (byte) 0); // FIXME: need proper ship object here
+						jumpBlock.deploy(worldObj, transformation);
 						
 						if (worldObj.rand.nextInt(100) <= 10) {
 							worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
 							
 							PacketHandler.sendBeamPacket(worldObj,
 									new Vector3(this).translate(0.5D),
-									new Vector3(targetX + jb.x, targetY + jb.y, targetZ + jb.z).translate(0.5D),
+									new Vector3(targetX + jumpBlock.x, targetY + jumpBlock.y, targetZ + jumpBlock.z).translate(0.5D),
 									0f, 1f, 0f, 15, 0, 100);
 						}
 					}

@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -20,6 +21,11 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.compat.CompatArsMagica2;
+import cr0s.warpdrive.compat.CompatImmersiveEngineering;
+import cr0s.warpdrive.compat.CompatIndustrialCraft2;
+import cr0s.warpdrive.compat.CompatOpenComputers;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.config.structures.StructureReference;
@@ -287,6 +293,8 @@ public class WarpDriveConfig {
 	public static float[] HULL_HARDNESS = { 25.0F, 50.0F, 80.0F };
 	public static float[] HULL_BLAST_RESISTANCE = { 60.0F, 90.0F, 120.0F };
 	
+	// Block transformers library
+	public static HashMap<String, IBlockTransformer> blockTransformers = null;
 	
 	
 	public static Block getModBlock(final String mod, final String id) {
@@ -695,7 +703,14 @@ public class WarpDriveConfig {
 		// Dictionary
 		Dictionary.loadConfig(config);
 		
+		// Block transformers library
+		blockTransformers = new HashMap();
+		
 		config.save();
+	}
+	
+	public static void registerBlockTransformer(final String modId, IBlockTransformer blockTransformer) {
+		blockTransformers.put(modId, blockTransformer);
 	}
 	
 	public static int clamp(final int min, final int max, final int value) {
@@ -715,6 +730,7 @@ public class WarpDriveConfig {
 		isIndustrialCraft2loaded = Loader.isModLoaded("IC2");
 		if (isIndustrialCraft2loaded) {
 			loadIC2();
+			CompatIndustrialCraft2.register();
 		}
 		
 		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
@@ -726,8 +742,17 @@ public class WarpDriveConfig {
 		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
+		if (isOpenComputersLoaded) {
+			CompatOpenComputers.register();
+		}
 		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
+		if (isArsMagica2Loaded) {
+			CompatArsMagica2.register();
+		}
 		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
+		if (isImmersiveEngineeringLoaded) {
+			CompatImmersiveEngineering.register();
+		}
 		isGregTech5loaded = false;
 		if (Loader.isModLoaded("gregtech")) {
 			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();

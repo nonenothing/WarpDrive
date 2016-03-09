@@ -113,7 +113,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		if (cooldownTime > 0) {
 			cooldownTime--;
 			warmupTime = 0;
-			if (cooldownTime == 0) {
+			if (cooldownTime == 0 && controller != null) {
 				controller.cooldownDone();
 			}
 		}
@@ -601,12 +601,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 				WarpDrive.logger.info(this + " Moving ship to beacon (" + beaconX + "; " + yCoord + "; " + beaconZ + ")");
 				EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 1, 0, true, beaconX, yCoord, beaconZ);
-				jump.maxX = maxX;
-				jump.minX = minX;
-				jump.maxZ = maxZ;
-				jump.minZ = minZ;
-				jump.maxY = maxY;
-				jump.minY = minY;
+				jump.ship.maxX = maxX;
+				jump.ship.minX = minX;
+				jump.ship.maxZ = maxZ;
+				jump.ship.minZ = minZ;
+				jump.ship.maxY = maxY;
+				jump.ship.minY = minY;
 				jump.shipLength = shipLength;
 				jump.on = true;
 				worldObj.spawnEntityInWorld(jump);
@@ -771,12 +771,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
 			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 1, 0, true, destX, destY, destZ);
-			jump.maxX = maxX;
-			jump.minX = minX;
-			jump.maxZ = maxZ;
-			jump.minZ = minZ;
-			jump.maxY = maxY;
-			jump.minY = minY;
+			jump.ship.maxX = maxX;
+			jump.ship.minX = minX;
+			jump.ship.maxZ = maxZ;
+			jump.ship.minZ = minZ;
+			jump.ship.maxY = maxY;
+			jump.ship.minY = minY;
 			jump.shipLength = shipLength;
 			jump.on = true;
 			worldObj.spawnEntityInWorld(jump);
@@ -854,12 +854,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			}
 			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, (currentMode == ShipCoreMode.HYPERSPACE), distance, direction,
 					false, 0, 0, 0);
-			jump.maxX = maxX;
-			jump.minX = minX;
-			jump.maxZ = maxZ;
-			jump.minZ = minZ;
-			jump.maxY = maxY;
-			jump.minY = minY;
+			jump.ship.maxX = maxX;
+			jump.ship.minX = minX;
+			jump.ship.maxZ = maxZ;
+			jump.ship.minZ = minZ;
+			jump.ship.maxY = maxY;
+			jump.ship.minY = minY;
 			jump.shipLength = shipLength;
 			jump.on = true;
 			worldObj.spawnEntityInWorld(jump);
@@ -1150,7 +1150,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	@Override
 	public String toString() {
 		return String.format(
-				"%s \'%s\' @ \'%s\' %d, %d, %d",
+				"%s \'%s\' @ \'%s\' (%d %d %d)",
 				new Object[] { getClass().getSimpleName(), shipName, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
 						Integer.valueOf(xCoord), Integer.valueOf(yCoord), Integer.valueOf(zCoord) });
 	}

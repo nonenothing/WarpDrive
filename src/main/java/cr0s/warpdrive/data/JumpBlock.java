@@ -1,17 +1,53 @@
 package cr0s.warpdrive.data;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockButton;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockCocoa;
+import net.minecraft.block.BlockDispenser;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockEndPortalFrame;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockFurnace;
+import net.minecraft.block.BlockHopper;
+import net.minecraft.block.BlockHugeMushroom;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockLever;
+import net.minecraft.block.BlockLog;
+import net.minecraft.block.BlockPistonBase;
+import net.minecraft.block.BlockPistonExtension;
+import net.minecraft.block.BlockPistonMoving;
+import net.minecraft.block.BlockPortal;
+import net.minecraft.block.BlockPumpkin;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockTorch;
+import net.minecraft.block.BlockTrapDoor;
+import net.minecraft.block.BlockTripWireHook;
+import net.minecraft.block.BlockVine;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
+
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.block.detection.BlockMonitor;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.filler.Filler;
 
@@ -23,8 +59,7 @@ public class JumpBlock {
 	public int x;
 	public int y;
 	public int z;
-	public NBTTagCompound nbtArsMagica2;
-	public NBTTagList nbtImmersiveEngineering;
+	public HashMap<String, NBTBase> externals;
 	
 	public JumpBlock() {
 	}
@@ -45,6 +80,14 @@ public class JumpBlock {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+		
+		// save externals
+		for (Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
+			if (entryBlockTransformer.getValue().isApplicable(block, blockMeta, tileEntity)) {
+				NBTBase nbtBase = entryBlockTransformer.getValue().saveExternals(tileEntity);
+				setExternal(entryBlockTransformer.getKey(), nbtBase);
+			}
+		}
 	}
 	
 	public JumpBlock(Filler filler, int x, int y, int z) {
@@ -60,33 +103,172 @@ public class JumpBlock {
 		this.z = z;
 	}
 	
-	public boolean deploy(World targetWorld, int offsetX, int offsetY, int offsetZ) {
+	public NBTBase getExternal(final String modId) {
+		if (externals == null) {
+			return null;
+		}
+		NBTBase nbtExternal = externals.get(modId);
+		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
+			WarpDrive.logger.info("Restoring " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
+		}
+		if (nbtExternal == null) {
+			return null;
+		}
+		return nbtExternal.copy();
+	}
+	
+	public void setExternal(final String modId, final NBTBase nbtExternal) {
+		if (externals == null) {
+			externals = new HashMap();
+		}
+		externals.put(modId, nbtExternal);
+		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
+			WarpDrive.logger.info("Saved " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
+		}
+	}
+	
+	// Return updated metadata from rotating a vanilla block
+	private int getMetadataRotation(NBTTagCompound nbtTileEntity, final byte rotationSteps) {
+		if (rotationSteps == 0) {
+			return blockMeta;
+		}
+		
+		final byte[] mrotNone           = {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+		final byte[] mrotRail           = {  1,  0,  5,  4,  2,  3,  7,  8,  9,  6, 10, 11, 12, 13, 14, 15 };
+		final byte[] mrotAnvil          = {  1,  2,  3,  0,  5,  6,  7,  4,  9, 10, 11,  8, 12, 13, 14, 15 };
+		final byte[] mrotFenceGate      = {  1,  0,  2,  3,  5,  6,  7,  4,  8,  9, 10, 11, 12, 13, 14, 15 };
+		final byte[] mrotPumpkin        = {  1,  2,  3,  0,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };	// Tripwire hook, Pumpkin, Jack-o-lantern
+		final byte[] mrotEndPortalFrame = {  1,  2,  3,  0,  5,  6,  7,  4,  8,  9, 10, 11, 12, 13, 14, 15 };	// EndPortal, doors (open/closed, base/top)
+		final byte[] mrotCocoa          = {  1,  2,  3,  0,  5,  6,  7,  4,  9, 10, 11,  8, 12, 13, 14, 15 };
+		final byte[] mrotRepeater       = {  1,  2,  3,  0,  5,  6,  7,  4,  9, 10, 11,  8, 13, 14, 15, 12 };	// Repeater (normal/lit), Comparator
+		final byte[] mrotBed            = {  1,  2,  3,  0,  4,  5,  6,  7,  9, 10, 11,  8, 12, 13, 14, 15 };
+		final byte[] mrotStair          = {  2,  3,  1,  0,  6,  7,  5,  4,  8,  9, 10, 11, 12, 13, 14, 15 };
+		final byte[] mrotSign           = {  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,  0,  1,  2,  3 };	// Sign, Skull
+		final byte[] mrotTrapDoor       = {  3,  2,  0,  1,  7,  6,  4,  5, 11, 10,  8,  9, 15, 14, 12, 13 };
+		final byte[] mrotLever          = {  7,  2,  3,  4,  1,  6,  5,  0, 15, 11, 12, 10,  9, 14, 13,  8 };
+		final byte[] mrotNetherPortal   = {  0,  2,  1,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+		final byte[] mrotVine           = {  0,  2,  4,  6,  8, 10, 12, 14,  1,  3,  5,  7,  9, 11, 13, 15 };
+		final byte[] mrotButton         = {  0,  3,  4,  2,  1,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };	// Button, torch (normal, redstone lit/unlit)
+		final byte[] mrotMushroom       = {  0,  3,  6,  9,  2,  5,  8,  1,  4,  7, 10, 11, 12, 13, 14, 15 };	// Red/brown mushroom block
+		final byte[] mrotForgeDirection = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };	// Furnace (lit/normal), Dispenser/Dropper, Enderchest, Chest (normal/trapped), Hopper, Ladder, Wall sign
+		final byte[] mrotPiston         = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 13, 12, 10, 11, 14, 15 };	// Pistons (sticky/normal, base/head)
+		final byte[] mrotWoodLog        = {  0,  1,  2,  3,  8,  9, 10, 11,  4,  5,  6,  7, 12, 13, 14, 15 };
+		
+		byte[] mrot = mrotNone;
+		if (block instanceof BlockRailBase) {
+			mrot = mrotRail;
+		} else if (block instanceof BlockRailBase) {
+			mrot = mrotAnvil;
+		} else if (block instanceof BlockFenceGate) {
+			mrot = mrotFenceGate;
+		} else if (block instanceof BlockPumpkin || block instanceof BlockTripWireHook) {
+			mrot = mrotPumpkin;
+		} else if (block instanceof BlockEndPortalFrame || block instanceof BlockDoor) {
+			mrot = mrotEndPortalFrame;
+		} else if (block instanceof BlockCocoa) {
+			mrot = mrotCocoa;
+		} else if (block instanceof BlockRedstoneDiode) {
+			mrot = mrotRepeater;
+		} else if (block instanceof BlockBed) {
+			mrot = mrotBed;
+		} else if (block instanceof BlockStairs) {
+			mrot = mrotStair;
+		} else if (block instanceof BlockSign) {
+			if (block == Blocks.wall_sign) {
+				mrot = mrotForgeDirection;
+			} else {
+				mrot = mrotSign;
+			}
+		} else if (block instanceof BlockTrapDoor) {
+			mrot = mrotTrapDoor;
+		} else if (block instanceof BlockLever) {
+			mrot = mrotLever;
+		} else if (block instanceof BlockPortal) {
+			mrot = mrotNetherPortal;
+		} else if (block instanceof BlockVine) {
+			mrot = mrotVine;
+		} else if (block instanceof BlockButton || block instanceof BlockTorch) {
+			mrot = mrotButton;
+		} else if (block instanceof BlockHugeMushroom) {
+			mrot = mrotMushroom;
+		} else if (block instanceof BlockFurnace || block instanceof BlockDispenser || block instanceof BlockHopper
+				|| block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockLadder
+				|| block instanceof BlockMonitor) {
+			mrot = mrotForgeDirection;
+		} else if (block instanceof BlockPistonBase || block instanceof BlockPistonExtension || block instanceof BlockPistonMoving) {
+			mrot = mrotPiston;
+		} else if (block instanceof BlockLog) {
+			mrot = mrotWoodLog;
+		} else if (block instanceof BlockSkull) {
+			mrot = mrotNone;
+			short facing = nbtTileEntity.getShort("Rot");
+			switch (rotationSteps) {
+			case 1:
+				nbtTileEntity.setShort("Rot", mrotSign[facing]);
+				break;
+			case 2:
+				nbtTileEntity.setShort("Rot", mrotSign[mrotSign[facing]]);
+				break;
+			case 3:
+				nbtTileEntity.setShort("Rot", mrotSign[mrotSign[mrotSign[facing]]]);
+				break;
+			default:
+				break;
+			}
+		}
+		
+		switch (rotationSteps) {
+			case 1:
+				return mrot[blockMeta];
+			case 2:
+				return mrot[mrot[blockMeta]];
+			case 3:
+				return mrot[mrot[mrot[blockMeta]]];
+			default:
+				return blockMeta;
+		}
+	}
+	
+	public void deploy(World targetWorld, ITransformation transformation) {
 		try {
-			int newX = x + offsetX;
-			int newY = y + offsetY;
-			int newZ = z + offsetZ;
-			setBlockNoLight(targetWorld, newX, newY, newZ, block, blockMeta, 2);
+			NBTTagCompound oldnbt = null;
+			if (blockTileEntity != null) {
+				oldnbt = new NBTTagCompound();
+				blockTileEntity.writeToNBT(oldnbt);
+			}
+			int newBlockMeta = blockMeta;
+			if (externals != null) {
+				for (Entry<String, NBTBase> external : externals.entrySet()) {
+					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
+					if (blockTransformer != null) {
+						newBlockMeta = blockTransformer.rotate(block, blockMeta, oldnbt, transformation.getRotationSteps(), transformation.getRotationYaw());
+					}
+				}
+			} else {
+				newBlockMeta = getMetadataRotation(oldnbt, transformation.getRotationSteps());
+			}
+			ChunkCoordinates target = transformation.apply(x, y, z);
+			setBlockNoLight(targetWorld, target.posX, target.posY, target.posZ, block, newBlockMeta, 2);
 			
 			// Re-schedule air blocks update
 			if (block == WarpDrive.blockAir) {
-				targetWorld.markBlockForUpdate(newX, newY, newZ);
-				targetWorld.scheduleBlockUpdate(newX, newY, newZ, block, 40 + targetWorld.rand.nextInt(20));
+				targetWorld.markBlockForUpdate(target.posX, target.posY, target.posZ);
+				targetWorld.scheduleBlockUpdate(target.posX, target.posY, target.posZ, block, 40 + targetWorld.rand.nextInt(20));
 			}
 			
-			NBTTagCompound oldnbt = new NBTTagCompound();
-			if (blockTileEntity != null) {
-				blockTileEntity.writeToNBT(oldnbt);
-				oldnbt.setInteger("x", newX);
-				oldnbt.setInteger("y", newY);
-				oldnbt.setInteger("z", newZ);
+			if (oldnbt != null) {
+				oldnbt.setInteger("x", target.posX);
+				oldnbt.setInteger("y", target.posY);
+				oldnbt.setInteger("z", target.posZ);
 				
 				if (oldnbt.hasKey("mainX") && oldnbt.hasKey("mainY") && oldnbt.hasKey("mainZ")) {// Mekanism 6.0.4.44
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 						WarpDrive.logger.info(this + " deploy: TileEntity has mainXYZ");
 					}
-					oldnbt.setInteger("mainX", oldnbt.getInteger("mainX") + offsetX);
-					oldnbt.setInteger("mainY", oldnbt.getInteger("mainY") + offsetY);
-					oldnbt.setInteger("mainZ", oldnbt.getInteger("mainZ") + offsetZ);
+					ChunkCoordinates mainTarget = transformation.apply(oldnbt.getInteger("mainX"), oldnbt.getInteger("mainY"), oldnbt.getInteger("mainZ"));
+					oldnbt.setInteger("mainX", mainTarget.posX);
+					oldnbt.setInteger("mainY", mainTarget.posY);
+					oldnbt.setInteger("mainZ", mainTarget.posZ);
 				}
 				
 				if (oldnbt.hasKey("screenData")) {// IC2NuclearControl 2.2.5a
@@ -96,12 +278,14 @@ public class JumpBlock {
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 							WarpDrive.logger.info(this + " deploy: TileEntity has screenData.min/maxXYZ");
 						}
-						nbtScreenData.setInteger("minX", nbtScreenData.getInteger("minX") + offsetX);
-						nbtScreenData.setInteger("minY", nbtScreenData.getInteger("minY") + offsetY);
-						nbtScreenData.setInteger("minZ", nbtScreenData.getInteger("minZ") + offsetZ);
-						nbtScreenData.setInteger("maxX", nbtScreenData.getInteger("maxX") + offsetX);
-						nbtScreenData.setInteger("maxY", nbtScreenData.getInteger("maxY") + offsetY);
-						nbtScreenData.setInteger("maxZ", nbtScreenData.getInteger("maxZ") + offsetZ);
+						ChunkCoordinates minTarget = transformation.apply(nbtScreenData.getInteger("minX"), nbtScreenData.getInteger("minY"), nbtScreenData.getInteger("minZ"));
+						nbtScreenData.setInteger("minX", minTarget.posX);
+						nbtScreenData.setInteger("minY", minTarget.posY);
+						nbtScreenData.setInteger("minZ", minTarget.posZ);
+						ChunkCoordinates maxTarget = transformation.apply(nbtScreenData.getInteger("maxX"), nbtScreenData.getInteger("maxY"), nbtScreenData.getInteger("maxZ"));
+						nbtScreenData.setInteger("maxX", maxTarget.posX);
+						nbtScreenData.setInteger("maxY", maxTarget.posY);
+						nbtScreenData.setInteger("maxZ", maxTarget.posZ);
 						oldnbt.setTag("screenData", nbtScreenData);
 					}
 				}
@@ -141,11 +325,12 @@ public class JumpBlock {
 					newTileEntity.setWorldObj(targetWorld);
 					newTileEntity.validate();
 					
-					targetWorld.setTileEntity(newX, newY, newZ, newTileEntity);
+					targetWorld.setTileEntity(target.posX, target.posY, target.posZ, newTileEntity);
 					if (isForgeMultipart) {
 						WarpDriveConfig.forgeMultipart_tileMultipart_onChunkLoad.invoke(newTileEntity);
 						WarpDriveConfig.forgeMultipart_helper_sendDescPacket.invoke(null, targetWorld, newTileEntity);
 					}
+					return;
 				} else {
 					WarpDrive.logger.info(" deploy failed to create new tile entity at " + x + ", " + y + ", " + z + " blockId " + block + ":" + blockMeta);
 					WarpDrive.logger.info("NBT data was " + oldnbt);
@@ -160,10 +345,10 @@ public class JumpBlock {
 				coordinates = " (unknown coordinates)";
 			}
 			WarpDrive.logger.info("moveBlockSimple exception at " + coordinates);
-			return false;
+			return;
 		}
 		
-		return true;
+		return;
 	}
 	
 	public static void refreshBlockStateOnClient(World world, int x, int y, int z) {
