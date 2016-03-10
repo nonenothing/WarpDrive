@@ -430,7 +430,7 @@ function core_writeDirection()
     WriteLn(" Direction        = Back")
   elseif data.core_direction == 90 then
     WriteLn(" Direction        = Left")
-  elseif data.core_direction == 255 then
+  elseif data.core_direction == 270 then
     WriteLn(" Direction        = Right")
   end
 end
@@ -445,7 +445,7 @@ function core_computeRealDistance()
       core_shipLength = core_up + core_down + 1
     elseif data.core_direction == 0 or data.core_direction == 180 then
       core_shipLength = core_front + core_back + 1
-    elseif data.core_direction == 90 or data.core_direction == 255 then
+    elseif data.core_direction == 90 or data.core_direction == 270 then
       core_shipLength = core_left + core_right + 1
     end
     core_realDistance = data.core_distance + core_shipLength - 1
@@ -469,7 +469,7 @@ function core_computeNewCoordinates(cx, cy, cz)
       res.x = res.x - (core_realDistance * dx)
     elseif data.core_direction == 90 then
       res.z = res.z + (core_realDistance * dx)
-    elseif data.core_direction == 255 then
+    elseif data.core_direction == 270 then
       res.z = res.z - (core_realDistance * dx)
     end
   else
@@ -479,7 +479,7 @@ function core_computeNewCoordinates(cx, cy, cz)
       res.z = res.z - (core_realDistance * dz)
     elseif data.core_direction == 90 then
       res.x = res.x + (core_realDistance * dz)
-    elseif data.core_direction == 255 then
+    elseif data.core_direction == 270 then
       res.x = res.x - (core_realDistance * dz)
     end
   end
@@ -555,7 +555,7 @@ function core_page_setDirection()
       elseif keycode == 203 then
         data.core_direction = 90
       elseif keycode == 205 then
-        data.core_direction = 255
+        data.core_direction = 270
       elseif keycode == 208 then
         data.core_direction = 180
       elseif keycode == 31 or keycode == 209 then
