@@ -540,8 +540,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				newPitch = (float) (Math.atan2(deltaY, horizontalDistance) * 180.0D / Math.PI);
 				initiateBeamEmission(newYaw, newPitch);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 			return new Object[] { false };
 		}
 		return new Object[] { true };

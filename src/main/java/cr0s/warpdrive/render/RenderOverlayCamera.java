@@ -73,8 +73,8 @@ public class RenderOverlayCamera {
 					(int)(scaledHeight * 0.19),
 					0xFF008F, true);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
 		
 		GL11.glDepthMask(true);

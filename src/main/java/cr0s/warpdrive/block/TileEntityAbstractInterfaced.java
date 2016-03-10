@@ -144,7 +144,9 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			if (OC_node != null && OC_node.host() == this) {
 				OC_node.load(tag.getCompoundTag("oc:node"));
 			} else {
-				WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
+				}
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
 				OC_fileSystem.node().load(tag.getCompoundTag("oc:fs"));

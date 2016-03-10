@@ -78,9 +78,9 @@ public class CommandDebug extends CommandBase
 				metadata = Integer.parseInt(params[5]);
 				actions = params[6];
 			}
-			catch (Exception e)
+			catch (Exception exception)
 			{
-				e.printStackTrace();
+				exception.printStackTrace();
 				WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
 				return;
 			}

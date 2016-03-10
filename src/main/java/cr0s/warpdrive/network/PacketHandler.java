@@ -41,8 +41,8 @@ public class PacketHandler {
 		try {
 			EntityTrackerEntry_getPacketForThisEntity = Class.forName("net.minecraft.entity.EntityTrackerEntry").getDeclaredMethod("func_151260_c"); 
 			EntityTrackerEntry_getPacketForThisEntity.setAccessible(true);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
+		} catch (Exception exception) {
+			throw new RuntimeException(exception);
 		}
 	}
 	

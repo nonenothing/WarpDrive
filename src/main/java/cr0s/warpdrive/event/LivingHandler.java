@@ -198,8 +198,8 @@ public class LivingHandler {
 			} else {
 				player_cloakTicks.put(player.getCommandSenderName(), cloakTicks + 1);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
 	}
 	
