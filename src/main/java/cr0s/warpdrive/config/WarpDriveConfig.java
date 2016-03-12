@@ -23,6 +23,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.compat.CompatArsMagica2;
+import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatImmersiveEngineering;
 import cr0s.warpdrive.compat.CompatIndustrialCraft2;
 import cr0s.warpdrive.compat.CompatOpenComputers;
@@ -759,6 +760,9 @@ public class WarpDriveConfig {
 			isGregTech5loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
 		}
 		isEnderIOloaded = Loader.isModLoaded("EnderIO");
+		if (isEnderIOloaded) {
+			CompatEnderIO.register();
+		}
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 	}
 	
