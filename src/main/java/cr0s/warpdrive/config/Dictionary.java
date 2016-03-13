@@ -50,8 +50,6 @@ public class Dictionary {
 	public static HashSet<Item> ITEMS_NOFALLDAMAGE = null;
 	public static HashSet<Item> ITEMS_BREATHINGIC2 = null;
 	
-	
-	
 	public static void loadConfig(Configuration config) {
 		
 		// Block dictionary
@@ -98,6 +96,7 @@ public class Dictionary {
 				config.get("block_tags", "Artifacts:anti_builder"           , "Anchor NoMining").getString();
 				
 				// placement priorities
+				config.get("block_tags", "minecraft:lever"                  , "PlaceLater").getString();
 				config.get("block_tags", "IC2:blockReinforcedFoam"          , "PlaceEarliest NoMining").getString();
 				config.get("block_tags", "IC2:blockAlloy"                   , "PlaceEarliest NoMining").getString();
 				config.get("block_tags", "IC2:blockAlloyGlass"              , "PlaceEarliest NoMining").getString();
@@ -106,6 +105,11 @@ public class Dictionary {
 				// FIXME config.get("block_tags", "MFFS:field"						, "PlaceEarlier NoMining"	).getString();
 				config.get("block_tags", "IC2:blockGenerator"               , "PlaceLater").getString();
 				config.get("block_tags", "IC2:blockReactorChamber"          , "PlaceLatest").getString();
+				config.get("block_tags", "ImmersiveEngineering:metalDevice" , "PlaceLatest").getString();	// FIXME: need to fine tune at metadata level
+				// config.get("block_tags", "SGCraft:stargateBase"             , "PlaceEarliest").getString();
+				// config.get("block_tags", "SGCraft:stargateBase"             , "PlaceEarliest").getString();
+				// config.get("block_tags", "SGCraft:stargateRing"             , "PlaceEarlier").getString();
+				// config.get("block_tags", "SGCraft:stargateController"       , "PlaceLatest").getString();
 				
 				// expandables, a.k.a. "don't blow my ship with this..."
 				config.get("block_tags", "WarpDrive:blockGas"               , "LeftBehind Expandable").getString();
