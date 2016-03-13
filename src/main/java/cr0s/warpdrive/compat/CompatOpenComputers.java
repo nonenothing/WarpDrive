@@ -4,7 +4,6 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import cpw.mods.fml.common.Optional;
 
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
@@ -34,14 +33,12 @@ public class CompatOpenComputers implements IBlockTransformer {
 	}
 	
 	@Override
-	@Optional.Method(modid = "OpenComputers")
 	public NBTBase saveExternals(final TileEntity tileEntity) {
 		// nothing to do
 		return null;
 	}
 	
 	@Override
-	@Optional.Method(modid = "OpenComputers")
 	public void remove(TileEntity tileEntity) {
 		// nothing to do
 	}
@@ -70,7 +67,6 @@ public class CompatOpenComputers implements IBlockTransformer {
 	}
 	
 	@Override
-	@Optional.Method(modid = "OpenComputers")
 	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
 		// nothing to do
 	}
