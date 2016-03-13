@@ -11,15 +11,15 @@ public class Transformation implements ITransformation {
 	private VectorI sourceCore;
 	private VectorI targetCore;
 	private VectorI move;
-	private byte rotation;
+	private byte rotationSteps;
 	private World targetWorld;
 	
-	public Transformation(JumpShip ship, World targetWorld, int moveX, int moveY, int moveZ, byte rotation) {
+	public Transformation(JumpShip ship, World targetWorld, int moveX, int moveY, int moveZ, byte rotationSteps) {
 		sourceCore = new VectorI(ship.coreX, ship.coreY, ship.coreZ);
 		this.targetWorld = targetWorld;
 		move = new VectorI(moveX, moveY, moveZ);
 		targetCore = sourceCore.add(move);
-		this.rotation = (byte) ((rotation + 4) % 4);
+		this.rotationSteps = (byte) ((rotationSteps + 4) % 4);
 	}
 	
 	@Override
@@ -29,26 +29,26 @@ public class Transformation implements ITransformation {
 	
 	@Override
 	public byte getRotationSteps() {
-		return rotation;
+		return rotationSteps;
 	}
 	
 	@Override
 	public float getRotationYaw() {
-		return 90.0F * rotation;
+		return 90.0F * rotationSteps;
 	}
 	
 	@Override
 	public Vec3 apply(final double sourceX, final double sourceY, final double sourceZ) {
-		if (rotation == 0) {
+		if (rotationSteps == 0) {
 			return Vec3.createVectorHelper(sourceX + move.x, sourceY + move.y, sourceZ + move.z);
 		} else {
 			double dX = sourceX - sourceCore.x - 0.5D;
 			double dZ = sourceZ - sourceCore.z - 0.5D;
-			switch (rotation) {
+			switch (rotationSteps) {
 			case 1:
 				return Vec3.createVectorHelper(targetCore.x + 0.5D - dZ, sourceY + move.y, targetCore.z + 0.5D + dX);
 			case 2:
-				return Vec3.createVectorHelper(targetCore.x + 0.5D - dZ, sourceY + move.y, targetCore.z + 0.5D - dX);
+				return Vec3.createVectorHelper(targetCore.x + 0.5D - dX, sourceY + move.y, targetCore.z + 0.5D - dZ);
 			case 3:
 				return Vec3.createVectorHelper(targetCore.x + 0.5D + dZ, sourceY + move.y, targetCore.z + 0.5D - dX);
 			default:
@@ -59,16 +59,16 @@ public class Transformation implements ITransformation {
 	
 	@Override
 	public ChunkCoordinates apply(final int sourceX, final int sourceY, final int sourceZ) {
-		if (rotation == 0) {
+		if (rotationSteps == 0) {
 			return new ChunkCoordinates(sourceX + move.x, sourceY + move.y, sourceZ + move.z);
 		} else {
 			int dX = sourceX - sourceCore.x;
 			int dZ = sourceZ - sourceCore.z;
-			switch (rotation) {
+			switch (rotationSteps) {
 			case 1:
 				return new ChunkCoordinates(targetCore.x - dZ, sourceY + move.y, targetCore.z + dX);
 			case 2:
-				return new ChunkCoordinates(targetCore.x - dZ, sourceY + move.y, targetCore.z - dX);
+				return new ChunkCoordinates(targetCore.x - dX, sourceY + move.y, targetCore.z - dZ);
 			case 3:
 				return new ChunkCoordinates(targetCore.x + dZ, sourceY + move.y, targetCore.z - dX);
 			default:
@@ -88,9 +88,9 @@ public class Transformation implements ITransformation {
 	}
 
 	public void rotate(Entity entity) {
-		if (rotation == 0) {
+		if (rotationSteps == 0) {
 			return;
 		}
-		entity.rotationYaw = (entity.rotationYaw + 270.0F * rotation) % 360.0F - 180.0F; 
+		entity.rotationYaw = (entity.rotationYaw + 270.0F * rotationSteps) % 360.0F - 180.0F; 
 	}
 }
