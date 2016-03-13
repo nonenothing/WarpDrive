@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -26,6 +27,7 @@ import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -42,8 +44,8 @@ public class EntityJump extends Entity {
 	// Jump vector
 	private Transformation transformation;
 	
-	private int distance;
-	public int shipLength;
+	private int moveX, moveY, moveZ;
+	private byte rotationSteps;
 	private boolean isHyperspaceJump;
 	
 	private World targetWorld;
@@ -64,7 +66,7 @@ public class EntityJump extends Entity {
 	private int state = STATE_IDLE;
 	private int currentIndexInShip = 0;
 	
-	public JumpShip ship = new JumpShip();
+	public JumpShip ship;
 	private boolean betweenWorlds;
 	
 	private int destX, destY, destZ;
@@ -76,35 +78,38 @@ public class EntityJump extends Entity {
 	public EntityJump(World world) {
 		super(world);
 		targetWorld = worldObj;
-		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Entity created (empty) in dimension " + worldObj.getProviderName() + " - " + worldObj.getWorldInfo().getWorldName());
+		if (!world.isRemote) {
+			WarpDrive.logger.error(this + " Entity created (empty) in dimension " + worldObj.getProviderName() + " - " + worldObj.getWorldInfo().getWorldName());
 		}
 	}
 	
-	public EntityJump(World world, int x, int y, int z, int _dx, int _dz, TileEntityShipCore _shipCore, boolean _isHyperspaceJump, int _distance, int _direction,
-			boolean _isCoordJump, int _destX, int _destY, int _destZ) {
+	public EntityJump(World world, int x, int y, int z, int _dx, int _dz, TileEntityShipCore shipCore, boolean isHyperspaceJump,
+			final int moveX, final int moveY, final int moveZ, final byte rotationSteps,
+			boolean isCoordJump, int destX, int destY, int destZ) {
 		super(world);
 		this.posX = x + 0.5D;
 		this.posY = y + 0.5D;
 		this.posZ = z + 0.5D;
+		this.ship = new JumpShip();
 		this.ship.worldObj = worldObj;
 		this.ship.coreX = x;
 		this.ship.coreY = y;
 		this.ship.coreZ = z;
 		this.ship.dx = _dx;
 		this.ship.dz = _dz;
-		this.ship.shipCore = _shipCore;
-		this.isHyperspaceJump = _isHyperspaceJump;
-		this.distance = _distance;
-		this.ship.direction = _direction;
-		this.isCoordJump = _isCoordJump;
-		this.destX = _destX;
-		this.destY = _destY;
-		this.destZ = _destZ;
+		this.ship.shipCore = shipCore;
+		this.isHyperspaceJump = isHyperspaceJump;
+		this.moveX = moveX;
+		this.moveY = moveY;
+		this.moveZ = moveZ;
+		this.rotationSteps = rotationSteps;
+		this.isCoordJump = isCoordJump;
+		this.destX = destX;
+		this.destY = destY;
+		this.destZ = destZ;
 		
 		// set by reactor
 		ship.maxX = ship.maxZ = ship.maxY = ship.minX = ship.minZ = ship.minY = 0;
-		shipLength = 0;
 		
 		// set when preparing jump
 		targetWorld = null;
@@ -292,25 +297,6 @@ public class EntityJump extends Entity {
 		LocalProfiler.stop();
 	}
 	
-	public static String getDirectionLabel(int direction) {
-		switch (direction) {
-		case -1:
-			return "UP";
-		case -2:
-			return "DOWN";
-		case 0:
-			return "FRONT";
-		case 180:
-			return "BACK";
-		case 90:
-			return "LEFT";
-		case 255:
-			return "RIGHT";
-		default:
-			return direction + " degrees";
-		}
-	}
-	
 	private void prepareToJump() {
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Preparing to jump...");
@@ -322,14 +308,37 @@ public class EntityJump extends Entity {
 		boolean isInSpace = (worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID);
 		boolean isInHyperSpace = (worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
 		
-		boolean toSpace = (ship.direction == -1) && (ship.maxY + distance > 255) && (!isInSpace) && (!isInHyperSpace);
-		boolean fromSpace = (ship.direction == -2) && (ship.minY - distance < 0) && isInSpace;
+		boolean toSpace = (moveY > 0) && (ship.maxY + moveY > 255) && (!isInSpace) && (!isInHyperSpace);
+		boolean fromSpace = (moveY < 0) && (ship.minY + moveY < 0) && isInSpace;
 		betweenWorlds = fromSpace || toSpace || isHyperspaceJump;
-		int moveX = 0;
-		int moveY = 0;
-		int moveZ = 0;
 		
-		if (!isHyperspaceJump && toSpace) {
+		if (isHyperspaceJump) {
+			if (isInHyperSpace) {
+				targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+				if (targetWorld == null) {
+					LocalProfiler.stop();
+					String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting jump.";
+					ship.messageToAllPlayersOnShip(this, msg);
+					killEntity(msg);
+					return;
+				}
+			} else if (isInSpace) {
+				targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+				if (targetWorld == null) {
+					LocalProfiler.stop();
+					String msg = "Unable to load Hyperspace dimension " + WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID + ", aborting jump.";
+					ship.messageToAllPlayersOnShip(this, msg);
+					killEntity(msg);
+					return;
+				}
+			} else {
+				String msg = "Unable to reach hyperspace from a planet";
+				killEntity(msg);
+				ship.messageToAllPlayersOnShip(this, msg);
+				LocalProfiler.stop();
+				return;
+			}
+		} else if (toSpace) {
 			Boolean planetFound = false;
 			Boolean planetValid = false;
 			int closestPlanetDistance = Integer.MAX_VALUE;
@@ -359,7 +368,7 @@ public class EntityJump extends Entity {
 			}
 			if (!planetFound) {
 				LocalProfiler.stop();
-				String msg = "Unable to reach space!\nThere's no valid transition plane for current dimension " + worldObj.provider.getDimensionName() + " ("
+				String msg = "Unable to reach space!\nThere's not planet defined for current dimension " + worldObj.provider.getDimensionName() + " ("
 						+ worldObj.provider.dimensionId + ")";
 				ship.messageToAllPlayersOnShip(this, msg);
 				killEntity(msg);
@@ -378,7 +387,7 @@ public class EntityJump extends Entity {
 				killEntity(msg);
 				return;
 			}
-		} else if (!isHyperspaceJump && fromSpace) {
+		} else if (fromSpace) {
 			Boolean planetFound = false;
 			int closestPlaneDistance = Integer.MAX_VALUE;
 			Planet closestTransitionPlane = null;
@@ -408,30 +417,12 @@ public class EntityJump extends Entity {
 				if (closestTransitionPlane == null) {
 					msg = "No planet defined, unable to enter atmosphere!";
 				} else {
-					msg = "No planet in range, unable to enter atmosphere!\nClosest transition plane is " + closestPlaneDistance + " m away ("
+					msg = "No planet in range, unable to enter atmosphere!\nClosest planet is " + closestPlaneDistance + " m away ("
 							+ (closestTransitionPlane.spaceCenterX - closestTransitionPlane.borderSizeX) + ", 250,"
 							+ (closestTransitionPlane.spaceCenterZ - closestTransitionPlane.borderSizeZ) + ") to ("
 							+ (closestTransitionPlane.spaceCenterX + closestTransitionPlane.borderSizeX) + ", 255,"
 							+ (closestTransitionPlane.spaceCenterZ + closestTransitionPlane.borderSizeZ) + ")";
 				}
-				ship.messageToAllPlayersOnShip(this, msg);
-				killEntity(msg);
-				return;
-			}
-		} else if (isHyperspaceJump && isInHyperSpace) {
-			targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
-			if (targetWorld == null) {
-				LocalProfiler.stop();
-				String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting jump.";
-				ship.messageToAllPlayersOnShip(this, msg);
-				killEntity(msg);
-				return;
-			}
-		} else if (isHyperspaceJump && isInSpace) {
-			targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
-			if (targetWorld == null) {
-				LocalProfiler.stop();
-				String msg = "Unable to load Hyperspace dimension " + WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID + ", aborting jump.";
 				ship.messageToAllPlayersOnShip(this, msg);
 				killEntity(msg);
 				return;
@@ -443,19 +434,9 @@ public class EntityJump extends Entity {
 		// Calculate jump vector
 		if (isCoordJump) {
 			moveX = destX - ship.coreX;
-			moveZ = destZ - ship.coreZ;
 			moveY = destY - ship.coreY;
-			distance = 0; // FIXME: check collision in straight path, starting with getPossibleJumpDistance() ?
-		} else if (isHyperspaceJump) {
-			distance = 0;
-			if (!isInSpace && !isInHyperSpace) {
-				String msg = "Unable to reach hyperspace from a planet";
-				killEntity(msg);
-				ship.messageToAllPlayersOnShip(this, msg);
-				LocalProfiler.stop();
-				return;
-			}
-		} else {
+			moveZ = destZ - ship.coreZ;
+		} else if (!isHyperspaceJump) {
 			if (toSpace) {
 				// enter space at current altitude
 				moveY = 0;
@@ -464,14 +445,9 @@ public class EntityJump extends Entity {
 				moveY = 245 - ship.maxY;
 			} else {
 				// Do not check in long jumps
-				if (distance < 256) {
-					distance = getPossibleJumpDistance();
+				if (Math.max(moveX, moveZ) < 256) {
+					getPossibleJumpDistance();
 				}
-				
-				int movementVector[] = getVector(ship.direction);
-				moveX = movementVector[0] * distance;
-				moveY = movementVector[1] * distance;
-				moveZ = movementVector[2] * distance;
 				
 				if ((ship.maxY + moveY) > 255) {
 					moveY = 255 - ship.maxY;
@@ -482,7 +458,7 @@ public class EntityJump extends Entity {
 				}
 			}
 		}
-		transformation = new Transformation(ship, targetWorld, moveX, moveY, moveZ, (byte) 0);
+		transformation = new Transformation(ship, targetWorld, moveX, moveY, moveZ, rotationSteps);
 		
 		if (betweenWorlds && WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " From world " + worldObj.provider.getDimensionName() + " to " + targetWorld.provider.getDimensionName());
@@ -490,7 +466,14 @@ public class EntityJump extends Entity {
 		
 		// Validate positions aren't overlapping
 		if (!betweenWorlds) {
-			if (Math.abs(moveX) <= (ship.maxX - ship.minX + 1) && Math.abs(moveY) <= (ship.maxY - ship.minY + 1) && Math.abs(moveZ) <= (ship.maxZ - ship.minZ + 1)) {
+			ChunkCoordinates target1 = transformation.apply(ship.minX, ship.minY, ship.minZ);
+			ChunkCoordinates target2 = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+			AxisAlignedBB aabbSource = AxisAlignedBB.getBoundingBox(ship.minX, ship.minY, ship.minZ, ship.maxX, ship.maxY, ship.maxZ);
+			aabbSource.expand(1.0D, 1.0D, 1.0D);
+			AxisAlignedBB aabbTarget = AxisAlignedBB.getBoundingBox(
+					Math.min(target1.posX, target2.posX), Math.min(target1.posY, target2.posY), Math.min(target1.posZ, target2.posZ),
+					Math.max(target1.posX, target2.posX), Math.max(target1.posY, target2.posY), Math.max(target1.posZ, target2.posZ));
+			if (aabbSource.intersectsWith(aabbTarget)) {
 				// render fake explosions
 				doCollisionDamage(false);
 				
@@ -529,9 +512,22 @@ public class EntityJump extends Entity {
 		} else if (isHyperspaceJump && isInHyperSpace) {
 			ship.messageToAllPlayersOnShip(this, "Leaving HYPERSPACE..");
 		} else if (isCoordJump) {
-			ship.messageToAllPlayersOnShip(this, "Jumping to coordinates (" + destX + "; " + ship.coreY + "; " + destZ + ")!");
+			ship.messageToAllPlayersOnShip(this, "Jumping to coordinates (" + destX + " " + destY + " " + destZ + ")!");
 		} else {
-			ship.messageToAllPlayersOnShip(this, "Jumping " + getDirectionLabel(ship.direction) + " by " + distance + " blocks");
+			ship.messageToAllPlayersOnShip(this, "Jumping of " + Math.round(Math.sqrt(moveX * moveX + moveY * moveY + moveZ * moveZ)) + " blocks (" + moveX + " " + moveY + " " + moveZ + ")");
+		}
+		switch (rotationSteps) {
+			case 1:
+				ship.messageToAllPlayersOnShip(this, "Turning to the right");
+				break;
+			case 2:
+				ship.messageToAllPlayersOnShip(this, "Turning back");
+				break;
+			case 3:
+				ship.messageToAllPlayersOnShip(this, "Turning to the left");
+				break;
+			default:
+				break;
 		}
 		
 		// validate ship content
@@ -791,14 +787,15 @@ public class EntityJump extends Entity {
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Calculating possible jump distance...");
 		}
-		int testDistance = this.distance;
+		int originalRange = Math.max(Math.abs(moveX), Math.max(Math.abs(moveY), Math.abs(moveZ)));
+		int testRange = originalRange;
 		int blowPoints = 0;
 		collisionDetected = false;
 		
 		CheckMovementResult result = null;
-		while (testDistance >= 0) {
+		while (testRange >= 0) {
 			// Is there enough space in destination point?
-			result = checkMovement(testDistance, false);
+			result = checkMovement(testRange / (double)originalRange, false);
 			
 			if (result == null) {
 				break;
@@ -807,16 +804,20 @@ public class EntityJump extends Entity {
 			if (result.isCollision) {
 				blowPoints++;
 			}
-			testDistance--;
+			testRange--;
 		}
+		VectorI finalMovement = getMovementVector(testRange / (double)originalRange);
+		moveX = finalMovement.x;
+		moveY = finalMovement.y;
+		moveZ = finalMovement.z;
 		
-		if (distance != testDistance && WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Jump distance adjusted to " + testDistance + " after " + blowPoints + " collisions");
+		if (originalRange != testRange && WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " Jump range adjusted from " + originalRange + " to " + testRange + " after " + blowPoints + " collisions");
 		}
 		
 		// Register explosion(s) at collision point
 		if (blowPoints > WarpDriveConfig.SHIP_COLLISION_TOLERANCE_BLOCKS) {
-			result = checkMovement(Math.max(1, testDistance + 1), true);
+			result = checkMovement(Math.max(1, testRange + 1), true);
 			if (result != null) {
 				/*
 				 * Strength scaling:
@@ -834,15 +835,15 @@ public class EntityJump extends Entity {
 				collisionStrength = (4.0F + blowPoints - WarpDriveConfig.SHIP_COLLISION_TOLERANCE_BLOCKS) * massCorrection;
 				collisionAtSource = result.atSource;
 				collisionAtTarget = result.atTarget;
-				WarpDrive.logger.info(this + " Reporting " + collisionAtTarget.size() + " collisions coordinates " + blowPoints
-							+ " blowPoints with massCorrection of " + String.format("%.2f", massCorrection) + " => strength "
-							+ String.format("%.2f", collisionStrength));
+				WarpDrive.logger.info(this + " Reporting " + collisionAtTarget.size() + " collisions points after " + blowPoints
+							+ " blowPoints with " + String.format("%.2f", massCorrection) + " ship mass correction => "
+							+ String.format("%.2f", collisionStrength) + " explosion strength");
 			} else {
 				WarpDrive.logger.error("WarpDrive error: unable to compute collision points, ignoring...");
 			}
 		}
 		
-		return testDistance;
+		return testRange;
 	}
 	
 	private void doCollisionDamage(boolean atTarget) {
@@ -1007,46 +1008,6 @@ public class EntityJump extends Entity {
 		return true;
 	}
 	
-	public int[] getVector(int i) {
-		int v[] = { 0, 0, 0 };
-		
-		switch (i) {
-		case -1:
-			v[1] = 1;
-			break;
-			
-		case -2:
-			v[1] = -1;
-			break;
-			
-		case 0:
-			v[0] = ship.dx;
-			v[2] = ship.dz;
-			break;
-			
-		case 180:
-			v[0] = -ship.dx;
-			v[2] = -ship.dz;
-			break;
-			
-		case 90:
-			v[0] = ship.dz;
-			v[2] = -ship.dx;
-			break;
-			
-		case 270:
-			v[0] = -ship.dz;
-			v[2] = ship.dx;
-			break;
-			
-		default:
-			WarpDrive.logger.error(this + " Invalid direction " + i);
-			break;
-		}
-		
-		return v;
-	}
-	
 	class CheckMovementResult {
 		public ArrayList<Vector3> atSource;
 		public ArrayList<Vector3> atTarget;
@@ -1071,42 +1032,40 @@ public class EntityJump extends Entity {
 		}
 	};
 	
-	private CheckMovementResult checkMovement(int testDistance, boolean fullCollisionDetails) {
+	private CheckMovementResult checkMovement(final double ratio, final boolean fullCollisionDetails) {
 		CheckMovementResult result = new CheckMovementResult();
-		if ((ship.direction == -1 && ship.maxY + testDistance > 255) && !betweenWorlds) {
-			result.add(ship.coreX, ship.maxY + testDistance, ship.coreZ, ship.coreX + 0.5D, ship.maxY + testDistance + 1.0D, ship.coreZ + 0.5D, false,
-					"Reactor will blow due +high limit");
+		VectorI testMovement = getMovementVector(ratio);
+		VectorI offset = new VectorI((int)Math.signum(moveX), (int)Math.signum(moveY), (int)Math.signum(moveZ));
+		
+		if ((moveY > 0 && ship.maxY + testMovement.y > 255) && !betweenWorlds) {
+			result.add(ship.coreX, ship.maxY + testMovement.y, ship.coreZ, ship.coreX + 0.5D, ship.maxY + testMovement.y + 1.0D, ship.coreZ + 0.5D, false,
+					"Ship core is moving too high");
 			return result;
 		}
 		
-		if ((ship.direction == -2 && ship.minY - testDistance <= 8) && !betweenWorlds) {
-			result.add(ship.coreX, ship.minY - testDistance, ship.coreZ, ship.coreX + 0.5D, ship.maxY - testDistance, ship.coreZ + 0.5D, false, "Reactor will blow due -low limit");
+		if ((moveY < 0 && ship.minY + testMovement.y <= 8) && !betweenWorlds) {
+			result.add(ship.coreX, ship.minY + testMovement.y, ship.coreZ, ship.coreX + 0.5D, ship.maxY + testMovement.y, ship.coreZ + 0.5D, false,
+					"Ship core is moving too low");
 			return result;
 		}
 		
-		int movementVector[] = getVector(ship.direction);
-		int lmoveX = movementVector[0] * testDistance;
-		int lmoveY = movementVector[1] * testDistance;
-		int lmoveZ = movementVector[2] * testDistance;
-		
-		int x, y, z, newX, newY, newZ;
+		int x, y, z;
+		ITransformation testTransformation = new Transformation(ship, targetWorld, testMovement.x, testMovement.y, testMovement.z, rotationSteps);
+		ChunkCoordinates coordTarget;
 		Block blockSource;
 		Block blockTarget;
 		for (y = ship.minY; y <= ship.maxY; y++) {
-			newY = y + lmoveY;
 			for (x = ship.minX; x <= ship.maxX; x++) {
-				newX = x + lmoveX;
 				for (z = ship.minZ; z <= ship.maxZ; z++) {
-					newZ = z + lmoveZ;
-					
+					coordTarget = testTransformation.apply(x, y, z);
 					blockSource = worldObj.getBlock(x, y, z);
-					blockTarget = worldObj.getBlock(newX, newY, newZ);
+					blockTarget = worldObj.getBlock(coordTarget.posX, coordTarget.posY, coordTarget.posZ);
 					if (Dictionary.BLOCKS_ANCHOR.contains(blockTarget)) {
 						result.add(x, y, z,
-							newX + 0.5D - movementVector[0] * 1.0D,
-							newY + 0.5D - movementVector[1] * 1.0D,
-							newZ + 0.5D - movementVector[2] * 1.0D,
-							true, "Unpassable block " + blockTarget + " detected at destination (" + newX + ";" + newY + ";" + newZ + ")");
+							coordTarget.posX + 0.5D - offset.x,
+							coordTarget.posY + 0.5D - offset.y,
+							coordTarget.posZ + 0.5D - offset.z,
+							true, "Unpassable block " + blockTarget + " detected at destination (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
 						if (!fullCollisionDetails) {
 							return result;
 						}
@@ -1117,10 +1076,10 @@ public class EntityJump extends Entity {
 					  && blockTarget != Blocks.air
 					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockTarget)) {
 						result.add(x, y, z,
-							newX + 0.5D + movementVector[0] * 0.1D,
-							newY + 0.5D + movementVector[1] * 0.1D,
-							newZ + 0.5D + movementVector[2]	* 0.1D,
-							true, "Obstacle block #" + blockTarget + " detected at (" + newX + ", " + newY + ", " + newZ + ")");
+							coordTarget.posX + 0.5D + offset.x * 0.1D,
+							coordTarget.posY + 0.5D + offset.y * 0.1D,
+							coordTarget.posZ + 0.5D + offset.z * 0.1D,
+							true, "Obstacle block " + blockTarget + " detected at (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
 						if (!fullCollisionDetails) {
 							return result;
 						}
@@ -1134,6 +1093,10 @@ public class EntityJump extends Entity {
 		} else {
 			return null;
 		}
+	}
+	
+	private VectorI getMovementVector(final double ratio) {
+		return new VectorI((int)Math.round(moveX * ratio), (int)Math.round(moveY * ratio), (int)Math.round(moveZ * ratio));
 	}
 	
 	private static ArrayList<Object> removeDuplicates(List<TileEntity> l) {

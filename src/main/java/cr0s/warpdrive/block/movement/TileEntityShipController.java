@@ -16,6 +16,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.block.movement.TileEntityShipCore.ShipCoreMode;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
@@ -27,6 +28,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	// Variables
 	private int distance = 0;
 	private int direction = 0;
+	private int moveFront = 0;
+	private int moveUp = 0;
+	private int moveRight = 0;
+	private byte rotationSteps = 0;
 	private ShipCoreMode mode = ShipCoreMode.IDLE;
 	
 	private boolean jumpFlag = false;
@@ -76,7 +81,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				"isInHyperspace",
 				"targetJumpgate",
 				"isAttached",
-				"getEnergyRequired"
+				"getEnergyRequired",
+				"movement",
+				"rotationSteps"
 		});
 		CC_scripts = Arrays.asList("startup");
 	}
@@ -111,7 +118,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		}
 	}
 	
-	private void setMode(int mode) {
+	private void setMode(final int mode) {
 		ShipCoreMode[] modes = ShipCoreMode.values();
 		if (mode >= 0 && mode <= modes.length) {
 			this.mode = modes[mode];
@@ -121,18 +128,34 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		}
 	}
 	
-	private void setDirection(int dir) {
-		if (dir == 1) {
+	private void setDirection(final int parDirection) {
+		if (parDirection == 1) {
 			this.direction = -1;
-		} else if (dir == 2) {
+		} else if (parDirection == 2) {
 			this.direction = -2;
-		} else if (dir == 255) {
+		} else if (parDirection == 255) {
 			this.direction = 270;
 		} else {
-			this.direction = dir;
+			this.direction = parDirection;
 		}
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Direction set to " + direction);
+		}
+	}
+	
+	private void setMovement(final int parMoveFront, final int parMoveUp, final int parMoveRight) {
+		moveFront = parMoveFront;
+		moveUp = parMoveUp;
+		moveRight = parMoveRight;
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " Movement set to " + moveFront + " front, " + moveUp + " up, " + moveRight + " right");
+		}
+	}
+	
+	private void setRotationSteps(final byte parRotationSteps) {
+		rotationSteps = (byte) ((parRotationSteps + 4) % 4);
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " RotationSteps set to " + rotationSteps);
 		}
 	}
 	
@@ -159,6 +182,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		setDown(tag.getInteger("down"));
 		setDistance(tag.getInteger("distance"));
 		setDirection(tag.getInteger("direction"));
+		setMovement(tag.getInteger("moveFront"), tag.getInteger("moveUp"), tag.getInteger("moveRight"));
+		setRotationSteps(tag.getByte("rotationSteps"));
 		playersString = tag.getString("players");
 		updatePlayersList();
 		setBeaconFrequency(tag.getString("bfreq"));
@@ -169,15 +194,19 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		super.writeToNBT(tag);
 		updatePlayersString();
 		tag.setString("players", playersString);
-		tag.setInteger("mode", this.mode.getCode());
-		tag.setInteger("front", this.front);
-		tag.setInteger("right", this.right);
-		tag.setInteger("up", this.up);
-		tag.setInteger("back", this.back);
-		tag.setInteger("left", this.left);
-		tag.setInteger("down", this.down);
-		tag.setInteger("distance", this.distance);
-		tag.setInteger("direction", this.direction);
+		tag.setInteger("mode", mode.getCode());
+		tag.setInteger("front", front);
+		tag.setInteger("right", right);
+		tag.setInteger("up", up);
+		tag.setInteger("back", back);
+		tag.setInteger("left", left);
+		tag.setInteger("down", down);
+		tag.setInteger("distance", distance);
+		tag.setInteger("direction", direction);
+		tag.setInteger("moveFront", moveFront);
+		tag.setInteger("moveUp", moveUp);
+		tag.setInteger("moveRight", moveRight);
+		tag.setByte("rotationSteps", rotationSteps);
 		tag.setString("bfreq", getBeaconFrequency());
 		// FIXME: shouldn't we save boolean jumpFlag, boolean summonFlag, String toSummon, String targetJumpgateName?
 	}
@@ -376,17 +405,24 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	/**
-	 * @return current reactor mode
-	 */
-	public ShipCoreMode getMode() {
-		return mode;
-	}
-	
-	/**
 	 * @return the direction
 	 */
 	public int getDirection() {
 		return direction;
+	}
+	
+	/**
+	 * @return the rotation steps
+	 */
+	public byte getRotationSteps() {
+		return rotationSteps;
+	}
+	
+	/**
+	 * @return current reactor mode
+	 */
+	public ShipCoreMode getMode() {
+		return mode;
 	}
 	
 	/**
@@ -397,8 +433,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	/**
-	 * @param summonFlag
-	 *            to set
+	 * @param summonFlag to set
 	 */
 	public void setSummonAllFlag(boolean summonFlag) {
 		this.summonFlag = summonFlag;
@@ -412,8 +447,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	/**
-	 * @param toSummon
-	 *            the toSummon to set
+	 * @param toSummon the toSummon to set
 	 */
 	public void setToSummon(String toSummon) {
 		this.toSummon = toSummon;
@@ -427,11 +461,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	/**
-	 * @param beaconFrequency
-	 *            the beaconFrequency to set
+	 * @param beaconFrequency the beaconFrequency to set
 	 */
 	public void setBeaconFrequency(String beaconFrequency) {
-		//WarpDrive.debugPrint("Setting beacon frequency: " + beaconFrequency);
+		if (WarpDriveConfig.LOGGING_LUA) {
+			WarpDrive.logger.info(this + " Beacon frequency set to " + beaconFrequency);
+		}
 		this.beaconFrequency = beaconFrequency;
 	}
 	
@@ -490,6 +525,18 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] direction(Context context, Arguments arguments) {
 		return direction(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] movement(Context context, Arguments arguments) {
+		return movement(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] rotationSteps(Context context, Arguments arguments) {
+		return rotationSteps(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
@@ -607,20 +654,17 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		try {
 			if (arguments.length == 3) {
 				int argInt0, argInt1, argInt2;
-				argInt0 = toInt(arguments[0]);
-				argInt1 = toInt(arguments[1]);
-				argInt2 = toInt(arguments[2]);
-				if (argInt0 < 0 || argInt1 < 0 || argInt2 < 0) {
-					return new Integer[] { getFront(), getRight(), getUp() };
-				}
-				if (WarpDriveConfig.LOGGING_JUMP) {
+				argInt0 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[0])));
+				argInt1 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[1])));
+				argInt2 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[2])));
+				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " Positive dimensions set to front " + argInt0 + ", right " + argInt1 + ", up " + argInt2);
 				}
 				setFront(argInt0);
 				setRight(argInt1);
-				setUp(argInt2);
+				setUp(Math.min(255 - yCoord, argInt2));
 			}
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Integer[] { getFront(), getRight(), getUp() };
 		}
 		
@@ -631,20 +675,17 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		try {
 			if (arguments.length == 3) {
 				int argInt0, argInt1, argInt2;
-				argInt0 = toInt(arguments[0]);
-				argInt1 = toInt(arguments[1]);
-				argInt2 = toInt(arguments[2]);
-				if (argInt0 < 0 || argInt1 < 0 || argInt2 < 0) {
-					return new Integer[] { getBack(), getLeft(), getDown() };
-				}
-				if (WarpDriveConfig.LOGGING_JUMP) {
+				argInt0 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[0])));
+				argInt1 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[1])));
+				argInt2 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[2])));
+				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " Negative dimensions set to back " + argInt0 + ", left " + argInt1 + ", down " + argInt2);
 				}
 				setBack(argInt0);
 				setLeft(argInt1);
-				setDown(argInt2);
+				setDown(Math.min(yCoord, argInt2));
 			}
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Integer[] { getBack(), getLeft(), getDown() };
 		}
 		
@@ -656,7 +697,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			if (arguments.length == 1) {
 				setMode(toInt(arguments[0]));
 			}
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Integer[] { mode.getCode() };
 		}
 		
@@ -668,7 +709,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			if (arguments.length == 1) {
 				setDistance(toInt(arguments[0]));
 			}
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Integer[] { getDistance() };
 		}
 		
@@ -680,11 +721,35 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			if (arguments.length == 1) {
 				setDirection(toInt(arguments[0]));
 			}
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Integer[] { getDirection() };
 		}
 		
 		return new Integer[] { getDirection() };
+	}
+	
+	private Object[] movement(Object[] arguments) {
+		try {
+			if (arguments.length == 3) {
+				setMovement(toInt(arguments[0]), toInt(arguments[1]), toInt(arguments[2]));
+			}
+		} catch (Exception exception) {
+			return new Integer[] { moveFront, moveUp, moveRight };
+		}
+		
+		return new Integer[] { moveFront, moveUp, moveRight };
+	}
+	
+	private Object[] rotationSteps(Object[] arguments) {
+		try {
+			if (arguments.length == 1) {
+				setRotationSteps((byte)toInt(arguments[0]));
+			}
+		} catch (Exception exception) {
+			return new Integer[] { (int) rotationSteps };
+		}
+		
+		return new Integer[] { (int) rotationSteps };
 	}
 	
 	private Object[] getAttachedPlayers(Object[] arguments) {
@@ -707,7 +772,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		}
 		try {
 			playerIndex = toInt(arguments[0]);
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			return new Object[] { false };
 		}
 		
@@ -856,6 +921,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			if (core != null) {
 				return new Object[] { (boolean) (core.controller != null) };
 			}
+		} else if (methodName.equals("movement")) {
+			return movement(arguments);
+			
+		} else if (methodName.equals("rotationSteps")) {
+			return rotationSteps(arguments);
+			
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
@@ -874,6 +945,35 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	 */
 	public void setTargetJumpgateName(String parTargetJumpgateName) {
 		targetJumpgateName = parTargetJumpgateName;
+	}
+	
+	public VectorI getMovement() {
+		if (moveFront != 0 || moveUp != 0 || moveRight != 0) {
+			return new VectorI(moveFront, moveUp, moveRight);
+		}
+		switch (direction) {
+		case -1:
+			return new VectorI(0, distance, 0);
+			
+		case -2:
+			return new VectorI(0, -distance, 0);
+			
+		case 0:
+			return new VectorI(distance, 0, 0);
+			
+		case 180:
+			return new VectorI(-distance, 0, 0);
+			
+		case 90:
+			return new VectorI(0, 0, -distance);
+			
+		case 270:
+			return new VectorI(0, 0, distance);
+			
+		default:
+			WarpDrive.logger.error(this + " Invalid direction " + direction);
+			return new VectorI(0, 0, 0);
+		}
 	}
 	
 	@Override

@@ -5,6 +5,11 @@ local event = require("event")
 local fs = require("filesystem")
 local serialization = require("serialization")
 
+if not term.isAvailable() then
+  computer.beep()
+  return
+end
+
 Style = {
   CDefault = 0xFFFFFF,
   BGDefault = 0x0000FF,
@@ -21,11 +26,6 @@ Style = {
   CDisabled = 0x808080,
   BGDisabled = 0x0000FF
 }
-
-if not term.isAvailable() then
-  computer.beep()
-  return
-end
 
 ----------- Monitor support
 
@@ -196,7 +196,7 @@ function readInputNumber(currentValue)
     SetCursorPos(x, y)
     Write(input .. "            ")
     input = string.sub(input, -9)
-
+    
     local params = { event.pull() }
     local eventName = params[1]
     local address = params[2]
@@ -210,6 +210,16 @@ function readInputNumber(currentValue)
         input = input .. string.format(keycode - 1)
       elseif char == 48 or keycode == 11 then -- 0
         input = input .. "0"
+      elseif char == 45 or keycode == 74 then -- -
+        if string.sub(input, 1, 1) == "-" then
+          input = string.sub(input, 2)
+        else
+          input = "-" .. input
+        end
+      elseif char == 43 or keycode == 78 then -- +
+        if string.sub(input, 1, 1) == "-" then
+          input = string.sub(input, 2)
+        end
       elseif char == 8 then -- Backspace
         input = string.sub(input, 1, string.len(input) - 1)
       elseif char == 0 and keycode == 211 then -- Delete
@@ -220,7 +230,13 @@ function readInputNumber(currentValue)
         ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
       end
     elseif eventName == "key_up" then
-    -- drop it
+      -- drop it
+    elseif eventName == "touch" then
+      -- drop it
+    elseif eventName == "drop" then
+      -- drop it
+    elseif eventName == "drag" then
+      -- drop it
     elseif eventName == "interrupted" then
       inputAbort = true
     elseif not common_event(eventName, params[3]) then
@@ -228,7 +244,7 @@ function readInputNumber(currentValue)
     end
   until inputAbort
   SetCursorPos(1, y + 1)
-  if input == "" then
+  if input == "" or input == "-" then
     return currentValue
   else
     return tonumber(input)
@@ -266,6 +282,12 @@ function readInputText(currentValue)
       end
     elseif eventName == "key_up" then
     -- drop it
+    elseif eventName == "touch" then
+      -- drop it
+    elseif eventName == "drop" then
+      -- drop it
+    elseif eventName == "drag" then
+      -- drop it
     elseif eventName == "interrupted" then
       inputAbort = true
     elseif not common_event(eventName, params[3]) then
@@ -289,13 +311,19 @@ function readConfirmation()
     if address == nil then address = "none" end
     if eventName == "key_down" then
       local char = params[3]
-      if char == 89 or char == 121 then -- Y
+      if char == 89 or char == 121 or keycode == 21 then -- Y
         return true
       else
         return false
       end
     elseif eventName == "key_up" then
     -- drop it
+    elseif eventName == "touch" then
+      -- drop it
+    elseif eventName == "drop" then
+      -- drop it
+    elseif eventName == "drag" then
+      -- drop it
     elseif eventName == "interrupted" then
       return false
     elseif not common_event(eventName, params[3]) then
@@ -346,8 +374,6 @@ function data_read()
     file:close()
   end
   if data.core_summon == nil then data.core_summon = false; end
-  if data.core_distance == nil then data.core_distance = 0; end
-  if data.core_direction == nil then data.core_direction = 0; end
 end
 
 function data_setName()
@@ -372,117 +398,129 @@ core_back = 0
 core_left = 0
 core_down = 0
 core_isInHyper = false
-core_shipLength = 0
-core_realDistance = 0
 core_jumpCost = 0
 core_shipSize = 0
+core_movement = { 0, 0, 0 }
+core_rotationSteps = 0
 
 function core_boot()
   if ship == nil then
     return
   end
-
+  
   Write("Booting Ship Core")
-
+  
   if data.core_summon then
     ship.summon_all()
   end
-
-  Write(".")
+  
+  WriteLn("...")
   core_front, core_right, core_up = ship.dim_positive()
   core_back, core_left, core_down = ship.dim_negative()
   core_isInHyper = ship.isInHyperspace()
-
-  Write(".")
+  core_rotationSteps = ship.rotationSteps()
+  core_movement = { ship.movement() }
+  if ship.direction ~= nil then
+    ship.direction(666)
+    ship.distance(0)
+  end
+  WriteLn("Ship core detected...")
+  
   repeat
     pos = ship.position()
     os.sleep(0.3)
   until pos ~= nil
   X, Y, Z = ship.position()
-  Write(".")
+  WriteLn("Ship position triangulated...")
+  
   repeat
     isAttached = ship.isAttached()
     os.sleep(0.3)
   until isAttached ~= false
-
-  Write(".")
+  WriteLn("Ship core linked...")
+  
   repeat
     core_shipSize = ship.getShipSize()
     os.sleep(0.3)
   until core_shipSize ~= nil
-
-  Write(".")
-  core_computeRealDistance()
-
-  Write(".")
+  WriteLn("Ship size updated...")
+  
   ship.mode(1)
-  WriteLn("")
 end
 
-function core_writeDirection()
-  if data.core_direction == 1 then
-    WriteLn(" Direction        = Up")
-  elseif data.core_direction == 2 then
-    WriteLn(" Direction        = Down")
-  elseif data.core_direction == 0 then
-    WriteLn(" Direction        = Front")
-  elseif data.core_direction == 180 then
-    WriteLn(" Direction        = Back")
-  elseif data.core_direction == 90 then
-    WriteLn(" Direction        = Left")
-  elseif data.core_direction == 270 then
-    WriteLn(" Direction        = Right")
+function core_writeMovement()
+  local message = " Movement         = "
+  local count = 0
+  if core_movement[1] > 0 then
+    message = message .. core_movement[1] .. " front"
+    count = count + 1
+  elseif core_movement[1] < 0 then
+    message = message .. (- core_movement[1]) .. " back"
+    count = count + 1
   end
+  if core_movement[2] > 0 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. core_movement[2] .. " up"
+    count = count + 1
+  elseif core_movement[2] < 0 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. (- core_movement[2]) .. " down"
+    count = count + 1
+  end
+  if core_movement[3] > 0 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. core_movement[3] .. " right"
+    count = count + 1
+  elseif core_movement[3] < 0 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. (- core_movement[3]) .. " left"
+    count = count + 1
+  end
+  
+  if core_rotationSteps == 1 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. "Turn right"
+    count = count + 1
+  elseif core_rotationSteps == 2 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. "Turn back"
+    count = count + 1
+  elseif core_rotationSteps == 3 then
+    if count > 0 then message = message .. ", "; end
+    message = message .. "Turn left"
+    count = count + 1
+  end
+  
+  if count == 0 then
+    message = message .. "(none)"
+  end
+  WriteLn(message)
 end
 
-function core_computeRealDistance()
-  if core_isInHyper then
-    core_shipLength = 0
-    core_realDistance = data.core_distance * 100 + core_shipLength
-    ship.mode(2)
-  else
-    if data.core_direction == 1 or data.core_direction == 2 then
-      core_shipLength = core_up + core_down + 1
-    elseif data.core_direction == 0 or data.core_direction == 180 then
-      core_shipLength = core_front + core_back + 1
-    elseif data.core_direction == 90 or data.core_direction == 270 then
-      core_shipLength = core_left + core_right + 1
-    end
-    core_realDistance = data.core_distance + core_shipLength - 1
-    ship.mode(1)
+function core_writeRotation()
+  if core_rotationSteps == 0 then
+    WriteLn(" Rotation         = Front")
+  elseif core_rotationSteps == 1 then
+    WriteLn(" Rotation         = Right +90")
+  elseif core_rotationSteps == 2 then
+    WriteLn(" Rotation         = Back 180")
+  elseif core_rotationSteps == 3 then
+    WriteLn(" Rotation         = Left -90")
   end
-  core_jumpCost = ship.getEnergyRequired(core_realDistance)
 end
 
 function core_computeNewCoordinates(cx, cy, cz)
   local res = { x = cx, y = cy, z = cz }
-  if data.core_direction == 1 then
-    res.y = res.y + core_realDistance
-  elseif data.core_direction == 2 then
-    res.y = res.y - core_realDistance
-  end
   local dx, dy, dz = ship.getOrientation()
-  if dx ~= 0 then
-    if data.core_direction == 0 then
-      res.x = res.x + (core_realDistance * dx)
-    elseif data.core_direction == 180 then
-      res.x = res.x - (core_realDistance * dx)
-    elseif data.core_direction == 90 then
-      res.z = res.z + (core_realDistance * dx)
-    elseif data.core_direction == 270 then
-      res.z = res.z - (core_realDistance * dx)
-    end
-  else
-    if data.core_direction == 0 then
-      res.z = res.z + (core_realDistance * dz)
-    elseif data.core_direction == 180 then
-      res.z = res.z - (core_realDistance * dz)
-    elseif data.core_direction == 90 then
-      res.x = res.x + (core_realDistance * dz)
-    elseif data.core_direction == 270 then
-      res.x = res.x - (core_realDistance * dz)
-    end
-  end
+  local worldMovement = { x = 0, y = 0, z = 0 }
+  worldMovement.x = dx * core_movement[1] - dz * core_movement[3]
+  worldMovement.y = core_movement[2]
+  worldMovement.z = dz * core_movement[1] + dx * core_movement[3]
+  core_actualDistance = math.ceil(math.sqrt(worldMovement.x * worldMovement.x + worldMovement.y * worldMovement.y + worldMovement.z * worldMovement.z))
+  core_jumpCost = ship.getEnergyRequired(core_actualDistance)
+  res.x = res.x + worldMovement.x
+  res.y = res.y + worldMovement.y
+  res.z = res.z + worldMovement.z
   return res
 end
 
@@ -490,55 +528,53 @@ function core_warp()
   -- rs.setOutput(alarm_side, true)
   if readConfirmation() then
     -- rs.setOutput(alarm_side, false)
-    ship.direction(data.core_direction)
-    ship.distance(data.core_distance)
-    if core_isInHyper then
-      ship.mode(2)
-    else
-      ship.mode(1)
-    end
+    ship.movement(core_movement[1], core_movement[2], core_movement[3])
+    ship.rotationSteps(core_rotationSteps)
+    ship.mode(1)
     ship.jump()
     -- ship = nil
   end
   -- rs.setOutput(alarm_side, false)
 end
 
-function core_page_setDistance()
-  ShowTitle("<==== Set distance ====>")
+function core_page_setMovement()
+  ShowTitle("<==== Set movement ====>")
   
-  core_computeRealDistance()
-  local maximumDistance = core_shipLength + 127
-  local userEntry = core_realDistance
-  if userEntry <= 1 then
-    userEntry = 0
-  end
-  repeat
-    SetCursorPos(1, 2)
-    if core_isInHyper then
-      Write("Distance * 100 (min " .. core_shipLength .. ", max " .. maximumDistance .. "): ")
-    else
-      Write("Distance (min " .. (core_shipLength + 1) .. ", max " .. maximumDistance .. "): ")
-    end
-    userEntry = readInputNumber(userEntry)
-    if userEntry <= core_shipLength or userEntry > maximumDistance then
-      ShowWarning("Wrong distance. Try again.")
-    end
-  until userEntry > core_shipLength and userEntry <= maximumDistance
-
-  data.core_distance = userEntry - core_shipLength + 1
-  core_computeRealDistance()
+  core_movement[1] = core_page_setDistanceAxis(2, "Front", core_movement[1], math.abs(core_front + core_back + 1))
+  core_movement[2] = core_page_setDistanceAxis(3, "Up"   , core_movement[2], math.abs(core_up + core_down + 1))
+  core_movement[3] = core_page_setDistanceAxis(4, "Right", core_movement[3], math.abs(core_left + core_right + 1))
+  core_movement = { ship.movement(core_movement[1], core_movement[2], core_movement[3]) }
 end
 
-function core_page_setDirection()
+function core_page_setDistanceAxis(line, axis, userEntry, shipLength)
+  local maximumDistance = shipLength + 127
+  if core_isInHyper and line ~= 3 then
+    maximumDistance = shipLength + 127 * 100
+  end
+  repeat
+    SetCursorPos(1, line)
+    Write(axis .. " (min " .. (shipLength + 1) .. ", max " .. maximumDistance .. "): ")
+    userEntry = readInputNumber(userEntry)
+    if userEntry == 0 then
+      return userEntry
+    end
+    if math.abs(userEntry) <= shipLength or math.abs(userEntry) > maximumDistance then
+      ShowWarning("Wrong distance. Try again.")
+    end
+  until math.abs(userEntry) > shipLength and math.abs(userEntry) <= maximumDistance
+  
+  return userEntry
+end
+
+function core_page_setRotation()
   local inputAbort = false
   local drun = true
   repeat
-    ShowTitle("<==== Set direction ====>")
-    core_writeDirection()
+    ShowTitle("<==== Set rotation ====>")
+    core_writeRotation()
     SetCursorPos(1, 19)
     SetColorTitle()
     ShowMenu("Use directional keys")
-    ShowMenu("W/S keys for Up/Down")
     ShowMenu("Enter - confirm")
     SetColorDefault()
     local params = { event.pull() }
@@ -549,17 +585,13 @@ function core_page_setDirection()
       local char = params[3]
       local keycode = params[4]
       if keycode == 200 then
-        data.core_direction = 0
-      elseif keycode == 17 or keycode == 201 then
-        data.core_direction = 1
+        core_rotationSteps = 0
       elseif keycode == 203 then
-        data.core_direction = 90
+        core_rotationSteps = 3
       elseif keycode == 205 then
-        data.core_direction = 270
+        core_rotationSteps = 1
       elseif keycode == 208 then
-        data.core_direction = 180
-      elseif keycode == 31 or keycode == 209 then
-        data.core_direction = 2
+        core_rotationSteps = 2
       elseif keycode == 28 then
         inputAbort = true
       else
@@ -567,12 +599,19 @@ function core_page_setDirection()
       end
     elseif eventName == "key_up" then
     -- drop it
+    elseif eventName == "touch" then
+      -- drop it
+    elseif eventName == "drop" then
+      -- drop it
+    elseif eventName == "drag" then
+      -- drop it
     elseif eventName == "interrupted" then
       inputAbort = true
     elseif not common_event(eventName, params[3]) then
       ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     end
   until inputAbort
+  core_rotationSteps = ship.rotationSteps(core_rotationSteps)
 end
 
 function core_page_setDimensions()
@@ -590,8 +629,8 @@ function core_page_setDimensions()
   Write(" Down  (".. core_down ..") : ")
   core_down = readInputNumber(core_down)
   Write("Setting dimensions...")
-  ship.dim_positive(core_front, core_right, core_up)
-  ship.dim_negative(core_back, core_left, core_down)
+  core_front, core_right, core_up = ship.dim_positive(core_front, core_right, core_up)
+  core_back, core_left, core_down = ship.dim_negative(core_back, core_left, core_down)
   core_shipSize = ship.getShipSize()
   if core_shipSize == nil then core_shipSize = 0 end
 end
@@ -606,7 +645,7 @@ function core_page_summon()
   ShowMenu("Enter player number")
   ShowMenu("or press enter to summon everyone")
   SetColorDefault()
-
+  
   Write(":")
   local input = readInputNumber("")
   if input == "" then
@@ -619,7 +658,7 @@ end
 
 function core_page_jumpToBeacon()
   ShowTitle("<==== Jump to beacon ====>")
-
+  
   Write("Enter beacon frequency: ")
   local freq = readInputText("")
   -- rs.setOutput(alarm_side, true)
@@ -635,7 +674,7 @@ end
 
 function core_page_jumpToGate()
   ShowTitle("<==== Jump to Jumpgate ====>")
-
+  
   Write("Enter jumpgate name: ")
   local name = readInputText("")
   -- rs.setOutput(alarm_side, true)
@@ -670,9 +709,9 @@ function core_page()
     WriteLn(" Size             = " .. core_shipSize .. " blocks")
     WriteLn("")
     WriteLn("Warp data:")
-    core_writeDirection()
+    core_writeMovement()
     local dest = core_computeNewCoordinates(X, Y, Z)
-    WriteLn(" Distance         = " .. core_realDistance .. " (" .. core_jumpCost .. "EU, " .. math.floor(energy / core_jumpCost) .. " jumps)")
+    WriteLn(" Distance         = " .. core_actualDistance .. " (" .. core_jumpCost .. "EU, " .. math.floor(energy / core_jumpCost) .. " jumps)")
     WriteLn(" Dest.coordinates = " .. FormatInteger(dest.x) .. ", " .. FormatInteger(dest.y) .. ", " .. FormatInteger(dest.z))
     if data.core_summon then
       WriteLn(" Summon after     = Yes")
@@ -682,29 +721,29 @@ function core_page()
   else
     ShowWarning("No ship controller detected")
   end
-
+  
   SetCursorPos(1, 19)
   SetColorTitle()
-  ShowMenu("D - Dimensions, M - Toggle summon, N - Ship name")
-  ShowMenu("S - Set Warp Data, J - Jump, G - Jump to JumpGate")
-  ShowMenu("B - Jump to Beacon, H - Jump to Hyperspace")
-  ShowMenu("C - summon Crew")
+  ShowMenu("D - set Dimensions, N - set ship Name")
+  ShowMenu("M - set Movement, J - Jump, G - jump through Gate")
+  ShowMenu("B - jump to Beacon, H - jump to Hyperspace")
+  ShowMenu("C - summon Crew, M - Toggle summon")
 end
 
 function core_key(char, keycode)
-  if char == 83 or char == 115 then -- S
-    core_page_setDirection()
-    core_page_setDistance()
+  if char == 77 or char == 109 then -- M
+    core_page_setMovement()
+    core_page_setRotation()
     data_save()
     return true
-  elseif char == 77 or char == 109 then -- M
+  elseif char == 84 or char == 116 then -- T
     if data.core_summon then
       data.core_summon = false
-  else
-    data.core_summon = true
-  end
-  data_save()
-  return true
+    else
+      data.core_summon = true
+    end
+    data_save()
+    return true
   elseif char == 68 or char == 100 then -- D
     core_page_setDimensions()
     data_save()
@@ -739,6 +778,7 @@ function core_key(char, keycode)
 end
 
 ----------- Boot sequence
+
 label = computer.address()
 if not label then
   label = "" .. computer.address()
@@ -759,7 +799,6 @@ for address, componentType in component.list() do
     ship = component.proxy(address)
   end
 end
--- os.sleep(1)
 
 if not computer.address() and ship ~= nil then
   data_setName()
@@ -768,7 +807,7 @@ end
 -- peripherals status
 function connections_page()
   ShowTitle(label .. " - Connections")
-
+  
   WriteLn("")
   if ship == nil then
     SetColorDisabled()
@@ -811,13 +850,13 @@ repeat
   if eventName == "key_down" then
     char = params[3]
     keycode = params[4]
-    if char == 88 or char == 120 then -- x for eXit
+    if char == 88 or char == 120 or keycode == 45 then -- x for eXit
       abort = true
-    elseif char == 48 or keycode == 11 then -- 0
+    elseif char == 48 or keycode == 11 or keycode == 82 then -- 0
       page = connections_page
       keyHandler = nil
       refresh = true
-    elseif char == 49 or keycode == 2 then -- 1
+    elseif char == 49 or keycode == 2 or keycode == 79 then -- 1
       page = core_page
       keyHandler = core_key
       refresh = true
@@ -834,9 +873,15 @@ repeat
     -- func(unpack(params))
     -- abort, refresh = false, false
   elseif eventName == "char" then
-  -- drop it
+    -- drop it
   elseif eventName == "key_up" then
-  -- drop it
+    -- drop it
+  elseif eventName == "touch" then
+    -- drop it
+  elseif eventName == "drop" then
+    -- drop it
+  elseif eventName == "drag" then
+    -- drop it
   elseif eventName == "interrupted" then
     abort = true
   elseif not common_event(eventName, params[3]) then
@@ -845,6 +890,16 @@ repeat
     os.sleep(0.2)
   end
 until abort
+
+-- exiting
+if data.core_summon then
+  data.core_summon = false
+  data_save()
+end
+
+if ship ~= nil then
+  ship.mode(0)
+end
 
 -- clear screens on exit
 SetMonitorColorFrontBack(0xFFFFFF, 0x000000)

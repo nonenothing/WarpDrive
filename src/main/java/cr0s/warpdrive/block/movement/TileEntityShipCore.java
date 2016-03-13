@@ -29,6 +29,7 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Jumpgate;
 import cr0s.warpdrive.data.StarMapEntry;
+import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
 /**
@@ -39,17 +40,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	public Boolean launchState = false;
 	
-	public final int JUMP_UP = -1;
-	public final int JUMP_DOWN = -2;
 	public int dx, dz;
 	private int direction;
 	
 	public int maxX, maxY, maxZ;
 	public int minX, minY, minZ;
 	
-	public int shipFront, shipBack;
-	public int shipLeft, shipRight;
-	public int shipUp, shipDown;
 	public int shipLength;
 	public int shipMass;
 	public int shipVolume;
@@ -74,27 +70,27 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			return code;
 		}
 	}
-
+	
 	private int warmupTime = 0;
 	private int cooldownTime = 0;
 	public int randomWarmupAddition = 0;
-
+	
 	private int chestTeleportUpdateTicks = 0;
-    private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS;
+	private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS;
 	private int registryUpdateTicks = 0;
-    private int bootTicks = 20;
-    
+	private int bootTicks = 20;
+	
 	public UUID uuid = null;
 	public String shipName = "default";
 
 	public int isolationBlocksCount = 0;
 	public double isolationRate = 0.0D;
 	public int isolationUpdateTicks = 0;
-
+	
 	public TileEntityShipController controller;
-
+	
 	private boolean soundPlayed = false;
-
+	
 	public TileEntityShipCore() {
 		super();
 		peripheralName = "warpdriveShipCore";
@@ -356,17 +352,17 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		int xmin, ymin, zmin;
 		xmin = xCoord - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
 		xmax = xCoord + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
-
+		
 		zmin = zCoord - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
 		zmax = zCoord + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
-
+		
 		// scan 1 block higher to encourage putting isolation block on both
 		// ground and ceiling
 		ymin = Math.max(0, yCoord - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE + 1);
 		ymax = Math.min(255, yCoord + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE + 1);
-
+		
 		int newCount = 0;
-
+		
 		// Search for warp isolation blocks
 		for (int y = ymin; y <= ymax; y++) {
 			for (int x = xmin; x <= xmax; x++) {
@@ -407,25 +403,25 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	private void summonPlayers() {
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
-
+		
 		for (int i = 0; i < controller.players.size(); i++) {
 			String nick = controller.players.get(i);
 			EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(nick);
-
+			
 			if (player != null
 					&& !testBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
 				summonPlayer(player, xCoord + dx, yCoord, zCoord + dz);
 			}
 		}
 	}
-
+	
 	private void summonSinglePlayer(String nickname) {
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
-
+		
 		for (int i = 0; i < controller.players.size(); i++) {
 			String nick = controller.players.get(i);
 			EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(nick);
-
+			
 			if (player != null && nick.equals(nickname)
 					&& !testBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
 				summonPlayer(player, xCoord + dx, yCoord, zCoord + dz);
@@ -433,7 +429,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			}
 		}
 	}
-
+	
 	private void summonPlayer(EntityPlayerMP player, int x, int y, int z) {
 		if (consumeEnergy(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
 			if (player.dimension != worldObj.provider.dimensionId) {
@@ -451,13 +447,16 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			}
 		}
 	}
-
+	
 	public boolean validateShipSpatialParameters(StringBuilder reason) {
 		if (controller == null) {
 			reason.append("TileEntityReactor.validateShipSpatialParameters: no controller detected!");
 			return false;
 		}
 		direction = controller.getDirection();
+		int shipFront, shipBack;
+		int shipLeft, shipRight;
+		int shipUp, shipDown;
 		shipFront = controller.getFront();
 		shipRight = controller.getRight();
 		shipUp = controller.getUp();
@@ -492,7 +491,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				x2 = xCoord + shipRight;
 			}
 		}
-
+		
 		if (x1 < x2) {
 			minX = x1;
 			maxX = x2;
@@ -500,7 +499,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			minX = x2;
 			maxX = x1;
 		}
-
+		
 		if (z1 < z2) {
 			minZ = z1;
 			maxZ = z2;
@@ -508,32 +507,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			minZ = z2;
 			maxZ = z1;
 		}
-
+		
 		minY = yCoord - shipDown;
 		maxY = yCoord + shipUp;
-		shipLength = 0;
-
-		switch (direction) {
-		case 0:
-		case 180:
-			shipLength = shipBack + shipFront;
-			break;
-
-		case 90:
-		case 270:
-			shipLength = shipLeft + shipRight;
-			break;
-
-		case -1:
-		case -2:
-			shipLength = shipDown + shipUp;
-			break;
-
-		default:
-			reason.append("Invalid jump direction " + direction);
-			return false;
-		}
-
+		
 		// Ship side is too big
 		if ( (shipBack + shipFront) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE
 		  || (shipLeft + shipRight) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE
@@ -541,50 +518,50 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			reason.append("Ship is too big (max is " + WarpDriveConfig.SHIP_MAX_SIDE_SIZE + " per side)");
 			return false;
 		}
-
+		
 		boolean isUnlimited = false;
 		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-		for (Object o : list) {
-			if (o == null || !(o instanceof EntityPlayer)) {
+		for (Object object : list) {
+			if (object == null || !(object instanceof EntityPlayer)) {
 				continue;
 			}
-
-			String playerName = ((EntityPlayer) o).getDisplayName();
+			
+			String playerName = ((EntityPlayer) object).getDisplayName();
 			for (String unlimiteName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
 				isUnlimited = isUnlimited || unlimiteName.equals(playerName);
 			}
 		}
-
+		
 		updateShipMassAndVolume();
-		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && worldObj.provider.dimensionId == 0) {
+		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && worldObj.provider.dimensionId == 0) {// FIXME: need to support any planets and landing movement
 			reason.append("Ship is too big for the overworld (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
 			return false;
 		}
-
+		
 		return true;
 	}
-
+	
 	private void doBeaconJump() {
 		// Search beacon coordinates
 		String freq = controller.getBeaconFrequency();
 		int beaconX = 0, beaconZ = 0;
 		boolean isBeaconFound = false;
 		EntityPlayerMP player;
-
+		
 		for (int i = 0; i < MinecraftServer.getServer().getConfigurationManager().playerEntityList.size(); i++) {
 			player = (EntityPlayerMP) MinecraftServer.getServer().getConfigurationManager().playerEntityList.get(i);
-
+			
 			// Skip players from other dimensions
 			if (player.dimension != worldObj.provider.dimensionId) {
 				continue;
 			}
-
+			
 			TileEntity tileEntity = worldObj.getTileEntity(
 					MathHelper.floor_double(player.posX),
 					MathHelper.floor_double(player.posY) - 1,
 					MathHelper.floor_double(player.posZ));
-
+			
 			if (tileEntity != null && (tileEntity instanceof TileEntityShipController)) {
 				if (((TileEntityShipController) tileEntity).getBeaconFrequency().equals(freq)) {
 					beaconX = tileEntity.xCoord;
@@ -600,14 +577,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			// Consume energy
 			if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 				WarpDrive.logger.info(this + " Moving ship to beacon (" + beaconX + "; " + yCoord + "; " + beaconZ + ")");
-				EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 1, 0, true, beaconX, yCoord, beaconZ);
+				EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 0, 0, 0, (byte)0, true, beaconX, yCoord, beaconZ);
 				jump.ship.maxX = maxX;
 				jump.ship.minX = minX;
 				jump.ship.maxZ = maxZ;
 				jump.ship.minZ = minZ;
 				jump.ship.maxY = maxY;
 				jump.ship.minY = minY;
-				jump.shipLength = shipLength;
 				jump.on = true;
 				worldObj.spawnEntityInWorld(jump);
 			} else {
@@ -680,7 +656,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	private boolean isFreePlaceForShip(int destX, int destY, int destZ) {
 		int newX, newZ;
 		
-		if (destY + shipUp > 255 || destY - shipDown < 5) {
+		if (controller == null || destY + controller.getUp() > 255 || destY - controller.getDown() < 5) {
 			return false;
 		}
 		
@@ -770,14 +746,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		// Consume energy
 		if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
-			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 1, 0, true, destX, destY, destZ);
+			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 0, 0, 0, (byte)0, true, destX, destY, destZ);
 			jump.ship.maxX = maxX;
 			jump.ship.minX = minX;
 			jump.ship.maxZ = maxZ;
 			jump.ship.minZ = minZ;
 			jump.ship.maxY = maxY;
 			jump.ship.minY = minY;
-			jump.shipLength = shipLength;
 			jump.on = true;
 			worldObj.spawnEntityInWorld(jump);
 		} else {
@@ -792,7 +767,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		if (!consumeEnergy(requiredEnergy, true)) {
 			messageToAllPlayersOnShip("Insufficient energy to jump! Core is currently charged with " + getEnergyStored() + " EU while jump requires "
 					+ requiredEnergy + " EU");
-			this.controller.setJumpFlag(false);
+			controller.setJumpFlag(false);
 			return;
 		}
 		
@@ -819,9 +794,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				
 				StringBuilder reason = new StringBuilder();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
-					this.messageToAllPlayersOnShip("Ship is too small (" + shipMass + "/" + WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE
+					messageToAllPlayersOnShip("Ship is too small (" + shipMass + "/" + WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE
 							+ ").\nInsufficient ship mass to open hyperspace portal.\nUse a jumpgate to reach or exit hyperspace.");
-					this.controller.setJumpFlag(false);
+					controller.setJumpFlag(false);
 					return;
 				}
 			}
@@ -838,21 +813,31 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				messageToAllPlayersOnShip("Insufficient energy level");
 				return;
 			}
+			int moveX = 0;
+			int moveY = 0;
+			int moveZ = 0;
 			
-			if (this.currentMode == ShipCoreMode.BASIC_JUMP) {
-				distance += shipLength;
-			}
-			
-			if (currentMode == ShipCoreMode.LONG_JUMP && (direction != -1) && (direction != -2)) {
-				if (worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
-					distance *= 100;
+			if (currentMode != ShipCoreMode.HYPERSPACE) {
+				VectorI movement = controller.getMovement();
+				moveX = dx * movement.x - dz * movement.z;
+				moveY = movement.y;
+				moveZ = dz * movement.x + dx * movement.z;
+				if (currentMode == ShipCoreMode.BASIC_JUMP) {
+					// VectorI sizes = new VectorI(controller.getBack() + controller.getFront(), controller.getDown() + controller.getUp(), controller.getLeft() + controller.getRight());
+					// moveX += Math.signum((double)moveX) * Math.abs(dx * sizes.x - dz * sizes.z);
+					// moveY += Math.signum((double)moveY) * (sizes.y);
+					// moveZ += Math.signum((double)moveZ) * Math.abs(dz * sizes.x + dx * sizes.z);
+				} else if (currentMode == ShipCoreMode.LONG_JUMP) {
+					moveX *= 100;
+					moveZ *= 100;
 				}
 			}
 			
 			if (WarpDriveConfig.LOGGING_JUMP) {
-				WarpDrive.logger.info(this + " Distance adjusted to " + distance + " blocks.");
+				WarpDrive.logger.info(this + " Movement adjusted to (" + moveX + " " + moveY + " " + moveZ + ") blocks.");
 			}
-			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, (currentMode == ShipCoreMode.HYPERSPACE), distance, direction,
+			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, (currentMode == ShipCoreMode.HYPERSPACE),
+					moveX, moveY, moveZ, controller.getRotationSteps(),
 					false, 0, 0, 0);
 			jump.ship.maxX = maxX;
 			jump.ship.minX = minX;
@@ -860,7 +845,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			jump.ship.minZ = minZ;
 			jump.ship.maxY = maxY;
 			jump.ship.minY = minY;
-			jump.shipLength = shipLength;
 			jump.on = true;
 			worldObj.spawnEntityInWorld(jump);
 		}

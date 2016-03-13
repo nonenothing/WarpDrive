@@ -318,4 +318,11 @@ public class VectorI implements Cloneable {
 	public int getMagnitudeSquared() {
 		return x * x + y * y + z * z;
 	}
+	
+	public VectorI scale(final int amount) {
+		x *= amount;
+		y *= amount;
+		z *= amount;
+		return this;
+	}
 }

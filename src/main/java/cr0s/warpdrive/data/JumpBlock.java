@@ -231,21 +231,21 @@ public class JumpBlock {
 	
 	public void deploy(World targetWorld, ITransformation transformation) {
 		try {
-			NBTTagCompound oldnbt = null;
+			NBTTagCompound nbtToDeploy = null;
 			if (blockTileEntity != null) {
-				oldnbt = new NBTTagCompound();
-				blockTileEntity.writeToNBT(oldnbt);
+				nbtToDeploy = new NBTTagCompound();
+				blockTileEntity.writeToNBT(nbtToDeploy);
 			}
 			int newBlockMeta = blockMeta;
 			if (externals != null) {
 				for (Entry<String, NBTBase> external : externals.entrySet()) {
 					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
-						newBlockMeta = blockTransformer.rotate(block, blockMeta, oldnbt, transformation.getRotationSteps(), transformation.getRotationYaw());
+						newBlockMeta = blockTransformer.rotate(block, blockMeta, nbtToDeploy, transformation.getRotationSteps(), transformation.getRotationYaw());
 					}
 				}
 			} else {
-				newBlockMeta = getMetadataRotation(oldnbt, transformation.getRotationSteps());
+				newBlockMeta = getMetadataRotation(nbtToDeploy, transformation.getRotationSteps());
 			}
 			ChunkCoordinates target = transformation.apply(x, y, z);
 			setBlockNoLight(targetWorld, target.posX, target.posY, target.posZ, block, newBlockMeta, 2);
@@ -256,23 +256,23 @@ public class JumpBlock {
 				targetWorld.scheduleBlockUpdate(target.posX, target.posY, target.posZ, block, 40 + targetWorld.rand.nextInt(20));
 			}
 			
-			if (oldnbt != null) {
-				oldnbt.setInteger("x", target.posX);
-				oldnbt.setInteger("y", target.posY);
-				oldnbt.setInteger("z", target.posZ);
+			if (nbtToDeploy != null) {
+				nbtToDeploy.setInteger("x", target.posX);
+				nbtToDeploy.setInteger("y", target.posY);
+				nbtToDeploy.setInteger("z", target.posZ);
 				
-				if (oldnbt.hasKey("mainX") && oldnbt.hasKey("mainY") && oldnbt.hasKey("mainZ")) {// Mekanism 6.0.4.44
+				if (nbtToDeploy.hasKey("mainX") && nbtToDeploy.hasKey("mainY") && nbtToDeploy.hasKey("mainZ")) {// Mekanism 6.0.4.44
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 						WarpDrive.logger.info(this + " deploy: TileEntity has mainXYZ");
 					}
-					ChunkCoordinates mainTarget = transformation.apply(oldnbt.getInteger("mainX"), oldnbt.getInteger("mainY"), oldnbt.getInteger("mainZ"));
-					oldnbt.setInteger("mainX", mainTarget.posX);
-					oldnbt.setInteger("mainY", mainTarget.posY);
-					oldnbt.setInteger("mainZ", mainTarget.posZ);
+					ChunkCoordinates mainTarget = transformation.apply(nbtToDeploy.getInteger("mainX"), nbtToDeploy.getInteger("mainY"), nbtToDeploy.getInteger("mainZ"));
+					nbtToDeploy.setInteger("mainX", mainTarget.posX);
+					nbtToDeploy.setInteger("mainY", mainTarget.posY);
+					nbtToDeploy.setInteger("mainZ", mainTarget.posZ);
 				}
 				
-				if (oldnbt.hasKey("screenData")) {// IC2NuclearControl 2.2.5a
-					NBTTagCompound nbtScreenData = oldnbt.getCompoundTag("screenData");
+				if (nbtToDeploy.hasKey("screenData")) {// IC2NuclearControl 2.2.5a
+					NBTTagCompound nbtScreenData = nbtToDeploy.getCompoundTag("screenData");
 					if ( nbtScreenData.hasKey("minX") && nbtScreenData.hasKey("minY") && nbtScreenData.hasKey("minZ")
 					  && nbtScreenData.hasKey("maxX") && nbtScreenData.hasKey("maxY") && nbtScreenData.hasKey("maxZ")) {
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
@@ -286,24 +286,24 @@ public class JumpBlock {
 						nbtScreenData.setInteger("maxX", maxTarget.posX);
 						nbtScreenData.setInteger("maxY", maxTarget.posY);
 						nbtScreenData.setInteger("maxZ", maxTarget.posZ);
-						oldnbt.setTag("screenData", nbtScreenData);
+						nbtToDeploy.setTag("screenData", nbtScreenData);
 					}
 				}
 				
-				if (oldnbt.hasKey("hasValidBubble")) {// Galacticraft 3.0.11.333
-					oldnbt.setBoolean("hasValidBubble", false);
+				if (nbtToDeploy.hasKey("hasValidBubble")) {// Galacticraft 3.0.11.333
+					nbtToDeploy.setBoolean("hasValidBubble", false);
 					// old bubble will die naturally due to missing tile entity, new one will be spawned
 				}
 				
 				TileEntity newTileEntity = null;
 				boolean isForgeMultipart = false;
-				if (WarpDriveConfig.isForgeMultipartLoaded && oldnbt.hasKey("id") && oldnbt.getString("id") == "savedMultipart") {
+				if (WarpDriveConfig.isForgeMultipartLoaded && nbtToDeploy.hasKey("id") && nbtToDeploy.getString("id") == "savedMultipart") {
 					isForgeMultipart = true;
-					newTileEntity = (TileEntity) WarpDriveConfig.forgeMultipart_helper_createTileFromNBT.invoke(null, targetWorld, oldnbt);
+					newTileEntity = (TileEntity) WarpDriveConfig.forgeMultipart_helper_createTileFromNBT.invoke(null, targetWorld, nbtToDeploy);
 					
 				} else if (block == WarpDriveConfig.CC_Computer || block == WarpDriveConfig.CC_peripheral
 						|| block == WarpDriveConfig.CCT_Turtle || block == WarpDriveConfig.CCT_Expanded || block == WarpDriveConfig.CCT_Advanced) {
-					newTileEntity = TileEntity.createAndLoadEntity(oldnbt);
+					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
 					newTileEntity.invalidate();
 					
 				} /* else if (block == WarpDriveConfig.AS_Turbine) {
@@ -318,7 +318,7 @@ public class JumpBlock {
 					} /* No 1.7.10 version */
 				
 				if (newTileEntity == null) {
-					newTileEntity = TileEntity.createAndLoadEntity(oldnbt);
+					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
 				}
 				
 				if (newTileEntity != null) {
@@ -333,7 +333,7 @@ public class JumpBlock {
 					return;
 				} else {
 					WarpDrive.logger.info(" deploy failed to create new tile entity at " + x + ", " + y + ", " + z + " blockId " + block + ":" + blockMeta);
-					WarpDrive.logger.info("NBT data was " + oldnbt);
+					WarpDrive.logger.info("NBT data was " + nbtToDeploy);
 				}
 			}
 		} catch (Exception exception) {

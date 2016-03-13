@@ -25,7 +25,6 @@ public class JumpShip {
 	public int coreZ;
 	public int dx;
 	public int dz;
-	public int direction;
 	public int maxX;
 	public int maxZ;
 	public int maxY;
