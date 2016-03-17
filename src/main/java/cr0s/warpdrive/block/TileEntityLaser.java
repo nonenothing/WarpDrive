@@ -120,7 +120,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					WarpDriveConfig.LASER_CANNON_MAX_LASER_ENERGY);
 			emitBeam(beamEnergy);
 			energyFromOtherBeams = 0;
-			sendEvent("laserSend", new Object[] { beamFrequency, beamEnergy });
+			sendEvent("laserSend", beamFrequency, beamEnergy);
 		}
 	}
 	
@@ -197,9 +197,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				PacketHandler.sendBeamPacket(worldObj, vSource, vReachPoint, r, g, b, 50, energy, 200);
 			}
 			
-			sendEvent("laserScanning", new Object[] {
+			sendEvent("laserScanning",
 					scanResult_type.name, scanResult_position.x, scanResult_position.y, scanResult_position.z,
-					scanResult_blockUnlocalizedName, scanResult_blockMetadata, scanResult_blockResistance });
+					scanResult_blockUnlocalizedName, scanResult_blockMetadata, scanResult_blockResistance);
 			return;
 		}
 		

@@ -163,6 +163,7 @@ function ClearWarning()
     local sizeX, sizeY = term.getSize()
     SetCursorPos(1, sizeY)
     ClearLine()
+    clearWarningTick = -1
   end
 end
 
@@ -210,7 +211,7 @@ function readInputNumber(currentValue)
     SetCursorPos(x, y)
     Write(input .. "            ")
     input = string.sub(input, -9)
-
+    
     local params = { os.pullEventRaw() }
     local eventName = params[1]
     local address = params[2]
@@ -233,7 +234,7 @@ function readInputNumber(currentValue)
         input = ""
       elseif keycode == 28 then -- Enter
         inputAbort = true
-      elseif keycode == 74 then -- -
+      elseif keycode == 74 or keycode == 12 or keycode == 49 then -- - on numeric keypad or - on US top or n letter
         if string.sub(input, 1, 1) == "-" then
           input = string.sub(input, 2)
         else
@@ -258,7 +259,7 @@ function readInputNumber(currentValue)
       -- drop it
     elseif eventName == "terminate" then
       inputAbort = true
-    elseif not common_event(eventName, params[3]) then
+    elseif not common_event(eventName, params[2]) then
       ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     end
   until inputAbort
@@ -314,7 +315,7 @@ function readInputText(currentValue)
       -- drop it
     elseif eventName == "terminate" then
       inputAbort = true
-    elseif not common_event(eventName, params[3]) then
+    elseif not common_event(eventName, params[2]) then
       ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     end
   until inputAbort
@@ -352,7 +353,7 @@ function readConfirmation()
       -- drop it
     elseif eventName == "terminate" then
       return false
-    elseif not common_event(eventName, params[3]) then
+    elseif not common_event(eventName, params[2]) then
       ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     end
   until false
@@ -362,7 +363,7 @@ end
 
 function common_event(eventName, param)
   if eventName == "redstone" then
-  --    redstone_event(param)
+      redstone_event(param)
   elseif eventName == "timer" then
   else
     return false
@@ -374,6 +375,41 @@ function menu_common()
   SetCursorPos(1, 18)
   SetColorTitle()
   ShowMenu("0 Connections, 1 Ship core, X Exit")
+end
+
+----------- Redstone support
+
+local tblRedstoneState = {-- Remember redstone state on each side
+  ["top"] = rs.getInput("top"),
+  ["front"] = rs.getInput("front"),
+  ["left"] = rs.getInput("left"),
+  ["right"] = rs.getInput("right"),
+  ["back"] = rs.getInput("back"),
+  ["bottom"] = rs.getInput("bottom"),
+}
+local tblSides = {-- list all sides and offset coordinates
+  ["top"   ] = { 3, 1},
+  ["front" ] = { 1, 3},
+  ["left"  ] = { 3, 3},
+  ["right" ] = { 5, 3},
+  ["back"  ] = { 5, 5},
+  ["bottom"] = { 3, 5},
+}
+
+function redstone_event()
+  -- Event only returns nil so we need to check sides manually
+  local message = ""
+  for side, state in pairs(tblRedstoneState) do
+    if rs.getInput(side) ~= state then
+      -- print(side .. " is now " .. tostring(rs.getInput(side)))
+      message = message .. side .. " "
+      tblRedstoneState[side] = rs.getInput(side)
+    end
+  end
+  if message ~= "" then
+    message = "Redstone changed on " .. message
+    showWarning(message)
+  end
 end
 
 ----------- Configuration
@@ -400,7 +436,7 @@ end
 
 function data_setName()
   ShowTitle("<==== Set name ====>")
-
+  
   SetCursorPos(1, 2)
   Write("Enter ship name: ")
   label = readInputText(label)
@@ -409,6 +445,14 @@ function data_setName()
     ship.coreFrequency(label)
   end
   os.reboot()
+end
+
+function string_split(source, sep)
+  local sep = sep or ":"
+  local fields = {}
+  local pattern = string.format("([^%s]+)", sep)
+  source:gsub(pattern, function(c) fields[#fields + 1] = c end)
+  return fields
 end
 
 ----------- Ship support
@@ -561,6 +605,13 @@ end
 
 function core_page_setMovement()
   ShowTitle("<==== Set movement ====>")
+  SetCursorPos(1, 15)
+  SetColorTitle()
+  ShowMenu("Enter 0 to keep position on that axis")
+  ShowMenu("Use - or n keys to move in opposite direction")
+  ShowMenu("Press Enter to confirm")
+  SetColorDefault()
+  SetCursorPos(1, 3)
   
   core_movement[1] = core_page_setDistanceAxis(2, "Front", core_movement[1], math.abs(core_front + core_back + 1))
   core_movement[2] = core_page_setDistanceAxis(3, "Up"   , core_movement[2], math.abs(core_up + core_down + 1))
@@ -594,10 +645,10 @@ function core_page_setRotation()
   repeat
     ShowTitle("<==== Set rotation ====>")
     core_writeRotation()
-    SetCursorPos(1, 19)
+    SetCursorPos(1, 16)
     SetColorTitle()
     ShowMenu("Use directional keys")
-    ShowMenu("Enter - confirm")
+    ShowMenu("Press Enter to confirm")
     SetColorDefault()
     local params = { os.pullEventRaw() }
     local eventName = params[1]
@@ -660,9 +711,19 @@ end
 
 function core_page_summon()
   ShowTitle("<==== Summon players ====>")
-  local playersString, playersArray = ship.getAttachedPlayers()
+  local playersString = ship.getAttachedPlayers()
+  if playersString == "" then
+    WriteLn("~ no players registered ~")
+    WriteLn("")
+    SetColorTitle()
+    ShowMenu("Press enter to exit")
+    SetColorDefault()
+	readInputNumber("")
+	return
+  end
+  local playersArray = string_split(playersString, ",")
   for i = 1, #playersArray do
-    WriteLn(i..". "..playersArray[i])
+    WriteLn(i .. ". " .. playersArray[i])
   end
   SetColorTitle()
   ShowMenu("Enter player number")
@@ -747,10 +808,9 @@ function core_page()
   
   SetCursorPos(1, 15)
   SetColorTitle()
-  ShowMenu("D - set Dimensions, N - set ship Name")
-  ShowMenu("M - set Movement, J - Jump, G - jump through Gate")
-  ShowMenu("B - jump to Beacon, H - jump to Hyperspace")
-  ShowMenu("C - summon Crew, M - Toggle summon")
+  ShowMenu("D - Dimensions, N - set ship Name, M - set Movement")
+  ShowMenu("J - Jump, G - jump through Gate, B - jump to Beacon")
+  ShowMenu("H - Hyperspace, C - summon Crew, T - Toggle summon")
 end
 
 function core_key(char, keycode)
@@ -820,7 +880,7 @@ WriteLn("")
 sides = peripheral.getNames()
 ship = nil
 for key,side in pairs(sides) do
-  sleep(0)
+  os.sleep(0)
   if peripheral.getType(side) == "monitor" then
     WriteLn("Wrapping " .. side)
     lmonitor = peripheral.wrap(side)
@@ -935,5 +995,10 @@ end
 -- clear screens on exit
 SetMonitorColorFrontBack(colors.white, colors.black)
 term.clear()
+if monitors ~= nil then
+  for key,monitor in pairs(monitors) do
+    monitor.clear()
+  end
+end
 SetCursorPos(1, 1)
 Write("")

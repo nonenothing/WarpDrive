@@ -74,7 +74,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void increaseInstability(ForgeDirection from, boolean isNatural) {
-		if (canOutputEnergy(from) || hold) {
+		if (canOutputEnergy(from)) {
 			return;
 		}
 		
@@ -195,15 +195,17 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		
 		updateSideTextures();
 		
-		// unstable at all time
-		if (shouldExplode()) {
-			explode();
+		if (!hold) {// still loading/booting => hold simulation
+			// unstable at all time
+			if (shouldExplode()) {
+				explode();
+			}
+			increaseInstability(true);
+			
+			generateEnergy();
 		}
-		increaseInstability(true);
 		
-		generateEnergy();
-		
-		sendEvent("reactorPulse", new Object[] { lastGenerationRate });
+		sendEvent("reactorPulse", lastGenerationRate);
 	}
 	
 	private void explode() {
@@ -296,7 +298,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Override
 	public Object[] energy() {
-		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };	}
+		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
+	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
@@ -313,9 +316,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 				throw new Exception("Function expects a boolean value");
 			}
 			if (active && !activate) {
-				sendEvent("reactorDeactivation", null);
+				sendEvent("reactorDeactivation");
 			} else if (!active && activate) {
-				sendEvent("reactorActivation", null);
+				sendEvent("reactorActivation");
 			}
 			active = activate;
 		}
@@ -404,6 +407,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] instability(Context context, Arguments arguments) throws Exception {
+		// computer is alive => start updating reactor
+		hold = false;
 		return new Double[] { instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3] };
 	}
 	

@@ -285,7 +285,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	// Computer abstraction methods
-	protected void sendEvent(String eventName, Object[] arguments) {
+	protected void sendEvent(String eventName, Object... arguments) {
 		if (WarpDriveConfig.LOGGING_LUA) {
 			WarpDrive.logger.info(this + " Sending event '" + eventName + "'");
 		}
@@ -298,7 +298,18 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		}
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (OC_node != null && OC_node.network() != null) {
-				OC_node.sendToReachable("computer.signal", eventName, arguments);
+				if (arguments == null || arguments.length == 0) {
+					OC_node.sendToReachable("computer.signal", eventName);
+				} else {
+					Object[] eventWithArguments = new Object[arguments.length + 1];
+					eventWithArguments[0] = eventName;
+					int index = 1;
+					for (Object object : arguments) {
+						eventWithArguments[index] = object;
+						index++;
+					}
+					OC_node.sendToReachable("computer.signal", eventWithArguments);
+				}
 			}
 		}
 	}

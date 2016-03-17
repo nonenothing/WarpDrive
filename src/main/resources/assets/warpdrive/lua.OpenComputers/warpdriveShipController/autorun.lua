@@ -29,12 +29,18 @@ Style = {
 
 ----------- Monitor support
 
--- need to memorize colors so we can see debug stack dump
+-- cache colors to reduce GPU load
 local gpu_frontColor = 0xFFFFFF
 local gpu_backgroundColor = 0x000000
 function SetMonitorColorFrontBack(frontColor, backgroundColor)
-  gpu_frontColor = frontColor
-  gpu_backgroundColor = backgroundColor
+  if gpu_frontColor ~= frontColor then
+    gpu_frontColor = frontColor
+    component.gpu.setForeground(gpu_frontColor)
+  end
+  if gpu_backgroundColor ~= backgroundColor then
+    gpu_backgroundColor = backgroundColor
+    component.gpu.setBackground(gpu_backgroundColor)
+  end
 end
 
 function Write(text)
@@ -42,11 +48,8 @@ function Write(text)
     local w, h = component.gpu.getResolution()
     if w then
       local xt, yt = term.getCursor()
-      component.gpu.setBackground(gpu_backgroundColor)
-      component.gpu.setForeground(gpu_frontColor)
       component.gpu.set(xt, yt, text)
       SetCursorPos(xt + #text, yt)
-      component.gpu.setBackground(0x000000)
     end
   end
 end
@@ -78,10 +81,7 @@ end
 function Clear()
   clearWarningTick = -1
   SetColorDefault()
-  component.gpu.setBackground(gpu_backgroundColor)
-  component.gpu.setForeground(gpu_frontColor)
   term.clear()
-  component.gpu.setBackground(0x000000)
   SetCursorPos(1, 1)
 end
 
@@ -105,10 +105,7 @@ function WriteCentered(y, text)
   if term.isAvailable() then
     local sizeX, sizeY = component.gpu.getResolution()
     if sizeX then
-      component.gpu.setBackground(gpu_backgroundColor)
-      component.gpu.setForeground(gpu_frontColor)
       component.gpu.set((sizeX - text:len()) / 2, y, text)
-      component.gpu.setBackground(0x000000)
     end
   end
   local xt, yt = term.getCursor()
@@ -149,6 +146,7 @@ function ClearWarning()
     local sizeX, sizeY = component.gpu.getResolution()
     SetCursorPos(1, sizeY)
     ClearLine()
+    clearWarningTick = -1
   end
 end
 
@@ -210,7 +208,8 @@ function readInputNumber(currentValue)
         input = input .. string.format(keycode - 1)
       elseif char == 48 or keycode == 11 then -- 0
         input = input .. "0"
-      elseif char == 45 or keycode == 74 then -- -
+      elseif char == 45 or char == 78 or char == 110
+        or keycode == 74 or keycode == 12 or keycode == 49 then -- - on numeric keypad or - on US top or n letter
         if string.sub(input, 1, 1) == "-" then
           input = string.sub(input, 2)
         else
@@ -281,7 +280,7 @@ function readInputText(currentValue)
         ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
       end
     elseif eventName == "key_up" then
-    -- drop it
+      -- drop it
     elseif eventName == "touch" then
       -- drop it
     elseif eventName == "drop" then
@@ -317,7 +316,7 @@ function readConfirmation()
         return false
       end
     elseif eventName == "key_up" then
-    -- drop it
+      -- drop it
     elseif eventName == "touch" then
       -- drop it
     elseif eventName == "drop" then
@@ -378,7 +377,7 @@ end
 
 function data_setName()
   ShowTitle("<==== Set name ====>")
-
+  
   SetCursorPos(1, 2)
   Write("Enter ship name: ")
   label = readInputText(label)
@@ -386,7 +385,7 @@ function data_setName()
   if ship ~= nil then
     ship.coreFrequency(label)
   end
-  -- FIXME os.reboot()
+  -- FIXME computer.shutdown(true)
 end
 
 ----------- Ship support
@@ -539,6 +538,13 @@ end
 
 function core_page_setMovement()
   ShowTitle("<==== Set movement ====>")
+  SetCursorPos(1, 20)
+  SetColorTitle()
+  ShowMenu("Enter 0 to keep position on that axis")
+  ShowMenu("Use - or n keys to move in opposite direction")
+  ShowMenu("Press Enter to confirm")
+  SetColorDefault()
+  SetCursorPos(1, 3)
   
   core_movement[1] = core_page_setDistanceAxis(2, "Front", core_movement[1], math.abs(core_front + core_back + 1))
   core_movement[2] = core_page_setDistanceAxis(3, "Up"   , core_movement[2], math.abs(core_up + core_down + 1))
@@ -572,10 +578,10 @@ function core_page_setRotation()
   repeat
     ShowTitle("<==== Set rotation ====>")
     core_writeRotation()
-    SetCursorPos(1, 19)
+    SetCursorPos(1, 21)
     SetColorTitle()
     ShowMenu("Use directional keys")
-    ShowMenu("Enter - confirm")
+    ShowMenu("Press Enter to confirm")
     SetColorDefault()
     local params = { event.pull() }
     local eventName = params[1]
@@ -638,8 +644,18 @@ end
 function core_page_summon()
   ShowTitle("<==== Summon players ====>")
   local playersString, playersArray = ship.getAttachedPlayers()
+  if #playersArray == 0 then
+    WriteLn("~ no players registered ~")
+    WriteLn("")
+    SetColorTitle()
+    ShowMenu("Press enter to exit")
+    SetColorDefault()
+	readInputNumber("")
+	return
+  end
+  
   for i = 1, #playersArray do
-    WriteLn(i..". "..playersArray[i])
+    WriteLn(i .. ". " .. playersArray[i])
   end
   SetColorTitle()
   ShowMenu("Enter player number")
@@ -722,12 +738,11 @@ function core_page()
     ShowWarning("No ship controller detected")
   end
   
-  SetCursorPos(1, 19)
+  SetCursorPos(1, 20)
   SetColorTitle()
-  ShowMenu("D - set Dimensions, N - set ship Name")
-  ShowMenu("M - set Movement, J - Jump, G - jump through Gate")
-  ShowMenu("B - jump to Beacon, H - jump to Hyperspace")
-  ShowMenu("C - summon Crew, M - Toggle summon")
+  ShowMenu("D - Dimensions, N - set ship Name, M - set Movement")
+  ShowMenu("J - Jump, G - jump through Gate, B - jump to Beacon")
+  ShowMenu("H - Hyperspace, C - summon Crew, T - Toggle summon")
 end
 
 function core_key(char, keycode)
@@ -791,6 +806,10 @@ data_read()
 ShowTitle(label .. " - Connecting...")
 WriteLn("")
 
+-- clear previous events
+repeat
+until event.pull(0) == nil
+
 ship = nil
 for address, componentType in component.list() do
   os.sleep(0)
@@ -845,7 +864,7 @@ repeat
   address = params[2]
   if address == nil then address = "none" end
   -- WriteLn("...")
-  -- WriteLn("Event '" .. eventName .. "', " .. address .. ", " .. params[3] .. ", " .. params[4] .. " received")
+  -- WriteLn("Event '" .. eventName .. "', " .. address .. ", " .. params[3] .. " received")
   -- os.sleep(0.2)
   if eventName == "key_down" then
     char = params[3]

@@ -71,7 +71,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				"energy",
 				"getAttachedPlayers",
 				"summon",
-				"summonAll",
+				"summon_all",
 				"jump",
 				"getShipSize",
 				"beaconFrequency",
@@ -762,7 +762,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			}
 		}
 		
-		return new Object[] { list, players };
+		return new Object[] { list, players.toArray() };
 	}
 	
 	private Object[] summon(Object[] arguments) {
@@ -840,7 +840,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	protected void cooldownDone() {
-		sendEvent("shipCoreCooldownDone", null);
+		sendEvent("shipCoreCooldownDone");
 	}
 	
 	// ComputerCraft IPeripheral methods implementation

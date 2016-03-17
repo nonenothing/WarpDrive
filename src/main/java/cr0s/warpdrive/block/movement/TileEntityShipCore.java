@@ -410,7 +410,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			
 			if (player != null
 					&& !testBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
-				summonPlayer(player, xCoord + dx, yCoord, zCoord + dz);
+				summonPlayer(player, xCoord + 2 * dx, yCoord, zCoord + 2 * dz);
 			}
 		}
 	}
@@ -424,7 +424,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			
 			if (player != null && nick.equals(nickname)
 					&& !testBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
-				summonPlayer(player, xCoord + dx, yCoord, zCoord + dz);
+				summonPlayer(player, xCoord + 2 * dx, yCoord, zCoord + 2 * dz);
 				return;
 			}
 		}
@@ -440,10 +440,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 						DimensionManager.getWorld(worldObj.provider.dimensionId),
 						0,
 						MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ)));
-				player.setPositionAndUpdate(x, y, z);
+				player.setPositionAndUpdate(x + 0.5d, y, z + 0.5d);
 				player.sendPlayerAbilities();
 			} else {
-				player.setPositionAndUpdate(x, y, z);
+				player.setPositionAndUpdate(x + 0.5d, y, z + 0.5d);
 			}
 		}
 	}
