@@ -28,6 +28,7 @@ import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatImmersiveEngineering;
 import cr0s.warpdrive.compat.CompatIndustrialCraft2;
 import cr0s.warpdrive.compat.CompatOpenComputers;
+import cr0s.warpdrive.compat.CompatTConstruct;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.config.structures.StructureReference;
@@ -642,7 +643,7 @@ public class WarpDriveConfig {
 		
 		// Cloaking
 		CLOAKING_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("cloaking", "max_energy_stored", CLOAKING_MAX_ENERGY_STORED, "Maximum energy storage").getInt());
+				config.get("cloaking", "max_energy_stored", CLOAKING_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		CLOAKING_COIL_CAPTURE_BLOCKS = clamp(0, 30,
 				config.get("cloaking", "coil_capture_blocks", CLOAKING_COIL_CAPTURE_BLOCKS, "Extra blocks covered after the outer coils").getInt());
 		CLOAKING_MAX_FIELD_RADIUS = clamp(CLOAKING_COIL_CAPTURE_BLOCKS + 3, 128,
@@ -656,7 +657,7 @@ public class WarpDriveConfig {
 		
 		// Air generator
 		AIRGEN_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("air_generator", "max_energy_stored", AIRGEN_MAX_ENERGY_STORED).getInt());
+				config.get("air_generator", "max_energy_stored", AIRGEN_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		AIRGEN_ENERGY_PER_CANISTER = clamp(1, AIRGEN_MAX_ENERGY_STORED,
 				config.get("air_generator", "energy_per_canister", AIRGEN_ENERGY_PER_CANISTER).getInt());
 		AIRGEN_ENERGY_PER_NEWAIRBLOCK = clamp(1, AIRGEN_MAX_ENERGY_STORED,
@@ -668,7 +669,7 @@ public class WarpDriveConfig {
 		
 		// IC2 Reactor monitor
 		IC2_REACTOR_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("ic2_reactor_laser", "max_energy_stored", IC2_REACTOR_MAX_ENERGY_STORED).getInt());
+				config.get("ic2_reactor_laser", "max_energy_stored", IC2_REACTOR_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		IC2_REACTOR_ENERGY_PER_HEAT = clamp(2.0D, 100000.0D,
 				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT).getDouble(2));
 		IC2_REACTOR_COOLING_INTERVAL_TICKS = clamp(0, 1200,
@@ -676,7 +677,7 @@ public class WarpDriveConfig {
 		
 		// Transporter
 		TRANSPORTER_MAX_ENERGY = clamp(1, Integer.MAX_VALUE,
-				config.get("transporter", "max_energy", TRANSPORTER_MAX_ENERGY).getInt());
+				config.get("transporter", "max_energy", TRANSPORTER_MAX_ENERGY, "Maximum energy stored").getInt());
 		TRANSPORTER_USE_RELATIVE_COORDS = config.get("transporter", "use_relative_coords", TRANSPORTER_USE_RELATIVE_COORDS).getBoolean(true);
 		TRANSPORTER_ENERGY_PER_BLOCK = clamp(1.0D, TRANSPORTER_MAX_ENERGY / 10.0D,
 				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK).getDouble(100.0D));
@@ -685,18 +686,18 @@ public class WarpDriveConfig {
 		
 		// Enantiomorphic reactor
 		ENAN_REACTOR_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("enantiomorphic_reactor", "max_energy_stored", ENAN_REACTOR_MAX_ENERGY_STORED).getInt());
+				config.get("enantiomorphic_reactor", "max_energy_stored", ENAN_REACTOR_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		ENAN_REACTOR_UPDATE_INTERVAL_TICKS = clamp(1, 300,
-				config.get("enantiomorphic_reactor", "update_interval_ticks", ENAN_REACTOR_UPDATE_INTERVAL_TICKS).getInt());
+				config.get("enantiomorphic_reactor", "update_interval_ticks", ENAN_REACTOR_UPDATE_INTERVAL_TICKS, "Update speed of the reactor simulation").getInt());
 		ENAN_REACTOR_MAX_LASERS_PER_SECOND = clamp(4, 80,
-				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabiliation laser shots per seconds before loosing effiency").getInt());
+				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabiliation laser shots per seconds before loosing efficiency").getInt());
 		
 		// Energy bank
-		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED).getInt();
+		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored").getInt();
 		
 		// Lift
 		LIFT_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("lift", "max_energy_stored", LIFT_MAX_ENERGY_STORED).getInt());
+				config.get("lift", "max_energy_stored", LIFT_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		LIFT_ENERGY_PER_ENTITY = clamp(1, Integer.MAX_VALUE,
 				config.get("lift", "energy_per_entity", LIFT_ENERGY_PER_ENTITY, "Energy consummed per entity moved").getInt());
 		LIFT_UPDATE_INTERVAL_TICKS = clamp(1, 60,
@@ -713,6 +714,7 @@ public class WarpDriveConfig {
 	
 	public static void registerBlockTransformer(final String modId, IBlockTransformer blockTransformer) {
 		blockTransformers.put(modId, blockTransformer);
+		WarpDrive.logger.info(modId + " blockTransformer registered");
 	}
 	
 	public static int clamp(final int min, final int max, final int value) {
@@ -766,6 +768,10 @@ public class WarpDriveConfig {
 			CompatEnderIO.register();
 		}
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
+		boolean isTConstructloaded = Loader.isModLoaded("TConstruct");
+		if (isTConstructloaded) {
+			CompatTConstruct.register();
+		}
 	}
 	
 	public static void onFMLPostInitialization() {
