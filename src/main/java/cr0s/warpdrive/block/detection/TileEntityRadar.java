@@ -33,7 +33,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		peripheralName = "warpdriveRadar";
 		addMethods(new String[] {
 				"radius",
+				"getEnergyRequired",
 				"start",
+				"getScanDuration",
 				"getResultsCount",
 				"getResult"
 			});
@@ -187,7 +189,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		if (getBlockMetadata() != 2) {
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 2, 1 + 2);
 		}
-		WarpDrive.logger.info("!!! Starting scan over radius " + scanningRadius + " for " + energyRequired + " EU, results expected in " + scanningDuration_ticks + " ticks");
+		if (WarpDriveConfig.LOGGING_RADAR) {
+			WarpDrive.logger.info(this + "Starting scan over radius " + scanningRadius + " for " + energyRequired + " EU, results expected in " + scanningDuration_ticks + " ticks");
+		}
 		return new Object[] { true };
 	}
 	
