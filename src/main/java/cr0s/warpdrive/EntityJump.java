@@ -444,17 +444,17 @@ public class EntityJump extends Entity {
 				// re-enter atmosphere at max altitude
 				moveY = 245 - ship.maxY;
 			} else {
-				// Do not check in long jumps
-				if (Math.max(moveX, moveZ) < 256) {
-					getPossibleJumpDistance();
-				}
-				
 				if ((ship.maxY + moveY) > 255) {
 					moveY = 255 - ship.maxY;
 				}
 				
 				if ((ship.minY + moveY) < 5) {
 					moveY = 5 - ship.minY;
+				}
+				
+				// Do not check in long jumps
+				if (Math.max(moveX, moveZ) < 256) {
+					getPossibleJumpDistance();
 				}
 			}
 		}
@@ -796,7 +796,6 @@ public class EntityJump extends Entity {
 		while (testRange >= 0) {
 			// Is there enough space in destination point?
 			result = checkMovement(testRange / (double)originalRange, false);
-			
 			if (result == null) {
 				break;
 			}
@@ -807,9 +806,6 @@ public class EntityJump extends Entity {
 			testRange--;
 		}
 		VectorI finalMovement = getMovementVector(testRange / (double)originalRange);
-		moveX = finalMovement.x;
-		moveY = finalMovement.y;
-		moveZ = finalMovement.z;
 		
 		if (originalRange != testRange && WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Jump range adjusted from " + originalRange + " to " + testRange + " after " + blowPoints + " collisions");
@@ -817,7 +813,7 @@ public class EntityJump extends Entity {
 		
 		// Register explosion(s) at collision point
 		if (blowPoints > WarpDriveConfig.SHIP_COLLISION_TOLERANCE_BLOCKS) {
-			result = checkMovement(Math.max(1, testRange + 1), true);
+			result = checkMovement(Math.min(1.0D, Math.max(0.0D, (testRange + 1) / (double)originalRange)), true);
 			if (result != null) {
 				/*
 				 * Strength scaling:
@@ -843,6 +839,10 @@ public class EntityJump extends Entity {
 			}
 		}
 		
+		// Update movement after computing collision points 
+		moveX = finalMovement.x;
+		moveY = finalMovement.y;
+		moveZ = finalMovement.z;
 		return testRange;
 	}
 	
@@ -854,8 +854,8 @@ public class EntityJump extends Entity {
 			return;
 		}
 		ArrayList<Vector3> collisionPoints = atTarget ? collisionAtTarget : collisionAtSource;
-		Vector3 min = collisionPoints.get(0);
-		Vector3 max = collisionPoints.get(0);
+		Vector3 min = collisionPoints.get(0).clone();
+		Vector3 max = collisionPoints.get(0).clone();
 		for (Vector3 v : collisionPoints) {
 			if (min.x > v.x) {
 				min.x = v.x;
@@ -872,6 +872,9 @@ public class EntityJump extends Entity {
 			} else if (max.z < v.z) {
 				max.z = v.z;
 			}
+		}
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " Ship collision from " + min + " to " + max);
 		}
 		
 		// inform players on board
@@ -963,7 +966,7 @@ public class EntityJump extends Entity {
 				double newEntityZ = target.zCoord;
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info("Entity moving: old (" + oldEntityX + " " + oldEntityY + " " + oldEntityZ + ") -> new (" + newEntityX + " " + newEntityY + " " + newEntityZ);
+					WarpDrive.logger.info("Entity moving: old (" + oldEntityX + " " + oldEntityY + " " + oldEntityZ + ") -> new (" + newEntityX + " " + newEntityY + " " + newEntityZ + ") entity " + entity);
 				}
 				
 				// Travel to another dimension if needed
@@ -1036,7 +1039,6 @@ public class EntityJump extends Entity {
 		CheckMovementResult result = new CheckMovementResult();
 		VectorI testMovement = getMovementVector(ratio);
 		VectorI offset = new VectorI((int)Math.signum(moveX), (int)Math.signum(moveY), (int)Math.signum(moveZ));
-		
 		if ((moveY > 0 && ship.maxY + testMovement.y > 255) && !betweenWorlds) {
 			result.add(ship.coreX, ship.maxY + testMovement.y, ship.coreZ, ship.coreX + 0.5D, ship.maxY + testMovement.y + 1.0D, ship.coreZ + 0.5D, false,
 					"Ship core is moving too high");
@@ -1068,6 +1070,8 @@ public class EntityJump extends Entity {
 							true, "Unpassable block " + blockTarget + " detected at destination (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
 						if (!fullCollisionDetails) {
 							return result;
+						} else if (WarpDriveConfig.LOGGING_JUMP) {
+							WarpDrive.logger.info("Anchor collision at ratio " + ratio + " testMovement " + testMovement);
 						}
 					}
 					
@@ -1082,6 +1086,8 @@ public class EntityJump extends Entity {
 							true, "Obstacle block " + blockTarget + " detected at (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
 						if (!fullCollisionDetails) {
 							return result;
+						} else if (WarpDriveConfig.LOGGING_JUMP) {
+							WarpDrive.logger.info("Hard collision at ratio " + ratio + " testMovement " + testMovement);
 						}
 					}
 				}
