@@ -75,7 +75,7 @@ public class OrbInstance extends AbstractInstance {
 		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness,
 			  Math.max(y, WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness));
 		if (hasShip) {
-			new WorldGenSmallShip(false).generate(world, random, x, y2, z);
+			new WorldGenSmallShip(random.nextFloat() < 0.2F).generate(world, random, x, y2, z);
 		}
 		EntitySphereGen entitySphereGen = new EntitySphereGen(world, x, y2, z, this, !hasShip);
 		world.spawnEntityInWorld(entitySphereGen);

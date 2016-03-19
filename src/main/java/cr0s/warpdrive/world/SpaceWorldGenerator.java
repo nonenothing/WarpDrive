@@ -66,7 +66,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		WarpDrive.logger.info("Generating small ship at " + x2 + "," + y2 + "," + z2);
-		new WorldGenSmallShip(world.rand.nextBoolean()).generate(world, world.rand, x2, y2, z2);
+		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F).generate(world, world.rand, x2, y2, z2);
 	}
 
 	private static void generateStation(World world, int x, int y, int z, int jitter) {

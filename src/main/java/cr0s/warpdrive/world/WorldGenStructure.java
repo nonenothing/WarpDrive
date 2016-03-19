@@ -26,24 +26,27 @@ public class WorldGenStructure {
 		this.rand = rand;
 		
 		// choose a hull block
-		switch (rand.nextInt(4)) {
+		switch (rand.nextInt(7)) {
 		default:
 		case 0:
+		case 1:
 			hullPlain_block = Blocks.stained_hardened_clay;
 			hullPlain_metadata = rand.nextInt(16);
 			hullGlass_block = Blocks.stained_glass;
 			hullGlass_metadata = hullPlain_metadata;
 			break;
 			
-		case 1:
 		case 2:
+		case 3:
+		case 4:
+		case 5:
 			hullPlain_block = WarpDrive.blockHulls_plain[0];
 			hullPlain_metadata = rand.nextInt(16);
 			hullGlass_block = WarpDrive.blockHulls_glass[0];
 			hullGlass_metadata = hullPlain_metadata;
 			break;
 			
-		case 3:
+		case 6:
 			hullPlain_block = WarpDrive.blockHulls_plain[1];
 			hullPlain_metadata = rand.nextInt(16);
 			hullGlass_block = WarpDrive.blockHulls_glass[1];
@@ -108,7 +111,9 @@ public class WorldGenStructure {
 	}
 	
 	public void setHullPlain(World world, final int x, final int y, final int z) {
-		if (corrupted && (rand.nextInt(15) == 1)) {
+		if (corrupted && (rand.nextInt(400) == 1)) {
+			world.newExplosion(null, x + 0.5D, y + 0.5D, z + 0.5D, 17, false, true);
+		} else if (corrupted && (rand.nextInt(10) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
 			world.setBlock(x, y, z, hullPlain_block, hullPlain_metadata, 2);
@@ -124,7 +129,7 @@ public class WorldGenStructure {
 	}
 	
 	public void setCable(World world, final int x, final int y, final int z) {
-		if (corrupted && (rand.nextInt(5) == 1)) {
+		if (corrupted && (rand.nextInt(3) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
 			world.setBlock(x, y, z, cable_block, cable_metadata, 2);
@@ -132,7 +137,7 @@ public class WorldGenStructure {
 	}
 	
 	public void setSolarPanel(World world, final int x, final int y, final int z) {
-		if (corrupted && (rand.nextInt(5) == 1)) {
+		if (corrupted && (rand.nextInt(3) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
 			world.setBlock(x, y, z, solarPanel_block, solarPanel_metadata, 2);
