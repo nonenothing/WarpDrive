@@ -23,6 +23,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.compat.CompatArsMagica2;
+import cr0s.warpdrive.compat.CompatBiblioCraft;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatImmersiveEngineering;
@@ -768,9 +769,13 @@ public class WarpDriveConfig {
 			CompatEnderIO.register();
 		}
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
-		boolean isTConstructloaded = Loader.isModLoaded("TConstruct");
-		if (isTConstructloaded) {
+		boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
+		if (isTConstructLoaded) {
 			CompatTConstruct.register();
+		}
+		boolean isBibliocraftLoaded = Loader.isModLoaded("BiblioCraft");
+		if (isBibliocraftLoaded) {
+			CompatBiblioCraft.register();
 		}
 	}
 	
