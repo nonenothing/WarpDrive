@@ -59,14 +59,14 @@ public class WarpDriveConfig {
 	public static boolean isForgeMultipartLoaded = false;
 	public static boolean isAdvancedSolarPanelLoaded = false;
 	public static boolean isAppliedEnergistics2Loaded = false;
-	public static boolean isICBMLoaded = false;
-	public static boolean isIndustrialCraft2loaded = false;
+	public static boolean isICBMloaded = false;
+	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isComputerCraftLoaded = false;
 	public static boolean isOpenComputersLoaded = false;
 	public static boolean isThermalExpansionLoaded = false;
 	public static boolean isArsMagica2Loaded = false;
 	public static boolean isImmersiveEngineeringLoaded = false;
-	public static boolean isGregTech5loaded = false;
+	public static boolean isGregTech5Loaded = false;
 	public static boolean isEnderIOloaded = false;
 	public static boolean isAdvancedRepulsionSystemLoaded = false;
 	
@@ -732,8 +732,8 @@ public class WarpDriveConfig {
 			loadForgeMultipart();
 		}
 		
-		isIndustrialCraft2loaded = Loader.isModLoaded("IC2");
-		if (isIndustrialCraft2loaded) {
+		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
+		if (isIndustrialCraft2Loaded) {
 			loadIC2();
 			CompatIndustrialCraft2.register();
 		}
@@ -759,10 +759,10 @@ public class WarpDriveConfig {
 		if (isImmersiveEngineeringLoaded) {
 			CompatImmersiveEngineering.register();
 		}
-		isGregTech5loaded = false;
+		isGregTech5Loaded = false;
 		if (Loader.isModLoaded("gregtech")) {
 			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
 		}
 		isEnderIOloaded = Loader.isModLoaded("EnderIO");
 		if (isEnderIOloaded) {

@@ -54,7 +54,7 @@ public class WorldGenStructure {
 			break;
 			
 		case 10:	// disabled since it's tier3
-			if (WarpDriveConfig.isIndustrialCraft2loaded) {
+			if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 				hullPlain_block = WarpDriveConfig.getModBlock("IC2", "blockAlloy");
 				hullPlain_metadata = 0;
 				hullGlass_block = WarpDriveConfig.getModBlock("IC2", "blockAlloyGlass");
@@ -64,7 +64,7 @@ public class WorldGenStructure {
 		}
 		
 		// choose a solar panel
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			if (WarpDriveConfig.isAdvancedSolarPanelLoaded) {
 				solarPanel_block = WarpDriveConfig.getModBlock("AdvancedSolarPanel", "BlockAdvSolarPanel");
 				solarPanel_metadata = rand.nextInt(2);
@@ -83,7 +83,7 @@ public class WorldGenStructure {
 		// choose a wiring
 		cable_block = Blocks.air;
 		cable_metadata = 0;
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			cable_block = WarpDriveConfig.getModBlock("IC2", "blockCable");
 			cable_metadata = 0;
 			

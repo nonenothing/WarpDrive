@@ -210,7 +210,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 		
 		// IndustrialCraft2
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			IC2_addToEnergyNet();
 		}
 		
@@ -227,7 +227,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	public void onChunkUnload() {
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			IC2_removeFromEnergyNet();
 		}
 		
@@ -236,7 +236,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	public void invalidate() {
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			IC2_removeFromEnergyNet();
 		}
 		

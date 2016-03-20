@@ -551,7 +551,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		while (!isDone) {
 			switch (rand.nextInt(14)) {
 			case 0: // Mass fabricator
-				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 					res = WarpDriveConfig.getModItemStack("IC2", "blockMachine", -1);
 					res.setItemDamage(14);
 					res.stackSize = 1; // + rand.nextInt(2);
@@ -560,7 +560,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 				break;
 				
 			case 1:
-				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 					res = WarpDriveConfig.getModItemStack("IC2", "blockNuke", -1);
 					res.stackSize = 1 + rand.nextInt(2);
 					isDone = true;
@@ -575,7 +575,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 				break;// skipped
 				
 			case 6:// Glass fiber cable item
-				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 					res = WarpDriveConfig.getModItemStack("IC2", "itemCable", -1);
 					res.setItemDamage(9);
 					res.stackSize = 2 + rand.nextInt(12);
@@ -584,7 +584,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 				break;
 			
 			case 7:// UU matter cell
-				if (WarpDriveConfig.isIndustrialCraft2loaded) {
+				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 					res = WarpDriveConfig.getModItemStack("IC2", "itemCellEmpty", -1);
 					res.setItemDamage(3);
 					res.stackSize = 2 + rand.nextInt(14);
@@ -599,7 +599,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 			case 9:
 			case 10:
 			case 11: // Rocket launcher platform Tier3
-				if (WarpDriveConfig.isICBMLoaded) {
+				if (WarpDriveConfig.isICBMloaded) {
 					// TODO: No 1.7 ICBM yet
 					// res = new ItemStack(WarpDriveConfig.ICBM_Machine, 1 +
 					// rand.nextInt(1), 2).copy();
@@ -609,7 +609,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 			
 			
 			case 12: // Missiles from conventional to hypersonic
-				if (WarpDriveConfig.isICBMLoaded) {
+				if (WarpDriveConfig.isICBMloaded) {
 					// TODO: No 1.7 ICBM yet
 					// res = new ItemStack(WarpDriveConfig.ICBM_Missile, 2 +
 					// rand.nextInt(1), rand.nextInt(10)).copy();

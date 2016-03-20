@@ -343,7 +343,7 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerTileEntity(TileEntityTransporter.class, MODID + ":blockTransporter");
 		
 		// IC2 REACTOR LASER MONITOR
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			blockIC2reactorLaserMonitor = new BlockIC2reactorLaserMonitor();
 			
 			GameRegistry.registerBlock(blockIC2reactorLaserMonitor, "blockIC2reactorLaserMonitor");
@@ -391,7 +391,7 @@ public class WarpDrive implements LoadingCallback {
 		}
 		
 		// REACTOR LASER FOCUS
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus();
 			GameRegistry.registerItem(itemIC2reactorLaserFocus, "itemIC2reactorLaserFocus");
 		}
@@ -447,10 +447,10 @@ public class WarpDrive implements LoadingCallback {
 		if (WarpDriveConfig.RECIPES_ENABLE_DYNAMIC) {
 			Recipes.initDynamic();
 		} else {
-			if (WarpDriveConfig.isIndustrialCraft2loaded && WarpDriveConfig.RECIPES_ENABLE_IC2) {
+			if (WarpDriveConfig.isIndustrialCraft2Loaded && WarpDriveConfig.RECIPES_ENABLE_IC2) {
 				Recipes.initIC2();
 			}
-			if (WarpDriveConfig.isIndustrialCraft2loaded && WarpDriveConfig.RECIPES_ENABLE_HARD_IC2) {
+			if (WarpDriveConfig.isIndustrialCraft2Loaded && WarpDriveConfig.RECIPES_ENABLE_HARD_IC2) {
 				Recipes.initHardIC2();
 			}
 			if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {

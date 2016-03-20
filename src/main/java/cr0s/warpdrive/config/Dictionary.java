@@ -383,7 +383,7 @@ public class Dictionary {
 		Blocks.flowing_lava.setResistance(30.0F);
 		
 		// adjust IC2 Reinforced stone stats
-		if (WarpDriveConfig.isIndustrialCraft2loaded) {
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			Block blockReinforcedStone = (Block) Block.blockRegistry.getObject("IC2:blockAlloy");
 			// TODO
 		}
