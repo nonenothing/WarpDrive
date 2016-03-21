@@ -414,8 +414,8 @@ end
 function data_save()
   local file = fs.open("shipdata.txt", "w")
   if file ~= nil then
-    file:writeLine(textutils.serialize(data))
-    file:close()
+    file.writeLine(textutils.serialize(data))
+    file.close()
   else
     ShowWarning("No file system")
   end
@@ -719,7 +719,7 @@ function reactor_pulse(output)
     end
     if energy[3] ~= nil then
       SetCursorPos(12, 8)
-      Write(energy[3] .. " RF/t")
+      Write(energy[3] .. " RF/t    ")
     end
 	
     if #reactorlasers ~= 0 then

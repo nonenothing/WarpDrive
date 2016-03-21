@@ -673,7 +673,7 @@ function reactor_pulse(output)
       end
       if energy[3] ~= nil then
         SetCursorPos(12, 8)
-        Write(energy[3] .. " RF/t")
+        Write(energy[3] .. " RF/t    ")
       end
 	  
     elseif reactor_pulseStep == 8 then
