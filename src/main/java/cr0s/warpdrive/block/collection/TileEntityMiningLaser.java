@@ -184,7 +184,14 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 				
 				// consume power
-				enoughPower = consumeEnergyFromLaserMediums(isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_BLOCK : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_BLOCK, false);
+				int requiredPower = isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_BLOCK : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_BLOCK;
+				if (!mineAllBlocks) {
+					requiredPower *= WarpDriveConfig.MINING_LASER_ORESONLY_ENERGY_FACTOR;
+				}
+				if (enableSilktouch) {
+					requiredPower *= WarpDriveConfig.MINING_LASER_SILKTOUCH_ENERGY_FACTOR;
+				}
+				enoughPower = consumeEnergyFromLaserMediums(requiredPower, false);
 				if (!enoughPower) {
 					updateMetadata(BlockMiningLaser.ICON_MININGLOWPOWER);
 					return;
