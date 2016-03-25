@@ -55,7 +55,9 @@ function Write(text)
 end
 
 function SetCursorPos(x, y)
-  term.setCursor(x, y)
+  if term.isAvailable() then
+    term.setCursor(x, y)
+  end
 end
 
 function SetColorDefault()
@@ -92,13 +94,15 @@ function ClearLine()
 end
 
 function WriteLn(text)
-  Write(text)
-  local x, y = term.getCursor()
-  local width, height = component.gpu.getResolution()
-  if y > height - 1 then
-    y = 1
+  if term.isAvailable() then
+    Write(text)
+    local x, y = term.getCursor()
+    local width, height = component.gpu.getResolution()
+    if y > height - 1 then
+      y = 1
+    end
+    SetCursorPos(1, y + 1)
   end
-  SetCursorPos(1, y + 1)
 end
 
 function WriteCentered(y, text)
@@ -107,9 +111,9 @@ function WriteCentered(y, text)
     if sizeX then
       component.gpu.set((sizeX - text:len()) / 2, y, text)
     end
+    local xt, yt = term.getCursor()
+    SetCursorPos(1, yt + 1)
   end
-  local xt, yt = term.getCursor()
-  SetCursorPos(1, yt + 1)
 end
 
 function ShowTitle(text)
@@ -120,33 +124,39 @@ function ShowTitle(text)
 end
 
 function ShowMenu(text)
-  Write(text)
-  local sizeX, sizeY = component.gpu.getResolution()
-  local xt, yt = term.getCursor()
-  for i = xt, sizeX do
-    Write(" ")
+  if term.isAvailable() then
+    Write(text)
+    local sizeX, sizeY = component.gpu.getResolution()
+    local xt, yt = term.getCursor()
+    for i = xt, sizeX do
+      Write(" ")
+    end
+    SetCursorPos(1, yt + 1)
   end
-  SetCursorPos(1, yt + 1)
 end
 
 local clearWarningTick = -1
 function ShowWarning(text)
-  local sizeX, sizeY = component.gpu.getResolution()
-  SetColorWarning()
-  SetCursorPos((sizeX - text:len() - 2) / 2, sizeY)
-  Write(" " .. text .. " ")
-  SetColorDefault()
-  clearWarningTick = 5
+  if term.isAvailable() then
+    local sizeX, sizeY = component.gpu.getResolution()
+    SetColorWarning()
+    SetCursorPos((sizeX - text:len() - 2) / 2, sizeY)
+    Write(" " .. text .. " ")
+    SetColorDefault()
+    clearWarningTick = 5
+  end
 end
 function ClearWarning()
   if clearWarningTick > 0 then
     clearWarningTick = clearWarningTick - 1
   elseif clearWarningTick == 0 then
-    SetColorDefault()
-    local sizeX, sizeY = component.gpu.getResolution()
-    SetCursorPos(1, sizeY)
-    ClearLine()
-    clearWarningTick = -1
+    if term.isAvailable() then
+      SetColorDefault()
+      local sizeX, sizeY = component.gpu.getResolution()
+      SetCursorPos(1, sizeY)
+      ClearLine()
+      clearWarningTick = -1
+	end
   end
 end
 
