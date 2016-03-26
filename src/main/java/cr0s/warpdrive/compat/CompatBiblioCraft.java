@@ -49,7 +49,8 @@ public class CompatBiblioCraft implements IBlockTransformer {
 	private static final int[]  rotCaseAngle   = {  0,  1,  2,  3,  5,  6,  7,  4,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final byte rotationSteps, final float rotationYaw) {
+	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}

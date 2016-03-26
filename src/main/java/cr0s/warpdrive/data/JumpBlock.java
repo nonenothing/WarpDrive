@@ -241,7 +241,7 @@ public class JumpBlock {
 				for (Entry<String, NBTBase> external : externals.entrySet()) {
 					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
-						newBlockMeta = blockTransformer.rotate(block, blockMeta, nbtToDeploy, transformation.getRotationSteps(), transformation.getRotationYaw());
+						newBlockMeta = blockTransformer.rotate(block, blockMeta, nbtToDeploy, transformation);
 					}
 				}
 			} else {

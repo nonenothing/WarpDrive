@@ -52,15 +52,16 @@ public class CompatEnderIO implements IBlockTransformer {
 	private static final byte NBTTagByteArrayId = 7; // new NBTTagByteArray(null).getId();
 	private static final byte NBTTagCompoundId = 10; // new NBTTagCompound().getId();
 	private static final byte NBTTagIntArrayId = 11; // new NBTTagIntArray(null).getId();
-    private static final Map<String, String> rotSideNames;
-    static {
-        Map<String, String> map = new HashMap();
-        map.put("EAST", "SOUTH");
-        map.put("SOUTH", "WEST");
-        map.put("WEST", "NORTH");
-        map.put("NORTH", "EAST");
-        rotSideNames = Collections.unmodifiableMap(map);
-    }
+	private static final Map<String, String> rotSideNames;
+	static {
+		Map<String, String> map = new HashMap();
+		map.put("EAST", "SOUTH");
+		map.put("SOUTH", "WEST");
+		map.put("WEST", "NORTH");
+		map.put("NORTH", "EAST");
+		rotSideNames = Collections.unmodifiableMap(map);
+	}
+	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
 		byte[] newData = data.clone();
 		for (int index = 0; index < data.length; index++) {
@@ -138,7 +139,8 @@ public class CompatEnderIO implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final byte rotationSteps, final float rotationYaw) {
+	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}

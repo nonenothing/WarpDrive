@@ -62,7 +62,8 @@ public class CompatComputerCraft implements IBlockTransformer {
 	private static final int[] rotDir            = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 };	// printer, monitor, turtle
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final byte rotationSteps, final float rotationYaw) {
+	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}

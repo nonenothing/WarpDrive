@@ -12,19 +12,40 @@ import net.minecraftforge.common.util.Constants;
 import am2.api.power.IPowerNode;
 import am2.power.PowerNodeRegistry;
 import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class CompatArsMagica2 implements IBlockTransformer {
 	
+	private static Class<?> classBlockInscriptionTable;
+	private static Class<?> classBlockKeystoneReceptacle;
+	private static Class<?> classBlockLectern;
+	private static Class<?> classBlockMagiciansWorkbench;
+	private static Class<?> classBlockOcculus;
+	
 	public static void register() {
-		WarpDriveConfig.registerBlockTransformer("arsmagica2", new CompatArsMagica2());
+		try {
+			classBlockInscriptionTable = Class.forName("am2.blocks.BlockInscriptionTable");
+			classBlockKeystoneReceptacle = Class.forName("am2.blocks.BlockKeystoneReceptacle");
+			classBlockLectern = Class.forName("am2.blocks.BlockLectern");
+			classBlockMagiciansWorkbench = Class.forName("am2.blocks.BlockMagiciansWorkbench");
+			classBlockOcculus = Class.forName("am2.blocks.BlockOcculus");
+			WarpDriveConfig.registerBlockTransformer("arsmagica2", new CompatArsMagica2());
+		} catch(ClassNotFoundException exception) {
+			exception.printStackTrace();
+		}
 	}
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		return tileEntity instanceof IPowerNode;
+		return classBlockInscriptionTable.isInstance(block)
+			|| classBlockKeystoneReceptacle.isInstance(block)
+			|| classBlockLectern.isInstance(block)
+			|| classBlockMagiciansWorkbench.isInstance(block)
+			|| classBlockOcculus.isInstance(block)
+			|| tileEntity instanceof IPowerNode;
 	}
 	
 	@Override
@@ -45,17 +66,70 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	@Override
 	@Optional.Method(modid = "arsmagica2")
 	public void remove(TileEntity tileEntity) {
-		PowerNodeRegistry.For(tileEntity.getWorldObj()).removePowerNode((IPowerNode) tileEntity);
+		if (tileEntity instanceof IPowerNode) {
+			PowerNodeRegistry.For(tileEntity.getWorldObj()).removePowerNode((IPowerNode) tileEntity);
+		}
 	}
 	
+	private static final int[] mrotInscriptionTable   = {  0,  4,  1,  2,  3,  5,  6,  7,  8, 12,  9, 10, 11, 13, 14, 15 };
+	private static final int[] mrotKeystoneReceptacle = {  3,  0,  1,  2,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+	private static final int[] mrotLectern            = {  0,  4,  1,  2,  3,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };	// same as Magicians workbench & Occulus
+	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final byte rotationSteps, final float rotationYaw) {
+	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		byte rotationSteps = transformation.getRotationSteps();
+		if (rotationSteps == 0) {
+			return metadata;
+		}
+		
+		if (classBlockInscriptionTable.isInstance(block)) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotInscriptionTable[metadata];
+			case 2:
+				return mrotInscriptionTable[mrotInscriptionTable[metadata]];
+			case 3:
+				return mrotInscriptionTable[mrotInscriptionTable[mrotInscriptionTable[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
+		if (classBlockKeystoneReceptacle.isInstance(block)) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotKeystoneReceptacle[metadata];
+			case 2:
+				return mrotKeystoneReceptacle[mrotKeystoneReceptacle[metadata]];
+			case 3:
+				return mrotKeystoneReceptacle[mrotKeystoneReceptacle[mrotKeystoneReceptacle[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
+		if (classBlockLectern.isInstance(block) || classBlockMagiciansWorkbench.isInstance(block) || classBlockOcculus.isInstance(block)) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotLectern[metadata];
+			case 2:
+				return mrotLectern[mrotLectern[metadata]];
+			case 3:
+				return mrotLectern[mrotLectern[mrotLectern[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
 		return metadata;
 	}
 	
 	@Override
 	@Optional.Method(modid = "arsmagica2")
 	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
+		if (!(tileEntity instanceof IPowerNode) || nbtBase == null) {
+			return;
+		}
 		NBTTagCompound nbtTagCompound = (NBTTagCompound) nbtBase;
 		
 		// powerAmounts
@@ -99,6 +173,13 @@ public class CompatArsMagica2 implements IBlockTransformer {
 		
 		World targetWorld = transformation.getTargetWorld();
 		ChunkCoordinates target = transformation.apply(tileEntity);
-		PowerNodeRegistry.For(targetWorld).setDataCompoundForNode((IPowerNode) targetWorld.getTileEntity(target.posX, target.posY, target.posZ), nbtTagCompound);
+		TileEntity tileEntityTarget = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
+		if (tileEntityTarget == null) {
+			WarpDrive.logger.error("ArsMagica2 compat: No tile entity found at target location " + target + ". We might loose mana network " + nbtBase + ".");
+		} else if (!(tileEntityTarget instanceof IPowerNode)) {
+			WarpDrive.logger.error("ArsMagica2 compat: invalid tile entity " + tileEntityTarget + " found at target location " + target + ".");
+		} else {
+			PowerNodeRegistry.For(targetWorld).setDataCompoundForNode((IPowerNode) tileEntityTarget, nbtTagCompound);
+		}
 	}
 }

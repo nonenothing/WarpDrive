@@ -44,7 +44,8 @@ public class CompatOpenComputers implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final byte rotationSteps, final float rotationYaw) {
+	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 || !nbtTileEntity.hasKey("oc:yaw")) {
 			return metadata;
 		}
