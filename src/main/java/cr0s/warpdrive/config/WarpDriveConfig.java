@@ -28,7 +28,11 @@ import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatImmersiveEngineering;
 import cr0s.warpdrive.compat.CompatIndustrialCraft2;
+import cr0s.warpdrive.compat.CompatJABBA;
+import cr0s.warpdrive.compat.CompatMetallurgy;
+import cr0s.warpdrive.compat.CompatNatura;
 import cr0s.warpdrive.compat.CompatOpenComputers;
+import cr0s.warpdrive.compat.CompatStargateTech2;
 import cr0s.warpdrive.compat.CompatTConstruct;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
@@ -44,6 +48,8 @@ import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 
 public class WarpDriveConfig {
+	private static final boolean unused = false; // TODO
+	
 	private static File configDirectory;
 	private static DocumentBuilder xmlDocumentBuilder;
 	private static final String[] defaultXMLfilenames = {
@@ -270,7 +276,7 @@ public class WarpDriveConfig {
 	public static int IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
 	
 	// Transporter
-	public static int TRANSPORTER_MAX_ENERGY = 1000000;
+	public static int TRANSPORTER_MAX_ENERGY_STORED = 1000000;
 	public static boolean TRANSPORTER_USE_RELATIVE_COORDS = true;
 	public static double TRANSPORTER_ENERGY_PER_BLOCK = 100.0;
 	public static double TRANSPORTER_MAX_BOOST_MUL = 4.0;
@@ -437,23 +443,23 @@ public class WarpDriveConfig {
 		
 		// Ship
 		SHIP_MAX_ENERGY_STORED = clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "max_energy_stored", SHIP_MAX_ENERGY_STORED, "Maximum energy storage").getInt());
+				config.get("ship", "max_energy_stored", SHIP_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		SHIP_NORMALJUMP_ENERGY_PER_BLOCK = clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "normaljump_energy_per_block", SHIP_NORMALJUMP_ENERGY_PER_BLOCK).getInt());
+				config.get("ship", "normaljump_energy_per_block", SHIP_NORMALJUMP_ENERGY_PER_BLOCK, "Energy cost per non-air block without warping").getInt());
 		SHIP_NORMALJUMP_ENERGY_PER_DISTANCE = clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "normaljump_energy_per_distance", SHIP_NORMALJUMP_ENERGY_PER_DISTANCE).getInt());
+				config.get("ship", "normaljump_energy_per_distance", SHIP_NORMALJUMP_ENERGY_PER_DISTANCE, "Energy cost per non-air block without warping").getInt());
 		SHIP_HYPERJUMP_ENERGY_PER_DISTANCE = clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "hyperjump_energy_per_distance", SHIP_HYPERJUMP_ENERGY_PER_DISTANCE).getInt());
+				config.get("ship", "hyperjump_energy_per_distance", SHIP_HYPERJUMP_ENERGY_PER_DISTANCE, "Energy cost per non-air block while warping").getInt());
 		SHIP_HYPERJUMP_ENERGY_PER_BLOCK = clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "hyperjump_energy_per_block", SHIP_HYPERJUMP_ENERGY_PER_BLOCK).getInt());
+				config.get("ship", "hyperjump_energy_per_block", SHIP_HYPERJUMP_ENERGY_PER_BLOCK, "Energy cost per non-air block while warping").getInt());
 		SHIP_TELEPORT_ENERGY_PER_ENTITY = clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "teleport_energy_per_entity", SHIP_TELEPORT_ENERGY_PER_ENTITY).getInt());
+				config.get("ship", "teleport_energy_per_entity", SHIP_TELEPORT_ENERGY_PER_ENTITY, "Energy cost per entity").getInt());
 		
 		SHIP_MAX_JUMP_DISTANCE = clamp(0, 30000000,
 				config.get("ship", "max_jump_distance", SHIP_MAX_JUMP_DISTANCE, "Maximum jump length value in blocks").getInt());
 		
 		SHIP_VOLUME_MAX_ON_PLANET_SURFACE = clamp(0, 10000000,
-				config.get("ship", "volume_max_on_planet_surface", SHIP_VOLUME_MAX_ON_PLANET_SURFACE, "Maximum ship mass (in blocks) to jump on earth").getInt());
+				config.get("ship", "volume_max_on_planet_surface", SHIP_VOLUME_MAX_ON_PLANET_SURFACE, "Maximum ship mass (in blocks) to jump on a planet").getInt());
 		SHIP_VOLUME_MIN_FOR_HYPERSPACE = clamp(0, 10000000,
 				config.get("ship", "volume_min_for_hyperspace", SHIP_VOLUME_MIN_FOR_HYPERSPACE, "Minimum ship mass (in blocks) to enter or exit hyperspace without a jumpgate").getInt());
 		SHIP_VOLUME_UNLIMITED_PLAYERNAMES = config.get("ship", "volume_unlimited_playernames", SHIP_VOLUME_UNLIMITED_PLAYERNAMES,
@@ -521,7 +527,7 @@ public class WarpDriveConfig {
 		
 		// Ship Scanner
 		SS_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("ship_scanner", "max_energy_stored", SS_MAX_ENERGY_STORED, "Maximum energy storage").getInt());
+				config.get("ship_scanner", "max_energy_stored", SS_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		
 		SS_ENERGY_PER_BLOCK_SCAN = config.get("ship_scanner", "energy_per_block_when_scanning", SS_ENERGY_PER_BLOCK_SCAN,
 				"Energy consummed per block when scanning a ship (use -1 to consume everything)").getInt();
@@ -540,11 +546,11 @@ public class WarpDriveConfig {
 		
 		// Laser medium
 		LASER_MEDIUM_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
-				config.get("laser_medium", "max_energy_stored", LASER_MEDIUM_MAX_ENERGY_STORED).getInt());
+				config.get("laser_medium", "max_energy_stored", LASER_MEDIUM_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		
 		// Laser cannon
 		LASER_CANNON_MAX_MEDIUMS_COUNT = clamp(1, 64,
-				config.get("laser_cannon", "max_mediums_count", LASER_CANNON_MAX_MEDIUMS_COUNT).getInt());
+				config.get("laser_cannon", "max_mediums_count", LASER_CANNON_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums per laser").getInt());
 		LASER_CANNON_MAX_LASER_ENERGY = clamp(1, Integer.MAX_VALUE,
 				config.get("laser_cannon", "max_laser_energy", LASER_CANNON_MAX_LASER_ENERGY, "Maximum energy in beam after accounting for boosters beams").getInt());
 		LASER_CANNON_EMIT_FIRE_DELAY_TICKS = clamp(1, 100,
@@ -553,7 +559,7 @@ public class WarpDriveConfig {
 				config.get("laser_cannon", "emit_scan_delay_ticks", LASER_CANNON_EMIT_SCAN_DELAY_TICKS, "Delay while booster beams are accepted, before actually scanning").getInt());
 		
 		LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY = clamp(0.01D, 10.0D,
-				config.get("laser_cannon", "booster_beam_energy_efficiency", LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY).getDouble(0.6D));
+				config.get("laser_cannon", "booster_beam_energy_efficiency", LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY, "Energy factor applied from boosting to main laser").getDouble(0.6D));
 		LASER_CANNON_RANGE_ENERGY_PER_BLOCK = clamp(1, LASER_CANNON_MAX_LASER_ENERGY / 10,
 				config.get("laser_cannon", "range_energy_per_block", LASER_CANNON_RANGE_ENERGY_PER_BLOCK, "Energy required per block distance").getInt());
 		LASER_CANNON_RANGE_MAX = clamp(64, 512,
@@ -601,32 +607,35 @@ public class WarpDriveConfig {
 		MINING_LASER_MAX_MEDIUMS_COUNT = clamp(1, 64,
 				config.get("mining_laser", "max_mediums_count", MINING_LASER_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
 		MINING_LASER_RADIUS_BLOCKS = clamp(1, 64,
-				config.get("mining_laser", "radius_blocks", MINING_LASER_RADIUS_BLOCKS).getInt());
+				config.get("mining_laser", "radius_blocks", MINING_LASER_RADIUS_BLOCKS, "Mining radius").getInt());
 		
 		MINING_LASER_WARMUP_DELAY_TICKS = clamp(1, 300,
-				config.get("mining_laser", "warmup_delay_ticks", MINING_LASER_WARMUP_DELAY_TICKS).getInt());
+				config.get("mining_laser", "warmup_delay_ticks", MINING_LASER_WARMUP_DELAY_TICKS, "Warmup duration (buffer on startup when energy source is weak)").getInt());
 		MINING_LASER_SCAN_DELAY_TICKS = clamp(1, 300,
-				config.get("mining_laser", "scan_delay_ticks", MINING_LASER_SCAN_DELAY_TICKS).getInt());
+				config.get("mining_laser", "scan_delay_ticks", MINING_LASER_SCAN_DELAY_TICKS, "Scan duration per layer").getInt());
 		MINING_LASER_MINE_DELAY_TICKS = clamp(1, 300,
-				config.get("mining_laser", "mine_delay_ticks", MINING_LASER_MINE_DELAY_TICKS).getInt());
+				config.get("mining_laser", "mine_delay_ticks", MINING_LASER_MINE_DELAY_TICKS, "Mining duration per scanned block").getInt());
 		
 		MINING_LASER_PLANET_ENERGY_PER_LAYER = clamp(1, Integer.MAX_VALUE,
-				config.get("mining_laser", "planet_energy_per_layer", MINING_LASER_PLANET_ENERGY_PER_LAYER).getInt());
+				config.get("mining_laser", "planet_energy_per_layer", MINING_LASER_PLANET_ENERGY_PER_LAYER, "Energy cost per layer on a planet").getInt());
 		MINING_LASER_PLANET_ENERGY_PER_BLOCK = clamp(1, Integer.MAX_VALUE,
-				config.get("mining_laser", "planet_energy_per_block", MINING_LASER_PLANET_ENERGY_PER_BLOCK).getInt());
+				config.get("mining_laser", "planet_energy_per_block", MINING_LASER_PLANET_ENERGY_PER_BLOCK, "Energy cost per block in space").getInt());
 		MINING_LASER_SPACE_ENERGY_PER_LAYER = clamp(1, Integer.MAX_VALUE,
-				config.get("mining_laser", "space_energy_per_layer", MINING_LASER_SPACE_ENERGY_PER_LAYER).getInt());
+				config.get("mining_laser", "space_energy_per_layer", MINING_LASER_SPACE_ENERGY_PER_LAYER, "Energy cost per layer on a planet").getInt());
 		MINING_LASER_SPACE_ENERGY_PER_BLOCK = clamp(1, Integer.MAX_VALUE,
-				config.get("mining_laser", "space_energy_per_block", MINING_LASER_SPACE_ENERGY_PER_BLOCK).getInt());
+				config.get("mining_laser", "space_energy_per_block", MINING_LASER_SPACE_ENERGY_PER_BLOCK, "Energy cost per block in space").getInt());
 		
 		MINING_LASER_ORESONLY_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
-				config.get("mining_laser", "oresonly_energy_factor", MINING_LASER_ORESONLY_ENERGY_FACTOR).getDouble(4.0D));
+				config.get("mining_laser", "oresonly_energy_factor", MINING_LASER_ORESONLY_ENERGY_FACTOR, "Energy cost multiplier per block when mining only ores").getDouble(4.0D));
 		MINING_LASER_SILKTOUCH_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
-				config.get("mining_laser", "silktouch_energy_factor", MINING_LASER_SILKTOUCH_ENERGY_FACTOR).getDouble(2.5D));
-		MINING_LASER_SILKTOUCH_DEUTERIUM_L = clamp(0.001D, 10.0D,
-				config.get("mining_laser", "silktouch_deuterium_l", MINING_LASER_SILKTOUCH_DEUTERIUM_L).getDouble(1.0D));
-		MINING_LASER_FORTUNE_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
-				config.get("mining_laser", "fortune_energy_factor", MINING_LASER_FORTUNE_ENERGY_FACTOR).getDouble(2.5D));
+				config.get("mining_laser", "silktouch_energy_factor", MINING_LASER_SILKTOUCH_ENERGY_FACTOR, "Energy cost multiplier per block when mining with silktouch").getDouble(2.5D));
+		
+		if (unused) {
+			MINING_LASER_SILKTOUCH_DEUTERIUM_L = clamp(0.001D, 10.0D,
+					config.get("mining_laser", "silktouch_deuterium_l", MINING_LASER_SILKTOUCH_DEUTERIUM_L, "Deuterium cost per block when mining with silktouch (0 to disable)").getDouble(1.0D));
+			MINING_LASER_FORTUNE_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
+					config.get("mining_laser", "fortune_energy_factor", MINING_LASER_FORTUNE_ENERGY_FACTOR, "Energy cost multiplier per fortune level").getDouble(2.5D));
+		}
 		
 		// Tree Farm
 		TREE_FARM_MAX_MEDIUMS_COUNT = clamp(1, 10,
@@ -648,23 +657,23 @@ public class WarpDriveConfig {
 		CLOAKING_COIL_CAPTURE_BLOCKS = clamp(0, 30,
 				config.get("cloaking", "coil_capture_blocks", CLOAKING_COIL_CAPTURE_BLOCKS, "Extra blocks covered after the outer coils").getInt());
 		CLOAKING_MAX_FIELD_RADIUS = clamp(CLOAKING_COIL_CAPTURE_BLOCKS + 3, 128,
-				config.get("cloaking", "max_field_radius", CLOAKING_MAX_FIELD_RADIUS).getInt());
+				config.get("cloaking", "max_field_radius", CLOAKING_MAX_FIELD_RADIUS, "Maximum distance between cloaking core and any cloaked side").getInt());
 		CLOAKING_TIER1_ENERGY_PER_BLOCK = clamp(0, Integer.MAX_VALUE,
-				config.get("cloaking", "tier1_energy_per_block", CLOAKING_TIER1_ENERGY_PER_BLOCK).getInt());
+				config.get("cloaking", "tier1_energy_per_block", CLOAKING_TIER1_ENERGY_PER_BLOCK, "Energy cost per non-air block in a Tier1 cloak").getInt());
 		CLOAKING_TIER2_ENERGY_PER_BLOCK = clamp(CLOAKING_TIER1_ENERGY_PER_BLOCK, Integer.MAX_VALUE,
-				config.get("cloaking", "tier2_energy_per_block", CLOAKING_TIER2_ENERGY_PER_BLOCK).getInt());
+				config.get("cloaking", "tier2_energy_per_block", CLOAKING_TIER2_ENERGY_PER_BLOCK, "Energy cost per non-air block in a Tier2 cloak").getInt());
 		CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS = clamp(1, 30,
-				config.get("cloaking", "field_refresh_interval_seconds", CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS).getInt());
+				config.get("cloaking", "field_refresh_interval_seconds", CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS, "Update speed of cloak simulation").getInt());
 		
 		// Air generator
 		AIRGEN_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
 				config.get("air_generator", "max_energy_stored", AIRGEN_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		AIRGEN_ENERGY_PER_CANISTER = clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_canister", AIRGEN_ENERGY_PER_CANISTER).getInt());
+				config.get("air_generator", "energy_per_canister", AIRGEN_ENERGY_PER_CANISTER, "Energy cost per air canister refilled").getInt());
 		AIRGEN_ENERGY_PER_NEWAIRBLOCK = clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_new_air_block", AIRGEN_ENERGY_PER_NEWAIRBLOCK).getInt());
+				config.get("air_generator", "energy_per_new_air_block", AIRGEN_ENERGY_PER_NEWAIRBLOCK, "Energy cost to start air distribution per open side").getInt());
 		AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK = clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_existing_air_block", AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK).getInt());
+				config.get("air_generator", "energy_per_existing_air_block", AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK, "Energy cost to sustain air distribution per open side").getInt());
 		AIRGEN_AIR_GENERATION_TICKS = clamp(1, 300,
 				config.get("air_generator", "air_generation_ticks", AIRGEN_AIR_GENERATION_TICKS).getInt());
 		
@@ -672,18 +681,18 @@ public class WarpDriveConfig {
 		IC2_REACTOR_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
 				config.get("ic2_reactor_laser", "max_energy_stored", IC2_REACTOR_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		IC2_REACTOR_ENERGY_PER_HEAT = clamp(2.0D, 100000.0D,
-				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT).getDouble(2));
+				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT, "Energy cost per heat absorbed").getDouble(2));
 		IC2_REACTOR_COOLING_INTERVAL_TICKS = clamp(0, 1200,
-				config.get("ic2_reactor_laser", "cooling_interval_ticks", IC2_REACTOR_COOLING_INTERVAL_TICKS).getInt());
+				config.get("ic2_reactor_laser", "cooling_interval_ticks", IC2_REACTOR_COOLING_INTERVAL_TICKS, "Update speed of the check for reactors to cooldown").getInt());
 		
 		// Transporter
-		TRANSPORTER_MAX_ENERGY = clamp(1, Integer.MAX_VALUE,
-				config.get("transporter", "max_energy", TRANSPORTER_MAX_ENERGY, "Maximum energy stored").getInt());
-		TRANSPORTER_USE_RELATIVE_COORDS = config.get("transporter", "use_relative_coords", TRANSPORTER_USE_RELATIVE_COORDS).getBoolean(true);
-		TRANSPORTER_ENERGY_PER_BLOCK = clamp(1.0D, TRANSPORTER_MAX_ENERGY / 10.0D,
-				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK).getDouble(100.0D));
+		TRANSPORTER_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
+				config.get("transporter", "max_energy_stored", TRANSPORTER_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
+		TRANSPORTER_USE_RELATIVE_COORDS = config.get("transporter", "use_relative_coords", TRANSPORTER_USE_RELATIVE_COORDS, "Should transporter use relative coordinates?").getBoolean(true);
+		TRANSPORTER_ENERGY_PER_BLOCK = clamp(1.0D, TRANSPORTER_MAX_ENERGY_STORED / 10.0D,
+				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK, "Energy cost per block distance").getDouble(100.0D));
 		TRANSPORTER_MAX_BOOST_MUL = clamp(1.0D, 1000.0D,
-				config.get("transporter", "max_boost", TRANSPORTER_MAX_BOOST_MUL).getDouble(4.0));
+				config.get("transporter", "max_boost", TRANSPORTER_MAX_BOOST_MUL, "Maximum energy boost allowed").getDouble(4.0));
 		
 		// Enantiomorphic reactor
 		ENAN_REACTOR_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
@@ -702,7 +711,7 @@ public class WarpDriveConfig {
 		LIFT_ENERGY_PER_ENTITY = clamp(1, Integer.MAX_VALUE,
 				config.get("lift", "energy_per_entity", LIFT_ENERGY_PER_ENTITY, "Energy consummed per entity moved").getInt());
 		LIFT_UPDATE_INTERVAL_TICKS = clamp(1, 60,
-				config.get("lift", "update_interval_ticks", LIFT_UPDATE_INTERVAL_TICKS).getInt());
+				config.get("lift", "update_interval_ticks", LIFT_UPDATE_INTERVAL_TICKS, "Update speed of the check for entities").getInt());
 		
 		// Dictionary
 		Dictionary.loadConfig(config);
@@ -776,6 +785,22 @@ public class WarpDriveConfig {
 		boolean isBibliocraftLoaded = Loader.isModLoaded("BiblioCraft");
 		if (isBibliocraftLoaded) {
 			CompatBiblioCraft.register();
+		}
+		boolean isJABBAloaded = Loader.isModLoaded("JABBA");
+		if (isJABBAloaded) {
+			CompatJABBA.register();
+		}
+		boolean isMetallurgyloaded = Loader.isModLoaded("Metallurgy");
+		if (isMetallurgyloaded) {
+			CompatMetallurgy.register();
+		}
+		boolean isNaturaLoaded = Loader.isModLoaded("Natura");
+		if (isNaturaLoaded) {
+			CompatNatura.register();
+		}
+		boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
+		if (isStargateTech2Loaded) {
+			CompatStargateTech2.register();
 		}
 	}
 	

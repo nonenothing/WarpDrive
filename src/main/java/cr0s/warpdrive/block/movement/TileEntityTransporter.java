@@ -504,7 +504,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 
 	@Override
 	public int getMaxEnergyStored() {
-		int max = WarpDriveConfig.TRANSPORTER_MAX_ENERGY;
+		int max = WarpDriveConfig.TRANSPORTER_MAX_ENERGY_STORED;
 		if (upgrades.containsKey(UpgradeType.Energy)) {
 			max = (int) Math.floor(max * Math.pow(1.2, upgrades.get(UpgradeType.Energy)));
 		}

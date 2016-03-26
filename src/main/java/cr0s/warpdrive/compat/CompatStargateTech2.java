@@ -1,0 +1,133 @@
+package cr0s.warpdrive.compat;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
+public class CompatStargateTech2 implements IBlockTransformer {
+	
+	private static Class<?> classBlockMachine;
+	
+	public static void register() {
+		try {
+			classBlockMachine = Class.forName("lordfokas.stargatetech2.core.machine.BlockMachine");
+			WarpDriveConfig.registerBlockTransformer("StargateTech2", new CompatStargateTech2());
+		} catch(ClassNotFoundException exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	@Override
+	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
+		return classBlockMachine.isInstance(block);
+	}
+	
+	@Override
+	public boolean isJumpReady(TileEntity tileEntity) {
+		return true;
+	}
+	
+	@Override
+	public NBTBase saveExternals(final TileEntity tileEntity) {
+		// nothing to do
+		return null;
+	}
+	
+	@Override
+	public void remove(TileEntity tileEntity) {
+		// nothing to do
+	}
+	
+	private static final int[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+	private static final Map<String, String> rotFacingcolors;
+	static {
+		Map<String, String> map = new HashMap();
+		map.put("color0", "color0");
+		map.put("color1", "color1");
+		map.put("color2", "color5");
+		map.put("color3", "color4");
+		map.put("color4", "color2");
+		map.put("color5", "color3");
+		rotFacingcolors = Collections.unmodifiableMap(map);
+	}
+	
+	private static NBTTagCompound rotateVector(ITransformation transformation, NBTTagCompound tag) {
+		ChunkCoordinates target = transformation.apply(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+		tag.setFloat("x", target.posX);
+		tag.setFloat("y", target.posY);
+		tag.setFloat("z", target.posZ);
+		return tag;
+	}
+	
+	private static NBTTagCompound rotateFacingColors(final Byte rotationSteps, final NBTTagCompound tag) {
+		NBTTagCompound newFacing = new NBTTagCompound();
+		Set<String> keys = tag.func_150296_c();
+		for (String key : keys) {
+			NBTBase base = tag.getTag(key);
+			if (base instanceof NBTTagByte && rotFacingcolors.containsKey(key)) {
+				switch (rotationSteps) {
+				case 1:
+					newFacing.setTag(rotFacingcolors.get(key), base);
+					break;
+				case 2:
+					newFacing.setTag(rotFacingcolors.get(rotFacingcolors.get(key)), base);
+					break;
+				case 3:
+					newFacing.setTag(rotFacingcolors.get(rotFacingcolors.get(rotFacingcolors.get(key))), base);
+					break;
+				default:
+					newFacing.setTag(key, base);
+					break;
+				}
+			} else {
+				newFacing.setTag(key, base);
+			}
+		}
+		return newFacing;
+	}
+	
+	@Override
+	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		byte rotationSteps = transformation.getRotationSteps();
+		if (rotationSteps == 0) {
+			return metadata;
+		}
+		
+		if (nbtTileEntity.hasKey("controller")) {
+			nbtTileEntity.setTag("controller", rotateVector(transformation, nbtTileEntity.getCompoundTag("controller")));
+		}
+		if (nbtTileEntity.hasKey("emitter_0")) {
+			nbtTileEntity.setTag("emitter_0", rotateVector(transformation, nbtTileEntity.getCompoundTag("emitter_0")));
+		}
+		if (nbtTileEntity.hasKey("facing")) {
+			nbtTileEntity.setTag("facing", rotateFacingColors(rotationSteps, nbtTileEntity.getCompoundTag("facing")));
+		}
+		
+		switch (rotationSteps) {
+		case 1:
+			return mrot[metadata];
+		case 2:
+			return mrot[mrot[metadata]];
+		case 3:
+			return mrot[mrot[mrot[metadata]]];
+		default:
+			return metadata;
+		}
+	}
+	
+	@Override
+	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
+		// nothing to do
+	}
+}
