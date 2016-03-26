@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -18,10 +19,12 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 public class CompatStargateTech2 implements IBlockTransformer {
 	
 	private static Class<?> classBlockMachine;
+	private static Class<?> classBlockShield;
 	
 	public static void register() {
 		try {
 			classBlockMachine = Class.forName("lordfokas.stargatetech2.core.machine.BlockMachine");
+			classBlockShield = Class.forName("lordfokas.stargatetech2.enemy.BlockShield");
 			WarpDriveConfig.registerBlockTransformer("StargateTech2", new CompatStargateTech2());
 		} catch(ClassNotFoundException exception) {
 			exception.printStackTrace();
@@ -30,7 +33,8 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		return classBlockMachine.isInstance(block);
+		return classBlockMachine.isInstance(block)
+			|| classBlockShield.isInstance(block);
 	}
 	
 	@Override
@@ -64,6 +68,8 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	
 	private static NBTTagCompound rotateVector(ITransformation transformation, NBTTagCompound tag) {
 		ChunkCoordinates target = transformation.apply(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+		WarpDrive.logger.info("Rotating multiblock from " + tag.getInteger("x") + " " + tag.getInteger("y") + " " + tag.getInteger("z")
+				+ " to " + target.posX + " " + target.posY + " " + target.posZ);
 		tag.setFloat("x", target.posX);
 		tag.setFloat("y", target.posY);
 		tag.setFloat("z", target.posZ);
@@ -112,6 +118,11 @@ public class CompatStargateTech2 implements IBlockTransformer {
 		}
 		if (nbtTileEntity.hasKey("facing")) {
 			nbtTileEntity.setTag("facing", rotateFacingColors(rotationSteps, nbtTileEntity.getCompoundTag("facing")));
+		}
+		
+		// Shield master (a.k.a. shield controller)
+		if (nbtTileEntity.hasKey("master")) {
+			nbtTileEntity.setTag("master", rotateVector(transformation, nbtTileEntity.getCompoundTag("master")));
 		}
 		
 		switch (rotationSteps) {
