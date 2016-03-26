@@ -257,7 +257,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 								stop();
 							}
 							totalHarvested += resin.stackSize;
-							int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+							int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * TREE_FARM_HARVEST_LOG_DELAY_TICKS));
 							PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable.x, valuable.y, valuable.z).translate(0.5D),
 									0.8F, 0.8F, 0.2F, age, 0, 50);
 							
