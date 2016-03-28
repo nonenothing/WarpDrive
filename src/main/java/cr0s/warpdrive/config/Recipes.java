@@ -911,7 +911,7 @@ public class Recipes {
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("ThermalExpansion", "Machine", 5); // Fluid transposer
 		} else if (WarpDriveConfig.isEnderIOloaded) {
-			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("EnderIO", "blockReservoir", 5);
+			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("EnderIO", "blockReservoir", 0);
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "aca", "ata", "gmp",
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
