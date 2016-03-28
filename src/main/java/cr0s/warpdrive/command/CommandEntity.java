@@ -1,8 +1,10 @@
 package cr0s.warpdrive.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import net.minecraft.command.CommandBase;
@@ -17,6 +19,13 @@ import cr0s.warpdrive.WarpDrive;
  */
 
 public class CommandEntity extends CommandBase {
+	private static List<String> entitiesNoRemoval = Arrays.asList(
+			"item.EntityItemFrame_" 
+			);
+	private static List<String> entitiesNoCount = Arrays.asList(
+			"item.EntityItemFrame_" 
+			);
+	
 	@Override
 	public String getCommandName() {
 		return "wentity";
@@ -82,40 +91,64 @@ public class CommandEntity extends CommandBase {
 					Math.floor(player.posX + 1), Math.floor(player.posY + 1), Math.floor(player.posZ + 1)).expand(radius, radius, radius));
 		}
 		HashMap<String, Integer> counts = new HashMap<String, Integer>(entities.size());
+		int count = 0;
 		for (Object object : entities) {
 			if (object instanceof Entity) {
 				String name = object.getClass().getCanonicalName();
 				if (name == null) {
 					name = "-null-";
+				} else {
+					name = name.replaceAll("net\\.minecraft\\.entity\\.", "") + "_";
+				}
+				if (filter.isEmpty() && !entitiesNoCount.isEmpty()) {
+					for (String entityNoCount : entitiesNoCount) {
+						if (name.contains(entityNoCount)) {
+							continue;
+						}
+					}
 				}
 				if (filter.isEmpty() || name.contains(filter)) {
+					// update statistics
+					count++;
 					if (!counts.containsKey(name)) {
 						counts.put(name, 1);
 					} else {
 						counts.put(name, counts.get(name) + 1);
 					}
+					if (!filter.isEmpty()) {
+						WarpDrive.addChatMessage(player, "§cFound " + object);
+					}
+					// remove entity
 					if (kill && !((Entity) object).invulnerable) {
+						if (!entitiesNoRemoval.isEmpty()) {
+							for (String entityNoRemoval : entitiesNoRemoval) {
+								if (name.contains(entityNoRemoval)) {
+									continue;
+								}
+							}
+						}
 						((Entity) object).setDead();
 					}
 				}
 			}
 		}
-		if (counts.isEmpty()) {
-			WarpDrive.addChatMessage(player, "No matching entities found in range");
+		if (count == 0) {
+			WarpDrive.addChatMessage(player, "§cNo matching entities found within " + radius + " blocks");
 			return;
 		}
-		WarpDrive.addChatMessage(player, "&6Matching entities within range:");
+		
+		WarpDrive.addChatMessage(player, "§6" + count + " matching entities within " + radius + " blocks:");
 		if (counts.size() < 10) {
 			for (Entry<String, Integer> entry : counts.entrySet()) {
-				WarpDrive.addChatMessage(player, entry.getValue() + " x " + entry.getKey());
+				WarpDrive.addChatMessage(player, "§f" + entry.getValue() + "§8x§d" + entry.getKey());
 			}
 		} else {
 			String message = "";
 			for (Entry<String, Integer> entry : counts.entrySet()) {
 				if (!message.isEmpty()) {
-					message += ", ";
+					message += "§8" + ", ";
 				}
-				message += entry.getValue() + " x " + entry.getKey();
+				message += "§f" + entry.getValue() + "§8x§d" + entry.getKey();
 			}
 			WarpDrive.addChatMessage(player, message);
 		}
