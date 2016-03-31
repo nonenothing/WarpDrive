@@ -79,7 +79,7 @@ public class EntityJump extends Entity {
 		super(world);
 		targetWorld = worldObj;
 		if (!world.isRemote) {
-			WarpDrive.logger.error(this + " Entity created (empty) in dimension " + worldObj.getProviderName() + " - " + worldObj.getWorldInfo().getWorldName());
+			WarpDrive.logger.error(this + " Entity created (empty) in world " + worldObj + " " + worldObj.getWorldInfo().getWorldName());
 		}
 	}
 	
