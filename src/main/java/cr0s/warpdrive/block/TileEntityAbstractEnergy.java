@@ -8,6 +8,7 @@ import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
 import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyReceiver;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
@@ -37,13 +38,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	private int scanTickCount = -1;
 	
-	private Object[] cofhEnergyHandlers;
+	private Object[] cofhEnergyReceivers;
 	
 	protected HashMap<UpgradeType,Integer> upgrades = new HashMap<UpgradeType,Integer>();
 	
 	public TileEntityAbstractEnergy() {
 		super();
-		if (WarpDriveConfig.isThermalExpansionLoaded) {
+		if (WarpDriveConfig.isCoFHCoreLoaded) {
 			RF_initialiseAPI();
 		}
 		addMethods(new String[] { "energy" });
@@ -215,7 +216,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 		
 		// Thermal Expansion
-		if (WarpDriveConfig.isThermalExpansionLoaded) {
+		if (WarpDriveConfig.isCoFHCoreLoaded) {
 			scanTickCount++;
 			if (scanTickCount >= 20) {
 				scanTickCount = 0;
@@ -320,7 +321,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// ThermalExpansion IEnergyHandler interface
 	@Override
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver */
 	public int receiveEnergy(ForgeDirection from, int maxReceive_RF, boolean simulate) {
 		if (!canInputEnergy(from)) {
 			return 0;
@@ -341,7 +342,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "CoFHCore")	/* IEnergyProvider */
 	public int extractEnergy(ForgeDirection from, int maxExtract_RF, boolean simulate) {
 		if (!canOutputEnergy(from)) {
 			return 0;
@@ -357,22 +358,19 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "CoFHCore")	/* IEnergyConnection */
 	public boolean canConnectEnergy(ForgeDirection from) {
 		return (getMaxEnergyStored() != 0) && (canInputEnergy(from) || canOutputEnergy(from)); // FIXME deadlock risk
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
 	public int getEnergyStored(ForgeDirection from) {
-		if (canConnectEnergy(from)) {
-			return convertInternalToRF(getEnergyStored());
-		}
-		return 0;
+		return canConnectEnergy(from) ? convertInternalToRF(getEnergyStored()) : 0;
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
 	public int getMaxEnergyStored(ForgeDirection from) {
 		return canConnectEnergy(from) ? convertInternalToRF(getMaxEnergyStored()) : 0;
 	}
@@ -380,15 +378,15 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// WarpDrive overrides for Thermal Expansion FIXME: are we really supposed to do this?
 	@Optional.Method(modid = "CoFHCore")
-	private void outputEnergy(ForgeDirection from, IEnergyHandler ieh) {
-		if (ieh == null || worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ) == null) {
+	private void outputEnergy(ForgeDirection from, IEnergyReceiver energyReceiver) {
+		if (energyReceiver == null || worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ) == null) {
 			return;
 		}
 		int potentialEnergyOutput_internal = getPotentialEnergyOutput();
 		if (potentialEnergyOutput_internal > 0) {
-			int energyToOutput_RF = ieh.receiveEnergy(from.getOpposite(), convertInternalToRF(potentialEnergyOutput_internal), true);
+			int energyToOutput_RF = energyReceiver.receiveEnergy(from.getOpposite(), convertInternalToRF(potentialEnergyOutput_internal), true);
 			if (energyToOutput_RF > 0) {
-				int energyOutputed_RF = ieh.receiveEnergy(from.getOpposite(), energyToOutput_RF, false);
+				int energyOutputed_RF = energyReceiver.receiveEnergy(from.getOpposite(), energyToOutput_RF, false);
 				energyOutputDone(convertRFtoInternal(energyOutputed_RF));
 				// WarpDrive.debugPrint("ForcedOutputEnergy Potential " + potentialEnergyOutput_internal + " EU, Actual output " + energyOutputed_RF + " RF, simulated at " + energyToOutput_RF + " RF");
 			}
@@ -398,15 +396,15 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Optional.Method(modid = "CoFHCore")
 	private void outputEnergy() {
 		for(ForgeDirection from: ForgeDirection.VALID_DIRECTIONS) {
-			if (cofhEnergyHandlers[from.ordinal()] != null) {
-				outputEnergy(from, (IEnergyHandler) cofhEnergyHandlers[from.ordinal()]);
+			if (cofhEnergyReceivers[from.ordinal()] != null) {
+				outputEnergy(from, (IEnergyReceiver) cofhEnergyReceivers[from.ordinal()]);
 			}
 		}
 	}
 	
 	@Optional.Method(modid = "CoFHCore")
 	private void RF_initialiseAPI() {
-		cofhEnergyHandlers = new IEnergyHandler[ForgeDirection.VALID_DIRECTIONS.length];
+		cofhEnergyReceivers = new IEnergyReceiver[ForgeDirection.VALID_DIRECTIONS.length];
 	}
 	
 	
@@ -451,7 +449,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	public void updatedNeighbours() {
 		super.updatedNeighbours();
 		
-		if (WarpDriveConfig.isThermalExpansionLoaded) {
+		if (WarpDriveConfig.isCoFHCoreLoaded) {
 			scanForEnergyHandlers();
 		}
 	}
@@ -459,19 +457,19 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Optional.Method(modid = "CoFHCore")
 	private void scanForEnergyHandlers() {
 		for(ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
-			boolean iehFound = false;
+			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
-				TileEntity te = worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ);
-				if (te != null && te instanceof IEnergyHandler) {
-					IEnergyHandler ieh = (IEnergyHandler)te;
-					if (ieh.canConnectEnergy(from.getOpposite())) {
-						iehFound = true;
-						cofhEnergyHandlers[from.ordinal()] = ieh;
+				TileEntity tileEntity = worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ);
+				if (tileEntity != null && tileEntity instanceof IEnergyReceiver) {
+					IEnergyReceiver energyReceiver = (IEnergyReceiver)tileEntity;
+					if (energyReceiver.canConnectEnergy(from.getOpposite())) {
+						energyReceiverFound = true;
+						cofhEnergyReceivers[from.ordinal()] = energyReceiver;
 					}
 				}
 			}
-			if (!iehFound) {
-				cofhEnergyHandlers[from.ordinal()] = null;
+			if (!energyReceiverFound) {
+				cofhEnergyReceivers[from.ordinal()] = null;
 			}
 		}
 	}

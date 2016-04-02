@@ -69,6 +69,7 @@ public class WarpDriveConfig {
 	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isComputerCraftLoaded = false;
 	public static boolean isOpenComputersLoaded = false;
+	public static boolean isCoFHCoreLoaded = false;
 	public static boolean isThermalExpansionLoaded = false;
 	public static boolean isArsMagica2Loaded = false;
 	public static boolean isImmersiveEngineeringLoaded = false;
@@ -754,6 +755,7 @@ public class WarpDriveConfig {
 		}
 		
 		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
+		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
 		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
