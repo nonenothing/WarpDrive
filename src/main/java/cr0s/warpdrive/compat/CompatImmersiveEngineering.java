@@ -13,7 +13,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.Optional;
-
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -99,12 +98,38 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 		World targetWorld = transformation.getTargetWorld();
 		
 		// powerPathList
-		for (int connectionIndex = 0; connectionIndex < nbtImmersiveEngineering.tagCount(); connectionIndex++) {
-			Connection connection = Connection.readFromNBT(nbtImmersiveEngineering.getCompoundTagAt(connectionIndex));
-			connection.start = transformation.apply(connection.start);
-			connection.end = transformation.apply(connection.end);
-			
-			ImmersiveNetHandler.INSTANCE.addConnection(targetWorld, new ChunkCoordinates(connection.start.posX, connection.start.posY, connection.start.posZ), connection);
+		for (int indexConnectionToAdd = 0; indexConnectionToAdd < nbtImmersiveEngineering.tagCount(); indexConnectionToAdd++) {
+			Connection connectionToAdd = Connection.readFromNBT(nbtImmersiveEngineering.getCompoundTagAt(indexConnectionToAdd));
+			connectionToAdd.start = transformation.apply(connectionToAdd.start);
+			connectionToAdd.end = transformation.apply(connectionToAdd.end);
+			ChunkCoordinates node = new ChunkCoordinates(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+			Collection<Connection> connectionActuals = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorldObj(), node);
+			boolean existing = false;
+			if (connectionActuals != null) {
+				for (Connection connectionActual : connectionActuals) {
+					if ( connectionActual.start.posX == connectionToAdd.start.posX
+					  && connectionActual.start.posY == connectionToAdd.start.posY
+					  && connectionActual.start.posZ == connectionToAdd.start.posZ
+					  && connectionActual.end.posX == connectionToAdd.end.posX
+					  && connectionActual.end.posY == connectionToAdd.end.posY
+					  && connectionActual.end.posZ == connectionToAdd.end.posZ) {
+						existing = true;
+						break;
+					} else if (
+					     connectionActual.start.posX == connectionToAdd.end.posX
+					  && connectionActual.start.posY == connectionToAdd.end.posY
+					  && connectionActual.start.posZ == connectionToAdd.end.posZ
+					  && connectionActual.end.posX == connectionToAdd.start.posX
+					  && connectionActual.end.posY == connectionToAdd.start.posY
+					  && connectionActual.end.posZ == connectionToAdd.start.posZ) {
+						existing = true;
+						break;
+					}
+				}
+			}
+			if (!existing) {
+				ImmersiveNetHandler.INSTANCE.addConnection(targetWorld, new ChunkCoordinates(connectionToAdd.start.posX, connectionToAdd.start.posY, connectionToAdd.start.posZ), connectionToAdd);
+			}
 		}
 	}
 }
