@@ -98,6 +98,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			}
 		}
 	}
+	
 	@Override
 	public void validate() {
 		if (WarpDriveConfig.isComputerCraftLoaded) {

@@ -347,6 +347,12 @@ function common_event(eventName, param)
   if eventName == "redstone" then
   --    redstone_event(param)
   elseif eventName == "timer" then
+  elseif eventName == "shipCoreCooldownDone" then
+    ShowWarning("Ship core cooldown done")
+  elseif eventName == "component_added" then
+    -- ShowWarning("Event '" .. eventName .. "', " .. param .. " is unsupported")
+  elseif eventName == "component_removed" then
+    -- ShowWarning("Event '" .. eventName .. "', " .. param .. " is unsupported")
   else
     return false
   end
