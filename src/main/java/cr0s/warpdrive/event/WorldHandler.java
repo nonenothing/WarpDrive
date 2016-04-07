@@ -2,6 +2,8 @@ package cr0s.warpdrive.event;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -66,5 +68,14 @@ public class WorldHandler {
 	public void onWorldUnload(WorldEvent.Unload event) {
 		// WarpDrive.logger.info("onWorldUnload world " + event.world);
 		WarpDrive.cloaks.onClientChangingDimension();
+	}
+	
+	@SubscribeEvent
+	public void onServerTick(ServerTickEvent event) {
+		if (event.side != Side.SERVER || event.phase != Phase.END) {
+			return;
+		}
+		
+		AbstractSequencer.updateTick();
 	}
 }

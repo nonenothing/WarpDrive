@@ -11,12 +11,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import cr0s.warpdrive.EntityJump;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.event.JumpSequencer;
 
 public class JumpShip {
 	public World worldObj;
@@ -38,7 +38,7 @@ public class JumpShip {
 	public JumpShip() {
 	}
 
-	public void messageToAllPlayersOnShip(EntityJump entityJump, String msg) {
+	public void messageToAllPlayersOnShip(JumpSequencer entityJump, String msg) {
 		if (entitiesOnShip == null) {
 			shipCore.messageToAllPlayersOnShip(msg);
 		} else {
@@ -52,16 +52,16 @@ public class JumpShip {
 		}
 	}
 
-	public String saveEntities(EntityJump entityJump) {
+	public String saveEntities(JumpSequencer entityJump) {
 		String result = null;
 		entitiesOnShip = new ArrayList<MovingEntity>();
 		
 		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		
-		List<Entity> list = entityJump.worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
 		for (Entity entity : list) {
-			if (entity == null || (entity instanceof EntityJump)) {
+			if (entity == null) {
 				continue;
 			}
 			
@@ -88,7 +88,7 @@ public class JumpShip {
 		return result;
 	}
 
-	public void setMinMaxes(EntityJump entityJump, int minXV, int maxXV, int minYV, int maxYV, int minZV, int maxZV) {
+	public void setMinMaxes(JumpSequencer entityJump, int minXV, int maxXV, int minYV, int maxYV, int minZV, int maxZV) {
 		minX = minXV;
 		maxX = maxXV;
 		minY = minYV;
@@ -106,14 +106,14 @@ public class JumpShip {
 			Double.valueOf(coreX), Double.valueOf(coreY), Double.valueOf(coreZ));
 	}
 	
-	public int getRealShipVolume_checkBedrock(EntityJump entityJump, StringBuilder reason) {
-		LocalProfiler.start("EntityJump.getRealShipVolume_checkBedrock");
+	public int getRealShipVolume_checkBedrock(JumpSequencer entityJump, StringBuilder reason) {
+		LocalProfiler.start("JumpShip.getRealShipVolume_checkBedrock");
 		int shipVolume = 0;
 		
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				for (int y = minY; y <= maxY; y++) {
-					Block block = entityJump.worldObj.getBlock(x, y, z);
+					Block block = worldObj.getBlock(x, y, z);
 					
 					// Skipping vanilla air & ignored blocks
 					if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
@@ -123,7 +123,7 @@ public class JumpShip {
 					shipVolume++;
 					
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-						WarpDrive.logger.info("Block(" + x + ", " + y + ", " + z + ") is " + block.getUnlocalizedName() + "@" + entityJump.worldObj.getBlockMetadata(x, y, z));
+						WarpDrive.logger.info("Block(" + x + ", " + y + ", " + z + ") is " + block.getUnlocalizedName() + "@" + worldObj.getBlockMetadata(x, y, z));
 					}
 					
 					// Stop on non-movable blocks

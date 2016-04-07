@@ -22,7 +22,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.EntityJump;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
@@ -30,6 +29,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Jumpgate;
 import cr0s.warpdrive.data.StarMapEntry;
 import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.event.JumpSequencer;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
 /**
@@ -577,15 +577,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			// Consume energy
 			if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 				WarpDrive.logger.info(this + " Moving ship to beacon (" + beaconX + "; " + yCoord + "; " + beaconZ + ")");
-				EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 0, 0, 0, (byte)0, true, beaconX, yCoord, beaconZ);
-				jump.ship.maxX = maxX;
-				jump.ship.minX = minX;
-				jump.ship.maxZ = maxZ;
-				jump.ship.minZ = minZ;
-				jump.ship.maxY = maxY;
-				jump.ship.minY = minY;
-				jump.on = true;
-				worldObj.spawnEntityInWorld(jump);
+				JumpSequencer jump = new JumpSequencer(this, false, 0, 0, 0, (byte)0, true, beaconX, yCoord, beaconZ);
+				jump.enable();
 			} else {
 				messageToAllPlayersOnShip("Insufficient energy level");
 			}
@@ -746,15 +739,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		// Consume energy
 		if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
-			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, false, 0, 0, 0, (byte)0, true, destX, destY, destZ);
-			jump.ship.maxX = maxX;
-			jump.ship.minX = minX;
-			jump.ship.maxZ = maxZ;
-			jump.ship.minZ = minZ;
-			jump.ship.maxY = maxY;
-			jump.ship.minY = minY;
-			jump.on = true;
-			worldObj.spawnEntityInWorld(jump);
+			JumpSequencer jump = new JumpSequencer(this, false, 0, 0, 0, (byte)0, true, destX, destY, destZ);
+			jump.enable();
 		} else {
 			messageToAllPlayersOnShip("Insufficient energy level");
 		}
@@ -836,17 +822,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info(this + " Movement adjusted to (" + moveX + " " + moveY + " " + moveZ + ") blocks.");
 			}
-			EntityJump jump = new EntityJump(worldObj, xCoord, yCoord, zCoord, dx, dz, this, (currentMode == ShipCoreMode.HYPERSPACE),
+			JumpSequencer jump = new JumpSequencer(this, (currentMode == ShipCoreMode.HYPERSPACE),
 					moveX, moveY, moveZ, controller.getRotationSteps(),
 					false, 0, 0, 0);
-			jump.ship.maxX = maxX;
-			jump.ship.minX = minX;
-			jump.ship.maxZ = maxZ;
-			jump.ship.minZ = minZ;
-			jump.ship.maxY = maxY;
-			jump.ship.minY = minY;
-			jump.on = true;
-			worldObj.spawnEntityInWorld(jump);
+			jump.enable();
 		}
 	}
 	
