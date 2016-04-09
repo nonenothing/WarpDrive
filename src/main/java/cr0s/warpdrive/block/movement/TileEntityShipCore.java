@@ -79,10 +79,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS;
 	private int registryUpdateTicks = 0;
 	private int bootTicks = 20;
+	private final int logInterval_ticks = 20 * 60;
+	private int logTicks = 120;
 	
 	public UUID uuid = null;
 	public String shipName = "default";
-
+	
 	public int isolationBlocksCount = 0;
 	public double isolationRate = 0.0D;
 	public int isolationUpdateTicks = 0;
@@ -149,10 +151,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			}
 			// recovery registration, shouldn't be needed, in theory...
 			WarpDrive.starMap.updateInRegistry(new StarMapEntry(this));
-			if (WarpDriveConfig.LOGGING_JUMP) {
-				WarpDrive.logger.info(this + " controller is " + controller + ", warmupTime " + warmupTime + ", currentMode " + currentMode + ", jumpFlag "
-						+ (controller == null ? "NA" : controller.isJumpFlag()) + ", cooldownTime " + cooldownTime);
-			}
 			
 			TileEntity controllerFound = findControllerBlock();
 			if (controllerFound == null) {
@@ -162,6 +160,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				return;
 			}
 			controller = (TileEntityShipController) controllerFound;
+		}
+		
+		logTicks--;
+		if (logTicks <= 0) {
+			logTicks = logInterval_ticks;
+			if (WarpDriveConfig.LOGGING_JUMP) {
+				WarpDrive.logger.info(this + " controller is " + controller + ", warmupTime " + warmupTime + ", currentMode " + currentMode + ", jumpFlag "
+						+ (controller == null ? "NA" : controller.isJumpFlag()) + ", cooldownTime " + cooldownTime);
+			}
 		}
 		
 		isolationUpdateTicks++;
@@ -333,7 +340,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	public void messageToAllPlayersOnShip(String msg) {
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(this.minX, this.minY, this.minZ, this.maxX + 0.99D, this.maxY + 0.99D, this.maxZ + 0.99D);
+		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
 		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + msg);
@@ -535,7 +542,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		
 		updateShipMassAndVolume();
 		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && worldObj.provider.dimensionId == 0) {// FIXME: need to support any planets and landing movement
-			reason.append("Ship is too big for the overworld (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
+			reason.append("Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
 			return false;
 		}
 		
