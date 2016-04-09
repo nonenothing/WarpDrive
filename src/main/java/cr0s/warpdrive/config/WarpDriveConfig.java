@@ -33,6 +33,7 @@ import cr0s.warpdrive.compat.CompatJABBA;
 import cr0s.warpdrive.compat.CompatMetallurgy;
 import cr0s.warpdrive.compat.CompatNatura;
 import cr0s.warpdrive.compat.CompatOpenComputers;
+import cr0s.warpdrive.compat.CompatRedstonePaste;
 import cr0s.warpdrive.compat.CompatStargateTech2;
 import cr0s.warpdrive.compat.CompatTConstruct;
 import cr0s.warpdrive.config.filler.FillerManager;
@@ -807,6 +808,10 @@ public class WarpDriveConfig {
 		boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
 		if (isStargateTech2Loaded) {
 			CompatStargateTech2.register();
+		}
+		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
+		if (isRedstonePasteLoaded) {
+			CompatRedstonePaste.register();
 		}
 	}
 	
