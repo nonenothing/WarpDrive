@@ -491,7 +491,7 @@ public class JumpSequencer extends AbstractSequencer {
 				LocalProfiler.stop();
 				assert(closestPlanet != null);
 				@SuppressWarnings("null") // Eclipse derp, don't remove
-				String msg = "Ship is outside border, unable to reach space!\nClosest transition plane is ~" + closestPlanetDistance + " m away ("
+				String msg = "Ship is outside planet border, unable to reach space!\nClosest transition plane is ~" + closestPlanetDistance + " m away ("
 						+ (closestPlanet.dimensionCenterX - closestPlanet.borderSizeX) + ", 250,"
 						+ (closestPlanet.dimensionCenterZ - closestPlanet.borderSizeZ) + ") to ("
 						+ (closestPlanet.dimensionCenterX + closestPlanet.borderSizeX) + ", 255,"
@@ -542,6 +542,18 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 		} else {
 			targetWorld = sourceWorld;
+		}
+		
+		// Check mass constrains
+		if ( ((!isInSpace) && (!isInHyperSpace))
+		  || ( (targetWorld.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID)
+			&& (targetWorld.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID)) ) {
+			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE) {
+				String msg = "Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)";
+				ship.messageToAllPlayersOnShip(msg);
+				disable(msg);
+				return;
+			}
 		}
 		
 		// Calculate jump vector

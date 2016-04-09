@@ -33,6 +33,7 @@ public class JumpShip {
 	public int minZ;
 	public int minY;
 	public JumpBlock[] jumpBlocks;
+	public int actualMass;
 	public TileEntityShipCore shipCore;
 	public List<MovingEntity> entitiesOnShip;
 	
@@ -86,7 +87,27 @@ public class JumpShip {
 			MovingEntity movingEntity = new MovingEntity(entity);
 			entitiesOnShip.add(movingEntity);
 		}
+		
 		return result;
+	}
+	
+	public boolean isUnlimited() {
+		if (entitiesOnShip == null) {
+			return false;
+		}
+		for (MovingEntity movingEntity : entitiesOnShip) {
+			if (!(movingEntity.entity instanceof EntityPlayer)) {
+				continue;
+			}
+			
+			String playerName = ((EntityPlayer) movingEntity.entity).getDisplayName();
+			for (String unlimiteName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
+				if (unlimiteName.equals(playerName)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	public void setMinMaxes(int minXV, int maxXV, int minYV, int maxYV, int minZV, int maxZV) {
@@ -162,6 +183,7 @@ public class JumpShip {
 			int[] placeTimeIndexes = { 0, 0, 0, 0, 0 }; 
 			
 			int actualVolume = 0;
+			int newMass = 0;
 			int xc1 = minX >> 4;
 			int xc2 = maxX >> 4;
 			int zc1 = minZ >> 4;
@@ -184,11 +206,14 @@ public class JumpShip {
 								if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 									continue;
 								}
-								
 								actualVolume++;
 								
 								if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 									WarpDrive.logger.info("Block(" + x + ", " + y + ", " + z + ") is " + block.getUnlocalizedName() + "@" + worldObj.getBlockMetadata(x, y, z));
+								}
+								
+								if (!Dictionary.BLOCKS_NOMASS.contains(block)) {
+									newMass++;
 								}
 								
 								// Stop on non-movable blocks
@@ -239,6 +264,7 @@ public class JumpShip {
 					indexShip++;
 				}
 			}
+			actualMass = newMass;
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			reason.append("Exception while saving ship");
