@@ -22,6 +22,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.compat.CompatAppliedEnergistics2;
 import cr0s.warpdrive.compat.CompatArsMagica2;
 import cr0s.warpdrive.compat.CompatBiblioCraft;
 import cr0s.warpdrive.compat.CompatComputerCraft;
@@ -758,6 +759,9 @@ public class WarpDriveConfig {
 		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
 		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
+		if (isAppliedEnergistics2Loaded) {
+			CompatAppliedEnergistics2.register();
+		}
 		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
 		if (isOpenComputersLoaded) {
 			CompatOpenComputers.register();

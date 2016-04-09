@@ -49,7 +49,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final TileEntity tileEntity) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
 		return true;
 	}
 	

@@ -39,7 +39,7 @@ public class CompatTConstruct implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(TileEntity tileEntity) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
 		return true;
 	}
 	

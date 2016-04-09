@@ -60,7 +60,7 @@ public class JumpSequencer extends AbstractSequencer {
 	private ArrayList<Vector3> collisionAtTarget;
 	private float collisionStrength = 0;
 	
-	public boolean on = false;
+	public boolean isEnabled = false;
 	private final static int STATE_IDLE = 0;
 	private final static int STATE_BLOCKS = 1;
 	private final static int STATE_EXTERNALS = 2;
@@ -115,16 +115,16 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	public void enable() {
-		on = true;
+		isEnabled = true;
 		register();
 	}
 	
 	private void disable(String reason) {
-		if (!on) {
+		if (!isEnabled) {
 			return;
 		}
 		
-		on = false;
+		isEnabled = false;
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			if (reason == null || reason.isEmpty()) {
@@ -146,7 +146,7 @@ public class JumpSequencer extends AbstractSequencer {
 			return false;
 		}
 		
-		if (!on) {
+		if (!isEnabled) {
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info(this + " Removing from onUpdate...");
 			}
@@ -163,7 +163,8 @@ public class JumpSequencer extends AbstractSequencer {
 		ticks++;
 		if (state == STATE_IDLE) {
 			prepareToJump();
-			if (on) {
+			if (isEnabled) {
+				currentIndexInShip = 0;
 				state = STATE_BLOCKS;
 			}
 		} else if (state == STATE_BLOCKS) {
@@ -339,8 +340,8 @@ public class JumpSequencer extends AbstractSequencer {
 			Boolean planetValid = false;
 			int closestPlanetDistance = Integer.MAX_VALUE;
 			Planet closestPlanet = null;
-			for (int iPlane = 0; (!planetValid) && iPlane < WarpDriveConfig.PLANETS.length; iPlane++) {
-				Planet planet = WarpDriveConfig.PLANETS[iPlane];
+			for (int indexPlanet = 0; (!planetValid) && indexPlanet < WarpDriveConfig.PLANETS.length; indexPlanet++) {
+				Planet planet = WarpDriveConfig.PLANETS[indexPlanet];
 				if (sourceWorld.provider.dimensionId == planet.dimensionId) {
 					planetFound = true;
 					int planetDistance = planet.isValidToSpace(new VectorI(ship.coreX, ship.coreY, ship.coreZ));
@@ -364,7 +365,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			if (!planetFound) {
 				LocalProfiler.stop();
-				String msg = "Unable to reach space!\nThere's not planet defined for current dimension " + sourceWorld.provider.getDimensionName() + " ("
+				String msg = "Unable to reach space!\nThere's no planet defined for current dimension " + sourceWorld.provider.getDimensionName() + " ("
 						+ sourceWorld.provider.dimensionId + ")";
 				ship.messageToAllPlayersOnShip(this, msg);
 				disable(msg);
@@ -387,8 +388,8 @@ public class JumpSequencer extends AbstractSequencer {
 			Boolean planetFound = false;
 			int closestPlaneDistance = Integer.MAX_VALUE;
 			Planet closestTransitionPlane = null;
-			for (int iPlanet = 0; (!planetFound) && iPlanet < WarpDriveConfig.PLANETS.length; iPlanet++) {
-				Planet planet = WarpDriveConfig.PLANETS[iPlanet];
+			for (int indexPlanet = 0; (!planetFound) && indexPlanet < WarpDriveConfig.PLANETS.length; indexPlanet++) {
+				Planet planet = WarpDriveConfig.PLANETS[indexPlanet];
 				int planeDistance = planet.isValidFromSpace(new VectorI(ship.coreX, ship.coreY, ship.coreZ));
 				if (planeDistance == 0) {
 					planetFound = true;
@@ -537,7 +538,6 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		saveShip(shipVolume);
-		this.currentIndexInShip = 0;
 		msCounter = System.currentTimeMillis();
 		LocalProfiler.stop();
 		if (WarpDriveConfig.LOGGING_JUMP) {
@@ -582,6 +582,22 @@ public class JumpSequencer extends AbstractSequencer {
 								int blockMeta = sourceWorld.getBlockMetadata(x, y, z);
 								TileEntity tileEntity = sourceWorld.getTileEntity(x, y, z);
 								JumpBlock jumpBlock = new JumpBlock(block, blockMeta, tileEntity, x, y, z);
+								
+								if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
+									for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
+										IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
+										if (blockTransformer != null) {
+											StringBuilder reason = new StringBuilder();
+											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity, reason)) {
+												String msg = reason.toString() + " " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z;
+												disable(msg);
+												ship.messageToAllPlayersOnShip(this, msg);
+												LocalProfiler.stop();
+												return;
+											}
+										}
+									}
+								}
 								
 								// default priority is 2 for block, 3 for tile entities
 								Integer placeTime = Dictionary.BLOCKS_PLACE.get(block);
