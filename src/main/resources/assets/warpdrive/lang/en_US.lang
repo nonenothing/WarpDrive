@@ -8,6 +8,7 @@ item.warpdrive.crafting.ComputerInterface.name=Computer Interface
 item.warpdrive.crafting.PowerInterface.name=Power Interface
 item.warpdrive.crafting.CapacitiveCrystal.name=Capacitive Crystal
 item.warpdrive.crafting.AirCanisterEmpty.name=Empty Air Canister
+item.warpdrive.crafting.AirCanisterEmpty.tooltip=Right click an Air generator to fill me
 item.warpdrive.crafting.Lens.name=Lens
 item.warpdrive.crafting.Zoom.name=Zoom
 item.warpdrive.crafting.GlassTank.name=Glass Tank

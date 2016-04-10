@@ -4,9 +4,11 @@ import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.data.ComponentType;
@@ -96,5 +98,21 @@ public class ItemComponent extends Item implements IAirCanister {
 	@Override
 	public boolean containsAir(ItemStack itemStack) {
 		return false;
+	}
+	
+	@Override
+	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
+		
+		String tooltip = "";
+		switch (ComponentType.get(itemStack.getItemDamage())) {
+		case AIR_CANISTER:
+			tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.crafting.AirCanisterEmpty.tooltip");
+			break;
+		default:
+			break;
+		}
+		
+		WarpDrive.addTooltip(list, tooltip);
 	}
 }
