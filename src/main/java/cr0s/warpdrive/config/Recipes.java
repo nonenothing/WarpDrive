@@ -1217,7 +1217,9 @@ public class Recipes {
 		
 		// Hull blocks plain
 		// (BlockColored.func_150031_c is converting wool metadata into dye metadata)
-		// Tier 1 = 5 stone + 4 iron ingots or 5 stone + 4 steel ingots or 5 reinforced stone + 4 obsidian
+		// Tier 1 = 5 stone + 4 iron ingots or 5 stone + 4 steel ingots or 5 reinforced stone + 4 obsidian gives 10
+		// Tier 1 = 5 stone + 4 bronze ingots gives 5
+		// Tier 1 = 5 stone + 4 aluminium ingots gives 3
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("IC2", "blockAlloy", -1);
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
@@ -1230,6 +1232,20 @@ public class Recipes {
 		} else {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotIron",
+					'c', "stone" ));
+		}
+		if (OreDictionary.doesOreNameExist("ingotBronze") && !OreDictionary.getOres("ingotBronze").isEmpty()) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 5, 0), false, "cbc", "bcb", "cbc",
+					'b', "ingotBronze",
+					'c', "stone" ));
+		}
+		if (OreDictionary.doesOreNameExist("ingotAluminium") && !OreDictionary.getOres("ingotAluminium").isEmpty()) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 3, 0), false, "cbc", "bcb", "cbc",
+					'b', "ingotAluminium",
+					'c', "stone" ));
+		} else if (OreDictionary.doesOreNameExist("ingotAluminum") && !OreDictionary.getOres("ingotAluminum").isEmpty()) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 3, 0), false, "cbc", "bcb", "cbc",
+					'b', "ingotAluminum",
 					'c', "stone" ));
 		}
 		// Tier 2 = 4 Tier 1 + 4 obsidian or 4x Tier 1 + 4x Carbon plates or 4x Tier 1 + 1 Gregtech 5 Tungstensteel reinforced block
