@@ -172,11 +172,23 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
+		if (tag.hasKey("mode")) {
+			mode = clamp(-1, 2, tag.getByte("mode"));
+		}
+		if (tag.hasKey("computerEnabled")) {
+			computerEnabled = tag.getBoolean("computerEnabled");
+		}
+		if (tag.hasKey("computerMode")) {
+			computerMode = clamp(-1, 2, tag.getByte("computerMode"));
+		}
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
+		tag.setByte("mode", (byte)mode);
+		tag.setBoolean("computerEnabled", computerEnabled);
+		tag.setByte("computerMode", (byte)computerMode);
 	}
 	
 	@Override
