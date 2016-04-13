@@ -28,7 +28,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 			return;
 		}
 		
-		// Air generator works only in spaces
+		// Air generator works only in space
 		if (worldObj.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && worldObj.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
 			if (getBlockMetadata() != 0) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
