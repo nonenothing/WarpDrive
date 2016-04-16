@@ -36,6 +36,7 @@ import cr0s.warpdrive.compat.CompatOpenComputers;
 import cr0s.warpdrive.compat.CompatRedstonePaste;
 import cr0s.warpdrive.compat.CompatStargateTech2;
 import cr0s.warpdrive.compat.CompatTConstruct;
+import cr0s.warpdrive.compat.CompatThaumcraft;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.config.structures.StructureReference;
@@ -812,6 +813,10 @@ public class WarpDriveConfig {
 		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
 		if (isRedstonePasteLoaded) {
 			CompatRedstonePaste.register();
+		}
+		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
+		if (isThaumcraftLoaded) {
+			CompatThaumcraft.register();
 		}
 	}
 	
