@@ -10,7 +10,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.ComponentType;
 import cr0s.warpdrive.data.DecorativeType;
 
 public class BlockDecorative extends Block {
@@ -44,7 +43,7 @@ public class BlockDecorative extends Block {
 	
 	@Override
 	public IIcon getIcon(int side, int damage) {
-		if (damage >= 0 && damage < ComponentType.length) {
+		if (damage >= 0 && damage < DecorativeType.length) {
 			return icons[damage];
 		}
 		return icons[0];
