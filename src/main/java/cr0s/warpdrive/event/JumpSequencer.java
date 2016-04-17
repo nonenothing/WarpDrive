@@ -838,7 +838,14 @@ public class JumpSequencer extends AbstractSequencer {
 					}
 				}
 			}
-			JumpBlock.setBlockNoLight(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z, Blocks.air, 0, 2);
+			try {
+				JumpBlock.setBlockNoLight(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z, Blocks.air, 0, 2);
+			} catch (Exception exception) {
+				WarpDrive.logger.info("Exception while removing " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
+					exception.printStackTrace();
+				}
+			}
 			
 			JumpBlock.refreshBlockStateOnClient(targetWorld, target.posX, target.posY, target.posZ);
 			

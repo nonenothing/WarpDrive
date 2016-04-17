@@ -25,6 +25,7 @@ import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.compat.CompatAppliedEnergistics2;
 import cr0s.warpdrive.compat.CompatArsMagica2;
 import cr0s.warpdrive.compat.CompatBiblioCraft;
+import cr0s.warpdrive.compat.CompatBotania;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatEvilCraft;
@@ -836,6 +837,10 @@ public class WarpDriveConfig {
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
 			CompatEvilCraft.register();
+		}
+		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
+		if (isBotaniaLoaded) {
+			CompatBotania.register();
 		}
 	}
 	
