@@ -15,38 +15,38 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 public class ItemHelmet extends ItemArmor implements IBreathingHelmet {
 	// private static Random ran = new Random();
 	private int slot;
-
+	
 	IIcon ic;
-
+	
 	public ItemHelmet(ArmorMaterial mat, int slot) {
 		super(mat, 0, slot);
 		this.slot = slot;
 		setUnlocalizedName("warpdrive.armor.Helmet");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}
-
+	
 	@Override
 	public String getArmorTexture(ItemStack is, Entity en, int parSlot, String type) {
 		return "warpdrive:textures/armor/warpArmor_1.png";
 	}
-
+	
 	@Override
 	public void registerIcons(IIconRegister ir) {
 		if (slot == 0) {
 			ic = ir.registerIcon("warpdrive:warpArmorHelmet");
 		}
 	}
-
+	
 	@Override
 	public IIcon getIconFromDamage(int damage) {
 		return ic;
 	}
-
+	
 	@Override
 	public boolean canBreath(Entity player) {
 		return true;
 	}
-
+	
 	@Override
 	public boolean removeAir(Entity player) {
 		if (WarpDriveConfig.LOGGING_BREATHING) {
