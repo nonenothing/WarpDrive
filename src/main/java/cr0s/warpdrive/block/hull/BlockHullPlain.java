@@ -13,15 +13,19 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IHullBlock;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-public class BlockHullPlain extends Block {
+public class BlockHullPlain extends Block implements IHullBlock {
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
+	private int tier;
 	
 	public BlockHullPlain(final int tier) {
 		super(Material.iron);
+		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 		setStepSound(Block.soundTypeMetal);
@@ -71,5 +75,15 @@ public class BlockHullPlain extends Block {
 	@Override
 	public MapColor getMapColor(int metadata) {
 		return MapColor.getMapColorForBlockColored(metadata);
+	}
+	
+	@Override
+	public void downgrade(World world, int x, int y, int z) {
+		int metadata = world.getBlockMetadata(x, y, z);
+		if (tier == 1) {
+			world.setBlockToAir(x, y, z);
+		} else {
+			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2], metadata, 2);
+		}
 	}
 }

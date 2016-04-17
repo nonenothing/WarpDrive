@@ -5,13 +5,18 @@ import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IHullBlock;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-public class BlockHullGlass extends BlockColored {
+public class BlockHullGlass extends BlockColored implements IHullBlock {
+	private int tier;
+	
 	public BlockHullGlass(final int tier) {
 		super(Material.glass);
+		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 		setStepSound(Block.soundTypeGlass);
@@ -52,5 +57,15 @@ public class BlockHullGlass extends BlockColored {
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;
+	}
+	
+	@Override
+	public void downgrade(World world, int x, int y, int z) {
+		int metadata = world.getBlockMetadata(x, y, z);
+		if (tier == 1) {
+			world.setBlockToAir(x, y, z);
+		} else {
+			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2], metadata, 2);
+		}
 	}
 }

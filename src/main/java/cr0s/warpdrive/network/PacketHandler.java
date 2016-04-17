@@ -31,11 +31,12 @@ public class PacketHandler {
 	
 	public static void init() {
 		// Forge packets
-		simpleNetworkManager.registerMessage(MessageBeamEffect.class, MessageBeamEffect.class, 0, Side.CLIENT);
+		simpleNetworkManager.registerMessage(MessageBeamEffect.class   , MessageBeamEffect.class   , 0, Side.CLIENT);
 		simpleNetworkManager.registerMessage(MessageVideoChannel.class , MessageVideoChannel.class , 1, Side.CLIENT);
-		simpleNetworkManager.registerMessage(MessageCloak.class     , MessageCloak.class     , 2, Side.CLIENT);
+		simpleNetworkManager.registerMessage(MessageCloak.class        , MessageCloak.class        , 2, Side.CLIENT);
+		simpleNetworkManager.registerMessage(MessageSpawnParticle.class, MessageSpawnParticle.class, 3, Side.CLIENT);
 		
-		simpleNetworkManager.registerMessage(MessageTargeting.class , MessageTargeting.class , 100, Side.SERVER);
+		simpleNetworkManager.registerMessage(MessageTargeting.class    , MessageTargeting.class    , 100, Side.SERVER);
 		
 		// Entity packets for 'uncloaking' entities
 		try {
@@ -91,6 +92,18 @@ public class PacketHandler {
 				PacketHandler.simpleNetworkManager.sendTo(beamMessage, (EntityPlayerMP) entity);
 			}
 		}
+	}
+	
+
+	// Forced particle effect sent to client side
+	public static void sendSpawnParticlePacket(World worldObj, final String type, Vector3 origin, Vector3 direction, float red, float green, float blue, int radius) {
+		assert(!worldObj.isRemote);
+		
+		MessageSpawnParticle beamSpawnParticle = new MessageSpawnParticle(type, origin, direction, red, green, blue);
+		
+		// small beam are sent relative to beam center
+		simpleNetworkManager.sendToAllAround(beamSpawnParticle, new TargetPoint(
+				worldObj.provider.dimensionId, origin.x, origin.y, origin.z, radius));
 	}
 	
 	// Monitor/Laser/Camera updating its video channel to client side

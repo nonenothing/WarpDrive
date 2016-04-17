@@ -24,6 +24,7 @@ import net.minecraft.util.Vec3;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IHullBlock;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.config.Dictionary;
@@ -146,10 +147,10 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	
 	private void emitBeam(int beamEnergy) {
 		int energy = beamEnergy;
-		int beamLengthBlocks = clamp(0, WarpDriveConfig.LASER_CANNON_RANGE_MAX,
-				energy / WarpDriveConfig.LASER_CANNON_RANGE_ENERGY_PER_BLOCK);
 		
-		if (energy == 0 || beamLengthBlocks < 1 || beamFrequency > 65000 || beamFrequency <= 0) {
+		int beamLengthBlocks = clamp(0, WarpDriveConfig.LASER_CANNON_RANGE_MAX, energy / 200);
+		
+		if (energy == 0 || beamFrequency > 65000 || beamFrequency <= 0) {
 			if (WarpDriveConfig.LOGGING_WEAPON) {
 				WarpDrive.logger.info(this + " Beam canceled (energy " + energy + " over " + beamLengthBlocks + " blocks, beamFrequency " + beamFrequency + ")");
 			}
@@ -246,6 +247,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 							if (WarpDriveConfig.LOGGING_WEAPON) {
 								WarpDrive.logger.info("Entity is an invalid target (non-living " + entityId + ") " + mopEntity.entityHit);
 							}
+							// remove entity from hit list
+							entityHits.put(entityHitDistance, null);
 							continue;
 						}
 						if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -254,9 +257,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					}
 					
 					// Consume energy
-					energy -= WarpDriveConfig.LASER_CANNON_ENTITY_HIT_ENERGY
-							+ ((blockHitDistance - distanceTravelled) * WarpDriveConfig.LASER_CANNON_ENERGY_LOSS_PER_BLOCK);
-					distanceTravelled = blockHitDistance;
+					energy *= getTransmittance(entityHitDistance - distanceTravelled);
+					energy -= WarpDriveConfig.LASER_CANNON_ENTITY_HIT_ENERGY;
+					distanceTravelled = entityHitDistance;
 					vHitPoint = new Vector3(mopEntity.hitVec);
 					if (energy <= 0) {
 						break;
@@ -272,7 +275,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 						mopEntity.entityHit.setDead();
 					}
 					
-					if (energy > WarpDriveConfig.LASER_CANNON_ENTITY_HIT_ENERGY_THRESHOLD_FOR_EXPLOSION) {
+					if (energy > WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD) {
 						float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH,
 							  WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH); 
 						worldObj.newExplosion(null, mopEntity.entityHit.posX, mopEntity.entityHit.posY, mopEntity.entityHit.posZ, strength, true, true);
@@ -288,15 +291,33 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			
 			// Laser went too far or no block hit
 			if (blockHitDistance >= beamLengthBlocks || blockHit == null) {
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("No more blocks to hit or too far: blockHitDistance is " + blockHitDistance + ", blockHit is " + blockHit);
+				}
 				vHitPoint = vReachPoint;
 				break;
 			}
 			
 			Block block = worldObj.getBlock(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
 			// int blockMeta = worldObj.getBlockMetadata(hit.blockX, hit.blockY, hit.blockZ);
-			float resistance = block.getExplosionResistance(null);
+			// get hardness and blast resistance
+			float hardness = -2.0F;
+			if (WarpDrive.fieldBlockHardness != null) {
+				// WarpDrive.fieldBlockHardness.setAccessible(true);
+				try {
+					hardness = (float)WarpDrive.fieldBlockHardness.get(block);
+				} catch (IllegalArgumentException | IllegalAccessException exception) {
+					exception.printStackTrace();
+					WarpDrive.logger.error("Unable to access block hardness value of " + block);
+				}
+			}
+			if (WarpDriveConfig.LOGGING_WEAPON) {
+				WarpDrive.logger.info("Block collision found at " + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ
+						+ " with block " + block + " of hardness " + hardness);
+			}
 			
-			if (block.isAssociatedBlock(Blocks.bedrock)) { // FIXME: should check block hardness instead?
+			// stop on unbreakable blocks
+			if (hardness < 0.0F) {
 				vHitPoint = new Vector3(blockHit.hitVec);
 				break;
 			}
@@ -311,24 +332,71 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				}
 			}
 			
+			// instantly break glass
 			if (block.getMaterial() == Material.glass) {
 				worldObj.setBlockToAir(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
 				vHitPoint = new Vector3(blockHit.hitVec);
 			}
 			
-			// Consume energy
-			energy -= WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY
-					+ (resistance * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_RESISTANCE)
-					+ ((blockHitDistance - distanceTravelled) * WarpDriveConfig.LASER_CANNON_ENERGY_LOSS_PER_BLOCK);
-			distanceTravelled = blockHitDistance;
-			vHitPoint = new Vector3(blockHit.hitVec);
+			// Compute parameters
+			int energyCost = clamp(WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_MIN, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_MAX,
+					Math.round(hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS));
+			double absorptionChance = clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX,
+					hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS);
+			
+			do {
+				// Consume energy
+				energy *= getTransmittance(blockHitDistance - distanceTravelled);
+				energy -= energyCost;
+				distanceTravelled = blockHitDistance;
+				vHitPoint = new Vector3(blockHit.hitVec);
+				if (energy <= 0) {
+					if (WarpDriveConfig.LOGGING_WEAPON) {
+						WarpDrive.logger.info("Beam died out of energy");
+					}
+					break;
+				}
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("Beam energy down to " + energy);
+				}
+				
+				// apply chance of absorption
+				if (worldObj.rand.nextDouble() > absorptionChance) {
+					break;
+				}
+			} while (true);
 			if (energy <= 0) {
 				break;
 			}
 			
-			if (resistance >= WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_RESISTANCE_THRESHOLD) {
+			// apply hull effect
+			if (block instanceof IHullBlock) {
+				((IHullBlock)block).downgrade(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ);
+				// worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, 4, true, true);
+				Vector3 origin = new Vector3(
+						blockHit.blockX -0.93D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+						blockHit.blockY -0.93D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+						blockHit.blockZ -0.93D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
+				Vector3 direction = null;
+				direction = new Vector3(
+						-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
+						-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
+						-0.2D * vDirection.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
+				PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, 96);
+				WarpDrive.logger.info("Effect: block " + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ
+						+ " effect at " + origin + " towards " + direction);
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("Hull absorbed remaining energy of " + energy);
+				}
+				break;
+			}
+			
+			if (hardness >= WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD) {
 				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
 						WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH); 
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("Explosion triggered with strength " + strength);
+				}
 				worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, strength, true, true);
 				worldObj.setBlock(blockHit.blockX, blockHit.blockY, blockHit.blockZ, (worldObj.rand.nextBoolean()) ? Blocks.fire : Blocks.air);
 			} else {
@@ -338,6 +406,25 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		
 		PacketHandler.sendBeamPacket(worldObj, new Vector3(this).translate(0.5D).translate(vDirection.scale(0.5D)), vHitPoint, r, g, b, 50, energy,
 				beamLengthBlocks);
+	}
+	
+	private double getTransmittance(final double distance) {
+		if (distance <= 0) {
+			return 1.0D;
+		}
+		boolean isInSpace = (worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID);
+		boolean isInHyperSpace = (worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+		double attenuation;
+		if (isInSpace || isInHyperSpace) {
+			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK;
+		} else {
+			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK;
+		}
+		double transmittance = Math.exp(- attenuation * distance);
+		if (WarpDriveConfig.LOGGING_WEAPON) {
+			WarpDrive.logger.info("Transmittance over " + distance + " blocks is " + transmittance);
+		}
+		return transmittance;
 	}
 	
 	public TreeMap<Double, MovingObjectPosition> raytraceEntities(Vector3 vSource, Vector3 vDirection, boolean collisionFlag, double reachDistance) {

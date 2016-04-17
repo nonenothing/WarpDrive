@@ -195,33 +195,39 @@ public class WarpDriveConfig {
 	public static int LASER_MEDIUM_MAX_ENERGY_STORED = 100000;
 	
 	// Laser Emitter
-	public static int LASER_CANNON_MAX_MEDIUMS_COUNT = 10;
-	public static int LASER_CANNON_MAX_LASER_ENERGY = 4000000;
-	public static int LASER_CANNON_EMIT_FIRE_DELAY_TICKS = 5;
-	public static int LASER_CANNON_EMIT_SCAN_DELAY_TICKS = 1;
+	// 1 main laser + 4 boosting lasers = 10 * 100k + 0.6 * 40 * 100k = 3.4M
+	public static int    LASER_CANNON_MAX_MEDIUMS_COUNT = 10;
+	public static int    LASER_CANNON_MAX_LASER_ENERGY = 3400000;
+	public static int    LASER_CANNON_EMIT_FIRE_DELAY_TICKS = 5;
+	public static int    LASER_CANNON_EMIT_SCAN_DELAY_TICKS = 1;
 	
 	public static double LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY = 0.60D;
-	public static int LASER_CANNON_RANGE_ENERGY_PER_BLOCK = 5000;
-	public static int LASER_CANNON_RANGE_MAX = 500;
-	public static int LASER_CANNON_ENERGY_LOSS_PER_BLOCK = 500;
+	public static double LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK  = 0.000200D;
+	public static double LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK = 0.000005D;
+	public static double LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK = 0.23D;
+	public static int    LASER_CANNON_RANGE_MAX = 500;
 	
-	public static int LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS = 20;
-	public static int LASER_CANNON_ENTITY_HIT_ENERGY = 15000;
-	public static int LASER_CANNON_ENTITY_HIT_BASE_DAMAGE = 3;
-	public static int LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE = 30000;
-	public static int LASER_CANNON_ENTITY_HIT_MAX_DAMAGE = 100;
+	public static int    LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS = 20;
+	public static int    LASER_CANNON_ENTITY_HIT_ENERGY = 15000;
+	public static int    LASER_CANNON_ENTITY_HIT_BASE_DAMAGE = 3;
+	public static int    LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE = 30000;
+	public static int    LASER_CANNON_ENTITY_HIT_MAX_DAMAGE = 100;
 	
-	public static int LASER_CANNON_ENTITY_HIT_ENERGY_THRESHOLD_FOR_EXPLOSION = 1000000;
-	public static float LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH = 4.0F;
-	public static int LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
-	public static float LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH = 4.0F;
+	public static int    LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD = 900000;
+	public static float  LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH = 4.0F;
+	public static int    LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
+	public static float  LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH = 4.0F;
 	
-	public static int LASER_CANNON_BLOCK_HIT_ENERGY = 70000;
-	public static int LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_RESISTANCE = 1000;
-	public static double LASER_CANNON_BLOCK_HIT_EXPLOSION_RESISTANCE_THRESHOLD = 1200.0D; // obsidian is 2000 * 3 / 5 = 1200
-	public static float LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH = 8.0F;
-	public static int LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
-	public static float LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH = 100F;
+	public static int    LASER_CANNON_BLOCK_HIT_ENERGY_MIN = 75000;
+	public static int    LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS = 150000;
+	public static int    LASER_CANNON_BLOCK_HIT_ENERGY_MAX = 750000;
+	public static double LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS = 0.01;
+	public static double LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX = 0.80;
+	
+	public static float  LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD = 5.0F;
+	public static float  LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH = 8.0F;
+	public static int    LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH = 125000;
+	public static float  LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH = 50F;
 	
 	// Mining laser
 	// BuildCraft quarry values for reference
@@ -564,12 +570,14 @@ public class WarpDriveConfig {
 		
 		LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY = clamp(0.01D, 10.0D,
 				config.get("laser_cannon", "booster_beam_energy_efficiency", LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY, "Energy factor applied from boosting to main laser").getDouble(0.6D));
-		LASER_CANNON_RANGE_ENERGY_PER_BLOCK = clamp(1, LASER_CANNON_MAX_LASER_ENERGY / 10,
-				config.get("laser_cannon", "range_energy_per_block", LASER_CANNON_RANGE_ENERGY_PER_BLOCK, "Energy required per block distance").getInt());
+		LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK = clamp(0.0D, 0.1D,
+				config.get("laser_cannon", "energy_attenueation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK, "Energy attenuation when going through air blocks (on a planet or any gaz in space)").getDouble());
+		LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK = clamp(0.0D, 0.1D,
+				config.get("laser_cannon", "energy_attenueation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK, "Energy attenuation when going through void blocks (in space or hyperspace)").getDouble());
+		LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK = clamp(0.0D, 1.0D,
+				config.get("laser_cannon", "energy_attenueation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK, "Energy attenuation when going through a broken block").getDouble());
 		LASER_CANNON_RANGE_MAX = clamp(64, 512,
 				config.get("laser_cannon", "range_max", LASER_CANNON_RANGE_MAX, "Maximum distance travelled").getInt());
-		LASER_CANNON_ENERGY_LOSS_PER_BLOCK = clamp(0, Integer.MAX_VALUE,
-				config.get("laser_cannon", "energy_loss_per_block", LASER_CANNON_ENERGY_LOSS_PER_BLOCK, "Energy consummed per distance travelled").getInt());
 		
 		LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS = clamp(0, 300,
 				config.get("laser_cannon", "entity_hit_set_on_fire_seconds", LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS, "Duration of fire effect on entity hit (in seconds)").getInt());
@@ -583,8 +591,8 @@ public class WarpDriveConfig {
 		LASER_CANNON_ENTITY_HIT_MAX_DAMAGE = clamp(0, Integer.MAX_VALUE,
 				config.get("laser_cannon", "entity_hit_max_damage", LASER_CANNON_ENTITY_HIT_MAX_DAMAGE, "Maximum damage to entity hit, set to 0 to disable damage completly").getInt());
 		
-		LASER_CANNON_ENTITY_HIT_ENERGY_THRESHOLD_FOR_EXPLOSION = clamp(0, Integer.MAX_VALUE,
-				config.get("laser_cannon", "entity_hit_energy_threshold_for_explosion", LASER_CANNON_ENTITY_HIT_ENERGY_THRESHOLD_FOR_EXPLOSION, "Minimum energy to cause explosion effect").getInt());
+		LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD = clamp(0, Integer.MAX_VALUE,
+				config.get("laser_cannon", "entity_hit_energy_threshold_for_explosion", LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD, "Minimum energy to cause explosion effect").getInt());
 		LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH = (float) clamp(0.0D, 100.0D,
 				config.get("laser_cannon", "entity_hit_explosion_base_strength", LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH, "Explosion base strength, 4 is Vanilla TNT").getDouble());
 		LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH = clamp(1, Integer.MAX_VALUE,
@@ -592,14 +600,20 @@ public class WarpDriveConfig {
 		LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH = (float) clamp(0.0D, 1000.0D,
 				config.get("laser_cannon", "entity_hit_explosion_max_strength", LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completly").getDouble());
 		
-		LASER_CANNON_BLOCK_HIT_ENERGY = clamp(0, Integer.MAX_VALUE,
-				config.get("laser_cannon", "block_hit_energy", LASER_CANNON_BLOCK_HIT_ENERGY, "Base energy consummed from hitting a block").getInt());
-		LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_RESISTANCE = clamp(0, Integer.MAX_VALUE,
-				config.get("laser_cannon", "block_hit_energy_per_block_resistance", LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_RESISTANCE, "Energy consummed per explosive resistance points").getInt());
+		LASER_CANNON_BLOCK_HIT_ENERGY_MIN = clamp(0, Integer.MAX_VALUE,
+				config.get("laser_cannon", "block_hit_energy_min", LASER_CANNON_BLOCK_HIT_ENERGY_MIN, "Minimum energy required for breaking a block").getInt());
+		LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS = clamp(0, Integer.MAX_VALUE,
+				config.get("laser_cannon", "block_hit_energy_per_block_hardness", LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS, "Energy cost per block hardness for breaking a block").getInt());
+		LASER_CANNON_BLOCK_HIT_ENERGY_MAX = clamp(0, Integer.MAX_VALUE,
+				config.get("laser_cannon", "block_hit_energy_max", LASER_CANNON_BLOCK_HIT_ENERGY_MAX, "Maximum energy required for breaking a block").getInt());
+		LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS = clamp(0.0D, 1.0D,
+				config.get("laser_cannon", "block_hit_absorption_per_block_hardness", LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS, "Probability of energy absorption (i.e. block not breaking) per block hardness. Set to 1.0 to always break the block.").getDouble());
+		LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX = clamp(0.0D, 1.0D,
+				config.get("laser_cannon", "block_hit_absorption_max", LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX, "Maximum probability of energy absorption (i.e. block not breaking)").getDouble());
 		
-		LASER_CANNON_BLOCK_HIT_EXPLOSION_RESISTANCE_THRESHOLD = clamp(0.0D, 1000000.0D,
-				config.get("laser_cannon", "block_hit_explosion_resistance_threshold", LASER_CANNON_BLOCK_HIT_EXPLOSION_RESISTANCE_THRESHOLD,
-						"Block explosion resistance threshold to cause an explosion").getDouble());
+		LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD = (float) clamp(0.0D, 10000.0D,
+				config.get("laser_cannon", "block_hit_explosion_hardness_threshold", LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD,
+						"Minimum block hardness required to cause an explosion").getDouble());
 		LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH = (float) clamp(0.0D, 1000.0D,
 				config.get("laser_cannon", "block_hit_explosion_base_strength", LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH, "Explosion base strength, 4 is Vanilla TNT").getDouble());
 		LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH = clamp(1, Integer.MAX_VALUE,
