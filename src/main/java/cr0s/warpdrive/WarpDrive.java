@@ -90,7 +90,9 @@ import cr0s.warpdrive.block.passive.BlockIridium;
 import cr0s.warpdrive.block.passive.BlockTransportBeacon;
 import cr0s.warpdrive.block.passive.ItemBlockDecorative;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
+import cr0s.warpdrive.block.weapon.BlockWeaponController;
 import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
+import cr0s.warpdrive.block.weapon.TileEntityWeaponController;
 import cr0s.warpdrive.command.CommandDebug;
 import cr0s.warpdrive.command.CommandEntity;
 import cr0s.warpdrive.command.CommandGenerate;
@@ -139,6 +141,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockAirGenerator;
 	public static Block blockLaser;
 	public static Block blockLaserCamera;
+	public static Block blockWeaponController;
 	public static Block blockCamera;
 	public static Block blockMonitor;
 	public static Block blockLaserMedium;
@@ -228,13 +231,13 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockShipController, "blockShipController");
 		GameRegistry.registerTileEntity(TileEntityShipController.class, MODID + ":blockShipController");
 		
-		// WARP CORE
+		// SHIP CORE
 		blockShipCore = new BlockShipCore();
 		
 		GameRegistry.registerBlock(blockShipCore, "blockShipCore");
 		GameRegistry.registerTileEntity(TileEntityShipCore.class, MODID + ":blockShipCore");
 		
-		// WARP RADAR
+		// RADAR
 		blockRadar = new BlockRadar();
 		
 		GameRegistry.registerBlock(blockRadar, "blockRadar");
@@ -272,6 +275,12 @@ public class WarpDrive implements LoadingCallback {
 		
 		GameRegistry.registerBlock(blockLaserCamera, "blockLaserCamera");
 		GameRegistry.registerTileEntity(TileEntityLaserCamera.class, MODID + ":blockLaserCamera");
+		
+		// LASER EMITTER WITH CAMERA
+		blockWeaponController = new BlockWeaponController();
+		
+		GameRegistry.registerBlock(blockWeaponController, "blockWeaponController");
+		GameRegistry.registerTileEntity(TileEntityWeaponController.class, MODID + ":blockWeaponController");
 		
 		// CAMERA
 		blockCamera = new BlockCamera();
