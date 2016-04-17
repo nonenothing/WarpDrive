@@ -2,8 +2,6 @@ package cr0s.warpdrive.block.detection;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,17 +10,15 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 
-public class BlockCamera extends BlockContainer {
+public class BlockCamera extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
 	private final int ICON_SIDE = 0;
 	
 	public BlockCamera() {
-		super(Material.rock);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		super(Material.iron);
 		this.setBlockName("warpdrive.detection.Camera");
 	}
 	

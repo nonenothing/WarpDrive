@@ -14,7 +14,7 @@ public class BlockTransporter extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 
 	public BlockTransporter() {
-		super(Material.rock);
+		super(Material.iron);
 		setBlockName("warpdrive.movement.Transporter");
 	}
 

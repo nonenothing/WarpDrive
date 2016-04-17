@@ -19,7 +19,7 @@ public class BlockDecorative extends Block {
 	
 	public BlockDecorative() {
 		super(Material.iron);
-		setHardness(0.5f);
+		setHardness(1.5f);
 		setStepSound(Block.soundTypeMetal);
 		setBlockName("warpdrive.passive.Plain");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);

@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
-public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {// TODO BlockAbstractContainer
+public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	static IIcon[] iconBuffer = new IIcon[3];
 	
 	public BlockIC2reactorLaserMonitor() {

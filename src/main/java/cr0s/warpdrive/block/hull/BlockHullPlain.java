@@ -24,7 +24,7 @@ public class BlockHullPlain extends Block implements IHullBlock {
 	private int tier;
 	
 	public BlockHullPlain(final int tier) {
-		super(Material.iron);
+		super(Material.rock);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);

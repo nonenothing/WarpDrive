@@ -2,8 +2,6 @@ package cr0s.warpdrive.block.movement;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,8 +13,9 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 
-public class BlockShipController extends BlockContainer {
+public class BlockShipController extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
 	private final int ICON_INACTIVE_SIDE = 0;
@@ -25,10 +24,7 @@ public class BlockShipController extends BlockContainer {
 	private final int ICON_SIDE_ACTIVATED = 3;
 	
 	public BlockShipController() {
-		super(Material.rock);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		super(Material.iron);
 		setBlockName("warpdrive.movement.ShipController");
 	}
 	

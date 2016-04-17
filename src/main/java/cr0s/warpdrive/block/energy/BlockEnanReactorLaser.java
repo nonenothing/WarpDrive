@@ -13,7 +13,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	
 	public BlockEnanReactorLaser() {
 		super(Material.iron);
-		setResistance(100.0F);
+		setResistance(60.0F * 5 / 3);
 		setBlockName("warpdrive.energy.EnanReactorLaser");
 	}
 	

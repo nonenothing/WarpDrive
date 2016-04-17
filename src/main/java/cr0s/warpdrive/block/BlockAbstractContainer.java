@@ -11,7 +11,8 @@ import cr0s.warpdrive.api.IBlockUpdateDetector;
 public abstract class BlockAbstractContainer extends BlockContainer {
 	protected BlockAbstractContainer(Material material) {
 		super(material);
-		setHardness(0.5F);
+		setHardness(5.0F);
+		setResistance(6.0F * 5 / 3);
 		setStepSound(Block.soundTypeMetal);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}

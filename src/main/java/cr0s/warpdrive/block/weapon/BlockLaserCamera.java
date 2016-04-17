@@ -20,7 +20,9 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	private final int ICON_SIDE = 0;
 	
 	public BlockLaserCamera() {
-		super(Material.rock);
+		super(Material.iron);
+		setHardness(50.0F);
+		setResistance(20.0F * 5 / 3);
 		setBlockName("warpdrive.weapon.LaserCamera");
 	}
 	

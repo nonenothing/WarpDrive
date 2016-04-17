@@ -2,8 +2,6 @@ package cr0s.warpdrive.block.collection;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,8 +11,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 
-public class BlockLaserTreeFarm extends BlockContainer {
+public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	public final static int ICON_IDLE = 0;
 	public final static int ICON_FARMINGLOWPOWER = 1;
@@ -27,10 +26,7 @@ public class BlockLaserTreeFarm extends BlockContainer {
 	private final static int ICON_TOP = 8;
 	
 	public BlockLaserTreeFarm() {
-		super(Material.rock);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		super(Material.iron);
 		this.setBlockName("warpdrive.collection.LaserTreeFarm");
 	}
 	

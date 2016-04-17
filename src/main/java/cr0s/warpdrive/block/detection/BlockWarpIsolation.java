@@ -13,8 +13,8 @@ public class BlockWarpIsolation extends Block {
 	private IIcon[] iconBuffer;
 
 	public BlockWarpIsolation() {
-		super(Material.rock);
-		setHardness(0.5F);
+		super(Material.iron);
+		setHardness(3.5F);
 		setStepSound(Block.soundTypeMetal);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.detection.WarpIsolation");

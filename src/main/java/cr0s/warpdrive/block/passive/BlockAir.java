@@ -24,6 +24,7 @@ public class BlockAir extends Block {
 	public BlockAir() {
 		super(Material.fire);
 		setHardness(0.0F);
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.Air");
 	}
 	

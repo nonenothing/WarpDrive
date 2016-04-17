@@ -2,8 +2,6 @@ package cr0s.warpdrive.block;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
@@ -18,16 +16,13 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-public class BlockAirGenerator extends BlockContainer {
+public class BlockAirGenerator extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
 	private final int ICON_INACTIVE_SIDE = 0, ICON_BOTTOM = 1, ICON_SIDE_ACTIVATED = 2;
 	
 	public BlockAirGenerator() {
-		super(Material.rock);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		super(Material.iron);
 		setBlockName("warpdrive.machines.AirGenerator");
 	}
 	

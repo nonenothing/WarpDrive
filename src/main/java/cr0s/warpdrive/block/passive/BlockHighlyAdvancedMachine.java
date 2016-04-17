@@ -10,8 +10,8 @@ import cr0s.warpdrive.WarpDrive;
 
 public class BlockHighlyAdvancedMachine extends Block {
 	public BlockHighlyAdvancedMachine() {
-		super(Material.rock);
-		setHardness(3.0F);
+		super(Material.iron);
+		setHardness(5.0F);
 		setStepSound(Block.soundTypeMetal);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.HighlyAdvancedMachine");

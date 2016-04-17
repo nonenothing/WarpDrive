@@ -14,8 +14,8 @@ public class BlockCloakingCoil extends Block {
 	private IIcon[] iconBuffer;
 	
 	public BlockCloakingCoil() {
-		super(Material.rock);
-		setHardness(0.5F);
+		super(Material.iron);
+		setHardness(3.5F);
 		setStepSound(Block.soundTypeMetal);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		this.setBlockName("warpdrive.detection.CloakingCoil");

@@ -1,7 +1,5 @@
 package cr0s.warpdrive.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,14 +9,11 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 
-public class BlockLaserMedium extends BlockContainer {
+public class BlockLaserMedium extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
 	public BlockLaserMedium() {
-		super(Material.rock);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		super(Material.iron);
 		setBlockName("warpdrive.machines.LaserMedium");
 	}
 	
