@@ -888,13 +888,12 @@ public class Recipes {
 		
 		// Warp isolation is 1 EV Machine casing (Ti), 8 Iridium reinforced plate
 		// or 1 Nether star, 8 diamond
-		String oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
+		Object oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
 		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2 and Gregtech
 			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
 		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
 			ItemStack itemStackFranckNZombie = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
-			OreDictionary.registerOre("plateAlloyIridium", itemStackFranckNZombie);
-			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
+			oreEmeraldOrReinforcedIridiumPlate = itemStackFranckNZombie;
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			oreEmeraldOrReinforcedIridiumPlate = "ingotLumium";
 		}
