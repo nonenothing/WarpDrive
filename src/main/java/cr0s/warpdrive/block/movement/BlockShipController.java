@@ -31,7 +31,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = new IIcon[10];
+		iconBuffer = new IIcon[11];
 		// Solid textures
 		iconBuffer[ICON_INACTIVE_SIDE] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerSideInactive");
 		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerBottom");
@@ -44,6 +44,7 @@ public class BlockShipController extends BlockAbstractContainer {
 		iconBuffer[ICON_SIDE_ACTIVATED + 4] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerSideActive4");
 		iconBuffer[ICON_SIDE_ACTIVATED + 5] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerSideActive5");
 		iconBuffer[ICON_SIDE_ACTIVATED + 6] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerSideActive6");
+		iconBuffer[ICON_SIDE_ACTIVATED + 7] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerSideActive7");
 	}
 	
 	@Override
