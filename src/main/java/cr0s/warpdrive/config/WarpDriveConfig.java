@@ -27,6 +27,7 @@ import cr0s.warpdrive.compat.CompatArsMagica2;
 import cr0s.warpdrive.compat.CompatBiblioCraft;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatEnderIO;
+import cr0s.warpdrive.compat.CompatEvilCraft;
 import cr0s.warpdrive.compat.CompatImmersiveEngineering;
 import cr0s.warpdrive.compat.CompatIndustrialCraft2;
 import cr0s.warpdrive.compat.CompatJABBA;
@@ -831,6 +832,10 @@ public class WarpDriveConfig {
 		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
+		}
+		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
+		if (isEvilCraftLoaded) {
+			CompatEvilCraft.register();
 		}
 	}
 	
