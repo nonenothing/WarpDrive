@@ -11,6 +11,7 @@ public class BlockChunkLoader extends BlockAbstractContainer {
 	
 	public BlockChunkLoader() {
 		super(Material.iron);
+		setBlockName("warpdrive.machines.ChunkLoader");
 	}
 	
 	@Override
@@ -19,8 +20,8 @@ public class BlockChunkLoader extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public void registerBlockIcons(IIconRegister ir) {
-		iconBuffer = ir.registerIcon("warpdrive:chunkLoader");
+	public void registerBlockIcons(IIconRegister par1IconRegister) {
+		iconBuffer = par1IconRegister.registerIcon("warpdrive:chunkLoader");
 	}
 	
 	@Override
