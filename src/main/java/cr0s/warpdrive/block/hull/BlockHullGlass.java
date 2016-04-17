@@ -61,11 +61,11 @@ public class BlockHullGlass extends BlockColored implements IHullBlock {
 	
 	@Override
 	public void downgrade(World world, int x, int y, int z) {
-		int metadata = world.getBlockMetadata(x, y, z);
 		if (tier == 1) {
 			world.setBlockToAir(x, y, z);
 		} else {
-			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2], metadata, 2);
+			int metadata = world.getBlockMetadata(x, y, z);
+			world.setBlock(x, y, z, WarpDrive.blockHulls_glass[tier - 2], metadata, 2);
 		}
 	}
 }

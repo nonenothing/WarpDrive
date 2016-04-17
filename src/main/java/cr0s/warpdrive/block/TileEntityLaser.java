@@ -9,7 +9,6 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -316,8 +315,14 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 						+ " with block " + block + " of hardness " + hardness);
 			}
 			
-			// stop on unbreakable blocks
+			// explode on unbreakable blocks
 			if (hardness < 0.0F) {
+				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
+						WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH); 
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("Explosion triggered with strength " + strength);
+				}
+				worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, strength, true, true);
 				vHitPoint = new Vector3(blockHit.hitVec);
 				break;
 			}
@@ -330,12 +335,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					vHitPoint = new Vector3(blockHit.hitVec);
 					break;
 				}
-			}
-			
-			// instantly break glass
-			if (block.getMaterial() == Material.glass) {
-				worldObj.setBlockToAir(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
-				vHitPoint = new Vector3(blockHit.hitVec);
 			}
 			
 			// Compute parameters
@@ -374,9 +373,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				((IHullBlock)block).downgrade(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ);
 				// worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, 4, true, true);
 				Vector3 origin = new Vector3(
-						blockHit.blockX -0.93D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
-						blockHit.blockY -0.93D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
-						blockHit.blockZ -0.93D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
+						blockHit.blockX -0.3D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+						blockHit.blockY -0.3D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+						blockHit.blockZ -0.3D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
 				Vector3 direction = null;
 				direction = new Vector3(
 						-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
