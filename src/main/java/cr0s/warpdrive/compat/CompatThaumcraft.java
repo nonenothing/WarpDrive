@@ -103,9 +103,6 @@ public class CompatThaumcraft implements IBlockTransformer {
 	@Override
 	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		byte rotationSteps = transformation.getRotationSteps();
-		if (rotationSteps == 0) {
-			return metadata;
-		}
 		
 		if (classBlockArcaneDoor.isInstance(block)) {
 			switch (rotationSteps) {
