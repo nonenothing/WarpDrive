@@ -318,8 +318,12 @@ function readInputText(currentValue)
   end
 end
 
-function readConfirmation()
-  ShowWarning("Are you sure? (y/n)")
+function readConfirmation(msg)
+  if msg == nil then
+    ShowWarning("Are you sure? (y/n)")
+  else
+    ShowWarning(msg)
+  end
   repeat
     local params = { os.pullEventRaw() }
     local eventName = params[1]
@@ -778,6 +782,7 @@ function reactor_config()
 end
 
 ----------- Boot sequence 
+math.randomseed(os.time())
 label = os.getComputerLabel()
 if not label then
   label = "" .. os.getComputerID()
@@ -785,6 +790,8 @@ end
 
 -- read configuration
 data_read()
+Clear()
+print("data_read...")
 
 -- initial scanning
 monitors = {}

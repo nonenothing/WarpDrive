@@ -4,6 +4,8 @@ if not term.isColor() then
 end
 print("loading...")
 
+monitor_textScale = 0.5
+
 Style = {
   CDefault = colors.white,
   BGDefault = colors.blue,
@@ -327,8 +329,12 @@ function readInputText(currentValue)
   end
 end
 
-function readConfirmation()
-  ShowWarning("Are you sure? (y/n)")
+function readConfirmation(msg)
+  if msg == nil then
+    ShowWarning("Are you sure? (y/n)")
+  else
+    ShowWarning(msg)
+  end
   repeat
     local params = { os.pullEventRaw() }
     local eventName = params[1]
@@ -363,7 +369,7 @@ end
 
 function common_event(eventName, param)
   if eventName == "redstone" then
-      redstone_event(param)
+    redstone_event(param)
   elseif eventName == "timer" then
   elseif eventName == "shipCoreCooldownDone" then
     ShowWarning("Ship core cooldown done")
@@ -683,7 +689,7 @@ function core_page_setRotation()
       -- drop it
     elseif eventName == "terminate" then
       inputAbort = true
-    elseif not common_event(eventName, params[3]) then
+    elseif not common_event(eventName, params[2]) then
       ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     end
   until inputAbort
@@ -852,9 +858,9 @@ function core_key(char, keycode)
       ship.mode(5)
       ship.jump()
       -- ship = nil
-  end
-  -- rs.setOutput(alarm_side, false)
-  return true
+    end
+    -- rs.setOutput(alarm_side, false)
+    return true
   elseif keycode == 49 then
     data_setName()
     return true
@@ -863,7 +869,7 @@ function core_key(char, keycode)
 end
 
 ----------- Boot sequence
-
+math.randomseed(os.time())
 label = os.computerLabel()
 if not label then
   label = "" .. os.getComputerID()
@@ -977,7 +983,7 @@ repeat
     -- drop it
   elseif eventName == "terminate" then
     abort = true
-  elseif not common_event(eventName, params[3]) then
+  elseif not common_event(eventName, params[2]) then
     ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     refresh = true
     os.sleep(0.2)
