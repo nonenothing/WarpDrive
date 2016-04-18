@@ -647,7 +647,7 @@ public class Recipes {
 		// Intermediary component for reactor core
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.REACTOR_CORE), false, "shs", "hmh", "shs",
 				's', Items.nether_star,
-				'h', Blocks.obsidian,	// FIXME: hull tier 3
+				'h', "blockHull3_plain",
 				'm', itemMachineCasingHV));
 		
 		
@@ -937,7 +937,7 @@ public class Recipes {
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "gtr", "ldm", "gtc",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "cmr", "tdt", "glg",
 				't', itemMotorMV,
 				'd', ItemComponent.getItemStack(ComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
@@ -1025,6 +1025,13 @@ public class Recipes {
 					'l', WarpDrive.blockLaser,
 					'c', WarpDrive.blockCamera));
 		}
+		
+		// Weapon controller is diamond sword with Ship controller
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWeaponController), false, "rwr", "rsr", "rcr",
+				'r', rubberOrLeather,
+				's', WarpDrive.itemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL),
+				'w', Items.diamond_sword,
+				'c', WarpDrive.blockShipController));
 		
 		// Camera is 1 daylight sensor, 2 motors, 1 computer interface, 2 glass panel, 1 Tuning diamond, 1 LV Machine casing
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCamera), false, "gtd", "zlm", "gtc",
@@ -1154,7 +1161,7 @@ public class Recipes {
 				'm', itemMachineCasingHV,
 				'r', Items.redstone,
 				'g', "paneGlassColorless",
-				'h', Blocks.obsidian));	// TODO: hull tier 3
+				'h', "blockHull3_plain"));
 		
 		// Decorative blocks
 		OreDictionary.registerOre("warpDecorative", BlockDecorative.getItemStack(DecorativeType.PLAIN));
