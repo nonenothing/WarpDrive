@@ -1184,8 +1184,8 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemHelmet), false, "iii", "iwi", "gcg",
 				'i', Items.iron_ingot,
 				'w', Blocks.wool,
-				'g', "blockGlassColorless",
-				'c', ItemComponent.getItemStack(ComponentType.AIR_CANISTER)));
+				'g', "blockGlass",
+				'c', WarpDrive.itemAirCanisterFull));
 		
 		// Tuning rod ore dictionary
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
