@@ -170,7 +170,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			if (delayTicksMine >= WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS) {
 				delayTicksMine = 0;
 				
-				if (valuableIndex >= valuablesInLayer.size()) {
+				if (valuableIndex < 0 || valuableIndex >= valuablesInLayer.size()) {
 					delayTicksScan = 0;
 					currentState = STATE_SCANNING;
 					updateMetadata(BlockMiningLaser.ICON_SCANNINGPOWERED);
@@ -336,9 +336,6 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		mineAllBlocks = tag.getBoolean("mineAllBlocks");
 		currentState = tag.getInteger("currentState");
 		currentLayer = tag.getInteger("currentLayer");
-		if (currentState == STATE_MINING) {
-			scanLayer();
-		}
 	}
 	
 	@Override
