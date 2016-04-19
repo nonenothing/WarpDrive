@@ -1223,7 +1223,9 @@ public class Recipes {
 		
 		// Hull blocks plain
 		// (BlockColored.func_150031_c is converting wool metadata into dye metadata)
-		// Tier 1 = 5 stone + 4 iron ingots or 5 stone + 4 steel ingots or 5 reinforced stone + 4 obsidian gives 10
+		// Tier 1 = 5 reinforced stone + 4 obsidian gives 10
+		// Tier 1 = 5 stone + 4 steel ingots gives 10
+		// Tier 1 = 5 stone + 4 iron ingots gives 10
 		// Tier 1 = 5 stone + 4 bronze ingots gives 5
 		// Tier 1 = 5 stone + 4 aluminium ingots gives 3
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
@@ -1254,7 +1256,10 @@ public class Recipes {
 					'b', "ingotAluminum",
 					'c', "stone" ));
 		}
-		// Tier 2 = 4 Tier 1 + 4 obsidian or 4x Tier 1 + 4x Carbon plates or 4x Tier 1 + 1 Gregtech 5 Tungstensteel reinforced block
+		// Tier 2 = 4 Tier 1 + 1 Gregtech 5 Tungstensteel reinforced block gives 4
+		// Tier 2 = 4 Tier 1 + 4 carbon plates gives 4
+		// Tier 2 = 4 Tier 1 + 4 dark steel ingot gives 4
+		// Tier 2 = 4 Tier 1 + 4 obsidian gives 4
 		for (int woolColor = 0; woolColor < 16; woolColor++) {
 			if (WarpDriveConfig.isGregTech5Loaded) {
 				ItemStack tungstensteelReinforcedBlock = WarpDriveConfig.getModItemStack("gregtech", "gt.blockreinforced", 3);
@@ -1274,6 +1279,14 @@ public class Recipes {
 						'b', "blockHull1_plain",
 						'c', carbonPlate,
 						'X', oreDyes[woolColor] ));
+			} else if (OreDictionary.doesOreNameExist("ingotDarkSteel") && !OreDictionary.getOres("ingotDarkSteel").isEmpty()) {// EnderIO
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+						'c', "ingotDarkSteel" ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+						'b', "blockHull1_plain",
+						'c', "ingotDarkSteel",
+						'X', oreDyes[woolColor] ));
 			} else {
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
 						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
@@ -1284,7 +1297,10 @@ public class Recipes {
 						'X', oreDyes[woolColor] ));
 			}
 		}
-		// Tier 3 = 4 Tier 2 + 4 diamond or 4x Tier 2 + 4x Iridium plate or 4x Tier 2 + 1 Naquadah plate
+		// Tier 3 = 4 Tier 2 + 1 naquadah plate gives 4
+		// Tier 3 = 4 Tier 2 + 4 iridium plate gives 4
+		// Tier 3 = 4 Tier 2 + 4 pulsating crystal gives 4
+		// Tier 3 = 4 Tier 2 + 4 diamond gives 4
 		for (int woolColor = 0; woolColor < 16; woolColor++) {
 			if (OreDictionary.doesOreNameExist("plateNaquadah") && !OreDictionary.getOres("plateNaquadah").isEmpty()) {
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
@@ -1301,6 +1317,14 @@ public class Recipes {
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "plateAlloyIridium",
+						'X', oreDyes[woolColor] ));
+			} else if (OreDictionary.doesOreNameExist("itemPulsatingCrystal") && !OreDictionary.getOres("itemPulsatingCrystal").isEmpty()) {// EnderIO
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+						'c', "itemPulsatingCrystal" ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+						'b', "blockHull2_plain",
+						'c', "itemPulsatingCrystal",
 						'X', oreDyes[woolColor] ));
 			} else {
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
