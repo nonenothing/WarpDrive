@@ -55,7 +55,9 @@ public class StarMapRegistry {
 			registry.set(idx, entryKey);
 		} else {
 			registry.add(entryKey);
-			printRegistry("added");
+			if (WarpDriveConfig.LOGGING_STARMAP) {
+				printRegistry("added");
+			}
 		}
 	}
 	
@@ -64,7 +66,9 @@ public class StarMapRegistry {
 		
 		if (idx != -1) {
 			registry.remove(idx);
-			printRegistry("removed");
+			if (WarpDriveConfig.LOGGING_STARMAP) {
+				printRegistry("removed");
+			}
 		}
 	}
 	
@@ -205,7 +209,7 @@ public class StarMapRegistry {
 			}
 			
 			if (!isValid) {
-				if (WarpDriveConfig.LOGGING_JUMP) {
+				if (WarpDriveConfig.LOGGING_STARMAP) {
 					if (entry == null) {
 						WarpDrive.logger.info("Cleaning up starmap object ~null~");
 					} else {

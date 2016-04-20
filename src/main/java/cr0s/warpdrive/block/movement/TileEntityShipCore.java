@@ -389,7 +389,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		} else {
 			isolationRate = 0.0D;
 		}
-		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
+		if (WarpDriveConfig.LOGGING_RADAR) {
 			WarpDrive.logger.info(this + " Isolation updated to " + isolationBlocksCount + " (" + String.format("%.1f", isolationRate * 100.0) + "%)");
 		}
 	}
