@@ -1205,22 +1205,22 @@ function reactor_key(keycode)
     data_save()
     return true
   elseif keycode == 34 then -- G
-    data.reactor_rate = data.reactor_rate / 10
+    data.reactor_rate = data.reactor_rate - 1000
     reactor_setMode()
     data_save()
     return true
   elseif keycode == 20 then -- T
-    data.reactor_rate = data.reactor_rate * 10
+    data.reactor_rate = data.reactor_rate + 1000
     reactor_setMode()
     data_save()
     return true
   elseif keycode == 36 then -- J
-    data.reactor_laserAmount = data.reactor_laserAmount / 10
+    data.reactor_laserAmount = data.reactor_laserAmount - 500
     reactor_setLaser()
     data_save()
     return true
   elseif keycode == 22 then -- U
-    data.reactor_laserAmount = data.reactor_laserAmount * 10
+    data.reactor_laserAmount = data.reactor_laserAmount + 500
     reactor_setLaser()
     data_save()
     return true
@@ -2069,6 +2069,7 @@ repeat
   if eventName == "key" then
     keycode = params[2]
     if char == 88 or char == 120 or keycode == 45 then -- x for eXit
+      os.pullEventRaw()
       abort = true
     elseif char == 48 or keycode == 11 or keycode == 82 then -- 0
       page = connections_page

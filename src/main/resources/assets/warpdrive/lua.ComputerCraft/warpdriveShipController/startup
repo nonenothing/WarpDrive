@@ -950,6 +950,7 @@ repeat
   if eventName == "key" then
     keycode = params[2]
     if char == 88 or char == 120 or keycode == 45 then -- x for eXit
+      os.pullEventRaw()
       abort = true
     elseif char == 48 or keycode == 11 or keycode == 82 then -- 0
       page = connections_page

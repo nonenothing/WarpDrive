@@ -442,22 +442,22 @@ function reactor_key(char, keycode)
     data_save()
     return true
   elseif char == 71 or char == 103 then -- G
-    data.reactor_rate = data.reactor_rate / 10
+    data.reactor_rate = data.reactor_rate - 1000
     reactor_setMode()
     data_save()
     return true
   elseif char == 84 or char == 116 then -- T
-    data.reactor_rate = data.reactor_rate * 10
+    data.reactor_rate = data.reactor_rate + 1000
     reactor_setMode()
     data_save()
     return true
   elseif char == 74 or char == 106 then -- J
-    data.reactor_laserAmount = data.reactor_laserAmount / 10
+    data.reactor_laserAmount = data.reactor_laserAmount - 500
     reactor_setLaser()
     data_save()
     return true
   elseif char == 85 or char == 117 then -- U
-    data.reactor_laserAmount = data.reactor_laserAmount * 10
+    data.reactor_laserAmount = data.reactor_laserAmount + 500
     reactor_setLaser()
     data_save()
     return true
