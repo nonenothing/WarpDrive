@@ -75,6 +75,16 @@ public class ItemComponent extends Item implements IAirCanister {
 	
 	// For empty air canister
 	@Override
+	public boolean canContainAir(ItemStack itemStack) {
+		return (itemStack.getItem() instanceof ItemComponent && itemStack.getItemDamage() == ComponentType.AIR_CANISTER.ordinal());
+	}
+	
+	@Override
+	public boolean containsAir(ItemStack itemStack) {
+		return false;
+	}
+	
+	@Override
 	public ItemStack fullDrop(ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirCanisterFull.fullDrop(itemStack);
@@ -88,16 +98,6 @@ public class ItemComponent extends Item implements IAirCanister {
 			return WarpDrive.itemAirCanisterFull.emptyDrop(itemStack);
 		}
 		return null;
-	}
-	
-	@Override
-	public boolean canContainAir(ItemStack itemStack) {
-		return (itemStack.getItem() instanceof ItemComponent && itemStack.getItemDamage() == ComponentType.AIR_CANISTER.ordinal());
-	}
-	
-	@Override
-	public boolean containsAir(ItemStack itemStack) {
-		return false;
 	}
 	
 	@Override

@@ -53,9 +53,6 @@ public class BlockShipScanner extends BlockAbstractContainer {
 		return 1;
 	}
 	
-	/**
-	 * Returns the item to drop on destruction.
-	 */
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);

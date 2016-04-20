@@ -29,16 +29,6 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 	public IIcon getIconFromDamage(int damage) {
 		return icon;
 	}
-
-	@Override
-	public ItemStack emptyDrop(ItemStack itemStack) {
-		return WarpDrive.itemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 1);
-	}
-	
-	@Override
-	public ItemStack fullDrop(ItemStack itemStack) {
-		return new ItemStack(WarpDrive.itemAirCanisterFull,1);
-	}
 	
 	@Override
 	public boolean canContainAir(ItemStack itemStack) {
@@ -51,5 +41,15 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 	@Override
 	public boolean containsAir(ItemStack itemStack) {
 		return true;
+	}
+	
+	@Override
+	public ItemStack emptyDrop(ItemStack itemStack) {
+		return WarpDrive.itemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 1);
+	}
+	
+	@Override
+	public ItemStack fullDrop(ItemStack itemStack) {
+		return new ItemStack(WarpDrive.itemAirCanisterFull, 1);
 	}
 }
