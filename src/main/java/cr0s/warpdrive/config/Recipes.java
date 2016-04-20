@@ -822,15 +822,19 @@ public class Recipes {
 		GameRegistry.addSmelting(Items.bone, ItemComponent.getItemStackNoCache(ComponentType.BONE_CHARCOAL, 1), 1);
 		
 		// Activated carbon is 1 bone charcoal, 4 sticks, 4 leaves
+		Object leaves = Blocks.leaves;
+		if (OreDictionary.doesOreNameExist("treeLeaves") && !OreDictionary.getOres("treeLeaves").isEmpty()) {
+			leaves = "treeLeaves";
+		}
 		if (OreDictionary.doesOreNameExist("dustSulfur") && !OreDictionary.getOres("dustSulfur").isEmpty()) {
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON), false, "lll", "aaa", "fwf",
-					'l', "treeLeaves",
+					'l', leaves,
 					'a', ItemComponent.getItemStack(ComponentType.BONE_CHARCOAL),
 					'w', new ItemStack(Items.potionitem, 1, 0),
 					'f', "dustSulfur"));
 		} else {
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON), false, "lll", "aaa", "wgw",
-					'l', "treeLeaves",
+					'l', leaves,
 					'a', ItemComponent.getItemStack(ComponentType.BONE_CHARCOAL),
 					'w', new ItemStack(Items.potionitem, 1, 0),
 					'g', Items.gunpowder));
