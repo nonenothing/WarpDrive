@@ -48,6 +48,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	protected volatile List<String> CC_scripts = null;
 	
 	// OpenComputer specific properties
+	protected boolean 	OC_enable = true;
 	protected Node		OC_node = null;
 	protected boolean	OC_addedToNetwork = false;
 	
@@ -92,7 +93,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		super.updateEntity();
 		
 		if (WarpDriveConfig.isOpenComputersLoaded) {
-			if (!OC_addedToNetwork) {
+			if (!OC_addedToNetwork && OC_enable) {
 				OC_addedToNetwork = true;
 				Network.joinOrCreateNetwork(this);
 			}
