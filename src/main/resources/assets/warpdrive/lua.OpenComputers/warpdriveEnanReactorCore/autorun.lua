@@ -139,6 +139,8 @@ local clearWarningTick = -1
 function ShowWarning(text)
   if term.isAvailable() then
     local sizeX, sizeY = component.gpu.getResolution()
+    SetCursorPos(1, sizeY)
+    ClearLine()
     SetColorWarning()
     SetCursorPos((sizeX - text:len() - 2) / 2, sizeY)
     Write(" " .. text .. " ")
@@ -156,7 +158,7 @@ function ClearWarning()
       SetCursorPos(1, sizeY)
       ClearLine()
       clearWarningTick = -1
-	end
+    end
   end
 end
 
@@ -238,14 +240,6 @@ function readInputNumber(currentValue)
       elseif char ~= 0 then
         ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
       end
-    elseif eventName == "key_up" then
-      -- drop it
-    elseif eventName == "touch" then
-      -- drop it
-    elseif eventName == "drop" then
-      -- drop it
-    elseif eventName == "drag" then
-      -- drop it
     elseif eventName == "interrupted" then
       inputAbort = true
     elseif not common_event(eventName, params[3]) then
@@ -289,14 +283,6 @@ function readInputText(currentValue)
       elseif char ~= 0 then
         ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
       end
-    elseif eventName == "key_up" then
-      -- drop it
-    elseif eventName == "touch" then
-      -- drop it
-    elseif eventName == "drop" then
-      -- drop it
-    elseif eventName == "drag" then
-      -- drop it
     elseif eventName == "interrupted" then
       inputAbort = true
     elseif not common_event(eventName, params[3]) then
@@ -311,8 +297,12 @@ function readInputText(currentValue)
   end
 end
 
-function readConfirmation()
-  ShowWarning("Are you sure? (y/n)")
+function readConfirmation(msg)
+  if msg == nil then
+    ShowWarning("Are you sure? (y/n)")
+  else
+    ShowWarning(msg)
+  end
   repeat
     local params = { event.pull() }
     local eventName = params[1]
@@ -325,14 +315,6 @@ function readConfirmation()
       else
         return false
       end
-    elseif eventName == "key_up" then
-      -- drop it
-    elseif eventName == "touch" then
-      -- drop it
-    elseif eventName == "drop" then
-      -- drop it
-    elseif eventName == "drag" then
-      -- drop it
     elseif eventName == "interrupted" then
       return false
     elseif not common_event(eventName, params[3]) then
@@ -353,6 +335,14 @@ function common_event(eventName, param)
     ShowWarning("Reactor deactivated")
   elseif eventName == "reactorActivation" then
     ShowWarning("Reactor activated")
+  elseif eventName == "key_up" then
+  elseif eventName == "touch" then
+  elseif eventName == "drop" then
+  elseif eventName == "drag" then
+  elseif eventName == "component_added" then
+  elseif eventName == "component_removed" then
+  elseif eventName == "component_unavailable" then
+    -- ShowWarning("Event '" .. eventName .. "', " .. param .. " is unsupported")
   else
     return false
   end
@@ -368,20 +358,21 @@ end
 ----------- Configuration
 
 function data_save()
-  local file = fs.open("shipdata.txt", "w")
+  local file = fs.open("/disk/shipdata.txt", "w")
   if file ~= nil then
     file:write(serialization.serialize(data))
     file:close()
   else
     ShowWarning("No file system")
+    os.sleep(0.1)
   end
 end
 
 function data_read()
   data = { }
-  if fs.exists("shipdata.txt") then
-    local file = fs.open("shipdata.txt", "r")
-    local size = fs.size("shipdata.txt")
+  if fs.exists("/disk/shipdata.txt") then
+    local file = fs.open("/disk/shipdata.txt", "r")
+    local size = fs.size("/disk/shipdata.txt")
     local rawData = file:read(size)
     if rawData ~= nil then
       data = serialization.unserialize(rawData)
@@ -395,14 +386,30 @@ function data_read()
 end
 
 function data_setName()
-  ShowTitle("<==== Set name ====>")
+  if ship ~= nil then
+    ShowTitle("<==== Set ship name ====>")
+  else
+    ShowTitle("<==== Set name ====>")
+  end
   
   SetCursorPos(1, 2)
   Write("Enter ship name: ")
   label = readInputText(label)
   -- FIXME os.setComputerLabel(label)
+  if ship ~= nil then
+    ship.coreFrequency(label)
+  end
   -- FIXME computer.shutdown(true)
 end
+
+function string_split(source, sep)
+  local sep = sep or ":"
+  local fields = {}
+  local pattern = string.format("([^%s]+)", sep)
+  source:gsub(pattern, function(c) fields[#fields + 1] = c end)
+  return fields
+end
+
 
 ----------- Reactor support
 
@@ -427,51 +434,51 @@ function reactor_boot()
 end
 
 function reactor_key(char, keycode)
-  if char == 83 or char == 115 then -- S
+  if char == 83 or char == 115 or keycode == 31 then -- S
     reactor_start()
     return true
-  elseif char == 80 or char == 112 then -- P
+  elseif char == 80 or char == 112 or keycode == 25 then -- P
     reactor_stop()
     return true
-  elseif char == 76 or char == 108 then -- L
+  elseif char == 76 or char == 108 or keycode == 38 then -- L
     reactor_laser()
     return true
-  elseif char == 79 or char == 111 then -- O
+  elseif char == 79 or char == 111 or keycode == 24 then -- O
     data.reactor_mode = (data.reactor_mode + 1) % 4
     reactor_setMode()
     data_save()
     return true
-  elseif char == 71 or char == 103 then -- G
+  elseif char == 71 or char == 103 or keycode == 34 then -- G
     data.reactor_rate = data.reactor_rate - 1000
     reactor_setMode()
     data_save()
     return true
-  elseif char == 84 or char == 116 then -- T
+  elseif char == 84 or char == 116 or keycode == 20 then -- T
     data.reactor_rate = data.reactor_rate + 1000
     reactor_setMode()
     data_save()
     return true
-  elseif char == 74 or char == 106 then -- J
+  elseif char == 74 or char == 106 or keycode == 36 then -- J
     data.reactor_laserAmount = data.reactor_laserAmount - 500
     reactor_setLaser()
     data_save()
     return true
-  elseif char == 85 or char == 117 then -- U
+  elseif char == 85 or char == 117 or keycode == 22 then -- U
     data.reactor_laserAmount = data.reactor_laserAmount + 500
     reactor_setLaser()
     data_save()
     return true
-  elseif char == 45 then -- -
+  elseif char == 45 or keycode == 74 then -- -
     data.reactor_targetStability = data.reactor_targetStability - 1
     reactor_setTargetStability()
     data_save()
     return true
-  elseif char == 43 then -- +
+  elseif char == 43 or keycode == 78 then -- +
     data.reactor_targetStability = data.reactor_targetStability + 1
     reactor_setTargetStability()
     data_save()
     return true
-  elseif char == 67 or char == 99 then -- C
+  elseif char == 67 or char == 99 or keycode == 46 then -- C
     reactor_config()
     data_save()
     return true
@@ -481,7 +488,7 @@ end
 
 function reactor_page()
   ShowTitle(label .. " - Reactor status")
-
+  
   SetCursorPos(1, 2)
   if reactor == nil then
     SetColorDisabled()
@@ -500,7 +507,7 @@ function reactor_page()
       end
       Write(FormatFloat(stability, 5) .. " %")
     end
-
+    
     SetColorDefault()
     local energy = { reactor.energy() }
     SetCursorPos(1, 7)
@@ -515,7 +522,7 @@ function reactor_page()
     if energy[3] ~= nil then
       Write(energy[3] .. " RF/t")
     end
-
+    
     SetColorDefault()
     SetCursorPos(1, 9)
     Write("Activated: ")
@@ -523,7 +530,7 @@ function reactor_page()
     if isActive then SetColorSuccess() else SetColorDefault() end
     Write(boolToYesNo(isActive))
   end
-
+  
   if #reactorlasers == 0 then
     SetColorDisabled()
     SetCursorPos(30, 2)
@@ -532,28 +539,28 @@ function reactor_page()
     SetColorDefault()
     SetCursorPos(30, 2)
     Write("Lasers")
-
+    
     for key,reactorlaser in pairs(reactorlasers) do
-      local side = reactorlaser.side()
+      local side = reactorlaser.side
       if side ~= nil then
         side = side % 4
         SetColorDefault()
         SetCursorPos(4, 3 + side)
         Write("Side " .. side .. ":")
         SetCursorPos(30, 3 + side)
-        local energy = reactorlaser.energy()
-        if not reactorlaser.hasReactor() then
+        local energy = reactorlaser.wrap.energy()
+        if not reactorlaser.wrap.hasReactor() then
           SetColorDisabled()
         elseif energy > 3 * data.reactor_laserAmount then
           SetColorSuccess()
         else
           SetColorWarning()
         end
-        Write(FormatInteger(reactorlaser.energy(), 6))
+        Write(FormatInteger(energy, 6))
       end
     end
   end
-
+  
   SetColorDefault()
   SetCursorPos(1, 10)
   Write("  -----------------------------------------------")
@@ -636,8 +643,8 @@ end
 
 function reactor_laser(side)
   for key,reactorlaser in pairs(reactorlasers) do
-    if (side == nil) or (reactorlaser.side() == side) then
-      reactorlaser.stabilize(data.reactor_laserAmount)
+    if (side == nil) or (reactorlaser.side == side) then
+      reactorlaser.wrap.stabilize(data.reactor_laserAmount)
     end
   end
 end
@@ -651,12 +658,12 @@ function reactor_pulse(output)
   end
   local instabilities = { reactor.instability() }
   for key,instability in pairs(instabilities) do
-    local stability = math.floor((100.0 - instability) * 10) / 10
+    local stability = 100.0 - instability
     if stability < data.reactor_targetStability then
       reactor_laser(key - 1)
     end
   end
-  reactor_pulseStep = (reactor_pulseStep + 1) % 12
+  reactor_pulseStep = (reactor_pulseStep + 1) % 6
   if page == reactor_page and (not reactor_configPageLoaded) then
     if reactor_pulseStep == 0 then
       for key,instability in pairs(instabilities) do
@@ -669,8 +676,8 @@ function reactor_pulse(output)
         end
         Write(FormatFloat(stability, 5) .. " %")
       end
-	  
-    elseif reactor_pulseStep == 4 then
+    
+    elseif reactor_pulseStep == 2 then
       SetColorDefault()
       local energy = { reactor.energy() }
       SetCursorPos(12, 7)
@@ -685,34 +692,34 @@ function reactor_pulse(output)
         SetCursorPos(12, 8)
         Write(energy[3] .. " RF/t    ")
       end
-	  
-    elseif reactor_pulseStep == 8 then
+    
+    elseif reactor_pulseStep == 4 then
       if #reactorlasers ~= 0 then
         for key,reactorlaser in pairs(reactorlasers) do
-          local side = reactorlaser.side()
+          local side = reactorlaser.side
           if side ~= nil then
             side = side % 4
             SetCursorPos(30, 3 + side)
-            local energy = reactorlaser.energy()
-            if not reactorlaser.hasReactor() then
+            local energy = reactorlaser.wrap.energy()
+            if not reactorlaser.wrap.hasReactor() then
               SetColorDisabled()
             elseif energy > 3 * data.reactor_laserAmount then
               SetColorSuccess()
             else
               SetColorWarning()
             end
-            Write(FormatInteger(reactorlaser.energy(), 6))
+            Write(FormatInteger(energy, 6))
           end
         end
       end
-	end
+    end
   end
 end
 
 function reactor_config()
   reactor_configPageLoaded = true
   ShowTitle(label .. " - Reactor configuration")
-
+  
   SetCursorPos(1, 2)
   if reactor == nil then
     SetColorDisabled()
@@ -764,15 +771,17 @@ reactor = nil
 reactorlasers = {}
 for address, componentType in component.list() do
   os.sleep(0)
+  Write("Checking " .. componentType .. " ")
   if componentType == "warpdriveEnanReactorCore" then
-    WriteLn("Wrapping " .. componentType)
+    Write("wrapping!")
     reactor =  component.proxy(address)
   elseif componentType == "warpdriveEnanReactorLaser" then
-    WriteLn("Wrapping " .. componentType)
-    table.insert(reactorlasers, component.proxy(address))
+    Write("wrapping!")
+	local wrap = component.proxy(address)
+	table.insert(reactorlasers, { side = wrap.side(), wrap = wrap })
   end
+  WriteLn("")
 end
--- os.sleep(1)
 
 if not computer.address() and reactor ~= nil then
   data_setName()
@@ -855,18 +864,6 @@ repeat
       ShowWarning("Key " .. char .. " " .. keycode .. " is invalid")
       os.sleep(0.2)
     end
-    -- func(unpack(params))
-    -- abort, refresh = false, false
-  elseif eventName == "char" then
-    -- drop it
-  elseif eventName == "key_up" then
-    -- drop it
-  elseif eventName == "touch" then
-    -- drop it
-  elseif eventName == "drop" then
-    -- drop it
-  elseif eventName == "drag" then
-    -- drop it
   elseif eventName == "interrupted" then
     abort = true
   elseif not common_event(eventName, params[3]) then

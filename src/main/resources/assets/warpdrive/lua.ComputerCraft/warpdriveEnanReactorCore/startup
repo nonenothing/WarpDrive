@@ -1,9 +1,10 @@
-monitor_textScale = 0.5
 if not term.isColor() then
   print("Advanced computer required")
   exit()
 end
 print("loading...")
+
+monitor_textScale = 0.5
 
 Style = {
   CDefault = colors.white,
@@ -39,7 +40,9 @@ function Write(text)
   term.write(text)
   if monitors ~= nil then
     for key,monitor in pairs(monitors) do
-      monitor.write(text)
+      if key ~= data.radar_monitorIndex then
+        monitor.write(text)
+      end
     end
   end
 end
@@ -48,7 +51,9 @@ function SetCursorPos(x, y)
   term.setCursorPos(x, y)
   if monitors ~= nil then
     for key,monitor in pairs(monitors) do
-      monitor.setCursorPos(x, y)
+      if key ~= data.radar_monitorIndex then
+        monitor.setCursorPos(x, y)
+      end
     end
   end
 end
@@ -79,7 +84,9 @@ function Clear()
   term.clear()
   if monitors ~= nil then
     for key,monitor in pairs(monitors) do
-      monitor.clear()
+      if key ~= data.radar_monitorIndex then
+        monitor.clear()
+      end
     end
   end
   SetCursorPos(1, 1)
@@ -90,7 +97,9 @@ function ClearLine()
   term.clearLine()
   if monitors ~= nil then
     for key,monitor in pairs(monitors) do
-      monitor.clearLine()
+      if key ~= data.radar_monitorIndex then
+        monitor.clearLine()
+      end
     end
   end
   SetCursorPos(1, 1)
@@ -111,9 +120,11 @@ function WriteCentered(y, text)
   term.write(text)
   if monitors ~= nil then
     for key,monitor in pairs(monitors) do
-      local sizeX, sizeY = monitor.getSize()
-      monitor.setCursorPos((sizeX - text:len()) / 2, y)
-      monitor.write(text)
+      if key ~= data.radar_monitorIndex then
+        local sizeX, sizeY = monitor.getSize()
+        monitor.setCursorPos((sizeX - text:len()) / 2, y)
+        monitor.write(text)
+      end
     end
   end
   local xt, yt = term.getCursorPos()
@@ -140,6 +151,8 @@ end
 local clearWarningTick = -1
 function ShowWarning(text)
   local sizeX, sizeY = term.getSize()
+  SetCursorPos(1, sizeY)
+  ClearLine()
   SetColorWarning()
   SetCursorPos((sizeX - text:len() - 2) / 2, sizeY)
   Write(" " .. text .. " ")
@@ -163,7 +176,7 @@ end
 function FormatFloat(value, nbchar)
   local str = "?"
   if value ~= nil then
-    str = string.format("%f", value)
+    str = string.format("%g", value)
   end
   if nbchar ~= nil then
     str = string.sub("               " .. str, -nbchar)
@@ -238,16 +251,6 @@ function readInputNumber(currentValue)
       else
         ShowWarning("Key " .. keycode .. " is invalid")
       end
-    elseif eventName == "char" then
-      -- drop it
-    elseif eventName == "key_up" then
-      -- drop it
-    elseif eventName == "mouse_click" then
-      -- drop it
-    elseif eventName == "mouse_up" then
-      -- drop it
-    elseif eventName == "mouse_drag" then
-      -- drop it
     elseif eventName == "terminate" then
       inputAbort = true
     elseif not common_event(eventName, params[2]) then
@@ -287,7 +290,7 @@ function readInputText(currentValue)
       elseif keycode == 28 then -- Enter
         inputAbort = true
       else
-        -- ShowWarning("Key " .. keycode .. " is invalid")
+        ShowWarning("Key " .. keycode .. " is invalid")
       end
     elseif eventName == "char" then
       local char = params[2]
@@ -296,14 +299,6 @@ function readInputText(currentValue)
       else
         ShowWarning("Char #" .. string.byte(char) .. " is invalid")
       end
-    elseif eventName == "key_up" then
-      -- drop it
-    elseif eventName == "mouse_click" then
-      -- drop it
-    elseif eventName == "mouse_up" then
-      -- drop it
-    elseif eventName == "mouse_drag" then
-      -- drop it
     elseif eventName == "terminate" then
       inputAbort = true
     elseif not common_event(eventName, params[2]) then
@@ -336,16 +331,6 @@ function readConfirmation(msg)
       else
         return false
       end
-    elseif eventName == "char" then
-      -- drop it
-    elseif eventName == "key_up" then
-      -- drop it
-    elseif eventName == "mouse_click" then
-      -- drop it
-    elseif eventName == "mouse_up" then
-      -- drop it
-    elseif eventName == "mouse_drag" then
-      -- drop it
     elseif eventName == "terminate" then
       return false
     elseif not common_event(eventName, params[2]) then
@@ -366,6 +351,15 @@ function common_event(eventName, param)
     ShowWarning("Reactor deactivated")
   elseif eventName == "reactorActivation" then
     ShowWarning("Reactor activated")
+  elseif eventName == "char" then
+  elseif eventName == "key_up" then
+  elseif eventName == "mouse_click" then
+  elseif eventName == "mouse_up" then
+  elseif eventName == "mouse_drag" then
+  elseif eventName == "monitor_touch" then
+  elseif eventName == "monitor_resize" then
+  elseif eventName == "peripheral" then
+  elseif eventName == "peripheral_detach" then
   else
     return false
   end
@@ -422,6 +416,7 @@ function data_save()
     file.close()
   else
     ShowWarning("No file system")
+    os.sleep(3)
   end
 end
 
@@ -439,14 +434,30 @@ function data_read()
 end
 
 function data_setName()
-  ShowTitle("<==== Set name ====>")
+  if ship ~= nil then
+    ShowTitle("<==== Set ship name ====>")
+  else
+    ShowTitle("<==== Set name ====>")
+  end
   
   SetCursorPos(1, 2)
   Write("Enter ship name: ")
   label = readInputText(label)
   os.setComputerLabel(label)
+  if ship ~= nil then
+    ship.coreFrequency(label)
+  end
   os.reboot()
 end
+
+function string_split(source, sep)
+  local sep = sep or ":"
+  local fields = {}
+  local pattern = string.format("([^%s]+)", sep)
+  source:gsub(pattern, function(c) fields[#fields + 1] = c end)
+  return fields
+end
+
 
 ----------- Reactor support
 
@@ -470,52 +481,52 @@ function reactor_boot()
   end
 end
 
-function reactor_key(keycode)
-  if keycode == 31 then -- S
+function reactor_key(char, keycode)
+  if char == 83 or char == 115 or keycode == 31 then -- S
     reactor_start()
     return true
-  elseif keycode == 25 then -- P
+  elseif char == 80 or char == 112 or keycode == 25 then -- P
     reactor_stop()
     return true
-  elseif keycode == 38 then -- L
+  elseif char == 76 or char == 108 or keycode == 38 then -- L
     reactor_laser()
     return true
-  elseif keycode == 24 then -- O
+  elseif char == 79 or char == 111 or keycode == 24 then -- O
     data.reactor_mode = (data.reactor_mode + 1) % 4
     reactor_setMode()
     data_save()
     return true
-  elseif keycode == 34 then -- G
+  elseif char == 71 or char == 103 or keycode == 34 then -- G
     data.reactor_rate = data.reactor_rate - 1000
     reactor_setMode()
     data_save()
     return true
-  elseif keycode == 20 then -- T
+  elseif char == 84 or char == 116 or keycode == 20 then -- T
     data.reactor_rate = data.reactor_rate + 1000
     reactor_setMode()
     data_save()
     return true
-  elseif keycode == 36 then -- J
+  elseif char == 74 or char == 106 or keycode == 36 then -- J
     data.reactor_laserAmount = data.reactor_laserAmount - 500
     reactor_setLaser()
     data_save()
     return true
-  elseif keycode == 22 then -- U
+  elseif char == 85 or char == 117 or keycode == 22 then -- U
     data.reactor_laserAmount = data.reactor_laserAmount + 500
     reactor_setLaser()
     data_save()
     return true
-  elseif keycode == 74 then -- -
+  elseif char == 45 or keycode == 74 then -- -
     data.reactor_targetStability = data.reactor_targetStability - 1
     reactor_setTargetStability()
     data_save()
     return true
-  elseif keycode == 78 then -- +
+  elseif char == 43 or keycode == 78 then -- +
     data.reactor_targetStability = data.reactor_targetStability + 1
     reactor_setTargetStability()
     data_save()
     return true
-  elseif keycode == 46 then -- C
+  elseif char == 67 or char == 99 or keycode == 46 then -- C
     reactor_config()
     data_save()
     return true
@@ -525,7 +536,7 @@ end
 
 function reactor_page()
   ShowTitle(label .. " - Reactor status")
-
+  
   SetCursorPos(1, 2)
   if reactor == nil then
     SetColorDisabled()
@@ -544,7 +555,7 @@ function reactor_page()
       end
       Write(FormatFloat(stability, 5) .. " %")
     end
-
+    
     SetColorDefault()
     local energy = { reactor.energy() }
     SetCursorPos(1, 7)
@@ -559,7 +570,7 @@ function reactor_page()
     if energy[3] ~= nil then
       Write(energy[3] .. " RF/t")
     end
-
+    
     SetColorDefault()
     SetCursorPos(1, 9)
     Write("Activated: ")
@@ -567,7 +578,7 @@ function reactor_page()
     if isActive then SetColorSuccess() else SetColorDefault() end
     Write(boolToYesNo(isActive))
   end
-
+  
   if #reactorlasers == 0 then
     SetColorDisabled()
     SetCursorPos(30, 2)
@@ -576,28 +587,28 @@ function reactor_page()
     SetColorDefault()
     SetCursorPos(30, 2)
     Write("Lasers")
-
+    
     for key,reactorlaser in pairs(reactorlasers) do
-      local side = reactorlaser.side()
+      local side = reactorlaser.side
       if side ~= nil then
         side = side % 4
         SetColorDefault()
         SetCursorPos(4, 3 + side)
         Write("Side " .. side .. ":")
         SetCursorPos(30, 3 + side)
-        local energy = reactorlaser.energy()
-        if not reactorlaser.hasReactor() then
+        local energy = reactorlaser.wrap.energy()
+        if not reactorlaser.wrap.hasReactor() then
           SetColorDisabled()
         elseif energy > 3 * data.reactor_laserAmount then
           SetColorSuccess()
         else
           SetColorWarning()
         end
-        Write(FormatInteger(reactorlaser.energy(), 6))
+        Write(FormatInteger(energy, 6))
       end
     end
   end
-
+  
   SetColorDefault()
   SetCursorPos(1, 10)
   Write("  -----------------------------------------------")
@@ -680,8 +691,8 @@ end
 
 function reactor_laser(side)
   for key,reactorlaser in pairs(reactorlasers) do
-    if (side == nil) or (reactorlaser.side() == side) then
-      reactorlaser.stabilize(data.reactor_laserAmount)
+    if (side == nil) or (reactorlaser.side == side) then
+      reactorlaser.wrap.stabilize(data.reactor_laserAmount)
     end
   end
 end
@@ -694,7 +705,7 @@ function reactor_pulse(output)
   end
   local instabilities = { reactor.instability() }
   for key,instability in pairs(instabilities) do
-    local stability = math.floor((100.0 - instability) * 10) / 10
+    local stability = 100.0 - instability
     if stability < data.reactor_targetStability then
       reactor_laser(key - 1)
     end
@@ -710,7 +721,7 @@ function reactor_pulse(output)
       end
       Write(FormatFloat(stability, 5) .. " %")
     end
-	
+    
     SetColorDefault()
     local energy = { reactor.energy() }
     SetCursorPos(12, 7)
@@ -725,25 +736,25 @@ function reactor_pulse(output)
       SetCursorPos(12, 8)
       Write(energy[3] .. " RF/t    ")
     end
-	
+    
     if #reactorlasers ~= 0 then
       for key,reactorlaser in pairs(reactorlasers) do
-        local side = reactorlaser.side()
+        local side = reactorlaser.side
         if side ~= nil then
           side = side % 4
           SetCursorPos(30, 3 + side)
-          local energy = reactorlaser.energy()
-          if not reactorlaser.hasReactor() then
+          local energy = reactorlaser.wrap.energy()
+          if not reactorlaser.wrap.hasReactor() then
             SetColorDisabled()
           elseif energy > 3 * data.reactor_laserAmount then
             SetColorSuccess()
           else
             SetColorWarning()
           end
-          Write(FormatInteger(reactorlaser.energy(), 6))
+          Write(FormatInteger(energy, 6))
         end
       end
-	end
+    end
   end
 end
 
@@ -781,8 +792,7 @@ function reactor_config()
   reactor_configPageLoaded = false
 end
 
------------ Boot sequence 
-math.randomseed(os.time())
+----------- Boot sequence
 label = os.getComputerLabel()
 if not label then
   label = "" .. os.getComputerID()
@@ -803,20 +813,24 @@ reactor = nil
 reactorlasers = {}
 for key,side in pairs(sides) do
   os.sleep(0)
-  if peripheral.getType(side) == "monitor" then
-    WriteLn("Wrapping " .. side)
+  Write("Checking " .. side .. " ")
+  local componentType = peripheral.getType(side)
+  Write(componentType .. " ")
+  if componentType == "warpdriveEnanReactorCore" then
+    Write("wrapping!")
+    reactor = peripheral.wrap(side)
+  elseif componentType == "warpdriveEnanReactorLaser" then
+    Write("wrapping!")
+    local wrap = peripheral.wrap(side)
+    table.insert(reactorlasers, { side = wrap.side(), wrap = wrap })
+  elseif componentType == "monitor" then
+    Write("wrapping!")
     lmonitor = peripheral.wrap(side)
     table.insert(monitors, lmonitor)
     lmonitor.setTextScale(monitor_textScale)
-  elseif peripheral.getType(side) == "warpdriveEnanReactorCore" then
-    WriteLn("Wrapping " .. side)
-    reactor =  peripheral.wrap(side)
-  elseif peripheral.getType(side) == "warpdriveEnanReactorLaser" then
-    WriteLn("Wrapping " .. side)
-    table.insert(reactorlasers, peripheral.wrap(side))
   end
+  WriteLn("")
 end
--- os.sleep(1)
 
 if not os.getComputerLabel() and reactor ~= nil then
   data_setName()
@@ -825,7 +839,7 @@ end
 -- peripherals status
 function connections_page()
   ShowTitle(label .. " - Connections")
-
+  
   WriteLn("")
   if #monitors == 0 then
     SetColorDisabled()
@@ -837,7 +851,7 @@ function connections_page()
     SetColorSuccess()
     WriteLn(#monitors .. " Monitors detected")
   end
-
+  
   if reactor == nil then
     SetColorDisabled()
     WriteLn("No Enantiomorphic reactor detected")
@@ -845,7 +859,7 @@ function connections_page()
     SetColorSuccess()
     WriteLn("Enantiomorphic reactor detected")
   end
-
+  
   if #reactorlasers == 0 then
     SetColorDisabled()
     WriteLn("No reactor stabilisation laser detected")
@@ -882,38 +896,38 @@ repeat
   end
   params = { os.pullEventRaw() }
   eventName = params[1]
-  side = params[2]
-  if side == nil then side = "none" end
+  address = params[2]
+  if address == nil then address = "none" end
+  -- WriteLn("...")
+  -- WriteLn("Event '" .. eventName .. "', " .. address .. ", " .. params[3] .. ", " .. params[4] .. " received")
+  -- os.sleep(0.2)
   if eventName == "key" then
     keycode = params[2]
-    if keycode == 45 then -- x for eXit
+    if char == 88 or char == 120 or keycode == 45 then -- x for eXit
       os.pullEventRaw()
       abort = true
-    elseif keycode == 11 or keycode == 82 then -- 0
+    elseif char == 48 or keycode == 11 or keycode == 82 then -- 0
       page = connections_page
       keyHandler = nil
       refresh = true
-    elseif keycode == 2 or keycode == 79 then -- 1
+    elseif char == 49 or keycode == 2 or keycode == 79 then -- 1
       page = reactor_page
       keyHandler = reactor_key
       refresh = true
-    elseif keyHandler ~= nil and keyHandler(keycode) then
+    elseif keyHandler ~= nil and keyHandler(char, keycode) then
       refresh = true
+      os.sleep(0)
+    elseif char == 0 then -- control chars
+      refresh = false
       os.sleep(0)
     else
       ShowWarning("Key " .. keycode .. " is invalid")
       os.sleep(0.2)
     end
-    -- func(unpack(params))
-    -- abort, refresh = false, false
-  elseif eventName == "char" then
-    -- drop it
-  elseif eventName == "key_up" then
-    -- drop it
   elseif eventName == "terminate" then
     abort = true
   elseif not common_event(eventName, params[2]) then
-    ShowWarning("Event '" .. eventName .. "', " .. side .. " is unsupported")
+    ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
     refresh = true
     os.sleep(0.2)
   end
