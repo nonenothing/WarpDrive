@@ -54,10 +54,10 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 			if (tileEntity instanceof IVideoChannel) {
 				((IVideoChannel) tileEntity).setVideoChannel(videoChannel);
 			} else {
-				WarpDrive.logger.error("Received video channel packet: (" + x + ", " + y + ", " + z + ") is not a valid tile entity");
+				WarpDrive.logger.error("Received video channel packet: (" + x + " " + y + " " + z + ") is not a valid tile entity");
 			}
 		} else {
-			WarpDrive.logger.error("Received video channel packet: (" + x + ", " + y + ", " + z + ") has no tile entity");
+			WarpDrive.logger.error("Received video channel packet: (" + x + " " + y + " " + z + ") has no tile entity");
 		}
  	}
 	
@@ -71,7 +71,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 		}
 		
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-			WarpDrive.logger.info("Received video channel packet: (" + videoChannelMessage.x + ", " + videoChannelMessage.y + ", " + videoChannelMessage.z + ") videoChannel '" + videoChannelMessage.videoChannel + "'");
+			WarpDrive.logger.info("Received video channel packet: (" + videoChannelMessage.x + " " + videoChannelMessage.y + " " + videoChannelMessage.z + ") videoChannel '" + videoChannelMessage.videoChannel + "'");
 		}
 		
 		videoChannelMessage.handle(Minecraft.getMinecraft().theWorld);

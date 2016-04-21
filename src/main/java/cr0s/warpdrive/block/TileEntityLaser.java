@@ -197,6 +197,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				PacketHandler.sendBeamPacket(worldObj, vSource, vReachPoint, r, g, b, 50, energy, 200);
 			}
 			
+			if (WarpDriveConfig.LOGGING_WEAPON) {
+				WarpDrive.logger.info("Scan result type " + scanResult_type.name
+					+ " at " + scanResult_position.x + " " + scanResult_position.y + " " + scanResult_position.z
+					+ " block " + scanResult_blockUnlocalizedName + " " + scanResult_blockMetadata + " resistance " + scanResult_blockResistance);
+			}
+			
 			sendEvent("laserScanning",
 					scanResult_type.name, scanResult_position.x, scanResult_position.y, scanResult_position.z,
 					scanResult_blockUnlocalizedName, scanResult_blockMetadata, scanResult_blockResistance);

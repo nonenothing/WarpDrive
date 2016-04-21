@@ -96,8 +96,8 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
 			WarpDrive.logger.info("Received cloak packet: " + ((cloakMessage.decloak) ? "DEcloaked" : "cloaked")
-				+ "area: (" + cloakMessage.minX + "; " + cloakMessage.minY + "; " + cloakMessage.minZ
-				+ ") -> (" + cloakMessage.maxX + "; " + cloakMessage.maxY + "; " + cloakMessage.maxZ + ") tier " + cloakMessage.tier);
+				+ "area: (" + cloakMessage.minX + " " + cloakMessage.minY + " " + cloakMessage.minZ
+				+ ") -> (" + cloakMessage.maxX + " " + cloakMessage.maxY + " " + cloakMessage.maxZ + ") tier " + cloakMessage.tier);
 		}
 		
 		EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;

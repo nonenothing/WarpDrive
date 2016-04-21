@@ -43,11 +43,8 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	@Override
 	public void fromBytes(ByteBuf buffer) {
 		int typeSize = buffer.readByte();
-		WarpDrive.logger.info("1: " + buffer.readerIndex() + " typeSize " + typeSize);
 		type = buffer.toString(buffer.readerIndex(), typeSize, StandardCharsets.US_ASCII);
-		WarpDrive.logger.info("2: " + buffer.readerIndex() + " type " + type);
 		buffer.skipBytes(typeSize);
-		WarpDrive.logger.info("3: " + buffer.readerIndex());
 		
 		double x = buffer.readDouble();
 		double y = buffer.readDouble();

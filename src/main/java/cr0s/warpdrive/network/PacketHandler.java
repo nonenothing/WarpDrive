@@ -111,7 +111,7 @@ public class PacketHandler {
 		MessageVideoChannel videoChannelMessage = new MessageVideoChannel(xCoord, yCoord, zCoord, videoChannel);
 		simpleNetworkManager.sendToAllAround(videoChannelMessage, new TargetPoint(dimensionId, xCoord, yCoord, zCoord, 100));
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-			WarpDrive.logger.info("Sent video channel packet (" + xCoord + ", " + yCoord + ", " + zCoord + ") video channel " + videoChannel);
+			WarpDrive.logger.info("Sent video channel packet (" + xCoord + " " + yCoord + " " + zCoord + ") video channel " + videoChannel);
 		}
 	}
 	
@@ -120,7 +120,7 @@ public class PacketHandler {
 		MessageTargeting targetingMessage = new MessageTargeting(x, y, z, yaw, pitch);
 		simpleNetworkManager.sendToServer(targetingMessage);
 		if (WarpDriveConfig.LOGGING_TARGETTING) {
-			WarpDrive.logger.info("Sent targeting packet (" + x + ", " + y + ", " + z + ") yaw " + yaw + " pitch " + pitch);
+			WarpDrive.logger.info("Sent targeting packet (" + x + " " + y + " " + z + ") yaw " + yaw + " pitch " + pitch);
 		}
 	}
 	
