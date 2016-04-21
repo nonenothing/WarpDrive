@@ -89,6 +89,7 @@ tile.warpdrive.movement.ShipCore.name=Ship Core
 tile.warpdrive.movement.Transporter.name=Transporter
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Camera
+tile.warpdrive.weapon.WeaponController.name=Weapon Controller
 
 
 
