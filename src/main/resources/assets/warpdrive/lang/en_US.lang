@@ -1,3 +1,8 @@
+death.attack.warpdrive.asphyxia=%s died from asphyxia
+death.attack.warpdrive.asphyxia.player=%1$s was killed by %2$s using asphyxia
+death.attack.warpdrive.teleportation=%s didn't survive from rematerialization
+death.attack.warpdrive.teleportation.player=%1$s was teleporkilled by %2$s
+
 item.warpdrive.crafting.Malformed.name=Bad Item
 item.warpdrive.crafting.EmeraldCrystal.name=Emerald Tuned Crystal
 item.warpdrive.crafting.EnderCrystal.name=Ender Tuned Crystal

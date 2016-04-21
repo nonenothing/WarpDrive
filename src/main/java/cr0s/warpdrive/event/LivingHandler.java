@@ -131,7 +131,7 @@ public class LivingHandler {
 										player_airTank.put(playerName, airTicks);
 									} else {
 										player_airTank.put(playerName, AIR_DROWN_TICKS);
-										player.attackEntityFrom(DamageSource.drown, 2.0F);
+										player.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
 									}
 								} else {
 									player_airTank.put(playerName, air - 1);
@@ -146,7 +146,7 @@ public class LivingHandler {
 									player_airTank.put(playerName, AIR_TANK_TICKS);
 								} else {
 									player_airTank.put(playerName, AIR_DROWN_TICKS);
-									entity.attackEntityFrom(DamageSource.drown, 2.0F);
+									entity.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
 								}
 							} else {
 								player_airTank.put(playerName, air - 1);
@@ -159,7 +159,7 @@ public class LivingHandler {
 							player_airTank.put(playerName, AIR_TANK_TICKS);
 						} else if (air <= 1) {
 							player_airTank.put(playerName, AIR_DROWN_TICKS);
-							entity.attackEntityFrom(DamageSource.drown, 2.0F);
+							entity.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
 						} else {
 							player_airTank.put(playerName, air - 1);
 						}
@@ -175,7 +175,7 @@ public class LivingHandler {
 					}
 				} else {// (in space, no air block and not a player)
 					entity_airBlock.put(entity.getEntityId(), 0);
-					entity.attackEntityFrom(DamageSource.drown, 2.0F);
+					entity.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
 				}
 			}
 		}

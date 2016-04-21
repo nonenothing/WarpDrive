@@ -177,6 +177,9 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemHelmet itemHelmet;
 	public static ItemAirCanisterFull itemAirCanisterFull;
 	
+	public static DamageAsphyxia damageAxphyxia;
+	public static DamageTeleportation damageTeleportation;
+	
 	public static BiomeGenBase spaceBiome;
 	public SpaceWorldGenerator spaceWorldGenerator;
 	public HyperSpaceWorldGenerator hyperSpaceWorldGenerator;
@@ -423,6 +426,9 @@ public class WarpDrive implements LoadingCallback {
 		itemTuningRod = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
 		
+		
+		damageAxphyxia = new DamageAsphyxia();
+		damageTeleportation = new DamageTeleportation();
 		
 		proxy.registerEntities();
 		

@@ -10,14 +10,11 @@ import li.cil.oc.api.machine.Context;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
+import cr0s.warpdrive.DamageTeleportation;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IUpgradable;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -42,7 +39,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	private Vector3 sourceVec = new Vector3();
 	private Vector3 destVec = new Vector3();
 
-	private TeleporterDamage teleDam = new TeleporterDamage("teleporter");
+	private DamageTeleportation damageTeleportation = new DamageTeleportation();
 
 	public TileEntityTransporter() {
 		super();
@@ -347,15 +344,15 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		}
 		
 		if (value < 0.1) {
-			ent.attackEntityFrom(teleDam, 1000);
+			ent.attackEntityFrom(damageTeleportation, 1000);
 		}
 
 		if (value < 0.2) {
-			ent.attackEntityFrom(teleDam, 10);
+			ent.attackEntityFrom(damageTeleportation, 10);
 		}
 
 		if (value < 0.5) {
-			ent.attackEntityFrom(teleDam, 1);
+			ent.attackEntityFrom(damageTeleportation, 1);
 		}
 	}
 
@@ -529,27 +526,6 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		powerBoost = tag.getDouble("powerBoost");
-	}
-
-	class TeleporterDamage extends DamageSource {
-		protected TeleporterDamage(String par1Str) {
-			super(par1Str);
-		}
-
-		@Override
-		public ChatComponentText func_151519_b(EntityLivingBase entity) {
-			String message = "";
-			if (entity instanceof EntityPlayer || entity instanceof EntityPlayerMP) {
-				message = ((EntityPlayer) entity).getDisplayName() + " was killed by a teleporter malfunction";
-			} else {
-				message = entity.toString() + " was killed by a teleporter malfunction";
-			}
-
-			if (WarpDriveConfig.LOGGING_TRANSPORTER) {
-				WarpDrive.logger.info(message);
-			}
-			return new ChatComponentText(message);
-		}
 	}
 
 	@Override
