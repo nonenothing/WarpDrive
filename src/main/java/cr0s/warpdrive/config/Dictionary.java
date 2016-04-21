@@ -86,6 +86,8 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:sand"                        , "Soil").getString();
 				config.get("block_tags", "minecraft:soul_sand"                   , "Soil").getString();
 				config.get("block_tags", "IC2:blockRubWood"                      , "Log").getString();
+				config.get("block_tags", "TConstruct:slime.gel"                  , "Log").getString();
+				config.get("block_tags", "TConstruct:slime.leaves"               , "Leaf").getString();
 				
 				// anchors
 				config.get("block_tags", "minecraft:bedrock"                     , "Anchor NoMining").getString();
