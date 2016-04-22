@@ -1,6 +1,8 @@
 package cr0s.warpdrive.compat;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,8 +18,7 @@ public class CompatSGCraft implements IBlockTransformer {
 	private static Class<?> classDHDBlock;
 	private static Class<?> classSGBaseBlock;
 	private static Class<?> classSGBaseTE;
-	private static Field propertySGBaseTE_dialledAddress;
-	private static Field propertySGBaseTE_numEngagedChevron;
+	private static Method methodSGBaseTE_sgStateDescription;
 	
 	public static void register() {
 		try {
@@ -25,10 +26,10 @@ public class CompatSGCraft implements IBlockTransformer {
 			classDHDBlock = Class.forName("gcewing.sg.DHDBlock");
 			classSGBaseBlock = Class.forName("gcewing.sg.SGBaseBlock");
 			classSGBaseTE = Class.forName("gcewing.sg.SGBaseTE");
-			propertySGBaseTE_dialledAddress = classSGBaseTE.getField("dialledAddress");
-			propertySGBaseTE_numEngagedChevron = classSGBaseTE.getField("numEngagedChevrons");
+			methodSGBaseTE_sgStateDescription = classSGBaseTE.getMethod("sgStateDescription");
+			
 			WarpDriveConfig.registerBlockTransformer("SGCraft", new CompatSGCraft());
-		} catch(ClassNotFoundException | NoSuchFieldException | SecurityException exception) {
+		} catch(ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -42,21 +43,13 @@ public class CompatSGCraft implements IBlockTransformer {
 	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
 		if (classSGBaseTE.isInstance(tileEntity)) {
 			try {
-				Object object = propertySGBaseTE_dialledAddress.get(tileEntity);
-				if (!((String)object).isEmpty()) {
-					reason.append("Stargate warmhole is open!");
+				Object object = methodSGBaseTE_sgStateDescription.invoke(tileEntity);
+				String state = (String)object;
+				if (!state.equalsIgnoreCase("Idle")) {
+					reason.append("Stargate is active (" + state + ")!");
 					return false;
 				}
-			} catch (IllegalAccessException | IllegalArgumentException exception) {
-				exception.printStackTrace();
-			}
-			try {
-				Object object = propertySGBaseTE_numEngagedChevron.get(tileEntity);
-				if (((int)object) != 0L) {
-					reason.append("Stargate dialing engaged!");
-					return false;
-				}
-			} catch (IllegalAccessException | IllegalArgumentException exception) {
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
 				exception.printStackTrace();
 			}
 		}
