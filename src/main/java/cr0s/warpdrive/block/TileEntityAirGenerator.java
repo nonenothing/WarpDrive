@@ -60,7 +60,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
 	private void releaseAir(int xOffset, int yOffset, int zOffset) {
 		Block block = worldObj.getBlock(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset);
-		if (block.isAir(worldObj, xOffset, yOffset, zOffset)) {// can be air
+		if (block.isAir(worldObj, xCoord + xOffset, yCoord + yOffset, zCoord + zOffset)) {// can be air
 			int energy_cost = (!block.isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.AIRGEN_ENERGY_PER_NEWAIRBLOCK : WarpDriveConfig.AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK;
 			if (consumeEnergy(energy_cost, true)) {// enough energy
 				if (worldObj.setBlock(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, WarpDrive.blockAir, START_CONCENTRATION_VALUE, 2)) {
