@@ -43,11 +43,11 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.detection.BlockMonitor;
+import cr0s.warpdrive.compat.CompatForgeMultipart;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.filler.Filler;
 
@@ -299,7 +299,7 @@ public class JumpBlock {
 				boolean isForgeMultipart = false;
 				if (WarpDriveConfig.isForgeMultipartLoaded && nbtToDeploy.hasKey("id") && nbtToDeploy.getString("id") == "savedMultipart") {
 					isForgeMultipart = true;
-					newTileEntity = (TileEntity) WarpDriveConfig.forgeMultipart_helper_createTileFromNBT.invoke(null, targetWorld, nbtToDeploy);
+					newTileEntity = (TileEntity) CompatForgeMultipart.methodMultipartHelper_createTileFromNBT.invoke(null, targetWorld, nbtToDeploy);
 					
 				} else if (block == WarpDriveConfig.CC_Computer || block == WarpDriveConfig.CC_peripheral
 						|| block == WarpDriveConfig.CCT_Turtle || block == WarpDriveConfig.CCT_Expanded || block == WarpDriveConfig.CCT_Advanced) {
@@ -327,8 +327,8 @@ public class JumpBlock {
 					
 					targetWorld.setTileEntity(target.posX, target.posY, target.posZ, newTileEntity);
 					if (isForgeMultipart) {
-						WarpDriveConfig.forgeMultipart_tileMultipart_onChunkLoad.invoke(newTileEntity);
-						WarpDriveConfig.forgeMultipart_helper_sendDescPacket.invoke(null, targetWorld, newTileEntity);
+						CompatForgeMultipart.tileMultipart_onChunkLoad.invoke(newTileEntity);
+						CompatForgeMultipart.methodMultipartHelper_sendDescPacket.invoke(null, targetWorld, newTileEntity);
 					}
 					return;
 				} else {

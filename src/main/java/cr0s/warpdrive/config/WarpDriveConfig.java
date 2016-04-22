@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -29,6 +28,7 @@ import cr0s.warpdrive.compat.CompatBotania;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatEvilCraft;
+import cr0s.warpdrive.compat.CompatForgeMultipart;
 import cr0s.warpdrive.compat.CompatImmersiveEngineering;
 import cr0s.warpdrive.compat.CompatIndustrialCraft2;
 import cr0s.warpdrive.compat.CompatJABBA;
@@ -47,9 +47,6 @@ import cr0s.warpdrive.data.Planet;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 
@@ -82,11 +79,6 @@ public class WarpDriveConfig {
 	public static boolean isGregTech5Loaded = false;
 	public static boolean isEnderIOloaded = false;
 	public static boolean isAdvancedRepulsionSystemLoaded = false;
-	
-	// ForgeMultipart (microblocks) support
-	public static Method forgeMultipart_helper_createTileFromNBT = null;
-	public static Method forgeMultipart_helper_sendDescPacket = null;
-	public static Method forgeMultipart_tileMultipart_onChunkLoad = null;
 	
 	public static ItemStack IC2_compressedAir;
 	public static ItemStack IC2_emptyCell;
@@ -761,7 +753,7 @@ public class WarpDriveConfig {
 	public static void onFMLInitialization() {
 		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
 		if (isForgeMultipartLoaded) {
-			loadForgeMultipart();
+			isForgeMultipartLoaded = CompatForgeMultipart.register();
 		}
 		
 		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
@@ -874,20 +866,6 @@ public class WarpDriveConfig {
 		StructureManager.load(configDirectory);
 		
 		Dictionary.apply();
-	}
-	
-	private static void loadForgeMultipart() {
-		try {
-			Class forgeMultipart_helper = Class.forName("codechicken.multipart.MultipartHelper");
-			forgeMultipart_helper_createTileFromNBT = forgeMultipart_helper.getDeclaredMethod("createTileFromNBT", World.class, NBTTagCompound.class);
-			forgeMultipart_helper_sendDescPacket = forgeMultipart_helper.getDeclaredMethod("sendDescPacket", World.class, TileEntity.class);
-			Class forgeMultipart_tileMultipart = Class.forName("codechicken.multipart.TileMultipart");
-			forgeMultipart_tileMultipart_onChunkLoad = forgeMultipart_tileMultipart.getDeclaredMethod("onChunkLoad");
-		} catch (Exception exception) {
-			isForgeMultipartLoaded = false;
-			WarpDrive.logger.error("Error loading ForgeMultipart classes");
-			exception.printStackTrace();
-		}
 	}
 	
 	private static void loadIC2() {
