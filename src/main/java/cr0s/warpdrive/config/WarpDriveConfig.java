@@ -36,6 +36,7 @@ import cr0s.warpdrive.compat.CompatMetallurgy;
 import cr0s.warpdrive.compat.CompatNatura;
 import cr0s.warpdrive.compat.CompatOpenComputers;
 import cr0s.warpdrive.compat.CompatRedstonePaste;
+import cr0s.warpdrive.compat.CompatSGCraft;
 import cr0s.warpdrive.compat.CompatStargateTech2;
 import cr0s.warpdrive.compat.CompatTConstruct;
 import cr0s.warpdrive.compat.CompatThaumcraft;
@@ -804,13 +805,18 @@ public class WarpDriveConfig {
 			CompatEnderIO.register();
 		}
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
-		boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
-		if (isTConstructLoaded) {
-			CompatTConstruct.register();
+		
+		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
+		if (isBotaniaLoaded) {
+			CompatBotania.register();
 		}
 		boolean isBibliocraftLoaded = Loader.isModLoaded("BiblioCraft");
 		if (isBibliocraftLoaded) {
 			CompatBiblioCraft.register();
+		}
+		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
+		if (isEvilCraftLoaded) {
+			CompatEvilCraft.register();
 		}
 		boolean isJABBAloaded = Loader.isModLoaded("JABBA");
 		if (isJABBAloaded) {
@@ -824,25 +830,25 @@ public class WarpDriveConfig {
 		if (isNaturaLoaded) {
 			CompatNatura.register();
 		}
-		boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
-		if (isStargateTech2Loaded) {
-			CompatStargateTech2.register();
-		}
 		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
 		if (isRedstonePasteLoaded) {
 			CompatRedstonePaste.register();
 		}
+		boolean isSGCraftLoaded = Loader.isModLoaded("SGCraft");
+		if (isSGCraftLoaded) {
+			CompatSGCraft.register();
+		}
+		boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
+		if (isStargateTech2Loaded) {
+			CompatStargateTech2.register();
+		}
+		boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
+		if (isTConstructLoaded) {
+			CompatTConstruct.register();
+		}
 		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
-		}
-		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
-		if (isEvilCraftLoaded) {
-			CompatEvilCraft.register();
-		}
-		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
-		if (isBotaniaLoaded) {
-			CompatBotania.register();
 		}
 	}
 	
