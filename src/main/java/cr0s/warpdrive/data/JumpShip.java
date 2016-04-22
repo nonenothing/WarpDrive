@@ -231,7 +231,7 @@ public class JumpShip {
 										IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 										if (blockTransformer != null) {
 											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity, reason)) {
-												reason.append(" " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+												reason.append(" Jump aborted by " + jumpBlock.block.getLocalizedName() + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 												return false;
 											}
 										}
