@@ -209,7 +209,7 @@ public class JumpShip {
 								actualVolume++;
 								
 								if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-									WarpDrive.logger.info("Block(" + x + ", " + y + ", " + z + ") is " + block.getUnlocalizedName() + "@" + worldObj.getBlockMetadata(x, y, z));
+									WarpDrive.logger.info("Block(" + x + " " + y + " " + z + ") is " + block.getUnlocalizedName() + "@" + worldObj.getBlockMetadata(x, y, z));
 								}
 								
 								if (!Dictionary.BLOCKS_NOMASS.contains(block)) {
@@ -218,7 +218,7 @@ public class JumpShip {
 								
 								// Stop on non-movable blocks
 								if (Dictionary.BLOCKS_ANCHOR.contains(block)) {
-									reason.append(block.getUnlocalizedName() + " detected onboard at " + x + ", " + y + ", " + z + ". Aborting.");
+									reason.append(block.getUnlocalizedName() + " detected onboard at " + x + " " + y + " " + z + ". Aborting.");
 									return false;
 								}
 								
