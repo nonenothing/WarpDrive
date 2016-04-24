@@ -23,6 +23,7 @@ public class BlockHullGlass extends BlockColored implements IHullBlock {
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.hull" + tier + ".glass.");
 		setBlockTextureName("warpdrive:hull/glass");
+		setLightLevel(10.0F / 15.0F);
 	}
 	
 	@Override
