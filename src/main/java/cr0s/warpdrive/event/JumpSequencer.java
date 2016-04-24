@@ -589,8 +589,7 @@ public class JumpSequencer extends AbstractSequencer {
 			WarpDrive.logger.info(this + " From world " + sourceWorld.provider.getDimensionName() + " to " + targetWorld.provider.getDimensionName());
 		}
 		
-		// Validate positions aren't overlapping
-		if (!betweenWorlds) {
+		{
 			ChunkCoordinates target1 = transformation.apply(ship.minX, ship.minY, ship.minZ);
 			ChunkCoordinates target2 = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
 			AxisAlignedBB aabbSource = AxisAlignedBB.getBoundingBox(ship.minX, ship.minY, ship.minZ, ship.maxX, ship.maxY, ship.maxZ);
@@ -598,7 +597,8 @@ public class JumpSequencer extends AbstractSequencer {
 			AxisAlignedBB aabbTarget = AxisAlignedBB.getBoundingBox(
 					Math.min(target1.posX, target2.posX), Math.min(target1.posY, target2.posY), Math.min(target1.posZ, target2.posZ),
 					Math.max(target1.posX, target2.posX), Math.max(target1.posY, target2.posY), Math.max(target1.posZ, target2.posZ));
-			if (aabbSource.intersectsWith(aabbTarget)) {
+			// Validate positions aren't overlapping
+			if (!betweenWorlds && aabbSource.intersectsWith(aabbTarget)) {
 				// render fake explosions
 				doCollisionDamage(false);
 				
@@ -608,6 +608,26 @@ public class JumpSequencer extends AbstractSequencer {
 				ship.messageToAllPlayersOnShip(msg);
 				LocalProfiler.stop();
 				return;
+			}
+			
+			// Check world border
+			if ( (targetWorld.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID)
+			  || (targetWorld.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID)) {
+				if (WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS > 0) {// Space world border is enabled
+					if ( Math.abs(aabbTarget.minX) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS
+					  || Math.abs(aabbTarget.minZ) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS
+					  || Math.abs(aabbTarget.maxX) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS
+					  || Math.abs(aabbTarget.maxZ) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS ) {
+						// cancel jump
+						String msg = "Space border reach, max is " + WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS;
+						disable(msg);
+						ship.messageToAllPlayersOnShip(msg);
+						LocalProfiler.stop();
+						return;
+					}
+				}
+			} else {
+				// TODO: implement planet world border independent from transition plane
 			}
 		}
 		
