@@ -719,7 +719,7 @@ public class JumpSequencer extends AbstractSequencer {
 			JumpBlock jumpBlock = ship.jumpBlocks[ship.jumpBlocks.length - actualIndexInShip - 1];
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info(this + " Removing ship externals: unexpected null found at ship[" + actualIndexInShip + "]");
+					WarpDrive.logger.info(this + " Moving ship externals: unexpected null found at ship[" + actualIndexInShip + "]");
 				}
 				actualIndexInShip++;
 				continue;
@@ -727,7 +727,7 @@ public class JumpSequencer extends AbstractSequencer {
 			
 			if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-					WarpDrive.logger.info("Removing externals for block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+					WarpDrive.logger.info("Moving externals for block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				}
 				for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
 					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
@@ -838,25 +838,11 @@ public class JumpSequencer extends AbstractSequencer {
 				WarpDrive.logger.info("Removing block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 			}
 			
-			ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z); 
 			if (jumpBlock.blockTileEntity != null) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Removing tile entity at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				}
 				sourceWorld.removeTileEntity(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-				
-				if (jumpBlock.externals != null) {
-					for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
-						if (external.getValue() == null) {
-							continue;
-						}
-						IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
-						if (blockTransformer != null) {
-							TileEntity newTileEntity = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
-							blockTransformer.restoreExternals(newTileEntity, transformation, external.getValue());
-						}
-					}
-				}
 			}
 			try {
 				JumpBlock.setBlockNoLight(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z, Blocks.air, 0, 2);
@@ -867,6 +853,7 @@ public class JumpSequencer extends AbstractSequencer {
 				}
 			}
 			
+			ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z); 
 			JumpBlock.refreshBlockStateOnClient(targetWorld, target.posX, target.posY, target.posZ);
 			
 			actualIndexInShip++;
