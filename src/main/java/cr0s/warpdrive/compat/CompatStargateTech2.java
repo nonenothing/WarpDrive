@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
@@ -11,7 +13,6 @@ import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -20,13 +21,19 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	
 	private static Class<?> classBlockMachine;
 	private static Class<?> classBlockShield;
+	private static Class<?> classBlockTransportRing;
+	private static Class<?> classTileTransportRing;
+	private static Method   methodTileTransportRing_link;
 	
 	public static void register() {
 		try {
 			classBlockMachine = Class.forName("lordfokas.stargatetech2.core.machine.BlockMachine");
 			classBlockShield = Class.forName("lordfokas.stargatetech2.enemy.BlockShield");
+			classBlockTransportRing = Class.forName("lordfokas.stargatetech2.transport.BlockTransportRing");
+			classTileTransportRing = Class.forName("lordfokas.stargatetech2.transport.TileTransportRing");
+			methodTileTransportRing_link = classTileTransportRing.getDeclaredMethod("link");
 			WarpDriveConfig.registerBlockTransformer("StargateTech2", new CompatStargateTech2());
-		} catch(ClassNotFoundException exception) {
+		} catch(ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -34,7 +41,8 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
 		return classBlockMachine.isInstance(block)
-			|| classBlockShield.isInstance(block);
+			|| classBlockShield.isInstance(block)
+			|| classBlockTransportRing.isInstance(block);
 	}
 	
 	@Override
@@ -68,11 +76,9 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	
 	private static NBTTagCompound rotateVector(ITransformation transformation, NBTTagCompound tag) {
 		ChunkCoordinates target = transformation.apply(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
-		WarpDrive.logger.info("Rotating multiblock from " + tag.getInteger("x") + " " + tag.getInteger("y") + " " + tag.getInteger("z")
-				+ " to " + target.posX + " " + target.posY + " " + target.posZ);
-		tag.setFloat("x", target.posX);
-		tag.setFloat("y", target.posY);
-		tag.setFloat("z", target.posZ);
+		tag.setInteger("x", target.posX);
+		tag.setInteger("y", target.posY);
+		tag.setInteger("z", target.posZ);
 		return tag;
 	}
 	
@@ -106,8 +112,12 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	@Override
 	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		byte rotationSteps = transformation.getRotationSteps();
-		if (rotationSteps == 0) {
-			return metadata;
+		
+		if (nbtTileEntity.hasKey("pairDn")) {
+			nbtTileEntity.setTag("pairDn", rotateVector(transformation, nbtTileEntity.getCompoundTag("pairDn")));
+		}
+		if (nbtTileEntity.hasKey("pairUp")) {
+			nbtTileEntity.setTag("pairUp", rotateVector(transformation, nbtTileEntity.getCompoundTag("pairUp")));
 		}
 		
 		if (nbtTileEntity.hasKey("controller")) {
@@ -139,6 +149,12 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	
 	@Override
 	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
-		// nothing to do
+		if (classTileTransportRing.isInstance(tileEntity)) {
+			try {
+				methodTileTransportRing_link.invoke(tileEntity);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+				exception.printStackTrace();
+			}
+		}
 	}
 }
