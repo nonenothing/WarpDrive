@@ -17,7 +17,7 @@ public class CompatForgeMultipart implements IBlockTransformer {
 	
 	public static Method methodMultipartHelper_createTileFromNBT = null;
 	public static Method methodMultipartHelper_sendDescPacket = null;
-	public static Method tileMultipart_onChunkLoad = null;
+	public static Method methodTileMultipart_onChunkLoad = null;
 	
 	private static Class<?> classBlockMultipart;
 	
@@ -27,7 +27,7 @@ public class CompatForgeMultipart implements IBlockTransformer {
 			methodMultipartHelper_createTileFromNBT = forgeMultipart_helper.getDeclaredMethod("createTileFromNBT", World.class, NBTTagCompound.class);
 			methodMultipartHelper_sendDescPacket = forgeMultipart_helper.getDeclaredMethod("sendDescPacket", World.class, TileEntity.class);
 			Class forgeMultipart_tileMultipart = Class.forName("codechicken.multipart.TileMultipart");
-			tileMultipart_onChunkLoad = forgeMultipart_tileMultipart.getDeclaredMethod("onChunkLoad");
+			methodTileMultipart_onChunkLoad = forgeMultipart_tileMultipart.getDeclaredMethod("onChunkLoad");
 			
 			classBlockMultipart = Class.forName("codechicken.multipart.BlockMultipart");
 			WarpDriveConfig.registerBlockTransformer("ForgeMultipart", new CompatForgeMultipart());

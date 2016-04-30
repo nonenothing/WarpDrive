@@ -327,7 +327,7 @@ public class JumpBlock {
 					
 					targetWorld.setTileEntity(target.posX, target.posY, target.posZ, newTileEntity);
 					if (isForgeMultipart) {
-						CompatForgeMultipart.tileMultipart_onChunkLoad.invoke(newTileEntity);
+						CompatForgeMultipart.methodTileMultipart_onChunkLoad.invoke(newTileEntity);
 						CompatForgeMultipart.methodMultipartHelper_sendDescPacket.invoke(null, targetWorld, newTileEntity);
 					}
 					return;

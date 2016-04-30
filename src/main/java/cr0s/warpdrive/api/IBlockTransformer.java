@@ -34,5 +34,6 @@ public interface IBlockTransformer {
 	// Called when placing back a ship in the world.
 	// Use this to restore external data from the ship schematic, right after block & tile entity placement.
 	// Use priority placement to ensure dependent blocks are placed first.
+	// This is will be called whether saveExternals returned null or not.
 	void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase);
 }
