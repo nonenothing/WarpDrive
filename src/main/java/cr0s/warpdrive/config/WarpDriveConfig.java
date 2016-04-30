@@ -21,6 +21,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.compat.CompatAdvancedRepulsionSystems;
 import cr0s.warpdrive.compat.CompatAppliedEnergistics2;
 import cr0s.warpdrive.compat.CompatArsMagica2;
 import cr0s.warpdrive.compat.CompatBiblioCraft;
@@ -797,6 +798,9 @@ public class WarpDriveConfig {
 			CompatEnderIO.register();
 		}
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
+		if (isAdvancedRepulsionSystemLoaded) {
+			CompatAdvancedRepulsionSystems.register();
+		}
 		
 		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {
