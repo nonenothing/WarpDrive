@@ -4,6 +4,9 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.Optional;
@@ -23,11 +26,12 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	private final static int REGISTRY_UPDATE_INTERVAL_TICKS = 15 * 20;
 	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
 
+	private int packetSendTicks = 10;
 	private int registryUpdateTicks = 20;
-	private int packetSendTicks = 20;
 
 	public TileEntityCamera() {
 		super();
+		
 		peripheralName = "warpdriveCamera";
 		addMethods(new String[] {
 			"videoChannel"
@@ -138,6 +142,19 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 			WarpDrive.logger.info(this + " writeToNBT");
 		}
+	}
+	
+	@Override
+	public Packet getDescriptionPacket() {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		writeToNBT(tagCompound);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.func_148857_g();
+		readFromNBT(tagCompound);
 	}
 	
 	// OpenComputer callback methods

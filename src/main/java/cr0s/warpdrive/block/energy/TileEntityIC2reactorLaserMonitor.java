@@ -180,8 +180,8 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	
 	@Override
 	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tag = packet.func_148857_g();
-		readFromNBT(tag);
+		NBTTagCompound tagCompound = packet.func_148857_g();
+		readFromNBT(tagCompound);
 	}
 	
 	@Override

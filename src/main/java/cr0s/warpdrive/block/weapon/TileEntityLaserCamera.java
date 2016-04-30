@@ -4,6 +4,9 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.Optional;
@@ -23,8 +26,8 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	private final static int REGISTRY_UPDATE_INTERVAL_TICKS = 15 * 20;
 	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
 	
+	private int packetSendTicks = 10;
 	private int registryUpdateTicks = 20;
-	private int packetSendTicks = 20;
 	
 	public TileEntityLaserCamera() {
 		super();
@@ -50,6 +53,9 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 			registryUpdateTicks--;
 			if (registryUpdateTicks <= 0) {
 				registryUpdateTicks = REGISTRY_UPDATE_INTERVAL_TICKS;
+				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
+					WarpDrive.logger.info(this + " Updating registry (" + videoChannel + ")");
+				}
 				WarpDrive.instance.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, CameraType.LASER_CAMERA);
 			}
 		}
@@ -113,6 +119,21 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		tag.setInteger("videoChannel", videoChannel);
+	}
+	
+	@Override
+	public Packet getDescriptionPacket() {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		// (beam frequency is server side only)
+		tagCompound.setInteger("videoChannel", videoChannel);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.func_148857_g();
+		// (beam frequency is server side only)
+		setVideoChannel(tagCompound.getInteger("videoChannel"));
 	}
 	
 	@Override
