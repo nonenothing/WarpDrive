@@ -890,19 +890,9 @@ public class Recipes {
 			'm', itemMachineCasingHV,
 			'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE)));
 		
-		// Warp isolation is 1 EV Machine casing (Ti), 8 Iridium reinforced plate
-		// or 1 Nether star, 8 diamond
-		Object oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
-		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2 and Gregtech
-			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
-		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
-			ItemStack itemStackFranckNZombie = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
-			oreEmeraldOrReinforcedIridiumPlate = itemStackFranckNZombie;
-		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			oreEmeraldOrReinforcedIridiumPlate = "ingotLumium";
-		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWarpIsolation), false, "iii", "imi", "iii",
-				'i', oreEmeraldOrReinforcedIridiumPlate,
+		// Warp isolation is 1 EV Machine casing (Ti), 4 Titanium plate/Enderium ingot/Vibrant alloy/Iridium plate/quartz
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWarpIsolation), false, "i i", " m ", "i i",
+				'i', oreCloakingPlate,
 				'm', itemMachineCasingEV));
 		
 		// Air generator is 1 power interface, 4 activated carbon, 1 motor, 1 MV Machine casing, 2 tanks
@@ -1142,6 +1132,15 @@ public class Recipes {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "metalDecoration", 5);	// Heavy engineering block
 		} else if (WarpDriveConfig.isEnderIOloaded) {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("EnderIO", "itemAlloy", 2);	// Vibrant alloy
+		}
+		Object oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
+		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2 and Gregtech
+			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
+		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
+			ItemStack itemStackFranckNZombie = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
+			oreEmeraldOrReinforcedIridiumPlate = itemStackFranckNZombie;
+		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
+			oreEmeraldOrReinforcedIridiumPlate = "ingotLumium";
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCloakingCoil), false, "iti", "cmc", "iti",
 				't', oreEmeraldOrTitaniumPlate,
