@@ -705,7 +705,7 @@ public class WarpDrive implements LoadingCallback {
 	// add tooltip information with text formating and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(List list, String tooltip) {
-		tooltip = tooltip.replace("§", "" + (char)167).replace("\\n", "\n");
+		tooltip = tooltip.replace("§", "" + (char)167).replace("\\n", "\n").replace("|", "\n");
 		
 		String[] split = tooltip.split("\n");
 		for (String line : split) {
