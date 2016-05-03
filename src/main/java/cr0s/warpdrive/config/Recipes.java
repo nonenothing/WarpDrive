@@ -948,22 +948,22 @@ public class Recipes {
 				'l', Blocks.lapis_block));
 		
 		// Laser lift is ...
-		ItemStack itemStackMagnetizer = itemMachineCasingLV;
+		Object oreMagnetizer = itemMachineCasingLV;
 		if (WarpDriveConfig.isGregTech5Loaded) {
-			itemStackMagnetizer = WarpDriveConfig.getModItemStack("gregtech", "gt.blockmachines", 551);	// Basic polarizer
+			oreMagnetizer = WarpDriveConfig.getModItemStack("gregtech", "gt.blockmachines", 551);	// Basic polarizer
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemStackMagnetizer = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 9);
+			oreMagnetizer = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 9);
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			itemStackMagnetizer = WarpDriveConfig.getModItemStack("ThermalExpansion", "Plate", 3);
-		} else if (WarpDriveConfig.isEnderIOloaded) {
-			itemStackMagnetizer = WarpDriveConfig.getModItemStack("EnderIO", "itemMagnet", 16);
+			oreMagnetizer = WarpDriveConfig.getModItemStack("ThermalExpansion", "Plate", 3);
+		} else if (OreDictionary.doesOreNameExist("ingotRedstoneAlloy") && !OreDictionary.getOres("ingotRedstoneAlloy").isEmpty()) {// EnderIO
+			oreMagnetizer = "ingotRedstoneAlloy";
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLift), false, "rmw", "plc", "glg",
 				'r', Items.redstone,
 				'w', Blocks.wool,
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemStackMagnetizer,
+				'm', oreMagnetizer,
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
 				'g', "paneGlassColorless"));
 		
