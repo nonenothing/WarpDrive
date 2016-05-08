@@ -26,7 +26,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
  *
  */
 public class Recipes {
-	public static final String[] oreDyes = {
+	private static final String[] oreDyes = {
 		"dyeBlack",
 		"dyeRed",
 		"dyeGreen",
@@ -564,10 +564,10 @@ public class Recipes {
 		}
 		
 		// Get the machine casing to use
-		ItemStack itemMachineCasingLV = null;
-		ItemStack itemMachineCasingMV = null;
-		ItemStack itemMachineCasingHV = null;
-		ItemStack itemMachineCasingEV = null;
+		ItemStack itemMachineCasingLV;
+		ItemStack itemMachineCasingMV;
+		ItemStack itemMachineCasingHV;
+		ItemStack itemMachineCasingEV;
 		ItemStack itemMotorLV = ItemComponent.getItemStack(ComponentType.MOTOR);
 		ItemStack itemMotorMV = ItemComponent.getItemStack(ComponentType.MOTOR);
 		ItemStack itemMotorHV = ItemComponent.getItemStack(ComponentType.MOTOR);
@@ -1023,7 +1023,7 @@ public class Recipes {
 		// Weapon controller is diamond sword with Ship controller
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWeaponController), false, "rwr", "rsr", "rcr",
 				'r', rubberOrLeather,
-				's', WarpDrive.itemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL),
+				's', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL),
 				'w', Items.diamond_sword,
 				'c', WarpDrive.blockShipController));
 		
@@ -1137,8 +1137,7 @@ public class Recipes {
 		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2 and Gregtech
 			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
 		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
-			ItemStack itemStackFranckNZombie = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
-			oreEmeraldOrReinforcedIridiumPlate = itemStackFranckNZombie;
+			oreEmeraldOrReinforcedIridiumPlate = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			oreEmeraldOrReinforcedIridiumPlate = "ingotLumium";
 		}
@@ -1234,7 +1233,7 @@ public class Recipes {
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("IC2", "blockAlloy", -1);
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
-					'b', "blockObsidian",
+					'b', Blocks.obsidian,
 					'c', reinforcedStone ));
 		} else if (OreDictionary.doesOreNameExist("ingotSteel") && !OreDictionary.getOres("ingotSteel").isEmpty()) {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
@@ -1293,10 +1292,10 @@ public class Recipes {
 			} else {
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
 						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
-						'c', "blockObsidian" ));
+						'c', Blocks.obsidian ));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
-						'c', "blockObsidian",
+						'c', Blocks.obsidian,
 						'X', oreDyes[woolColor] ));
 			}
 		}
