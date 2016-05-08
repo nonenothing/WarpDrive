@@ -2,9 +2,12 @@ package cr0s.warpdrive.api;
 
 import net.minecraft.item.ItemStack;
 
+@Deprecated // we should use fluid storage instead here
 public interface IAirCanister {
-	public ItemStack emptyDrop(ItemStack can);
-	public ItemStack fullDrop(ItemStack can);
-	public boolean canContainAir(ItemStack can);
-	public boolean containsAir(ItemStack can);
+	// Return true if that itemStack is Air compatible (i.e. may or already contains air)
+	public boolean canContainAir(ItemStack itemStack);
+	
+	public boolean containsAir(ItemStack itemStack);
+	public ItemStack emptyDrop(ItemStack itemStack);
+	public ItemStack fullDrop(ItemStack itemStack);
 }

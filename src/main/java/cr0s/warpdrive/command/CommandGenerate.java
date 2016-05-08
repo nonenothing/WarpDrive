@@ -3,10 +3,13 @@ package cr0s.warpdrive.command;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.config.structures.AbstractStructure;
+import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.world.JumpgateGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
 import cr0s.warpdrive.world.WorldGenStation;
@@ -34,61 +37,113 @@ public class CommandGenerate extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] params) {
-		EntityPlayerMP player = (EntityPlayerMP) icommandsender;
-		if (params.length > 0) {
-			String struct = params[0];
-
-			// Reject command, if player is not in space
-			if (player.dimension != WarpDriveConfig.G_SPACE_DIMENSION_ID && (!"ship".equals(struct))) {
-				WarpDrive.addChatMessage(player, "* generate: this structure is only allowed in space!");
-				return;
-			}
-
-			int x = MathHelper.floor_double(player.posX);
-			int y = MathHelper.floor_double(player.posY);
-			int z = MathHelper.floor_double(player.posZ);
-
-			if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-				if (struct.equals("moon")) {
-					WarpDrive.logger.info("/generate: generating moon at " + x + ", " + (y - 16) + ", " + z);
-					WarpDrive.instance.spaceWorldGenerator.generateMoon(player.worldObj, x, y - 16, z, null);
-				} else if (struct.equals("ship")) {
-					WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
-					new WorldGenSmallShip(false).generate(player.worldObj, player.worldObj.rand, x, y, z);
-				} else if (struct.equals("station")) {
-					WarpDrive.logger.info("/generate: generating station at " + x + ", " + y + ", " + z);
-					new WorldGenStation(false).generate(player.worldObj, player.worldObj.rand, x, y, z);
-				} else if (struct.equals("asteroid")) {
-					WarpDrive.logger.info("/generate: generating asteroid at " + x + ", " + (y - 10) + ", " + z);
-					WarpDrive.instance.spaceWorldGenerator.generateRandomAsteroid(player.worldObj, x, y - 10, z, 6, 11);
-				} else if (struct.equals("astfield")) {
-					WarpDrive.logger.info("/generate: generating asteroid field at " + x + ", " + y + ", " + z);
-					WarpDrive.instance.spaceWorldGenerator.generateAsteroidField(player.worldObj, x, y, z);
-				} else if (struct.equals("gascloud")) {
-					WarpDrive.logger.info("/generate: generating gas cloud at " + x + ", " + y + ", " + z);
-					String type = (params.length > 1) ? params[1] : null;
-					WarpDrive.instance.spaceWorldGenerator.generateGasCloudOfColor(player.worldObj, x, y, z, 15, 20, type);
-				} else if (struct.equals("star")) {
-					WarpDrive.logger.info("/generate: generating star at " + x + ", " + y + ", " + z);
-					String type = (params.length > 1) ? params[1] : null;
-					WarpDrive.instance.spaceWorldGenerator.generateStar(player.worldObj, x, y, z, type);
-				} else if (struct.equals("jumpgate")) {
-					if (params.length == 2) {
-						WarpDrive.logger.info("/generate: creating jumpgate at " + x + ", " + y + ", " + z);
-
-						if (WarpDrive.jumpgates.addGate(params[1], x, y, z)) {
-							JumpgateGenerator.generate(player.worldObj, x, Math.min(y, 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), z);
-						} else {
-							WarpDrive.logger.info("/generate: jumpgate '" + params[1] + "' already exists.");
-						}
-					}
+	public void processCommand(ICommandSender commandSender, String[] params) {
+		World world = commandSender.getEntityWorld();
+		ChunkCoordinates coordinates = commandSender.getPlayerCoordinates();
+		
+		if (world == null || coordinates == null) {
+			WarpDrive.addChatMessage(commandSender, "* generate: unknown world or coordinates, probably an invalid command sender in action here.");
+			return;
+		}
+		int x = coordinates.posX;
+		int y = coordinates.posY;
+		int z = coordinates.posZ;
+		
+		if (params.length <= 0 || params.length == 3 || params.length > 5) {
+			WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
+			return;
+		}
+		
+		if (params.length > 3) {
+			x = AdjustAxis(x, params[params.length - 3]);
+			y = AdjustAxis(y, params[params.length - 2]);
+			z = AdjustAxis(z, params[params.length - 1]);
+		}
+		
+		String struct = params[0];
+		
+		// Reject command, if player is not in space
+		if (world.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && (!"ship".equals(struct))) {
+			WarpDrive.addChatMessage(commandSender, "* generate: this structure is only allowed in space!");
+			return;
+		}
+		
+		if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
+			if (struct.equals("ship")) {
+				WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
+				new WorldGenSmallShip(false).generate(world, world.rand, x, y, z);
+				
+			} else if (struct.equals("station")) {
+				WarpDrive.logger.info("/generate: generating station at " + x + ", " + y + ", " + z);
+				new WorldGenStation(false).generate(world, world.rand, x, y, z);
+				
+			} else if (struct.equals("asteroid")) {
+				String name = (params.length > 1) ? params[1] : null;
+				generateStructure(commandSender, StructureManager.GROUP_ASTEROIDS, name, world, x, y - 10, z);
+				
+			} else if (struct.equals("astfield")) {
+				WarpDrive.logger.info("/generate: generating asteroid field at " + x + ", " + y + ", " + z);
+				WarpDrive.instance.spaceWorldGenerator.generateAsteroidField(world, x, y, z);
+				
+			} else if (struct.equals("gascloud")) {
+				String name = (params.length > 1) ? params[1] : null;
+				generateStructure(commandSender, StructureManager.GROUP_GASCLOUDS, name, world, x, y, z);
+				
+			} else if (struct.equals("moon")) {
+				String name = (params.length > 1) ? params[1] : null;
+				generateStructure(commandSender, StructureManager.GROUP_MOONS, name, world, x, y - 16, z);
+				
+			} else if (struct.equals("star")) {
+				String name = (params.length > 1) ? params[1] : null;
+				generateStructure(commandSender, StructureManager.GROUP_STARS, name, world, x, y, z);
+				
+			} else if (struct.equals("jumpgate")) {
+				if (params.length != 2) {
+					WarpDrive.addChatMessage(commandSender, "Missing jumpgate name");
 				} else {
-					WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+					WarpDrive.logger.info("/generate: creating jumpgate at " + x + ", " + y + ", " + z);
+					
+					if (WarpDrive.jumpgates.addGate(params[1], x, y, z)) {
+						JumpgateGenerator.generate(world, x, Math.min(y, 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), z);
+					} else {
+						WarpDrive.logger.info("/generate: jumpgate '" + params[1] + "' already exists.");
+					}
 				}
+			} else {
+				WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
 			}
+		}
+	}
+	
+	private int AdjustAxis(final int axis, final String param) {
+		if (param.isEmpty() || param.equals("~")) {
+			return axis;
+		}
+		
+		if (param.charAt(0) == '~') {
+			return axis + Integer.parseInt(param.substring(1));
 		} else {
-			WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+			return Integer.parseInt(param);
+		}
+	}
+	
+	private void generateStructure(ICommandSender commandSender, final String group, final String name, World world, final int x, final int y, final int z) {
+		AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
+		if (structure == null) {
+			WarpDrive.addChatMessage(commandSender, "Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group));
+		} else {
+			WarpDrive.logger.info("/generate: Generating " + group + ":" + structure.getName() + " at " + x + " " + y + " " + z);
+			structure.generate(world, world.rand, x, y, z);
+			
+			// do a weak attempt to extract player (ideally, it should be delayed after generation, but that's too complicated)
+			if (commandSender instanceof EntityPlayerMP) {
+				int newY = y + 1;
+				while (newY < 256 && !world.isAirBlock(x, newY, z)) {
+					newY++;
+				}
+				EntityPlayerMP player = (EntityPlayerMP)commandSender;
+				player.setPosition(player.posX, newY, player.posZ);
+			}
 		}
 	}
 }

@@ -2,28 +2,30 @@ package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class BlockEnanReactorCore extends BlockAbstractContainer {
 	IIcon[] iconBuffer = new IIcon[17];
-
+	
 	public BlockEnanReactorCore() {
-		super();
+		super(Material.iron);
 		setBlockName("warpdrive.energy.EnanReactorCore");
 	}
-
+	
 	@Override
 	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntityEnanReactorCore();
 	}
-
+	
 	@Override
 	public void breakBlock(World w, int x, int y, int z, Block oid, int om) {
 		super.breakBlock(w, x, y, z, oid, om);
-
+		
 		int[] xo = { -2, 2, 0, 0 };
 		int[] zo = { 0, 0, -2, 2 };
 		for (int i = 0; i < 4; i++) {
@@ -33,18 +35,27 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 			}
 		}
 	}
-
+	
 	@Override
-	public IIcon getIcon(int side, int meta) {
+	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
+		int metadata  = world.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[16];
 		}
-		if (meta >= 0 && meta < 16) {
-			return iconBuffer[meta];
+		if (metadata >= 0 && metadata < 16) {
+			return iconBuffer[metadata];
 		}
 		return iconBuffer[0];
 	}
-
+	
+	@Override
+	public IIcon getIcon(int side, int metadata) {
+		if (side == 0 || side == 1) {
+			return iconBuffer[16];
+		}
+		return iconBuffer[7];
+	}
+	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer[16] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreTopBottom");

@@ -1,8 +1,10 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -11,8 +13,8 @@ public class BlockTransporter extends BlockAbstractContainer {
 
 	private IIcon[] iconBuffer;
 
-	public BlockTransporter(Material par2Material) {
-		super(par2Material);
+	public BlockTransporter() {
+		super(Material.iron);
 		setBlockName("warpdrive.movement.Transporter");
 	}
 
@@ -37,5 +39,26 @@ public class BlockTransporter extends BlockAbstractContainer {
 		}
 
 		return iconBuffer[2];
+	}
+	
+	
+	/**
+	 * Called upon block activation (right click on the block.)
+	 */
+	@Override
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
+		
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityTransporter) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }

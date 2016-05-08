@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.passive;
 
+import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -7,7 +8,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
 
 public class BlockTransportBeacon extends Block {
 	public BlockTransportBeacon() {

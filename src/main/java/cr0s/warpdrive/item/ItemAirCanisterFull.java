@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.data.ComponentType;
 
 public class ItemAirCanisterFull extends Item implements IAirCanister {
 	
@@ -20,35 +21,35 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 	}
 	
 	@Override
-	public void registerIcons(IIconRegister ir) {
-		icon = ir.registerIcon("warpdrive:componentAirCanisterFull");
+	public void registerIcons(IIconRegister iconRegister) {
+		icon = iconRegister.registerIcon("warpdrive:componentAirCanisterFull");
 	}
 	
 	@Override
 	public IIcon getIconFromDamage(int damage) {
 		return icon;
 	}
-
-	@Override
-	public ItemStack emptyDrop(ItemStack is) {
- 		return WarpDrive.itemComponent.getISNoCache(1, 8);
- 	}
- 
-	@Override
-	public ItemStack fullDrop(ItemStack can) {
-		return new ItemStack(WarpDrive.itemAirCanisterFull,1);
-	}
 	
 	@Override
-	public boolean canContainAir(ItemStack can) {
-		if (can != null && can.getItem() instanceof ItemAirCanisterFull) {
-			return can.getItemDamage() > 0;
+	public boolean canContainAir(ItemStack itemStack) {
+		if (itemStack != null && itemStack.getItem() instanceof ItemAirCanisterFull) {
+			return itemStack.getItemDamage() > 0;
 		}
 		return false;
 	}
-
+	
 	@Override
-	public boolean containsAir(ItemStack can) {
+	public boolean containsAir(ItemStack itemStack) {
 		return true;
+	}
+	
+	@Override
+	public ItemStack emptyDrop(ItemStack itemStack) {
+		return WarpDrive.itemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 1);
+	}
+	
+	@Override
+	public ItemStack fullDrop(ItemStack itemStack) {
+		return new ItemStack(WarpDrive.itemAirCanisterFull, 1);
 	}
 }

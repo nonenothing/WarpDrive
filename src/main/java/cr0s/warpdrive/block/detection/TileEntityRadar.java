@@ -8,74 +8,114 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StarMapEntry;
+import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityRadar extends TileEntityAbstractEnergy {
-	private ArrayList<TileEntityShipCore> results;
-
-	private int scanRadius = 0;
-	private int cooldownTime = 0;
+	private ArrayList<StarMapEntry> results;
+	
+	// radius defined for next scan
+	private int radius = 0;
+	
+	// radius for ongoing scan
+	private int scanningRadius = 0;
+	private int scanningDuration_ticks = 0;
+	private int scanning_ticks = 0;
 	
 	public TileEntityRadar() {
 		super();
 		peripheralName = "warpdriveRadar";
-		methodsArray = new String[] {
-				"scanRadius",
+		addMethods(new String[] {
+				"radius",
+				"getEnergyRequired",
+				"start",
+				"getScanDuration",
 				"getResultsCount",
-				"getResult",
-				"getEnergyLevel",
-				"pos"
-			};
+				"getResult"
+			});
 		CC_scripts = Arrays.asList("scan", "ping");
 	}
 	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		
+		if (worldObj.isRemote) {
 			return;
 		}
 		
 		try {
 			if (getBlockMetadata() == 2) {
-				cooldownTime++;
-				if (cooldownTime > (20 * ((scanRadius / 1000) + 1))) {
-					results = WarpDrive.shipCores.searchWarpCoresInRadius(xCoord, yCoord, zCoord, scanRadius);
+				scanning_ticks++;
+				if (scanning_ticks > scanningDuration_ticks) {
+					results = WarpDrive.starMap.radarScan(this, scanningRadius);
 					if (WarpDriveConfig.LOGGING_RADAR) {
-						WarpDrive.logger.info(this + " Scan found " + results.size() + " results in " + scanRadius + " radius...");
+						WarpDrive.logger.info(this + " Scan found " + results.size() + " results in " + scanningRadius + " radius...");
 					}
 					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 1 + 2);
-					cooldownTime = 0;
+					scanning_ticks = 0;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 	}
-
+	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 	}
-
+	
+	private int calculateEnergyRequired(final int parRadius) {
+		return (int)Math.round(Math.max(WarpDriveConfig.RADAR_SCAN_MIN_ENERGY_COST,
+				  WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[0]
+				+ WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[1] * parRadius
+				+ WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[2] * parRadius * parRadius
+				+ WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[3] * parRadius * parRadius * parRadius));
+	}
+	
+	private int calculateScanDuration(final int parRadius) {
+		return (int)Math.round(20 * Math.max(WarpDriveConfig.RADAR_SCAN_MIN_DELAY_SECONDS,
+				  WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[0]
+				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[1] * parRadius
+				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[2] * parRadius * parRadius
+				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[3] * parRadius * parRadius * parRadius));
+	}
+	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] scanRadius(Context context, Arguments arguments) {
-		return scanRadius(argumentsOCtoCC(arguments));
+	public Object[] radius(Context context, Arguments arguments) {
+		return radius(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+		return getEnergyRequired(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getScanDuration(Context context, Arguments arguments) {
+		return getScanDuration(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] start(Context context, Arguments arguments) {
+		return start(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
@@ -93,62 +133,87 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return getResult(argumentsOCtoCC(arguments));
 	}
 	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] pos(Context context, Arguments arguments) {
-		return new Integer[] { xCoord, yCoord, zCoord };
+	private Object[] radius(Object[] arguments) {
+		if (arguments.length == 1 && getBlockMetadata() != 2) {
+			int newRadius;
+			try {
+				newRadius = toInt(arguments[0]);
+			} catch(Exception exception) {
+				return new Integer[] { radius };
+			}
+			radius = clamp(0, 10000, newRadius);
+		}
+		return new Integer[] { radius };
 	}
 	
-	private Object[] scanRadius(Object[] arguments) {
+	private Object[] getEnergyRequired(Object[] arguments) {
+		try {
+			if (arguments.length == 1) {
+				return new Object[] { calculateEnergyRequired(toInt(arguments[0])) };
+			}
+		} catch (Exception exception) {
+			return new Integer[] { -1 };
+		}
+		return new Integer[] { -1 };
+	}
+	
+	private Object[] getScanDuration(Object[] arguments) {
+		try {
+			if (arguments.length == 1) {
+				return new Object[] { 0.050D * calculateScanDuration(toInt(arguments[0])) };
+			}
+		} catch (Exception exception) {
+			return new Integer[] { -1 };
+		}
+		return new Integer[] { -1 };
+	}
+
+	private Object[] start(Object[] arguments) {
 		// always clear results
 		results = null;
 		
 		// validate parameters
-		if (arguments.length != 1) {
-			return new Boolean[] { false };
-		}
-		int radius;
-		try {
-			radius = toInt(arguments[0]);
-		} catch(Exception e) {
-           	return new Boolean[] { false };
-        }
 		if (radius <= 0 || radius > 10000) {
-			scanRadius = 0;
-			return new Boolean[] { false };
+			radius = 0;
+			return new Object[] { false, "Invalid radius" };
 		}
-		if (!consumeEnergy(Math.max(radius, 100) * Math.max(radius, 100), false)) {
-			return new Boolean[] { false };
+		int energyRequired = calculateEnergyRequired(radius);
+		if (!consumeEnergy(energyRequired, false)) {
+			return new Object[] { false, "Insufficient energy" };
 		}
 		
 		// Begin searching
-		scanRadius = radius;
-		cooldownTime = 0;
+		scanningRadius = radius;
+		scanningDuration_ticks = calculateScanDuration(radius);
+		scanning_ticks = 0;
 		if (getBlockMetadata() != 2) {
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 2, 1 + 2);
 		}
-		return new Boolean[] { true };
+		if (WarpDriveConfig.LOGGING_RADAR) {
+			WarpDrive.logger.info(this + "Starting scan over radius " + scanningRadius + " for " + energyRequired + " EU, results expected in " + scanningDuration_ticks + " ticks");
+		}
+		return new Object[] { true };
 	}
+	
 	private Object[] getResult(Object[] arguments) {
 		if (arguments.length == 1 && (results != null)) {
 			int index;
 			try {
 				index = toInt(arguments[0]);
-			} catch(Exception e) {
-				return new Object[] { "FAIL", 0, 0, 0 };
+			} catch(Exception exception) {
+				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}
 			if (index >= 0 && index < results.size()) {
-				TileEntityShipCore res = results.get(index);
-				if (res != null)
-				{
-					int yAddition = (res.getWorldObj().provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) ? 256 : (res.getWorldObj().provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) ? 512 : 0;
-					return new Object[] { res.coreFrequency, res.xCoord, res.yCoord + yAddition, res.zCoord };
+				StarMapEntry result = results.get(index);
+				if (result != null) {
+					VectorI spaceCoordinates = result.getSpaceCoordinates();
+					return new Object[] { true, "SHIP", result.name, spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z };
 				}
 			}
 		}
-		return new Object[] { "FAIL", 0, 0, 0 };
+		return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 	}
-
+	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
@@ -158,7 +223,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 1 + 2);
 		}
 	}
-
+	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public void detach(IComputerAccess computer) {
@@ -169,10 +234,20 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-	   	String methodName = methodsArray[method];
-		if (methodName.equals("scanRadius")) {// scanRadius (radius)
-			return scanRadius(arguments);
-
+		String methodName = getMethodName(method);
+		
+		if (methodName.equals("radius")) {
+			return radius(arguments);
+			
+		} else if (methodName.equals("getEnergyRequired")) {
+			return getEnergyRequired(arguments);
+			
+		} else if (methodName.equals("getScanDuration")) {
+			return getScanDuration(arguments);
+			
+		} else if (methodName.equals("start")) {
+			return start(arguments);
+			
 		} else if (methodName.equals("getResultsCount")) {
 			if (results != null) {
 				return new Integer[] { results.size() };
@@ -182,23 +257,18 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		} else if (methodName.equals("getResult")) {
 			return getResult(arguments);
 			
-		} else if (methodName.equals("getEnergyLevel")) {
-			return getEnergyLevel();
-				
-		} else if (methodName.equals("pos")) {
-			return new Integer[] { xCoord, yCoord, zCoord };
 		}
-
-		return null;
+		
+		return super.callMethod(computer, context, method, arguments);
 	}
-
+	
 	@Override
 	public int getMaxEnergyStored() {
-		return WarpDriveConfig.WR_MAX_ENERGY_VALUE;
+		return WarpDriveConfig.RADAR_MAX_ENERGY_STORED;
 	}
-
-    @Override
-    public boolean canInputEnergy(ForgeDirection from) {
-    	return true;
-    }
+	
+	@Override
+	public boolean canInputEnergy(ForgeDirection from) {
+		return true;
+	}
 }

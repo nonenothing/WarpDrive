@@ -7,8 +7,10 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.render.EntityFXBeam;
 
@@ -66,7 +68,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 		red = buffer.readFloat();
 		green = buffer.readFloat();
 		blue = buffer.readFloat();
-		age = buffer.readByte();
+		age = buffer.readShort();
 		energy = buffer.readInt();
 	}
 	
@@ -81,15 +83,17 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 		buffer.writeFloat(red);
 		buffer.writeFloat(green);
 		buffer.writeFloat(blue);
-		buffer.writeByte(age);
+		buffer.writeShort(Math.min(32767, age));
 		buffer.writeInt(energy);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	private void handle(World worldObj) {
 		FMLClientHandler.instance().getClient().effectRenderer.addEffect(new EntityFXBeam(worldObj, source.clone(), target.clone(), red, green, blue, age, energy));
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(MessageBeamEffect beamEffectMessage, MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {

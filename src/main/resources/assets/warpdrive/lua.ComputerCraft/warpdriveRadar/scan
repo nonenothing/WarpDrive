@@ -65,8 +65,9 @@ function drawContact(x, y, z, name, color)
 end
 
 function scanAndDraw()
-  local energy, energyMax = radar.getEnergyLevel()
-  if (energy < radius*radius) then
+  local energy, energyMax = radar.energy()
+  local energyRequired = radar.getEnergyRequired(radius)
+  if (energy < energyRequired) then
     hh = math.floor(h / 2)
     hw = math.floor(w / 2)
     
@@ -78,8 +79,10 @@ function scanAndDraw()
     
     return 0
   end
-  radar.scanRadius(radius)
-  sleep(2)
+  radar.radius(radius)
+  radar.start()
+  local scanDuration = radar.getScanDuration(radius)
+  sleep(scanDuration)
   
   redraw()
   
@@ -87,9 +90,9 @@ function scanAndDraw()
   
   if (numResults ~= 0) then
     for i = 0, numResults-1 do
-      freq, cx, cy, cz = radar.getResult(i)
+      success, type, name, cx, cy, cz = radar.getResult(i)
       
-      drawContact(cx, cy, cz, freq, colors.red)
+      drawContact(cx, cy, cz, name, colors.red)
     end
   end
   
@@ -101,16 +104,16 @@ function redraw()
   
   paintutils.drawLine(1, 1, w, 1, colors.black)
   
-  textOut((w / 2) - 8, 1, "= Q-Radar v0.1 =", colors.white, colors.black)
+  textOut((w / 2) - 8, 1, "= Q-Radar v0.2 =", colors.white, colors.black)
   
   textOut(w - 3, 1, "[X]", colors.white, colors.red)
   
   paintutils.drawLine(1, h, w, h, colors.black)
-  local energy, energyMax = radar.getEnergyLevel()
+  local energy, energyMax = radar.energy()
   textOut(4, h, "Energy: " .. energy .. " EU | Scan radius: " .. radius, colors.white, colors.black)
 end
 
-radarX, radarY, radarZ = radar.pos()
+radarX, radarY, radarZ = radar.position()
 mrun = true
 while (mrun) do
   scanAndDraw()

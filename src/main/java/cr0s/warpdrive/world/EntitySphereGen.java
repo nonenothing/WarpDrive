@@ -6,9 +6,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
+import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.structures.Orb;
+import cr0s.warpdrive.config.structures.Orb.OrbShell;
+import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.data.JumpBlock;
 
 /*
@@ -48,12 +49,12 @@ public final class EntitySphereGen extends Entity {
 	private int radius;
 	private int gasColor;
 	
-	private final int BLOCKS_PER_TICK = 5000;
+	private static final int BLOCKS_PER_TICK = 5000;
 	
-	private final int STATE_SAVING = 0;
-	private final int STATE_SETUP = 1;
-	private final int STATE_DELETE = 2;
-	private final int STATE_STOP = 3;
+	private static final int STATE_SAVING = 0;
+	private static final int STATE_SETUP = 1;
+	private static final int STATE_DELETE = 2;
+	private static final int STATE_STOP = 3;
 	private int state = STATE_DELETE;
 	private int ticksDelay = 0;
 	
@@ -61,15 +62,14 @@ public final class EntitySphereGen extends Entity {
 	private int pregenSize = 0;
 	
 	private ArrayList<JumpBlock> blocks;
-	private int defaultMeta;
-	private Orb orb;
+	private OrbInstance orbInstance;
 	private boolean replace;
 	
 	public EntitySphereGen(World world) {
 		super(world);
 	}
 	
-	public EntitySphereGen(World world, int x, int y, int z, int radius, Orb orb, boolean replace) {
+	public EntitySphereGen(World world, int x, int y, int z, OrbInstance orbInstance, boolean replace) {
 		super(world);
 		this.xCoord = x;
 		this.posX = x;
@@ -77,45 +77,64 @@ public final class EntitySphereGen extends Entity {
 		this.posY = y;
 		this.zCoord = z;
 		this.posZ = z;
+		this.orbInstance = orbInstance;
 		this.gasColor = worldObj.rand.nextInt(12);
-		this.radius = radius;
+		this.radius = orbInstance.getTotalThickness();
+		
 		this.state = STATE_SAVING;
 		this.pregenSize = (int) Math.ceil(Math.PI * 4.0F / 3.0F * Math.pow(radius + 1, 3));
 		blocks = new ArrayList<JumpBlock>(this.pregenSize);
 		this.ticksDelay = world.rand.nextInt(60);
-		this.orb = orb;
 		this.replace = replace;
 	}
 	
 	public void killEntity() {
 		this.state = STATE_STOP;
+		int minYclamped = Math.max(0, yCoord - radius);
+		int maxYclamped = Math.min(255, yCoord + radius);
+		for (int x = xCoord - radius; x <= xCoord + radius; x++) {
+			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
+				for (int y = minYclamped; y <= maxYclamped; y++) {
+					if (worldObj.getBlock(x, y, z) != Blocks.air) {
+						worldObj.markBlockForUpdate(x, y, z);
+					}
+				}
+			}
+		}
 		worldObj.removeEntity(this);
 	}
 	
 	@Override
 	public void onUpdate() {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+		if (worldObj.isRemote) {
 			return;
 		}
-		
+		 
 		if (ticksDelay > 0) {
 			ticksDelay--;
 			return;
 		}
 		
-		switch (this.state) {
+		switch (state) {
 		case STATE_SAVING:
 			tickScheduleBlocks();
 			this.state = STATE_SETUP;
 			break;
+		
 		case STATE_SETUP:
 			if (currentIndex >= blocks.size() - 1)
 				this.state = STATE_DELETE;
 			else
 				tickPlaceBlocks();
 			break;
+		
 		case STATE_DELETE:
 			currentIndex = 0;
+			killEntity();
+			break;
+		
+		default:
+			WarpDrive.logger.error(this + " Invalid state " + state + ". Killing entity...");
 			killEntity();
 			break;
 		}
@@ -123,72 +142,68 @@ public final class EntitySphereGen extends Entity {
 	
 	private void tickPlaceBlocks() {
 		int blocksToMove = Math.min(BLOCKS_PER_TICK, blocks.size() - currentIndex);
-		// LocalProfiler.start("[EntitySphereGen] Placing blocks: " +
-		// currentIndex + "/" + blocks.size());
+		LocalProfiler.start("[EntitySphereGen] Placing blocks from " + currentIndex + " to " + (currentIndex + blocksToMove) + "/" + blocks.size());
 		int notifyFlag;
 		
 		for (int index = 0; index < blocksToMove; index++) {
 			if (currentIndex >= blocks.size())
 				break;
-			notifyFlag = (currentIndex % 1000 == 0 ? 2 : 0);
+			notifyFlag = (currentIndex % 1000 == 0 ? 2 : 2);
 			JumpBlock jb = blocks.get(currentIndex);
 			JumpBlock.setBlockNoLight(worldObj, jb.x, jb.y, jb.z, jb.block, jb.blockMeta, notifyFlag);
+			// worldObj.setBlock(jb.x, jb.y, jb.z, jb.block, jb.blockMeta, notifyFlag);
 			currentIndex++;
 		}
 		
-		// LocalProfiler.stop();
+		LocalProfiler.stop();
 	}
 	
 	private void tickScheduleBlocks() {
-		radius += 0.5D; // Radius from center of block
-
+		LocalProfiler.start("[EntitySphereGen] Saving blocks, radius " + radius);
+		
+		// square radius from center of block
+		double sqRadius = (radius + 0.5D) * (radius + 0.5D);
+		
 		// sphere
-		int ceilRadius = (int) Math.ceil(radius);
+		int ceilRadius = radius + 1;
 		
 		// Pass the cube and check points for sphere equation x^2 + y^2 + z^2 = r^2
 		for (int x = 0; x <= ceilRadius; x++) {
 			double x2 = (x + 0.5D) * (x + 0.5D);
 			for (int y = 0; y <= ceilRadius; y++) {
-				double y2 = (y + 0.5D) * (y + 0.5D);
+				double x2y2 = x2 + (y + 0.5D) * (y + 0.5D);
 				for (int z = 0; z <= ceilRadius; z++) {
-					double z2 = (z + 0.5D) * (z + 0.5D);
-					double dSq = Math.sqrt(x2 + y2 + z2); // Distance from current position
-					// to center
+					double sqRange = x2y2 + (z + 0.5D) * (z + 0.5D); // Square distance from current position to center
 					
 					// Skip too far blocks
-					if (dSq > radius)
+					if (sqRange > sqRadius) {
 						continue;
-					
-					int rad = (int) Math.ceil(dSq);
+					}
 					
 					// Add blocks to memory
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord + x, yCoord + y, zCoord + z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord - x, yCoord + y, zCoord + z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord + x, yCoord - y, zCoord + z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord + x, yCoord + y, zCoord - z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord - x, yCoord - y, zCoord + z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord + x, yCoord - y, zCoord - z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord - x, yCoord + y, zCoord - z));
-					
-					addBlock(new JumpBlock(orb.getBlockForRadius(rand, rad), defaultMeta, xCoord - x, yCoord - y, zCoord - z));
+					OrbShell orbShell = orbInstance.getShellForSqRadius(sqRange);
+					// WarpDrive.logger.info("sqRange " + sqRange + " sqRadius " + sqRadius);
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord + y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord + y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord - y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord + y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord - y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord - y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord + y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord - y, zCoord - z));
 				}
 			}
 		}
 		if (blocks != null) {
 			WarpDrive.logger.info("[EntitySphereGen] Saved " + blocks.size() + " blocks (estimated to " + pregenSize + ")");
 		}
-		// LocalProfiler.stop();
+		LocalProfiler.stop();
 	}
 	
 	private void addBlock(JumpBlock jb) {
-		if (blocks == null)
+		if (blocks == null) {
 			return;
+		}
 		// Replace water with random gas (ship in moon)
 		if (worldObj.getBlock(jb.x, jb.y, jb.z).isAssociatedBlock(Blocks.water)) {
 			if (worldObj.rand.nextInt(50) != 1) {
@@ -199,13 +214,15 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Do not replace existing blocks if fillingSphere is true
-		if (!replace && !worldObj.isAirBlock(jb.x, jb.y, jb.z))
+		if (!replace && !worldObj.isAirBlock(jb.x, jb.y, jb.z)) {
 			return;
+		}
 		blocks.add(jb);
 	}
 	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound tag) {
+		// FIXME not implemented
 	}
 	
 	@Override
@@ -214,6 +231,7 @@ public final class EntitySphereGen extends Entity {
 	
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound tag) {
+		// FIXME not implemented
 	}
 	
 	@Override

@@ -1,350 +1,726 @@
 package cr0s.warpdrive.block.collection;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.IPlantable;
+import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
-	Boolean active = false;
-
-	private int mode = 0;
-	private boolean doLeaves = false;
-	private boolean silkTouchLeaves = false;
-	private boolean treeTap = false;
-
-	private final int defSize = 8;
-	private final int scanWait = 40;
-	private final int mineWait = 4;
-	private int delayMul = 4;
-
-	private int totalHarvested=0;
-
-	private int scan = 0;
-	private int xSize = defSize;
-	private int zSize = defSize;
-
-	LinkedList<Vector3> logs;
-	private int logIndex = 0;
-
+	private boolean breakLeaves = false;
+	private boolean tapTrees = false;
+	
+	private boolean isFarming() {
+		return currentState != STATE_IDLE;
+	}
+	private final int STATE_IDLE = 0;
+	private final int STATE_WARMUP = 1;
+	private final int STATE_SCAN = 2;
+	private final int STATE_HARVEST = 3;
+	private final int STATE_TAP = 4;
+	private final int STATE_PLANT = 5;
+	private int currentState = STATE_IDLE;
+	
+	private boolean enoughPower = false;
+	
+	private final int TREE_FARM_WARMUP_DELAY_TICKS = 40;
+	private final int TREE_FARM_SCAN_DELAY_TICKS = 40;
+	private final int TREE_FARM_HARVEST_LOG_DELAY_TICKS = 4;
+	private final int TREE_FARM_BREAK_LEAF_DELAY_TICKS = 4;
+	private final int TREE_FARM_SILKTOUCH_LEAF_DELAY_TICKS = 4;
+	private final int TREE_FARM_TAP_TREE_WET_DELAY_TICKS = 4;
+	private final int TREE_FARM_TAP_TREE_DRY_DELAY_TICKS = 1;
+	private final int TREE_FARM_PLANT_DELAY_TICKS = 1;
+	private final int TREE_FARM_LOWPOWER_DELAY_TICKS = 40;
+	
+	private final int TREE_FARM_ENERGY_PER_SURFACE = 1;
+	private final int TREE_FARM_ENERGY_PER_WET_SPOT = 1;
+	private final double TREE_FARM_ENERGY_PER_LOG = 1;
+	private final double TREE_FARM_ENERGY_PER_LEAF = 1;
+	private final double TREE_FARM_SILKTOUCH_ENERGY_FACTOR = 2.0D;
+	private final int TREE_FARM_ENERGY_PER_SAPLING = 1;
+	
+	private int delayTargetTicks = 0;
+	
+	private int totalHarvested = 0;
+	
+	private boolean bScanOnReload = false;
+	private int delayTicks = 0;
+	
+	private int radiusX = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
+	private int radiusZ = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
+	
+	LinkedList<VectorI> soils;
+	private int soilIndex = 0;
+	ArrayList<VectorI> valuables;
+	private int valuableIndex = 0;
+	
 	public TileEntityLaserTreeFarm() {
 		super();
-		IC2_sinkTier = 2;
-		IC2_sourceTier = 2;
+		laserOutputSide = ForgeDirection.UP;
 		peripheralName = "warpdriveLaserTreefarm";
-		methodsArray = new String[] {
+		addMethods(new String[] {
 				"start",
 				"stop",
-				"area",
-				"leaves",
-				"silkTouch",
-				"silkTouchLeaves",
-				"treetap",
-				"state"
-		};
+				"radius",
+				"state",
+				"breakLeaves",
+				"silktouch",
+				"tapTrees"
+		});
+		laserMediumMaxCount = WarpDriveConfig.TREE_FARM_MAX_MEDIUMS_COUNT;
+		CC_scripts = Arrays.asList("farm", "stop");
 	}
-
+	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-
-		if (active) {
-			scan++;
-			if (mode == 0) {
-				if (scan >= scanWait) {
-					scan = 0;
-					logs = scanTrees();
-					if(logs.size() > 0)
-						mode = treeTap ? 2 : 1;
-					logIndex = 0;
+		
+		if (worldObj.isRemote) {
+			return;
+		}
+		
+		if (bScanOnReload) {
+			soils = scanSoils();
+			valuables = new ArrayList<VectorI>(scanTrees());
+			bScanOnReload = false;
+			return;
+		}
+		
+		if (currentState == STATE_IDLE) {
+			delayTicks = 0;
+			delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
+			updateMetadata(BlockLaserTreeFarm.ICON_IDLE);
+			
+			// force start if no computer control is available
+			if (!WarpDriveConfig.isComputerCraftLoaded && !WarpDriveConfig.isOpenComputersLoaded) {
+				breakLeaves = true;
+				enableSilktouch = false;
+				tapTrees = true;
+				start(null);
+			}
+			return;
+		}
+		
+		delayTicks++;
+		
+		// Scanning
+		if (currentState == STATE_WARMUP) {
+			updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGLOWPOWER);
+			if (delayTicks >= delayTargetTicks) {
+				delayTicks = 0;
+				delayTargetTicks = TREE_FARM_SCAN_DELAY_TICKS;
+				currentState = STATE_SCAN;
+				updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGLOWPOWER);
+				return;
+			}
+		} else if (currentState == STATE_SCAN) {
+			int energyCost = TREE_FARM_ENERGY_PER_SURFACE * (1 + 2 * radiusX) * (1 + 2 * radiusZ);
+			if (delayTicks == 1) {
+				if (WarpDriveConfig.LOGGING_COLLECTION) {
+					WarpDrive.logger.debug("Scan pre-tick");
 				}
-			} else {
-				if (scan >= mineWait * delayMul) {
-					scan = 0;
-
-					if (logIndex >= logs.size()) {
-						mode = 0;
-						return;
-					}
-					Vector3 pos = logs.get(logIndex);
-					Block block = worldObj.getBlock(pos.intX(), pos.intY(), pos.intZ());
-
-					if (mode == 1) {
-						int cost = calculateBlockCost(block);
-						if (consumeEnergyFromBooster(cost, true)) {
-							if (isLog(block) || (doLeaves && isLeaf(block))) {
-								delayMul = 1;
-								if (isRoomForHarvest()) {
-									if (consumeEnergyFromBooster(cost, false)) {
-										if (isLog(block)) {
-											delayMul = 4;
-											totalHarvested++;
-										}
-										harvestBlock(pos);
-									} else {
-										return;
-									}
-								} else {
-									return;
-								}
+				// check power level
+				enoughPower = consumeEnergyFromLaserMediums(energyCost, true);
+				if (!enoughPower) {
+					currentState = STATE_WARMUP;	// going back to warmup state to show the animation when it'll be back online
+					delayTicks = 0;
+					delayTargetTicks = TREE_FARM_LOWPOWER_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGLOWPOWER);
+					return;
+				} else {
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGPOWERED);
+				}
+				
+				// show current layer
+				int age = Math.max(40, 2 * TREE_FARM_SCAN_DELAY_TICKS);
+				double xmax = xCoord + radiusX + 1.0D;
+				double xmin = xCoord - radiusX + 0.0D;
+				double zmax = zCoord + radiusZ + 1.0D;
+				double zmin = zCoord - radiusZ + 0.0D;
+				double y = yCoord + worldObj.rand.nextInt(9);
+				PacketHandler.sendBeamPacket(worldObj, new Vector3(xmin, y, zmin), new Vector3(xmax, y, zmin), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(worldObj, new Vector3(xmax, y, zmin), new Vector3(xmax, y, zmax), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(worldObj, new Vector3(xmax, y, zmax), new Vector3(xmin, y, zmax), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(worldObj, new Vector3(xmin, y, zmax), new Vector3(xmin, y, zmin), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				
+			} else if (delayTicks >= delayTargetTicks) {
+				if (WarpDriveConfig.LOGGING_COLLECTION) {
+					WarpDrive.logger.debug("Scan tick");
+				}
+				delayTicks = 0;
+				
+				// consume power
+				enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
+				if (!enoughPower) {
+					delayTargetTicks = TREE_FARM_LOWPOWER_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGLOWPOWER);
+					return;
+				} else {
+					delayTargetTicks = TREE_FARM_SCAN_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGPOWERED);
+				}
+				
+				// scan
+				soils = scanSoils();
+				soilIndex = 0;
+				
+				valuables = new ArrayList<VectorI>(scanTrees());
+				valuableIndex = 0;
+				if (valuables != null && valuables.size() > 0) {
+					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
+					currentState = tapTrees ? STATE_TAP : STATE_HARVEST;
+					delayTargetTicks = TREE_FARM_HARVEST_LOG_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_FARMINGPOWERED);
+					return;
+					
+				} else if (soils != null && soils.size() > 0) {
+					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
+					currentState = STATE_PLANT;
+					delayTargetTicks = TREE_FARM_PLANT_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_PLANTINGPOWERED);
+					return;
+					
+				} else {
+					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+					currentState = STATE_WARMUP;
+					delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGLOWPOWER);
+				}
+			}
+		} else if (currentState == STATE_HARVEST || currentState == STATE_TAP) {
+			if (delayTicks >= delayTargetTicks) {
+				if (WarpDriveConfig.LOGGING_COLLECTION) {
+					WarpDrive.logger.debug("Harvest/tap tick");
+				}
+				delayTicks = 0;
+				
+				// harvesting done => plant
+				if (valuables == null || valuableIndex >= valuables.size()) {
+					valuableIndex = 0;
+					currentState = STATE_PLANT;
+					delayTargetTicks = TREE_FARM_PLANT_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_PLANTINGPOWERED);
+					return;
+				}
+				
+				// get current block
+				VectorI valuable = valuables.get(valuableIndex);
+				Block block = worldObj.getBlock(valuable.x, valuable.y, valuable.z);
+				valuableIndex++;
+				boolean isLog = isLog(block);
+				boolean isLeaf = isLeaf(block);
+				
+				// save the rubber producing blocks in tapping mode
+				if (currentState == STATE_TAP) {
+					if (block.isAssociatedBlock(WarpDriveConfig.IC2_rubberWood)) {
+						int metadata = worldObj.getBlockMetadata(valuable.x, valuable.y, valuable.z);
+						if (metadata >= 2 && metadata <= 5) {
+							if (WarpDriveConfig.LOGGING_COLLECTION) {
+								WarpDrive.logger.info("Tap found rubber wood wetspot at " + valuable + " with metadata " + metadata);
 							}
-							logIndex++;
-						}
-					} else if(mode == 2) {
-						int cost = calculateBlockCost(block);
-						if (consumeEnergyFromBooster(cost, true)) {
-							if (isRoomForHarvest()) {
-								if (block.isAssociatedBlock(Block.getBlockFromItem(WarpDriveConfig.IC2_rubberWood.getItem()))) {
-									int metadata = worldObj.getBlockMetadata(pos.intX(), pos.intY(), pos.intZ());
-									if (metadata >= 2 && metadata <= 5) {
-										if (WarpDriveConfig.LOGGING_COLLECTION) {
-											WarpDrive.logger.info("wetspot found");
-										}
-										if (consumeEnergyFromBooster(cost, false)) {
-											ItemStack resin = WarpDriveConfig.IC2_Resin.copy();
-											resin.stackSize = (int) Math.round(Math.random() * 4);
-											dumpToInv(resin);
-											worldObj.setBlockMetadataWithNotify(pos.intX(), pos.intY(), pos.intZ(), metadata+6, 3);
-											laserBlock(pos);
-											totalHarvested++;
-											delayMul = 4;
-										} else {
-											return;
-										}
-									} else {
-										delayMul = 1;
-									}
-								} else if (isLog(block)) {
-									if (consumeEnergyFromBooster(cost, false)) {
-										delayMul = 4;
-										totalHarvested++;
-										harvestBlock(pos);
-									} else {
-										return;
-									}
-								} else if (isLeaf(block)) {
-									if (consumeEnergyFromBooster(cost, true)) {
-										delayMul = 1;
-										harvestBlock(pos);
-									} else {
-										return;
-									}
-								}
-							} else {
+							
+							// consume power
+							int energyCost = TREE_FARM_ENERGY_PER_WET_SPOT;
+							enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
+							if (!enoughPower) {
+								delayTargetTicks = TREE_FARM_LOWPOWER_DELAY_TICKS;
+								updateMetadata(BlockLaserTreeFarm.ICON_FARMINGLOWPOWER);
 								return;
+							} else {
+								delayTargetTicks = TREE_FARM_TAP_TREE_WET_DELAY_TICKS;
+								updateMetadata(BlockLaserTreeFarm.ICON_FARMINGPOWERED);
 							}
-							logIndex++;
+							
+							ItemStack resin = WarpDriveConfig.IC2_Resin.copy();
+							resin.stackSize = (int) Math.round(Math.random() * 4);
+							if (addToConnectedInventory(resin)) {
+								stop();
+							}
+							totalHarvested += resin.stackSize;
+							int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * TREE_FARM_HARVEST_LOG_DELAY_TICKS));
+							PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable.x, valuable.y, valuable.z).translate(0.5D),
+									0.8F, 0.8F, 0.2F, age, 0, 50);
+							
+							worldObj.setBlockMetadataWithNotify(valuable.x, valuable.y, valuable.z, metadata + 6, 3);
+							// done with this block
+							return;
+						} else if (metadata != 0 && metadata != 1) {
+							delayTargetTicks = TREE_FARM_TAP_TREE_DRY_DELAY_TICKS;
+							// done with this block
+							return;
+						}
+					}
+				}
+				
+				if (isLog || (breakLeaves && isLeaf)) {// actually break the block?
+					// consume power
+					double energyCost = isLog ? TREE_FARM_ENERGY_PER_LOG : TREE_FARM_ENERGY_PER_LEAF;
+					if (enableSilktouch) {
+						energyCost *= TREE_FARM_SILKTOUCH_ENERGY_FACTOR;
+					}
+					enoughPower = consumeEnergyFromLaserMediums((int) Math.round(energyCost), false);
+					if (!enoughPower) {
+						delayTargetTicks = TREE_FARM_LOWPOWER_DELAY_TICKS;
+						updateMetadata(BlockLaserTreeFarm.ICON_FARMINGLOWPOWER);
+						return;
+					} else {
+						delayTargetTicks = isLog ? TREE_FARM_HARVEST_LOG_DELAY_TICKS : enableSilktouch ? TREE_FARM_SILKTOUCH_LEAF_DELAY_TICKS : TREE_FARM_BREAK_LEAF_DELAY_TICKS;
+						updateMetadata(BlockLaserTreeFarm.ICON_FARMINGPOWERED);
+					}
+					
+					totalHarvested++;
+					int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable.x, valuable.y, valuable.z).translate(0.5D),
+							0.2F, 0.7F, 0.4F, age, 0, 50);
+					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+					
+					harvestBlock(valuable);
+				}
+			}
+		} else if (currentState == STATE_PLANT) {
+			if (delayTicks >= delayTargetTicks) {
+				if (WarpDriveConfig.LOGGING_COLLECTION) {
+					WarpDrive.logger.debug("Plant final tick");
+				}
+				delayTicks = 0;
+				
+				// planting done => scan
+				if (soils == null || soilIndex >= soils.size()) {
+					soilIndex = 0;
+					currentState = STATE_SCAN;
+					delayTargetTicks = TREE_FARM_SCAN_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGPOWERED);
+					return;
+				}
+				
+				// get current block
+				VectorI soil = soils.get(soilIndex);
+				Block block = worldObj.getBlock(soil.x, soil.y, soil.z);
+				soilIndex++;
+				IInventory inventory = getFirstConnectedInventory();
+				if (inventory == null) {
+					currentState = STATE_WARMUP;
+					delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGLOWPOWER);
+					return;
+				}
+				
+				int slotIndex = 0;
+				boolean found = false;
+				int plantableCount = 0;
+				ItemStack itemStack = null;
+				Block plant = null;
+				int plantMetadata = -1;
+				while (slotIndex < inventory.getSizeInventory() && !found) {
+					itemStack = inventory.getStackInSlot(slotIndex);
+					if (itemStack == null || itemStack.stackSize <= 0) {
+						slotIndex++;
+						continue;
+					}
+					Block blockFromItem = Block.getBlockFromItem(itemStack.getItem());
+					if (!(itemStack.getItem() instanceof IPlantable) && !(blockFromItem instanceof IPlantable)) {
+						slotIndex++;
+						continue;
+					}
+					plantableCount++;
+					IPlantable plantable = (IPlantable)((itemStack.getItem() instanceof IPlantable) ? itemStack.getItem() : blockFromItem);
+					plant = plantable.getPlant(worldObj, soil.x, soil.y + 1, soil.z);
+					plantMetadata = plantable.getPlantMetadata(worldObj, soil.x, soil.y + 1, soil.z);
+					if (plantMetadata == 0 && itemStack.getItemDamage() != 0) {
+						plantMetadata = itemStack.getItemDamage();
+					}
+					if (WarpDriveConfig.LOGGING_COLLECTION) {
+						WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant + ":" + plantMetadata);
+					}
+					
+					if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, plantable)) {
+						slotIndex++;
+						continue;
+					}
+					
+					if (!plant.canPlaceBlockAt(worldObj, soil.x, soil.y + 1, soil.z)) {
+						slotIndex++;
+						continue;
+					}
+					
+					found = true;
+				}
+				
+				// no plantable found at all, back to scanning
+				if (plantableCount <= 0) {
+					currentState = STATE_SCAN;
+					delayTargetTicks = TREE_FARM_SCAN_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNINGPOWERED);
+					return;
+				}
+				
+				// no sapling found for this soil, moving on...
+				if (!found || itemStack == null) {
+					WarpDrive.logger.debug("No sapling found");
+					return;
+				}
+				
+				// consume power
+				double energyCost = TREE_FARM_ENERGY_PER_SAPLING;
+				enoughPower = consumeEnergyFromLaserMediums((int) Math.round(energyCost), false);
+				if (!enoughPower) {
+					delayTargetTicks = TREE_FARM_LOWPOWER_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_PLANTINGLOWPOWER);
+					return;
+				} else {
+					delayTargetTicks = TREE_FARM_PLANT_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_PLANTINGPOWERED);
+				}
+				
+				itemStack.stackSize--;
+				if (itemStack.stackSize <= 0) {
+					itemStack = null;
+				}
+				inventory.setInventorySlotContents(slotIndex, itemStack);
+				
+				// totalPlanted++;
+				int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(soil.x, soil.y + 1, soil.z).translate(0.5D),
+						0.2F, 0.7F, 0.4F, age, 0, 50);
+				worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+				worldObj.setBlock(soil.x, soil.y + 1, soil.z, plant, plantMetadata, 3);
+			}
+		}
+	}
+	
+	@Override
+	protected void stop() {
+		super.stop();
+		currentState = STATE_IDLE;
+		updateMetadata(BlockLaserTreeFarm.ICON_IDLE);
+	}
+	
+	private static boolean isSoil(Block block) {
+		return Dictionary.BLOCKS_SOILS.contains(block);
+	}
+	
+	private static boolean isLog(Block block) {
+		return Dictionary.BLOCKS_LOGS.contains(block);
+	}
+	
+	private static boolean isLeaf(Block block) {
+		return Dictionary.BLOCKS_LEAVES.contains(block);
+	}
+	
+	private LinkedList<VectorI> scanSoils() {
+		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		int xmin = xCoord - Math.min(radiusX, maxRadius);
+		int xmax = xCoord + Math.min(radiusX, maxRadius);
+		int ymin = yCoord + 0;
+		int ymax = yCoord + 8;
+		int zmin = zCoord - Math.min(radiusZ, maxRadius);
+		int zmax = zCoord + Math.min(radiusZ, maxRadius);
+		
+		LinkedList<VectorI> soilPositions = new LinkedList<VectorI>();
+		
+		for(int y = ymin; y <= ymax; y++) {
+			for(int x = xmin; x <= xmax; x++) {
+				for(int z = zmin; z <= zmax; z++) {
+					if (worldObj.isAirBlock(x, y + 1, z)) {
+						Block block = worldObj.getBlock(x, y, z);
+						if (isSoil(block)) {
+							VectorI pos = new VectorI(x, y, z);
+							if (WarpDriveConfig.LOGGING_COLLECTION) {
+								// WarpDrive.logger.info("Found soil at " + x + "," + y + "," + z);
+							}
+							soilPositions.add(pos);
 						}
 					}
 				}
 			}
 		}
-	}
-
-	private static boolean isLog(Block block) {
-		return WarpDriveConfig.minerLogs.contains(block);
-	}
-
-	private static boolean isLeaf(Block block) {
-		return WarpDriveConfig.minerLeaves.contains(block);
-	}
-
-	private static void addTree(LinkedList<Vector3> list, Vector3 newTree) {
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
-			WarpDrive.logger.info("Adding tree position:" + newTree.x + "," + newTree.y + "," + newTree.z);
+			WarpDrive.logger.info("Found " + soilPositions.size() + " soils");
 		}
-		list.add(newTree);
+		return soilPositions;
 	}
-
-	private LinkedList<Vector3> scanTrees() {
-		int xmax, zmax, x1, x2, z1, z2;
-		int xmin, zmin;
-		x1 = xCoord + xSize / 2;
-		x2 = xCoord - xSize / 2;
-		xmin = Math.min(x1, x2);
-		xmax = Math.max(x1, x2);
-
-		z1 = zCoord + zSize / 2;
-		z2 = zCoord - zSize / 2;
-		zmin = Math.min(z1, z2);
-		zmax = Math.max(z1, z2);
-
-		LinkedList<Vector3> logPositions = new LinkedList<Vector3>();
-
-		for(int x = xmin; x <= xmax; x++) {
-			for(int z = zmin; z <= zmax; z++) {
-				Block block = worldObj.getBlock(x, yCoord, z);
-				if (isLog(block)) {
-					Vector3 pos = new Vector3(x, yCoord, z);
-					logPositions.add(pos);
-					scanNearby(logPositions, x, yCoord, z, 0);
+	
+	private Collection<VectorI> scanTrees() {
+		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		int xmin = xCoord - Math.min(radiusX, maxRadius);
+		int xmax = xCoord + Math.min(radiusX, maxRadius);
+		int ymin = yCoord + 1;
+		int ymax = yCoord + 1 + (tapTrees ? 8 : 0);
+		int zmin = zCoord - Math.min(radiusZ, maxRadius);
+		int zmax = zCoord + Math.min(radiusZ, maxRadius);
+		
+		Collection<VectorI> logPositions = new HashSet<VectorI>();
+		
+		for(int y = ymin; y <= ymax; y++) {
+			for(int x = xmin; x <= xmax; x++) {
+				for(int z = zmin; z <= zmax; z++) {
+					Block block = worldObj.getBlock(x, y, z);
+					if (isLog(block)) {
+						VectorI pos = new VectorI(x, y, z);
+						if (!logPositions.contains(pos)) {
+							if (WarpDriveConfig.LOGGING_COLLECTION) {
+								WarpDrive.logger.info("Found tree base at " + x + "," + y + "," + z);
+							}
+							logPositions.add(pos);
+						}
+					}
 				}
 			}
+		}
+		if (logPositions.size() > 0) {
+			HashSet<Block> whitelist = (HashSet<Block>) Dictionary.BLOCKS_LOGS.clone();
+			if (breakLeaves) {
+				whitelist.addAll(Dictionary.BLOCKS_LEAVES);
+			}
+			logPositions = getConnectedBlocks(worldObj, logPositions, UP_DIRECTIONS, whitelist, WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
+		}
+		if (WarpDriveConfig.LOGGING_COLLECTION) {
+			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
 		}
 		return logPositions;
 	}
-
-	private void scanNearby(LinkedList<Vector3> current, int x, int y, int z, int d) {
-		int[] deltas = {0, -1, 1};
-		for(int dx : deltas) {
-			for(int dy = 1; dy >= 0; dy--) {
-				for(int dz : deltas) {
-					Block block = worldObj.getBlock(x + dx, y + dy, z + dz);
-					if (isLog(block) || (doLeaves && isLeaf(block))) {
-						Vector3 pos = new Vector3(x + dx, y + dy, z + dz);
-						if (!current.contains(pos)) {
-							addTree(current, pos);
-							if (d < 35) {
-								scanNearby(current,x+dx,y+dy,z+dz,d+1);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
+	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		tag.setInteger("xSize", xSize);
-		tag.setInteger("zSize", zSize);
-		tag.setBoolean("doLeaves", doLeaves);
-		tag.setBoolean("active", active);
-		tag.setBoolean("treetap", treeTap);
-		tag.setBoolean("silkTouchLeaves", silkTouchLeaves);
+		tag.setInteger("radiusX", radiusX);
+		tag.setInteger("radiusZ", radiusZ);
+		tag.setBoolean("breakLeaves", breakLeaves);
+		tag.setBoolean("tapTrees", tapTrees);
+		tag.setInteger("currentState", currentState);
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		xSize = tag.getInteger("xSize");
-		zSize = tag.getInteger("zSize");
-
-		doLeaves = tag.getBoolean("doLeaves");
-		active   = tag.getBoolean("active");
-		treeTap  = tag.getBoolean("treetap");
-		silkTouchLeaves = tag.getBoolean("silkTouchLeaves");
-	}
-
-	// OpenComputer callback methods
-	// FIXME: implement OpenComputers...
-
-	// ComputerCraft IPeripheral methods implementation
-	@Override
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = methodsArray[method];
-		if (methodName.equals("start")) {
-			if (!active) {
-				mode = 0;
-				totalHarvested = 0;
-				active = true;
-			}
-			return new Boolean[] { true };
-		} else if (methodName.equals("stop")) {
-			active = false;
-		} else if (methodName.equals("area")) {
-			try {
-				if (arguments.length == 1) {
-					xSize = clamp(toInt(arguments[0]),3,WarpDriveConfig.TF_MAX_SIZE);
-					zSize = xSize;
-				} else if (arguments.length == 2) {
-					xSize = clamp(toInt(arguments[0]),3,WarpDriveConfig.TF_MAX_SIZE);
-					zSize = clamp(toInt(arguments[1]),3,WarpDriveConfig.TF_MAX_SIZE);
-				}
-			} catch(NumberFormatException e) {
-				xSize = defSize;
-				zSize = defSize;
-			}
-			return new Integer[] { xSize , zSize };
-		} else if (methodName.equals("leaves")) {
-			try {
-				if (arguments.length > 0) {
-					doLeaves = toBool(arguments[0]);
-				}
-			} catch(Exception e) {
-
-			}
-			return new Boolean[] { doLeaves };
-		} else if (methodName.equals("silkTouch")) {
-			try {
-				silkTouch(arguments[0]);
-			} catch(Exception e) {
-				silkTouch(false);
-			}
-			return new Object[] { silkTouch() };
-		} else if (methodName.equals("silkTouchLeaves")) {
-			try {
-				if (arguments.length >= 1) {
-					silkTouchLeaves = toBool(arguments[0]);
-				}
-			} catch(Exception e) {
-				silkTouchLeaves = false;
-			}
-			return new Object[] { silkTouchLeaves };
-		} else if (methodName.equals("treetap")) {
-			try {
-				if (arguments.length >= 1) {
-					treeTap = toBool(arguments[0]);
-				}
-			} catch(Exception e) {
-				treeTap = false;
-			}
-			return new Object[] { treeTap };
-		} else if (methodName.equals("state")) {
-			String state = active ? (mode==0?"scanning" : (mode == 1 ? "harvesting" : "tapping")) : "inactive";
-			return new Object[] { state, xSize, zSize, energy(), totalHarvested };
+		radiusX = tag.getInteger("radiusX");
+		if (radiusX == 0) {
+			radiusX = 1;
 		}
+		radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusX);
+		radiusZ = tag.getInteger("radiusZ");
+		if (radiusZ == 0) {
+			radiusZ = 1;
+		}
+		radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusZ);
+		
+		breakLeaves     = tag.getBoolean("breakLeaves");
+		tapTrees        = tag.getBoolean("tapTrees");
+		currentState    = tag.getInteger("currentState");
+		if (currentState == STATE_HARVEST || currentState == STATE_TAP || currentState == STATE_PLANT) {
+			bScanOnReload = true;
+		}
+	}
+	
+	// OpenComputer callback methods
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] start(Context context, Arguments arguments) {
+		return start(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] stop(Context context, Arguments arguments) {
+		stop();
 		return null;
 	}
-
-	//ABSTRACT LASER IMPLEMENTATION
-	@Override
-	protected boolean silkTouch(Block block) {
-		if (isLeaf(block)) {
-			return silkTouchLeaves;
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] state(Context context, Arguments arguments) {
+		return state(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] radius(Context context, Arguments arguments) {
+		return radius(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] breakLeaves(Context context, Arguments arguments) {
+		return breakLeaves(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] silktouch(Context context, Arguments arguments) {
+		return silktouch(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] tapTrees(Context context, Arguments arguments) {
+		return tapTrees(argumentsOCtoCC(arguments));
+	}
+	
+	// Common OC/CC methods
+	private Object[] start(Object[] arguments) {
+		if (isFarming()) {
+			return new Object[] { false, "Already started" };
 		}
-		return silkTouch();
+		
+		totalHarvested = 0;
+		delayTicks = 0;
+		currentState = STATE_WARMUP;
+		return new Boolean[] { true };
 	}
-
-	@Override
-	protected boolean canSilkTouch() {
-		return true;
+	
+	private Object[] state(Object[] arguments) {
+		int energy = getEnergyStored();
+		String status = getStatus();
+		Integer retValuables, retValuablesIndex;
+		if (isFarming() && valuables != null) {
+			retValuables = valuables.size();
+			retValuablesIndex = valuableIndex;
+			
+			return new Object[] { status, isFarming(), energy, totalHarvested, retValuablesIndex, retValuables };
+		}
+		return new Object[] { status, isFarming(), energy, totalHarvested, 0, 0 };
 	}
-
-	@Override
-	protected int minFortune() {
-		return 0;
+	
+	private Object[] radius(Object[] arguments) {
+		try {
+			if (arguments.length == 1) {
+				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
+				radiusZ = radiusX;
+			} else if (arguments.length == 2) {
+				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
+				radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[1]));
+			}
+		} catch(NumberFormatException exception) {
+			radiusX = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
+			radiusZ = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
+		}
+		return new Integer[] { radiusX , radiusZ };
 	}
-
-	@Override
-	protected int maxFortune() {
-		return 0;
+	
+	private Object[] breakLeaves(Object[] arguments) {
+		if (arguments.length == 1) {
+			try {
+				breakLeaves = toBool(arguments[0]);
+			} catch (Exception exception) {
+				return new Object[] { breakLeaves };
+			}
+		}
+		return new Object[] { breakLeaves };
 	}
-
-	@Override
-	protected double laserBelow() {
-		return -0.5;
+	
+	private Object[] silktouch(Object[] arguments) {
+		if (arguments.length == 1) {
+			try {
+				enableSilktouch = toBool(arguments[0]);
+			} catch (Exception exception) {
+				return new Object[] { enableSilktouch };
+			}
+		}
+		return new Object[] { enableSilktouch };
 	}
-
-	@Override
-	protected float getColorR() {
-		return 0.2f;
+	
+	private Object[] tapTrees(Object[] arguments) {
+		if (arguments.length == 1) {
+			try {
+				tapTrees = toBool(arguments[0]);
+			} catch (Exception exception) {
+				return new Object[] { tapTrees };
+			}
+		}
+		return new Object[] { tapTrees };
 	}
-
+	
+	// ComputerCraft IPeripheral methods implementation
 	@Override
-	protected float getColorG() {
-		return 0.7f;
+	@Optional.Method(modid = "ComputerCraft")
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+		String methodName = getMethodName(method);
+		
+		if (methodName.equals("start")) {
+			return start(arguments);
+			
+		} else if (methodName.equals("stop")) {
+			stop();
+			return null;
+			
+		} else if (methodName.equals("state")) {
+			return state(arguments);
+			
+		} else if (methodName.equals("radius")) {
+			return radius(arguments);
+			
+		} else if (methodName.equals("breakLeaves")) {
+			return breakLeaves(arguments);
+			
+		} else if (methodName.equals("silktouch")) {
+			return silktouch(arguments);
+			
+		} else if (methodName.equals("tapTrees")) {
+			return tapTrees(arguments);
+		}
+		
+		return super.callMethod(computer, context, method, arguments);
 	}
-
-	@Override
-	protected float getColorB() {
-		return 0.4f;
+	
+	public String getStatus() {
+		int energy = getEnergyStored();
+		String state = "IDLE (not farming)";
+		if (currentState == STATE_IDLE) {
+			state = "IDLE (not farming)";
+		} else if (currentState == STATE_WARMUP) {
+			state = "Warming up...";
+		} else if (currentState == STATE_SCAN) {
+			if (breakLeaves) {
+				state = "Scanning all";
+			} else {
+				state = "Scanning logs";
+			}
+		} else if (currentState == STATE_HARVEST) {
+			if (breakLeaves) {
+				state = "Harvesting all";
+			} else {
+				state = "Harvesting logs";
+			}
+			if (enableSilktouch) {
+				state = state + " with silktouch";
+			}
+		} else if (currentState == STATE_TAP) {
+			if (breakLeaves) {
+				state = "Tapping trees, harvesting all";
+			} else {
+				state = "Tapping trees, harvesting logs";
+			}
+			if (enableSilktouch) {
+				state = state + " with silktouch";
+			}
+		} else if (currentState == STATE_PLANT) {
+			state = "Planting trees";
+		}
+		if (energy <= 0) {
+			state = state + " - Out of energy";
+		} else if (((currentState == STATE_SCAN) || (currentState == STATE_HARVEST) || (currentState == STATE_TAP)) && !enoughPower) {
+			state = state + " - Not enough power";
+		}
+		return state;
 	}
 }

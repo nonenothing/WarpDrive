@@ -12,9 +12,9 @@ import cr0s.warpdrive.WarpDrive;
 public class BlockWarpIsolation extends Block {
 	private IIcon[] iconBuffer;
 
-	public BlockWarpIsolation(int texture, Material material) {
-		super(material);
-		setHardness(0.5F);
+	public BlockWarpIsolation() {
+		super(Material.iron);
+		setHardness(3.5F);
 		setStepSound(Block.soundTypeMetal);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.detection.WarpIsolation");

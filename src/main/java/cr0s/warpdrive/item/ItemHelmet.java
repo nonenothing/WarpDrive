@@ -1,81 +1,83 @@
 package cr0s.warpdrive.item;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.api.IBreathingHelmet;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class ItemHelmet extends ItemArmor implements IBreathingHelmet {
-	// private static Random ran = new Random();
-	private int slot;
-
-	IIcon ic;
-
+	
 	public ItemHelmet(ArmorMaterial mat, int slot) {
 		super(mat, 0, slot);
-		this.slot = slot;
 		setUnlocalizedName("warpdrive.armor.Helmet");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setTextureName("warpdrive:warpArmorHelmet");
 	}
-
+	
 	@Override
 	public String getArmorTexture(ItemStack is, Entity en, int parSlot, String type) {
 		return "warpdrive:textures/armor/warpArmor_1.png";
 	}
-
-	@Override
-	public void registerIcons(IIconRegister ir) {
-		if (slot == 0) {
-			ic = ir.registerIcon("warpdrive:warpArmorHelmet");
-		}
-	}
-
-	@Override
-	public IIcon getIconFromDamage(int damage) {
-		return ic;
-	}
-
+	
 	@Override
 	public boolean canBreath(Entity player) {
 		return true;
 	}
-
+	
 	@Override
-	public boolean removeAir(Entity player) {
+	public boolean removeAir(Entity entity) {
 		if (WarpDriveConfig.LOGGING_BREATHING) {
 			WarpDrive.logger.info("Checking breathing!");
 		}
-		if (player instanceof EntityPlayerMP) {
-			EntityPlayerMP pl = (EntityPlayerMP) player;
-			ItemStack[] plInv = pl.inventory.mainInventory;
-			for (int i = 0; i < plInv.length; i++) {
-				ItemStack is = plInv[i];
-				if (is != null && is.getItem() instanceof IAirCanister) {
-					IAirCanister airCanister = (IAirCanister) is.getItem();
-					if (airCanister.containsAir(is)) {
-						if (is.stackSize > 1) {// unstack
-							is.stackSize--;
-							ItemStack toAdd = is.copy();
+		if (entity instanceof EntityPlayerMP) {
+			EntityPlayerMP entityPlayer = (EntityPlayerMP) entity;
+			ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+			int slotAirCanisterFound = -1;
+			float fillingRatioAirCanisterFound = 0.0F;
+			
+			// find most consumed air canister with smallest stack
+			for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
+				ItemStack itemStack = playerInventory[slotIndex];
+				if (itemStack != null && itemStack.getItem() instanceof IAirCanister) {
+					IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+					if (airCanister.containsAir(itemStack)) {
+						float fillingRatio = 1.0F - itemStack.getItemDamage() / (float)itemStack.getMaxDamage();
+						fillingRatio -= itemStack.stackSize / 1000;
+						if (fillingRatioAirCanisterFound <= 0.0F || fillingRatio < fillingRatioAirCanisterFound) {
+							slotAirCanisterFound = slotIndex;
+							fillingRatioAirCanisterFound = fillingRatio;
+						}
+					}
+				}
+			}
+			// consume air on the selected Air canister
+			if (slotAirCanisterFound >= 0) {
+				ItemStack itemStack = playerInventory[slotAirCanisterFound];
+				if (itemStack != null && itemStack.getItem() instanceof IAirCanister) {
+					IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+					if (airCanister.containsAir(itemStack)) {
+						if (itemStack.stackSize > 1) {// unstack
+							itemStack.stackSize--;
+							ItemStack toAdd = itemStack.copy();
 							toAdd.stackSize = 1;
-							toAdd.setItemDamage(is.getItemDamage() + 1); // bypass unbreaking enchantment
-							if (is.getItemDamage() >= is.getMaxDamage()) {
-								toAdd = airCanister.emptyDrop(is);
+							toAdd.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+							if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+								toAdd = airCanister.emptyDrop(itemStack);
 							}
-							if (!pl.inventory.addItemStackToInventory(toAdd)) {
-								EntityItem ie = new EntityItem(pl.worldObj, pl.posX, pl.posY, pl.posZ, toAdd);
-								pl.worldObj.spawnEntityInWorld(ie);
+							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
+								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 							}
+							entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 						} else {
-							is.setItemDamage(is.getItemDamage() + 1); // bypass unbreaking enchantment
-							if (is.getItemDamage() >= is.getMaxDamage()) {
-								plInv[i] = airCanister.emptyDrop(is);
+							itemStack.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+							if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+								playerInventory[slotAirCanisterFound] = airCanister.emptyDrop(itemStack);
 							}
 						}
 						return true;
@@ -85,9 +87,9 @@ public class ItemHelmet extends ItemArmor implements IBreathingHelmet {
 		}
 		return false;
 	}
-
+	
 	@Override
 	public int ticksPerCanDamage() {
-		return 40;
+		return 300;
 	}
 }

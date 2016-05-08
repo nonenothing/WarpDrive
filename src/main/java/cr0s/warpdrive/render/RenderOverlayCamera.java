@@ -9,7 +9,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CameraType;
 
 public class RenderOverlayCamera {
 	private Minecraft mc;
@@ -33,7 +34,7 @@ public class RenderOverlayCamera {
 		
 		try {
 			String strHelp;
-			if (ClientCameraHandler.overlayType == 0) {
+			if (ClientCameraHandler.overlayType == CameraType.SIMPLE_CAMERA) {
 				mc.getTextureManager().bindTexture(new ResourceLocation("warpdrive", "textures/blocks/detection/cameraOverlay.png"));
 				strHelp = "Left click to zoom / Right click to exit";
 			} else {
@@ -72,8 +73,8 @@ public class RenderOverlayCamera {
 					(int)(scaledHeight * 0.19),
 					0xFF008F, true);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
 		
 		GL11.glDepthMask(true);

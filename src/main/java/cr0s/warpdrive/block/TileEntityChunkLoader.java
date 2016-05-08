@@ -2,13 +2,13 @@ package cr0s.warpdrive.block;
 
 import java.util.Map;
 
+import cpw.mods.fml.common.Optional;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IUpgradable;
-import cr0s.warpdrive.conf.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumUpgradeTypes;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.UpgradeType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
@@ -32,14 +32,12 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 		posDX = 0;
 		posDZ = 0;
 		peripheralName = "warpdriveChunkloader";
-		methodsArray = new String[] {
-				"getEnergyLevel",
+		addMethods(new String[] {
 				"radius",
 				"bounds",
 				"active",
-				"upgrades",
-				"help"
-		};
+				"upgrades"
+		});
 	}
 
 	@Override
@@ -74,12 +72,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 			canLoad = consumeEnergy(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, true);
 		}
 	}
-
-	private int clampDistance(int dis)
-	{
-		return clamp(dis,0,WarpDriveConfig.CL_MAX_DISTANCE);
-	}
-
+	
 	private void changedDistance()
 	{
 		if(worldObj == null) {
@@ -93,10 +86,10 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 				return;
 			}
 		}
-		negDX = -clampDistance(negDX);
-		posDX =  clampDistance(posDX);
-		negDZ = -clampDistance(negDZ);
-		posDZ =  clampDistance(posDZ);
+		negDX = - clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDX);
+		posDX =   clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDX);
+		negDZ = - clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDZ);
+		posDZ =   clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDZ);
 		minChunk = new ChunkCoordIntPair(myChunk.chunkXPos+negDX,myChunk.chunkZPos+negDZ);
 		maxChunk = new ChunkCoordIntPair(myChunk.chunkXPos+posDX,myChunk.chunkZPos+posDZ);
 		area = (posDX - negDX + 1) * (posDZ - negDZ + 1);
@@ -128,33 +121,12 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	// OpenComputer callback methods
 	// FIXME: implement OpenComputers...
 
-	// ComputerCraft IPeripheral methods implementation
-	private String helpStr(Object[] args)
-	{
-		if(args.length == 1)
-		{
-			String m = args[0].toString().toLowerCase();
-			if(m.equals("energy"))
-				return WarpDrive.defEnergyStr;
-			else if(m.equals("radius"))
-				return "radius(int): sets the radius in chunks";
-			else if(m.equals("bounds"))
-				return "bounds(int,int,int,int): sets the bounds of chunks to load\nbounds(): returns the 4 bounds\nFormat is -X, +X, -Z, +Z";
-			else if(m.equals("active"))
-				return "active(): returns whether active or not\nactive(boolean): sets whether it should be active or not";
-			else if(m.equals("upgrades"))
-				return WarpDrive.defUpgradeStr;
-		}
-		return WarpDrive.defHelpStr;
-	}
-
 	@Override
+	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String meth = methodsArray[method];
-
-		if(meth.equals("getEnergyLevel")) {
-			return getEnergyLevel();
-		} else if(meth.equals("radius"))
+		String methodName = getMethodName(method);
+		
+		if(methodName.equals("radius"))
 		{
 			if(arguments.length == 1)
 			{
@@ -168,7 +140,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 			}
 			return new Object[] { false };
 		}
-		else if(meth.equals("bounds"))
+		else if(methodName.equals("bounds"))
 		{
 			if(arguments.length == 4)
 			{
@@ -180,31 +152,27 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 			}
 			return new Object[] { negDX, posDX, negDZ, posDZ };
 		}
-		else if(meth.equals("active"))
+		else if(methodName.equals("active"))
 		{
 			if(arguments.length == 1)
 				shouldLoad = toBool(arguments[0]);
 			return new Object[] { shouldChunkLoad() };
 		}
-		else if(meth.equals("upgrades"))
+		else if(methodName.equals("upgrades"))
 		{
 			return getUpgrades();
 		}
-		else if(meth.equals("help"))
-		{
-			return new Object[] {helpStr(arguments) };
-		}
-
-		return null;
+		
+		return super.callMethod(computer, context, method, arguments);
 	}
 
 	@Override
-	public boolean takeUpgrade(EnumUpgradeTypes upgradeType, boolean simulate)
+	public boolean takeUpgrade(UpgradeType upgradeType, boolean simulate)
 	{
 		int max = 0;
-		if(upgradeType == EnumUpgradeTypes.Energy)
+		if(upgradeType == UpgradeType.Energy)
 			max = 2;
-		else if(upgradeType == EnumUpgradeTypes.Power)
+		else if(upgradeType == UpgradeType.Power)
 			max = 2;
 
 		if(max == 0)
@@ -225,7 +193,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	}
 
 	@Override
-	public Map<EnumUpgradeTypes, Integer> getInstalledUpgrades()
+	public Map<UpgradeType, Integer> getInstalledUpgrades()
 	{
 		return upgrades;
 	}

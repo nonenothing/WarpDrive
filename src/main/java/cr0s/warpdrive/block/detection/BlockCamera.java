@@ -2,8 +2,6 @@ package cr0s.warpdrive.block.detection;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,20 +9,16 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.CameraRegistryItem;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 
-public class BlockCamera extends BlockContainer {
+public class BlockCamera extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
 	private final int ICON_SIDE = 0;
 	
-	public BlockCamera(int texture, Material material) {
-		super(material);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+	public BlockCamera() {
+		super(Material.iron);
 		this.setBlockName("warpdrive.detection.Camera");
 	}
 	
@@ -56,24 +50,17 @@ public class BlockCamera extends BlockContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World par1World, int x, int y, int z, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (!world.isRemote) {
 			return false;
 		}
 		
-		// Get camera frequency
-		TileEntity te = par1World.getTileEntity(x, y, z);
-		if (te != null && te instanceof TileEntityCamera && (par5EntityPlayer.getHeldItem() == null)) {
-			int frequency = ((TileEntityCamera)te).getFrequency();
-			
-			CameraRegistryItem cam = WarpDrive.instance.cameras.getCameraByFrequency(par1World, frequency);
-			if (cam == null) {
-				WarpDrive.instance.cameras.printRegistry(par1World);
-				WarpDrive.addChatMessage(par5EntityPlayer, getLocalizedName() + " Frequency '" + frequency + "' is invalid!");
-			} else {
-				WarpDrive.addChatMessage(par5EntityPlayer, getLocalizedName() + " Frequency '" + frequency + "' is valid for camera at " + cam.position.chunkPosX + ", " + cam.position.chunkPosY + ", " + cam.position.chunkPosZ);
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityCamera) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityCamera)tileEntity).getStatus());
+				return true;
 			}
-			return true;
 		}
 		
 		return false;

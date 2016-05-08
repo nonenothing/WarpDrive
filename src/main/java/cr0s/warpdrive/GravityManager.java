@@ -1,10 +1,11 @@
 package cr0s.warpdrive;
 
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 
 public class GravityManager {
@@ -20,7 +21,7 @@ public class GravityManager {
 	private static double SPACE_VOID_GRAVITY_JETPACKSNEAK = 0.02D; // Lem 0.01D
 	private static double SPACE_VOID_GRAVITY_RAWSNEAK = 0.005D; // Lem 0.01D		0.001 = no mvt
 	
-	public static double getGravityForEntity(EntityLivingBase entity) {
+	public static double getGravityForEntity(Entity entity) {
 		// Is entity in space or hyper-space?
 		boolean inSpace = entity.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID;
 		boolean inHyperspace = entity.worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
@@ -42,11 +43,15 @@ public class GravityManager {
 					EntityPlayer player = (EntityPlayer) entity;
 					
 					if (player.isSneaking()) {
-						if (player.getCurrentArmor(2) != null && WarpDriveConfig.jetpacks.contains(player.getCurrentArmor(2))) {
-							return SPACE_VOID_GRAVITY_JETPACKSNEAK;
-						} else {
-							return SPACE_VOID_GRAVITY_RAWSNEAK;
+						for (int i = 0; i < 4; i++) {
+							ItemStack armor = player.getCurrentArmor(i);
+							if (armor != null) {
+								if (Dictionary.ITEMS_FLYINSPACE.contains(armor.getItem())) {
+									return SPACE_VOID_GRAVITY_JETPACKSNEAK;
+								}
+							}
 						}
+						return SPACE_VOID_GRAVITY_RAWSNEAK;
 					} else {
 						// FIXME: compensate jetpack
 					}

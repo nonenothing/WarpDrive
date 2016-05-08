@@ -2,8 +2,6 @@ package cr0s.warpdrive.block.building;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,76 +9,69 @@ import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 
-public class BlockShipScanner extends BlockContainer {
+public class BlockShipScanner extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
-
-	public BlockShipScanner(int texture, Material material) {
-		super(material);
-		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+	private final static int ICON_BOTTOM = 0;
+	private final static int ICON_TOP = 1;
+	private final static int ICON_SIDE = 2;
+	
+	public BlockShipScanner() {
+		super(Material.iron);
 		setBlockName("warpdrive.building.ShipScanner");
 	}
-
+	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = new IIcon[3];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:building/shipScannerUp");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:building/shipScannerSide");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:building/shipScannerBottom");
+		iconBuffer = new IIcon[16];
+		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:building/shipScannerBottom");
+		iconBuffer[ICON_TOP   ] = par1IconRegister.registerIcon("warpdrive:building/shipScannerTop");
+		iconBuffer[ICON_SIDE  ] = par1IconRegister.registerIcon("warpdrive:building/shipScannerSide");
 	}
-
+	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		if (side == 1) { // UP
-			return iconBuffer[0];
-		} else if (side == 0) { // DOWN
-			return iconBuffer[2];
+		if (side == 0) {
+			return iconBuffer[ICON_BOTTOM];
 		}
-
-		return iconBuffer[1];
+		if (side == 1) {
+			return iconBuffer[ICON_TOP];
+		}
+		
+		return iconBuffer[ICON_SIDE];
 	}
-
+	
 	@Override
 	public TileEntity createNewTileEntity(World var1, int i) {
 		return new TileEntityShipScanner();
 	}
-
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
+	
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
 	}
-
-	/**
-	 * Returns the ID of the items to drop on destruction.
-	 */
+	
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);
 	}
-
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
+	
 	@Override
-	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9) {
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
 			return false;
 		}
-
-		TileEntityAbstractEnergy te = (TileEntityAbstractEnergy)par1World.getTileEntity(par2, par3, par4);
-		if (te != null && (par5EntityPlayer.getHeldItem() == null)) {
-			WarpDrive.addChatMessage(par5EntityPlayer, te.getStatus());
-			return true;
+		
+		if (entityPlayer.getHeldItem() == null) {
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityShipScanner) {
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipScanner)tileEntity).getStatus());
+				return true;
+			}
 		}
-
+		
 		return false;
 	}
 }

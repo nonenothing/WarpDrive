@@ -6,82 +6,66 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.DecorativeType;
 
 public class BlockDecorative extends Block {
-	public static enum decorativeTypes {
-		Plain, Energized, Network
-	};
-
-	private ItemStack[] isCache = new ItemStack[decorativeTypes.values().length];
-	private IIcon[] iconBuffer = new IIcon[decorativeTypes.values().length];
-
+	private static IIcon[] icons;
+	private static ItemStack[] itemStackCache;
+	
 	public BlockDecorative() {
 		super(Material.iron);
-		setHardness(0.5f);
+		setHardness(1.5f);
 		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.Plain");
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		
+		icons = new IIcon[DecorativeType.length];
+		itemStackCache = new ItemStack[DecorativeType.length];
 	}
-
-	private boolean isValidDamage(final int damage) {
-		return damage >= 0 && damage < decorativeTypes.values().length;
-	}
-
+	
 	@Override
-	public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List par3List) {
-		for (decorativeTypes val : decorativeTypes.values())
-			par3List.add(new ItemStack(par1, 1, val.ordinal()));
+	public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list) {
+		for (DecorativeType decorativeType : DecorativeType.values()) {
+			list.add(new ItemStack(item, 1, decorativeType.ordinal()));
+		}
 	}
-
+	
 	@Override
-	public void registerBlockIcons(IIconRegister ir) {
-		for (decorativeTypes val : decorativeTypes.values())
-			iconBuffer[val.ordinal()] = ir.registerIcon("warpdrive:passive/decorative" + val.toString());
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		for (DecorativeType decorativeType : DecorativeType.values()) {
+			icons[decorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:passive/decorative" + decorativeType.unlocalizedName);
+		}
 	}
-
+	
 	@Override
 	public IIcon getIcon(int side, int damage) {
-		if (isValidDamage(damage))
-			return iconBuffer[damage];
-		return iconBuffer[0];
+		if (damage >= 0 && damage < DecorativeType.length) {
+			return icons[damage];
+		}
+		return icons[0];
 	}
-
+	
 	@Override
 	public int damageDropped(int damage) {
 		return damage;
 	}
-
-	public ItemStack getItemStack(int damage) {
-		if (!isValidDamage(damage))
-			return null;
-
-		if (isCache[damage] == null)
-			isCache[damage] = getItemStackNoCache(damage);
-		return isCache[damage];
+	
+	public static ItemStack getItemStack(DecorativeType decorativeType) {
+		if (decorativeType != null) {
+			int damage = decorativeType.ordinal();
+			if (itemStackCache[damage] == null) {
+				itemStackCache[damage] = new ItemStack(WarpDrive.blockDecorative, 1, damage);
+			}
+			return itemStackCache[damage];
+		}
+		return null;
 	}
-
-	public ItemStack getItemStackNoCache(int damage, int amount) {
-		if (!isValidDamage(damage))
-			return null;
-
-		return new ItemStack(WarpDrive.blockDecorative, amount, damage);
+	
+	public static ItemStack getItemStackNoCache(DecorativeType decorativeType, int amount) {
+		return new ItemStack(WarpDrive.blockDecorative, amount, decorativeType.ordinal());
 	}
-
-	public ItemStack getItemStackNoCache(int damage) {
-		return getItemStackNoCache(damage, 1);
-	}
-
-	public void initRecipes() {
-		GameRegistry.addRecipe(new ShapedOreRecipe(getItemStackNoCache(0, 8), false, "sss", "scs", "sss", 's', Blocks.stone, 'c', WarpDrive.itemComponent.getItemStack(0)));
-
-		GameRegistry.addRecipe(new ShapedOreRecipe(getItemStackNoCache(2, 8), false, "sss", "scs", "sss", 's', getItemStack(0), 'c', WarpDrive.itemComponent.getItemStack(5)));
-	}
-
 }

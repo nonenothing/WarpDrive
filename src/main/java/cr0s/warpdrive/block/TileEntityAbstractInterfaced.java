@@ -1,6 +1,8 @@
 package cr0s.warpdrive.block;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +12,7 @@ import li.cil.oc.api.Network;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+import li.cil.oc.api.network.Component;
 import li.cil.oc.api.network.Environment;
 import li.cil.oc.api.network.ManagedEnvironment;
 import li.cil.oc.api.network.Message;
@@ -18,7 +21,7 @@ import li.cil.oc.api.network.Visibility;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -32,9 +35,11 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 })
 public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBase implements IPeripheral, Environment {
 	// Common computer properties
-	private boolean interfacedFirstTick = true;
 	protected String peripheralName = null;
-	protected String[] methodsArray = {};
+	private String[] methodsArray = {};
+	
+	// String returned to LUA script in case of error
+	public static final String COMPUTER_ERROR_TAG = "!ERROR!";
 	
 	// pre-loaded scripts support
 	private volatile ManagedEnvironment OC_fileSystem = null;
@@ -43,11 +48,39 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	protected volatile List<String> CC_scripts = null;
 	
 	// OpenComputer specific properties
+	protected boolean 	OC_enable = true;
 	protected Node		OC_node = null;
 	protected boolean	OC_addedToNetwork = false;
 	
 	// ComputerCraft specific properties
 	protected HashMap<Integer, IComputerAccess> connectedComputers = new HashMap<Integer, IComputerAccess>();
+	
+	public TileEntityAbstractInterfaced() {
+		super();
+		addMethods(new String[] {
+				"interfaced",
+				"position",
+				"version"
+		});
+	}
+	
+	// WarpDrive abstraction layer
+	protected void addMethods(final String[] methodsToAdd) {
+		if (methodsArray == null) {
+			methodsArray = methodsToAdd;
+		} else {
+			int currentLength = methodsArray.length;
+			methodsArray = Arrays.copyOf(methodsArray, methodsArray.length + methodsToAdd.length);
+			for (String method : methodsToAdd) {
+				methodsArray[currentLength] = method;
+				currentLength++;
+			}
+		}
+	}
+	
+	protected String getMethodName(final int methodIndex) {
+		return methodsArray[methodIndex];
+	}
 	
 	private boolean assetExist(final String resourcePath) {
 		URL url = getClass().getResource(resourcePath);
@@ -59,32 +92,28 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
  	public void updateEntity() {
 		super.updateEntity();
 		
-		if (interfacedFirstTick) {
-			if (WarpDriveConfig.isComputerCraftLoaded) {
-				String CC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.ComputerCraft/" + peripheralName;
-				CC_hasResource = assetExist(CC_path);
-			}
-			if (WarpDriveConfig.isOpenComputersLoaded) {
-				String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
-				OC_hasResource = assetExist(OC_path);
-			}
-			
-			// deferred constructor so the derived class can finish it's initialization first
-			if (WarpDriveConfig.isOpenComputersLoaded) {
-				OC_constructor();
-			}
-			interfacedFirstTick = false;
-			return;
-		}
-		
 		if (WarpDriveConfig.isOpenComputersLoaded) {
-			if (!OC_addedToNetwork) {
+			if (!OC_addedToNetwork && OC_enable) {
 				OC_addedToNetwork = true;
 				Network.joinOrCreateNetwork(this);
 			}
 		}
 	}
-
+	
+	@Override
+	public void validate() {
+		if (WarpDriveConfig.isComputerCraftLoaded) {
+			String CC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.ComputerCraft/" + peripheralName;
+			CC_hasResource = assetExist(CC_path);
+		}
+		
+		// deferred constructor so the derived class can finish it's initialization first
+		if (WarpDriveConfig.isOpenComputersLoaded && OC_node == null) {
+			OC_constructor();
+		}
+		super.validate();
+	}
+	
 	@Override
 	public void invalidate() {
 		if (WarpDriveConfig.isOpenComputersLoaded) {
@@ -111,8 +140,20 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (WarpDriveConfig.isOpenComputersLoaded) {
+			if (OC_node == null) {
+				OC_constructor();
+			}
 			if (OC_node != null && OC_node.host() == this) {
 				OC_node.load(tag.getCompoundTag("oc:node"));
+			} else {
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
+				}
+			}
+			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
+				OC_fileSystem.node().load(tag.getCompoundTag("oc:fs"));
+			} else if (OC_hasResource) {
+				WarpDrive.logger.error(this + " OC filesystem failed to construct or wrong node, ignoring NBT filesystem data read...");
 			}
 		}
 	}
@@ -122,16 +163,21 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		super.writeToNBT(tag);
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (OC_node != null && OC_node.host() == this) {
-				final NBTTagCompound nodeNbt = new NBTTagCompound();
-				OC_node.save(nodeNbt);
-				tag.setTag("oc:node", nodeNbt);
+				final NBTTagCompound nbtNode = new NBTTagCompound();
+				OC_node.save(nbtNode);
+				tag.setTag("oc:node", nbtNode);
+			}
+			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
+				final NBTTagCompound nbtFileSystem = new NBTTagCompound();
+				OC_fileSystem.node().save(nbtFileSystem);
+				tag.setTag("oc:fs", nbtFileSystem);
 			}
 		}
 	}
 	
 	@Override
 	public int hashCode() {
-		return (((((super.hashCode() + worldObj.provider.dimensionId << 4) + xCoord) << 4) + yCoord) << 4) + zCoord;
+		return (((((super.hashCode() + (worldObj == null ? 0 : worldObj.provider.dimensionId) << 4) + xCoord) << 4) + yCoord) << 4) + zCoord;
 	}
 	
 	// Dirty cheap conversion methods
@@ -140,10 +186,42 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		Object[] arguments = new Object[args.count()];
 		int index = 0;
 		for (Object arg:args) {
-			arguments[index] = arg;
+			if (args.isString(index)) {
+				arguments[index] = args.checkString(index);
+			} else {
+				arguments[index] = arg;
+			}
 			index++;
 		}
 		return arguments;
+	}
+	
+	// Declare type
+	public Object[] interfaced(Object[] arguments) {
+		return new String[] { "I'm a WarpDrive computer interfaced tile entity." };
+	}
+	
+	// Return block coordinates
+	public Object[] position(Object[] arguments) {
+		return new Integer[] { xCoord, yCoord, zCoord };
+	}
+	
+	// Return version
+	public Object[] version(Object[] arguments) {
+		WarpDrive.logger.info("Version is " + WarpDrive.VERSION + " isDev " + WarpDrive.isDev);
+		String[] strings = WarpDrive.VERSION.split("-");
+		WarpDrive.logger.info("strings size is " + strings.length);
+		if (WarpDrive.isDev) {
+			strings = strings[strings.length - 2].split("\\.");
+		} else {
+			strings = strings[strings.length - 1].split("\\.");
+		}
+		WarpDrive.logger.info("strings size is now " + strings.length);
+		ArrayList<Integer> integers = new ArrayList(strings.length);
+		for (String string : strings) {
+			integers.add(Integer.parseInt(string));
+		}
+		return integers.toArray();
 	}
 	
 	// ComputerCraft methods
@@ -162,7 +240,17 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		// empty stub
+		String methodName = getMethodName(method);
+		if (methodName.equals("interfaced")) {
+			return interfaced(arguments);
+			
+		} else if (methodName.equals("position")) {
+			return position(arguments);
+			
+		} else if (methodName.equals("version")) {
+			return version(arguments);
+			
+		}
 		return null;
 	}
 	
@@ -173,7 +261,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		connectedComputers.put(id, computer);
 		if (CC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
 			computer.mount("/" + peripheralName, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName));
-	        computer.mount("/warpupdater", ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/common/updater"));
+			computer.mount("/warpupdater", ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/common/updater"));
 			if (WarpDriveConfig.G_LUA_SCRIPTS == WarpDriveConfig.LUA_SCRIPTS_ALL) {
 				for(String script : CC_scripts) {
 					computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName + "/" + script));
@@ -199,7 +287,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	// Computer abstraction methods
-	protected void sendEvent(String eventName, Object[] arguments) {
+	protected void sendEvent(String eventName, Object... arguments) {
 		if (WarpDriveConfig.LOGGING_LUA) {
 			WarpDrive.logger.info(this + " Sending event '" + eventName + "'");
 		}
@@ -210,20 +298,54 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				comp.queueEvent(eventName, arguments);
 			}
 		}
+		if (WarpDriveConfig.isOpenComputersLoaded) {
+			if (OC_node != null && OC_node.network() != null) {
+				if (arguments == null || arguments.length == 0) {
+					OC_node.sendToReachable("computer.signal", eventName);
+				} else {
+					Object[] eventWithArguments = new Object[arguments.length + 1];
+					eventWithArguments[0] = eventName;
+					int index = 1;
+					for (Object object : arguments) {
+						eventWithArguments[index] = object;
+						index++;
+					}
+					OC_node.sendToReachable("computer.signal", eventWithArguments);
+				}
+			}
+		}
 	}
 	
 	// OpenComputers methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
+	public Object[] position(Context context, Arguments arguments) {
+		return position(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] version(Context context, Arguments arguments) {
+		return version(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] interfaced(Context context, Arguments arguments) {
-		return new String[] { "This is a WarpDrive computer interfaced tile entity." };
+		return interfaced(argumentsOCtoCC(arguments));
 	}
 	
 	@Optional.Method(modid = "OpenComputers")
 	private void OC_constructor() {
+		assert(OC_node == null);
+		if (WarpDriveConfig.isOpenComputersLoaded) {
+			String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
+			OC_hasResource = assetExist(OC_path);
+		}
 		OC_node = Network.newNode(this, Visibility.Network).withComponent(peripheralName).create();
-		if (OC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
+		if (OC_node != null && OC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
 			OC_fileSystem = FileSystem.asManagedEnvironment(FileSystem.fromClass(getClass(), WarpDrive.MODID.toLowerCase(), "lua.OpenComputers/" + peripheralName), peripheralName);
+			((Component) OC_fileSystem.node()).setVisibility(Visibility.Network);
 		}
 	}
 	

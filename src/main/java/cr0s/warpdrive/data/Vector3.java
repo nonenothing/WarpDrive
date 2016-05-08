@@ -212,7 +212,43 @@ public class Vector3 implements Cloneable {
 		this.z += par1;
 		return this;
 	}
-
+	
+	// modify current vector by translation of amount block in side direction
+	public Vector3 translate(final ForgeDirection side, final double amount) {
+		switch (side) {
+		case DOWN:
+			y -= amount;
+			break;
+		case UP:
+			y += amount;
+			break;
+		case NORTH:
+			z -= amount;
+			break;
+		case SOUTH:
+			z += amount;
+			break;
+		case WEST:
+			x -= amount;
+			break;
+		case EAST:
+			x += amount;
+			break;
+		default:
+			break;
+		}
+		
+		return this;
+	}
+	
+	// modify current vector by translation of 1 block in side direction
+	public Vector3 translate(final ForgeDirection side) {
+		x += side.offsetX;
+		y += side.offsetY;
+		z += side.offsetZ;
+		return this;
+	}
+	
 	public static Vector3 translate(Vector3 translate, Vector3 par1) {
 		translate.x += par1.x;
 		translate.y += par1.y;
@@ -226,7 +262,7 @@ public class Vector3 implements Cloneable {
 		translate.z += par1;
 		return translate;
 	}
-
+	
 	public Vector3 subtract(Vector3 amount) {
 		return this.translate(amount.clone().invert());
 	}
@@ -350,28 +386,31 @@ public class Vector3 implements Cloneable {
 		case 0:
 			this.y -= amount;
 			break;
-
+		
 		case 1:
 			this.y += amount;
 			break;
-
+		
 		case 2:
 			this.z -= amount;
 			break;
-
+		
 		case 3:
 			this.z += amount;
 			break;
-
+		
 		case 4:
 			this.x -= amount;
 			break;
-
+		
 		case 5:
 			this.x += amount;
 			break;
+		
+		default:
+			break;
 		}
-
+		
 		return this;
 	}
 
@@ -614,10 +653,7 @@ public class Vector3 implements Cloneable {
 	public MovingObjectPosition rayTraceBlocks(World world, float rotationYaw, float rotationPitch, boolean collisionFlag, double reachDistance) {
 		Vector3 lookVector = getDeltaPositionFromRotation(rotationYaw, rotationPitch);
 		Vector3 reachPoint = translate(this, this.scale(lookVector, reachDistance));
-		return world.rayTraceBlocks(this.toVec3(), reachPoint.toVec3());// TODO:
-																		// Removed
-																		// collision
-																		// flag
+		return world.rayTraceBlocks(this.toVec3(), reachPoint.toVec3());// TODO: Removed collision flag
 	}
 
 	public MovingObjectPosition rayTraceEntities(World world, float rotationYaw, float rotationPitch, boolean collisionFlag, double reachDistance) {
@@ -646,11 +682,8 @@ public class Vector3 implements Cloneable {
 					if (aabb.isVecInside(startingPosition)) {
 						if (0.0D < closestEntity || closestEntity == 0.0D) {
 							pickedEntity = new MovingObjectPosition(entityHit);
-
-							if (pickedEntity != null) {
-								pickedEntity.hitVec = hitMOP.hitVec;
-								closestEntity = 0.0D;
-							}
+							pickedEntity.hitVec = hitMOP.hitVec;
+							closestEntity = 0.0D;
 						}
 					} else {
 						double distance = startingPosition.distanceTo(hitMOP.hitVec);

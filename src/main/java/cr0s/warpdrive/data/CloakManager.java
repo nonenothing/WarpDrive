@@ -2,15 +2,18 @@ package cr0s.warpdrive.data;
 
 import java.util.LinkedList;
 
-import net.minecraft.entity.Entity;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.Packet;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.network.internal.FMLNetworkHandler;
+import net.minecraft.world.chunk.Chunk;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 
 /**
@@ -21,166 +24,204 @@ import cr0s.warpdrive.network.PacketHandler;
  */
 
 public class CloakManager {
-
-	private LinkedList<CloakedArea> cloaks;
-
+	
+	private static LinkedList<CloakedArea> cloaks;
+	
 	public CloakManager() {
 		this.cloaks = new LinkedList<CloakedArea>();
 	}
-
+	
 	public boolean isCloaked(int dimensionID, int x, int y, int z) {
 		for (CloakedArea area : this.cloaks) {
 			if (area.dimensionId != dimensionID) {
 				continue;
 			}
-
-			if (area.aabb.minX <= x && area.aabb.maxX >= x && area.aabb.minY <= y && area.aabb.maxY >= y && area.aabb.minZ <= z && area.aabb.maxZ >= z) {
+			
+			if (area.minX <= x && area.maxX >= x && area.minY <= y && area.maxY >= y && area.minZ <= z && area.maxZ >= z) {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
-
-	public boolean checkChunkLoaded(EntityPlayerMP player, int chunkPosX, int chunkPosZ) {
+	
+	public boolean onChunkLoaded(EntityPlayerMP player, int chunkPosX, int chunkPosZ) {
 		for (CloakedArea area : this.cloaks) {
+			// skip other dimensions
 			if (area.dimensionId != player.worldObj.provider.dimensionId) {
 				continue;
 			}
-
-			if (area.aabb.minX <= (chunkPosX << 4 + 15) && area.aabb.maxX >= (chunkPosX << 4) && area.aabb.minZ <= (chunkPosZ << 4 + 15)
-					&& area.aabb.maxZ >= (chunkPosZ << 4)) {
-				PacketHandler.sendCloakPacket(player, area.aabb, area.tier, false);
+			
+			// force refresh if the chunk overlap the cloak
+			if ( area.minX <= (chunkPosX << 4 + 15) && area.maxX >= (chunkPosX << 4)
+			  && area.minZ <= (chunkPosZ << 4 + 15) && area.maxZ >= (chunkPosZ << 4) ) {
+				PacketHandler.sendCloakPacket(player, area, false);
 			}
 		}
-
+		
 		return false;
 	}
-
-	public boolean isAreaExists(World worldObj, int x, int y, int z) {
-		return (getCloakedArea(worldObj, x, y, z) != null);
+	
+	public boolean onPlayerEnteringDimension(EntityPlayer player) {
+		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("onEntityJoinWorld " + player); }
+		for (CloakedArea area : this.cloaks) {
+			// skip other dimensions
+			if (area.dimensionId != player.worldObj.provider.dimensionId) {
+				continue;
+			}
+			
+			// force refresh if player is outside the cloak
+			if ( area.minX > player.posX || area.maxX < player.posX
+			  || area.minY > player.posY || area.maxY < player.posY
+			  || area.minZ > player.posZ || area.maxZ < player.posZ ) {
+				PacketHandler.sendCloakPacket(player, area, false);
+			}
+		}
+		
+		return false;
 	}
-
-	public void addCloakedAreaWorld(World worldObj, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int x, int y, int z, byte tier) {
-		cloaks.add(new CloakedArea(worldObj, x, y, z, AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ), tier));
+	
+	public boolean isAreaExists(World world, int x, int y, int z) {
+		return (getCloakedArea(world, x, y, z) != null);
 	}
-
-	public void removeCloakedArea(World worldObj, int x, int y, int z) {
-		int index = 0;
-		for (int i = 0; i < this.cloaks.size(); i++) {
-			if (this.cloaks.get(i).coreX == x && this.cloaks.get(i).coreY == y && this.cloaks.get(i).coreZ == z
-					&& this.cloaks.get(i).dimensionId == worldObj.provider.dimensionId) {
-				this.cloaks.get(i).sendCloakPacketToPlayersEx(true); // send info about collapsing cloaking field
+	
+	public void updateCloakedArea(
+			World world,
+			final int dimensionId, final int coreX, final int coreY, final int coreZ, final byte tier,
+			final int minX, final int minY, final int minZ,
+			final int maxX, final int maxY, final int maxZ) {
+		CloakedArea newArea = new CloakedArea(world, dimensionId, coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
+		
+		// find existing one
+		int index = -1;
+		for (int i = 0; i < cloaks.size(); i++) {
+			CloakedArea area = cloaks.get(i);
+			if ( area.dimensionId == world.provider.dimensionId
+			  && area.coreX == coreX
+			  && area.coreY == coreY
+			  && area.coreZ == coreZ ) {
 				index = i;
 				break;
 			}
 		}
-
-		cloaks.remove(index);
+		if (index != -1) {
+			cloaks.set(index, newArea);
+		} else {
+			cloaks.add(newArea);
+		}
+		if (world.isRemote) {
+			newArea.clientCloak();
+		}
+		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Cloak count is " + cloaks.size()); }
 	}
-
-	public CloakedArea getCloakedArea(World worldObj, int x, int y, int z) {
-		for (CloakedArea area : this.cloaks) {
-			if (area.coreX == x && area.coreY == y && area.coreZ == z && area.dimensionId == worldObj.provider.dimensionId)
+	
+	public void removeCloakedArea(final int dimensionId, final int coreX, final int coreY, final int coreZ) {
+		int index = -1;
+		for (int i = 0; i < cloaks.size(); i++) {
+			CloakedArea area = cloaks.get(i);
+			if ( area.dimensionId == dimensionId
+			  && area.coreX == coreX
+			  && area.coreY == coreY
+			  && area.coreZ == coreZ ) {
+				if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
+					area.clientDecloak();
+				} else {
+					area.sendCloakPacketToPlayersEx(true); // send info about collapsing cloaking field
+				}
+				index = i;
+				break;
+			}
+		}
+		
+		if (index != -1) {
+			cloaks.remove(index);
+		}
+	}
+	
+	public CloakedArea getCloakedArea(World world, int x, int y, int z) {
+		for (CloakedArea area : cloaks) {
+			if (area.dimensionId == world.provider.dimensionId && area.coreX == x && area.coreY == y && area.coreZ == z)
 				return area;
 		}
-
+		
 		return null;
 	}
-
+	
+	@SideOnly(Side.CLIENT)
+	public CloakedArea getCloakedArea(int x, int y, int z) {
+		// client only 
+		for (CloakedArea area : cloaks) {
+			if (area.coreX == x && area.coreY == y && area.coreZ == z)
+				return area;
+		}
+		
+		return null;
+	}
+	
 	public void updatePlayer(EntityPlayer player) {
 		for (CloakedArea area : this.cloaks) {
 			area.updatePlayer(player);
 		}
 	}
-
-	public static Packet getPacketForThisEntity(Entity e) {
-		if (e.isDead) {
-			if (WarpDriveConfig.LOGGING_CLOAKING) {
-				WarpDrive.logger.info("Fetching addPacket for removed entity");
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean onBlockChange(int x, int y, int z, Block block, int metadata, int flag) {
+		if (block != Blocks.air && cloaks != null) {
+			for (CloakedArea area : cloaks) {
+				if (area.isBlockWithinArea(x, y, z)) {
+					// WarpDrive.logger.info("CM block is inside");
+					if (!area.isEntityWithinArea(Minecraft.getMinecraft().thePlayer)) {
+						// WarpDrive.logger.info("CM player is outside");
+						return Minecraft.getMinecraft().theWorld.setBlock(x, y, z, area.fogBlock, area.fogMetadata, flag);
+					}
+				}
 			}
 		}
-
-		Packet pkt = FMLNetworkHandler.getEntitySpawningPacket(e);
-		if (pkt != null) {
-			return pkt;
+		return Minecraft.getMinecraft().theWorld.setBlock(x, y, z, block, metadata, flag);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void onFillChunk(Chunk chunk) {
+		if (cloaks == null) {
+			// WarpDrive.logger.info("CM onFillChunk (" + chunk.xPosition + " " + chunk.zPosition + ") no cloaks");
+			return;
 		}
-
-		return null;
-
-		// TODO: Major, redo networking
-		/*
-		 * if (e instanceof EntityItem) { return new Packet23VehicleSpawn(e, 2,
-		 * 1); } else if (e instanceof EntityPlayerMP) { return new
-		 * Packet20NamedEntitySpawn((EntityPlayer) e); } else if (e instanceof
-		 * EntityMinecart) { EntityMinecart entityminecart = (EntityMinecart) e;
-		 * return new Packet23VehicleSpawn(e, 10,
-		 * entityminecart.getMinecartType()); } else if (e instanceof
-		 * EntityBoat) { return new Packet23VehicleSpawn(e, 1); } else if (!(e
-		 * instanceof IAnimals) && !(e instanceof EntityDragon)) { if (e
-		 * instanceof EntityFishHook) { EntityPlayer entityplayer =
-		 * ((EntityFishHook) e).angler; return new Packet23VehicleSpawn(e, 90,
-		 * entityplayer != null ? entityplayer.entityId : e.entityId); } else if
-		 * (e instanceof EntityArrow) { Entity entity = ((EntityArrow)
-		 * e).shootingEntity; return new Packet23VehicleSpawn(e, 60, entity !=
-		 * null ? entity.entityId : e.entityId); } else if (e instanceof
-		 * EntitySnowball) { return new Packet23VehicleSpawn(e, 61); } else if
-		 * (e instanceof EntityPotion) { return new Packet23VehicleSpawn(e, 73,
-		 * ((EntityPotion) e).getPotionDamage()); } else if (e instanceof
-		 * EntityExpBottle) { return new Packet23VehicleSpawn(e, 75); } else if
-		 * (e instanceof EntityEnderPearl) { return new Packet23VehicleSpawn(e,
-		 * 65); } else if (e instanceof EntityEnderEye) { return new
-		 * Packet23VehicleSpawn(e, 72); } else if (e instanceof
-		 * EntityFireworkRocket) { return new Packet23VehicleSpawn(e, 76); }
-		 * else { Packet23VehicleSpawn packet23vehiclespawn;
-		 * 
-		 * if (e instanceof EntityFireball) { EntityFireball entityfireball =
-		 * (EntityFireball) e; packet23vehiclespawn = null; byte b0 = 63;
-		 * 
-		 * if (e instanceof EntitySmallFireball) { b0 = 64; } else if (e
-		 * instanceof EntityWitherSkull) { b0 = 66; }
-		 * 
-		 * if (entityfireball.shootingEntity != null) { packet23vehiclespawn =
-		 * new Packet23VehicleSpawn(e, b0, ((EntityFireball)
-		 * e).shootingEntity.entityId); } else { packet23vehiclespawn = new
-		 * Packet23VehicleSpawn(e, b0, 0); }
-		 * 
-		 * packet23vehiclespawn.speedX = (int) (entityfireball.accelerationX *
-		 * 8000.0D); packet23vehiclespawn.speedY = (int)
-		 * (entityfireball.accelerationY * 8000.0D); packet23vehiclespawn.speedZ
-		 * = (int) (entityfireball.accelerationZ * 8000.0D); return
-		 * packet23vehiclespawn; } else if (e instanceof EntityEgg) { return new
-		 * Packet23VehicleSpawn(e, 62); } else if (e instanceof EntityTNTPrimed)
-		 * { return new Packet23VehicleSpawn(e, 50); } else if (e instanceof
-		 * EntityEnderCrystal) { return new Packet23VehicleSpawn(e, 51); } else
-		 * if (e instanceof EntityFallingSand) { EntityFallingSand
-		 * entityfallingsand = (EntityFallingSand) e; return new
-		 * Packet23VehicleSpawn(e, 70, entityfallingsand |
-		 * entityfallingsand.metadata << 16); } else if (e instanceof
-		 * EntityPainting) { return new Packet25EntityPainting((EntityPainting)
-		 * e); } else if (e instanceof EntityItemFrame) { EntityItemFrame
-		 * entityitemframe = (EntityItemFrame) e; packet23vehiclespawn = new
-		 * Packet23VehicleSpawn(e, 71, entityitemframe.hangingDirection);
-		 * packet23vehiclespawn.xPosition =
-		 * MathHelper.floor_float(entityitemframe.xPosition * 32);
-		 * packet23vehiclespawn.yPosition =
-		 * MathHelper.floor_float(entityitemframe.yPosition * 32);
-		 * packet23vehiclespawn.zPosition =
-		 * MathHelper.floor_float(entityitemframe.zPosition * 32); return
-		 * packet23vehiclespawn; } else if (e instanceof EntityLeashKnot) {
-		 * EntityLeashKnot entityleashknot = (EntityLeashKnot) e;
-		 * packet23vehiclespawn = new Packet23VehicleSpawn(e, 77);
-		 * packet23vehiclespawn.xPosition =
-		 * MathHelper.floor_float(entityleashknot.xPosition * 32);
-		 * packet23vehiclespawn.yPosition =
-		 * MathHelper.floor_float(entityleashknot.yPosition * 32);
-		 * packet23vehiclespawn.zPosition =
-		 * MathHelper.floor_float(entityleashknot.zPosition * 32); return
-		 * packet23vehiclespawn; } else if (e instanceof EntityXPOrb) { return
-		 * new Packet26EntityExpOrb((EntityXPOrb) e); } else { throw new
-		 * IllegalArgumentException("Don\'t know how to add " + e.getClass() +
-		 * "!"); } } } else { return new Packet24MobSpawn((EntityLivingBase) e);
-		 * }
-		 */
+		
+		int chunkXmin = chunk.xPosition * 16;
+		int chunkXmax = chunk.xPosition * 16 + 15;
+		int chunkZmin = chunk.zPosition * 16;
+		int chunkZmax = chunk.zPosition * 16 + 15;
+		// WarpDrive.logger.info("CM onFillChunk (" + chunk.xPosition + " " + chunk.zPosition + ") " + cloaks.size() + " cloak(s) from (" + chunkXmin + " " + chunkZmin + ") to (" + chunkXmax + " " + chunkZmax + ")");
+		
+		for (CloakedArea area : cloaks) {
+			if ( area.minX <= chunkXmax && area.maxX >= chunkXmin
+			  && area.minZ <= chunkZmax && area.maxZ >= chunkZmin ) {
+				// WarpDrive.logger.info("CM chunk is inside");
+				if (!area.isEntityWithinArea(Minecraft.getMinecraft().thePlayer)) {
+					// WarpDrive.logger.info("CM player is outside");
+					
+					int areaXmin = Math.max(chunkXmin, area.minX) & 15;
+					int areaXmax = Math.min(chunkXmax, area.maxX) & 15;
+					int areaZmin = Math.max(chunkZmin, area.minZ) & 15;
+					int areaZmax = Math.min(chunkZmax, area.maxZ) & 15;
+					
+					for (int x = areaXmin; x <= areaXmax; x++) {
+						for (int z = areaZmin; z <= areaZmax; z++) {
+							for (int y = area.maxY; y >= area.minY; y--) {
+								if (chunk.getBlock(x, y, z) != Blocks.air) {
+									chunk.func_150807_a(x, y, z, area.fogBlock, area.fogMetadata);
+								}
+								
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void onClientChangingDimension() {
+		cloaks.clear();
 	}
 }

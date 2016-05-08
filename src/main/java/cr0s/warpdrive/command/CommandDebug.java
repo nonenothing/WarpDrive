@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.conf.WarpDriveConfig;
+import cr0s.warpdrive.config.WarpDriveConfig;
 
 /*
  *   /wdebug <dimension> <coordinates> <blockId> <Metadata> <actions>
@@ -78,9 +78,9 @@ public class CommandDebug extends CommandBase
 				metadata = Integer.parseInt(params[5]);
 				actions = params[6];
 			}
-			catch (Exception e)
+			catch (Exception exception)
 			{
-				e.printStackTrace();
+				exception.printStackTrace();
 				WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
 				return;
 			}
@@ -143,6 +143,9 @@ public class CommandDebug extends CommandBase
 					if (te != null) {
 						te.updateContainingBlockInfo();
 					}
+					break;
+				default:
+					WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": invalid step '" + ch + "'");
 					break;
 				}
 			}
