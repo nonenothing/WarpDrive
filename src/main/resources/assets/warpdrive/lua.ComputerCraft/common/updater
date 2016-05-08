@@ -16,12 +16,14 @@ else
 	sg.installed = true
 end
 
-if not sg.installed then shell.run("pastebin","run", "qe4nQP8F") end
+if not sg.installed then
+    shell.run("pastebin", "get", "f89mQwxK", "san-get")
+    shell.run("san-get", "update")
+end
 
 write("Checking for mcwarp... ")
 if not(fs.exists(mw.filename)) then
 	print("not installed.")
-	shell.run("san-get", "install", "mcwarp")
 elseif (fs.isDir(mw.filename)) then
 	print("it is directory?!?")
 	fs.delete(mw.filename) -- установка любой ценой (2)
@@ -31,7 +33,7 @@ else
 end
 
 if mw.installed then
-	shell.run("san-get","update", "mcwarp")
+	shell.run("san-get", "update", "mcwarp")
 	print("Multicore Warper updated successfully.")
 else
 	shell.run("san-get", "install", "mcwarp")
