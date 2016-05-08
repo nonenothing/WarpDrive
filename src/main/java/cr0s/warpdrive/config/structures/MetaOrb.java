@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.XmlRepresentable;
+import cr0s.warpdrive.config.IXmlRepresentable;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
@@ -46,7 +46,7 @@ public class MetaOrb extends Orb {
 		return new MetaOrbInstance(this, random);
 	}
 	
-	public class Metashell implements XmlRepresentable {
+	public class Metashell implements IXmlRepresentable {
 		private String parentFullName;
 		protected Block block;
 		protected int metadata;

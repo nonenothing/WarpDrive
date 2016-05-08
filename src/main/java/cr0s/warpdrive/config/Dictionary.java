@@ -398,11 +398,12 @@ public class Dictionary {
 		
 		// scan blocks registry
 		for(Object blockKey : Block.blockRegistry.getKeys()) {
-			Object block = Block.blockRegistry.getObject(blockKey);
-			WarpDrive.logger.debug("Checking block registry for '" + blockKey + "': " + block);
-			if (!(block instanceof Block)) {
-				WarpDrive.logger.error("Block registry for '" + blockKey + "': this is not a block? " + block);
+			Object object = Block.blockRegistry.getObject(blockKey);
+			WarpDrive.logger.debug("Checking block registry for '" + blockKey + "': " + object);
+			if (!(object instanceof Block)) {
+				WarpDrive.logger.error("Block registry for '" + blockKey + "': this is not a block? " + object);
 			} else {
+				Block block = (Block) object;
 				// get hardness and blast resistance
 				float hardness = -2.0F;
 				if (WarpDrive.fieldBlockHardness != null) {
@@ -415,7 +416,7 @@ public class Dictionary {
 					}
 				}
 				
-				float blastResistance = ((Block)block).getExplosionResistance(null);
+				float blastResistance = block.getExplosionResistance(null);
 				
 				// check actual values
 				if (hardness != -2.0F) {
@@ -425,22 +426,22 @@ public class Dictionary {
 						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
 					}
 				}
-				if (blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0] && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || BLOCKS_ANCHOR.contains(block))) {
-					((Block)block).setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
+				if (blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0] && !((block instanceof BlockHullPlain) || (block instanceof BlockHullGlass) || BLOCKS_ANCHOR.contains(block))) {
+					block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
 					WarpDrive.logger.warn("Warning: non-anchor block with crazy blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
 					if (adjustResistance) {
-						WarpDrive.logger.warn("Adjusting blast resistance of '" + blockKey + "' " + block + " from " + blastResistance + " to " + ((Block)block).getExplosionResistance(null));
-						if (((Block)block).getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
+						WarpDrive.logger.warn("Adjusting blast resistance of '" + blockKey + "' " + block + " from " + blastResistance + " to " + block.getExplosionResistance(null));
+						if (block.getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
 							WarpDrive.logger.error("Blacklisting block with crazy blast resistance '" + blockKey + "' " + block + " (" + blastResistance + ")");
-							BLOCKS_ANCHOR.add((Block)block);
-							BLOCKS_NOMINING.add((Block)block);
+							BLOCKS_ANCHOR.add(block);
+							BLOCKS_NOMINING.add(block);
 						}
 					}
 				}
 				
 				if (WarpDriveConfig.LOGGING_DICTIONARY) {
 					WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
-						+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + ((Block)block).getExplosionResistance(null));
+						+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + block.getExplosionResistance(null));
 				}
 			}
 		}

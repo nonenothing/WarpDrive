@@ -17,7 +17,7 @@ import cr0s.warpdrive.WarpDrive;
  *
  * @param <E>
  **/
-public class RandomCollection<E extends XmlRepresentable> {
+public class RandomCollection<E extends IXmlRepresentable> {
 	private final NavigableMap<Integer, E> weightMap = new TreeMap<Integer, E>();
 	private int totalWeight = 0;
 	private final NavigableMap<Double, E> ratioMap = new TreeMap<Double, E>();

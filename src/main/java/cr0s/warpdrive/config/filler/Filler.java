@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.XmlRepresentable;
+import cr0s.warpdrive.config.IXmlRepresentable;
 import cr0s.warpdrive.data.JumpBlock;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 /**
  * Represents a single filler block.
  **/
-public class Filler implements XmlRepresentable {
+public class Filler implements IXmlRepresentable {
 	private String name;
 	public Block block;
 	public int metadata;
