@@ -1,18 +1,16 @@
 package cr0s.warpdrive.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-
+import cr0s.warpdrive.WarpDrive;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
-import cr0s.warpdrive.WarpDrive;
+import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /*
  *   /wentity <radius> <filter> <kill?>
@@ -46,9 +44,8 @@ public class CommandEntity extends CommandBase {
 	
 	@Override
 	public void processCommand(ICommandSender icommandsender, String[] params) {
-		EntityPlayerMP player = (EntityPlayerMP) icommandsender;
 		if (params.length > 3) {
-			WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+			WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 			return;
 		}
 		
@@ -75,20 +72,34 @@ public class CommandEntity extends CommandBase {
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+			WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 			return;
 		}
-		
+
 		WarpDrive.logger.info("/" + getCommandName() + " " + radius + " '*" + filter + "*' " + kill);
-		
+
 		Collection<Object> entities;
 		if (radius <= 0) {
-			entities = new ArrayList<Object>();
-			entities.addAll(player.worldObj.loadedEntityList);
+			World world;
+			if (icommandsender instanceof EntityPlayerMP) {
+				world = ((EntityPlayerMP) icommandsender).worldObj;
+			} else if (radius <= 0) {
+				world = DimensionManager.getWorld(0);
+			} else {
+				WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
+				return;
+			}
+			entities = new ArrayList();
+			entities.addAll(world.loadedEntityList);
 		} else {
-			entities = player.worldObj.getEntitiesWithinAABBExcludingEntity(player, AxisAlignedBB.getBoundingBox(
-					Math.floor(player.posX    ), Math.floor(player.posY    ), Math.floor(player.posZ    ),
-					Math.floor(player.posX + 1), Math.floor(player.posY + 1), Math.floor(player.posZ + 1)).expand(radius, radius, radius));
+			if (!(icommandsender instanceof EntityPlayerMP)) {
+				WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
+				return;
+			}
+			EntityPlayerMP entityPlayer = (EntityPlayerMP) icommandsender;
+			entities = entityPlayer.worldObj.getEntitiesWithinAABBExcludingEntity(entityPlayer, AxisAlignedBB.getBoundingBox(
+					Math.floor(entityPlayer.posX    ), Math.floor(entityPlayer.posY    ), Math.floor(entityPlayer.posZ    ),
+					Math.floor(entityPlayer.posX + 1), Math.floor(entityPlayer.posY + 1), Math.floor(entityPlayer.posZ + 1)).expand(radius, radius, radius));
 		}
 		HashMap<String, Integer> counts = new HashMap<String, Integer>(entities.size());
 		int count = 0;
@@ -116,7 +127,7 @@ public class CommandEntity extends CommandBase {
 						counts.put(name, counts.get(name) + 1);
 					}
 					if (!filter.isEmpty()) {
-						WarpDrive.addChatMessage(player, "§cFound " + object);
+						WarpDrive.addChatMessage(icommandsender, "§cFound " + object);
 					}
 					// remove entity
 					if (kill && !((Entity) object).invulnerable) {
@@ -133,14 +144,14 @@ public class CommandEntity extends CommandBase {
 			}
 		}
 		if (count == 0) {
-			WarpDrive.addChatMessage(player, "§cNo matching entities found within " + radius + " blocks");
+			WarpDrive.addChatMessage(icommandsender, "§cNo matching entities found within " + radius + " blocks");
 			return;
 		}
 		
-		WarpDrive.addChatMessage(player, "§6" + count + " matching entities within " + radius + " blocks:");
+		WarpDrive.addChatMessage(icommandsender, "§6" + count + " matching entities within " + radius + " blocks:");
 		if (counts.size() < 10) {
 			for (Entry<String, Integer> entry : counts.entrySet()) {
-				WarpDrive.addChatMessage(player, "§f" + entry.getValue() + "§8x§d" + entry.getKey());
+				WarpDrive.addChatMessage(icommandsender, "§f" + entry.getValue() + "§8x§d" + entry.getKey());
 			}
 		} else {
 			String message = "";
@@ -150,7 +161,7 @@ public class CommandEntity extends CommandBase {
 				}
 				message += "§f" + entry.getValue() + "§8x§d" + entry.getKey();
 			}
-			WarpDrive.addChatMessage(player, message);
+			WarpDrive.addChatMessage(icommandsender, message);
 		}
 	}
 }
