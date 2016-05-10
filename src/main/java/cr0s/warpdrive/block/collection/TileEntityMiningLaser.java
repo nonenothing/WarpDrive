@@ -230,8 +230,11 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (worldObj.isAirBlock(x, y, z)) {
 			return false;
 		}
-		// check blacklist
-		if (Dictionary.BLOCKS_NOMINING.contains(block)) {
+		// check blacklists
+		if (Dictionary.BLOCKS_SKIPMINING.contains(block)) {
+			return false;
+		}
+		if (Dictionary.BLOCKS_STOPMINING.contains(block)) {
 			stop();
 			return false;
 		}
