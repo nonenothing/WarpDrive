@@ -366,7 +366,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// Generate unique file name
 		do {
-			schematicFileName = (new StringBuilder().append(shipCore.shipName).append(System.currentTimeMillis()).append(".schematic")).toString();
+			schematicFileName = shipCore.shipName + System.currentTimeMillis() + ".schematic";
 		} while (new File(WarpDriveConfig.G_SCHEMALOCATION + "/" + schematicFileName).exists());
 		
 		if (!saveShipToSchematic(WarpDriveConfig.G_SCHEMALOCATION + "/" + schematicFileName, reason)) {
@@ -401,7 +401,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		// Load schematic
 		NBTTagCompound schematic = readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName);
 		if (schematic == null) {
-			reason.append("Schematic not found or unknow error reading it.");
+			reason.append("Schematic not found or unknown error reading it.");
 			return -1;
 		}
 		
@@ -605,17 +605,18 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
-		if (methodName.equals("scan")) {
-			return scan(arguments);
-			
-		} else if (methodName.equals("fileName")) {
-			return filename(arguments);
-			
-		} else if (methodName.equals("deploy")) {// deploy(schematicFileName, offsetX, offsetY, offsetZ)
-			return deploy(arguments);
-			
-		} else if (methodName.equals("state")) {
-			return state(arguments);
+		switch (methodName) {
+			case "scan":
+				return scan(arguments);
+
+			case "fileName":
+				return filename(arguments);
+
+			case "deploy": // deploy(schematicFileName, offsetX, offsetY, offsetZ)
+				return deploy(arguments);
+
+			case "state":
+				return state(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

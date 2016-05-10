@@ -21,7 +21,7 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 public abstract class AbstractStructure extends WorldGenerator implements IXmlRepresentable {
 	protected String group;
 	protected String name;
-	protected HashMap<String,String> variables = new HashMap<String,String>();
+	protected HashMap<String,String> variables = new HashMap<>();
 	
 	public AbstractStructure(final String group, final String name) {
 		this.group = group;

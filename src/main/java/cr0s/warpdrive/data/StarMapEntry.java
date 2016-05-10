@@ -27,7 +27,7 @@ public class StarMapEntry {
 		PLANET(3),		// a planet (a transition plane allowing to move to another dimension)
 		STAR(4),		// a star
 		STRUCTURE(5),	// a structure from WorldGeneration (moon, asteroid field, etc.)
-		WARPECHO(6);	// remains of a warp
+		WARP_ECHO(6);	// remains of a warp
 		
 		private final int code;
 		
@@ -81,7 +81,7 @@ public class StarMapEntry {
 			return null;
 		}
 		
-		boolean isLoaded = false;
+		boolean isLoaded;
 		if (world.getChunkProvider() instanceof ChunkProviderServer) {
 			ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
 			try {

@@ -18,58 +18,60 @@ import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 public class ClassTransformer implements net.minecraft.launchwrapper.IClassTransformer {
-	private HashMap<String, String> nodemap = new HashMap<String, String>();
+	private HashMap<String, String> nodeMap = new HashMap<>();
 	
-	private final String GRAVITY_MANAGER_CLASS = "cr0s/warpdrive/GravityManager";
-	private final String CLOAK_MANAGER_CLASS = "cr0s/warpdrive/data/CloakManager";
+	private static final String GRAVITY_MANAGER_CLASS = "cr0s/warpdrive/GravityManager";
+	private static final String CLOAK_MANAGER_CLASS = "cr0s/warpdrive/data/CloakManager";
 	private boolean debugLog = false;
 	
 	public ClassTransformer() {
-		nodemap.put("EntityLivingBase.class", "sv");
-		nodemap.put("moveEntityWithHeading.name", "func_70612_e");
-		nodemap.put("moveEntityWithHeading.desc", "(FF)V");
+		nodeMap.put("EntityLivingBase.class", "sv");
+		nodeMap.put("moveEntityWithHeading.name", "func_70612_e");
+		nodeMap.put("moveEntityWithHeading.desc", "(FF)V");
 		
-		nodemap.put("EntityItem.class", "xk");
-		nodemap.put("onUpdate.name", "func_70071_h_");
-		nodemap.put("onUpdate.desc", "()V");
+		nodeMap.put("EntityItem.class", "xk");
+		nodeMap.put("onUpdate.name", "func_70071_h_");
+		nodeMap.put("onUpdate.desc", "()V");
 		
-		nodemap.put("WorldClient.class", "bjf");
-		nodemap.put("func_147492_c.name", "func_147492_c");
-		nodemap.put("func_147492_c.desc", "(IIILnet/minecraft/block/Block;I)Z");
-		nodemap.put("setBlock.name", "func_147465_d");
+		nodeMap.put("WorldClient.class", "bjf");
+		nodeMap.put("func_147492_c.name", "func_147492_c");
+		nodeMap.put("func_147492_c.desc", "(IIILnet/minecraft/block/Block;I)Z");
+		nodeMap.put("setBlock.name", "func_147465_d");
 		
-		nodemap.put("Chunk.class", "apx");
-		nodemap.put("fillChunk.name", "func_76607_a");
-		nodemap.put("fillChunk.desc", "([BIIZ)V");
-		nodemap.put("generateHeightMap.name", "func_76590_a");
-		nodemap.put("generateHeightMap.desc", "()V");
+		nodeMap.put("Chunk.class", "apx");
+		nodeMap.put("fillChunk.name", "func_76607_a");
+		nodeMap.put("fillChunk.desc", "([BIIZ)V");
+		nodeMap.put("generateHeightMap.name", "func_76590_a");
+		nodeMap.put("generateHeightMap.desc", "()V");
 	}
 	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
-		if (nodemap == null) {
+		if (nodeMap == null) {
 			FMLLoadingPlugin.logger.info("Nodemap is null, transformation cancelled");
 			return bytes;
 		}
 		
 		// if (debugLog) { FMLLoadingPlugin.logger.info("Checking " + name); }
-		if (transformedName.equals("net.minecraft.entity.EntityLivingBase")) {
-			bytes = transformMinecraftEntityLivingBase(bytes);
-			
-		} else if (transformedName.equals("net.minecraft.entity.item.EntityItem")) {
-			bytes = transformMinecraftEntityItem(bytes);
-			
-		} else if (transformedName.equals("com.creativemd.itemphysic.physics.ServerPhysic")) {
-			bytes = transformItemPhysicEntityItem(bytes);
-			
-		} else if (transformedName.equals("micdoodle8.mods.galacticraft.core.util.WorldUtil")) {
-			bytes = transformGalacticraftWorldUtil(bytes);
-			
-		} else if (transformedName.equals("net.minecraft.client.multiplayer.WorldClient")) {
-			bytes = transformMinecraftWorldClient(bytes);
-			
-		} else if (transformedName.equals("net.minecraft.world.chunk.Chunk")) {
-			bytes = transformMinecraftChunk(bytes);
+		switch (transformedName) {
+			case "net.minecraft.entity.EntityLivingBase":
+				bytes = transformMinecraftEntityLivingBase(bytes);
+				break;
+			case "net.minecraft.entity.item.EntityItem":
+				bytes = transformMinecraftEntityItem(bytes);
+				break;
+			case "com.creativemd.itemphysic.physics.ServerPhysic":
+				bytes = transformItemPhysicEntityItem(bytes);
+				break;
+			case "micdoodle8.mods.galacticraft.core.util.WorldUtil":
+				bytes = transformGalacticraftWorldUtil(bytes);
+				break;
+			case "net.minecraft.client.multiplayer.WorldClient":
+				bytes = transformMinecraftWorldClient(bytes);
+				break;
+			case "net.minecraft.world.chunk.Chunk":
+				bytes = transformMinecraftChunk(bytes);
+				break;
 		}
 		
 		return bytes;
@@ -88,17 +90,17 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				break;
 			}
 			
-			MethodNode methodnode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
+			MethodNode methodNode = (MethodNode) methods.next();
+			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
 			
-			if ( (methodnode.name.equals(nodemap.get("moveEntityWithHeading.name")) || methodnode.name.equals("moveEntityWithHeading"))
-			  && methodnode.desc.equals(nodemap.get("moveEntityWithHeading.desc")) ) {
+			if ( (methodNode.name.equals(nodeMap.get("moveEntityWithHeading.name")) || methodNode.name.equals("moveEntityWithHeading"))
+			  && methodNode.desc.equals(nodeMap.get("moveEntityWithHeading.desc")) ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					
 					if (abstractNode instanceof LdcInsnNode) {
 						LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
@@ -111,9 +113,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getGravityForEntity",
 									"(Lnet/minecraft/entity/Entity;)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 					}
@@ -147,17 +149,17 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				break;
 			}
 			
-			MethodNode methodnode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
+			MethodNode methodNode = (MethodNode) methods.next();
+			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
 			
-			if ( (methodnode.name.equals(nodemap.get("onUpdate.name")) || methodnode.name.equals("onUpdate"))
-			  && methodnode.desc.equals(nodemap.get("onUpdate.desc")) ) {
+			if ( (methodNode.name.equals(nodeMap.get("onUpdate.name")) || methodNode.name.equals("onUpdate"))
+			  && methodNode.desc.equals(nodeMap.get("onUpdate.desc")) ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					
 					if (abstractNode instanceof LdcInsnNode) {
 						LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
@@ -170,9 +172,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getItemGravity",
 									"(L" + "net/minecraft/entity/item/EntityItem" + ";)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 						
@@ -184,9 +186,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getItemGravity2",
 									"(L" + "net/minecraft/entity/item/EntityItem" + ";)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 					}
@@ -220,17 +222,17 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				break;
 			}
 			
-			MethodNode methodnode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
+			MethodNode methodNode = (MethodNode) methods.next();
+			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
 			
-			if ( (methodnode.name.equals("update"))
-			  && methodnode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)V") ) {
+			if ( (methodNode.name.equals("update"))
+			  && methodNode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)V") ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					
 					if (abstractNode instanceof LdcInsnNode) {
 						LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
@@ -243,9 +245,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getItemGravity",
 									"(L" + "net/minecraft/entity/item/EntityItem" + ";)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 						
@@ -257,9 +259,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getItemGravity2",
 									"(L" + "net/minecraft/entity/item/EntityItem" + ";)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 					}
@@ -293,18 +295,18 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				break;
 			}
 			
-			MethodNode methodnode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
+			MethodNode methodNode = (MethodNode) methods.next();
+			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
 
 			// Entities gravity
-			if ( (methodnode.name.equals("getGravityForEntity"))
-			  && methodnode.desc.equals("(Lnet/minecraft/entity/Entity;)D") ) {
+			if ( (methodNode.name.equals("getGravityForEntity"))
+			  && methodNode.desc.equals("(Lnet/minecraft/entity/Entity;)D") ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					
 					if (abstractNode instanceof LdcInsnNode) {
 						LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
@@ -317,9 +319,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getGravityForEntity",
 									"(Lnet/minecraft/entity/Entity;)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 					}
@@ -329,14 +331,14 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 			
 			// Items gravity
-			if ( (methodnode.name.equals("getItemGravity"))
-			  && methodnode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)D") ) {
+			if ( (methodNode.name.equals("getItemGravity"))
+			  && methodNode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)D") ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					
 					if (abstractNode instanceof LdcInsnNode) {
 						LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
@@ -349,9 +351,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getItemGravity",
 									"(L" + "net/minecraft/entity/item/EntityItem" + ";)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 						/*
@@ -363,9 +365,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"getItemGravity2",
 									"(L" + "net/minecraft/entity/item/EntityItem" + ";)D",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, beforeNode);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 						/**/
@@ -400,30 +402,30 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				break;
 			}
 			
-			MethodNode methodnode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
+			MethodNode methodNode = (MethodNode) methods.next();
+			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
 			
-			if ( (methodnode.name.equals(nodemap.get("func_147492_c.name")) || methodnode.name.equals("func_147492_c"))
-			  && methodnode.desc.equals(nodemap.get("func_147492_c.desc")) ) {
+			if ( (methodNode.name.equals(nodeMap.get("func_147492_c.name")) || methodNode.name.equals("func_147492_c"))
+			  && methodNode.desc.equals(nodeMap.get("func_147492_c.desc")) ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					
 					if (abstractNode instanceof MethodInsnNode) {
 						MethodInsnNode nodeAt = (MethodInsnNode) abstractNode;
 						
-						if (nodeAt.name.equals(nodemap.get("setBlock.name")) || nodeAt.name.equals("setBlock")) {
+						if (nodeAt.name.equals(nodeMap.get("setBlock.name")) || nodeAt.name.equals("setBlock")) {
 							MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
 									CLOAK_MANAGER_CLASS,
 									"onBlockChange",
 									"(IIILnet/minecraft/block/Block;II)Z",
 									false);
-							methodnode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
 							injectedCount++;
 						}
 					}
@@ -460,8 +462,8 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			MethodNode methodnode = (MethodNode) methods.next();
 			if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
 			
-			if ( (methodnode.name.equals(nodemap.get("fillChunk.name")) || methodnode.name.equals("fillChunk"))
-			  && methodnode.desc.equals(nodemap.get("fillChunk.desc")) ) {
+			if ( (methodnode.name.equals(nodeMap.get("fillChunk.name")) || methodnode.name.equals("fillChunk"))
+			  && methodnode.desc.equals(nodeMap.get("fillChunk.desc")) ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
@@ -473,8 +475,8 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof MethodInsnNode) {
 						MethodInsnNode nodeAt = (MethodInsnNode) abstractNode;
 						
-						if ( (nodeAt.name.equals(nodemap.get("generateHeightMap.name")) || nodeAt.name.equals("generateHeightMap"))
-						  && nodeAt.desc.equals(nodemap.get("generateHeightMap.desc")) ) {
+						if ( (nodeAt.name.equals(nodeMap.get("generateHeightMap.name")) || nodeAt.name.equals("generateHeightMap"))
+						  && nodeAt.desc.equals(nodeMap.get("generateHeightMap.desc")) ) {
 							MethodInsnNode insertMethodNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
 									CLOAK_MANAGER_CLASS,
@@ -539,7 +541,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			FMLLoadingPlugin.logger.info("  + Method " + node.owner + " " + node.name + " " + node.desc);
 			
 		} else {
-			FMLLoadingPlugin.logger.info("  + Instruction " + abstractNode.getOpcode() + " " + abstractNode.getType() + " " + abstractNode.toString());
+			FMLLoadingPlugin.logger.info("  + Instruction " + abstractNode.getOpcode() + " " + abstractNode.getType() + " " + abstractNode);
 		}
 
 	}

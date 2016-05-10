@@ -19,16 +19,6 @@ import cr0s.warpdrive.config.structures.StructureManager;
  */
 public class SpaceWorldGenerator implements IWorldGenerator {
 
-	/**
-	 * Generator for chunk
-	 *
-	 * @param random
-	 * @param chunkX
-	 * @param chunkZ
-	 * @param world
-	 * @param chunkGenerator
-	 * @param chunkProvider
-	 */
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		try {
@@ -149,7 +139,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 
 			if (WarpDriveConfig.LOGGING_WORLDGEN) {
 				WarpDrive.logger.info(String.format("Big asteroid: %.3f %.3f r %.3f r makes %3d, %3d, %3d",
-						Double.valueOf(binomial), Double.valueOf(bearing), Double.valueOf(yawn), Integer.valueOf(aX), Integer.valueOf(aY), Integer.valueOf(aZ) ));
+					(double) binomial, bearing, yawn, aX, aY, aZ));
 			}
 
 			// Place an asteroid
@@ -214,7 +204,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	public static void generateSphereDirect(
 			OrbInstance orbInstance, World world, int xCoord, int yCoord, int zCoord) {
 		double radiusC = orbInstance.getTotalThickness() + 0.5D; // Radius from center of block
-		double radiusSq = radiusC * radiusC; // Optimization to avoid sqrts...
+		double radiusSq = radiusC * radiusC; // Optimization to avoid square roots...
 		// sphere
 		int ceilRadius = (int) Math.ceil(radiusC);
 		

@@ -52,7 +52,7 @@ public class ItemUpgrade extends Item {
 		
 		int damage = itemStack.getItemDamage();
 		if (isValidDamage(damage)) {
-			return "item.warpdrive.upgrade." + UpgradeType.values()[damage].toString();
+			return "item.warpdrive.upgrade." + UpgradeType.values()[damage];
 		}
 		
 		return null;
@@ -86,7 +86,7 @@ public class ItemUpgrade extends Item {
 	@Override
 	public void registerIcons(IIconRegister ir) {
 		for (UpgradeType val : UpgradeType.values()) {
-			iconBuffer[val.ordinal()] = ir.registerIcon("warpdrive:upgrade" + val.toString());
+			iconBuffer[val.ordinal()] = ir.registerIcon("warpdrive:upgrade" + val);
 		}
 	}
 	

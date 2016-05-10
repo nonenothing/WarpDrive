@@ -25,7 +25,7 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) {
+	public void processCommand(ICommandSender sender, String[] params) {
 		if (sender == null) { return; } 
 		MinecraftServer server = MinecraftServer.getServer();
 		
@@ -38,27 +38,27 @@ public class CommandSpace extends CommandBase {
 		}
 		
 		// parse arguments
-		if (args.length == 0) {
+		if (params.length == 0) {
 			// nop
-		} else if (args.length == 1) {
-			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+		} else if (params.length == 1) {
+			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
 				WarpDrive.addChatMessage(sender, getCommandUsage(sender));
 				return;
 			}
 			
-			EntityPlayerMP playerFound = getOnlinePlayerByName(args[0]);
+			EntityPlayerMP playerFound = getOnlinePlayerByName(params[0]);
 			if (playerFound != null) {
 				player = playerFound;
 			} else {
-				targetDimensionId = getDimensionId(args[0]);
+				targetDimensionId = getDimensionId(params[0]);
 			}
 			
-		} else if (args.length == 2) {
-			player = getOnlinePlayerByName(args[0]);
-			targetDimensionId = getDimensionId(args[1]);
+		} else if (params.length == 2) {
+			player = getOnlinePlayerByName(params[0]);
+			targetDimensionId = getDimensionId(params[1]);
 			
 		} else {
-			WarpDrive.addChatMessage(sender, "/space: too many arguments " + args.length);
+			WarpDrive.addChatMessage(sender, "/space: too many arguments " + params.length);
 			return;
 		}
 		
@@ -68,7 +68,7 @@ public class CommandSpace extends CommandBase {
 			return;
 		}
 		
-		// toggle between overworld and space if no dimension was providen
+		// toggle between overworld and space if no dimension was provided
 		if (targetDimensionId == Integer.MAX_VALUE) {
 			if (player.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
 				targetDimensionId = 0;

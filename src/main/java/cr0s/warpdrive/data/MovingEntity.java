@@ -6,19 +6,16 @@ package cr0s.warpdrive.data;
 
 import net.minecraft.entity.Entity;
 
-public class MovingEntity
-{
-    public double oldX;
-    public double oldY;
-    public double oldZ;
+public class MovingEntity {
+    public final Entity entity;
+    public final double oldX;
+    public final double oldY;
+    public final double oldZ;
 
-    public Entity entity;
-
-    public MovingEntity(Entity e)
-    {
-        entity = e;
-        oldX = e.posX;
-        oldY = e.posY;
-        oldZ = e.posZ;
+    public MovingEntity(Entity parEntity) {
+        entity = parEntity;
+        oldX = parEntity.posX;
+        oldY = parEntity.posY;
+        oldZ = parEntity.posZ;
     }
 }

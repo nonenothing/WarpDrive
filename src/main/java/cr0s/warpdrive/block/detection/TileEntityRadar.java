@@ -115,7 +115,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] start(Context context, Arguments arguments) {
-		return start(argumentsOCtoCC(arguments));
+		return start();
 	}
 	
 	@Callback
@@ -168,7 +168,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return new Integer[] { -1 };
 	}
 
-	private Object[] start(Object[] arguments) {
+	private Object[] start() {
 		// always clear results
 		results = null;
 		
@@ -236,26 +236,27 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
-		if (methodName.equals("radius")) {
-			return radius(arguments);
-			
-		} else if (methodName.equals("getEnergyRequired")) {
-			return getEnergyRequired(arguments);
-			
-		} else if (methodName.equals("getScanDuration")) {
-			return getScanDuration(arguments);
-			
-		} else if (methodName.equals("start")) {
-			return start(arguments);
-			
-		} else if (methodName.equals("getResultsCount")) {
-			if (results != null) {
-				return new Integer[] { results.size() };
-			}
-			return new Integer[] { -1 };
-			
-		} else if (methodName.equals("getResult")) {
-			return getResult(arguments);
+		switch (methodName) {
+			case "radius":
+				return radius(arguments);
+
+			case "getEnergyRequired":
+				return getEnergyRequired(arguments);
+
+			case "getScanDuration":
+				return getScanDuration(arguments);
+
+			case "start":
+				return start();
+
+			case "getResultsCount":
+				if (results != null) {
+					return new Integer[]{results.size()};
+				}
+				return new Integer[]{-1};
+
+			case "getResult":
+				return getResult(arguments);
 			
 		}
 		

@@ -3,7 +3,7 @@ package cr0s.warpdrive.config;
 public class InvalidXmlException extends Exception {
 
 	public InvalidXmlException() {
-		super("An unknown xml error occured");
+		super("An unknown xml error occurred");
 	}
 
 	public InvalidXmlException(String arg0) {

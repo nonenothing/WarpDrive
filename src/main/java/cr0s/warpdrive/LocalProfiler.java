@@ -11,7 +11,7 @@ public class LocalProfiler {
 		public String name;
 	}
 	
-	private static Stack<StackElement> stack = new Stack<StackElement>();
+	private static final Stack<StackElement> stack = new Stack<>();
 	
 	public static void start(String name) {
 		if (WarpDriveConfig.LOGGING_PROFILING) {

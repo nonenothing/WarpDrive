@@ -14,13 +14,13 @@ import cr0s.warpdrive.WarpDrive;
 public class BlockLaser extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 
-	private final int ICON_SIDE = 0;
+	private static final int ICON_SIDE = 0;
 
 	public BlockLaser() {
 		super(Material.iron);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		this.setBlockName("warpdrive.machines.Laser");
+		setBlockName("warpdrive.machines.Laser");
 	}
 
 	@Override

@@ -39,7 +39,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	private int tickCount = 0;
 	
-	private double[] instabilityValues = { 0.0D, 0.0D, 0.0D, 0.0D }; // no instability  = 0, explosion = 100
+	private final double[] instabilityValues = { 0.0D, 0.0D, 0.0D, 0.0D }; // no instability  = 0, explosion = 100
 	private float lasersReceived = 0;
 	private int lastGenerationRate = 0;
 	private int releasedThisTick = 0; // amount of energy released during current tick update
@@ -129,7 +129,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			if (side == 3) {
-				WarpDrive.logger.info("Instability on " + from.toString()
+				WarpDrive.logger.info("Instability on " + from
 					+ " decreased by " + String.format("%.1f", amountToRemove) + "/" + String.format("%.1f", PR_MAX_LASER_EFFECT)
 					+ " after consuming " + amount + "/" + PR_MAX_LASER_ENERGY + " lasersReceived is " + String.format("%.1f", lasersReceived) + " hence nospamFactor is " + nospamFactor);
 			}
@@ -271,9 +271,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		
 		if (exploding) {
 			WarpDrive.logger.info(this
-				+ String.format(" Explosion trigerred, Instability is [%.2f, %.2f, %.2f, %.2f], Energy stored is %d, Laser received is %.2f, %s",
-						new Object[] { instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3],
-							containedEnergy, lasersReceived, active ? "ACTIVE" : "INACTIVE" }));
+				+ String.format(" Explosion triggered, Instability is [%.2f, %.2f, %.2f, %.2f], Energy stored is %d, Laser received is %.2f, %s",
+				instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3],
+				containedEnergy, lasersReceived, active ? "ACTIVE" : "INACTIVE"));
 			active = false;
 		}
 		return exploding;
@@ -309,7 +309,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	public Object[] active(Object[] arguments) throws Exception {
 		if (arguments.length == 1) {
-			boolean activate = false;
+			boolean activate;
 			try {
 				activate = toBool(arguments[0]);
 			} catch (Exception e) {
@@ -338,7 +338,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	private Object[] release(Object[] arguments) throws Exception {
-		boolean doRelease = false;
+		boolean doRelease;
 		if (arguments.length > 0) {
 			try {
 				doRelease = toBool(arguments[0]);
@@ -360,7 +360,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	private Object[] releaseRate(Object[] arguments) throws Exception {
-		int rate = -1;
+		int rate;
 		try {
 			rate = toInt(arguments[0]);
 		} catch (Exception e) {
@@ -386,7 +386,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	private Object[] releaseAbove(Object[] arguments) throws Exception {
-		int above = -1;
+		int above;
 		try {
 			above = toInt(arguments[0]);
 		} catch (Exception e) {
@@ -422,27 +422,28 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		String methodName = getMethodName(method);
 		
 		try {
-			if (methodName.equals("active")) {
-				return active(arguments);
-				
-			} else if (methodName.equals("energy")) {
-				return energy();
-				
-			} else if (methodName.equals("instability")) {
-				Object[] retVal = new Object[4];
-				for (int i = 0; i < 4; i++) {
-					retVal[i] = instabilityValues[i];
-				}
-				return retVal;
-				
-			} else if (methodName.equals("release")) {
-				return release(arguments);
-				
-			} else if (methodName.equals("releaseRate")) {
-				return releaseRate(arguments);
-				
-			} else if (methodName.equals("releaseAbove")) {
-				return releaseAbove(arguments);
+			switch (methodName) {
+				case "active":
+					return active(arguments);
+
+				case "energy":
+					return energy();
+
+				case "instability":
+					Object[] retVal = new Object[4];
+					for (int i = 0; i < 4; i++) {
+						retVal[i] = instabilityValues[i];
+					}
+					return retVal;
+
+				case "release":
+					return release(arguments);
+
+				case "releaseRate":
+					return releaseRate(arguments);
+
+				case "releaseAbove":
+					return releaseAbove(arguments);
 			}
 		} catch (Exception exception) {
 			return new String[] { exception.getMessage() };
@@ -546,6 +547,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 			getClass().getSimpleName(),
 			connectedComputers == null ? "~NULL~" : connectedComputers,
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			Integer.valueOf(xCoord), Integer.valueOf(yCoord), Integer.valueOf(zCoord));
+			xCoord, yCoord, zCoord);
 	}
 }

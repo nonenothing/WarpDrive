@@ -19,7 +19,9 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 public class BlockAirGenerator extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
-	private final int ICON_INACTIVE_SIDE = 0, ICON_BOTTOM = 1, ICON_SIDE_ACTIVATED = 2;
+	private static final int ICON_INACTIVE_SIDE = 0;
+	private static final int ICON_BOTTOM = 1;
+	private static final int ICON_SIDE_ACTIVATED = 2;
 	
 	public BlockAirGenerator() {
 		super(Material.iron);

@@ -12,7 +12,7 @@ public class CreativeTabWarpDrive extends CreativeTabs {
 		super(par1, par2Str);
 	}
 	
-	public CreativeTabWarpDrive(String par1Str,String topLabelIn) {
+	public CreativeTabWarpDrive(String par1Str, String topLabelIn) {
 		super(par1Str);
 		topLabel = topLabelIn;
 	}

@@ -15,11 +15,11 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 public class BlockCamera extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
-	private final int ICON_SIDE = 0;
+	private static final int ICON_SIDE = 0;
 	
 	public BlockCamera() {
 		super(Material.iron);
-		this.setBlockName("warpdrive.detection.Camera");
+		setBlockName("warpdrive.detection.Camera");
 	}
 	
 	@Override

@@ -56,7 +56,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 					WarpDrive.logger.info(this + " Updating registry (" + videoChannel + ")");
 				}
-				WarpDrive.instance.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, CameraType.SIMPLE_CAMERA);
+				WarpDrive.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, CameraType.SIMPLE_CAMERA);
 			}
 		}
 	}
@@ -84,9 +84,9 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
 		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
+			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				WarpDrive.instance.cameras.printRegistry(worldObj);
+				WarpDrive.cameras.printRegistry(worldObj);
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 						videoChannel );
 			} else if (camera.isTileEntity(this)) {
@@ -113,7 +113,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 			WarpDrive.logger.info(this + " invalidated");
 		}
-		WarpDrive.instance.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
+		WarpDrive.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
 		super.invalidate();
 	}
 	
@@ -122,7 +122,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 			WarpDrive.logger.info(this + " onChunkUnload");
 		}
-		WarpDrive.instance.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
+		WarpDrive.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
 		super.onChunkUnload();
 	}
 	

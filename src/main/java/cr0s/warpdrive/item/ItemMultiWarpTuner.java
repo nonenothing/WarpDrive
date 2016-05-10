@@ -40,7 +40,7 @@ public class ItemMultiWarpTuner extends Item {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {
-			this.icons[i] = iconRegister.registerIcon("warpdrive:toolMultiWarpTuner_" + getDyeColorName(i));
+			icons[i] = iconRegister.registerIcon("warpdrive:toolMultiWarpTuner_" + getDyeColorName(i));
 		}
 	}
 	
@@ -81,7 +81,7 @@ public class ItemMultiWarpTuner extends Item {
 		if (!(itemStack.getItem() instanceof ItemMultiWarpTuner) || videoChannel == -1) {
 			return itemStack;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();;
+		NBTTagCompound nbt = itemStack.getTagCompound();
 		if (nbt == null) {
 			nbt = new NBTTagCompound();
 		}

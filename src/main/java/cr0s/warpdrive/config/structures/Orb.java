@@ -66,7 +66,7 @@ public class Orb extends AbstractStructure {
 	}
 	
 	public class OrbShell extends FillerSet {
-		private String parentFullName;
+		private final String parentFullName;
 		protected int minThickness;
 		protected int maxThickness;
 		

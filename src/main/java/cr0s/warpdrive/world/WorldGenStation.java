@@ -8,18 +8,20 @@ import java.util.Random;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenerator;
 
 /**
  *
  * @author user
  */
-public class WorldGenStation {
-	private boolean corrupted;
+public class WorldGenStation extends WorldGenerator {
+	private final boolean corrupted;
 
 	public WorldGenStation(boolean corrupted) {
 		this.corrupted = corrupted;
 	}
 
+	@Override
 	public boolean generate(World world, Random rand, int i, int j, int k) {
 		WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
 		genStructure.setHullPlain(world, i + 1, j + 0, k + 3);

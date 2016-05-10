@@ -22,7 +22,7 @@ public class MyDummyModContainer extends DummyModContainer {
 		meta.parent = "WarpDrive";
 		meta.version = "@version@";
 		meta.credits = "Cr0s";
-		meta.authorList = Arrays.asList("cr0s");
+		meta.authorList = Arrays.asList("LemADEC", "cr0s");
 		meta.description = "";
 		meta.url = "";
 		meta.updateUrl = "";

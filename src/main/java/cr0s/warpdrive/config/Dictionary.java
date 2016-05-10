@@ -19,7 +19,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class Dictionary {
-	private static boolean adjustResistance = false;
+	private static final boolean adjustResistance = false;
 	
 	// Tagged blocks and entities (loaded from configuration file at PreInit, parsed at PostInit)
 	private static HashMap<String, String> taggedBlocks = null;

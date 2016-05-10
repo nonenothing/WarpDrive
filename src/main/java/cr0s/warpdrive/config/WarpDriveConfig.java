@@ -393,28 +393,28 @@ public class WarpDriveConfig {
 		
 		// Logging
 		LOGGING_JUMP = config.get("logging", "enable_jump_logs", LOGGING_JUMP, "Basic jump logs, should always be enabled").getBoolean(true);
-		LOGGING_JUMPBLOCKS = config.get("logging", "enable_jumpblocks_logs", LOGGING_JUMPBLOCKS, "Detailled jump logs to help debug the mod, will spam your logs...").getBoolean(false);
-		LOGGING_ENERGY = config.get("logging", "enable_energy_logs", LOGGING_ENERGY, "Detailled energy logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_JUMPBLOCKS = config.get("logging", "enable_jumpblocks_logs", LOGGING_JUMPBLOCKS, "Detailed jump logs to help debug the mod, will spam your logs...").getBoolean(false);
+		LOGGING_ENERGY = config.get("logging", "enable_energy_logs", LOGGING_ENERGY, "Detailed energy logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		if (WarpDrive.isDev) {// disabled in production, for obvious reasons :)
-			LOGGING_EFFECTS = config.get("logging", "enable_effects_logs", LOGGING_EFFECTS, "Detailled effects logs to help debug the mod, will spam your console!").getBoolean(false);
-			LOGGING_CLOAKING = config.get("logging", "enable_cloaking_logs", LOGGING_CLOAKING, "Detailled cloaking logs to help debug the mod, will spam your console!").getBoolean(false);
-			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_videoChannel_logs", LOGGING_VIDEO_CHANNEL, "Detailled video channel logs to help debug the mod, will spam your console!").getBoolean(false);
-			LOGGING_TARGETTING = config.get("logging", "enable_targetting_logs", LOGGING_TARGETTING, "Detailled targetting logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_EFFECTS = config.get("logging", "enable_effects_logs", LOGGING_EFFECTS, "Detailed effects logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_CLOAKING = config.get("logging", "enable_cloaking_logs", LOGGING_CLOAKING, "Detailed cloaking logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_videoChannel_logs", LOGGING_VIDEO_CHANNEL, "Detailed video channel logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_TARGETTING = config.get("logging", "enable_targetting_logs", LOGGING_TARGETTING, "Detailed targetting logs to help debug the mod, will spam your console!").getBoolean(false);
 		} else {
 			LOGGING_EFFECTS = false;
 			LOGGING_CLOAKING = false;
 			LOGGING_VIDEO_CHANNEL = false;
 			LOGGING_TARGETTING = false;
 		}
-		LOGGING_WEAPON = config.get("logging", "enable_weapon_logs", LOGGING_WEAPON, "Detailled weapon logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_CAMERA = config.get("logging", "enable_camera_logs", LOGGING_CAMERA, "Detailled camera logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_BUILDING = config.get("logging", "enable_building_logs", LOGGING_BUILDING, "Detailled building logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_COLLECTION = config.get("logging", "enable_collection_logs", LOGGING_COLLECTION, "Detailled collection logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_TRANSPORTER = config.get("logging", "enable_transporter_logs", LOGGING_TRANSPORTER, "Detailled transporter logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_LUA = config.get("logging", "enable_LUA_logs", LOGGING_LUA, "Detailled LUA logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_RADAR = config.get("logging", "enable_radar_logs", LOGGING_RADAR, "Detailled radar logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailled breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_WORLDGEN = config.get("logging", "enable_worldgen_logs", LOGGING_WORLDGEN, "Detailled world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_WEAPON = config.get("logging", "enable_weapon_logs", LOGGING_WEAPON, "Detailed weapon logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_CAMERA = config.get("logging", "enable_camera_logs", LOGGING_CAMERA, "Detailed camera logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_BUILDING = config.get("logging", "enable_building_logs", LOGGING_BUILDING, "Detailed building logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_COLLECTION = config.get("logging", "enable_collection_logs", LOGGING_COLLECTION, "Detailed collection logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_TRANSPORTER = config.get("logging", "enable_transporter_logs", LOGGING_TRANSPORTER, "Detailed transporter logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_LUA = config.get("logging", "enable_LUA_logs", LOGGING_LUA, "Detailed LUA logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_RADAR = config.get("logging", "enable_radar_logs", LOGGING_RADAR, "Detailed radar logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_WORLDGEN = config.get("logging", "enable_worldgen_logs", LOGGING_WORLDGEN, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_PROFILING, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_PROFILING, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
@@ -441,7 +441,7 @@ public class WarpDriveConfig {
 					planetInts = defaultPlanet.clone();
 				}
 				Planet planet = new Planet(planetInts[0], planetInts[1], planetInts[2], planetInts[3], planetInts[4], planetInts[5], planetInts[6]);
-				WarpDrive.logger.info("Adding '" + name + "' as " + planet.toString());
+				WarpDrive.logger.info("Adding '" + name + "' as " + planet);
 				PLANETS[index] = planet;
 				index++;
 			}
@@ -502,7 +502,7 @@ public class WarpDriveConfig {
 				config.get("radar", "max_energy_stored", RADAR_MAX_ENERGY_STORED, "maximum energy stored").getInt());
 		
 		RADAR_SCAN_MIN_ENERGY_COST = clamp(0, Integer.MAX_VALUE,
-				config.get("radar", "min_energy_cost", RADAR_SCAN_MIN_ENERGY_COST, "minimum energy cost per scan (0+), independantly of radius").getInt());
+				config.get("radar", "min_energy_cost", RADAR_SCAN_MIN_ENERGY_COST, "minimum energy cost per scan (0+), independently of radius").getInt());
 		RADAR_SCAN_ENERGY_COST_FACTORS = 
 				config.get("radar", "factors_energy_cost", RADAR_SCAN_ENERGY_COST_FACTORS, "energy cost factors {a, b, c, d}. You need to provide exactly 4 values.\n"
 						+ "The equation used is a + b * radius + c * radius^2 + d * radius^3").getDoubleList();
@@ -538,13 +538,13 @@ public class WarpDriveConfig {
 				config.get("ship_scanner", "max_energy_stored", SS_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		
 		SS_ENERGY_PER_BLOCK_SCAN = config.get("ship_scanner", "energy_per_block_when_scanning", SS_ENERGY_PER_BLOCK_SCAN,
-				"Energy consummed per block when scanning a ship (use -1 to consume everything)").getInt();
+				"Energy consumed per block when scanning a ship (use -1 to consume everything)").getInt();
 		if (SS_ENERGY_PER_BLOCK_SCAN != -1) {
 			SS_ENERGY_PER_BLOCK_SCAN = clamp(1, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_SCAN);
 		}
 		
 		SS_ENERGY_PER_BLOCK_DEPLOY = config.get("ship_scanner", "energy_per_block_when_deploying", SS_ENERGY_PER_BLOCK_DEPLOY,
-				"Energy consummed per block when deploying a ship (use -1 to consume everything)").getInt();
+				"Energy consumed per block when deploying a ship (use -1 to consume everything)").getInt();
 		if (SS_ENERGY_PER_BLOCK_DEPLOY != -1) {
 			SS_ENERGY_PER_BLOCK_DEPLOY = clamp(1, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_DEPLOY);
 		}
@@ -569,11 +569,11 @@ public class WarpDriveConfig {
 		LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY = clamp(0.01D, 10.0D,
 				config.get("laser_cannon", "booster_beam_energy_efficiency", LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY, "Energy factor applied from boosting to main laser").getDouble(0.6D));
 		LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK = clamp(0.0D, 0.1D,
-				config.get("laser_cannon", "energy_attenueation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK, "Energy attenuation when going through air blocks (on a planet or any gaz in space)").getDouble());
+				config.get("laser_cannon", "energy_attenuation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK, "Energy attenuation when going through air blocks (on a planet or any gaz in space)").getDouble());
 		LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK = clamp(0.0D, 0.1D,
-				config.get("laser_cannon", "energy_attenueation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK, "Energy attenuation when going through void blocks (in space or hyperspace)").getDouble());
+				config.get("laser_cannon", "energy_attenuation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK, "Energy attenuation when going through void blocks (in space or hyperspace)").getDouble());
 		LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK = clamp(0.0D, 1.0D,
-				config.get("laser_cannon", "energy_attenueation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK, "Energy attenuation when going through a broken block").getDouble());
+				config.get("laser_cannon", "energy_attenuation_per_air_block", LASER_CANNON_ENERGY_ATTENUATION_PER_BROKEN_BLOCK, "Energy attenuation when going through a broken block").getDouble());
 		LASER_CANNON_RANGE_MAX = clamp(64, 512,
 				config.get("laser_cannon", "range_max", LASER_CANNON_RANGE_MAX, "Maximum distance travelled").getInt());
 		
@@ -585,9 +585,9 @@ public class WarpDriveConfig {
 		LASER_CANNON_ENTITY_HIT_BASE_DAMAGE = clamp(0, LASER_CANNON_MAX_LASER_ENERGY,
 				config.get("laser_cannon", "entity_hit_base_damage", LASER_CANNON_ENTITY_HIT_BASE_DAMAGE, "Minimum damage to entity hit (measured in half hearts)").getInt());
 		LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE = clamp(0, LASER_CANNON_MAX_LASER_ENERGY,
-				config.get("laser_cannon", "entity_hit_energy_per_damage", LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE, "Energy required by additional hit point (won't be consummed)").getInt());
+				config.get("laser_cannon", "entity_hit_energy_per_damage", LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE, "Energy required by additional hit point (won't be consumed)").getInt());
 		LASER_CANNON_ENTITY_HIT_MAX_DAMAGE = clamp(0, Integer.MAX_VALUE,
-				config.get("laser_cannon", "entity_hit_max_damage", LASER_CANNON_ENTITY_HIT_MAX_DAMAGE, "Maximum damage to entity hit, set to 0 to disable damage completly").getInt());
+				config.get("laser_cannon", "entity_hit_max_damage", LASER_CANNON_ENTITY_HIT_MAX_DAMAGE, "Maximum damage to entity hit, set to 0 to disable damage completely").getInt());
 		
 		LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD = clamp(0, Integer.MAX_VALUE,
 				config.get("laser_cannon", "entity_hit_energy_threshold_for_explosion", LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD, "Minimum energy to cause explosion effect").getInt());
@@ -596,7 +596,7 @@ public class WarpDriveConfig {
 		LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH = clamp(1, Integer.MAX_VALUE,
 				config.get("laser_cannon", "entity_hit_explosion_energy_per_strength", LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH, "Energy per added explosion strength").getInt());
 		LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH = (float) clamp(0.0D, 1000.0D,
-				config.get("laser_cannon", "entity_hit_explosion_max_strength", LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completly").getDouble());
+				config.get("laser_cannon", "entity_hit_explosion_max_strength", LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completely").getDouble());
 		
 		LASER_CANNON_BLOCK_HIT_ENERGY_MIN = clamp(0, Integer.MAX_VALUE,
 				config.get("laser_cannon", "block_hit_energy_min", LASER_CANNON_BLOCK_HIT_ENERGY_MIN, "Minimum energy required for breaking a block").getInt());
@@ -617,7 +617,7 @@ public class WarpDriveConfig {
 		LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH = clamp(1, Integer.MAX_VALUE,
 				config.get("laser_cannon", "block_hit_explosion_energy_per_strength", LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH, "Energy per added explosion strength").getInt());
 		LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH = (float) clamp(0.0D, 1000.0D,
-				config.get("laser_cannon", "block_hit_explosion_max_strength", LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completly").getDouble());
+				config.get("laser_cannon", "block_hit_explosion_max_strength", LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completely").getDouble());
 		
 		// Mining Laser
 		MINING_LASER_MAX_MEDIUMS_COUNT = clamp(1, 64,
@@ -716,7 +716,7 @@ public class WarpDriveConfig {
 		ENAN_REACTOR_UPDATE_INTERVAL_TICKS = clamp(1, 300,
 				config.get("enantiomorphic_reactor", "update_interval_ticks", ENAN_REACTOR_UPDATE_INTERVAL_TICKS, "Update speed of the reactor simulation").getInt());
 		ENAN_REACTOR_MAX_LASERS_PER_SECOND = clamp(4, 80,
-				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabiliation laser shots per seconds before loosing efficiency").getInt());
+				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabilisation laser shots per seconds before loosing efficiency").getInt());
 		
 		// Energy bank
 		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored").getInt();
@@ -725,7 +725,7 @@ public class WarpDriveConfig {
 		LIFT_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
 				config.get("lift", "max_energy_stored", LIFT_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
 		LIFT_ENERGY_PER_ENTITY = clamp(1, Integer.MAX_VALUE,
-				config.get("lift", "energy_per_entity", LIFT_ENERGY_PER_ENTITY, "Energy consummed per entity moved").getInt());
+				config.get("lift", "energy_per_entity", LIFT_ENERGY_PER_ENTITY, "Energy consumed per entity moved").getInt());
 		LIFT_UPDATE_INTERVAL_TICKS = clamp(1, 60,
 				config.get("lift", "update_interval_ticks", LIFT_UPDATE_INTERVAL_TICKS, "Update speed of the check for entities").getInt());
 		
@@ -733,7 +733,7 @@ public class WarpDriveConfig {
 		Dictionary.loadConfig(config);
 		
 		// Block transformers library
-		blockTransformers = new HashMap();
+		blockTransformers = new HashMap<>();
 		
 		config.save();
 	}

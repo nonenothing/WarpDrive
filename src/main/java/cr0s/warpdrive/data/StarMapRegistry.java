@@ -23,10 +23,10 @@ import cr0s.warpdrive.data.StarMapEntry.StarMapEntryType;
  * @author LemADEC
  */
 public class StarMapRegistry {
-	private LinkedList<StarMapEntry> registry;
+	private final LinkedList<StarMapEntry> registry;
 	
 	public StarMapRegistry() {
-		registry = new LinkedList<StarMapEntry>();
+		registry = new LinkedList<>();
 	}
 	
 	public int searchInRegistry(StarMapEntry entryKey) {
@@ -73,7 +73,7 @@ public class StarMapRegistry {
 	}
 	
 	public ArrayList<StarMapEntry> radarScan(TileEntity tileEntity, final int radius) {
-		ArrayList<StarMapEntry> res = new ArrayList<StarMapEntry>(registry.size());
+		ArrayList<StarMapEntry> res = new ArrayList<>(registry.size());
 		cleanup();
 		
 		// printRegistry();
@@ -98,7 +98,7 @@ public class StarMapRegistry {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
 		for (StarMapEntry entry : registry) {
-			WarpDrive.logger.info("- " + entry.type.toString() + " '" + entry.name + "' @ "
+			WarpDrive.logger.info("- " + entry.type + " '" + entry.name + "' @ "
 					+ entry.dimensionId + ": " + entry.x + ", " + entry.y + ", " + entry.z
 					+ " with " + entry.isolationRate + " isolation rate");
 		}
@@ -173,7 +173,7 @@ public class StarMapRegistry {
 					continue;
 				}
 				
-				boolean isLoaded = false;
+				boolean isLoaded;
 				if (world.getChunkProvider() instanceof ChunkProviderServer) {
 					ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
 					try {
@@ -203,7 +203,7 @@ public class StarMapRegistry {
 				case PLANET: break;
 				case STAR: break;
 				case STRUCTURE: break;
-				case WARPECHO: break;
+				case WARP_ECHO: break;
 				default: break;
 				}
 			}

@@ -45,7 +45,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	protected IInventory getFirstConnectedInventory() {
-		TileEntity result = null;
+		TileEntity result;
 		
 		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 			result = worldObj.getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
@@ -57,7 +57,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	protected boolean addToConnectedInventory(ItemStack itemStack) {
-		List<ItemStack> stacks = new ArrayList<ItemStack>(1);
+		List<ItemStack> stacks = new ArrayList<>(1);
 		stacks.add(itemStack);
 		return addToConnectedInventory(stacks);
 	}
@@ -65,7 +65,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected boolean addToConnectedInventory(List<ItemStack> stacks) {
 		boolean overflow = false;
 		if (stacks != null) {
-			int qtyLeft = 0;
+			int qtyLeft;
 			for (ItemStack stack : stacks) {
 				qtyLeft = addToInventory(getFirstConnectedInventory(), stack);
 				if (qtyLeft > 0) {
@@ -77,8 +77,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, stack.getMaxStackSize());
 						ItemStack dropItemStack = copyWithSize(stack, transfer);
-						EntityItem itemEnt = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, dropItemStack);
-						worldObj.spawnEntityInWorld(itemEnt);
+						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, dropItemStack);
+						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
 					}
 				}
@@ -148,21 +148,21 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return getConnectedBlocks(world, Arrays.asList(start), directions, whitelist, maxRange, ignore);
 	}
 	public static Set<VectorI> getConnectedBlocks(World world, Collection<VectorI> start, ForgeDirection[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
-		Set<VectorI> toIgnore = new HashSet<VectorI>();
+		Set<VectorI> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
 		
-		Set<VectorI> toIterate = new HashSet<VectorI>();
+		Set<VectorI> toIterate = new HashSet<>();
 		toIterate.addAll(start);
 		
-		Set<VectorI> toIterateNext = null;
+		Set<VectorI> toIterateNext;
 		
-		Set<VectorI> iterated = new HashSet<VectorI>();
+		Set<VectorI> iterated = new HashSet<>();
 		
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
-			toIterateNext = new HashSet<VectorI>();
+			toIterateNext = new HashSet<>();
 			for (VectorI current : toIterate) {
 				if (whitelist.contains(current.getBlock_noChunkLoading(world))) {
 					iterated.add(current);
@@ -191,26 +191,27 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return (int) Math.round(d);
 	}
 	
-	protected static int toInt(Object o) {
-		return toInt(toDouble(o));
+	protected static int toInt(Object object) {
+		return toInt(toDouble(object));
 	}
 	
-	protected static double toDouble(Object o) {
-		return Double.parseDouble(o.toString());
+	protected static double toDouble(Object object) {
+		return Double.parseDouble(object.toString());
 	}
 
-	protected static float toFloat(Object o) {
-		return Float.parseFloat(o.toString());
+	protected static float toFloat(Object object) {
+		return Float.parseFloat(object.toString());
 	}
 	
-	protected static boolean toBool(Object o) {
-		if (o == null) {
+	protected static boolean toBool(Object object) {
+		if (object == null) {
 			 return false;
 		}
-		if (o instanceof Boolean) {
-			 return ((Boolean) o);
+		if (object instanceof Boolean) {
+			 return ((Boolean) object);
 		}
-		if (o.toString() == "true" || o.toString() == "1.0" || o.toString() == "1" || o.toString() == "y" || o.toString() == "yes") {
+		String string = object.toString();
+		if (string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes")) {
 			return true;
 		}
 		return false;

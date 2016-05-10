@@ -35,10 +35,10 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private int delayTicksScan = 0;
 	private int delayTicksMine = 0;
 	
-	private final int STATE_IDLE = 0;
-	private final int STATE_WARMUP = 1;
-	private final int STATE_SCANNING = 2;
-	private final int STATE_MINING = 3;
+	private static final int STATE_IDLE = 0;
+	private static final int STATE_WARMUP = 1;
+	private static final int STATE_SCANNING = 2;
+	private static final int STATE_MINING = 3;
 	private int currentState = 0;
 	
 	private boolean enoughPower = false;
@@ -92,11 +92,11 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		
 		if (currentState == STATE_WARMUP) {
 			delayTicksWarmup++;
-			updateMetadata(BlockMiningLaser.ICON_SCANNINGLOWPOWER);
+			updateMetadata(BlockMiningLaser.ICON_SCANNING_LOW_POWER);
 			if (delayTicksWarmup >= WarpDriveConfig.MINING_LASER_WARMUP_DELAY_TICKS) {
 				delayTicksScan = 0;
 				currentState = STATE_SCANNING;
-				updateMetadata(BlockMiningLaser.ICON_SCANNINGLOWPOWER);
+				updateMetadata(BlockMiningLaser.ICON_SCANNING_LOW_POWER);
 				return;
 			}
 		} else if (currentState == STATE_SCANNING) {
@@ -105,11 +105,11 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				// check power level
 				enoughPower = consumeEnergyFromLaserMediums(isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, true);
 				if (!enoughPower) {
-					updateMetadata(BlockMiningLaser.ICON_SCANNINGLOWPOWER);
+					updateMetadata(BlockMiningLaser.ICON_SCANNING_LOW_POWER);
 					delayTicksScan = 0;
 					return;
 				} else {
-					updateMetadata(BlockMiningLaser.ICON_SCANNINGPOWERED);
+					updateMetadata(BlockMiningLaser.ICON_SCANNING_POWERED);
 				}
 				
 				// show current layer
@@ -134,15 +134,15 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				// consume power
 				enoughPower = consumeEnergyFromLaserMediums(isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, false);
 				if (!enoughPower) {
-					updateMetadata(BlockMiningLaser.ICON_SCANNINGLOWPOWER);
+					updateMetadata(BlockMiningLaser.ICON_SCANNING_LOW_POWER);
 					return;
 				} else {
-					updateMetadata(BlockMiningLaser.ICON_SCANNINGPOWERED);
+					updateMetadata(BlockMiningLaser.ICON_SCANNING_POWERED);
 				}
 				
 				// scan
 				scanLayer();
-				if (valuablesInLayer.size() > 0) {
+				if (!valuablesInLayer.isEmpty()) {
 					int r = (int) Math.ceil(WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS / 2.0D);
 					int offset = (yCoord - currentLayer) % (2 * r);
 					int age = Math.max(20, Math.round(2.5F * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS));
@@ -158,7 +158,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
 					delayTicksMine = 0;
 					currentState = STATE_MINING;
-					updateMetadata(BlockMiningLaser.ICON_MININGPOWERED);
+					updateMetadata(BlockMiningLaser.ICON_MINING_POWERED);
 					return;
 					
 				} else {
@@ -174,7 +174,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				if (valuableIndex < 0 || valuableIndex >= valuablesInLayer.size()) {
 					delayTicksScan = 0;
 					currentState = STATE_SCANNING;
-					updateMetadata(BlockMiningLaser.ICON_SCANNINGPOWERED);
+					updateMetadata(BlockMiningLaser.ICON_SCANNING_POWERED);
 					
 					// rescan same layer
 					scanLayer();
@@ -194,10 +194,10 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 				enoughPower = consumeEnergyFromLaserMediums(requiredPower, false);
 				if (!enoughPower) {
-					updateMetadata(BlockMiningLaser.ICON_MININGLOWPOWER);
+					updateMetadata(BlockMiningLaser.ICON_MINING_LOW_POWER);
 					return;
 				} else {
-					updateMetadata(BlockMiningLaser.ICON_MININGPOWERED);
+					updateMetadata(BlockMiningLaser.ICON_MINING_POWERED);
 				}
 				
 				VectorI valuable = valuablesInLayer.get(valuableIndex);

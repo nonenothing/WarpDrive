@@ -16,11 +16,11 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 public class BlockRadar extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
-	private final int ICON_SIDE_INACTIVE = 0;
-	private final int ICON_BOTTOM = 1;
-	private final int ICON_TOP = 2;
-	private final int ICON_SIDE_ACTIVATED = 3;
-	private final int ICON_SIDE_ACTIVATED_SCAN = 4;
+	private static final int ICON_SIDE_INACTIVE = 0;
+	private static final int ICON_BOTTOM = 1;
+	private static final int ICON_TOP = 2;
+	private static final int ICON_SIDE_ACTIVATED = 3;
+	private static final int ICON_SIDE_ACTIVATED_SCAN = 4;
 	
 	public BlockRadar() {
 		super(Material.iron);

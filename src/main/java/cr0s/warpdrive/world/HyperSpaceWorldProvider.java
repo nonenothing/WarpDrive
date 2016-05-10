@@ -19,8 +19,8 @@ import cr0s.warpdrive.render.RenderBlank;
 public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	public HyperSpaceWorldProvider() {
-		this.worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
-		this.hasNoSky = false;
+		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
+		hasNoSky = false;
 	}
 	
 	@Override
@@ -80,7 +80,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		
 		for (int i = 0; i <= 15; ++i) {
 			float f1 = 1.0F - i / 15.0F;
-			this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
+			lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean canCoordinateBeSpawn(int par1, int par2) {
-		int var3 = this.worldObj.getTopSolidOrLiquidBlock(par1, par2);
+		int var3 = worldObj.getTopSolidOrLiquidBlock(par1, par2);
 		return var3 != 0;
 	}
 	

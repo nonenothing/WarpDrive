@@ -10,9 +10,6 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 
-
-
-//import calclavia.lib.render.CalclaviaRenderHelper;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -67,7 +64,7 @@ public class EntityFXBeam extends EntityFX
         /**
          * Sets the particle age based on distance.
          */
-        EntityLivingBase renderentity = Minecraft.getMinecraft().renderViewEntity;
+        EntityLivingBase entityRender = Minecraft.getMinecraft().renderViewEntity;
         int visibleDistance = 300;
 
         if (!Minecraft.getMinecraft().gameSettings.fancyGraphics)
@@ -75,9 +72,9 @@ public class EntityFXBeam extends EntityFX
             visibleDistance = 100;
         }
 
-        if (renderentity.getDistance(this.posX, this.posY, this.posZ) > visibleDistance)
+        if (entityRender.getDistance(posX, posY, posZ) > visibleDistance)
         {
-            this.particleMaxAge = 0;
+            particleMaxAge = 0;
         }
     }
 
@@ -108,7 +105,7 @@ public class EntityFXBeam extends EntityFX
         /**
          * Sets the particle age based on distance.
          */
-        EntityLivingBase renderentity = Minecraft.getMinecraft().renderViewEntity;
+        EntityLivingBase entityRender = Minecraft.getMinecraft().renderViewEntity;
         int visibleDistance = 300;
 
         if (!Minecraft.getMinecraft().gameSettings.fancyGraphics)
@@ -116,9 +113,9 @@ public class EntityFXBeam extends EntityFX
             visibleDistance = 100;
         }
 
-        if (renderentity.getDistance(this.posX, this.posY, this.posZ) > visibleDistance)
+        if (entityRender.getDistance(posX, posY, posZ) > visibleDistance)
         {
-            this.particleMaxAge = 0;
+            particleMaxAge = 0;
         }
 
         //this.pulse = (energy == 0);
@@ -130,24 +127,24 @@ public class EntityFXBeam extends EntityFX
     @Override
     public void onUpdate()
     {
-        this.prevPosX = this.posX;
-        this.prevPosY = this.posY;
-        this.prevPosZ = this.posZ;
-        this.prevYaw = this.rotYaw;
-        this.prevPitch = this.rotPitch;
+        prevPosX = posX;
+        prevPosY = posY;
+        prevPosZ = posZ;
+        prevYaw = rotYaw;
+        prevPitch = rotPitch;
 
         if (!a)
         {
-            float xd = (float)(this.posX - this.target.x);
-            float yd = (float)(this.posY - this.target.y);
-            float zd = (float)(this.posZ - this.target.z);
-            this.length = MathHelper.sqrt_float(xd * xd + yd * yd + zd * zd);
+            float xd = (float)(posX - target.x);
+            float yd = (float)(posY - target.y);
+            float zd = (float)(posZ - target.z);
+            length = MathHelper.sqrt_float(xd * xd + yd * yd + zd * zd);
             double var7 = MathHelper.sqrt_double(xd * xd + zd * zd);
-            this.rotYaw = ((float)(Math.atan2(xd, zd) * 180.0D / Math.PI));
-            this.rotPitch = ((float)(Math.atan2(yd, var7) * 180.0D / Math.PI));
+            rotYaw = ((float)(Math.atan2(xd, zd) * 180.0D / Math.PI));
+            rotPitch = ((float)(Math.atan2(yd, var7) * 180.0D / Math.PI));
         }
 
-        if (this.particleAge++ >= this.particleMaxAge)
+        if (particleAge++ >= particleMaxAge)
         {
             setDead();
         }
@@ -155,9 +152,9 @@ public class EntityFXBeam extends EntityFX
 
     public void setRGB(float r, float g, float b)
     {
-        this.particleRed = r;
-        this.particleGreen = g;
-        this.particleBlue = b;
+        particleRed = r;
+        particleGreen = g;
+        particleBlue = b;
     }
 
     @Override
@@ -166,14 +163,14 @@ public class EntityFXBeam extends EntityFX
         tessellator.draw();
         GL11.glPushMatrix();
         float var9 = 1.0F;
-        float slide = this.worldObj.getTotalWorldTime();
-        float rot = this.worldObj.provider.getWorldTime() % (360 / this.rotationSpeed) * this.rotationSpeed + this.rotationSpeed * f;
+        float slide = worldObj.getTotalWorldTime();
+        float rot = worldObj.provider.getWorldTime() % (360 / rotationSpeed) * rotationSpeed + rotationSpeed * f;
         float size = 1.0F;
 
-        if (this.pulse)
+        if (pulse)
         {
-            size = Math.min(this.particleAge / 4.0F, 1.0F);
-            size = this.prevSize + (size - this.prevSize) * f;
+            size = Math.min(particleAge / 4.0F, 1.0F);
+            size = prevSize + (size - prevSize) * f;
         }
         else
         {
@@ -182,9 +179,9 @@ public class EntityFXBeam extends EntityFX
 
         float op = 0.5F;
 
-        if ((this.pulse) && (this.particleMaxAge - this.particleAge <= 4))
+        if ((pulse) && (particleMaxAge - particleAge <= 4))
         {
-            op = 0.5F - (4 - (this.particleMaxAge - this.particleAge)) * 0.1F;
+            op = 0.5F - (4 - (particleMaxAge - particleAge)) * 0.1F;
         }
 
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
@@ -193,7 +190,7 @@ public class EntityFXBeam extends EntityFX
         GL11.glDisable(GL11.GL_CULL_FACE);
         float var11 = slide + f;
 
-        if (this.reverse)
+        if (reverse)
         {
             var11 *= -1.0F;
         }
@@ -202,32 +199,32 @@ public class EntityFXBeam extends EntityFX
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GL11.glDepthMask(false);
-        float xx = (float)(this.prevPosX + (this.posX - this.prevPosX) * f - interpPosX);
-        float yy = (float)(this.prevPosY + (this.posY - this.prevPosY) * f - interpPosY);
-        float zz = (float)(this.prevPosZ + (this.posZ - this.prevPosZ) * f - interpPosZ);
+        float xx = (float)(prevPosX + (posX - prevPosX) * f - interpPosX);
+        float yy = (float)(prevPosY + (posY - prevPosY) * f - interpPosY);
+        float zz = (float)(prevPosZ + (posZ - prevPosZ) * f - interpPosZ);
         GL11.glTranslated(xx, yy, zz);
-        float ry = this.prevYaw + (this.rotYaw - this.prevYaw) * f;
-        float rp = this.prevPitch + (this.rotPitch - this.prevPitch) * f;
+        float ry = prevYaw + (rotYaw - prevYaw) * f;
+        float rp = prevPitch + (rotPitch - prevPitch) * f;
         GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
         GL11.glRotatef(180.0F + ry, 0.0F, 0.0F, -1.0F);
         GL11.glRotatef(rp, 1.0F, 0.0F, 0.0F);
         double var44 = -0.15D * size;
         double var17 = 0.15D * size;
-        double var44b = -0.15D * size * this.endModifier;
-        double var17b = 0.15D * size * this.endModifier;
+        double var44b = -0.15D * size * endModifier;
+        double var17b = 0.15D * size * endModifier;
         GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
 
         for (int t = 0; t < 3; t++)
         {
-            double var29 = this.length * size * var9;
+            double var29 = length * size * var9;
             double var31 = 0.0D;
             double var33 = 1.0D;
             double var35 = -1.0F + var12 + t / 3.0F;
-            double var37 = this.length * size * var9 + var35;
+            double var37 = length * size * var9 + var35;
             GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
             tessellator.startDrawingQuads();
             tessellator.setBrightness(200);
-            tessellator.setColorRGBA_F(this.particleRed, this.particleGreen, this.particleBlue, op);
+            tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, op);
             tessellator.addVertexWithUV(var44b, var29, 0.0D, var33, var37);
             tessellator.addVertexWithUV(var44, 0.0D, 0.0D, var33, var35);
             tessellator.addVertexWithUV(var17, 0.0D, 0.0D, var31, var35);
@@ -241,7 +238,7 @@ public class EntityFXBeam extends EntityFX
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
         tessellator.startDrawingQuads();
-        this.prevSize = size;
+        prevSize = size;
         FMLClientHandler.instance().getClient().renderEngine.bindTexture(new ResourceLocation("textures/particle/particles.png"));
     }
 }

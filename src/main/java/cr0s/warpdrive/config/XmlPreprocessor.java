@@ -24,7 +24,7 @@ import javax.xml.transform.dom.DOMSource;
 
 
 public class XmlPreprocessor {
-	static boolean enableOuput = false;
+	static final boolean enableOutput = false;
 	static int outputCount = 1;
 	
 	/**
@@ -33,7 +33,6 @@ public class XmlPreprocessor {
 	 * @param element
 	 *            Element to check
 	 * @return A string, which is empty if all the mods are loaded.
-	 * @throws InvalidXmlException
 	 */
 	public static String checkModRequirements(Element element) {
 		
@@ -62,9 +61,6 @@ public class XmlPreprocessor {
 	
 	/**
 	 * Goes through every child node of the given node, and remove elements failing to checkModRequirements()
-	 *
-	 * @param base
-	 * @throws InvalidXmlException
 	 */
 	public static void doModReqSanitation(Node base) {
 		
@@ -90,9 +86,6 @@ public class XmlPreprocessor {
 	
 	/**
 	 * Develop 'for' elements
-	 *
-	 * @param base
-	 * @throws InvalidXmlException
 	 */
 	public static void doLogicPreprocessing(Node root) throws InvalidXmlException {
 		// process child first
@@ -163,7 +156,7 @@ public class XmlPreprocessor {
 		//Remove the old node
 		root.getParentNode().removeChild(root);
 		
-		if (enableOuput) {
+		if (enableOutput) {
 			try {
 				Transformer transformer = TransformerFactory.newInstance().newTransformer();
 				Result output = new StreamResult(new File("output" + outputCount + ".xml"));
@@ -185,16 +178,16 @@ public class XmlPreprocessor {
 	}
 	
 	private static void replaceVariable(Node node, String keyword, String value) {
-		ArrayList<String> nameToRemove = new ArrayList<String>();
-		ArrayList<Attr> attrToAdd = new ArrayList<Attr>();
+		ArrayList<String> nameToRemove = new ArrayList<>();
+		ArrayList<Attr> attrToAdd = new ArrayList<>();
 		
 		// process element's attributes first
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			
 			// compute the changes
-			NamedNodeMap attrs = node.getAttributes();
-			for (int indexAttr = 0; indexAttr < attrs.getLength(); indexAttr++) {
-				Attr oldAttr = (Attr) attrs.item(indexAttr);
+			NamedNodeMap attributes = node.getAttributes();
+			for (int indexAttr = 0; indexAttr < attributes.getLength(); indexAttr++) {
+				Attr oldAttr = (Attr) attributes.item(indexAttr);
 				String oldName = oldAttr.getName();
 				String newName = oldName.replace(keyword, value);
 				
@@ -212,11 +205,11 @@ public class XmlPreprocessor {
 			
 			// then apply them
 			for (String attr : nameToRemove) {
-				attrs.removeNamedItem(attr);
+				attributes.removeNamedItem(attr);
 			}
 			
 			for (Attr attr : attrToAdd) {
-				attrs.setNamedItem(attr);
+				attributes.setNamedItem(attr);
 			}
 		}
 		
@@ -241,10 +234,10 @@ public class XmlPreprocessor {
 	
 	public static class ModCheckResults {
 		
-		private TreeMap<String, String> modResults;
+		private final TreeMap<String, String> modResults;
 		
 		public ModCheckResults() {
-			modResults = new TreeMap<String, String>();
+			modResults = new TreeMap<>();
 		}
 		
 		public void addMod(String name, String error) {

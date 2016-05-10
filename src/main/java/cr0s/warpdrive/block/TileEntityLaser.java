@@ -35,8 +35,8 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFrequency {
-	private final int BEAM_FREQUENCY_SCANNING = 1420;
-	private final int BEAM_FREQUENCY_MAX = 65000;
+	private static final int BEAM_FREQUENCY_SCANNING = 1420;
+	private static final int BEAM_FREQUENCY_MAX = 65000;
 	
 	private int legacyVideoChannel = -1;
 	private boolean legacyCheck = !(this instanceof TileEntityLaserCamera);
@@ -54,7 +54,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	public static enum ScanResultType {
 		IDLE("IDLE"), BLOCK("BLOCK"), NONE("NONE");
 		
-		public String name;
+		public final String name;
 		
 		private ScanResultType(String name) {
 			this.name = name;
@@ -156,13 +156,13 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return;
 		}
 		
-		float yawz = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
-		float yawx = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
-		float pitchhorizontal = -MathHelper.cos(-pitch * 0.017453292F);
-		float pitchvertical = MathHelper.sin(-pitch * 0.017453292F);
-		float directionx = yawx * pitchhorizontal;
-		float directionz = yawz * pitchhorizontal;
-		Vector3 vDirection = new Vector3(directionx, pitchvertical, directionz);
+		float yawZ = MathHelper.cos(-yaw * 0.017453292F - (float) Math.PI);
+		float yawX = MathHelper.sin(-yaw * 0.017453292F - (float) Math.PI);
+		float pitchHorizontal = -MathHelper.cos(-pitch * 0.017453292F);
+		float pitchVertical = MathHelper.sin(-pitch * 0.017453292F);
+		float directionX = yawX * pitchHorizontal;
+		float directionZ = yawZ * pitchHorizontal;
+		Vector3 vDirection = new Vector3(directionX, pitchVertical, directionZ);
 		Vector3 vSource = new Vector3(this).translate(0.5D).translate(vDirection);
 		Vector3 vReachPoint = Vector3.translate(vSource.clone(), Vector3.scale(vDirection.clone(), beamLengthBlocks));
 		if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -210,7 +210,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 		
 		// get colliding entities
-		TreeMap<Double, MovingObjectPosition> entityHits = raytraceEntities(vSource.clone(), vDirection.clone(), true, beamLengthBlocks);
+		TreeMap<Double, MovingObjectPosition> entityHits = raytraceEntities(vSource.clone(), vDirection.clone(), beamLengthBlocks);
 		
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info("Entity hits are (" + ((entityHits == null) ? 0 : entityHits.size()) + ") " + entityHits);
@@ -382,8 +382,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 						blockHit.blockX -0.3D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
 						blockHit.blockY -0.3D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
 						blockHit.blockZ -0.3D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
-				Vector3 direction = null;
-				direction = new Vector3(
+				Vector3 direction = new Vector3(
 						-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 						-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 						-0.2D * vDirection.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
@@ -432,7 +431,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		return transmittance;
 	}
 	
-	public TreeMap<Double, MovingObjectPosition> raytraceEntities(Vector3 vSource, Vector3 vDirection, boolean collisionFlag, double reachDistance) {
+	public TreeMap<Double, MovingObjectPosition> raytraceEntities(Vector3 vSource, Vector3 vDirection, double reachDistance) {
 		final double raytraceTolerance = 2.0D;
 		
 		// Pre-computation
@@ -460,7 +459,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 		
 		// Pick the closest one on trajectory
-		HashMap<Double, MovingObjectPosition> entityHits = new HashMap(entities.size());
+		HashMap<Double, MovingObjectPosition> entityHits = new HashMap<>(entities.size());
 		for (Entity entity : entities) {
 			if (entity != null && entity.canBeCollidedWith() && entity.boundingBox != null) {
 				double border = entity.getCollisionBorderSize();
@@ -485,7 +484,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return null;
 		}
 		
-		return new TreeMap(entityHits);
+		return new TreeMap<>(entityHits);
 	}
 	
 	@Override
@@ -666,20 +665,21 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
-		if (methodName.equals("emitBeam")) { // emitBeam(yaw, pitch) or emitBeam(deltaX, deltaY, deltaZ)
-			return emitBeam(arguments);
-			
-		} else if (methodName.equals("position")) {
-			return new Integer[] { xCoord, yCoord, zCoord };
-			
-		} else if (methodName.equals("beamFrequency")) {
-			if (arguments.length == 1) {
-				setBeamFrequency(toInt(arguments[0]));
-			}
-			return new Integer[] { beamFrequency };
-			
-		} else if (methodName.equals("getScanResult")) {
-			return getScanResult();
+		switch (methodName) {
+			case "emitBeam":  // emitBeam(yaw, pitch) or emitBeam(deltaX, deltaY, deltaZ)
+				return emitBeam(arguments);
+
+			case "position":
+				return new Integer[]{xCoord, yCoord, zCoord};
+
+			case "beamFrequency":
+				if (arguments.length == 1) {
+					setBeamFrequency(toInt(arguments[0]));
+				}
+				return new Integer[]{beamFrequency};
+
+			case "getScanResult":
+				return getScanResult();
 			
 		}
 		
@@ -688,7 +688,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	
 	@Override
 	public String toString() {
-		return String.format("%s Beam \'%d\' @ \'%s\' (%d %d %d)", new Object[] { getClass().getSimpleName(),
-				beamFrequency, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord });
+		return String.format("%s Beam \'%d\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
+			beamFrequency, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
 	}
 }

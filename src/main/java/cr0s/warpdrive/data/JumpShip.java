@@ -48,7 +48,7 @@ public class JumpShip {
 			for (MovingEntity me : entitiesOnShip) {
 				if (me.entity instanceof EntityPlayer) {
 					WarpDrive.addChatMessage((EntityPlayer) me.entity, "["
-							+ ((shipCore != null && shipCore.shipName.length() > 0) ? shipCore.shipName : "WarpCore") + "] " + message);
+							+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "WarpCore") + "] " + message);
 				}
 			}
 		}
@@ -56,7 +56,7 @@ public class JumpShip {
 	
 	public String saveEntities() {
 		String result = null;
-		entitiesOnShip = new ArrayList<MovingEntity>();
+		entitiesOnShip = new ArrayList<>();
 		
 		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		
@@ -101,8 +101,8 @@ public class JumpShip {
 			}
 			
 			String playerName = ((EntityPlayer) movingEntity.entity).getDisplayName();
-			for (String unlimiteName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
-				if (unlimiteName.equals(playerName)) {
+			for (String unlimitedName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
+				if (unlimitedName.equals(playerName)) {
 					return true;
 				}
 			}
@@ -173,8 +173,6 @@ public class JumpShip {
 
 	/**
 	 * Saving ship to memory
-	 *
-	 * @param shipVolume estimated volume
 	 */
 	public boolean save(StringBuilder reason) {
 		try {

@@ -37,9 +37,9 @@ public class LivingHandler {
 	private final int AIR_DROWN_TICKS = 20;
 	
 	public LivingHandler() {
-		entity_airBlock = new HashMap<Integer, Integer>();
-		player_airTank = new HashMap<String, Integer>();
-		player_cloakTicks = new HashMap<String, Integer>();
+		entity_airBlock = new HashMap<>();
+		player_airTank = new HashMap<>();
+		player_cloakTicks = new HashMap<>();
 	}
 	
 	@SubscribeEvent
@@ -131,7 +131,7 @@ public class LivingHandler {
 										player_airTank.put(playerName, airTicks);
 									} else {
 										player_airTank.put(playerName, AIR_DROWN_TICKS);
-										player.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
+										player.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
 									}
 								} else {
 									player_airTank.put(playerName, air - 1);
@@ -146,7 +146,7 @@ public class LivingHandler {
 									player_airTank.put(playerName, AIR_TANK_TICKS);
 								} else {
 									player_airTank.put(playerName, AIR_DROWN_TICKS);
-									entity.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
+									entity.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
 								}
 							} else {
 								player_airTank.put(playerName, air - 1);
@@ -159,7 +159,7 @@ public class LivingHandler {
 							player_airTank.put(playerName, AIR_TANK_TICKS);
 						} else if (air <= 1) {
 							player_airTank.put(playerName, AIR_DROWN_TICKS);
-							entity.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
+							entity.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
 						} else {
 							player_airTank.put(playerName, air - 1);
 						}
@@ -175,7 +175,7 @@ public class LivingHandler {
 					}
 				} else {// (in space, no air block and not a player)
 					entity_airBlock.put(entity.getEntityId(), 0);
-					entity.attackEntityFrom(WarpDrive.damageAxphyxia, 2.0F);
+					entity.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
 				}
 			}
 		}
@@ -215,8 +215,8 @@ public class LivingHandler {
 					ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
 					if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
 						World world = entityPlayer.worldObj;
-						EntityItem itemEnt = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
-						entityPlayer.worldObj.spawnEntityInWorld(itemEnt);
+						EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
+						entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 					}
 					entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				}

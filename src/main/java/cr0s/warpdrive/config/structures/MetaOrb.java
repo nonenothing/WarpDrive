@@ -14,7 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
 public class MetaOrb extends Orb {
-	protected Metashell metashell; 
+	protected MetaShell metaShell;
 	
 	public MetaOrb(final String group, final String name) {
 		super(group, name);
@@ -24,13 +24,13 @@ public class MetaOrb extends Orb {
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
 		super.loadFromXmlElement(element);
 		
-		NodeList nodeListMetashells = element.getElementsByTagName("metashell");
-		if (nodeListMetashells.getLength() > 1) {
-			throw new InvalidXmlException("Too many metashell defined in structure " + getFullName() + ". Maximum is 1.");
+		NodeList nodeListMetaShells = element.getElementsByTagName("metaShell");
+		if (nodeListMetaShells.getLength() > 1) {
+			throw new InvalidXmlException("Too many metaShell defined in structure " + getFullName() + ". Maximum is 1.");
 		}
-		if (nodeListMetashells.getLength() == 1) {
-			metashell = new Metashell(getFullName());
-			metashell.loadFromXmlElement((Element) nodeListMetashells.item(0));
+		if (nodeListMetaShells.getLength() == 1) {
+			metaShell = new MetaShell(getFullName());
+			metaShell.loadFromXmlElement((Element) nodeListMetaShells.item(0));
 		}
 		
 		return true;
@@ -46,8 +46,8 @@ public class MetaOrb extends Orb {
 		return new MetaOrbInstance(this, random);
 	}
 	
-	public class Metashell implements IXmlRepresentable {
-		private String parentFullName;
+	public class MetaShell implements IXmlRepresentable {
+		private final String parentFullName;
 		protected Block block;
 		protected int metadata;
 		protected int minCount;
@@ -55,7 +55,7 @@ public class MetaOrb extends Orb {
 		protected double minRadius;
 		protected double relativeRadius;
 		
-		public Metashell(final String parentFullName) {
+		public MetaShell(final String parentFullName) {
 			this.parentFullName = parentFullName;
 		}
 		
@@ -127,7 +127,7 @@ public class MetaOrb extends Orb {
 				} else {
 					minRadius = Double.parseDouble(element.getAttribute("minRadius"));
 				}
-			} catch (NumberFormatException gdbg) {
+			} catch (NumberFormatException exception) {
 				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minRadius " + element.getAttribute("minRadius") + ", expecting a double");
 			}
 			
@@ -142,7 +142,7 @@ public class MetaOrb extends Orb {
 				} else {
 					relativeRadius = Double.parseDouble(element.getAttribute("relativeRadius"));
 				}
-			} catch (NumberFormatException gdbg) {
+			} catch (NumberFormatException exception) {
 				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid relativeRadius " + element.getAttribute("relativeRadius") + ", expecting a double");
 			}
 			

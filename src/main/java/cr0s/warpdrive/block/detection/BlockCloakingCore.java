@@ -20,7 +20,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	public BlockCloakingCore() {
 		super(Material.iron);
-		this.setBlockName("warpdrive.detection.CloakingCore");
+		setBlockName("warpdrive.detection.CloakingCore");
 	}
 	
 	@Override

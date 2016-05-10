@@ -35,7 +35,7 @@ public class ItemTuningFork extends Item {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {
-			this.icons[i] = iconRegister.registerIcon("warpdrive:tool/tuningFork_" + getDyeColorName(i));
+			icons[i] = iconRegister.registerIcon("warpdrive:tool/tuningFork_" + getDyeColorName(i));
 		}
 	}
 	

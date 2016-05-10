@@ -56,7 +56,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 					WarpDrive.logger.info(this + " Updating registry (" + videoChannel + ")");
 				}
-				WarpDrive.instance.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, CameraType.LASER_CAMERA);
+				WarpDrive.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, CameraType.LASER_CAMERA);
 			}
 		}
 	}
@@ -84,9 +84,9 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
 		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
+			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				WarpDrive.instance.cameras.printRegistry(worldObj);
+				WarpDrive.cameras.printRegistry(worldObj);
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 						videoChannel );
 			} else if (camera.isTileEntity(this)) {
@@ -138,13 +138,13 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	@Override
 	public void invalidate() {
-		WarpDrive.instance.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
+		WarpDrive.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
 		super.invalidate();
 	}
 	
 	@Override
 	public void onChunkUnload() {
-		WarpDrive.instance.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
+		WarpDrive.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
 		super.onChunkUnload();
 	}
 	
@@ -176,7 +176,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	@Override
 	public String toString() {
-		return String.format("%s Beam \'%d\' Camera \'%d\' @ \'%s\' (%d %d %d)", new Object[] { getClass().getSimpleName(),
-				beamFrequency, videoChannel, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord });
+		return String.format("%s Beam \'%d\' Camera \'%d\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
+			beamFrequency, videoChannel, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
 	}
 }

@@ -43,25 +43,25 @@ public final class EntityStarCore extends Entity {
 	}
 	
 	private void actionToEntitiesNearStar() {
-		int xmax, ymax, zmax;
-		int xmin, ymin, zmin;
-		final int MAX_RANGE = this.radius + KILL_RADIUS + BURN_RADIUS;// + ROCKET_INTERCEPT_RADIUS;
-		final int KILL_RANGESQ = (this.radius + KILL_RADIUS) * (this.radius + KILL_RADIUS);
-		final int BURN_RANGESQ = (this.radius + KILL_RADIUS + BURN_RADIUS) * (this.radius + KILL_RADIUS + BURN_RADIUS);
-		xmin = xCoord - MAX_RANGE;
-		xmax = xCoord + MAX_RANGE;
+		int xMax, yMax, zMax;
+		int xMin, yMin, zMin;
+		final int MAX_RANGE = radius + KILL_RADIUS + BURN_RADIUS;// + ROCKET_INTERCEPT_RADIUS;
+		final int KILL_RANGESQ = (radius + KILL_RADIUS) * (radius + KILL_RADIUS);
+		final int BURN_RANGESQ = (radius + KILL_RADIUS + BURN_RADIUS) * (radius + KILL_RADIUS + BURN_RADIUS);
+		xMin = xCoord - MAX_RANGE;
+		xMax = xCoord + MAX_RANGE;
 		
-		zmin = zCoord - MAX_RANGE;
-		zmax = zCoord + MAX_RANGE;
+		zMin = zCoord - MAX_RANGE;
+		zMax = zCoord + MAX_RANGE;
 		
-		ymin = yCoord - MAX_RANGE;
-		ymax = yCoord + MAX_RANGE;
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xmin, ymin, zmin, xmax, ymax, zmax);
+		yMin = yCoord - MAX_RANGE;
+		yMax = yCoord + MAX_RANGE;
+		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, yMin, zMin, xMax, yMax, zMax);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, aabb);
 		
 		if (!isLogged) {
 			isLogged = true;
-			WarpDrive.logger.info(this + " Capture range " + MAX_RANGE + " X " + xmin + " to " + xmax + " Y " + ymin + " to " + ymax + " Z " + zmin + " to " + zmax);
+			WarpDrive.logger.info(this + " Capture range " + MAX_RANGE + " X " + xMin + " to " + xMax + " Y " + yMin + " to " + yMax + " Z " + zMin + " to " + zMax);
 		}
 		for (Object object : list) {
 			if (!(object instanceof Entity)) {
@@ -129,10 +129,10 @@ public final class EntityStarCore extends Entity {
 	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound nbttagcompound) {
-		this.xCoord = nbttagcompound.getInteger("x");
-		this.yCoord = nbttagcompound.getInteger("y");
-		this.zCoord = nbttagcompound.getInteger("z");
-		this.radius = nbttagcompound.getInteger("radius");
+		xCoord = nbttagcompound.getInteger("x");
+		yCoord = nbttagcompound.getInteger("y");
+		zCoord = nbttagcompound.getInteger("z");
+		radius = nbttagcompound.getInteger("radius");
 	}
 	
 	@Override
@@ -141,10 +141,10 @@ public final class EntityStarCore extends Entity {
 	
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("x", this.xCoord);
-		nbttagcompound.setInteger("y", this.yCoord);
-		nbttagcompound.setInteger("z", this.zCoord);
-		nbttagcompound.setInteger("radius", this.radius);
+		nbttagcompound.setInteger("x", xCoord);
+		nbttagcompound.setInteger("y", yCoord);
+		nbttagcompound.setInteger("z", zCoord);
+		nbttagcompound.setInteger("radius", radius);
 	}
 	
 	@Override

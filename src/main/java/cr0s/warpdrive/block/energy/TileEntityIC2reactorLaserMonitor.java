@@ -35,10 +35,10 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 		IC2_sourceTier = 2;
 	}
 	
-	private static int[] deltaX = {-2, 2, 0, 0, 0, 0};
-	private static int[] deltaY = { 0, 0,-2, 2, 0, 0};
-	private static int[] deltaZ = { 0, 0, 0, 0,-2, 2};
-	private static byte[] deltaSides = { 1, 2, 4, 8, 16, 32 };
+	private static final int[] deltaX = {-2, 2, 0, 0, 0, 0};
+	private static final int[] deltaY = { 0, 0,-2, 2, 0, 0};
+	private static final int[] deltaZ = { 0, 0, 0, 0,-2, 2};
+	private static final byte[] deltaSides = { 1, 2, 4, 8, 16, 32 };
 	
 	protected boolean isSideActive(int side) {
 		switch (side) {
@@ -55,7 +55,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	// returns IReactor tile entities
 	@Optional.Method(modid = "IC2")
 	private Set<IReactor> findReactors() {
-		Set<IReactor> output = new HashSet<IReactor>();
+		Set<IReactor> output = new HashSet<>();
 		
 		byte newActiveSides = 0;
 		for(int i = 0; i < deltaX.length; i++) {
@@ -137,7 +137,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 			Vector3 myPos = new Vector3(this).translate(0.5);
 			Set<IReactor> reactors = findReactors();
 			setMetadata();
-			if (reactors.size() == 0) {
+			if (reactors.isEmpty()) {
 				return;
 			}
 			
@@ -188,7 +188,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	@Optional.Method(modid = "IC2")
 	public String getStatus() {
 		Set<IReactor> reactors = findReactors();
-		if (reactors != null && reactors.size() > 0) {
+		if (reactors != null && !reactors.isEmpty()) {
 			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 					getBlockType().getLocalizedName())
 					+ StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.multipleReactors",

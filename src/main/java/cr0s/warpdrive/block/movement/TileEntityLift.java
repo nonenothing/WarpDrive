@@ -121,17 +121,17 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	
 	private void liftEntity() {
 		final double CUBE_RADIUS = 0.4;
-		double xmax, zmax;
-		double xmin, zmin;
+		double xMax, zMax;
+		double xMin, zMin;
 		
-		xmin = xCoord + 0.5 - CUBE_RADIUS;
-		xmax = xCoord + 0.5 + CUBE_RADIUS;
-		zmin = zCoord + 0.5 - CUBE_RADIUS;
-		zmax = zCoord + 0.5 + CUBE_RADIUS;
+		xMin = xCoord + 0.5 - CUBE_RADIUS;
+		xMax = xCoord + 0.5 + CUBE_RADIUS;
+		zMin = zCoord + 0.5 - CUBE_RADIUS;
+		zMax = zCoord + 0.5 + CUBE_RADIUS;
 		
 		// Lift up
 		if (mode == MODE_UP) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xmin, firstUncoveredY, zmin, xmax, yCoord, zmax);
+			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, firstUncoveredY, zMin, xMax, yCoord, zMax);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object o : list) {
@@ -149,8 +149,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				}
 			}
 		} else if (mode == MODE_DOWN) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xmin,
-					Math.min(firstUncoveredY + 4.0D, yCoord), zmin, xmax, yCoord + 2.0D, zmax);
+			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin,
+					Math.min(firstUncoveredY + 4.0D, yCoord), zMin, xMax, yCoord + 2.0D, zMax);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object o : list) {
@@ -218,7 +218,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 		if (arguments.count() == 1) {
 			computerEnabled = arguments.checkBoolean(0);
 		}
-		return new Object[] { computerEnabled ? false : isEnabled };
+		return new Object[] { !computerEnabled && isEnabled };
 	}
 	
 	private Object[] mode(Object[] arguments) {
@@ -258,7 +258,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			if (arguments.length == 1) {
 				computerEnabled = toBool(arguments);
 			}
-			return new Object[] { computerEnabled ? false : isEnabled };
+			return new Object[] { !computerEnabled && isEnabled };
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

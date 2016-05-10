@@ -5,36 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
-import net.minecraft.block.BlockButton;
-import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockCocoa;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockEndPortalFrame;
-import net.minecraft.block.BlockEnderChest;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockFurnace;
-import net.minecraft.block.BlockHopper;
-import net.minecraft.block.BlockHugeMushroom;
-import net.minecraft.block.BlockLadder;
-import net.minecraft.block.BlockLever;
-import net.minecraft.block.BlockLog;
-import net.minecraft.block.BlockPistonBase;
-import net.minecraft.block.BlockPistonExtension;
-import net.minecraft.block.BlockPistonMoving;
-import net.minecraft.block.BlockPortal;
-import net.minecraft.block.BlockPumpkin;
-import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.BlockRedstoneDiode;
-import net.minecraft.block.BlockSign;
-import net.minecraft.block.BlockSkull;
-import net.minecraft.block.BlockStairs;
-import net.minecraft.block.BlockTorch;
-import net.minecraft.block.BlockTrapDoor;
-import net.minecraft.block.BlockTripWireHook;
-import net.minecraft.block.BlockVine;
+import net.minecraft.block.*;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -95,8 +66,8 @@ public class JumpBlock {
 			WarpDrive.logger.info("Forcing glass for invalid filler with null block at " + x + " " + y + " " + z);
 			filler.block = Blocks.glass;
 		}
-		this.block = filler.block;
-		this.blockMeta = filler.metadata;
+		block = filler.block;
+		blockMeta = filler.metadata;
 		blockNBT = (filler.tag != null) ? (NBTTagCompound) filler.tag.copy() : null;
 		this.x = x;
 		this.y = y;
@@ -119,7 +90,7 @@ public class JumpBlock {
 	
 	public void setExternal(final String modId, final NBTBase nbtExternal) {
 		if (externals == null) {
-			externals = new HashMap();
+			externals = new HashMap<>();
 		}
 		externals.put(modId, nbtExternal);
 		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
@@ -157,7 +128,7 @@ public class JumpBlock {
 		byte[] mrot = mrotNone;
 		if (block instanceof BlockRailBase) {
 			mrot = mrotRail;
-		} else if (block instanceof BlockRailBase) {
+		} else if (block instanceof BlockAnvil) {
 			mrot = mrotAnvil;
 		} else if (block instanceof BlockFenceGate) {
 			mrot = mrotFenceGate;
@@ -297,7 +268,7 @@ public class JumpBlock {
 				
 				TileEntity newTileEntity = null;
 				boolean isForgeMultipart = false;
-				if (WarpDriveConfig.isForgeMultipartLoaded && nbtToDeploy.hasKey("id") && nbtToDeploy.getString("id") == "savedMultipart") {
+				if (WarpDriveConfig.isForgeMultipartLoaded && nbtToDeploy.hasKey("id") && nbtToDeploy.getString("id").equals("savedMultipart")) {
 					isForgeMultipart = true;
 					newTileEntity = (TileEntity) CompatForgeMultipart.methodMultipartHelper_createTileFromNBT.invoke(null, targetWorld, nbtToDeploy);
 					
@@ -306,16 +277,7 @@ public class JumpBlock {
 					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
 					newTileEntity.invalidate();
 					
-				} /* else if (block == WarpDriveConfig.AS_Turbine) {
-					if (oldnbt.hasKey("zhuYao")) {
-						NBTTagCompound nbt1 = oldnbt.getCompoundTag("zhuYao");
-						nbt1.setDouble("x", newX);
-						nbt1.setDouble("y", newY);
-						nbt1.setDouble("z", newZ);
-						oldnbt.setTag("zhuYao", nbt1);
-					}
-					newTileEntity = TileEntity.createAndLoadEntity(oldnbt);
-					} /* No 1.7.10 version */
+				}
 				
 				if (newTileEntity == null) {
 					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
@@ -338,7 +300,7 @@ public class JumpBlock {
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			String coordinates = "";
+			String coordinates;
 			try {
 				coordinates = " at " + x + ", " + y + ", " + z + " blockId " + block + ":" + blockMeta;
 			} catch (Exception dropMe) {
@@ -347,8 +309,6 @@ public class JumpBlock {
 			WarpDrive.logger.info("moveBlockSimple exception at " + coordinates);
 			return;
 		}
-		
-		return;
 	}
 	
 	public static void refreshBlockStateOnClient(World world, int x, int y, int z) {

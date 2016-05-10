@@ -16,26 +16,26 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 public class BlockMiningLaser extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	public final static int ICON_IDLE = 0;
-	public final static int ICON_MININGLOWPOWER = 1;
-	public final static int ICON_MININGPOWERED = 2;
-	public final static int ICON_SCANNINGLOWPOWER = 3;
-	public final static int ICON_SCANNINGPOWERED = 4;
+	public final static int ICON_MINING_LOW_POWER = 1;
+	public final static int ICON_MINING_POWERED = 2;
+	public final static int ICON_SCANNING_LOW_POWER = 3;
+	public final static int ICON_SCANNING_POWERED = 4;
 	private final static int ICON_BOTTOM = 5;
 	private final static int ICON_TOP = 6;
 	
 	public BlockMiningLaser() {
 		super(Material.iron);
-		this.setBlockName("warpdrive.collection.MiningLaser");
+		setBlockName("warpdrive.collection.MiningLaser");
 	}
 	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[16];
 		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_idle");
-		iconBuffer[ICON_MININGLOWPOWER  ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningLowPower");
-		iconBuffer[ICON_MININGPOWERED   ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
-		iconBuffer[ICON_SCANNINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
-		iconBuffer[ICON_SCANNINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
+		iconBuffer[ICON_MINING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningLowPower");
+		iconBuffer[ICON_MINING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
+		iconBuffer[ICON_SCANNING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
+		iconBuffer[ICON_SCANNING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
 		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserBottom");
 		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserTop");
 	}
@@ -63,7 +63,7 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 		if (side == 1) {
 			return iconBuffer[ICON_TOP];
 		}
-		return iconBuffer[ICON_SCANNINGLOWPOWER];
+		return iconBuffer[ICON_SCANNING_LOW_POWER];
 	}
 	
 	@Override

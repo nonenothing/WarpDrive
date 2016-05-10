@@ -6,7 +6,7 @@ public enum ComponentType {
 	EMERALD_CRYSTAL    ("EmeraldCrystal"),		// EmptyCore
 	ENDER_CRYSTAL      ("EnderCrystal"),		// TeleCore
 	DIAMOND_CRYSTAL    ("DiamondCrystal"),		// WarpCore
-	DIFFRACTION_GRATING("DiffrationGrating"),	// LaserCore
+	DIFFRACTION_GRATING("DiffractionGrating"),	// LaserCore
 	REACTOR_CORE       ("ReactorCore"),
 	COMPUTER_INTERFACE ("ComputerInterface"),	// InterfaceComputer
 	POWER_INTERFACE    ("PowerInterface"),		// InterfacePower
@@ -26,7 +26,7 @@ public enum ComponentType {
 	
 	// cached values
 	public static final int length;
-	private static final HashMap<Integer, ComponentType> ID_MAP = new HashMap<Integer, ComponentType>();
+	private static final HashMap<Integer, ComponentType> ID_MAP = new HashMap<>();
 	
 	static {
 		length = ComponentType.values().length;

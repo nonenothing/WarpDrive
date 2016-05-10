@@ -1,5 +1,6 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.world.SpaceWorldGenerator;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -60,57 +61,57 @@ public class CommandGenerate extends CommandBase {
 			z = AdjustAxis(z, params[params.length - 1]);
 		}
 		
-		String struct = params[0];
+		String structure = params[0];
 		
 		// Reject command, if player is not in space
-		if (world.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && (!"ship".equals(struct))) {
+		if (world.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && (!"ship".equals(structure))) {
 			WarpDrive.addChatMessage(commandSender, "* generate: this structure is only allowed in space!");
 			return;
 		}
 		
 		if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-			if (struct.equals("ship")) {
-				WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
-				new WorldGenSmallShip(false).generate(world, world.rand, x, y, z);
-				
-			} else if (struct.equals("station")) {
-				WarpDrive.logger.info("/generate: generating station at " + x + ", " + y + ", " + z);
-				new WorldGenStation(false).generate(world, world.rand, x, y, z);
-				
-			} else if (struct.equals("asteroid")) {
-				String name = (params.length > 1) ? params[1] : null;
-				generateStructure(commandSender, StructureManager.GROUP_ASTEROIDS, name, world, x, y - 10, z);
-				
-			} else if (struct.equals("astfield")) {
-				WarpDrive.logger.info("/generate: generating asteroid field at " + x + ", " + y + ", " + z);
-				WarpDrive.instance.spaceWorldGenerator.generateAsteroidField(world, x, y, z);
-				
-			} else if (struct.equals("gascloud")) {
-				String name = (params.length > 1) ? params[1] : null;
-				generateStructure(commandSender, StructureManager.GROUP_GASCLOUDS, name, world, x, y, z);
-				
-			} else if (struct.equals("moon")) {
-				String name = (params.length > 1) ? params[1] : null;
-				generateStructure(commandSender, StructureManager.GROUP_MOONS, name, world, x, y - 16, z);
-				
-			} else if (struct.equals("star")) {
-				String name = (params.length > 1) ? params[1] : null;
-				generateStructure(commandSender, StructureManager.GROUP_STARS, name, world, x, y, z);
-				
-			} else if (struct.equals("jumpgate")) {
-				if (params.length != 2) {
-					WarpDrive.addChatMessage(commandSender, "Missing jumpgate name");
-				} else {
-					WarpDrive.logger.info("/generate: creating jumpgate at " + x + ", " + y + ", " + z);
-					
-					if (WarpDrive.jumpgates.addGate(params[1], x, y, z)) {
-						JumpgateGenerator.generate(world, x, Math.min(y, 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), z);
+			String name = (params.length > 1) ? params[1] : null;
+			switch (structure) {
+				case "ship":
+					WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
+					new WorldGenSmallShip(false).generate(world, world.rand, x, y, z);
+					break;
+				case "station":
+					WarpDrive.logger.info("/generate: generating station at " + x + ", " + y + ", " + z);
+					new WorldGenStation(false).generate(world, world.rand, x, y, z);
+					break;
+				case "asteroid":
+					generateStructure(commandSender, StructureManager.GROUP_ASTEROIDS, name, world, x, y - 10, z);
+					break;
+				case "astfield":
+					WarpDrive.logger.info("/generate: generating asteroid field at " + x + ", " + y + ", " + z);
+					SpaceWorldGenerator.generateAsteroidField(world, x, y, z);
+					break;
+				case "gascloud":
+					generateStructure(commandSender, StructureManager.GROUP_GASCLOUDS, name, world, x, y, z);
+					break;
+				case "moon":
+					generateStructure(commandSender, StructureManager.GROUP_MOONS, name, world, x, y - 16, z);
+					break;
+				case "star":
+					generateStructure(commandSender, StructureManager.GROUP_STARS, name, world, x, y, z);
+					break;
+				case "jumpgate":
+					if (params.length != 2) {
+						WarpDrive.addChatMessage(commandSender, "Missing jumpgate name");
 					} else {
-						WarpDrive.logger.info("/generate: jumpgate '" + params[1] + "' already exists.");
+						WarpDrive.logger.info("/generate: creating jumpgate at " + x + ", " + y + ", " + z);
+
+						if (WarpDrive.jumpgates.addGate(params[1], x, y, z)) {
+							JumpgateGenerator.generate(world, x, Math.min(y, 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), z);
+						} else {
+							WarpDrive.logger.info("/generate: jumpgate '" + params[1] + "' already exists.");
+						}
 					}
-				}
-			} else {
-				WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
+					break;
+				default:
+					WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
+					break;
 			}
 		}
 	}

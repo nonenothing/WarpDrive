@@ -91,29 +91,39 @@ public class CompatForgeMultipart implements IBlockTransformer {
 			byte mask = (byte) 0xFF;
 			byte[] rot = null;
 			// microblocks
-			if (id.equals("mcr_cnr")) {
-				propertyName = "shape";
-				mask = (byte) 0x0F;
-				rot = rotMicroblockCorner;
-			} else if (id.equals("mcr_face") || id.equals("mcr_hllw")) {
-				propertyName = "shape";
-				mask = (byte) 0x0F;
-				rot = rotMicroblockFace;
-			} else if (id.equals("mcr_edge")) {
-				propertyName = "shape";
-				mask = (byte) 0x0F;
-				rot = rotMicroblockEdge;
-			} else if (id.equals("mcr_post")) {
-				propertyName = "shape";
-				mask = (byte) 0x0F;
-				rot = rotMicroblockPost;
-			// wireless redstone
-			} else if (id.equals("wrcbe-recv") || id.equals("wrcbe-tran") || id.equals("wrcbe-jamm")) {
-				propertyName = "state";
-				mask = (byte) 0x1F;
-				rot = rotWRCBEstate;
-			} else {
-				WarpDrive.logger.error("Ignoring part of ForgeMultipart with unknown id: " + nbtPart);
+			switch (id) {
+				case "mcr_cnr":
+					propertyName = "shape";
+					mask = (byte) 0x0F;
+					rot = rotMicroblockCorner;
+					break;
+				case "mcr_face":
+				case "mcr_hllw":
+					propertyName = "shape";
+					mask = (byte) 0x0F;
+					rot = rotMicroblockFace;
+					break;
+				case "mcr_edge":
+					propertyName = "shape";
+					mask = (byte) 0x0F;
+					rot = rotMicroblockEdge;
+					break;
+				case "mcr_post":
+					propertyName = "shape";
+					mask = (byte) 0x0F;
+					rot = rotMicroblockPost;
+					// wireless redstone
+					break;
+				case "wrcbe-recv":
+				case "wrcbe-tran":
+				case "wrcbe-jamm":
+					propertyName = "state";
+					mask = (byte) 0x1F;
+					rot = rotWRCBEstate;
+					break;
+				default:
+					WarpDrive.logger.error("Ignoring part of ForgeMultipart with unknown id: " + nbtPart);
+					break;
 			}
 			// actual rotation
 			if (propertyName != null && rot != null) {

@@ -26,11 +26,11 @@ public class SpaceGenerator extends ChunkProviderGenerate {
 	
 	@Override
 	public Chunk provideChunk(int par1, int par2) {
-		this.rand.setSeed(par1 * 341873128712L + par2 * 132897987541L);
+		rand.setSeed(par1 * 341873128712L + par2 * 132897987541L);
 		Block[] var3 = new Block[32768];
-		// this.biomesForGeneration[0] = WarpDrive.spaceBiome;
-		// this.caveGenerator.generate(this, this.worldObj, par1, par2, var3);
-		this.biomesForGeneration[0] = WarpDrive.spaceBiome;
+		// biomesForGeneration[0] = WarpDrive.spaceBiome;
+		// caveGenerator.generate(this, this.worldObj, par1, par2, var3);
+		biomesForGeneration[0] = WarpDrive.spaceBiome;
 		Chunk var4 = new Chunk(worldObj, var3, par1, par2);
 		var4.generateSkylightMap();
 		return var4;

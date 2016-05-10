@@ -52,21 +52,21 @@ public class VectorI implements Cloneable {
 	}
 	
 	public VectorI(final MovingObjectPosition movingObject) {
-		this.x = movingObject.blockX;
-		this.y = movingObject.blockY;
-		this.z = movingObject.blockZ;
+		x = movingObject.blockX;
+		y = movingObject.blockY;
+		z = movingObject.blockZ;
 	}
 	
 	public VectorI(final ChunkCoordinates chunkCoordinates) {
-		this.x = chunkCoordinates.posX;
-		this.y = chunkCoordinates.posY;
-		this.z = chunkCoordinates.posZ;
+		x = chunkCoordinates.posX;
+		y = chunkCoordinates.posY;
+		z = chunkCoordinates.posZ;
 	}
 	
 	public VectorI(final ForgeDirection direction) {
-		this.x = direction.offsetX;
-		this.y = direction.offsetY;
-		this.z = direction.offsetZ;
+		x = direction.offsetX;
+		y = direction.offsetY;
+		z = direction.offsetZ;
 	}
 	
 	

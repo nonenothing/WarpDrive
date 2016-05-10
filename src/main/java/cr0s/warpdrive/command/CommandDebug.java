@@ -50,25 +50,29 @@ public class CommandDebug extends CommandBase
 			try
 			{
 				String par = params[0].toLowerCase();
-				if (par.equals("world") || par.equals("overworld") || par.equals("0"))
-				{
-					dim = 0;
-				}
-				else if (par.equals("nether") || par.equals("thenether") || par.equals("-1"))
-				{
-					dim = -1;
-				}
-				else if (par.equals("s") || par.equals("space"))
-				{
-					dim = WarpDriveConfig.G_SPACE_DIMENSION_ID;
-				}
-				else if (par.equals("h") || par.equals("hyper") || par.equals("hyperspace"))
-				{
-					dim = WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
-				}
-				else
-				{
-					dim = Integer.parseInt(par);
+				switch (par) {
+					case "world":
+					case "overworld":
+					case "0":
+						dim = 0;
+						break;
+					case "nether":
+					case "thenether":
+					case "-1":
+						dim = -1;
+						break;
+					case "s":
+					case "space":
+						dim = WarpDriveConfig.G_SPACE_DIMENSION_ID;
+						break;
+					case "h":
+					case "hyper":
+					case "hyperspace":
+						dim = WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
+						break;
+					default:
+						dim = Integer.parseInt(par);
+						break;
 				}
 
 				x = Integer.parseInt(params[1]);
@@ -93,7 +97,7 @@ public class CommandDebug extends CommandBase
 			String side = FMLCommonHandler.instance().getEffectiveSide().isClient() ? "Client":"Server";
 
 			// I(nvalidate), V(alidate), A(set air), R(emoveEntity), P(setBlock), S(etEntity)
-			boolean bReturn = false;
+			boolean bReturn;
 			for (char ch: actions.toUpperCase().toCharArray()) {
 				switch (ch) {
 				case 'I':

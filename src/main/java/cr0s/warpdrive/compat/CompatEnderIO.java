@@ -59,13 +59,13 @@ public class CompatEnderIO implements IBlockTransformer {
 	private static final Map<String, String> rotSideNames;
 	private static final Map<String, String> rotFaceNames;
 	static {
-		Map<String, String> map = new HashMap();
+		Map<String, String> map = new HashMap<>();
 		map.put("EAST", "SOUTH");
 		map.put("SOUTH", "WEST");
 		map.put("WEST", "NORTH");
 		map.put("NORTH", "EAST");
 		rotSideNames = Collections.unmodifiableMap(map);
-		map = new HashMap();
+		map = new HashMap<>();
 		map.put("face2", "face5");
 		map.put("face5", "face3");
 		map.put("face3", "face4");
@@ -262,7 +262,7 @@ public class CompatEnderIO implements IBlockTransformer {
 		}
 		
 		// Faces
-		Map<String, Short> map = new HashMap();
+		Map<String, Short> map = new HashMap<>();
 		for (String key : rotFaceNames.keySet()) {
 			if (nbtTileEntity.hasKey(key)) {
 				short face = nbtTileEntity.getShort(key);

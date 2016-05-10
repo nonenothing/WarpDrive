@@ -24,6 +24,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.EntityFXBeam;
 
+@SuppressWarnings("Convert2Diamond")
 public class CloakedArea {
 	public int dimensionId = -666;
 	public int coreX, coreY, coreZ;
@@ -51,7 +52,7 @@ public class CloakedArea {
 		this.maxY = maxY;
 		this.maxZ = maxZ;
 		
-		this.playersInArea = new LinkedList<String>();
+		this.playersInArea = new LinkedList<>();
 		
 		if (worldObj != null) {
 			try {
@@ -177,11 +178,11 @@ public class CloakedArea {
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
 			 WarpDrive.logger.info(this + " Revealing cloaked blocks to player " + player.getCommandSenderName());
 		}
-		int minYclamped = Math.max(0, minY);
-		int maxYclamped = Math.min(255, maxY);
+		int minY_clamped = Math.max(0, minY);
+		int maxY_clamped = Math.min(255, maxY);
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
-				for (int y = minYclamped; y <= maxYclamped; y++) {
+				for (int y = minY_clamped; y <= maxY_clamped; y++) {
 					if (player.worldObj.getBlock(x, y, z) != Blocks.air) {
 						player.worldObj.markBlockForUpdate(x, y, z);
 						
@@ -200,10 +201,10 @@ public class CloakedArea {
 			}
 		}
 		
-		//System.outprintln("[Cloak] Sending " + chunksToSend.size() + " chunks to player " + p.username);
+		//System.out.println("[Cloak] Sending " + chunksToSend.size() + " chunks to player " + p.username);
 		((EntityPlayerMP) p).playerNetServerHandler.sendPacketToPlayer(new Packet56MapChunks(chunksToSend));
 		
-		//System.outprintln("[Cloak] Sending decloak packet to player " + p.username);
+		//System.out.println("[Cloak] Sending decloak packet to player " + p.username);
 		area.sendCloakPacketToPlayer(p, true);
 		// decloak = true
 		
@@ -233,9 +234,9 @@ public class CloakedArea {
 		// Hide the blocks within area
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Refreshing cloaked blocks..."); }
 		World worldObj = player.worldObj;
-		int minYmap = Math.max(0, minY);
-		int maxYmap = Math.min(255, maxY);
-		for (int y = minYmap; y <= maxYmap; y++) {
+		int minY_clamped = Math.max(0, minY);
+		int maxY_clamped = Math.min(255, maxY);
+		for (int y = minY_clamped; y <= maxY_clamped; y++) {
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					Block block = worldObj.getBlock(x, y, z);
@@ -289,9 +290,9 @@ public class CloakedArea {
 	@Override
 	public String toString() {
 		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
-				getClass().getSimpleName(), Integer.valueOf(dimensionId),
-				Integer.valueOf(coreX), Integer.valueOf(coreY), Integer.valueOf(coreZ),
-				Integer.valueOf(minX), Integer.valueOf(minY), Integer.valueOf(minZ),
-				Integer.valueOf(maxX), Integer.valueOf(maxY), Integer.valueOf(maxZ) );
+			getClass().getSimpleName(), dimensionId,
+			coreX, coreY, coreZ,
+			minX, minY, minZ,
+			maxX, maxY, maxZ);
 	}
 }

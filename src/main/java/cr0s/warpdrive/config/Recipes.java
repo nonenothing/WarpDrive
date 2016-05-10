@@ -550,6 +550,7 @@ public class Recipes {
 				'm', advancedMachine);
 	}
 	
+	@SuppressWarnings("UnusedAssignment")
 	public static void initDynamic() {
 		// Support iron bars from all mods
 		Object ironBars = Blocks.iron_bars;
@@ -663,7 +664,7 @@ public class Recipes {
 			if (OreDictionary.doesOreNameExist("oc:materialCU") && !OreDictionary.getOres("oc:materialCU").isEmpty()) {
 				oreCircuitOrHeavyPressurePlate = "oc:materialCU";	// Control circuit is 5 redstone, 5 gold ingot, 3 paper
 				outputFactor = 2;
-			} else if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustricalCraft2
+			} else if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustrialCraft2
 				oreCircuitOrHeavyPressurePlate = "circuitBasic";
 				outputFactor = 2;
 			}
@@ -729,7 +730,7 @@ public class Recipes {
 		Object rubberOrLeather = Items.leather;
 		if (OreDictionary.doesOreNameExist("plateRubber") && !OreDictionary.getOres("plateRubber").isEmpty()) {// comes with GregTech
 			rubberOrLeather = "plateRubber";
-		} else if (OreDictionary.doesOreNameExist("itemRubber") && !OreDictionary.getOres("itemRubber").isEmpty()) {// comes with IndustricalCraft2
+		} else if (OreDictionary.doesOreNameExist("itemRubber") && !OreDictionary.getOres("itemRubber").isEmpty()) {// comes with IndustrialCraft2
 			rubberOrLeather = "itemRubber";
 		}
 		Object woolYellow = new ItemStack(Blocks.wool, 1, 4);
@@ -871,7 +872,7 @@ public class Recipes {
 			oreCloakingPlate = "ingotEnderium";
 		} else if (OreDictionary.doesOreNameExist("ingotPhasedGold") && !OreDictionary.getOres("ingotPhasedGold").isEmpty()) {// EnderIO
 			oreCloakingPlate = "ingotPhasedGold";
-		} else if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2
+		} else if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustrialCraft2
 			oreCloakingPlate = "plateAlloyIridium";
 		}
 		Object oreAntenna = Items.ghast_tear;
@@ -1006,7 +1007,7 @@ public class Recipes {
 		}
 		
 		// Laser camera is just Laser + Camera
-		if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustricalCraft2
+		if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustrialCraft2
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserCamera), false, "rlr", "rsr", "rcr",
 					'r', rubberOrLeather,
 					's', "circuitBasic",
@@ -1134,7 +1135,7 @@ public class Recipes {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("EnderIO", "itemAlloy", 2);	// Vibrant alloy
 		}
 		Object oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
-		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustricalCraft2 and Gregtech
+		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustrialCraft2 and Gregtech
 			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
 		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
 			oreEmeraldOrReinforcedIridiumPlate = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);

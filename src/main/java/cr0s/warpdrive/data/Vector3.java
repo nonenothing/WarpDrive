@@ -36,63 +36,63 @@ public class Vector3 implements Cloneable {
 	}
 
 	public Vector3(Entity par1) {
-		this.x = par1.posX;
-		this.y = par1.posY;
-		this.z = par1.posZ;
+		x = par1.posX;
+		y = par1.posY;
+		z = par1.posZ;
 	}
 
 	public Vector3(TileEntity par1) {
-		this.x = par1.xCoord;
-		this.y = par1.yCoord;
-		this.z = par1.zCoord;
+		x = par1.xCoord;
+		y = par1.yCoord;
+		z = par1.zCoord;
 	}
 
 	public Vector3(Vec3 par1) {
-		this.x = par1.xCoord;
-		this.y = par1.yCoord;
-		this.z = par1.zCoord;
+		x = par1.xCoord;
+		y = par1.yCoord;
+		z = par1.zCoord;
 	}
 
 	public Vector3(MovingObjectPosition par1) {
-		this.x = par1.blockX;
-		this.y = par1.blockY;
-		this.z = par1.blockZ;
+		x = par1.blockX;
+		y = par1.blockY;
+		z = par1.blockZ;
 	}
 
 	public Vector3(ChunkCoordinates par1) {
-		this.x = par1.posX;
-		this.y = par1.posY;
-		this.z = par1.posZ;
+		x = par1.posX;
+		y = par1.posY;
+		z = par1.posZ;
 	}
 
 	public Vector3(ForgeDirection direction) {
-		this.x = direction.offsetX;
-		this.y = direction.offsetY;
-		this.z = direction.offsetZ;
+		x = direction.offsetX;
+		y = direction.offsetY;
+		z = direction.offsetZ;
 	}
 
 	/**
 	 * Loads a Vector3 from an NBT compound.
 	 */
 	public Vector3(NBTTagCompound nbt) {
-		this.x = nbt.getDouble("x");
-		this.y = nbt.getDouble("y");
-		this.z = nbt.getDouble("z");
+		x = nbt.getDouble("x");
+		y = nbt.getDouble("y");
+		z = nbt.getDouble("z");
 	}
 
 	/**
 	 * Returns the coordinates as integers, ideal for block placement.
 	 */
 	public int intX() {
-		return (int) Math.floor(this.x);
+		return (int) Math.floor(x);
 	}
 
 	public int intY() {
-		return (int) Math.floor(this.y);
+		return (int) Math.floor(y);
 	}
 
 	public int intZ() {
-		return (int) Math.floor(this.z);
+		return (int) Math.floor(z);
 	}
 
 	/**
@@ -100,48 +100,42 @@ public class Vector3 implements Cloneable {
 	 */
 	@Override
 	public Vector3 clone() {
-		return new Vector3(this.x, this.y, this.z);
+		return new Vector3(x, y, z);
 	}
 
-	/**
-	 * Easy block access functions.
-	 *
-	 * @param world
-	 * @return
-	 */
 	public Block getBlockID(IBlockAccess world) {
-		return world.getBlock(this.intX(), this.intY(), this.intZ());
+		return world.getBlock(intX(), intY(), intZ());
 	}
 
 	public int getBlockMetadata(IBlockAccess world) {
-		return world.getBlockMetadata(this.intX(), this.intY(), this.intZ());
+		return world.getBlockMetadata(intX(), intY(), intZ());
 	}
 
 	public TileEntity getTileEntity(IBlockAccess world) {
-		return world.getTileEntity(this.intX(), this.intY(), this.intZ());
+		return world.getTileEntity(intX(), intY(), intZ());
 	}
 
 	public boolean setBlock(World world, Block id, int metadata, int notify) {
-		return world.setBlock(this.intX(), this.intY(), this.intZ(), id, metadata, notify);
+		return world.setBlock(intX(), intY(), intZ(), id, metadata, notify);
 	}
 
 	public boolean setBlock(World world, Block id, int metadata) {
-		return this.setBlock(world, id, metadata, 3);
+		return setBlock(world, id, metadata, 3);
 	}
 
 	public boolean setBlock(World world, Block id) {
-		return this.setBlock(world, id, 0);
+		return setBlock(world, id, 0);
 	}
 
 	/**
 	 * Converts this vector three into a Minecraft Vec3 object
 	 */
 	public Vec3 toVec3() {
-		return Vec3.createVectorHelper(this.x, this.y, this.z);
+		return Vec3.createVectorHelper(x, y, z);
 	}
 
 	public double getMagnitude() {
-		return Math.sqrt(this.getMagnitudeSquared());
+		return Math.sqrt(getMagnitudeSquared());
 	}
 
 	public double getMagnitudeSquared() {
@@ -171,23 +165,23 @@ public class Vector3 implements Cloneable {
 	}
 
 	public double distanceTo(Vector3 vector3) {
-		double var2 = vector3.x - this.x;
-		double var4 = vector3.y - this.y;
-		double var6 = vector3.z - this.z;
+		double var2 = vector3.x - x;
+		double var4 = vector3.y - y;
+		double var6 = vector3.z - z;
 		return Math.sqrt(var2 * var2 + var4 * var4 + var6 * var6);
 	}
 
 	public double distanceTo_square(Vector3 vector3) {
-		double var2 = vector3.x - this.x;
-		double var4 = vector3.y - this.y;
-		double var6 = vector3.z - this.z;
+		double var2 = vector3.x - x;
+		double var4 = vector3.y - y;
+		double var6 = vector3.z - z;
 		return var2 * var2 + var4 * var4 + var6 * var6;
 	}
 
 	public double distanceTo_square(Entity entity) {
-		double var2 = entity.posX - this.x;
-		double var4 = entity.posY - this.y;
-		double var6 = entity.posZ - this.z;
+		double var2 = entity.posX - x;
+		double var4 = entity.posY - y;
+		double var6 = entity.posZ - z;
 		return var2 * var2 + var4 * var4 + var6 * var6;
 	}
 
@@ -195,21 +189,21 @@ public class Vector3 implements Cloneable {
 	 * Multiplies the vector by negative one.
 	 */
 	public Vector3 invert() {
-		this.scale(-1);
+		scale(-1);
 		return this;
 	}
 
 	public Vector3 translate(Vector3 par1) {
-		this.x += par1.x;
-		this.y += par1.y;
-		this.z += par1.z;
+		x += par1.x;
+		y += par1.y;
+		z += par1.z;
 		return this;
 	}
 
 	public Vector3 translate(double par1) {
-		this.x += par1;
-		this.y += par1;
-		this.z += par1;
+		x += par1;
+		y += par1;
+		z += par1;
 		return this;
 	}
 	
@@ -264,24 +258,24 @@ public class Vector3 implements Cloneable {
 	}
 	
 	public Vector3 subtract(Vector3 amount) {
-		return this.translate(amount.clone().invert());
+		return translate(amount.clone().invert());
 	}
 
 	public Vector3 subtract(double amount) {
-		return this.translate(-amount);
+		return translate(-amount);
 	}
 
 	public Vector3 scale(double amount) {
-		this.x *= amount;
-		this.y *= amount;
-		this.z *= amount;
+		x *= amount;
+		y *= amount;
+		z *= amount;
 		return this;
 	}
 
 	public Vector3 scale(Vector3 amount) {
-		this.x *= amount.x;
-		this.y *= amount.y;
-		this.z *= amount.z;
+		x *= amount.x;
+		y *= amount.y;
+		z *= amount.z;
 		return this;
 	}
 
@@ -295,12 +289,12 @@ public class Vector3 implements Cloneable {
 
 	@Deprecated
 	public Vector3 multiply(double amount) {
-		return this.scale(amount);
+		return scale(amount);
 	}
 
 	@Deprecated
 	public Vector3 multiply(Vector3 amount) {
-		return this.scale(amount);
+		return scale(amount);
 	}
 
 	/**
@@ -332,35 +326,35 @@ public class Vector3 implements Cloneable {
 	}
 
 	public Vector3 round() {
-		return new Vector3(Math.round(this.x), Math.round(this.y), Math.round(this.z));
+		return new Vector3(Math.round(x), Math.round(y), Math.round(z));
 	}
 
 	public Vector3 ceil() {
-		return new Vector3(Math.ceil(this.x), Math.ceil(this.y), Math.ceil(this.z));
+		return new Vector3(Math.ceil(x), Math.ceil(y), Math.ceil(z));
 	}
 
 	public Vector3 floor() {
-		return new Vector3(Math.floor(this.x), Math.floor(this.y), Math.floor(this.z));
+		return new Vector3(Math.floor(x), Math.floor(y), Math.floor(z));
 	}
 
 	public Vector3 toRound() {
-		this.x = Math.round(this.x);
-		this.y = Math.round(this.y);
-		this.z = Math.round(this.z);
+		x = Math.round(x);
+		y = Math.round(y);
+		z = Math.round(z);
 		return this;
 	}
 
 	public Vector3 toCeil() {
-		this.x = Math.ceil(this.x);
-		this.y = Math.ceil(this.y);
-		this.z = Math.ceil(this.z);
+		x = Math.ceil(x);
+		y = Math.ceil(y);
+		z = Math.ceil(z);
 		return this;
 	}
 
 	public Vector3 toFloor() {
-		this.x = Math.floor(this.x);
-		this.y = Math.floor(this.y);
-		this.z = Math.floor(this.z);
+		x = Math.floor(x);
+		y = Math.floor(y);
+		z = Math.floor(z);
 		return this;
 	}
 
@@ -369,42 +363,36 @@ public class Vector3 implements Cloneable {
 	 */
 	public List<Entity> getEntitiesWithin(World worldObj, Class<? extends Entity> par1Class) {
 		return worldObj.getEntitiesWithinAABB(par1Class,
-				AxisAlignedBB.getBoundingBox(this.intX(), this.intY(), this.intZ(), this.intX() + 1, this.intY() + 1, this.intZ() + 1));
+				AxisAlignedBB.getBoundingBox(intX(), intY(), intZ(), intX() + 1, intY() + 1, intZ() + 1));
 	}
 
 	/**
 	 * Gets a position relative to a position's side
-	 *
-	 * @param position
-	 *            - The position
-	 * @param side
-	 *            - The side. 0-5
-	 * @return The position relative to the original position's side
 	 */
 	public Vector3 modifyPositionFromSide(ForgeDirection side, double amount) {
 		switch (side.ordinal()) {
 		case 0:
-			this.y -= amount;
+			y -= amount;
 			break;
 		
 		case 1:
-			this.y += amount;
+			y += amount;
 			break;
 		
 		case 2:
-			this.z -= amount;
+			z -= amount;
 			break;
 		
 		case 3:
-			this.z += amount;
+			z += amount;
 			break;
 		
 		case 4:
-			this.x -= amount;
+			x -= amount;
 			break;
 		
 		case 5:
-			this.x += amount;
+			x += amount;
 			break;
 		
 		default:
@@ -415,7 +403,7 @@ public class Vector3 implements Cloneable {
 	}
 
 	public Vector3 modifyPositionFromSide(ForgeDirection side) {
-		this.modifyPositionFromSide(side, 1);
+		modifyPositionFromSide(side, 1);
 		return this;
 	}
 
@@ -425,37 +413,37 @@ public class Vector3 implements Cloneable {
 	 * @return The cross product between this vector and another.
 	 */
 	public Vector3 crossProduct(Vector3 vec2) {
-		return new Vector3(this.y * vec2.z - this.z * vec2.y, this.z * vec2.x - this.x * vec2.z, this.x * vec2.y - this.y * vec2.x);
+		return new Vector3(y * vec2.z - z * vec2.y, z * vec2.x - x * vec2.z, x * vec2.y - y * vec2.x);
 	}
 
 	public Vector3 xCrossProduct() {
-		return new Vector3(0.0D, this.z, -this.y);
+		return new Vector3(0.0D, z, -y);
 	}
 
 	public Vector3 zCrossProduct() {
-		return new Vector3(-this.y, this.x, 0.0D);
+		return new Vector3(-y, x, 0.0D);
 	}
 
 	public double dotProduct(Vector3 vec2) {
-		return this.x * vec2.x + this.y * vec2.y + this.z * vec2.z;
+		return x * vec2.x + y * vec2.y + z * vec2.z;
 	}
 
 	/**
 	 * @return The perpendicular vector.
 	 */
 	public Vector3 getPerpendicular() {
-		if (this.z == 0.0F) {
-			return this.zCrossProduct();
+		if (z == 0.0F) {
+			return zCrossProduct();
 		}
 
-		return this.xCrossProduct();
+		return xCrossProduct();
 	}
 
 	/**
 	 * @return True if this Vector3 is zero.
 	 */
 	public boolean isZero() {
-		return (this.x == 0.0F) && (this.y == 0.0F) && (this.z == 0.0F);
+		return (x == 0.0F) && (y == 0.0F) && (z == 0.0F);
 	}
 
 	/**
@@ -464,28 +452,28 @@ public class Vector3 implements Cloneable {
 	 * @return The new Vector3 rotation.
 	 */
 	public Vector3 rotate(float angle, Vector3 axis) {
-		return translateMatrix(getRotationMatrix(angle, axis), this.clone());
+		return translateMatrix(getRotationMatrix(angle, axis), clone());
 	}
 
 	public double[] getRotationMatrix(float angle_deg) {
 		double[] matrix = new double[16];
-		Vector3 axis = this.clone().normalize();
+		Vector3 axis = clone().normalize();
 		double xn = axis.x;
 		double yn = axis.y;
 		double zn = axis.z;
 		float angle_rad = angle_deg * 0.0174532925F;
 		float cos = (float) Math.cos(angle_rad);
-		float ocos = 1.0F - cos;
+		float oCos = 1.0F - cos;
 		float sin = (float) Math.sin(angle_rad);
-		matrix[0] = (xn * xn * ocos + cos);
-		matrix[1] = (yn * xn * ocos + zn * sin);
-		matrix[2] = (xn * zn * ocos - yn * sin);
-		matrix[4] = (xn * yn * ocos - zn * sin);
-		matrix[5] = (yn * yn * ocos + cos);
-		matrix[6] = (yn * zn * ocos + xn * sin);
-		matrix[8] = (xn * zn * ocos + yn * sin);
-		matrix[9] = (yn * zn * ocos - xn * sin);
-		matrix[10] = (zn * zn * ocos + cos);
+		matrix[0] = (xn * xn * oCos + cos);
+		matrix[1] = (yn * xn * oCos + zn * sin);
+		matrix[2] = (xn * zn * oCos - yn * sin);
+		matrix[4] = (xn * yn * oCos - zn * sin);
+		matrix[5] = (yn * yn * oCos + cos);
+		matrix[6] = (yn * zn * oCos + xn * sin);
+		matrix[8] = (xn * zn * oCos + yn * sin);
+		matrix[9] = (yn * zn * oCos - xn * sin);
+		matrix[10] = (zn * zn * oCos + cos);
 		matrix[15] = 1.0F;
 		return matrix;
 	}
@@ -511,16 +499,16 @@ public class Vector3 implements Cloneable {
 		double yawRadians = Math.toRadians(yaw);
 		double pitchRadians = Math.toRadians(pitch);
 		double rollRadians = Math.toRadians(roll);
-		double oldX = this.x;
-		double oldY = this.y;
-		double oldZ = this.z;
-		this.x = oldX * Math.cos(yawRadians) * Math.cos(pitchRadians) + oldZ
+		double oldX = x;
+		double oldY = y;
+		double oldZ = z;
+		x = oldX * Math.cos(yawRadians) * Math.cos(pitchRadians) + oldZ
 				* (Math.cos(yawRadians) * Math.sin(pitchRadians) * Math.sin(rollRadians) - Math.sin(yawRadians) * Math.cos(rollRadians)) + oldY
 				* (Math.cos(yawRadians) * Math.sin(pitchRadians) * Math.cos(rollRadians) + Math.sin(yawRadians) * Math.sin(rollRadians));
-		this.z = oldX * Math.sin(yawRadians) * Math.cos(pitchRadians) + oldZ
+		z = oldX * Math.sin(yawRadians) * Math.cos(pitchRadians) + oldZ
 				* (Math.sin(yawRadians) * Math.sin(pitchRadians) * Math.sin(rollRadians) + Math.cos(yawRadians) * Math.cos(rollRadians)) + oldY
 				* (Math.sin(yawRadians) * Math.sin(pitchRadians) * Math.cos(rollRadians) - Math.cos(yawRadians) * Math.sin(rollRadians));
-		this.y = -oldX * Math.sin(pitchRadians) + oldZ * Math.cos(pitchRadians) * Math.sin(rollRadians) + oldY * Math.cos(pitchRadians) * Math.cos(rollRadians);
+		y = -oldX * Math.sin(pitchRadians) + oldZ * Math.cos(pitchRadians) * Math.sin(rollRadians) + oldY * Math.cos(pitchRadians) * Math.cos(rollRadians);
 	}
 
 	/**
@@ -528,27 +516,24 @@ public class Vector3 implements Cloneable {
 	 * angle.
 	 */
 	public void rotate(double yaw, double pitch) {
-		this.rotate(yaw, pitch, 0);
+		rotate(yaw, pitch, 0);
 	}
 
 	public void rotate(double yaw) {
 		double yawRadians = Math.toRadians(yaw);
-		double oldX = this.x;
-		double oldZ = this.z;
+		double oldX = x;
+		double oldZ = z;
 
 		if (yaw != 0) {
-			this.x = oldX * Math.cos(yawRadians) - oldZ * Math.sin(yawRadians);
-			this.z = oldX * Math.sin(yawRadians) + oldZ * Math.cos(yawRadians);
+			x = oldX * Math.cos(yawRadians) - oldZ * Math.sin(yawRadians);
+			z = oldX * Math.sin(yawRadians) + oldZ * Math.cos(yawRadians);
 		}
 	}
 
 	/**
 	 * Gets the delta look position based on the rotation yaw and pitch.
 	 * Minecraft coordinates are messed up. Y and Z are flipped. Yaw is
-	 * displaced by 90 degrees. Pitch is inversed.
-	 *
-	 * @param rotationYaw
-	 * @param rotationPitch
+	 * displaced by 90 degrees. Pitch is inverted.
 	 */
 	public static Vector3 getDeltaPositionFromRotation(float rotationYaw1, float rotationPitch1) {
 		float rotationYaw2 = rotationYaw1 + 90;
@@ -562,7 +547,7 @@ public class Vector3 implements Cloneable {
 	 * @return Angle in degrees
 	 */
 	public double getAngle(Vector3 vec2) {
-		return anglePreNorm(this.clone().normalize(), vec2.clone().normalize());
+		return anglePreNorm(clone().normalize(), vec2.clone().normalize());
 	}
 
 	public static double getAngle(Vector3 vec1, Vector3 vec2) {
@@ -570,7 +555,7 @@ public class Vector3 implements Cloneable {
 	}
 
 	public double anglePreNorm(Vector3 vec2) {
-		return Math.acos(this.dotProduct(vec2));
+		return Math.acos(dotProduct(vec2));
 	}
 
 	public static double anglePreNorm(Vector3 vec1, Vector3 vec2) {
@@ -588,15 +573,13 @@ public class Vector3 implements Cloneable {
 	/**
 	 * Saves this Vector3 to disk
 	 *
-	 * @param prefix
-	 *            - The prefix of this save. Use some unique string.
 	 * @param nbt
 	 *            - The NBT compound object to save the data in
 	 */
 	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setDouble("x", this.x);
-		nbt.setDouble("y", this.y);
-		nbt.setDouble("z", this.z);
+		nbt.setDouble("x", x);
+		nbt.setDouble("y", y);
+		nbt.setDouble("z", z);
 		return nbt;
 	}
 
@@ -631,16 +614,16 @@ public class Vector3 implements Cloneable {
 	 */
 	public MovingObjectPosition rayTrace(World world, float rotationYaw, float rotationPitch, boolean collisionFlag, double reachDistance) {
 		// Somehow this destroys the playerPosition vector -.-
-		MovingObjectPosition pickedBlock = this.rayTraceBlocks(world, rotationYaw, rotationPitch, collisionFlag, reachDistance);
-		MovingObjectPosition pickedEntity = this.rayTraceEntities(world, rotationYaw, rotationPitch, collisionFlag, reachDistance);
+		MovingObjectPosition pickedBlock = rayTraceBlocks(world, rotationYaw, rotationPitch, reachDistance);
+		MovingObjectPosition pickedEntity = rayTraceEntities(world, rotationYaw, rotationPitch, reachDistance);
 
 		if (pickedBlock == null) {
 			return pickedEntity;
 		} else if (pickedEntity == null) {
 			return pickedBlock;
 		} else {
-			double dBlock = this.distanceTo(new Vector3(pickedBlock.hitVec));
-			double dEntity = this.distanceTo(new Vector3(pickedEntity.hitVec));
+			double dBlock = distanceTo(new Vector3(pickedBlock.hitVec));
+			double dEntity = distanceTo(new Vector3(pickedEntity.hitVec));
 
 			if (dEntity < dBlock) {
 				return pickedEntity;
@@ -650,21 +633,20 @@ public class Vector3 implements Cloneable {
 		}
 	}
 
-	public MovingObjectPosition rayTraceBlocks(World world, float rotationYaw, float rotationPitch, boolean collisionFlag, double reachDistance) {
+	public MovingObjectPosition rayTraceBlocks(World world, float rotationYaw, float rotationPitch, double reachDistance) {
 		Vector3 lookVector = getDeltaPositionFromRotation(rotationYaw, rotationPitch);
-		Vector3 reachPoint = translate(this, this.scale(lookVector, reachDistance));
-		return world.rayTraceBlocks(this.toVec3(), reachPoint.toVec3());// TODO: Removed collision flag
+		Vector3 reachPoint = translate(this, scale(lookVector, reachDistance));
+		return world.rayTraceBlocks(toVec3(), reachPoint.toVec3());// TODO: Removed collision flag
 	}
 
-	public MovingObjectPosition rayTraceEntities(World world, float rotationYaw, float rotationPitch, boolean collisionFlag, double reachDistance) {
+	public MovingObjectPosition rayTraceEntities(World world, float rotationYaw, float rotationPitch, double reachDistance) {
 		MovingObjectPosition pickedEntity = null;
-		Vec3 startingPosition = this.toVec3();
+		Vec3 startingPosition = toVec3();
 		Vec3 look = getDeltaPositionFromRotation(rotationYaw, rotationPitch).toVec3();
 		Vec3 reachPoint = Vec3.createVectorHelper(startingPosition.xCoord + look.xCoord * reachDistance, startingPosition.yCoord + look.yCoord * reachDistance,
 				startingPosition.zCoord + look.zCoord * reachDistance);
 		double playerBorder = 1.1 * reachDistance;
 		AxisAlignedBB boxToScan = AxisAlignedBB.getBoundingBox(-playerBorder, -playerBorder, -playerBorder, playerBorder, playerBorder, playerBorder);
-		@SuppressWarnings("unchecked")
 		List<Entity> entitiesHit = world.getEntitiesWithinAABBExcludingEntity(null, boxToScan);
 		double closestEntity = reachDistance;
 
@@ -703,14 +685,14 @@ public class Vector3 implements Cloneable {
 
 	@Override
 	public int hashCode() {
-		return ("X:" + this.x + "Y:" + this.y + "Z:" + this.z).hashCode();
+		return ("X:" + x + "Y:" + y + "Z:" + z).hashCode();
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Vector3) {
 			Vector3 vector3 = (Vector3) o;
-			return this.x == vector3.x && this.y == vector3.y && this.z == vector3.z;
+			return x == vector3.x && y == vector3.y && z == vector3.z;
 		}
 
 		return false;
@@ -718,6 +700,6 @@ public class Vector3 implements Cloneable {
 
 	@Override
 	public String toString() {
-		return "Vector3 [" + this.x + "," + this.y + "," + this.z + "]";
+		return "Vector3 [" + x + "," + y + "," + z + "]";
 	}
 }

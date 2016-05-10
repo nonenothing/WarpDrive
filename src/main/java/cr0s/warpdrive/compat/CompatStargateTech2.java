@@ -64,7 +64,7 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	private static final int[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final Map<String, String> rotFacingcolors;
 	static {
-		Map<String, String> map = new HashMap();
+		Map<String, String> map = new HashMap<>();
 		map.put("color0", "color0");
 		map.put("color1", "color1");
 		map.put("color2", "color5");

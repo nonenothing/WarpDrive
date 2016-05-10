@@ -17,7 +17,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	private boolean canLoad = false;
 	private boolean shouldLoad = false;
 
-	private boolean inited = false;
+	private boolean initialised = false;
 	private ChunkCoordIntPair myChunk;
 
 	int negDX, posDX, negDZ, posDZ;
@@ -56,9 +56,9 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	{
 		super.updateEntity();
 
-		if(!inited)
+		if(!initialised)
 		{
-			inited = true;
+			initialised = true;
 			myChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair();
 			changedDistance();
 		}
@@ -126,41 +126,33 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
-		if(methodName.equals("radius"))
-		{
-			if(arguments.length == 1)
-			{
-				int dist = toInt(arguments[0]);
-				negDX = dist;
-				negDZ = dist;
-				posDX = dist;
-				posDZ = dist;
-				changedDistance();
-				return new Object[] { true };
-			}
-			return new Object[] { false };
-		}
-		else if(methodName.equals("bounds"))
-		{
-			if(arguments.length == 4)
-			{
-				negDX = toInt(arguments[0]);
-				posDX = toInt(arguments[1]);
-				negDZ = toInt(arguments[2]);
-				posDZ = toInt(arguments[3]);
-				changedDistance();
-			}
-			return new Object[] { negDX, posDX, negDZ, posDZ };
-		}
-		else if(methodName.equals("active"))
-		{
-			if(arguments.length == 1)
-				shouldLoad = toBool(arguments[0]);
-			return new Object[] { shouldChunkLoad() };
-		}
-		else if(methodName.equals("upgrades"))
-		{
-			return getUpgrades();
+		switch (methodName) {
+			case "radius":
+				if (arguments.length == 1) {
+					int dist = toInt(arguments[0]);
+					negDX = dist;
+					negDZ = dist;
+					posDX = dist;
+					posDZ = dist;
+					changedDistance();
+					return new Object[]{true};
+				}
+				return new Object[]{false};
+			case "bounds":
+				if (arguments.length == 4) {
+					negDX = toInt(arguments[0]);
+					posDX = toInt(arguments[1]);
+					negDZ = toInt(arguments[2]);
+					posDZ = toInt(arguments[3]);
+					changedDistance();
+				}
+				return new Object[]{negDX, posDX, negDZ, posDZ};
+			case "active":
+				if (arguments.length == 1)
+					shouldLoad = toBool(arguments[0]);
+				return new Object[]{shouldChunkLoad()};
+			case "upgrades":
+				return getUpgrades();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

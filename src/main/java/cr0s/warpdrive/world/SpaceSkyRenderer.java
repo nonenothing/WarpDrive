@@ -28,13 +28,13 @@ public class SpaceSkyRenderer extends IRenderHandler {
 
 	public SpaceSkyRenderer() {
 		GL11.glPushMatrix();
-		GL11.glNewList(this.starGLCallList, GL11.GL_COMPILE);
-		this.renderStars();
+		GL11.glNewList(starGLCallList, GL11.GL_COMPILE);
+		renderStars();
 		GL11.glEndList();
 		GL11.glPopMatrix();
 		final Tessellator tessellator = Tessellator.instance;
-		this.glSkyList = this.starGLCallList + 1;
-		GL11.glNewList(this.glSkyList, GL11.GL_COMPILE);
+		glSkyList = starGLCallList + 1;
+		GL11.glNewList(glSkyList, GL11.GL_COMPILE);
 		final byte byte2 = 64;
 		final int i = 256 / byte2 + 2;
 		float f = 16F;
@@ -51,8 +51,8 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		}
 
 		GL11.glEndList();
-		this.glSkyList2 = this.starGLCallList + 2;
-		GL11.glNewList(this.glSkyList2, GL11.GL_COMPILE);
+		glSkyList2 = starGLCallList + 2;
+		GL11.glNewList(glSkyList2, GL11.GL_COMPILE);
 		f = -16F;
 		tessellator.startDrawingQuads();
 
@@ -78,7 +78,7 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		}
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		final Vec3 var2 = this.getCustomSkyColor();
+		final Vec3 var2 = getCustomSkyColor();
 		float var3 = (float) var2.xCoord * (1 - world.getStarBrightness(partialTicks) * 2);
 		float var4 = (float) var2.yCoord * (1 - world.getStarBrightness(partialTicks) * 2);
 		float var5 = (float) var2.zCoord * (1 - world.getStarBrightness(partialTicks) * 2);
@@ -98,7 +98,7 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		GL11.glDepthMask(false);
 		GL11.glEnable(GL11.GL_FOG);
 		GL11.glColor3f(0, 0, 0);
-		GL11.glCallList(this.glSkyList);
+		GL11.glCallList(glSkyList);
 		GL11.glDisable(GL11.GL_FOG);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -115,7 +115,7 @@ public class SpaceSkyRenderer extends IRenderHandler {
 
 		if (var20 > 0.0F) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, var20);
-			GL11.glCallList(this.starGLCallList);
+			GL11.glCallList(starGLCallList);
 		}
 
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
@@ -164,7 +164,7 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		if (var25 < 0.0D) {
 			GL11.glPushMatrix();
 			GL11.glTranslatef(0.0F, 12.0F, 0.0F);
-			GL11.glCallList(this.glSkyList2);
+			GL11.glCallList(glSkyList2);
 			GL11.glPopMatrix();
 			var10 = 1.0F;
 			var11 = -((float) (var25 + 65.0D));
@@ -197,7 +197,7 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		GL11.glColor3f(70F / 256F, 70F / 256F, 70F / 256F);
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0.0F, -((float) (var25 - 16.0D)), 0.0F);
-		GL11.glCallList(this.glSkyList2);
+		GL11.glCallList(glSkyList2);
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glDepthMask(true);

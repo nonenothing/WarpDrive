@@ -17,8 +17,8 @@ import cr0s.warpdrive.render.RenderBlank;
 public class SpaceWorldProvider extends WorldProvider {
 	
 	public SpaceWorldProvider() {
-		this.worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
-		this.hasNoSky = false;
+		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
+		hasNoSky = false;
 	}
 	
 	@Override
@@ -78,7 +78,7 @@ public class SpaceWorldProvider extends WorldProvider {
 		
 		for (int i = 0; i <= 15; ++i) {
 			float f1 = 1.0F - i / 15.0F;
-			this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
+			lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
 		}
 	}
 	
@@ -120,7 +120,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public int getRespawnDimension(EntityPlayerMP player) {
-		return 0; // respawn on Earth
+		return 0; // re-spawn on Earth
 	}
 	
 	@Override

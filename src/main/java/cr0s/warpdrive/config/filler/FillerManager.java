@@ -23,6 +23,7 @@ public class FillerManager {
 	// all fillerSets
 	private static HashMap<String, RandomCollection<FillerSet>> fillerSetsByGroup;
 	
+	@SuppressWarnings("MismatchedReadAndWriteOfArray") // we've no required filler groups
 	private static final String[] REQUIRED_GROUPS = { };
 	
 	public static void load(File dir) {
@@ -39,7 +40,7 @@ public class FillerManager {
 			}
 		});
 		
-		fillerSetsByGroup = new HashMap<String, RandomCollection<FillerSet>>();
+		fillerSetsByGroup = new HashMap<>();
 		for(File file : files) {
 			try {
 				loadXmlFillerFile(file);
@@ -60,6 +61,7 @@ public class FillerManager {
 		WarpDrive.logger.info("Loading filler data files done");
 	}
 	
+	@SuppressWarnings("Convert2Diamond")
 	private static void loadXmlFillerFile(File file) throws InvalidXmlException, SAXException, IOException {
 		WarpDrive.logger.info("Loading filler data file " + file.getName());
 		Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
@@ -96,7 +98,7 @@ public class FillerManager {
 			
 			RandomCollection<FillerSet> randomCollection = fillerSetsByGroup.get(group);
 			if (randomCollection == null) {
-				randomCollection = new RandomCollection<FillerSet>();
+				randomCollection = new RandomCollection<>();
 				fillerSetsByGroup.put(group, randomCollection);
 			}
 			
@@ -108,15 +110,16 @@ public class FillerManager {
 		}
 	}
 	
+	@SuppressWarnings("Convert2Diamond")
 	private static void propagateFillerSets() {
-		HashMap<FillerSet, ArrayList<String>> fillerSetsDependencies = new HashMap<FillerSet, ArrayList<String>>();
+		HashMap<FillerSet, ArrayList<String>> fillerSetsDependencies = new HashMap<>();
 		
 		// scan for static import dependencies
 		for (RandomCollection<FillerSet> fillerSets : fillerSetsByGroup.values()) {
 			for (FillerSet fillerSet : fillerSets.elements()) {
 				ArrayList<String> dependencies = fillerSetsDependencies.get(fillerSet);
 				if (dependencies == null) {
-					dependencies = new ArrayList<String>();
+					dependencies = new ArrayList<>();
 					fillerSetsDependencies.put(fillerSet, dependencies);
 				}
 				dependencies.addAll(fillerSet.getImportGroupNames());
@@ -126,10 +129,10 @@ public class FillerManager {
 		// resolve
 		int iterationCount = 0;
 		while (!fillerSetsDependencies.isEmpty() && iterationCount++ < 10) {
-			HashMap<FillerSet, ArrayList<String>> fillerSetsLeftToImport = new HashMap<FillerSet, ArrayList<String>>();
+			HashMap<FillerSet, ArrayList<String>> fillerSetsLeftToImport = new HashMap<>();
 			
 			for (Entry<FillerSet, ArrayList<String>> entry : fillerSetsDependencies.entrySet()) {
-				ArrayList<String> newDependencies = new ArrayList();
+				ArrayList<String> newDependencies = new ArrayList<>();
 				for (String dependency : entry.getValue()) {
 					FillerSet fillerSet = getFillerSet(dependency);
 					if (fillerSet == null) {
@@ -180,8 +183,7 @@ public class FillerManager {
 		if (group == null) {
 			return null;
 		}
-		FillerSet fillerSet = group.getRandomEntry(random);
-		return fillerSet;
+		return group.getRandomEntry(random);
 	}
 	
 	public static FillerSet getFillerSet(final String groupAndName) {

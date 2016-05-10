@@ -45,7 +45,7 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 	
 	@Override
 	public ItemStack emptyDrop(ItemStack itemStack) {
-		return WarpDrive.itemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 1);
+		return ItemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 1);
 	}
 	
 	@Override

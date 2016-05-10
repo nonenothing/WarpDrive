@@ -43,15 +43,15 @@ public class BlockMonitor extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityliving, ItemStack itemstack) {
-		int metadata = 2;
-		if (entityliving != null) {
-			if (entityliving.rotationPitch > 65) {
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemstack) {
+		int metadata;
+		if (entityLiving != null) {
+			if (entityLiving.rotationPitch > 65) {
 				metadata = 1;
-			} else if (entityliving.rotationPitch < -65) {
+			} else if (entityLiving.rotationPitch < -65) {
 				metadata = 0;
 			} else {
-				int direction = Math.round(entityliving.rotationYaw / 90.0F) & 3;
+				int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
 				switch (direction) {
 				case 0:
 					metadata = 2;
@@ -92,7 +92,7 @@ public class BlockMonitor extends BlockAbstractContainer {
 			
 			if (tileEntity instanceof TileEntityMonitor) {
 				int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
-				CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(world, videoChannel);
+				CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
 					WarpDrive.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
 					return true;

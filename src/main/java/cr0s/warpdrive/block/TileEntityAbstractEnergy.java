@@ -40,7 +40,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	private Object[] cofhEnergyReceivers;
 	
-	protected HashMap<UpgradeType,Integer> upgrades = new HashMap<UpgradeType,Integer>();
+	protected final HashMap<UpgradeType,Integer> upgrades = new HashMap<>();
 	
 	public TileEntityAbstractEnergy() {
 		super();
@@ -58,7 +58,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			int am = 0;
 			if(upgrades.containsKey(type))
 				am = upgrades.get(type);
-			retVal[type.ordinal()] = type.toString() + ":" + am;
+			retVal[type.ordinal()] = type + ":" + am;
 		}	
 		return retVal;
 	}
@@ -386,9 +386,9 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (potentialEnergyOutput_internal > 0) {
 			int energyToOutput_RF = energyReceiver.receiveEnergy(from.getOpposite(), convertInternalToRF(potentialEnergyOutput_internal), true);
 			if (energyToOutput_RF > 0) {
-				int energyOutputed_RF = energyReceiver.receiveEnergy(from.getOpposite(), energyToOutput_RF, false);
-				energyOutputDone(convertRFtoInternal(energyOutputed_RF));
-				// WarpDrive.debugPrint("ForcedOutputEnergy Potential " + potentialEnergyOutput_internal + " EU, Actual output " + energyOutputed_RF + " RF, simulated at " + energyToOutput_RF + " RF");
+				int energyOutputted_RF = energyReceiver.receiveEnergy(from.getOpposite(), energyToOutput_RF, false);
+				energyOutputDone(convertRFtoInternal(energyOutputted_RF));
+				// WarpDrive.debugPrint("ForcedOutputEnergy Potential " + potentialEnergyOutput_internal + " EU, Actual output " + energyOutputted_RF + " RF, simulated at " + energyToOutput_RF + " RF");
 			}
 		}
 	}
@@ -432,8 +432,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (energyStored_internal < 0) {
 			energyStored_internal = 0;
 		}
-		tag.setInteger("energy", this.energyStored_internal);
-		if (upgrades.size() > 0) {
+		tag.setInteger("energy", energyStored_internal);
+		if (!upgrades.isEmpty()) {
 			NBTTagCompound upgradeTag = new NBTTagCompound();
 			for (UpgradeType type : UpgradeType.values()) {
 				if (upgrades.containsKey(type)) {

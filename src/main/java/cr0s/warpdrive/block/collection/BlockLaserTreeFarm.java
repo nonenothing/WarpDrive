@@ -16,30 +16,30 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	public final static int ICON_IDLE = 0;
-	public final static int ICON_FARMINGLOWPOWER = 1;
-	public final static int ICON_FARMINGPOWERED = 2;
-	public final static int ICON_SCANNINGLOWPOWER = 3;
-	public final static int ICON_SCANNINGPOWERED = 4;
-	public final static int ICON_PLANTINGLOWPOWER = 5;
-	public final static int ICON_PLANTINGPOWERED = 6;
+	public final static int ICON_FARMING_LOW_POWER = 1;
+	public final static int ICON_FARMING_POWERED = 2;
+	public final static int ICON_SCANNING_LOW_POWER = 3;
+	public final static int ICON_SCANNING_POWERED = 4;
+	public final static int ICON_PLANTING_LOW_POWER = 5;
+	public final static int ICON_PLANTING_POWERED = 6;
 	private final static int ICON_BOTTOM = 7;
 	private final static int ICON_TOP = 8;
 	
 	public BlockLaserTreeFarm() {
 		super(Material.iron);
-		this.setBlockName("warpdrive.collection.LaserTreeFarm");
+		setBlockName("warpdrive.collection.LaserTreeFarm");
 	}
 	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[16];
 		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
-		iconBuffer[ICON_FARMINGLOWPOWER ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
-		iconBuffer[ICON_FARMINGPOWERED  ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
-		iconBuffer[ICON_SCANNINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
-		iconBuffer[ICON_SCANNINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
-		iconBuffer[ICON_PLANTINGLOWPOWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
-		iconBuffer[ICON_PLANTINGPOWERED ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
+		iconBuffer[ICON_FARMING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
+		iconBuffer[ICON_FARMING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
+		iconBuffer[ICON_SCANNING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
+		iconBuffer[ICON_SCANNING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
+		iconBuffer[ICON_PLANTING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
+		iconBuffer[ICON_PLANTING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
 		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
 		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
 	}
@@ -67,7 +67,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		if (side == 1) {
 			return iconBuffer[ICON_TOP];
 		}
-		return iconBuffer[ICON_PLANTINGLOWPOWER];
+		return iconBuffer[ICON_PLANTING_LOW_POWER];
 	}
 	
 	@Override

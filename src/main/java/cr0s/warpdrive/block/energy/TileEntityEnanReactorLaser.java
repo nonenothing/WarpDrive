@@ -123,7 +123,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		}
 		if (consumeEnergyFromLaserMediums(energy, false)) {
 			if (WarpDriveConfig.LOGGING_ENERGY && WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.info("ReactorLaser on " + side.toString() + " side sending " + energy);
+				WarpDrive.logger.info("ReactorLaser on " + side + " side sending " + energy);
 			}
 			reactor.decreaseInstability(side, energy);
 			PacketHandler.sendBeamPacket(worldObj, myVec, reactorVec, 0.1F, 0.2F, 1.0F, 25, 50, 100);
@@ -169,16 +169,18 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
-		if (methodName.equals("hasReactor")) {
-			return new Object[] { scanForReactor() != null };
-			
-		} else if (methodName.equals("stabilize")) {
-			if (arguments.length >= 1) {
-				stabilize(toInt(arguments[0]));
-			}
-			
-		} else if (methodName.equals("side")) {
-			return new Object[] { side.ordinal() - 2 };
+		switch (methodName) {
+			case "hasReactor":
+				return new Object[]{scanForReactor() != null};
+
+			case "stabilize":
+				if (arguments.length >= 1) {
+					stabilize(toInt(arguments[0]));
+				}
+				break;
+
+			case "side":
+				return new Object[]{side.ordinal() - 2};
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

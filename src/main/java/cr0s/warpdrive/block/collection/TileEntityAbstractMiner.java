@@ -70,7 +70,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 				exception.printStackTrace();
 			}
 			if (isSilkHarvestable) {
-				ArrayList<ItemStack> isBlock = new ArrayList<ItemStack>();
+				ArrayList<ItemStack> isBlock = new ArrayList<>();
 				isBlock.add(new ItemStack(block, 1, blockMeta));
 				return isBlock;
 			}

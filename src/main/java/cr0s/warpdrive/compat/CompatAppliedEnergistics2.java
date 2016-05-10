@@ -80,13 +80,13 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	private static final Map<String, String> rotSideNames;
 	private static final Map<String, String> rotTagSuffix;
 	static {
-		Map<String, String> map = new HashMap();
+		Map<String, String> map = new HashMap<>();
 		map.put("EAST", "SOUTH");
 		map.put("SOUTH", "WEST");
 		map.put("WEST", "NORTH");
 		map.put("NORTH", "EAST");
 		rotSideNames = Collections.unmodifiableMap(map);
-		map = new HashMap();
+		map = new HashMap<>();
 		map.put("2", "5");
 		map.put("5", "3");
 		map.put("3", "4");
@@ -147,8 +147,8 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 				}
 			}
 		} else if (classBlockCableBus.isInstance(block)) {
-			HashMap<String, NBTTagCompound> tagRotateds = new HashMap(7);
-			ArrayList<String> keys = new ArrayList();
+			HashMap<String, NBTTagCompound> tagsRotated = new HashMap<>(7);
+			ArrayList<String> keys = new ArrayList<>();
 			keys.addAll(nbtTileEntity.func_150296_c());
 			for (String key : keys) {
 				if ( (key.startsWith("def:") && !key.equals("def:6"))
@@ -160,23 +160,23 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 					} else {
 						switch (rotationSteps) {
 						case 1:
-							tagRotateds.put(parts[0] + ":" + rotTagSuffix.get(parts[1]), compound);
+							tagsRotated.put(parts[0] + ":" + rotTagSuffix.get(parts[1]), compound);
 							break;
 						case 2:
-							tagRotateds.put(parts[0] + ":" + rotTagSuffix.get(rotTagSuffix.get(parts[1])), compound);
+							tagsRotated.put(parts[0] + ":" + rotTagSuffix.get(rotTagSuffix.get(parts[1])), compound);
 							break;
 						case 3:
-							tagRotateds.put(parts[0] + ":" + rotTagSuffix.get(rotTagSuffix.get(rotTagSuffix.get(parts[1]))), compound);
+							tagsRotated.put(parts[0] + ":" + rotTagSuffix.get(rotTagSuffix.get(rotTagSuffix.get(parts[1]))), compound);
 							break;
 						default:
-							tagRotateds.put(key, compound);
+							tagsRotated.put(key, compound);
 							break;
 						}
 						nbtTileEntity.removeTag(key);
 					}
 				}
 			}
-			for (Entry<String, NBTTagCompound> entry : tagRotateds.entrySet()) {
+			for (Entry<String, NBTTagCompound> entry : tagsRotated.entrySet()) {
 				nbtTileEntity.setTag(entry.getKey(), entry.getValue());
 			}
 		}

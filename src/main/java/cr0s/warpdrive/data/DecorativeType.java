@@ -11,7 +11,7 @@ public enum DecorativeType {
 	
 	// cached values
 	public static final int length;
-	private static final HashMap<Integer, DecorativeType> ID_MAP = new HashMap<Integer, DecorativeType>();
+	private static final HashMap<Integer, DecorativeType> ID_MAP = new HashMap<>();
 	
 	static {
 		length = DecorativeType.values().length;

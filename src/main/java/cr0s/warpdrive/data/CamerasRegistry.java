@@ -13,11 +13,11 @@ public class CamerasRegistry {
 	private LinkedList<CameraRegistryItem> registry;
 	
 	public CamerasRegistry() {
-		registry = new LinkedList<CameraRegistryItem>();
+		registry = new LinkedList<>();
 	}
 	
 	public CameraRegistryItem getCameraByVideoChannel(World world, int videoChannel) {
-		CameraRegistryItem cam = null;
+		CameraRegistryItem cam;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
 			if (cam.videoChannel == videoChannel && cam.dimensionId == world.provider.dimensionId) {
@@ -39,7 +39,7 @@ public class CamerasRegistry {
 	}
 	
 	private CameraRegistryItem getCamByPosition(World world, ChunkPosition position) {
-		CameraRegistryItem cam = null;
+		CameraRegistryItem cam;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
 			if (cam.position.chunkPosX == position.chunkPosX && cam.position.chunkPosY == position.chunkPosY && cam.position.chunkPosZ == position.chunkPosZ
@@ -79,7 +79,7 @@ public class CamerasRegistry {
 	private void removeDeadCams(World world) {
 		// LocalProfiler.start("CamRegistry Removing dead cameras");
 		
-		CameraRegistryItem cam = null;
+		CameraRegistryItem cam;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
 			if (!isCamAlive(world, cam)) {

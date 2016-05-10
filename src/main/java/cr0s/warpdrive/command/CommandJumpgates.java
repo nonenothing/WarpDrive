@@ -22,7 +22,7 @@ public class CommandJumpgates extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] astring) {
+	public void processCommand(ICommandSender commandSender, String[] params) {
 		EntityPlayerMP player = (EntityPlayerMP) commandSender;
 		WarpDrive.addChatMessage(player, "Jumpgates: " + WarpDrive.jumpgates.commaList());
 	}

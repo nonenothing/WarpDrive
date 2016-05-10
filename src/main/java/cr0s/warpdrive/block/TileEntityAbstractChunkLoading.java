@@ -13,7 +13,7 @@ import cr0s.warpdrive.WarpDrive;
 
 public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractEnergy
 {
-	private ArrayList<Ticket> ticketList = new ArrayList<Ticket>();
+	private final ArrayList<Ticket> ticketList = new ArrayList<>();
 	
 	public abstract boolean shouldChunkLoad();
 	protected ChunkCoordIntPair minChunk = null;
@@ -41,7 +41,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	
 	public synchronized void refreshLoading(boolean force) {
 		boolean loadRequested = shouldChunkLoad();
-		if (ticketList.size() != 0) {
+		if (!ticketList.isEmpty()) {
 			if (loadRequested && (!areChunksLoaded || force)) {
 				int ticketSize = ticketList.get(0).getMaxChunkListDepth();
 				ArrayList<ChunkCoordIntPair> chunkList = getChunksToLoad();
@@ -134,18 +134,18 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		maxZ = minZ + deltaZ - 1;
 		WarpDrive.logger.info("Allocating " + deltaX + " x " + deltaZ + " blocks from " + minX + "," + minZ + " to " + maxX + "," + maxZ);
 		
-		int maxEnts = (deltaX) * (deltaZ);
-		ArrayList<ChunkCoordIntPair> chunkList = new ArrayList<ChunkCoordIntPair>(maxEnts);
+		int maxEntries = (deltaX) * (deltaZ);
+		ArrayList<ChunkCoordIntPair> chunkList = new ArrayList<>(maxEntries);
 		
 		int dir = 1;
 		int x = minX;
 		int z = maxZ;
-		for(int i=0;i<maxEnts;i++)
+		for(int i = 0; i < maxEntries; i++)
 		{
-			chunkList.add(new ChunkCoordIntPair(x,z));
+			chunkList.add(new ChunkCoordIntPair(x, z));
 			int dX = dX(dir);
 			int dZ = dZ(dir);
-			if(x+dX > maxX || x+dX < minX || z+dZ > maxZ || z+dZ < minZ)
+			if(x + dX > maxX || x + dX < minX || z + dZ > maxZ || z + dZ < minZ)
 			{
 				dir++;
 				if(dir >= 4)
@@ -212,8 +212,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	{
 		if(minChunk == null || maxChunk == null)
 		{
-			ArrayList<ChunkCoordIntPair> chunkList = new ArrayList<ChunkCoordIntPair>(1);
-			chunkList.add(this.worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair());
+			ArrayList<ChunkCoordIntPair> chunkList = new ArrayList<>(1);
+			chunkList.add(worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair());
 			return chunkList;
 		}
 		return getChunksFromCentre(minChunk,maxChunk);

@@ -154,7 +154,7 @@ public final class EntityCamera extends EntityLivingBase {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-		this.motionX = this.motionY = this.motionZ = 0.0D;
+		motionX = motionY = motionZ = 0.0D;
 	}
 	
 	@Override

@@ -18,11 +18,11 @@ import cr0s.warpdrive.WarpDrive;
  * @param <E>
  **/
 public class RandomCollection<E extends IXmlRepresentable> {
-	private final NavigableMap<Integer, E> weightMap = new TreeMap<Integer, E>();
+	private final NavigableMap<Integer, E> weightMap = new TreeMap<>();
 	private int totalWeight = 0;
-	private final NavigableMap<Double, E> ratioMap = new TreeMap<Double, E>();
+	private final NavigableMap<Double, E> ratioMap = new TreeMap<>();
 	private double totalRatio = 0;
-	private final ArrayList<E> list = new ArrayList<E>();
+	private final ArrayList<E> list = new ArrayList<>();
 	
 	/**
 	 * Add new object and its weight.
@@ -73,12 +73,6 @@ public class RandomCollection<E extends IXmlRepresentable> {
 		list.add(object);
 	}
 	
-	/**
-	 * Get a random object according weights and ratios
-	 * 
-	 * @param random
-	 * @return Random object or null if there is no objects to pick.
-	 **/
 	public E getRandomEntry(Random random) {
 		double value = random.nextDouble();
 		
@@ -124,7 +118,7 @@ public class RandomCollection<E extends IXmlRepresentable> {
 	/**
 	 * Get a string listing all object names
 	 * 
-	 * @return Formated string list separated by commas
+	 * @return Formatted string list separated by commas
 	 **/
 	public String getNames() {
 		String names = "";
@@ -180,7 +174,7 @@ public class RandomCollection<E extends IXmlRepresentable> {
 		// ratio takes priority over weight
 		String stringRatio = element.getAttribute("ratio");
 		if (!stringRatio.isEmpty()) {
-			double ratio = 0.1;
+			double ratio;
 			try {
 				ratio = Double.parseDouble(stringRatio);
 			} catch (NumberFormatException exceptionRatio) {
@@ -203,16 +197,7 @@ public class RandomCollection<E extends IXmlRepresentable> {
 		}
 	}
 	
-	/**
-	 * Merge another random collection into this one.
-	 * 
-	 * @param object
-	 *            Object to load into
-	 * @param element
-	 *            Element of an XML file
-	 * @throws InvalidXmlException
-	 **/
-	public void loadFrom(RandomCollection<E> objects) throws InvalidXmlException {
+	public void loadFrom(RandomCollection<E> objects) {
 		int previousWeight = 0;
 		for (Entry<Integer, E> entry : objects.weightMap.entrySet()) {
 			addWeight(entry.getKey() - previousWeight, entry.getValue());

@@ -18,8 +18,8 @@ public class WorldGenStructure {
 	private int solarPanel_metadata;
 	private Block cable_block;
 	private int cable_metadata;
-	private boolean corrupted;
-	private Random rand;
+	private final boolean corrupted;
+	private final Random rand;
 	
 	public WorldGenStructure(final boolean corrupted, Random rand) {
 		this.corrupted = corrupted;

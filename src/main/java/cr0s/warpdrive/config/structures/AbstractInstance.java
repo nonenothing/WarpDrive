@@ -16,14 +16,14 @@ import net.minecraft.world.gen.feature.WorldGenerator;
  */
 public abstract class AbstractInstance extends WorldGenerator {
 	protected AbstractStructure structure;
-	protected HashMap<String,Double> variables = new HashMap<String,Double>();
+	protected HashMap<String,Double> variables = new HashMap<>();
 	
 	public AbstractInstance(AbstractStructure structure, Random random) {
 		this.structure = structure;
 		
 		// evaluate variables
 		for (Entry<String, String> entry : structure.variables.entrySet()) {
-			double value = Double.NaN;
+			double value;
 			String stringValue = entry.getValue();
 			try {
 				if (stringValue.contains(",")) {

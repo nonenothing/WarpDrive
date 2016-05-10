@@ -23,7 +23,7 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 	
 	@Override
 	public void registerIcons(IIconRegister par1IconRegister) {
-		this.itemIcon = par1IconRegister.registerIcon("warpdrive:reactorFocus");
+		itemIcon = par1IconRegister.registerIcon("warpdrive:reactorFocus");
 	}
 	
 	private static void damageComponent(ItemStack self, int damage) {

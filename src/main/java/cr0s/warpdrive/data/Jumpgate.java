@@ -28,15 +28,15 @@ public class Jumpgate {
 	}
 	
 	public AxisAlignedBB getGateAABB() {
-		int xmin, ymin, zmin;
-		int xmax, ymax, zmax;
-		xmin = xCoord - (JumpgateGenerator.GATE_LENGTH_HALF * 2);
-		xmax = xCoord + (JumpgateGenerator.GATE_LENGTH_HALF * 2);
-		ymin = yCoord - (JumpgateGenerator.GATE_SIZE_HALF);
-		ymax = yCoord + (JumpgateGenerator.GATE_SIZE_HALF);
-		zmin = zCoord - (JumpgateGenerator.GATE_SIZE_HALF);
-		zmax = zCoord + (JumpgateGenerator.GATE_SIZE_HALF);
-		return AxisAlignedBB.getBoundingBox(xmin, ymin, zmin, xmax, ymax, zmax);
+		int xMin, yMin, zMin;
+		int xMax, yMax, zMax;
+		xMin = xCoord - (JumpgateGenerator.GATE_LENGTH_HALF * 2);
+		xMax = xCoord + (JumpgateGenerator.GATE_LENGTH_HALF * 2);
+		yMin = yCoord - (JumpgateGenerator.GATE_SIZE_HALF);
+		yMax = yCoord + (JumpgateGenerator.GATE_SIZE_HALF);
+		zMin = zCoord - (JumpgateGenerator.GATE_SIZE_HALF);
+		zMax = zCoord + (JumpgateGenerator.GATE_SIZE_HALF);
+		return AxisAlignedBB.getBoundingBox(xMin, yMin, zMin, xMax, yMax, zMax);
 	}
 	
 	@Override

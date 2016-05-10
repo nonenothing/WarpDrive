@@ -37,9 +37,9 @@ public class FillerSet implements IXmlRepresentable, Comparable {
 	public FillerSet(final String group, final String name) {
 		this.group = group;
 		this.name = name;
-		fillers = new RandomCollection<Filler>();
-		importGroupNames = new ArrayList<String>();
-		importGroups = new ArrayList<String>();
+		fillers = new RandomCollection<>();
+		importGroupNames = new ArrayList<>();
+		importGroups = new ArrayList<>();
 	}
 	
 	public boolean isEmpty() {

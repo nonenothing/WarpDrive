@@ -16,7 +16,11 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 public class BlockShipCore extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
-	private final int ICON_SIDE_INACTIVE = 0, ICON_BOTTOM = 1, ICON_TOP = 2, ICON_SIDE_ACTIVATED = 3, ICON_SIDE_HEATED = 4;
+	private static final int ICON_BOTTOM = 1;
+	private static final int ICON_SIDE_INACTIVE = 0;
+	private static final int ICON_TOP = 2;
+	private static final int ICON_SIDE_ACTIVATED = 3;
+	private static final int ICON_SIDE_HEATED = 4;
 	
 	public BlockShipCore() {
 		super(Material.iron);

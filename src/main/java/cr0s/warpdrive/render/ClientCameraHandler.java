@@ -69,7 +69,7 @@ public class ClientCameraHandler {
 		
 		// Update view
 		if (WarpDriveConfig.LOGGING_CAMERA) {
-			WarpDrive.logger.info("Setting viewpoint to " + entityCamera.toString());
+			WarpDrive.logger.info("Setting viewpoint to " + entityCamera);
 		}
 		mc.renderViewEntity = entityCamera;
 		mc.gameSettings.thirdPersonView = 0;
@@ -129,7 +129,7 @@ public class ClientCameraHandler {
 				WarpDrive.logger.info("Resetting viewpoint");
 			}
 		} else {
-			WarpDrive.logger.error("reseting viewpoint with invalid player entity?");
+			WarpDrive.logger.error("resetting viewpoint with invalid player entity?");
 		}
 		
 		Keyboard.enableRepeatEvents(false);

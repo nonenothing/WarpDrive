@@ -42,7 +42,7 @@ public class BlockHullPlain extends Block implements IHullBlock {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int metadata) {
-		return this.icons[metadata % 16];
+		return icons[metadata % 16];
 	}
 	
 	@Override
@@ -68,7 +68,7 @@ public class BlockHullPlain extends Block implements IHullBlock {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {
-			this.icons[i] = iconRegister.registerIcon(getTextureName() + "_" + getDyeColorName(i));
+			icons[i] = iconRegister.registerIcon(getTextureName() + "_" + getDyeColorName(i));
 		}
 	}
 	

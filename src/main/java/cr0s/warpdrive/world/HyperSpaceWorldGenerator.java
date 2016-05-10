@@ -10,22 +10,10 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 /**
  * @author Cr0s
  */
-public class HyperSpaceWorldGenerator implements IWorldGenerator
-{
-    /**
-     * Generator for chunk
-     * @param random
-     * @param chunkX
-     * @param chunkZ
-     * @param world
-     * @param chunkGenerator
-     * @param chunkProvider
-     */
+public class HyperSpaceWorldGenerator implements IWorldGenerator {
     @Override
-    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider)
-    {
-        if (world.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID)
-        {
+    public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+        if (world.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
             // ...
         }
     }

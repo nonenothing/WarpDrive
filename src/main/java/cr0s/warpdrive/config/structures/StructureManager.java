@@ -45,7 +45,7 @@ public class StructureManager {
 			}
 		});
 		
-		structuresByGroup = new HashMap<String, RandomCollection<AbstractStructure>>();
+		structuresByGroup = new HashMap<>();
 		for (File file : files) {
 			try {
 				loadXmlStructureFile(file);
@@ -98,18 +98,22 @@ public class StructureManager {
 			
 			RandomCollection<AbstractStructure> randomCollection = structuresByGroup.get(group);
 			if (randomCollection == null) {
-				randomCollection = new RandomCollection<AbstractStructure>();
+				randomCollection = new RandomCollection<>();
 				structuresByGroup.put(group, randomCollection);
 			}
 			
 			AbstractStructure abstractStructure = randomCollection.getNamedEntry(name);
 			if (abstractStructure == null) {
-				if (group.equals(GROUP_STARS)) {
-					abstractStructure = new Star(group, name);
-				} else if (group.equals(GROUP_MOONS)) {
-					abstractStructure = new Orb(group, name);
-				} else {
-					abstractStructure = new MetaOrb(group, name);
+				switch (group) {
+					case GROUP_STARS:
+						abstractStructure = new Star(group, name);
+						break;
+					case GROUP_MOONS:
+						abstractStructure = new Orb(group, name);
+						break;
+					default:
+						abstractStructure = new MetaOrb(group, name);
+						break;
 				}
 			}
 			randomCollection.loadFromXML(abstractStructure, elementStructure);
@@ -126,7 +130,7 @@ public class StructureManager {
 			return null;
 		}
 		
-		if (name == null || name.length() == 0) {
+		if (name == null || name.isEmpty()) {
 			return randomCollection.getRandomEntry(random);
 		} else {
 			return randomCollection.getNamedEntry(name);

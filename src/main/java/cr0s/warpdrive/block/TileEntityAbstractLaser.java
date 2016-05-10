@@ -76,7 +76,6 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 			}
 		}
 		directionLaserMedium = ForgeDirection.UNKNOWN;
-		return;
 	}
 	
 	protected int getEnergyStored() {
@@ -95,7 +94,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		// Primary scan of all laser mediums
 		int totalEnergy = 0;
 		int count = 1;
-		List<TileEntityLaserMedium> laserMediums = new LinkedList();
+		List<TileEntityLaserMedium> laserMediums = new LinkedList<>();
 		for (; count <= laserMediumMaxCount; count++) {
 			TileEntity tileEntity = worldObj.getTileEntity(
 					xCoord + count * directionLaserMedium.offsetX,
@@ -137,7 +136,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 			int energyStored = laserMedium.getEnergyStored();
 			int energyToConsume = Math.min(energyStored, energyAverage + energyLeftOver);
 			energyLeftOver -= Math.max(0, energyToConsume - energyAverage);
-			laserMedium.consumeEnergy(energyToConsume, simulate);
+			laserMedium.consumeEnergy(energyToConsume, simulate); // FIXME simulate is always false here
 			energyTotalConsumed += energyToConsume;
 		}
 		return energyTotalConsumed;
@@ -150,7 +149,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 			int energyStored = 0;
 			int energyStoredMax = 0;
 			int count = 1;
-			List<TileEntityLaserMedium> laserMediums = new LinkedList();
+			// List<TileEntityLaserMedium> laserMediums = new LinkedList();
 			for (; count <= laserMediumMaxCount; count++) {
 				TileEntity tileEntity = worldObj.getTileEntity(
 						xCoord + count * directionLaserMedium.offsetX,
@@ -159,7 +158,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 				if (!(tileEntity instanceof TileEntityLaserMedium)) {
 					break;
 				}
-				laserMediums.add((TileEntityLaserMedium) tileEntity);
+				// laserMediums.add((TileEntityLaserMedium) tileEntity);
 				energyStored += ((TileEntityLaserMedium) tileEntity).getEnergyStored();
 				energyStoredMax += ((TileEntityLaserMedium) tileEntity).getMaxEnergyStored();
 			}
@@ -193,12 +192,13 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
-		if (methodName.equals("energy")) {
-			return energy();
-		} else if (methodName.equals("laserMediumDirection")) {
-			return laserMediumDirection();
-		} else if (methodName.equals("laserMediumCount")) {
-			return laserMediumCount();
+		switch (methodName) {
+			case "energy":
+				return energy();
+			case "laserMediumDirection":
+				return laserMediumDirection();
+			case "laserMediumCount":
+				return laserMediumCount();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

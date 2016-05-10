@@ -21,7 +21,7 @@ public class ItemBlockHull extends ItemBlock {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int p_77617_1_) {
-		return this.field_150939_a.getIcon(2, BlockColored.func_150031_c(p_77617_1_));
+		return field_150939_a.getIcon(2, BlockColored.func_150031_c(p_77617_1_));
 	}
 	
 	@Override

@@ -47,10 +47,10 @@ public class JumpSequencer extends AbstractSequencer {
 	private Transformation transformation;
 	
 	private int moveX, moveY, moveZ;
-	private byte rotationSteps;
-	private boolean isHyperspaceJump;
+	private final byte rotationSteps;
+	private final boolean isHyperspaceJump;
 	
-	private World sourceWorld;
+	private final World sourceWorld;
 	private World targetWorld;
 	private Ticket sourceWorldTicket;
 	private Ticket targetWorldTicket;
@@ -78,8 +78,10 @@ public class JumpSequencer extends AbstractSequencer {
 	public JumpShip ship;
 	private boolean betweenWorlds;
 	
-	private int destX, destY, destZ;
-	private boolean isCoordJump;
+	private final int destX;
+	private final int destY;
+	private final int destZ;
+	private final boolean isCoordJump;
 	
 	private long msCounter = 0;
 	private int ticks = 0;
@@ -526,7 +528,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			if (!planetFound) {
 				LocalProfiler.stop();
-				String msg = "";
+				String msg;
 				if (closestTransitionPlane == null) {
 					msg = "No planet defined, unable to enter atmosphere!";
 				} else {
@@ -770,8 +772,8 @@ public class JumpSequencer extends AbstractSequencer {
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.info(String.format("Entity moving: (%.2f %.2f %.2f) -> (%.2f %.2f %.2f) entity %s",
-							oldEntityX, Double.valueOf(oldEntityY), Double.valueOf(oldEntityZ),
-							newEntityX, Double.valueOf(newEntityY), Double.valueOf(newEntityZ), entity.toString()));
+							oldEntityX, oldEntityY, oldEntityZ,
+							newEntityX, newEntityY, newEntityZ, entity.toString()));
 				}
 				
 				// Travel to another dimension if needed
@@ -883,7 +885,7 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		try {
-			targetWorld.loadedTileEntityList = this.removeDuplicates(targetWorld.loadedTileEntityList);
+			targetWorld.loadedTileEntityList = removeDuplicates(targetWorld.loadedTileEntityList);
 		} catch (Exception exception) {
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info("TE Duplicates removing exception: " + exception.getMessage());
@@ -900,12 +902,7 @@ public class JumpSequencer extends AbstractSequencer {
 		LocalProfiler.stop();
 	}
 	
-	/**
-	 * Checking jump possibility
-	 *
-	 * @return possible jump distance or -1
-	 */
-	private int getPossibleJumpDistance() {
+	private void getPossibleJumpDistance() {
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Calculating possible jump distance...");
 		}
@@ -914,7 +911,7 @@ public class JumpSequencer extends AbstractSequencer {
 		int blowPoints = 0;
 		collisionDetected = false;
 		
-		CheckMovementResult result = null;
+		CheckMovementResult result;
 		while (testRange >= 0) {
 			// Is there enough space in destination point?
 			result = checkMovement(testRange / (double)originalRange, false);
@@ -965,7 +962,6 @@ public class JumpSequencer extends AbstractSequencer {
 		moveX = finalMovement.x;
 		moveY = finalMovement.y;
 		moveZ = finalMovement.z;
-		return testRange;
 	}
 	
 	private void doCollisionDamage(boolean atTarget) {
@@ -1072,10 +1068,10 @@ public class JumpSequencer extends AbstractSequencer {
 		public String reason = "";
 		
 		CheckMovementResult() {
-			this.atSource = new ArrayList<Vector3>(1);
-			this.atTarget = new ArrayList<Vector3>(1);
-			this.isCollision = false;
-			this.reason = "Unknown reason";
+			atSource = new ArrayList<>(1);
+			atTarget = new ArrayList<>(1);
+			isCollision = false;
+			reason = "Unknown reason";
 		}
 		
 		public void add(double sx, double sy, double sz, double tx, double ty, double tz, boolean pisCollision, String preason) {
@@ -1087,7 +1083,7 @@ public class JumpSequencer extends AbstractSequencer {
 				WarpDrive.logger.info("CheckMovementResult " + sx + ", " + sy + ", " + sz + " -> " + tx + ", " + ty + ", " + tz + " " + isCollision + " '" + reason + "'");
 			}
 		}
-	};
+	}
 	
 	private CheckMovementResult checkMovement(final double ratio, final boolean fullCollisionDetails) {
 		CheckMovementResult result = new CheckMovementResult();
@@ -1160,7 +1156,7 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	private static ArrayList<Object> removeDuplicates(List<TileEntity> l) {
-		Set<TileEntity> s = new TreeSet<TileEntity>(new Comparator<TileEntity>() {
+		Set<TileEntity> s = new TreeSet<>(new Comparator<TileEntity>() {
 			@Override
 			public int compare(TileEntity o1, TileEntity o2) {
 				if (o1.xCoord == o2.xCoord && o1.yCoord == o2.yCoord && o1.zCoord == o2.zCoord) {
@@ -1174,7 +1170,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 		});
 		s.addAll(l);
-		return new ArrayList<Object>(Arrays.asList(s.toArray()));
+		return new ArrayList<>(Arrays.asList(s.toArray()));
 	}
 	
 	@Override
@@ -1190,10 +1186,10 @@ public class JumpSequencer extends AbstractSequencer {
 	@Override
 	public String toString() {
 		return String.format("%s/%d \'%s\' @ \'%s\' (%d %d %d) #%d",
-			getClass().getSimpleName(), Integer.valueOf(hashCode()),
+			getClass().getSimpleName(), hashCode(),
 			(ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
 			sourceWorld == null ? "~NULL~" : sourceWorld.getWorldInfo().getWorldName(),
 			ship == null ? -1 : ship.coreX, ship == null ? -1 : ship.coreY, ship == null ? -1 : ship.coreZ,
-			Integer.valueOf(ticks));
+			ticks);
 	}
 }

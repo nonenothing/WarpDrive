@@ -18,13 +18,13 @@ public class Planet implements Cloneable {
 	}
 	
 	public Planet(int parDimensionId, int parDimensionCenterX, int parDimensionCenterZ, int parBorderSizeX, int parBorderSizeZ, int parSpaceCenterX, int parSpaceCenterZ) {
-		this.dimensionId = parDimensionId;
-		this.spaceCenterX = parSpaceCenterX;
-		this.spaceCenterZ = parSpaceCenterZ;
-		this.dimensionCenterX = parDimensionCenterX;
-		this.dimensionCenterZ = parDimensionCenterZ;
-		this.borderSizeX = parBorderSizeX;
-		this.borderSizeZ = parBorderSizeZ;
+		dimensionId = parDimensionId;
+		spaceCenterX = parSpaceCenterX;
+		spaceCenterZ = parSpaceCenterZ;
+		dimensionCenterX = parDimensionCenterX;
+		dimensionCenterZ = parDimensionCenterZ;
+		borderSizeX = parBorderSizeX;
+		borderSizeZ = parBorderSizeZ;
 	}
 	
 	public Planet(NBTTagCompound nbt) {
@@ -69,13 +69,13 @@ public class Planet implements Cloneable {
 	}
 	
 	public void readFromNBT(NBTTagCompound tag) {
-		this.dimensionId = tag.getInteger("dimensionId");
-		this.dimensionCenterX = tag.getInteger("dimensionCenterX");
-		this.dimensionCenterZ = tag.getInteger("dimensionCenterZ");
-		this.borderSizeX = tag.getInteger("borderSizeX");
-		this.borderSizeZ = tag.getInteger("borderSizeZ");
-		this.spaceCenterX = tag.getInteger("spaceCenterX");
-		this.spaceCenterZ = tag.getInteger("spaceCenterZ");
+		dimensionId = tag.getInteger("dimensionId");
+		dimensionCenterX = tag.getInteger("dimensionCenterX");
+		dimensionCenterZ = tag.getInteger("dimensionCenterZ");
+		borderSizeX = tag.getInteger("borderSizeX");
+		borderSizeZ = tag.getInteger("borderSizeZ");
+		spaceCenterX = tag.getInteger("spaceCenterX");
+		spaceCenterZ = tag.getInteger("spaceCenterZ");
 	}
 	
 	public void writeToNBT(NBTTagCompound tag) {
@@ -97,13 +97,13 @@ public class Planet implements Cloneable {
 	public boolean equals(Object object) {
 		if (object instanceof Planet) {
 			Planet planet = (Planet) object;
-			return this.dimensionId == planet.dimensionId
-				&& this.dimensionCenterX == planet.dimensionCenterX
-				&& this.dimensionCenterZ == planet.dimensionCenterZ
-				&& this.borderSizeX == planet.borderSizeX
-				&& this.borderSizeZ == planet.borderSizeZ
-				&& this.spaceCenterX == planet.spaceCenterX
-				&& this.spaceCenterZ == planet.spaceCenterZ;
+			return dimensionId == planet.dimensionId
+				&& dimensionCenterX == planet.dimensionCenterX
+				&& dimensionCenterZ == planet.dimensionCenterZ
+				&& borderSizeX == planet.borderSizeX
+				&& borderSizeZ == planet.borderSizeZ
+				&& spaceCenterX == planet.spaceCenterX
+				&& spaceCenterZ == planet.spaceCenterZ;
 		}
 		
 		return false;

@@ -8,11 +8,11 @@ import net.minecraft.world.World;
 import cr0s.warpdrive.api.ITransformation;
 
 public class Transformation implements ITransformation {
-	private VectorI sourceCore;
-	private VectorI targetCore;
-	private VectorI move;
-	private byte rotationSteps;
-	private World targetWorld;
+	private final VectorI sourceCore;
+	private final VectorI targetCore;
+	private final VectorI move;
+	private final byte rotationSteps;
+	private final World targetWorld;
 	
 	public Transformation(JumpShip ship, World targetWorld, int moveX, int moveY, int moveZ, byte rotationSteps) {
 		sourceCore = new VectorI(ship.coreX, ship.coreY, ship.coreZ);

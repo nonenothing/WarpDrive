@@ -15,7 +15,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class WorldGenSmallShip extends WorldGenerator {
-	private boolean corrupted;
+	private final boolean corrupted;
 	
 	public WorldGenSmallShip(boolean corrupted) {
 		this.corrupted = corrupted;

@@ -266,14 +266,12 @@ public class BlockAir extends Block {
 		// compute new concentration, buffing closed space
 		int mid_concentration;
 		int new_concentration;
-		boolean isGrowth = false || (max_concentration > 8 && (max_concentration - min_concentration < 9)) || (max_concentration > 5 && (max_concentration - min_concentration < 4)); 
+		boolean isGrowth = (max_concentration > 8 && (max_concentration - min_concentration < 9)) || (max_concentration > 5 && (max_concentration - min_concentration < 4));
 		if (isGrowth) {
 			mid_concentration = Math.round(sum_concentration / (float)air_count) - 1;
 			new_concentration = sum_concentration - mid_concentration * (air_count - 1);
-			new_concentration = Math.max(Math.max(concentration + 1, max_concentration - 1), new_concentration - 20) - 0;
+			new_concentration = Math.max(Math.max(concentration + 1, max_concentration - 1), new_concentration - 20);
 		} else {
-			mid_concentration = 0;
-			new_concentration = 0;
 			mid_concentration = (int) Math.floor(sum_concentration / (float)air_count);
 			new_concentration = sum_concentration - mid_concentration * (air_count - 1);
 			if (empty_count > 0) {
@@ -396,7 +394,7 @@ public class BlockAir extends Block {
 	@Override
 	public void onBlockAdded(World par1World, int par2, int par3, int par4) {
 		if (par1World.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID || par1World.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
-			par1World.scheduleBlockUpdate(par2, par3, par4, this, this.tickRate(par1World));
+			par1World.scheduleBlockUpdate(par2, par3, par4, this, tickRate(par1World));
 		} else {
 			par1World.setBlockToAir(par2, par3, par4);
 		}

@@ -9,17 +9,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 
 public class GravityManager {
-	private static double OVERWORLD_ENTITY_GRAVITY = 0.080000000000000002D;	// Default value from Vanilla
-	private static double OVERWORLD_ITEM_GRAVITY = 0.039999999105930328D;	// Default value from Vanilla
-	private static double OVERWORLD_ITEM_GRAVITY2 = 0.9800000190734863D;	// Default value from Vanilla
-	private static double HYPERSPACE_FIELD_ENTITY_GRAVITY = 0.035D;
-	private static double HYPERSPACE_VOID_ENTITY_JITTER = 0.005D;
-	private static double SPACE_FIELD_ENTITY_GRAVITY = 0.025D; // Lem 0.08D
-	private static double SPACE_FIELD_ITEM_GRAVITY = 0.02D;	// Lem 0.04D
-	private static double SPACE_FIELD_ITEM_GRAVITY2 = 0.60D; // Lem 0.9800000190734863D
-	private static double SPACE_VOID_GRAVITY = 0.001D; // Lem 0.0001D
-	private static double SPACE_VOID_GRAVITY_JETPACKSNEAK = 0.02D; // Lem 0.01D
-	private static double SPACE_VOID_GRAVITY_RAWSNEAK = 0.005D; // Lem 0.01D		0.001 = no mvt
+	private static final double OVERWORLD_ENTITY_GRAVITY = 0.080000000000000002D;	// Default value from Vanilla
+	private static final double OVERWORLD_ITEM_GRAVITY = 0.039999999105930328D;	// Default value from Vanilla
+	private static final double OVERWORLD_ITEM_GRAVITY2 = 0.9800000190734863D;	// Default value from Vanilla
+	private static final double HYPERSPACE_FIELD_ENTITY_GRAVITY = 0.035D;
+	private static final double HYPERSPACE_VOID_ENTITY_JITTER = 0.005D;
+	private static final double SPACE_FIELD_ENTITY_GRAVITY = 0.025D;
+	private static final double SPACE_FIELD_ITEM_GRAVITY = 0.02D;
+	private static final double SPACE_FIELD_ITEM_GRAVITY2 = 0.60D;
+	private static final double SPACE_VOID_GRAVITY = 0.001D;
+	private static final double SPACE_VOID_GRAVITY_JETPACK_SNEAK = 0.02D;
+	private static final double SPACE_VOID_GRAVITY_RAW_SNEAK = 0.005D; // 0.001 = no mvt
 	
 	public static double getGravityForEntity(Entity entity) {
 		// Is entity in space or hyper-space?
@@ -47,11 +47,11 @@ public class GravityManager {
 							ItemStack armor = player.getCurrentArmor(i);
 							if (armor != null) {
 								if (Dictionary.ITEMS_FLYINSPACE.contains(armor.getItem())) {
-									return SPACE_VOID_GRAVITY_JETPACKSNEAK;
+									return SPACE_VOID_GRAVITY_JETPACK_SNEAK;
 								}
 							}
 						}
-						return SPACE_VOID_GRAVITY_RAWSNEAK;
+						return SPACE_VOID_GRAVITY_RAW_SNEAK;
 					} else {
 						// FIXME: compensate jetpack
 					}

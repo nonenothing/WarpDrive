@@ -15,32 +15,32 @@ import cr0s.warpdrive.data.VectorI;
 
 public class MetaOrbInstance extends OrbInstance {
 	private static final int CORE_MAX_TRIES = 10;
-	protected Metashell metashell;
+	protected final MetaShell metaShell;
 	
 	public MetaOrbInstance(MetaOrb asteroid, Random random) {
 		super(asteroid, random);
-		metashell = new Metashell(asteroid, random);
-		// FIXME setRadius(Math.round(totalThickness + metashell.radius));
+		metaShell = new MetaShell(asteroid, random);
+		// FIXME setRadius(Math.round(totalThickness + metaShell.radius));
 	}
 	
 	@Override
 	public boolean generate(World world, Random random, int x, int y, int z) {
 		if (WarpDriveConfig.LOGGING_WORLDGEN) {
-			WarpDrive.logger.info("Generating MetaOrb " + structure.name + " of " + metashell.count  + " cores with radius of " + totalThickness);
+			WarpDrive.logger.info("Generating MetaOrb " + structure.name + " of " + metaShell.count  + " cores with radius of " + totalThickness);
 		}
-		LocalProfiler.start("[AsteroidInstance] Generating MetaOrb " + structure.name + " of " + metashell.count + " cores with radius of " + totalThickness);
+		LocalProfiler.start("[AsteroidInstance] Generating MetaOrb " + structure.name + " of " + metaShell.count + " cores with radius of " + totalThickness);
 		
-		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness - (int)metashell.radius,
-			  Math.max(y, WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness + (int)metashell.radius));
-		if (((MetaOrb)structure).metashell == null) {
+		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness - (int) metaShell.radius,
+			  Math.max(y, WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness + (int) metaShell.radius));
+		if (((MetaOrb)structure).metaShell == null) {
 			return super.generate(world, random, x, y2, z);
 		}
 		
 		// generate an abstract form for the core
-		for (VectorI location: metashell.locations) {
+		for (VectorI location: metaShell.locations) {
 			// place core block
-			if (metashell.block != null) {
-				world.setBlock(x + location.x, y2 + location.y, z + location.z, metashell.block, metashell.metadata, 2);
+			if (metaShell.block != null) {
+				world.setBlock(x + location.x, y2 + location.y, z + location.z, metaShell.block, metaShell.metadata, 2);
 			}
 			
 			// calculate distance to borders of generation area
@@ -57,11 +57,11 @@ public class MetaOrbInstance extends OrbInstance {
 			addShell(world, new VectorI(x, y2, z).add(location), maxLocalRadius);
 		}
 		
-		int minYclamped = Math.max(0, y2 - totalThickness);
-		int maxYclamped = Math.min(255, y2 + totalThickness);
+		int minY_clamped = Math.max(0, y2 - totalThickness);
+		int maxY_clamped = Math.min(255, y2 + totalThickness);
 		for (int xIndex = x - totalThickness; xIndex <= x + totalThickness; xIndex++) {
 			for (int zIndex = z - totalThickness; zIndex <= z + totalThickness; zIndex++) {
-				for (int yIndex = minYclamped; yIndex <= maxYclamped; yIndex++) {
+				for (int yIndex = minY_clamped; yIndex <= maxY_clamped; yIndex++) {
 					if (world.getBlock(xIndex, yIndex, zIndex) != Blocks.air) {
 						world.markBlockForUpdate(xIndex, yIndex, zIndex);
 					}
@@ -73,14 +73,6 @@ public class MetaOrbInstance extends OrbInstance {
 		return false;
 	}
 	
-	/**
-	 * Creates a shell sphere around given core location.
-	 * 
-	 * @param thicknesses Random generator
-	 * @param world World to place shell
-	 * @param location Location of core block
-	 * @param maxRad Maximum radius of asteroid
-	 */
 	private void addShell(World world, VectorI location, int radius) {
 		double sqRadius = radius * radius;
 		// iterate all blocks within cube with side 2 * radius
@@ -103,40 +95,32 @@ public class MetaOrbInstance extends OrbInstance {
 		}
 	}
 	
-	/**
-	 * Checks if given coordinate empty (air in terms of MC).
-	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
 	private static boolean isReplaceableOreGen(World world, int x, int y, int z) {
 		return world.getBlock(x, y, z).isReplaceableOreGen(world, x, y, z, Blocks.air);
 	}
 	
-	public class Metashell {
-		protected int count;
-		protected double radius;
+	public class MetaShell {
+		protected final int count;
+		protected final double radius;
 		protected ArrayList<VectorI> locations;
-		protected Block block;
-		protected int metadata;
+		protected final Block block;
+		protected final int metadata;
 		
-		public Metashell(MetaOrb asteroid, Random random) {
-			if (asteroid.metashell == null) {
+		public MetaShell(MetaOrb asteroid, Random random) {
+			if (asteroid.metaShell == null) {
 				count = 1;
 				radius = 0;
 				block = null;
 				metadata = 0;
 				return;
 			}
-			count = randomRange(random, asteroid.metashell.minCount, asteroid.metashell.maxCount);
-			radius = Math.max(asteroid.metashell.minRadius, asteroid.metashell.relativeRadius * totalThickness);
-			block = asteroid.metashell.block;
-			metadata = asteroid.metashell.metadata;
+			count = randomRange(random, asteroid.metaShell.minCount, asteroid.metaShell.maxCount);
+			radius = Math.max(asteroid.metaShell.minRadius, asteroid.metaShell.relativeRadius * totalThickness);
+			block = asteroid.metaShell.block;
+			metadata = asteroid.metaShell.metadata;
 			
 			// evaluate core positions
-			locations = new ArrayList<VectorI>();
+			locations = new ArrayList<>();
 			double diameter = Math.max(1D, 2 * radius);
 			double xMin = -radius;
 			double yMin = -radius;

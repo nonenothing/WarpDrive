@@ -17,10 +17,10 @@ import java.util.Map.Entry;
  */
 
 public class CommandEntity extends CommandBase {
-	private static List<String> entitiesNoRemoval = Arrays.asList(
+	private static final List<String> entitiesNoRemoval = Arrays.asList(
 			"item.EntityItemFrame_" 
 			);
-	private static List<String> entitiesNoCount = Arrays.asList(
+	private static final List<String> entitiesNoCount = Arrays.asList(
 			"item.EntityItemFrame_" 
 			);
 	
@@ -89,7 +89,7 @@ public class CommandEntity extends CommandBase {
 				WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 				return;
 			}
-			entities = new ArrayList();
+			entities = new ArrayList<>();
 			entities.addAll(world.loadedEntityList);
 		} else {
 			if (!(icommandsender instanceof EntityPlayerMP)) {
@@ -101,7 +101,7 @@ public class CommandEntity extends CommandBase {
 					Math.floor(entityPlayer.posX    ), Math.floor(entityPlayer.posY    ), Math.floor(entityPlayer.posZ    ),
 					Math.floor(entityPlayer.posX + 1), Math.floor(entityPlayer.posY + 1), Math.floor(entityPlayer.posZ + 1)).expand(radius, radius, radius));
 		}
-		HashMap<String, Integer> counts = new HashMap<String, Integer>(entities.size());
+		HashMap<String, Integer> counts = new HashMap<>(entities.size());
 		int count = 0;
 		for (Object object : entities) {
 			if (object instanceof Entity) {
@@ -112,7 +112,7 @@ public class CommandEntity extends CommandBase {
 					name = name.replaceAll("net\\.minecraft\\.entity\\.", "") + "_";
 				}
 				if (filter.isEmpty() && !entitiesNoCount.isEmpty()) {
-					for (String entityNoCount : entitiesNoCount) {
+					for (String entityNoCount : entitiesNoCount) {// FIXME not working?
 						if (name.contains(entityNoCount)) {
 							continue;
 						}
@@ -132,7 +132,7 @@ public class CommandEntity extends CommandBase {
 					// remove entity
 					if (kill && !((Entity) object).invulnerable) {
 						if (!entitiesNoRemoval.isEmpty()) {
-							for (String entityNoRemoval : entitiesNoRemoval) {
+							for (String entityNoRemoval : entitiesNoRemoval) {// FIXME not working?
 								if (name.contains(entityNoRemoval)) {
 									continue;
 								}

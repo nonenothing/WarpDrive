@@ -57,8 +57,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	@Optional.Method(modid = "arsmagica2")
 	public NBTBase saveExternals(final TileEntity tileEntity) {
 		if (tileEntity instanceof IPowerNode) {
-			NBTBase nbtArsMagica2 = PowerNodeRegistry.For(tileEntity.getWorldObj()).getDataCompoundForNode((IPowerNode) tileEntity);
-			return nbtArsMagica2;
+			return PowerNodeRegistry.For(tileEntity.getWorldObj()).getDataCompoundForNode((IPowerNode) tileEntity);
 		}
 		return null;
 	}

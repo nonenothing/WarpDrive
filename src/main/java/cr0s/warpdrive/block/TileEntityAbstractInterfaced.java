@@ -1,11 +1,7 @@
 package cr0s.warpdrive.block;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import li.cil.oc.api.FileSystem;
 import li.cil.oc.api.Network;
@@ -53,7 +49,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	protected boolean	OC_addedToNetwork = false;
 	
 	// ComputerCraft specific properties
-	protected HashMap<Integer, IComputerAccess> connectedComputers = new HashMap<Integer, IComputerAccess>();
+	protected final HashMap<Integer, IComputerAccess> connectedComputers = new HashMap<>();
 	
 	public TileEntityAbstractInterfaced() {
 		super();
@@ -197,17 +193,17 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	// Declare type
-	public Object[] interfaced(Object[] arguments) {
+	public Object[] interfaced() {
 		return new String[] { "I'm a WarpDrive computer interfaced tile entity." };
 	}
 	
 	// Return block coordinates
-	public Object[] position(Object[] arguments) {
+	public Object[] position() {
 		return new Integer[] { xCoord, yCoord, zCoord };
 	}
 	
 	// Return version
-	public Object[] version(Object[] arguments) {
+	public Object[] version() {
 		WarpDrive.logger.info("Version is " + WarpDrive.VERSION + " isDev " + WarpDrive.isDev);
 		String[] strings = WarpDrive.VERSION.split("-");
 		WarpDrive.logger.info("strings size is " + strings.length);
@@ -217,7 +213,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			strings = strings[strings.length - 1].split("\\.");
 		}
 		WarpDrive.logger.info("strings size is now " + strings.length);
-		ArrayList<Integer> integers = new ArrayList(strings.length);
+		ArrayList<Integer> integers = new ArrayList<>(strings.length);
 		for (String string : strings) {
 			integers.add(Integer.parseInt(string));
 		}
@@ -241,14 +237,15 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
-		if (methodName.equals("interfaced")) {
-			return interfaced(arguments);
-			
-		} else if (methodName.equals("position")) {
-			return position(arguments);
-			
-		} else if (methodName.equals("version")) {
-			return version(arguments);
+		switch (methodName) {
+			case "interfaced":
+				return interfaced();
+
+			case "position":
+				return position();
+
+			case "version":
+				return version();
 			
 		}
 		return null;
@@ -292,9 +289,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			WarpDrive.logger.info(this + " Sending event '" + eventName + "'");
 		}
 		if (WarpDriveConfig.isComputerCraftLoaded) {
-			Set<Integer> keys = connectedComputers.keySet();
-			for(Integer key:keys) {
-				IComputerAccess comp = connectedComputers.get(key);
+			for(Map.Entry<Integer, IComputerAccess> integerIComputerAccessEntry : connectedComputers.entrySet()) {
+				IComputerAccess comp = integerIComputerAccessEntry.getValue();
 				comp.queueEvent(eventName, arguments);
 			}
 		}
@@ -320,19 +316,19 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] position(Context context, Arguments arguments) {
-		return position(argumentsOCtoCC(arguments));
+		return position();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] version(Context context, Arguments arguments) {
-		return version(argumentsOCtoCC(arguments));
+		return version();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] interfaced(Context context, Arguments arguments) {
-		return interfaced(argumentsOCtoCC(arguments));
+		return interfaced();
 	}
 	
 	@Optional.Method(modid = "OpenComputers")

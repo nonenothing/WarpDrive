@@ -43,8 +43,6 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
 				PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
 			}
-			
-			return;
 		}
 	}
 	
@@ -70,9 +68,9 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
 		} else {
-			CameraRegistryItem camera = WarpDrive.instance.cameras.getCameraByVideoChannel(worldObj, videoChannel);
+			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				WarpDrive.instance.cameras.printRegistry(worldObj);
+				WarpDrive.cameras.printRegistry(worldObj);
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalidOrNotLoaded",
 						videoChannel );
 			} else if (camera.isTileEntity(this)) {

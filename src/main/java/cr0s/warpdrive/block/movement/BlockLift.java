@@ -18,7 +18,7 @@ public class BlockLift extends BlockAbstractContainer {
 	
 	public BlockLift() {
 		super(Material.iron);
-		this.setBlockName("warpdrive.movement.Lift");
+		setBlockName("warpdrive.movement.Lift");
 	}
 	
 	@Override

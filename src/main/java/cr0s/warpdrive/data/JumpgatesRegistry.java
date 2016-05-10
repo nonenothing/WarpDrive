@@ -13,31 +13,30 @@ import java.util.logging.Logger;
 import cr0s.warpdrive.WarpDrive;
 
 public final class JumpgatesRegistry {
-    private File db;
-    private ArrayList<Jumpgate> gates = new ArrayList<Jumpgate>();
+    private File file;
+    private ArrayList<Jumpgate> gates = new ArrayList<>();
 
-    //@SideOnly(Side.CLIENT)
     public JumpgatesRegistry() {
-        db = new File("gates.txt");
-        WarpDrive.logger.info("Opening gates file '" + db + "'");
+        file = new File("gates.txt");
+        WarpDrive.logger.info("Opening gates file '" + file + "'");
         
-        if (db != null && !db.exists()) {
+        if (file != null && !file.exists()) {
         	try {
-				db.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
+				file.createNewFile();
+			} catch (IOException exception) {
+				exception.printStackTrace();
 			}
         }
         
         try {
             loadGates();
-        } catch (IOException ex) {
-            Logger.getLogger(JumpgatesRegistry.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException exception) {
+            Logger.getLogger(JumpgatesRegistry.class.getName()).log(Level.SEVERE, null, exception);
         }
     }
 
     public void saveGates() throws IOException {
-        PrintWriter out = new PrintWriter(new FileWriter(db));
+        PrintWriter out = new PrintWriter(new FileWriter(file));
 
         // Write each string in the array on a separate line
         for (Jumpgate jg : gates) {
@@ -50,7 +49,7 @@ public final class JumpgatesRegistry {
     public void loadGates() throws IOException {
     	WarpDrive.logger.info("Loading jump gates from gates.txt...");
         BufferedReader bufferedreader;
-        bufferedreader = new BufferedReader(new FileReader(db));
+        bufferedreader = new BufferedReader(new FileReader(file));
         String s1;
 
         while ((s1 = bufferedreader.readLine()) != null) {

@@ -83,18 +83,18 @@ public final class EntitySphereGen extends Entity {
 		
 		this.state = STATE_SAVING;
 		this.pregenSize = (int) Math.ceil(Math.PI * 4.0F / 3.0F * Math.pow(radius + 1, 3));
-		blocks = new ArrayList<JumpBlock>(this.pregenSize);
+		blocks = new ArrayList<>(this.pregenSize);
 		this.ticksDelay = world.rand.nextInt(60);
 		this.replace = replace;
 	}
 	
 	public void killEntity() {
 		this.state = STATE_STOP;
-		int minYclamped = Math.max(0, yCoord - radius);
-		int maxYclamped = Math.min(255, yCoord + radius);
+		int minY_clamped = Math.max(0, yCoord - radius);
+		int maxY_clamped = Math.min(255, yCoord + radius);
 		for (int x = xCoord - radius; x <= xCoord + radius; x++) {
 			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
-				for (int y = minYclamped; y <= maxYclamped; y++) {
+				for (int y = minY_clamped; y <= maxY_clamped; y++) {
 					if (worldObj.getBlock(x, y, z) != Blocks.air) {
 						worldObj.markBlockForUpdate(x, y, z);
 					}

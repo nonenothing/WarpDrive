@@ -8,7 +8,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	private int cooldownTicks = 0;
-	private final int START_CONCENTRATION_VALUE = 15;
+	private static final int START_CONCENTRATION_VALUE = 15;
 	
 	public TileEntityAirGenerator() {
 		super();

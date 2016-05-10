@@ -21,16 +21,16 @@ public class CommandInvisible extends CommandBase {
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] astring) {
+	public void processCommand(ICommandSender icommandsender, String[] params) {
 		EntityPlayer player = (EntityPlayer) icommandsender;
 
-		if (astring.length >= 1) {
-			WarpDrive.logger.info("/invisible: setting invisible to " + astring[0]);
+		if (params.length >= 1) {
+			WarpDrive.logger.info("/invisible: setting invisible to " + params[0]);
 			
 			// get an online player by name
 			List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 			for (EntityPlayer onlinePlayer : onlinePlayers) {
-				if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(astring[0])) {
+				if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(params[0])) {
 					player = onlinePlayer;
 				}
 			}

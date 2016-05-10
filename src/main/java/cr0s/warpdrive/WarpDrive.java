@@ -173,11 +173,11 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningRod;
 	
-	public static ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
+	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
 	public static ItemHelmet itemHelmet;
 	public static ItemAirCanisterFull itemAirCanisterFull;
 	
-	public static DamageAsphyxia damageAxphyxia;
+	public static DamageAsphyxia damageAsphyxia;
 	public static DamageTeleportation damageTeleportation;
 	
 	public static BiomeGenBase spaceBiome;
@@ -187,7 +187,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Field fieldBlockHardness = null;
 	
 	// Client settings
-	public static CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive("WarpDrive", "WarpDrive").setBackgroundImageName("warpdrive:creativeTab");
+	public static final CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive("WarpDrive", "WarpDrive").setBackgroundImageName("warpdrive:creativeTab");
 	
 	@Instance(WarpDrive.MODID)
 	public static WarpDrive instance;
@@ -427,7 +427,7 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
 		
 		
-		damageAxphyxia = new DamageAsphyxia();
+		damageAsphyxia = new DamageAsphyxia();
 		damageTeleportation = new DamageTeleportation();
 		
 		proxy.registerEntities();
@@ -573,136 +573,199 @@ public class WarpDrive implements LoadingCallback {
 	public void onFMLMissingMappings(FMLMissingMappingsEvent event) {
 		for (FMLMissingMappingsEvent.MissingMapping mapping: event.get()) {
 			if (mapping.type == GameRegistry.Type.ITEM) {
-				if (mapping.name.equals("WarpDrive:airBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockAir));
-				} else if (mapping.name.equals("WarpDrive:airCanisterFull")) {
-					mapping.remap(itemAirCanisterFull);
-				} else if (mapping.name.equals("WarpDrive:airgenBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockAirGenerator));
-				} else if (mapping.name.equals("WarpDrive:blockHAMachine")) {
-					mapping.remap(Item.getItemFromBlock(blockHighlyAdvancedMachine));
-				} else if (mapping.name.equals("WarpDrive:boosterBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockLaserMedium));
-				} else if (mapping.name.equals("WarpDrive:cameraBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockCamera));
-				} else if (mapping.name.equals("WarpDrive:chunkLoader")) {
-					mapping.remap(Item.getItemFromBlock(blockChunkLoader));
-				} else if (mapping.name.equals("WarpDrive:cloakBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockCloakingCore));
-				} else if (mapping.name.equals("WarpDrive:cloakCoilBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockCloakingCoil));
-				} else if (mapping.name.equals("WarpDrive:component")) {
-					mapping.remap(itemComponent);
-				} else if (mapping.name.equals("WarpDrive:decorative")) {
-					mapping.remap(Item.getItemFromBlock(blockDecorative));
-				} else if (mapping.name.equals("WarpDrive:gasBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockGas));
-				} else if (mapping.name.equals("WarpDrive:helmet")) {
-					mapping.remap(itemHelmet);
-				} else if (mapping.name.equals("WarpDrive:iridiumBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockIridium));
-				} else if (mapping.name.equals("WarpDrive:isolationBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockWarpIsolation));
-				} else if (mapping.name.equals("WarpDrive:laserBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockLaser));
-				} else if (mapping.name.equals("WarpDrive:laserCamBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockLaserCamera));
-				} else if (mapping.name.equals("WarpDrive:laserTreeFarmBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockLaserTreeFarm));
-				} else if (mapping.name.equals("WarpDrive:liftBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockLift));
-				} else if (mapping.name.equals("WarpDrive:miningLaserBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockMiningLaser));
-				} else if (mapping.name.equals("WarpDrive:monitorBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockMonitor));
-				} else if (mapping.name.equals("WarpDrive:powerLaser")) {
-					mapping.remap(Item.getItemFromBlock(blockEnanReactorLaser));
-				} else if (mapping.name.equals("WarpDrive:powerReactor")) {
-					mapping.remap(Item.getItemFromBlock(blockEnanReactorCore));
-				} else if (mapping.name.equals("WarpDrive:powerStore")) {
-					mapping.remap(Item.getItemFromBlock(blockEnergyBank));
-				} else if (mapping.name.equals("WarpDrive:protocolBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockShipController));
-				} else if (mapping.name.equals("WarpDrive:radarBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockRadar));
-				} else if (mapping.name.equals("WarpDrive:reactorLaserFocus")) {
-					mapping.remap(itemIC2reactorLaserFocus);
-				} else if (mapping.name.equals("WarpDrive:reactorMonitor")) {
-					mapping.remap(Item.getItemFromBlock(blockIC2reactorLaserMonitor));
-				} else if (mapping.name.equals("WarpDrive:scannerBlock")) {
-					mapping.remap(Item.getItemFromBlock(blockShipScanner));
-				} else if (mapping.name.equals("WarpDrive:transportBeacon")) {
-					mapping.remap(Item.getItemFromBlock(blockTransportBeacon));
-				} else if (mapping.name.equals("WarpDrive:transporter")) {
-					mapping.remap(Item.getItemFromBlock(blockTransporter));
-				} else if (mapping.name.equals("WarpDrive:upgrade")) {
-					mapping.remap(itemUpgrade);
-				} else if (mapping.name.equals("WarpDrive:warpCore")) {
-					mapping.remap(Item.getItemFromBlock(blockShipCore));
+				switch (mapping.name) {
+					case "WarpDrive:airBlock":
+						mapping.remap(Item.getItemFromBlock(blockAir));
+						break;
+					case "WarpDrive:airCanisterFull":
+						mapping.remap(itemAirCanisterFull);
+						break;
+					case "WarpDrive:airgenBlock":
+						mapping.remap(Item.getItemFromBlock(blockAirGenerator));
+						break;
+					case "WarpDrive:blockHAMachine":
+						mapping.remap(Item.getItemFromBlock(blockHighlyAdvancedMachine));
+						break;
+					case "WarpDrive:boosterBlock":
+						mapping.remap(Item.getItemFromBlock(blockLaserMedium));
+						break;
+					case "WarpDrive:cameraBlock":
+						mapping.remap(Item.getItemFromBlock(blockCamera));
+						break;
+					case "WarpDrive:chunkLoader":
+						mapping.remap(Item.getItemFromBlock(blockChunkLoader));
+						break;
+					case "WarpDrive:cloakBlock":
+						mapping.remap(Item.getItemFromBlock(blockCloakingCore));
+						break;
+					case "WarpDrive:cloakCoilBlock":
+						mapping.remap(Item.getItemFromBlock(blockCloakingCoil));
+						break;
+					case "WarpDrive:component":
+						mapping.remap(itemComponent);
+						break;
+					case "WarpDrive:decorative":
+						mapping.remap(Item.getItemFromBlock(blockDecorative));
+						break;
+					case "WarpDrive:gasBlock":
+						mapping.remap(Item.getItemFromBlock(blockGas));
+						break;
+					case "WarpDrive:helmet":
+						mapping.remap(itemHelmet);
+						break;
+					case "WarpDrive:iridiumBlock":
+						mapping.remap(Item.getItemFromBlock(blockIridium));
+						break;
+					case "WarpDrive:isolationBlock":
+						mapping.remap(Item.getItemFromBlock(blockWarpIsolation));
+						break;
+					case "WarpDrive:laserBlock":
+						mapping.remap(Item.getItemFromBlock(blockLaser));
+						break;
+					case "WarpDrive:laserCamBlock":
+						mapping.remap(Item.getItemFromBlock(blockLaserCamera));
+						break;
+					case "WarpDrive:laserTreeFarmBlock":
+						mapping.remap(Item.getItemFromBlock(blockLaserTreeFarm));
+						break;
+					case "WarpDrive:liftBlock":
+						mapping.remap(Item.getItemFromBlock(blockLift));
+						break;
+					case "WarpDrive:miningLaserBlock":
+						mapping.remap(Item.getItemFromBlock(blockMiningLaser));
+						break;
+					case "WarpDrive:monitorBlock":
+						mapping.remap(Item.getItemFromBlock(blockMonitor));
+						break;
+					case "WarpDrive:powerLaser":
+						mapping.remap(Item.getItemFromBlock(blockEnanReactorLaser));
+						break;
+					case "WarpDrive:powerReactor":
+						mapping.remap(Item.getItemFromBlock(blockEnanReactorCore));
+						break;
+					case "WarpDrive:powerStore":
+						mapping.remap(Item.getItemFromBlock(blockEnergyBank));
+						break;
+					case "WarpDrive:protocolBlock":
+						mapping.remap(Item.getItemFromBlock(blockShipController));
+						break;
+					case "WarpDrive:radarBlock":
+						mapping.remap(Item.getItemFromBlock(blockRadar));
+						break;
+					case "WarpDrive:reactorLaserFocus":
+						mapping.remap(itemIC2reactorLaserFocus);
+						break;
+					case "WarpDrive:reactorMonitor":
+						mapping.remap(Item.getItemFromBlock(blockIC2reactorLaserMonitor));
+						break;
+					case "WarpDrive:scannerBlock":
+						mapping.remap(Item.getItemFromBlock(blockShipScanner));
+						break;
+					case "WarpDrive:transportBeacon":
+						mapping.remap(Item.getItemFromBlock(blockTransportBeacon));
+						break;
+					case "WarpDrive:transporter":
+						mapping.remap(Item.getItemFromBlock(blockTransporter));
+						break;
+					case "WarpDrive:upgrade":
+						mapping.remap(itemUpgrade);
+						break;
+					case "WarpDrive:warpCore":
+						mapping.remap(Item.getItemFromBlock(blockShipCore));
+						break;
 				}
 			} else if (mapping.type == GameRegistry.Type.BLOCK) {
-				if (mapping.name.equals("WarpDrive:airBlock")) {
-					mapping.remap(blockAir);
-				} else if (mapping.name.equals("WarpDrive:airgenBlock")) {
-					mapping.remap(blockAirGenerator);
-				} else if (mapping.name.equals("WarpDrive:blockHAMachine")) {
-					mapping.remap(blockHighlyAdvancedMachine);
-				} else if (mapping.name.equals("WarpDrive:boosterBlock")) {
-					mapping.remap(blockLaserMedium);
-				} else if (mapping.name.equals("WarpDrive:cameraBlock")) {
-					mapping.remap(blockCamera);
-				} else if (mapping.name.equals("WarpDrive:chunkLoader")) {
-					mapping.remap(blockChunkLoader);
-				} else if (mapping.name.equals("WarpDrive:cloakBlock")) {
-					mapping.remap(blockCloakingCore);
-				} else if (mapping.name.equals("WarpDrive:cloakCoilBlock")) {
-					mapping.remap(blockCloakingCoil);
-				} else if (mapping.name.equals("WarpDrive:decorative")) {
-					mapping.remap(blockDecorative);
-				} else if (mapping.name.equals("WarpDrive:gasBlock")) {
-					mapping.remap(blockGas);
-				} else if (mapping.name.equals("WarpDrive:iridiumBlock")) {
-					mapping.remap(blockIridium);
-				} else if (mapping.name.equals("WarpDrive:isolationBlock")) {
-					mapping.remap(blockWarpIsolation);
-				} else if (mapping.name.equals("WarpDrive:laserBlock")) {
-					mapping.remap(blockLaser);
-				} else if (mapping.name.equals("WarpDrive:laserCamBlock")) {
-					mapping.remap(blockLaserCamera);
-				} else if (mapping.name.equals("WarpDrive:laserTreeFarmBlock")) {
-					mapping.remap(blockLaserTreeFarm);
-				} else if (mapping.name.equals("WarpDrive:liftBlock")) {
-					mapping.remap(blockLift);
-				} else if (mapping.name.equals("WarpDrive:miningLaserBlock")) {
-					mapping.remap(blockMiningLaser);
-				} else if (mapping.name.equals("WarpDrive:monitorBlock")) {
-					mapping.remap(blockMonitor);
-				} else if (mapping.name.equals("WarpDrive:powerLaser")) {
-					mapping.remap(blockEnanReactorLaser);
-				} else if (mapping.name.equals("WarpDrive:powerReactor")) {
-					mapping.remap(blockEnanReactorCore);
-				} else if (mapping.name.equals("WarpDrive:powerStore")) {
-					mapping.remap(blockEnergyBank);
-				} else if (mapping.name.equals("WarpDrive:protocolBlock")) {
-					mapping.remap(blockShipController);
-				} else if (mapping.name.equals("WarpDrive:radarBlock")) {
-					mapping.remap(blockRadar);
-				} else if (mapping.name.equals("WarpDrive:reactorMonitor")) {
-					mapping.remap(blockIC2reactorLaserMonitor);
-				} else if (mapping.name.equals("WarpDrive:scannerBlock")) {
-					mapping.remap(blockShipScanner);
-				} else if (mapping.name.equals("WarpDrive:transportBeacon")) {
-					mapping.remap(blockTransportBeacon);
-				} else if (mapping.name.equals("WarpDrive:transporter")) {
-					mapping.remap(blockTransporter);
-				} else if (mapping.name.equals("WarpDrive:warpCore")) {
-					mapping.remap(blockShipCore);
+				switch (mapping.name) {
+					case "WarpDrive:airBlock":
+						mapping.remap(blockAir);
+						break;
+					case "WarpDrive:airgenBlock":
+						mapping.remap(blockAirGenerator);
+						break;
+					case "WarpDrive:blockHAMachine":
+						mapping.remap(blockHighlyAdvancedMachine);
+						break;
+					case "WarpDrive:boosterBlock":
+						mapping.remap(blockLaserMedium);
+						break;
+					case "WarpDrive:cameraBlock":
+						mapping.remap(blockCamera);
+						break;
+					case "WarpDrive:chunkLoader":
+						mapping.remap(blockChunkLoader);
+						break;
+					case "WarpDrive:cloakBlock":
+						mapping.remap(blockCloakingCore);
+						break;
+					case "WarpDrive:cloakCoilBlock":
+						mapping.remap(blockCloakingCoil);
+						break;
+					case "WarpDrive:decorative":
+						mapping.remap(blockDecorative);
+						break;
+					case "WarpDrive:gasBlock":
+						mapping.remap(blockGas);
+						break;
+					case "WarpDrive:iridiumBlock":
+						mapping.remap(blockIridium);
+						break;
+					case "WarpDrive:isolationBlock":
+						mapping.remap(blockWarpIsolation);
+						break;
+					case "WarpDrive:laserBlock":
+						mapping.remap(blockLaser);
+						break;
+					case "WarpDrive:laserCamBlock":
+						mapping.remap(blockLaserCamera);
+						break;
+					case "WarpDrive:laserTreeFarmBlock":
+						mapping.remap(blockLaserTreeFarm);
+						break;
+					case "WarpDrive:liftBlock":
+						mapping.remap(blockLift);
+						break;
+					case "WarpDrive:miningLaserBlock":
+						mapping.remap(blockMiningLaser);
+						break;
+					case "WarpDrive:monitorBlock":
+						mapping.remap(blockMonitor);
+						break;
+					case "WarpDrive:powerLaser":
+						mapping.remap(blockEnanReactorLaser);
+						break;
+					case "WarpDrive:powerReactor":
+						mapping.remap(blockEnanReactorCore);
+						break;
+					case "WarpDrive:powerStore":
+						mapping.remap(blockEnergyBank);
+						break;
+					case "WarpDrive:protocolBlock":
+						mapping.remap(blockShipController);
+						break;
+					case "WarpDrive:radarBlock":
+						mapping.remap(blockRadar);
+						break;
+					case "WarpDrive:reactorMonitor":
+						mapping.remap(blockIC2reactorLaserMonitor);
+						break;
+					case "WarpDrive:scannerBlock":
+						mapping.remap(blockShipScanner);
+						break;
+					case "WarpDrive:transportBeacon":
+						mapping.remap(blockTransportBeacon);
+						break;
+					case "WarpDrive:transporter":
+						mapping.remap(blockTransporter);
+						break;
+					case "WarpDrive:warpCore":
+						mapping.remap(blockShipCore);
+						break;
 				}
 			}
 		}
 	}
 	
-	// add tooltip information with text formating and line splitting
+	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(List list, String tooltip) {
 		tooltip = tooltip.replace("§", "" + (char)167).replace("\\n", "\n").replace("|", "\n");
@@ -725,11 +788,11 @@ public class WarpDrive implements LoadingCallback {
 		}
 	}
 	
-	public static Field getField(Class<?> clazz, String deofuscatedName, String obfuscatedName) {
+	public static Field getField(Class<?> clazz, String deobfuscatedName, String obfuscatedName) {
 		Field fieldToReturn = null;
 		
 		try {
-			fieldToReturn = clazz.getDeclaredField(deofuscatedName);
+			fieldToReturn = clazz.getDeclaredField(deobfuscatedName);
 		} catch (Exception exception1) {
 			try {
 				fieldToReturn = clazz.getDeclaredField(obfuscatedName);
@@ -743,7 +806,7 @@ public class WarpDrive implements LoadingCallback {
 					map += fieldDeclared.getName();
 				}
 				WarpDrive.logger.error(String.format("Unable to find %1$s field in %2$s class. Available fields are: %3$s",
-						deofuscatedName, clazz.toString(), map));
+						deobfuscatedName, clazz.toString(), map));
 			}
 		}
 		if (fieldToReturn != null) {

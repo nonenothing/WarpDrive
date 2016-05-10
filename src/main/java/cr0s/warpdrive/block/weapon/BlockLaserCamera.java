@@ -17,7 +17,7 @@ import cr0s.warpdrive.render.ClientCameraHandler;
 public class BlockLaserCamera extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
-	private final int ICON_SIDE = 0;
+	private static final int ICON_SIDE = 0;
 	
 	public BlockLaserCamera() {
 		super(Material.iron);

@@ -6,9 +6,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 public class SpaceTeleporter extends Teleporter {
-	int x, y, z;
-	int orientation;
-	World world;
+	final int x;
+	final int y;
+	final int z;
+	final int orientation;
+	final World world;
 	
 	public SpaceTeleporter(WorldServer worldServer, int orientation, int x, int y, int z) {
 		super(worldServer);

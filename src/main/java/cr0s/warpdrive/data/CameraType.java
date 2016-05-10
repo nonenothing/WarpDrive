@@ -13,7 +13,7 @@ public enum CameraType {
 	
 	// cached values
 	public static final int length;
-	private static final HashMap<Integer, CameraType> ID_MAP = new HashMap<Integer, CameraType>();
+	private static final HashMap<Integer, CameraType> ID_MAP = new HashMap<>();
 	
 	static {
 		length = CameraType.values().length;
