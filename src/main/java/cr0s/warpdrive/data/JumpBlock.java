@@ -34,16 +34,7 @@ public class JumpBlock {
 	
 	public JumpBlock() {
 	}
-	
-	public JumpBlock(Block block, int blockMeta, int x, int y, int z) {
-		this.block = block;
-		this.blockMeta = blockMeta;
-		blockTileEntity = null;
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
-	
+
 	public JumpBlock(Block block, int blockMeta, TileEntity tileEntity, int x, int y, int z) {
 		this.block = block;
 		this.blockMeta = blockMeta;
