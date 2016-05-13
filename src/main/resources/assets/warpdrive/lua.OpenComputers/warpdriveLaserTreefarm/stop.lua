@@ -8,7 +8,7 @@ if not term.isAvailable() then
 end
 
 treefarms = {}
-for address,type in component.list("warpdriveLaserTreefarm", true) do
+for address,type in component.list("warpdriveLaserTreeFarm", true) do
   table.insert(treefarms, component.proxy(address))
 end
 

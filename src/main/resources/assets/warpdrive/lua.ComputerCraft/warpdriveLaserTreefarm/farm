@@ -6,7 +6,7 @@ end
 sides = peripheral.getNames()
 treefarms = {}
 for key,side in pairs(sides) do
-  if peripheral.getType(side) == "warpdriveLaserTreefarm" then
+  if peripheral.getType(side) == "warpdriveLaserTreeFarm" then
     print("Wrapping " .. side)
     table.insert(treefarms, peripheral.wrap(side))
   end
