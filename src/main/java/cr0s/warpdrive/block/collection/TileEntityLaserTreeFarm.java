@@ -42,22 +42,22 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	private boolean enoughPower = false;
 	
-	private final int TREE_FARM_WARMUP_DELAY_TICKS = 40;
-	private final int TREE_FARM_SCAN_DELAY_TICKS = 40;
-	private final int TREE_FARM_HARVEST_LOG_DELAY_TICKS = 4;
-	private final int TREE_FARM_BREAK_LEAF_DELAY_TICKS = 4;
-	private final int TREE_FARM_SILKTOUCH_LEAF_DELAY_TICKS = 4;
-	private final int TREE_FARM_TAP_TREE_WET_DELAY_TICKS = 4;
-	private final int TREE_FARM_TAP_TREE_DRY_DELAY_TICKS = 1;
-	private final int TREE_FARM_PLANT_DELAY_TICKS = 1;
-	private final int TREE_FARM_LOW_POWER_DELAY_TICKS = 40;
+	private static final int TREE_FARM_WARMUP_DELAY_TICKS = 40;
+	private static final int TREE_FARM_SCAN_DELAY_TICKS = 40;
+	private static final int TREE_FARM_HARVEST_LOG_DELAY_TICKS = 4;
+	private static final int TREE_FARM_BREAK_LEAF_DELAY_TICKS = 4;
+	private static final int TREE_FARM_SILKTOUCH_LEAF_DELAY_TICKS = 4;
+	private static final int TREE_FARM_TAP_TREE_WET_DELAY_TICKS = 4;
+	private static final int TREE_FARM_TAP_TREE_DRY_DELAY_TICKS = 1;
+	private static final int TREE_FARM_PLANT_DELAY_TICKS = 1;
+	private static final int TREE_FARM_LOW_POWER_DELAY_TICKS = 40;
 	
-	private final int TREE_FARM_ENERGY_PER_SURFACE = 1;
-	private final int TREE_FARM_ENERGY_PER_WET_SPOT = 1;
-	private final double TREE_FARM_ENERGY_PER_LOG = 1;
-	private final double TREE_FARM_ENERGY_PER_LEAF = 1;
-	private final double TREE_FARM_SILKTOUCH_ENERGY_FACTOR = 2.0D;
-	private final int TREE_FARM_ENERGY_PER_SAPLING = 1;
+	private static final int TREE_FARM_ENERGY_PER_SURFACE = 1;
+	private static final int TREE_FARM_ENERGY_PER_WET_SPOT = 1;
+	private static final double TREE_FARM_ENERGY_PER_LOG = 1;
+	private static final double TREE_FARM_ENERGY_PER_LEAF = 1;
+	private static final double TREE_FARM_SILKTOUCH_ENERGY_FACTOR = 2.0D;
+	private static final int TREE_FARM_ENERGY_PER_SAPLING = 1;
 	
 	private int delayTargetTicks = 0;
 	
@@ -69,9 +69,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private int radiusX = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
 	private int radiusZ = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
 	
-	LinkedList<VectorI> soils;
+	private LinkedList<VectorI> soils;
 	private int soilIndex = 0;
-	ArrayList<VectorI> valuables;
+	private ArrayList<VectorI> valuables;
 	private int valuableIndex = 0;
 	
 	public TileEntityLaserTreeFarm() {
@@ -230,6 +230,15 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				boolean isLog = isLog(block);
 				boolean isLeaf = isLeaf(block);
 				
+				// check area protection
+				if (isBlockBreakCanceled(null, worldObj, valuable.x, valuable.y, valuable.z)) {
+					if (WarpDriveConfig.LOGGING_COLLECTION) {
+						WarpDrive.logger.info(this + " Harvesting cancelled at (" + valuable.x + " " + valuable.y + " " + valuable.z + ")");
+					}
+					// done with this block
+					return;
+				}
+				
 				// save the rubber producing blocks in tapping mode
 				if (currentState == STATE_TAP) {
 					if (block.isAssociatedBlock(WarpDriveConfig.IC2_rubberWood)) {
@@ -375,8 +384,20 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// no sapling found for this soil, moving on...
-				if (!found || itemStack == null) {
-					WarpDrive.logger.debug("No sapling found");
+				assert(itemStack != null);
+				if (!found) {
+					if (WarpDriveConfig.LOGGING_COLLECTION) {
+						WarpDrive.logger.debug("No sapling found");
+					}
+					return;
+				}
+				
+				// check area protection
+				if (isBlockPlaceCanceled(null, worldObj, soil.x, soil.y + 1, soil.z, plant, plantMetadata)) {
+					if (WarpDriveConfig.LOGGING_COLLECTION) {
+						WarpDrive.logger.info(this + " Planting cancelled at (" + soil.x + " " + (soil.y + 1) + " " + soil.z + ")");
+					}
+					// done with this block
 					return;
 				}
 				
@@ -446,7 +467,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 						if (isSoil(block)) {
 							VectorI pos = new VectorI(x, y, z);
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								// WarpDrive.logger.info("Found soil at " + x + "," + y + "," + z);
+								WarpDrive.logger.info("Found soil at " + x + " " + y + " " + z);
 							}
 							soilPositions.add(pos);
 						}
@@ -488,6 +509,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			}
 		}
 		if (!logPositions.isEmpty()) {
+			@SuppressWarnings("unchecked")
 			HashSet<Block> whitelist = (HashSet<Block>) Dictionary.BLOCKS_LOGS.clone();
 			if (breakLeaves) {
 				whitelist.addAll(Dictionary.BLOCKS_LEAVES);

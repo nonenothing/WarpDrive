@@ -60,7 +60,7 @@ public class JumpSequencer extends AbstractSequencer {
 	private ArrayList<Vector3> collisionAtTarget;
 	private float collisionStrength = 0;
 	
-	public boolean isEnabled = false;
+	private boolean isEnabled = false;
 	private final static int STATE_IDLE = 0;
 	private final static int STATE_CHUNKLOADING = 1;
 	private final static int STATE_SAVING = 2;
@@ -1111,7 +1111,7 @@ public class JumpSequencer extends AbstractSequencer {
 				for (z = ship.minZ; z <= ship.maxZ; z++) {
 					coordTarget = testTransformation.apply(x, y, z);
 					blockSource = sourceWorld.getBlock(x, y, z);
-					blockTarget = sourceWorld.getBlock(coordTarget.posX, coordTarget.posY, coordTarget.posZ);
+					blockTarget = targetWorld.getBlock(coordTarget.posX, coordTarget.posY, coordTarget.posZ);
 					if (Dictionary.BLOCKS_ANCHOR.contains(blockTarget)) {
 						result.add(x, y, z,
 							coordTarget.posX + 0.5D - offset.x,
@@ -1140,6 +1140,13 @@ public class JumpSequencer extends AbstractSequencer {
 							WarpDrive.logger.info("Hard collision at ratio " + ratio + " testMovement " + testMovement);
 						}
 					}
+					
+					if (blockSource != Blocks.air && WarpDrive.proxy.isBlockPlaceCanceled(null, ship.coreX, ship.coreY, ship.coreZ,
+						targetWorld, coordTarget.posX, coordTarget.posY, coordTarget.posZ, blockSource, 0)) {
+						result.add(x, y, z, coordTarget.posX, coordTarget.posY, coordTarget.posZ, false,
+							"Ship is entering a protected area");
+						return result;
+					}
 				}
 			}
 		}
@@ -1161,7 +1168,7 @@ public class JumpSequencer extends AbstractSequencer {
 			public int compare(TileEntity o1, TileEntity o2) {
 				if (o1.xCoord == o2.xCoord && o1.yCoord == o2.yCoord && o1.zCoord == o2.zCoord) {
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-						WarpDrive.logger.info("Removed duplicated TE: " + o1 + ", " + o2);
+						WarpDrive.logger.info("Removed duplicated TE: " + o1 + " vs " + o2);
 					}
 					return 0;
 				} else {

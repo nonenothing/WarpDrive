@@ -2,7 +2,9 @@ package cr0s.warpdrive;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.UUID;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
@@ -133,6 +135,7 @@ public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
 	public static final boolean isDev = VERSION.equals("@" + "version" + "@") || VERSION.contains("-dev");
+	public static GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes("[WarpDrive]".getBytes()), "[WarpDrive]");
 	
 	public static Block blockShipCore;
 	public static Block blockShipController;
@@ -767,7 +770,7 @@ public class WarpDrive implements LoadingCallback {
 	
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
-	public static void addTooltip(List list, String tooltip) {
+	public static void addTooltip(List<String> list, String tooltip) {
 		tooltip = tooltip.replace("§", "" + (char)167).replace("\\n", "\n").replace("|", "\n");
 		
 		String[] split = tooltip.split("\n");

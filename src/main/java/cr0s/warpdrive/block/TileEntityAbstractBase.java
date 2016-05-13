@@ -1,23 +1,19 @@
 package cr0s.warpdrive.block;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
+
+import java.util.*;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector {
 	
@@ -198,7 +194,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected static double toDouble(Object object) {
 		return Double.parseDouble(object.toString());
 	}
-
+	
 	protected static float toFloat(Object object) {
 		return Float.parseFloat(object.toString());
 	}
@@ -223,5 +219,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	protected static double clamp(final double min, final double max, final double value) {
 		return Math.min(max, Math.max(value, min));
+	}
+	
+	protected boolean isBlockBreakCanceled(EntityPlayer entityPlayer, World world, int eventX, int eventY, int eventZ) {
+		return WarpDrive.proxy.isBlockBreakCanceled(entityPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ);
+	}
+	
+	protected boolean isBlockPlaceCanceled(EntityPlayer entityPlayer, World world, int eventX, int eventY, int eventZ, Block block, int metadata) {
+		return WarpDrive.proxy.isBlockPlaceCanceled(entityPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ, block, metadata);
 	}
 }

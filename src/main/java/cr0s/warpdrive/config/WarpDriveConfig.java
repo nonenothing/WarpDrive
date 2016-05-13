@@ -136,6 +136,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_PROFILING = true;
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
+	public static boolean LOGGING_BREAK_PLACE = false;
 	
 	// Planets
 	public static Planet[] PLANETS = null;
@@ -416,8 +417,9 @@ public class WarpDriveConfig {
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_WORLDGEN = config.get("logging", "enable_worldgen_logs", LOGGING_WORLDGEN, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
-		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_PROFILING, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
-		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_PROFILING, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
+		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
+		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
+		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailled break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		
 		// Planets
 		{
@@ -941,7 +943,7 @@ public class WarpDriveConfig {
 	/**
 	 * Copy a default configuration file from the mod's resources to the specified configuration folder
 	 **/
-	public static void unpackResourceToFolder(final String filename, final String sourceResourcePath, File targetFolder) {
+	private static void unpackResourceToFolder(final String filename, final String sourceResourcePath, File targetFolder) {
 		// targetFolder is already created by caller
 		
 		String resourceName = sourceResourcePath + "/" + filename;

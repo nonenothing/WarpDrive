@@ -88,7 +88,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		boolean isOnEarth = (worldObj.provider.dimensionId == 0);
+		boolean isOnEarth = isOnEarth();
 		
 		if (currentState == STATE_WARMUP) {
 			delayTicksWarmup++;
@@ -238,13 +238,21 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (Dictionary.BLOCKS_STOPMINING.contains(block)) {
 			stop();
 			if (WarpDriveConfig.LOGGING_COLLECTION) {
-				WarpDrive.logger.info(this + " Mining stopped by " + block + " at (" + xCoord + " " + y + " " + zCoord + ")");
+				WarpDrive.logger.info(this + " Mining stopped by " + block + " at (" + x + " " + y + " " + z + ")");
 			}
 			return false;
 		}
 		// check whitelist
 		if (Dictionary.BLOCKS_MINING.contains(block) || Dictionary.BLOCKS_ORES.contains(block)) {
 			return true;
+		}
+		// check area protection
+		if (isBlockBreakCanceled(null, worldObj, x, y, z)) {
+			stop();
+			if (WarpDriveConfig.LOGGING_COLLECTION) {
+				WarpDrive.logger.info(this + " Mining stopped by cancelled event at (" + x + " " + y + " " + z + ")");
+			}
+			return false;
 		}
 		// check default (explosion resistance is used to test for force fields and reinforced blocks, basically preventing mining a base or ship) 
 		if (block.getExplosionResistance(null) <= Blocks.obsidian.getExplosionResistance(null)) {

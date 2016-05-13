@@ -46,12 +46,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	protected int beamFrequency = -1;
 	private float r, g, b; // beam color (corresponds to frequency)
 	
-	public boolean isEmitting = false;
+	private boolean isEmitting = false;
 	
 	private int delayTicks = 0;
 	private int energyFromOtherBeams = 0;
 	
-	public static enum ScanResultType {
+	private static enum ScanResultType {
 		IDLE("IDLE"), BLOCK("BLOCK"), NONE("NONE");
 		
 		public final String name;
@@ -87,10 +87,10 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			if (worldObj.getBlock(xCoord, yCoord, zCoord) instanceof BlockLaserCamera) {
 				try {
 					WarpDrive.logger.info("Self-upgrading legacy tile entity " + this);
-					NBTTagCompound oldnbt = new NBTTagCompound();
-					writeToNBT(oldnbt);
+					NBTTagCompound nbtOld = new NBTTagCompound();
+					writeToNBT(nbtOld);
 					TileEntityLaserCamera newTileEntity = new TileEntityLaserCamera(); // id has changed, we can't directly call createAndLoadEntity
-					newTileEntity.readFromNBT(oldnbt);
+					newTileEntity.readFromNBT(nbtOld);
 					newTileEntity.setWorldObj(worldObj);
 					newTileEntity.validate();
 					invalidate();
@@ -131,7 +131,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		isEmitting = true;
 	}
 	
-	public void addBeamEnergy(int amount) {
+	private void addBeamEnergy(int amount) {
 		if (isEmitting) {
 			energyFromOtherBeams += amount;
 			if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -321,6 +321,15 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 						+ " with block " + block + " of hardness " + hardness);
 			}
 			
+			// check area protection
+			if (isBlockBreakCanceled(null, worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ)) {
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("Laser weapon cancelled at (" + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ + ")");
+				}
+				vHitPoint = new Vector3(blockHit.hitVec);
+				break;
+			}
+			
 			// explode on unbreakable blocks
 			if (hardness < 0.0F) {
 				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
@@ -431,7 +440,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		return transmittance;
 	}
 	
-	public TreeMap<Double, MovingObjectPosition> raytraceEntities(Vector3 vSource, Vector3 vDirection, double reachDistance) {
+	private TreeMap<Double, MovingObjectPosition> raytraceEntities(Vector3 vSource, Vector3 vDirection, double reachDistance) {
 		final double raytraceTolerance = 2.0D;
 		
 		// Pre-computation
@@ -449,6 +458,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				Math.max(xCoord + raytraceTolerance, vec3Target.xCoord + raytraceTolerance),
 				Math.max(yCoord + raytraceTolerance, vec3Target.yCoord + raytraceTolerance),
 				Math.max(zCoord + raytraceTolerance, vec3Target.zCoord + raytraceTolerance));
+		@SuppressWarnings("unchecked")
 		List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(null, boxToScan);
 		
 		if (entities == null || entities.isEmpty()) {
@@ -503,7 +513,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		updateColor();
 	}
 	
-	public String getBeamFrequencyStatus() {
+	protected String getBeamFrequencyStatus() {
 		if (beamFrequency < 0) {
 			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid",
 					beamFrequency );
@@ -627,6 +637,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				float deltaY = -toFloat(arguments[1]);
 				float deltaZ = toFloat(arguments[2]);
 				double horizontalDistance = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
+				//noinspection SuspiciousNameCombination
 				newYaw = (float) (Math.atan2(deltaX, deltaZ) * 180.0D / Math.PI);
 				newPitch = (float) (Math.atan2(deltaY, horizontalDistance) * 180.0D / Math.PI);
 				initiateBeamEmission(newYaw, newPitch);
