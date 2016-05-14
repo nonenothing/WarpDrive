@@ -16,10 +16,6 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
-import cr0s.warpdrive.network.MessageCloak;
-import cr0s.warpdrive.network.MessageVideoChannel;
-import cr0s.warpdrive.network.MessageBeamEffect;
-import cr0s.warpdrive.network.MessageTargeting;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CloakedArea;
@@ -119,7 +115,7 @@ public class PacketHandler {
 	public static void sendLaserTargetingPacket(int x, int y, int z, float yaw, float pitch) {
 		MessageTargeting targetingMessage = new MessageTargeting(x, y, z, yaw, pitch);
 		simpleNetworkManager.sendToServer(targetingMessage);
-		if (WarpDriveConfig.LOGGING_TARGETTING) {
+		if (WarpDriveConfig.LOGGING_TARGETING) {
 			WarpDrive.logger.info("Sent targeting packet (" + x + " " + y + " " + z + ") yaw " + yaw + " pitch " + pitch);
 		}
 	}

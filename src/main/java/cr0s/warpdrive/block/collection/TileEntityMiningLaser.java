@@ -422,6 +422,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		delayTicksWarmup = 0;
 		currentState = STATE_WARMUP;
 		currentLayer = yCoord - layerOffset - 1;
+		if (WarpDriveConfig.LOGGING_LUA) {
+			WarpDrive.logger.info(this + " Starting from Y " + currentLayer + " with silktouch " + enableSilktouch);
+		}
 		return new Boolean[] { true };
 	}
 	
@@ -442,6 +445,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				mineAllBlocks = ! toBool(arguments[0]);
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.info(this + " onlyOres set to " + !mineAllBlocks);
+				}
 			} catch (Exception exception) {
 				return new Object[] { !mineAllBlocks };
 			}
@@ -453,6 +459,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				layerOffset = Math.min(256, Math.abs(toInt(arguments[0])));
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.info(this + " offset set to " + layerOffset);
+				}
 			} catch (Exception exception) {
 				return new Integer[] { layerOffset };
 			}
@@ -463,7 +472,10 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private Object[] silktouch(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				enableSilktouch = ! toBool(arguments[0]);
+				enableSilktouch = toBool(arguments[0]);
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.info(this + " silktouch set to " + enableSilktouch);
+				}
 			} catch (Exception exception) {
 				return new Object[] { enableSilktouch };
 			}

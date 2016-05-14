@@ -87,10 +87,6 @@ public class WarpDriveConfig {
 	public static ItemStack IC2_Resin;
 	public static Block CC_Computer, CC_peripheral, CCT_Turtle, CCT_Expanded, CCT_Advanced;
 	
-	public static ItemStack GT_Ores, GT_Granite, GT_Machine;
-	public static int AS_Turbine, AS_deuteriumCell;
-	public static int ICBM_Machine, ICBM_Missile, ICBM_Explosive;
-	
 	// Mod configuration (see loadWarpDriveConfig() for comments/definitions)
 	// General
 	public static int G_SPACE_BIOME_ID = 95;
@@ -123,7 +119,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_EFFECTS = false;
 	public static boolean LOGGING_CLOAKING = false;
 	public static boolean LOGGING_VIDEO_CHANNEL = false;
-	public static boolean LOGGING_TARGETTING = false;
+	public static boolean LOGGING_TARGETING = false;
 	public static boolean LOGGING_WEAPON = false;
 	public static boolean LOGGING_CAMERA = false;
 	public static boolean LOGGING_BUILDING = false;
@@ -252,7 +248,7 @@ public class WarpDriveConfig {
 	public static int MINING_LASER_PLANET_ENERGY_PER_BLOCK = 2500;
 	public static double MINING_LASER_ORESONLY_ENERGY_FACTOR = 15.0; // lower value encourages to keep the land 'clean'
 	public static double MINING_LASER_SILKTOUCH_ENERGY_FACTOR = 1.5;
-	public static double MINING_LASER_SILKTOUCH_DEUTERIUM_L = 1.0;
+	public static double MINING_LASER_SILKTOUCH_DEUTERIUM_L = 0.0;
 	public static double MINING_LASER_FORTUNE_ENERGY_FACTOR = 1.5;
 	
 	// Tree farm
@@ -387,9 +383,9 @@ public class WarpDriveConfig {
 		
 		// Recipes
 		RECIPES_ENABLE_DYNAMIC = config.get("recipes", "enable_dynamic", RECIPES_ENABLE_DYNAMIC,
-				"Mixed recipes dynamicaly integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
+				"Mixed recipes dynamically integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
 		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
-		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCrat2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
+		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCraft2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
 		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
 		
 		// Logging
@@ -400,12 +396,12 @@ public class WarpDriveConfig {
 			LOGGING_EFFECTS = config.get("logging", "enable_effects_logs", LOGGING_EFFECTS, "Detailed effects logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_CLOAKING = config.get("logging", "enable_cloaking_logs", LOGGING_CLOAKING, "Detailed cloaking logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_videoChannel_logs", LOGGING_VIDEO_CHANNEL, "Detailed video channel logs to help debug the mod, will spam your console!").getBoolean(false);
-			LOGGING_TARGETTING = config.get("logging", "enable_targetting_logs", LOGGING_TARGETTING, "Detailed targetting logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_TARGETING = config.get("logging", "enable_targeting_logs", LOGGING_TARGETING, "Detailed targeting logs to help debug the mod, will spam your console!").getBoolean(false);
 		} else {
 			LOGGING_EFFECTS = false;
 			LOGGING_CLOAKING = false;
 			LOGGING_VIDEO_CHANNEL = false;
-			LOGGING_TARGETTING = false;
+			LOGGING_TARGETING = false;
 		}
 		LOGGING_WEAPON = config.get("logging", "enable_weapon_logs", LOGGING_WEAPON, "Detailed weapon logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_CAMERA = config.get("logging", "enable_camera_logs", LOGGING_CAMERA, "Detailed camera logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
@@ -419,7 +415,7 @@ public class WarpDriveConfig {
 		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
-		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailled break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		
 		// Planets
 		{
@@ -483,7 +479,7 @@ public class WarpDriveConfig {
 				config.get("ship", "cooldown_interval_seconds", SHIP_COOLDOWN_INTERVAL_SECONDS, "Cooldown seconds to wait after jumping").getInt());
 		
 		SHIP_SHORTJUMP_THRESHOLD_BLOCKS = clamp(0, 30000000,
-				config.get("ship", "shortjump_threhold_blocs", SHIP_SHORTJUMP_THRESHOLD_BLOCKS, "Short jump definition").getInt());
+				config.get("ship", "shortjump_threshold_blocs", SHIP_SHORTJUMP_THRESHOLD_BLOCKS, "Short jump definition").getInt());
 		SHIP_SHORTJUMP_WARMUP_SECONDS = clamp(0, 3600,
 				config.get("ship", "shortjump_warmup_seconds", SHIP_SHORTJUMP_WARMUP_SECONDS, "(measured in seconds)").getInt());
 		SHIP_LONGJUMP_WARMUP_SECONDS = clamp(0, 3600,
@@ -643,14 +639,17 @@ public class WarpDriveConfig {
 		MINING_LASER_SPACE_ENERGY_PER_BLOCK = clamp(1, Integer.MAX_VALUE,
 				config.get("mining_laser", "space_energy_per_block", MINING_LASER_SPACE_ENERGY_PER_BLOCK, "Energy cost per block in space").getInt());
 		
-		MINING_LASER_ORESONLY_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
-				config.get("mining_laser", "oresonly_energy_factor", MINING_LASER_ORESONLY_ENERGY_FACTOR, "Energy cost multiplier per block when mining only ores").getDouble(4.0D));
-		MINING_LASER_SILKTOUCH_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
-				config.get("mining_laser", "silktouch_energy_factor", MINING_LASER_SILKTOUCH_ENERGY_FACTOR, "Energy cost multiplier per block when mining with silktouch").getDouble(2.5D));
+		MINING_LASER_ORESONLY_ENERGY_FACTOR = clamp(1.5D, 1000.0D,
+				config.get("mining_laser", "oresonly_energy_factor", MINING_LASER_ORESONLY_ENERGY_FACTOR, "Energy cost multiplier per block when mining only ores").getDouble(MINING_LASER_ORESONLY_ENERGY_FACTOR));
+		MINING_LASER_SILKTOUCH_ENERGY_FACTOR = clamp(1.5D, 1000.0D,
+				config.get("mining_laser", "silktouch_energy_factor", MINING_LASER_SILKTOUCH_ENERGY_FACTOR, "Energy cost multiplier per block when mining with silktouch").getDouble(MINING_LASER_SILKTOUCH_ENERGY_FACTOR));
 		
 		if (unused) {
-			MINING_LASER_SILKTOUCH_DEUTERIUM_L = clamp(0.001D, 10.0D,
+			MINING_LASER_SILKTOUCH_DEUTERIUM_L = clamp(0.0D, 10.0D,
 					config.get("mining_laser", "silktouch_deuterium_l", MINING_LASER_SILKTOUCH_DEUTERIUM_L, "Deuterium cost per block when mining with silktouch (0 to disable)").getDouble(1.0D));
+			if (MINING_LASER_SILKTOUCH_DEUTERIUM_L < 0.001D) {
+				MINING_LASER_SILKTOUCH_DEUTERIUM_L = 0.0D;
+			}
 			MINING_LASER_FORTUNE_ENERGY_FACTOR = clamp(0.01D, 1000.0D,
 					config.get("mining_laser", "fortune_energy_factor", MINING_LASER_FORTUNE_ENERGY_FACTOR, "Energy cost multiplier per fortune level").getDouble(2.5D));
 		}
@@ -820,8 +819,8 @@ public class WarpDriveConfig {
 		if (isJABBAloaded) {
 			CompatJABBA.register();
 		}
-		boolean isMetallurgyloaded = Loader.isModLoaded("Metallurgy");
-		if (isMetallurgyloaded) {
+		boolean isMetallurgyLoaded = Loader.isModLoaded("Metallurgy");
+		if (isMetallurgyLoaded) {
 			CompatMetallurgy.register();
 		}
 		boolean isNaturaLoaded = Loader.isModLoaded("Natura");
