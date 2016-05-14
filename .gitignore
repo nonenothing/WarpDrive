@@ -16,3 +16,5 @@ eclipse/*
 *.idea/
 
 dependencies
+
+*.DS_Store
