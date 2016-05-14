@@ -285,7 +285,7 @@ public class JumpBlock {
 					}
 					return;
 				} else {
-					WarpDrive.logger.info(" deploy failed to create new tile entity at " + x + ", " + y + ", " + z + " blockId " + block + ":" + blockMeta);
+					WarpDrive.logger.info(" deploy failed to create new tile entity at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta);
 					WarpDrive.logger.info("NBT data was " + nbtToDeploy);
 				}
 			}
@@ -293,7 +293,7 @@ public class JumpBlock {
 			exception.printStackTrace();
 			String coordinates;
 			try {
-				coordinates = " at " + x + ", " + y + ", " + z + " blockId " + block + ":" + blockMeta;
+				coordinates = " at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta;
 			} catch (Exception dropMe) {
 				coordinates = " (unknown coordinates)";
 			}
@@ -307,21 +307,25 @@ public class JumpBlock {
 		if (tileEntity != null) {
 			Class<?> teClass = tileEntity.getClass();
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info("Tile at " + x + ", " + y + ", " + z + " is " + teClass + " derived from " + teClass.getSuperclass());
+				WarpDrive.logger.info("Tile at " + x + " " + y + " " + z + " is " + teClass + " derived from " + teClass.getSuperclass());
 			}
 			try {
-				if (teClass.getSuperclass().getName().contains("ic2.core.block")) {// IC2
+				String superClassName = teClass.getSuperclass().getName();
+				boolean isIC2 = superClassName.contains("ic2.core.block");
+				if (isIC2 || superClassName.contains("advsolar.common.tiles")) {// IC2
 					Method onUnloaded = teClass.getMethod("onUnloaded");
 					Method onLoaded = teClass.getMethod("onLoaded");
 					if (onUnloaded != null && onLoaded != null) {
 						onUnloaded.invoke(tileEntity);
 						onLoaded.invoke(tileEntity);
 					} else {
-						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "' at " + x + ", " + y + ", " + z + ". Please report this issue!");
+						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "' at " + x + " " + y + " " + z + ". Please report this issue!");
 					}
 					
 					tileEntity.updateContainingBlockInfo();
-					
+				}
+				
+				if (isIC2) {// IC2
 					// required in SSP during same dimension jump to update client with rotation data
 					if (teClass.getName().equals("ic2.core.block.wiring.TileEntityCable")) {
 						NetworkHelper_updateTileEntityField(tileEntity, "color");
@@ -349,7 +353,7 @@ public class JumpBlock {
 						// WarpDrive.logger.info("Tile has no getNetworkedFields method");
 					} catch (NoClassDefFoundError exception) {
 						if (WarpDriveConfig.LOGGING_JUMP) {
-							WarpDrive.logger.info("TileEntity " + teClass.getName() + " at " + x + ", " + y + ", " + z + " is missing a class definition");
+							WarpDrive.logger.info("TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z + " is missing a class definition");
 							if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 								exception.printStackTrace();
 							}
@@ -357,7 +361,7 @@ public class JumpBlock {
 					}
 				}
 			} catch (Exception exception) {
-				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName() + " at " + x + ", " + y + ", " + z);
+				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z);
 				exception.printStackTrace();
 			}
 		}
