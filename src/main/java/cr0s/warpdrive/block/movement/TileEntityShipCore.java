@@ -541,7 +541,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 		
 		updateShipMassAndVolume();
-		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && worldObj.provider.dimensionId == 0) {// FIXME: need to support any planets and landing movement
+		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && isOnPlanet()) {
 			reason.append("Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
 			return false;
 		}

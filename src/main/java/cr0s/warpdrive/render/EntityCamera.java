@@ -84,7 +84,7 @@ public final class EntityCamera extends EntityLivingBase {
 			ClientCameraHandler.overlayLoggingMessage = "Mouse " + Mouse.isButtonDown(0) + " " + Mouse.isButtonDown(1) + " " + Mouse.isButtonDown(2) + " " + Mouse.isButtonDown(3) + "\nBackspace "
 					+ Keyboard.isKeyDown(Keyboard.KEY_BACKSLASH) + " Space " + Keyboard.isKeyDown(Keyboard.KEY_SPACE) + " Shift " + "";
 			// Perform zoom
-			if (Mouse.isButtonDown(0)) {// FIXME merge: main is using right click with Mouse.isButtonDown(1), branch is using left click
+			if (Mouse.isButtonDown(0)) {
 				zoomWaitTicks++;
 				if (zoomWaitTicks >= 2) {
 					zoomWaitTicks = 0;
@@ -108,7 +108,7 @@ public final class EntityCamera extends EntityLivingBase {
 				}
 			}
 			
-			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {// FIXME merge: main is using left click with Mouse.isButtonDown(0), branch is using space bar
+			if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 				fireWaitTicks++;
 				if (fireWaitTicks >= 2) {
 					fireWaitTicks = 0;

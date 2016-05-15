@@ -376,7 +376,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	
-	// WarpDrive overrides for Thermal Expansion FIXME: are we really supposed to do this?
+	// WarpDrive overrides for Thermal Expansion
 	@Optional.Method(modid = "CoFHCore")
 	private void outputEnergy(ForgeDirection from, IEnergyReceiver energyReceiver) {
 		if (energyReceiver == null || worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ) == null) {

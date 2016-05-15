@@ -88,7 +88,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		boolean isOnEarth = isOnEarth();
+		boolean isOnEarth = isOnPlanet();
 		
 		if (currentState == STATE_WARMUP) {
 			delayTicksWarmup++;

@@ -21,7 +21,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	public void updatedNeighbours() {
 	}
 	
-	protected boolean isOnEarth() {
+	protected boolean isOnPlanet() {
 		return worldObj.provider.dimensionId == 0;
 	}
 	
