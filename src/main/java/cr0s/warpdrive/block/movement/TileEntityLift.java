@@ -112,11 +112,9 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	
 	private boolean isPassableBlock(int yPosition) {
 		Block block = worldObj.getBlock(xCoord, yPosition, zCoord);
-		//TODO: Make configurable or less specific
 		return block.isAssociatedBlock(Blocks.air)
-			|| block.isAssociatedBlock(Blocks.wall_sign)
-			|| block.isAssociatedBlock(Blocks.standing_sign)
-			|| worldObj.isAirBlock(xCoord, yPosition, zCoord);
+			|| worldObj.isAirBlock(xCoord, yPosition, zCoord)
+			|| block.getCollisionBoundingBoxFromPool(worldObj, xCoord, yPosition, zCoord) == null;
 	}
 	
 	private void liftEntity() {
