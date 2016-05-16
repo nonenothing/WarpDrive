@@ -184,6 +184,9 @@ public class WarpDriveConfig {
 	public static int SS_ENERGY_PER_BLOCK_SCAN = 100; // eU per block of ship volume (including air)
 	public static int SS_ENERGY_PER_BLOCK_DEPLOY = 5000;
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
+	public static int SS_SEARCH_INTERVAL_TICKS = 20;
+	public static int SS_SCAN_BLOCKS_PER_SECOND = 10;
+	public static int SS_DEPLOY_BLOCKS_PER_SECOND = 10;
 	
 	// Laser medium
 	public static int LASER_MEDIUM_MAX_ENERGY_STORED = 100000;
