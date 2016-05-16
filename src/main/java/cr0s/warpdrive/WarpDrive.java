@@ -499,7 +499,6 @@ public class WarpDrive implements LoadingCallback {
 	
 	@EventHandler
 	public void onFMLServerStarting(FMLServerStartingEvent event) {
-		WarpDrive.logger.info("onFMLServerStarting");
 		event.registerServerCommand(new CommandGenerate());
 		event.registerServerCommand(new CommandSpace());
 		event.registerServerCommand(new CommandInvisible());

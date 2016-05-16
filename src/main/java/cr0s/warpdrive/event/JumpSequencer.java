@@ -1024,8 +1024,8 @@ public class JumpSequencer extends AbstractSequencer {
 			// compute explosion strength with a jitter, at least 1 TNT
 			float strength = Math.max(4.0F, collisionStrength / nbExplosions - 2.0F + 2.0F * sourceWorld.rand.nextFloat());
 			
-			(atTarget ? targetWorld : sourceWorld).newExplosion((Entity) null, current.x, current.y, current.z, strength, atTarget, atTarget);
-			WarpDrive.logger.info("Ship collision caused explosion at " + current.x + ", " + current.y + ", " + current.z + " with strength " + strength);
+			(atTarget ? targetWorld : sourceWorld).newExplosion(null, current.x, current.y, current.z, strength, atTarget, atTarget);
+			WarpDrive.logger.info("Ship collision caused explosion at " + current.x + " " + current.y + " " + current.z + " with strength " + strength);
 		}
 	}
 	

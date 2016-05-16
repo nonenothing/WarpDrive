@@ -64,24 +64,22 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				mode = MODE_UP;
 			}
 			
-			isEnabled = computerEnabled && isPassableBlock(yCoord + 1)
-					&& isPassableBlock(yCoord + 2)
-					&& isPassableBlock(yCoord - 1)
-					&& isPassableBlock(yCoord - 2);
+			isEnabled = computerEnabled
+				     && isPassableBlock(yCoord + 1)
+				     && isPassableBlock(yCoord + 2)
+				     && isPassableBlock(yCoord - 1)
+				     && isPassableBlock(yCoord - 2);
 			
-			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY
-					|| !isEnabled) {
+			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
 				mode = MODE_INACTIVE;
 				if (getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord,
-							0, 2); // disabled
+					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // disabled
 				}
 				return;
 			}
 			
 			if (getBlockMetadata() != mode) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord,
-						mode, 2); // current mode
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, mode, 2); // current mode
 			}
 			
 			// Launch a beam: search non-air blocks under lift
