@@ -1,17 +1,19 @@
 package cr0s.warpdrive.block.hull;
 
+import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IHullBlock;
+import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-public class BlockHullGlass extends BlockColored implements IHullBlock {
+public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 	private int tier;
 	
 	public BlockHullGlass(final int tier) {
@@ -61,12 +63,22 @@ public class BlockHullGlass extends BlockColored implements IHullBlock {
 	}
 	
 	@Override
-	public void downgrade(World world, int x, int y, int z) {
+	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+		// TODO: adjust hardness to damage type/color
+		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+	}
+	
+	@Override
+	public int applyDamage(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+		if (damageLevel <= 0) {
+			return 0;
+		}
 		if (tier == 1) {
 			world.setBlockToAir(x, y, z);
 		} else {
 			int metadata = world.getBlockMetadata(x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockHulls_glass[tier - 2], metadata, 2);
 		}
+		return 0;
 	}
 }

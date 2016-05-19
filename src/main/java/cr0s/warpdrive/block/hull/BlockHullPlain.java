@@ -4,6 +4,7 @@ import java.util.List;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -12,13 +13,14 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IHullBlock;
+import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-public class BlockHullPlain extends Block implements IHullBlock {
+public class BlockHullPlain extends Block implements IDamageReceiver {
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
 	private int tier;
@@ -77,13 +79,24 @@ public class BlockHullPlain extends Block implements IHullBlock {
 		return MapColor.getMapColorForBlockColored(metadata);
 	}
 	
+	
 	@Override
-	public void downgrade(World world, int x, int y, int z) {
-		int metadata = world.getBlockMetadata(x, y, z);
+	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+		// TODO: adjust hardness to damage type/color
+		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+	}
+	
+	@Override
+	public int applyDamage(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+		if (damageLevel <= 0) {
+			return 0;
+		}
 		if (tier == 1) {
 			world.setBlockToAir(x, y, z);
 		} else {
+			int metadata = world.getBlockMetadata(x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2], metadata, 2);
 		}
+		return 0;
 	}
 }

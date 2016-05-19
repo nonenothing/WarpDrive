@@ -1,7 +1,15 @@
 death.attack.warpdrive.asphyxia=%s died from asphyxia
 death.attack.warpdrive.asphyxia.player=%1$s was killed by %2$s using asphyxia
+death.attack.warpdrive.cold=%s died from cold
+death.attack.warpdrive.cold.player=%1$s was frozen to death by %2$s 
+death.attack.warpdrive.laser=%s died from crossing the beam
+death.attack.warpdrive.laser.player=%1$s was laserified by %2$s
+death.attack.warpdrive.shock=%s was electrocuted
+death.attack.warpdrive.shock.player=%1$s was electrocuted by %2$s
 death.attack.warpdrive.teleportation=%s didn't survive from rematerialization
 death.attack.warpdrive.teleportation.player=%1$s was teleporkilled by %2$s
+death.attack.warpdrive.warm=%s died from excessive temperature
+death.attack.warpdrive.warm.player=%1$s was cooked by %2$s
 
 item.warpdrive.crafting.Malformed.name=Bad Item
 item.warpdrive.crafting.EmeraldCrystal.name=Emerald Tuned Crystal

@@ -181,7 +181,11 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemAirCanisterFull itemAirCanisterFull;
 	
 	public static DamageAsphyxia damageAsphyxia;
+	public static DamageCold damageCold;
+	public static DamageLaser damageLaser;
+	public static DamageShock damageShock;
 	public static DamageTeleportation damageTeleportation;
+	public static DamageWarm damageWarm;
 	
 	public static BiomeGenBase spaceBiome;
 	public SpaceWorldGenerator spaceWorldGenerator;
@@ -431,7 +435,11 @@ public class WarpDrive implements LoadingCallback {
 		
 		
 		damageAsphyxia = new DamageAsphyxia();
+		damageCold = new DamageCold();
+		damageLaser = new DamageLaser();
+		damageShock = new DamageShock();
 		damageTeleportation = new DamageTeleportation();
+		damageWarm = new DamageWarm();
 		
 		proxy.registerEntities();
 		

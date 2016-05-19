@@ -23,7 +23,7 @@ import net.minecraft.util.Vec3;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.api.IHullBlock;
+import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.config.Dictionary;
@@ -35,8 +35,6 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFrequency {
-	private static final int BEAM_FREQUENCY_SCANNING = 1420;
-	private static final int BEAM_FREQUENCY_MAX = 65000;
 	
 	private int legacyVideoChannel = -1;
 	private boolean legacyCheck = !(this instanceof TileEntityLaserCamera);
@@ -51,12 +49,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	private int delayTicks = 0;
 	private int energyFromOtherBeams = 0;
 	
-	private static enum ScanResultType {
+	private enum ScanResultType {
 		IDLE("IDLE"), BLOCK("BLOCK"), NONE("NONE");
 		
 		public final String name;
 		
-		private ScanResultType(String name) {
+		ScanResultType(String name) {
 			this.name = name;
 		}
 	}
@@ -316,6 +314,10 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					WarpDrive.logger.error("Unable to access block hardness value of " + block);
 				}
 			}
+			if (block instanceof IDamageReceiver) {
+				hardness = ((IDamageReceiver)block).getBlockHardness(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
+			}				
 			if (WarpDriveConfig.LOGGING_WEAPON) {
 				WarpDrive.logger.info("Block collision found at " + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ
 						+ " with block " + block + " of hardness " + hardness);
@@ -330,18 +332,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				break;
 			}
 			
-			// explode on unbreakable blocks
-			if (hardness < 0.0F) {
-				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
-						WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH); 
-				if (WarpDriveConfig.LOGGING_WEAPON) {
-					WarpDrive.logger.info("Explosion triggered with strength " + strength);
-				}
-				worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, strength, true, true);
-				vHitPoint = new Vector3(blockHit.hitVec);
-				break;
-			}
-			
 			// Boost a laser if it uses same beam frequency
 			if (block.isAssociatedBlock(WarpDrive.blockLaser) || block.isAssociatedBlock(WarpDrive.blockLaserCamera)) {
 				TileEntityLaser tileEntityLaser = (TileEntityLaser) worldObj.getTileEntity(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
@@ -350,6 +340,18 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					vHitPoint = new Vector3(blockHit.hitVec);
 					break;
 				}
+			}
+			
+			// explode on unbreakable blocks
+			if (hardness < 0.0F) {
+				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
+					WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH);
+				if (WarpDriveConfig.LOGGING_WEAPON) {
+					WarpDrive.logger.info("Explosion triggered with strength " + strength);
+				}
+				worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, strength, true, true);
+				vHitPoint = new Vector3(blockHit.hitVec);
+				break;
 			}
 			
 			// Compute parameters
@@ -383,25 +385,28 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				break;
 			}
 			
-			// apply hull effect
-			if (block instanceof IHullBlock) {
-				((IHullBlock)block).downgrade(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ);
-				// worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, 4, true, true);
-				Vector3 origin = new Vector3(
-						blockHit.blockX -0.3D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
-						blockHit.blockY -0.3D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
-						blockHit.blockZ -0.3D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
-				Vector3 direction = new Vector3(
-						-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
-						-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
-						-0.2D * vDirection.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
-				PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, 96);
-				WarpDrive.logger.info("Effect: block " + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ
-						+ " effect at " + origin + " towards " + direction);
+			// add 'explode' effect with the beam color
+			// worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, 4, true, true);
+			Vector3 origin = new Vector3(
+				blockHit.blockX -0.3D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+				blockHit.blockY -0.3D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+				blockHit.blockZ -0.3D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
+			Vector3 direction = new Vector3(
+				-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
+				-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
+				-0.2D * vDirection.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
+			PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, 96);
+			
+			// apply custom damages
+			if (block instanceof IDamageReceiver) {
+				energy = ((IDamageReceiver)block).applyDamage(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
-					WarpDrive.logger.info("Hull absorbed remaining energy of " + energy);
+					WarpDrive.logger.info("IDamageReceiver damage applied, remaining energy is " + energy);
 				}
-				break;
+				if (energy <= 0) {
+					break;
+				}
 			}
 			
 			if (hardness >= WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD) {
