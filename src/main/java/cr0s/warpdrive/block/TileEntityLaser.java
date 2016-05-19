@@ -546,7 +546,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			worldObj.playSoundEffect(xCoord + 0.5f, yCoord - 0.5f, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
 		}
 	}
-
 	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {

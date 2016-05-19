@@ -11,7 +11,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
 public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
-	static IIcon[] iconBuffer = new IIcon[3];
+	static IIcon[] icons;
 	
 	public BlockIC2reactorLaserMonitor() {
 		super(Material.iron);
@@ -25,9 +25,10 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorNotConnected");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedNotPowered");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedPowered");
+		icons = new IIcon[3];
+		icons[0] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorNotConnected");
+		icons[1] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedNotPowered");
+		icons[2] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedPowered");
 	}
 	
 	@Override
@@ -35,26 +36,26 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		int meta = world.getBlockMetadata(x, y, z);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity == null || !(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
-			return iconBuffer[0];
+			return icons[0];
 		}
 		
 		if (((TileEntityIC2reactorLaserMonitor)tileEntity).isSideActive(side)) {
 			if ((meta & 8) == 0) {
-				return iconBuffer[1];
+				return icons[1];
 			} else {
-				return iconBuffer[2];
+				return icons[2];
 			}
 		}
 		
-		return iconBuffer[0];
+		return icons[0];
 	}
 	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 4) {
-			return iconBuffer[1];
+			return icons[1];
 		} else {
-			return iconBuffer[0];
+			return icons[0];
 		}
 	}
 	
