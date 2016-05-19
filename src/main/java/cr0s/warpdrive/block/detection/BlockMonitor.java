@@ -2,15 +2,13 @@ package cr0s.warpdrive.block.detection;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.CameraRegistryItem;
@@ -22,7 +20,14 @@ public class BlockMonitor extends BlockAbstractContainer {
 	
 	public BlockMonitor() {
 		super(Material.iron);
+		isRotating = true;
 		setBlockName("warpdrive.detection.Monitor");
+	}
+	
+	@Override
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
+		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
 	}
 	
 	@Override
@@ -34,50 +39,6 @@ public class BlockMonitor extends BlockAbstractContainer {
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return side == 3 ? iconFront : iconSide;
-	}
-	
-	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
-		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
-	}
-	
-	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemstack) {
-		int metadata;
-		if (entityLiving != null) {
-			if (entityLiving.rotationPitch > 65) {
-				metadata = 1;
-			} else if (entityLiving.rotationPitch < -65) {
-				metadata = 0;
-			} else {
-				int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
-				switch (direction) {
-				case 0:
-					metadata = 2;
-					break;
-				case 1: 
-					metadata = 5;
-					break;
-				case 2:
-					metadata = 3;
-					break;
-				case 3: 
-					metadata = 4;
-					break;
-				default:
-					metadata = 2;
-					break;
-				}
-			}
-			world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
-		}
-	}
-	
-	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-		world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
-		return true;
 	}
 	
 	@Override
