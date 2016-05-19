@@ -22,7 +22,7 @@ import cr0s.warpdrive.data.CloakedArea;
 import cr0s.warpdrive.data.Vector3;
 
 public class PacketHandler {
-	public static final SimpleNetworkWrapper simpleNetworkManager = NetworkRegistry.INSTANCE.newSimpleChannel(WarpDrive.MODID);
+	private static final SimpleNetworkWrapper simpleNetworkManager = NetworkRegistry.INSTANCE.newSimpleChannel(WarpDrive.MODID);
 	private static Method EntityTrackerEntry_getPacketForThisEntity;
 	
 	public static void init() {
@@ -47,11 +47,11 @@ public class PacketHandler {
 	public static void sendBeamPacket(World worldObj, Vector3 source, Vector3 target, float red, float green, float blue, int age, int energy, int radius) {
 		assert(!worldObj.isRemote);
 		
-		MessageBeamEffect beamMessage = new MessageBeamEffect(source, target, red, green, blue, age, energy);
+		MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		
 		// small beam are sent relative to beam center
 		if (source.distanceTo_square(target) < 3600 /* 60 * 60 */) {
-			simpleNetworkManager.sendToAllAround(beamMessage, new TargetPoint(
+			simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
 					worldObj.provider.dimensionId, (source.x + target.x) / 2, (source.y + target.y) / 2, (source.z + target.z) / 2, radius));
 		} else {// large beam are sent from both ends
 			if (true) {
@@ -64,14 +64,14 @@ public class PacketHandler {
 					if (entityplayermp.dimension == dimensionId) {
 						Vector3 player = new Vector3(entityplayermp);
 						if (source.distanceTo_square(player) < radius_square || target.distanceTo_square(player) < radius_square) {
-							simpleNetworkManager.sendTo(beamMessage, entityplayermp);
+							simpleNetworkManager.sendTo(messageBeamEffect, entityplayermp);
 						}
 					}
 				}
 			} else {
-				simpleNetworkManager.sendToAllAround(beamMessage, new TargetPoint(
+				simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
 						worldObj.provider.dimensionId, source.x, source.y, source.z, radius));
-				simpleNetworkManager.sendToAllAround(beamMessage, new TargetPoint(
+				simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
 						worldObj.provider.dimensionId, target.x, target.y, target.z, radius));
 			}
 		}
@@ -80,32 +80,36 @@ public class PacketHandler {
 	public static void sendBeamPacketToPlayersInArea(World worldObj, Vector3 source, Vector3 target, float red, float green, float blue, int age, int energy, AxisAlignedBB aabb) {
 		assert(!worldObj.isRemote);
 		
-		MessageBeamEffect beamMessage = new MessageBeamEffect(source, target, red, green, blue, age, energy);
+		MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		// Send packet to all players within cloaked area
 		List<Entity> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
 		for (Entity entity : list) {
 			if (entity != null && entity instanceof EntityPlayerMP) {
-				PacketHandler.simpleNetworkManager.sendTo(beamMessage, (EntityPlayerMP) entity);
+				PacketHandler.simpleNetworkManager.sendTo(messageBeamEffect, (EntityPlayerMP) entity);
 			}
 		}
 	}
 	
-
 	// Forced particle effect sent to client side
 	public static void sendSpawnParticlePacket(World worldObj, final String type, Vector3 origin, Vector3 direction, float red, float green, float blue, int radius) {
 		assert(!worldObj.isRemote);
 		
-		MessageSpawnParticle beamSpawnParticle = new MessageSpawnParticle(type, origin, direction, red, green, blue);
+		MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(type, origin, direction, red, green, blue);
 		
 		// small beam are sent relative to beam center
-		simpleNetworkManager.sendToAllAround(beamSpawnParticle, new TargetPoint(
+		simpleNetworkManager.sendToAllAround(messageSpawnParticle, new TargetPoint(
 				worldObj.provider.dimensionId, origin.x, origin.y, origin.z, radius));
+		
+		if (WarpDriveConfig.LOGGING_EFFECTS) {
+			WarpDrive.logger.info("Sent particle effect '" + type + "' from " + origin + " toward " + direction
+				+ " as RGB " + red + " " + green + " " + blue);
+		}
 	}
 	
 	// Monitor/Laser/Camera updating its video channel to client side
 	public static void sendVideoChannelPacket(int dimensionId, int xCoord, int yCoord, int zCoord, int videoChannel) {
-		MessageVideoChannel videoChannelMessage = new MessageVideoChannel(xCoord, yCoord, zCoord, videoChannel);
-		simpleNetworkManager.sendToAllAround(videoChannelMessage, new TargetPoint(dimensionId, xCoord, yCoord, zCoord, 100));
+		MessageVideoChannel messageVideoChannel = new MessageVideoChannel(xCoord, yCoord, zCoord, videoChannel);
+		simpleNetworkManager.sendToAllAround(messageVideoChannel, new TargetPoint(dimensionId, xCoord, yCoord, zCoord, 100));
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 			WarpDrive.logger.info("Sent video channel packet (" + xCoord + " " + yCoord + " " + zCoord + ") video channel " + videoChannel);
 		}
@@ -113,8 +117,8 @@ public class PacketHandler {
 	
 	// LaserCamera shooting at target (client -> server)
 	public static void sendLaserTargetingPacket(int x, int y, int z, float yaw, float pitch) {
-		MessageTargeting targetingMessage = new MessageTargeting(x, y, z, yaw, pitch);
-		simpleNetworkManager.sendToServer(targetingMessage);
+		MessageTargeting messageTargeting = new MessageTargeting(x, y, z, yaw, pitch);
+		simpleNetworkManager.sendToServer(messageTargeting);
 		if (WarpDriveConfig.LOGGING_TARGETING) {
 			WarpDrive.logger.info("Sent targeting packet (" + x + " " + y + " " + z + ") yaw " + yaw + " pitch " + pitch);
 		}
@@ -122,8 +126,8 @@ public class PacketHandler {
 	
 	// Sending cloaking area definition (server -> client)
 	public static void sendCloakPacket(EntityPlayer player, CloakedArea area, final boolean decloak) {
-		MessageCloak cloakMessage = new MessageCloak(area, decloak);
-		simpleNetworkManager.sendTo(cloakMessage, (EntityPlayerMP) player);
+		MessageCloak messageCloak = new MessageCloak(area, decloak);
+		simpleNetworkManager.sendTo(messageCloak, (EntityPlayerMP) player);
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
 			WarpDrive.logger.info("Sent cloak packet (area " + area + " decloak " + decloak + ")");
 		}

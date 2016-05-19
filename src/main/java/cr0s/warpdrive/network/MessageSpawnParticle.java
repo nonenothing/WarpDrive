@@ -92,8 +92,6 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			}
 			FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
 		}
-		WarpDrive.logger.info("Executing particle effect '" + type + "' from " + origin + " toward " + direction
-				+ " as RGB " + red + " " + green + " " + blue);
 	}
 	
 	@Override
