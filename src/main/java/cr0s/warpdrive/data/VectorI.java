@@ -246,6 +246,9 @@ public class VectorI implements Cloneable {
 		if (object instanceof VectorI) {
 			VectorI vector = (VectorI) object;
 			return (x == vector.x) && (y == vector.y) && (z == vector.z);
+		} else if (object instanceof TileEntity) {
+			TileEntity tileEntity = (TileEntity) object;
+			return (x == tileEntity.xCoord) && (y == tileEntity.yCoord) && (z == tileEntity.zCoord);
 		}
 		
 		return false;
@@ -324,5 +327,36 @@ public class VectorI implements Cloneable {
 		y *= amount;
 		z *= amount;
 		return this;
+	}
+	
+	public void rotateByAngle(final double yaw, final double pitch) {
+		rotateByAngle(yaw, pitch, 0.0D);
+	}
+	
+	public void rotateByAngle(final double yaw, final double pitch, final double roll) {
+		double yawRadians = Math.toRadians(yaw);
+		double yawCosinus = Math.cos(yawRadians);
+		double yawSinus = Math.sin(yawRadians);
+		double pitchRadians = Math.toRadians(pitch);
+		double pitchCosinus = Math.cos(pitchRadians);
+		double pitchSinus = Math.sin(pitchRadians);
+		double rollRadians = Math.toRadians(roll);
+		double rollCosinus = Math.cos(rollRadians);
+		double rollSinus = Math.sin(rollRadians);
+		
+		double oldX = x;
+		double oldY = y;
+		double oldZ = z;
+		
+		x = (int)Math.round(( oldX * yawCosinus * pitchCosinus
+			+ oldZ * (yawCosinus * pitchSinus * rollSinus - yawSinus * rollCosinus)
+			+ oldY * (yawCosinus * pitchSinus * rollCosinus + yawSinus * rollSinus)));
+		
+		z = (int)Math.round(( oldX * yawSinus * pitchCosinus
+			+ oldZ * (yawSinus * pitchSinus * rollSinus + yawCosinus * rollCosinus)
+			+ oldY * (yawSinus * pitchSinus * rollCosinus - yawCosinus * rollSinus)));
+		
+		y = (int)Math.round((-oldX * pitchSinus + oldZ * pitchCosinus * rollSinus
+			+ oldY * pitchCosinus * rollCosinus));
 	}
 }
