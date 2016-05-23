@@ -72,8 +72,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					int transfer;
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, stack.getMaxStackSize());
-						ItemStack dropItemStack = copyWithSize(stack, transfer);
-						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, dropItemStack);
+						ItemStack itemStackDrop = copyWithSize(stack, transfer);
+						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, itemStackDrop);
 						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
 					}
