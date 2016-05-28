@@ -63,7 +63,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		}
 	}
 	
-	public String getVideoChannelStatus() {
+	private String getVideoChannelStatus() {
 		if (videoChannel < 0) {
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
@@ -108,7 +108,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 10, tagCompound);
 	}
 	
 	@Override

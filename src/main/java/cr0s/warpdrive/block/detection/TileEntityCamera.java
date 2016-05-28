@@ -79,7 +79,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		}
 	}
 	
-	public String getVideoChannelStatus() {
+	private String getVideoChannelStatus() {
 		if (videoChannel < 0) {
 			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
 					videoChannel );
@@ -148,7 +148,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 10, tagCompound);
 	}
 	
 	@Override
