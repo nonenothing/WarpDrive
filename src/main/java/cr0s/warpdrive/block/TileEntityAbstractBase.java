@@ -16,6 +16,20 @@ import net.minecraftforge.common.util.ForgeDirection;
 import java.util.*;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector {
+	private boolean isFirstTick = true;
+	
+	@Override
+	public void updateEntity() {
+		super.updateEntity();
+		if (isFirstTick) {
+			isFirstTick = false;
+			onFirstUpdateTick();
+		}
+	}
+	
+	protected void onFirstUpdateTick() {
+		// No operation
+	}
 	
 	@Override
 	public void updatedNeighbours() {
@@ -207,10 +221,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			 return ((Boolean) object);
 		}
 		String string = object.toString();
-		if (string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes")) {
-			return true;
-		}
-		return false;
+		return string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes");
 	}
 	
 	protected static int clamp(final int min, final int max, final int value) {
