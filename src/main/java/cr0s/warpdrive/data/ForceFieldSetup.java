@@ -115,7 +115,7 @@ public class ForceFieldSetup extends GlobalPosition {
 			}
 		}
 		
-		hasFusion = upgrades.containsKey(EnumForceFieldUpgrade.FUSION);
+		hasFusion = upgrades.containsKey(EnumForceFieldUpgrade.FUSION.unlocalizedName);
 	}
 	
 	@Override
@@ -133,6 +133,6 @@ public class ForceFieldSetup extends GlobalPosition {
 	}
 	
 	public int getProjectionSpeed() {
-		return 1; // TODO
+		return 100; // TODO
 	}
 }
