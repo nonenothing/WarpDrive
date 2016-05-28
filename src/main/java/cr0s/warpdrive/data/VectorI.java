@@ -107,16 +107,12 @@ public class VectorI implements Cloneable {
 			return null;
 		}
 		if (world instanceof WorldServer) {
-			boolean isLoaded = false;
+			boolean isLoaded;
 			if (((WorldServer)world).getChunkProvider() instanceof ChunkProviderServer) {
 				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer)world).getChunkProvider();
 				try {
-					Chunk chunk = (Chunk)chunkProviderServer.loadedChunkHashMap.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
-					if (chunk == null) {
-						isLoaded = false;
-					} else {
-						isLoaded = chunk.isChunkLoaded;
-					}
+					Chunk chunk = (Chunk) chunkProviderServer.loadedChunkHashMap.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+					isLoaded = chunk != null && chunk.isChunkLoaded;
 				} catch (NoSuchFieldError exception) {
 					isLoaded = chunkProviderServer.chunkExists(x >> 4, z >> 4);
 				}
@@ -239,6 +235,10 @@ public class VectorI implements Cloneable {
 	@Override
 	public int hashCode() {
 		return (x + " " + y + " " + z).hashCode();
+	}
+	
+	public boolean equals(final TileEntity tileEntity) {
+		return (x == tileEntity.xCoord) && (y == tileEntity.yCoord) && (z == tileEntity.zCoord);
 	}
 	
 	@Override

@@ -307,12 +307,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		return active(argumentsOCtoCC(arguments));
 	}
 	
-	public Object[] active(Object[] arguments) throws Exception {
+	private Object[] active(Object[] arguments) throws Exception {
 		if (arguments.length == 1) {
 			boolean activate;
 			try {
 				activate = toBool(arguments[0]);
-			} catch (Exception e) {
+			} catch (Exception exception) {
 				throw new Exception("Function expects a boolean value");
 			}
 			if (active && !activate) {
@@ -342,7 +342,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		if (arguments.length > 0) {
 			try {
 				doRelease = toBool(arguments[0]);
-			} catch (Exception e) {
+			} catch (Exception exception) {
 				throw new Exception("Function expects a boolean value");
 			}
 			
@@ -363,7 +363,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		int rate;
 		try {
 			rate = toInt(arguments[0]);
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			throw new Exception("Function expects an integer value");
 		}
 		
@@ -389,7 +389,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		int above;
 		try {
 			above = toInt(arguments[0]);
-		} catch (Exception e) {
+		} catch (Exception exception) {
 			throw new Exception("Function expects an integer value");
 		}
 		
@@ -482,10 +482,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public boolean canOutputEnergy(ForgeDirection from) {
-		if (from.equals(ForgeDirection.UP) || from.equals(ForgeDirection.DOWN)) {
-			return true;
-		}
-		return false;
+		return from.equals(ForgeDirection.UP) || from.equals(ForgeDirection.DOWN);
 	}
 	
 	@Override

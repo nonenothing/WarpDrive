@@ -648,13 +648,13 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				return emitBeam(arguments);
 
 			case "position":
-				return new Integer[]{xCoord, yCoord, zCoord};
+				return new Integer[]{ xCoord, yCoord, zCoord };
 
 			case "beamFrequency":
 				if (arguments.length == 1) {
 					setBeamFrequency(toInt(arguments[0]));
 				}
-				return new Integer[]{beamFrequency};
+				return new Integer[]{ beamFrequency };
 
 			case "getScanResult":
 				return getScanResult();
