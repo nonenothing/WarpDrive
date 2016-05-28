@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
+import cr0s.warpdrive.block.forcefield.*;
+import cr0s.warpdrive.item.*;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
@@ -40,6 +42,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+
 import cr0s.warpdrive.block.BlockAirGenerator;
 import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
@@ -110,14 +113,9 @@ import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
-import cr0s.warpdrive.item.ItemAirCanisterFull;
-import cr0s.warpdrive.item.ItemComponent;
-import cr0s.warpdrive.item.ItemHelmet;
-import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
-import cr0s.warpdrive.item.ItemUpgrade;
-import cr0s.warpdrive.item.ItemTuningFork;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
+import cr0s.warpdrive.render.RenderBlockForceField;
 import cr0s.warpdrive.render.RenderBlockStandard;
 import cr0s.warpdrive.render.RenderOverlayCamera;
 import cr0s.warpdrive.world.BiomeSpace;
@@ -165,6 +163,8 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockHighlyAdvancedMachine;
 	public static Block blockTransportBeacon;
 	public static Block blockChunkLoader;
+	public static Block blockForceField;
+	public static Block blockProjector;
 	public static BlockDecorative blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
@@ -175,6 +175,8 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemComponent itemComponent;
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningRod;
+	public static ItemForceFieldShape itemForceFieldShape;
+	public static BlockForceFieldUpgrade blockForceFieldUpgrade;
 	
 	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
 	public static ItemHelmet itemHelmet;
@@ -188,8 +190,10 @@ public class WarpDrive implements LoadingCallback {
 	public static DamageWarm damageWarm;
 	
 	public static BiomeGenBase spaceBiome;
-	public SpaceWorldGenerator spaceWorldGenerator;
-	public HyperSpaceWorldGenerator hyperSpaceWorldGenerator;
+	@SuppressWarnings("FieldCanBeLocal")
+	private SpaceWorldGenerator spaceWorldGenerator;
+	@SuppressWarnings("FieldCanBeLocal")
+	private HyperSpaceWorldGenerator hyperSpaceWorldGenerator;
 	
 	public static Field fieldBlockHardness = null;
 	
@@ -206,7 +210,8 @@ public class WarpDrive implements LoadingCallback {
 	public static CloakManager cloaks;
 	public static CamerasRegistry cameras;
 	
-	public static WarpDrivePeripheralHandler peripheralHandler = null;
+	@SuppressWarnings("FieldCanBeLocal")
+	private static WarpDrivePeripheralHandler peripheralHandler = null;
 	
 	public static Logger logger;
 	
@@ -223,6 +228,9 @@ public class WarpDrive implements LoadingCallback {
 			
 			RenderBlockStandard.renderId = RenderingRegistry.getNextAvailableRenderId();
 			RenderingRegistry.registerBlockHandler(RenderBlockStandard.instance);
+			
+			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
 		}
 	}
 	
@@ -368,6 +376,7 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerBlock(blockIC2reactorLaserMonitor, "blockIC2reactorLaserMonitor");
 			GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, MODID + ":blockIC2reactorLaserMonitor");
 		}
+		
 		// TRANSPORT BEACON
 		blockTransportBeacon = new BlockTransportBeacon();
 		
@@ -391,6 +400,29 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockChunkLoader, "blockChunkLoader");
 		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, MODID + ":blockChunkLoader");
 		
+		for(byte tier = 1; tier <= 3; tier++) {
+			// FORCE FIELD
+			blockForceField = new BlockForceField(tier);
+			GameRegistry.registerBlock(blockForceField, "blockForceField" + tier);
+			GameRegistry.registerTileEntity(TileEntityForceField.class, MODID + ":blockForceField" + tier);
+			
+			// FORCE FIELD PROJECTOR
+			blockProjector = new BlockProjector(tier);
+			GameRegistry.registerBlock(blockProjector, "blockProjector" + tier);
+			GameRegistry.registerTileEntity(TileEntityProjector.class, MODID + ":blockProjector" + tier);
+/*	TODO		
+			// FORCE FIELD CORE
+			blockForceFieldCore = new BlockForceFieldCore(tier);
+			GameRegistry.registerBlock(blockProjector, "blockForceFieldCore" + tier);
+			GameRegistry.registerTileEntity(TileEntityForceFieldCore.class, MODID + ":blockForceFieldCore" + tier);
+			*/
+		}
+		/* TODO
+		// SECURITY STATION
+		blockSecurityStation = new BlockSecurityStation();
+		GameRegistry.registerBlock(blockSecurityStation, "blockSecurityStation");
+		GameRegistry.registerTileEntity(TileEntitySecurityStation.class, MODID + ":blockSecurityStation");
+		*/
 		// DECORATIVE
 		blockDecorative = new BlockDecorative();
 		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
@@ -430,10 +462,19 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
 		}
 		
+		// TOOL ITEMS
 		itemTuningRod = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
 		
+		// FORCEFIELD UPGRADES
+		itemForceFieldShape = new ItemForceFieldShape();
+		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
 		
+		blockForceFieldUpgrade = new BlockForceFieldUpgrade();
+		GameRegistry.registerBlock(blockForceFieldUpgrade, ItemBlockForceFieldUpgrade.class, "blockForceFieldUpgrade");
+		GameRegistry.registerTileEntity(TileEntityForceFieldUpgrade.class, MODID + ":blockForceFieldUpgrade");
+		
+		// DAMAGE SOURCES
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
 		damageLaser = new DamageLaser();

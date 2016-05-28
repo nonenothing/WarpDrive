@@ -133,6 +133,8 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
 	public static boolean LOGGING_BREAK_PLACE = false;
+	public static boolean LOGGING_FORCEFIELD = false;
+	public static boolean LOGGING_FORCEFIELD_REGISTRY = false;
 	
 	// Planets
 	public static Planet[] PLANETS = null;
@@ -340,6 +342,7 @@ public class WarpDriveConfig {
 	public static void onFMLpreInitialization(final String stringConfigDirectory) {
 		// create mod folder
 		configDirectory = new File(stringConfigDirectory, WarpDrive.MODID);
+		//noinspection ResultOfMethodCallIgnored
 		configDirectory.mkdir();
 		if (!configDirectory.isDirectory()) {
 			throw new RuntimeException("Unable to create config directory " + configDirectory);
@@ -419,6 +422,8 @@ public class WarpDriveConfig {
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
 		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_FORCEFIELD = config.get("logging", "enable_forcefield_logs", LOGGING_FORCEFIELD, "Detailed forcefield logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_FORCEFIELD_REGISTRY = config.get("logging", "enable_forcefield_registry_logs", LOGGING_FORCEFIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
 		
 		// Planets
 		{
@@ -854,11 +859,8 @@ public class WarpDriveConfig {
 	
 	public static void onFMLPostInitialization() {
 		// unpack default XML files if none are defined
-		File[] files = configDirectory.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File file_notUsed, String name) {
-				return name.endsWith(".xml");
-			}
+		File[] files = configDirectory.listFiles((file_notUsed, name) -> {
+			return name.endsWith(".xml");
 		});
 		if (files.length == 0) {
 			for (String defaultXMLfilename : defaultXMLfilenames) {

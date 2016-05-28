@@ -32,9 +32,19 @@ item.warpdrive.crafting.BoneCharcoal.name=Bone Charcoal
 item.warpdrive.crafting.ActivatedCarbon.name=Activated Carbon
 item.warpdrive.crafting.LaserMediumEmpty.name=Laser Medium (empty)
 
-item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 Reactor Laser Focus
 item.warpdrive.armor.AirCanisterFull.name=Air Canister
 item.warpdrive.armor.Helmet.name=Warp Helmet
+
+item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 Reactor Laser Focus
+
+item.warpdrive.forcefield.shape.none.name=No shape
+item.warpdrive.forcefield.shape.sphere.name=Sphere shape
+item.warpdrive.forcefield.shape.cylinder_h.name=Horizontal cylinder shape
+item.warpdrive.forcefield.shape.cylinder_v.name=Vertical cylinder shape
+item.warpdrive.forcefield.shape.cube.name=Cube shape
+item.warpdrive.forcefield.shape.plane.name=Plane shape
+item.warpdrive.forcefield.shape.tube.name=Tube shape
+item.warpdrive.forcefield.shape.tunnel.name=Tunnel shape
 
 item.warpdrive.upgrade.Power.name=Power Upgrade
 item.warpdrive.upgrade.Speed.name=Speed Upgrade
@@ -95,6 +105,26 @@ tile.warpdrive.energy.EnanReactorCore.name=Enantiomorphic Reactor Core
 tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorphic Reactor Stabilization Laser
 tile.warpdrive.energy.EnergyBank.name=Anuic Energy Bank
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reactor Laser Monitor
+
+tile.warpdrive.forcefield.block.name=Forcefield
+tile.warpdrive.forcefield.projector1.name=Basic Forcefield Projector
+tile.warpdrive.forcefield.projector2.name=Advanced Forcefield Projector
+tile.warpdrive.forcefield.projector3.name=Superior Forcefield Projector
+
+tile.warpdrive.forcefield.upgrade.none.name=No upgrade
+tile.warpdrive.forcefield.upgrade.break.name=Block breaker upgrade
+tile.warpdrive.forcefield.upgrade.camouflage.name=Camouflage upgrade
+tile.warpdrive.forcefield.upgrade.cool.name=Cooling upgrade
+tile.warpdrive.forcefield.upgrade.fusion.name=Fusion upgrade
+tile.warpdrive.forcefield.upgrade.mute.name=Muting upgrade
+tile.warpdrive.forcefield.upgrade.range .name=Range  upgrade
+tile.warpdrive.forcefield.upgrade.rotation.name=Rotation upgrade
+tile.warpdrive.forcefield.upgrade.shock.name=Shock upgrade
+tile.warpdrive.forcefield.upgrade.speed.name=Speed upgrade
+tile.warpdrive.forcefield.upgrade.stabilize.name=Stabilization upgrade
+tile.warpdrive.forcefield.upgrade.thickness.name=Thickness upgrade
+tile.warpdrive.forcefield.upgrade.translation.name=Translation upgrade
+tile.warpdrive.forcefield.upgrade.warm.name=Heating upgrade
 
 tile.warpdrive.movement.Lift.name=Lift
 tile.warpdrive.movement.ShipController.name=Ship Controller
