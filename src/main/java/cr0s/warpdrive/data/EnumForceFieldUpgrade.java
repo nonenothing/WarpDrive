@@ -8,6 +8,7 @@ public enum EnumForceFieldUpgrade {
 	CAMOUFLAGE         ("camouflage"    , false, true ),
 	COOL               ("cool"          , true , true ),
 	FUSION             ("fusion"        , true , true ),
+	INVERT             ("invert"        , true , false),
 	MUTE               ("mute"          , true , false),
 	RANGE              ("range"         , true , true ),
 	ROTATION           ("rotation"      , true , false),
@@ -17,7 +18,6 @@ public enum EnumForceFieldUpgrade {
 	THICKNESS          ("thickness"     , true , true ),
 	TRANSLATION        ("translation"   , true , false),
 	WARM               ("warm"          , true , true ),
-	// reserved 13
 	// reserved 14
 	// reserved 15
 	;

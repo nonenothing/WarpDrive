@@ -20,7 +20,15 @@ public class ForceFieldSetup extends GlobalPosition {
 	public ItemStack itemStackCamouflage;
 	private Block blockCamouflage_cache;
 	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(0, 1, 4, 5, 6, 8, 7, 12, 13, 14, 16, 17, 20, 23, 29, 30, 31, 39);
-	private final HashMap<String, Integer> upgrades = new HashMap<>(EnumForceFieldUpgrade.length);
+	private final HashMap<String, Integer> mapUpgradeValues = new HashMap<>(EnumForceFieldUpgrade.length);
+	private final HashMap<String, IForceFieldUpgrade> mapUpgradeObjects = new HashMap<>(EnumForceFieldUpgrade.length);
+	public boolean hasFusion;
+	public boolean isInverted;
+	public float startupEnergyCost;
+	public float scanEnergyCost;
+	public float placeEnergyCost;
+	public float scanSpeed = 100000;
+	public float placeSpeed = 100000;
 	
 	// TODO
 	public Set<TileEntityProjector> projectors = new HashSet<>();
@@ -28,8 +36,6 @@ public class ForceFieldSetup extends GlobalPosition {
 	public int disintegrationLevel;
 	public int temperatureLevel;
 	public boolean hasStabilize;
-	public boolean isInverted = false;
-	public boolean hasFusion;
 	
 	// Projector provided properties
 	public float rotationYaw;
@@ -94,6 +100,7 @@ public class ForceFieldSetup extends GlobalPosition {
 					vTranslation = new VectorI(projector);
 					// TODO vMin = projector.vMin;
 					// TODO vMax = projector.vMax;
+					// TODO item upgrades
 				} else {
 					if ((((TileEntityProjector) tileEntity).isEnabled)
 						&& (((TileEntityProjector) tileEntity).isCalculated())
@@ -106,16 +113,26 @@ public class ForceFieldSetup extends GlobalPosition {
 			if (tileEntity instanceof IForceFieldUpgrade) {
 				String upgradeKey = ((IForceFieldUpgrade)tileEntity).getUpgradeKey();
 				if (!upgradeKey.isEmpty()) {
-					Integer count = upgrades.get(upgradeKey);
-					if (count == null) {
-						count = 0;
+					Integer value = mapUpgradeValues.get(upgradeKey);
+					if (value == null) {
+						value = 0;
+						mapUpgradeObjects.put(upgradeKey, (IForceFieldUpgrade)tileEntity);
 					}
-					upgrades.put(upgradeKey, count + ((IForceFieldUpgrade)tileEntity).getUpgradeValue());
+					mapUpgradeValues.put(upgradeKey, value + ((IForceFieldUpgrade)tileEntity).getUpgradeValue());
 				}
 			}
 		}
 		
-		hasFusion = upgrades.containsKey(EnumForceFieldUpgrade.FUSION.unlocalizedName);
+		// compute results
+		hasFusion = mapUpgradeObjects.containsKey(EnumForceFieldUpgrade.FUSION.unlocalizedName);
+		isInverted = mapUpgradeObjects.containsKey(EnumForceFieldUpgrade.INVERT.unlocalizedName);
+		for (Map.Entry<String, IForceFieldUpgrade> entry : mapUpgradeObjects.entrySet()) {
+			startupEnergyCost += entry.getValue().getStartupEnergyCost(entry.getKey(), mapUpgradeValues.get(entry.getKey()));
+			scanEnergyCost += entry.getValue().getScanEnergyCost(entry.getKey(), mapUpgradeValues.get(entry.getKey()));
+			placeEnergyCost += entry.getValue().getPlaceEnergyCost(entry.getKey(), mapUpgradeValues.get(entry.getKey()));
+			scanSpeed = Math.min(scanSpeed, entry.getValue().getMaxScanSpeed(entry.getKey(), mapUpgradeValues.get(entry.getKey())));
+			placeSpeed = Math.min(placeSpeed, entry.getValue().getMaxPlaceSpeed(entry.getKey(), mapUpgradeValues.get(entry.getKey())));
+		}
 	}
 	
 	@Override
