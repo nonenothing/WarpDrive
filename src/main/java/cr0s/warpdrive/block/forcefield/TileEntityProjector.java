@@ -62,7 +62,7 @@ public class TileEntityProjector extends TileEntityAbstractForceField {
 		super();
 		
 		peripheralName = "warpdriveForceFieldProjector";
-		addMethods(new String[]{
+		addMethods(new String[] {
 			"status"    // isConnected, isPowered, shape
 		});
 	}
