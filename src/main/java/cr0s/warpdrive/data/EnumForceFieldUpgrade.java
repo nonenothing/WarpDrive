@@ -17,7 +17,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	CAMOUFLAGE   ("camouflage"   , false, true , 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is boolean"), 
 	COOL         ("cool"         , true , true , 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is heat units"),
 	FUSION       ("fusion"       , true , true , 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is boolean"),
-	INVERT       ("invert"       , false, true , 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is boolean"),
+	INVERT       ("invert"       , true , false, 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is boolean"),
 	MUTE         ("mute"         , true , false, 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is boolean"),
 	PUMP         ("pump"         , false, true , 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is TO BE DEFINED"),
 	RANGE        ("range"        , true , true , 1000,   1000, 10.0F, 10.0F, 100.0F, 1.0F, 10.0F, 100.0F, "value is bonus blocks"),
