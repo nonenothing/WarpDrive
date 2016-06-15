@@ -33,6 +33,7 @@ public abstract class BlockAbstractContainer extends BlockContainer {
 	
 	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemstack) {
+		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemstack);
 		if (isRotating) {
 			if (entityLiving != null) {
 				int metadata;
@@ -62,8 +63,6 @@ public abstract class BlockAbstractContainer extends BlockContainer {
 				}
 				world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
 			}
-		} else {
-			super.onBlockPlacedBy(world, x, y, z, entityLiving, itemstack);
 		}
 	}
 	
