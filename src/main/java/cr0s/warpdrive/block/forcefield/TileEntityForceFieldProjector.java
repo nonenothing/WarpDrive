@@ -527,7 +527,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					// compute interior fields to remove overlapping parts
 					for (Map.Entry<VectorI, Boolean> entry : forceFieldSetup.shapeProvider.getVertexes(forceFieldSetup).entrySet()) {
 						VectorI vPosition = entry.getKey();
-						if (forceFieldSetup.isDoubleSided || vPosition.y >= yCoord) {
+						if (forceFieldSetup.isDoubleSided || vPosition.y >= 0) {
 							if ((forceFieldSetup.rotationYaw != 0) || (forceFieldSetup.rotationPitch != 0)) {
 								vPosition.rotateByAngle(forceFieldSetup.rotationYaw, forceFieldSetup.rotationPitch);
 							}
