@@ -126,9 +126,6 @@ import cr0s.warpdrive.world.SpaceWorldGenerator;
 
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2API;" + " after:CoFHCore;" + " after:ComputerCraft;"
 		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;")
-/**
- * @author Cr0s
- */
 public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
@@ -163,8 +160,9 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockHighlyAdvancedMachine;
 	public static Block blockTransportBeacon;
 	public static Block blockChunkLoader;
-	public static Block blockForceField;
-	public static Block blockProjector;
+	public static Block[] blockForceFields;
+	public static Block[] blockForceFieldProjectors;
+	public static Block[] blockForceFieldRelays;
 	public static BlockDecorative blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
@@ -176,7 +174,7 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningRod;
 	public static ItemForceFieldShape itemForceFieldShape;
-	public static BlockForceFieldUpgrade blockForceFieldUpgrade;
+	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
 	
 	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
 	public static ItemHelmet itemHelmet;
@@ -400,22 +398,26 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockChunkLoader, "blockChunkLoader");
 		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, MODID + ":blockChunkLoader");
 		
+		// FORCE FIELD BLOCKS
+		blockForceFields = new Block[3];
+		blockForceFieldProjectors = new Block[3];
+		blockForceFieldRelays = new Block[3];
 		for(byte tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
 			// FORCE FIELD
-			blockForceField = new BlockForceField(tier);
-			GameRegistry.registerBlock(blockForceField, "blockForceField" + tier);
+			blockForceFields[index] = new BlockForceField(tier);
+			GameRegistry.registerBlock(blockForceFields[index], "blockForceField" + tier);
 			GameRegistry.registerTileEntity(TileEntityForceField.class, MODID + ":blockForceField" + tier);
 			
 			// FORCE FIELD PROJECTOR
-			blockProjector = new BlockProjector(tier);
-			GameRegistry.registerBlock(blockProjector, "blockProjector" + tier);
-			GameRegistry.registerTileEntity(TileEntityProjector.class, MODID + ":blockProjector" + tier);
-/*	TODO		
-			// FORCE FIELD CORE
-			blockForceFieldCore = new BlockForceFieldCore(tier);
-			GameRegistry.registerBlock(blockProjector, "blockForceFieldCore" + tier);
-			GameRegistry.registerTileEntity(TileEntityForceFieldCore.class, MODID + ":blockForceFieldCore" + tier);
-			*/
+			blockForceFieldProjectors[index] = new BlockForceFieldProjector(tier);
+			GameRegistry.registerBlock(blockForceFieldProjectors[index], "blockProjector" + tier);
+			GameRegistry.registerTileEntity(TileEntityForceFieldProjector.class, MODID + ":blockProjector" + tier);
+
+			// FORCE FIELD RELAY
+			blockForceFieldRelays[index] = new BlockForceFieldRelay(tier);
+			GameRegistry.registerBlock(blockForceFieldRelays[index], "blockForceFieldRelay" + tier);
+			GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, MODID + ":blockForceFieldRelay" + tier);
 		}
 		/* TODO
 		// SECURITY STATION
@@ -466,14 +468,13 @@ public class WarpDrive implements LoadingCallback {
 		itemTuningRod = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
 		
-		// FORCEFIELD UPGRADES
+		// FORCE FIELD UPGRADES
 		itemForceFieldShape = new ItemForceFieldShape();
 		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-		
-		blockForceFieldUpgrade = new BlockForceFieldUpgrade();
-		GameRegistry.registerBlock(blockForceFieldUpgrade, ItemBlockForceFieldUpgrade.class, "blockForceFieldUpgrade");
-		GameRegistry.registerTileEntity(TileEntityForceFieldUpgrade.class, MODID + ":blockForceFieldUpgrade");
-		
+
+		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
+		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
+
 		// DAMAGE SOURCES
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
@@ -556,7 +557,7 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandEntity());
 	}
 	
-	public Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {
+	private Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {
 		World worldObj = tileEntity.getWorldObj();
 		if (ForgeChunkManager.ticketCountAvailableFor(this, worldObj) > 0) {
 			Ticket ticket = ForgeChunkManager.requestTicket(this, worldObj, Type.NORMAL);

@@ -20,7 +20,9 @@ public enum ComponentType {
 	MOTOR              ("Motor"),
 	BONE_CHARCOAL      ("BoneCharcoal"),
 	ACTIVATED_CARBON   ("ActivatedCarbon"),
-	LASER_MEDIUM_EMPTY ("LaserMediumEmpty");
+	LASER_MEDIUM_EMPTY ("LaserMediumEmpty"),
+	COIL_CRYSTAL       ("CoilCrystal"),
+	EMC_PROJECTOR      ("EMCProjector");
 	
 	public final String unlocalizedName;
 	

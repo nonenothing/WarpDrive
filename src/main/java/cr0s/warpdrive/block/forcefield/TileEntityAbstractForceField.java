@@ -12,17 +12,16 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.StatCollector;
 
-/**
- * Created by LemADEC on 16/05/2016.
- */
 public class TileEntityAbstractForceField extends TileEntityAbstractEnergy implements IBeamFrequency {
 	// persistent properties
+	protected byte tier = -1;
 	protected int beamFrequency = -1;
 	public boolean isEnabled = true;
 	
@@ -32,7 +31,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	public TileEntityAbstractForceField() {
 		super();
-		
+
 		addMethods(new String[]{
 			"enable",
 			"beamFrequency"
@@ -41,6 +40,12 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	@Override
 	protected void onFirstUpdateTick() {
+		Block block = getBlockType();
+		if (block instanceof BlockAbstractForceField) {
+			tier = ((BlockAbstractForceField) block).tier;
+		} else {
+			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + xCoord + " " + yCoord + " " + zCoord);
+		}
 		if (beamFrequency >= 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX) {
 			ForceFieldRegistry.updateInRegistry(this);
 		}
@@ -63,7 +68,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		// reload chunks as needed?
+		// reload chunks as needed
 		// ForceFieldRegistry.removeFromRegistry(this);
 	}
 	
@@ -90,7 +95,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		}
 	}
 	
-	protected String getBeamFrequencyStatus() {
+	String getBeamFrequencyStatus() {
 		if (beamFrequency < 0) {
 			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid",
 				beamFrequency);
@@ -101,14 +106,17 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	public String getStatus() {
+		String strEnergyStatus = getEnergyStatus();
 		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 			getBlockType().getLocalizedName())
-			+ getBeamFrequencyStatus();
+			+ getBeamFrequencyStatus()
+			+ (strEnergyStatus.isEmpty() ? "" : "\n" + strEnergyStatus);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
+		tier = tag.getByte("tier");
 		setBeamFrequency(tag.getInteger("beamFrequency"));
 		isEnabled = tag.getBoolean("isEnabled");
 	}
@@ -116,6 +124,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
+		tag.setByte("tier", tier);
 		tag.setInteger("beamFrequency", beamFrequency);
 		tag.setBoolean("isEnabled", isEnabled);
 	}

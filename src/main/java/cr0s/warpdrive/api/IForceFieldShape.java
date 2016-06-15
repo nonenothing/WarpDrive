@@ -6,7 +6,7 @@ import cr0s.warpdrive.data.VectorI;
 import java.util.Collection;
 import java.util.Map;
 
-public interface IShapeProvider {
+public interface IForceFieldShape {
 	
 	/**
 	 * Return a collection of coordinates to all blocks in a shape.

@@ -6,10 +6,10 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.block.passive.BlockDecorative;
-import cr0s.warpdrive.data.ComponentType;
-import cr0s.warpdrive.data.DecorativeType;
-import cr0s.warpdrive.data.UpgradeType;
+import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.item.ItemComponent;
+import cr0s.warpdrive.item.ItemForceFieldShape;
+import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemUpgrade;
 import net.minecraft.block.BlockColored;
 import net.minecraft.init.Blocks;
@@ -21,9 +21,6 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 /**
  * Hold the different recipe sets
- *
- * @author LemADEC
- *
  */
 public class Recipes {
 	private static final String[] oreDyes = {
@@ -565,61 +562,66 @@ public class Recipes {
 		}
 		
 		// Get the machine casing to use
-		ItemStack itemMachineCasingLV;
-		ItemStack itemMachineCasingMV;
-		ItemStack itemMachineCasingHV;
-		ItemStack itemMachineCasingEV;
-		ItemStack itemMotorLV = ItemComponent.getItemStack(ComponentType.MOTOR);
-		ItemStack itemMotorMV = ItemComponent.getItemStack(ComponentType.MOTOR);
-		ItemStack itemMotorHV = ItemComponent.getItemStack(ComponentType.MOTOR);
-		@SuppressWarnings("unused")
-		ItemStack itemMotorEV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		ItemStack itemStackMachineCasingLV;
+		ItemStack itemStackMachineCasingMV;
+		ItemStack itemStackMachineCasingHV;
+		ItemStack itemStackMachineCasingEV;
+		ItemStack itemStackMotorLV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		ItemStack itemStackMotorMV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		ItemStack itemStackMotorHV = ItemComponent.getItemStack(ComponentType.MOTOR);
+		ItemStack itemStackMotorEV = ItemComponent.getItemStack(ComponentType.MOTOR);
 		
 		if (WarpDriveConfig.isGregTech5Loaded) {
-			itemMachineCasingLV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 1);
-			itemMachineCasingMV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 2);
-			itemMachineCasingHV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 3);
-			itemMachineCasingEV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 4);
+			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 1);
+			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 2);
+			itemStackMachineCasingHV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 3);
+			itemStackMachineCasingEV = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 4);
 			
-			itemMotorLV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32600);	// LV Motor
-			itemMotorMV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32601);	// MV Motor
-			itemMotorHV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32602);	// HV Motor
-			itemMotorEV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32603);	// EV Motor
+			itemStackMotorLV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32600);    // LV Motor
+			itemStackMotorMV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32601);    // MV Motor
+			itemStackMotorHV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32602);    // HV Motor
+			itemStackMotorEV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32603);    // EV Motor
 			
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemMachineCasingLV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 0);	// Basic machine casing
-			itemMachineCasingMV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 12);	// Advanced machine casing
-			itemMachineCasingHV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
-			itemMachineCasingEV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
+			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 0);     // Basic machine casing
+			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 12);    // Advanced machine casing
+			itemStackMachineCasingHV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
+			itemStackMachineCasingEV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
 			
-			itemMotorHV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);			// Electric motor
-			itemMotorEV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);
+			itemStackMotorHV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);            // Electric motor
+			itemStackMotorEV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);
 			
 			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
 			GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine), "iii", "imi", "iii",
-					'i', iridiumAlloy,
-					'm', itemMachineCasingMV);
+			'i', iridiumAlloy,
+			'm', itemStackMachineCasingMV);
+			
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			itemMachineCasingLV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 0);
-			itemMachineCasingMV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 1);
-			itemMachineCasingHV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 2);
-			itemMachineCasingEV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 3);
+			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 0);
+			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 1);
+			itemStackMachineCasingHV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 2);
+			itemStackMachineCasingEV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 3);
+			
 		} else if (WarpDriveConfig.isEnderIOloaded) {
-			itemMachineCasingLV = WarpDriveConfig.getModItemStack("EnderIO", "itemMachinePart", 0);		// Machine chassis
-			itemMachineCasingMV = WarpDriveConfig.getModItemStack("EnderIO", "blockVacuumChest", 0);	// Pulsating crystal => Vacuum chest
-			itemMachineCasingHV = WarpDriveConfig.getModItemStack("EnderIO", "blockIngotStorage", 2);	// Vibrant alloy block
-			itemMachineCasingEV = WarpDriveConfig.getModItemStack("EnderIO", "itemMaterial", 8);		// Ender crystal
+			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("EnderIO", "itemMachinePart", 0);     // Machine chassis
+			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("EnderIO", "blockVacuumChest", 0);    // Pulsating crystal => Vacuum chest
+			itemStackMachineCasingHV = WarpDriveConfig.getModItemStack("EnderIO", "blockIngotStorage", 2);   // Vibrant alloy block
+			itemStackMachineCasingEV = WarpDriveConfig.getModItemStack("EnderIO", "itemMaterial", 8);        // Ender crystal
+			
 		} else {// vanilla
-			itemMachineCasingLV = new ItemStack(Blocks.iron_block);
-			itemMachineCasingMV = new ItemStack(Blocks.diamond_block);
-			itemMachineCasingHV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
-			itemMachineCasingEV = new ItemStack(Blocks.beacon);
+			itemStackMachineCasingLV = new ItemStack(Blocks.iron_block);
+			itemStackMachineCasingMV = new ItemStack(Blocks.diamond_block);
+			itemStackMachineCasingHV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
+			itemStackMachineCasingEV = new ItemStack(Blocks.beacon);
 			
 			GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine, 4), "pep", "ede", "pep",
-					'e', Items.emerald,
-					'p', Items.ender_eye,
-					'd', Blocks.diamond_block);
+			'e', Items.emerald,
+			'p', Items.ender_eye,
+			'd', Blocks.diamond_block);
 		}
+		
+		ItemStack[] itemStackMachineCasings = { itemStackMachineCasingLV, itemStackMachineCasingMV, itemStackMachineCasingHV, itemStackMachineCasingEV };
+		ItemStack[] itemStackMotors  = { itemStackMotorLV, itemStackMotorMV, itemStackMotorHV, itemStackMotorEV };
 		
 		// Base tuning crystals
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL), false, " e ", "BBB", "qrq",
@@ -649,7 +651,7 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.REACTOR_CORE), false, "shs", "hmh", "shs",
 				's', Items.nether_star,
 				'h', "blockHull3_plain",
-				'm', itemMachineCasingHV));
+				'm', itemStackMachineCasings[2]));
 		
 		
 		// Computer interface is 2 gold ingot, 2 wired modems (or redstone), 1 lead/tin ingot
@@ -774,7 +776,7 @@ public class Recipes {
 				'r', Items.redstone,
 				'i', Items.iron_ingot,
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
-				't', itemMotorLV,
+				't', itemStackMotors[0],
 				'd', "dye"));
 		
 		// Glass tank is 4 slime balls, 4 glass
@@ -845,23 +847,136 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.LASER_MEDIUM_EMPTY), false, "   ", "ggg", "pmc",
 				'g', ItemComponent.getItemStack(ComponentType.GLASS_TANK),
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
-				'm', itemMachineCasingMV,
+				'm', itemStackMachineCasings[1],
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE)));
 		
+		// Coil crystal is 6 iron bars, 2 gold ingots, 1 diamond crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL), false, "bbg", "bdb", "gbb",
+		                                          'b', ironBars,
+		                                          'g', "ingotGold",
+		                                          'd', ItemComponent.getItemStack(ComponentType.DIAMOND_CRYSTAL)));
+		
+		// EMC Projector is 5 coil crystals, 1 power interface, 1 computer interface, 2 motors
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR), false, "CCm", "Cpc", "CCm",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MOTOR),
+		                                          'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE)));
+		
+		// *** Force field shapes
+		// Force field shapes are 1 Memory crystal, 3 to 5 Coil crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.SPHERE), false, "   ", "CmC", "CCC",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.CYLINDER_H), false, "C C", " m ", "C C",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.CYLINDER_V), false, " C ", "CmC", " C ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.CUBE), false, "CCC", "CmC", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.PLANE), false, "CCC", " m ", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.TUBE), false, "   ", "CmC", "C C",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.TUNNEL), false, "C C", "CmC", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
+		
+		// *** Force field upgrades
+		// Force field break upgrade is 3 Coil crystal, 1 Diamond axe, 1 diamond shovel, 1 diamond pick
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.BREAK), false, "CCC", "sap", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          's', Items.diamond_axe,
+		                                          'a', Items.diamond_shovel,
+		                                          'p', Items.diamond_pickaxe));
+		// Force field camouflage upgrade is 3 Coil crystal, 2 Diffraction grating, 1 Zoom, 1 Emerald crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.CAMOUFLAGE), false, "CCC", "zre", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'z', ItemComponent.getItemStack(ComponentType.ZOOM),
+		                                          'r', Blocks.daylight_detector,
+		                                          'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL)));
+		// Force field cool upgrade is 3 Coil crystal, 2 Ice, 1 MV Motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.COOL), false, "CCC", "imi", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'i', Blocks.ice,
+		                                          'm', itemStackMotors[1]));
+		// Force field fusion upgrade is 3 Coil crystal, 2 Computer interface, 1 Emerald crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.FUSION), false, "CCC", "cec", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
+		                                          'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL)));
+		// Force field invert upgrade is 3 Coil crystal, 1 Gold nugget, 2 Redstone
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.INVERT), false, "rgr", "CCC", "CCC",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'r', Items.redstone,
+		                                          'g', Items.gold_nugget));
+		// Force field mute upgrade is 3 Coil crystal, 3 Wool
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.MUTE), false, "CCC", "www", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'w', Blocks.wool));
+		// Force field pump upgrade is 3 Coil crystal, 1 MV Motor, 2 glass tanks
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.PUMP), false, "CCC", "tmt", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', itemStackMotors[1],
+		                                          't', ItemComponent.getItemStack(ComponentType.GLASS_TANK)));
+		// Force field range upgrade is 3 Coil crystal, 2 Memory crystal, 1 Redstone block
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.RANGE), false, "CCC", "RMR", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'M', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL),
+		                                          'R', Blocks.redstone_block));
+		// Force field rotation upgrade is 3 Coil crystal, 2 MV Motors, 1 Computer interface
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStackNoCache(EnumForceFieldUpgrade.ROTATION, 2), false, "CCC", " m ", " mc",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', itemStackMotors[1],
+		                                          'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE)));
+		// Force field shock upgrade is 3 Coil crystal, 1 Power interface
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.SHOCK), false, "CCC", " p ", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE)));
+		// Force field speed upgrade is 3 Coil crystal, 2 Ghast tear, 1 Emerald crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.SPEED), false, "CCC", "geg", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'g', Items.ghast_tear,
+		                                          'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL)));
+		// Force field stabilize upgrade is 3 Coil crystal, 1 Memory crystal, 2 Lapis block
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.STABILIZE), "CCC", "lMl", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'M', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL),
+		                                          'l', Blocks.lapis_block));
+		// Force field thickness upgrade is 8 Coil crystal, 1 Diamond crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.THICKNESS), false, "CCC", "CpC", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR)));
+		// Force field translation upgrade is 3 Coil crystal, 2 MV Motor, 1 Computer interface
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStackNoCache(EnumForceFieldUpgrade.TRANSLATION, 2), false, "CCC", "m m", " c ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'm', itemStackMotors[1],
+		                                          'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE)));
+		// Force field warm upgrade is 3 Coil crystal, 2 Blaze rod, 1 MV Motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.WARM), false, "CCC", "bmb", "   ",
+		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+		                                          'b', Items.blaze_rod,
+		                                          'm', itemStackMotors[1]));
+		
 		// *** Blocks
-		// Ship core is 1x Ghast tear, 4x Capacitive crystal, 2x Tuning ender, 1x Power interface, 1x MV Machine casing
+		// Ship core is 1 Ghast tear, 4 Capacitive crystal, 2 Tuning ender, 1 Power interface, 1 MV Machine casing
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockShipCore),"csc", "eme", "cpc",
 				's', Items.ghast_tear,
 				'c', ItemComponent.getItemStack(ComponentType.CAPACITIVE_CRYSTAL),
 				'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
-				'm', itemMachineCasingMV);
+				'm', itemStackMachineCasings[1]);
 		
-		// Ship controller is 1x Computer interface, 1x Tuning emerald, 1x LV Machine casing, 2x Memory bank
+		// Ship controller is 1 Computer interface, 1 Tuning emerald, 1 LV Machine casing, 2 Memory bank
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockShipController), false, " e ", "bmb", " c ",
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
 				'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL),
-				'm', itemMachineCasingLV,
+				'm', itemStackMachineCasings[0],
 				'b', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
 		
 		// Radar is 1 motor, 4 Titanium plate (diamond), 1 quarztite rod (nether quartz), 1 computer interface, 1 HV Machine casing, 1 power interface
@@ -884,17 +999,17 @@ public class Recipes {
 			oreAntenna = "nuggetPulsatingIron";
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockRadar), false, "PAP", "PtP", "pmc",
-			't', itemMotorHV,
+			't', itemStackMotors[2],
 			'P', oreCloakingPlate,
 			'A', oreAntenna,
 			'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-			'm', itemMachineCasingHV,
+			'm', itemStackMachineCasings[2],
 			'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE)));
 		
 		// Warp isolation is 1 EV Machine casing (Ti), 4 Titanium plate/Enderium ingot/Vibrant alloy/Iridium plate/quartz
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWarpIsolation), false, "i i", " m ", "i i",
 				'i', oreCloakingPlate,
-				'm', itemMachineCasingEV));
+				'm', itemStackMachineCasings[3]));
 		
 		// Air generator is 1 power interface, 4 activated carbon, 1 motor, 1 MV Machine casing, 2 tanks
 		ItemStack itemStackCompressorOrTank = ItemComponent.getItemStack(ComponentType.GLASS_TANK);
@@ -910,18 +1025,18 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "aca", "ata", "gmp",
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
 				'a', ItemComponent.getItemStack(ComponentType.ACTIVATED_CARBON),
-				't', itemMotorMV,
+				't', itemStackMotors[1],
 				'g', ItemComponent.getItemStack(ComponentType.GLASS_TANK),
-				'm', itemMachineCasingMV,
+				'm', itemStackMachineCasings[1],
 				'c', itemStackCompressorOrTank));
 		
 		// Laser cannon is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 HV Machine casing, 1 redstone dust, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaser), false, "gtr", "ldm", "gtc",
-				't', itemMotorHV,
+				't', itemStackMotors[2],
 				'd', ItemComponent.getItemStack(ComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemMachineCasingHV,
+				'm', itemStackMachineCasings[2],
 				'r', Items.redstone,
 				'g', "paneGlassColorless"));
 		
@@ -933,11 +1048,11 @@ public class Recipes {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "cmr", "tdt", "glg",
-				't', itemMotorMV,
+				't', itemStackMotors[1],
 				'd', ItemComponent.getItemStack(ComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemMachineCasingMV,
+				'm', itemStackMachineCasings[1],
 				'r', itemStackDiamondPick,
 				'g', "paneGlassColorless"));
 		
@@ -949,7 +1064,7 @@ public class Recipes {
 				'l', Blocks.lapis_block));
 		
 		// Laser lift is ...
-		Object oreMagnetizer = itemMachineCasingLV;
+		Object oreMagnetizer = itemStackMachineCasings[0];
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			oreMagnetizer = WarpDriveConfig.getModItemStack("gregtech", "gt.blockmachines", 551);	// Basic polarizer
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
@@ -1030,11 +1145,11 @@ public class Recipes {
 		
 		// Camera is 1 daylight sensor, 2 motors, 1 computer interface, 2 glass panel, 1 Tuning diamond, 1 LV Machine casing
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCamera), false, "gtd", "zlm", "gtc",
-				't', itemMotorLV,
+				't', itemStackMotors[0],
 				'z', ItemComponent.getItemStack(ComponentType.ZOOM),
 				'd', ItemComponent.getItemStack(ComponentType.DIAMOND_CRYSTAL),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemMachineCasingLV,
+				'm', itemStackMachineCasings[0],
 				'l', Blocks.daylight_detector,
 				'g', "paneGlassColorless"));
 		
@@ -1043,7 +1158,7 @@ public class Recipes {
 				'f', ItemComponent.getItemStack(ComponentType.FLAT_SCREEN),
 				'd', ItemComponent.getItemStack(ComponentType.DIAMOND_CRYSTAL),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemMachineCasingLV));
+				'm', itemStackMachineCasings[0]));
 		
 		// Ship scanner is non-functional => no recipe
 		/*
@@ -1056,10 +1171,10 @@ public class Recipes {
 		
 		// Laser tree farm is 2 motors, 2 lenses, 1 computer interface, 1 LV Machine casing, 1 diamond axe, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserTreeFarm), false, "glg", "tlt", "amc",
-				't', itemMotorLV,
+				't', itemStackMotors[0],
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemMachineCasingLV,
+				'm', itemStackMachineCasings[0],
 				'a', Items.diamond_axe,
 				'g', "paneGlassColorless"));
 		
@@ -1095,7 +1210,7 @@ public class Recipes {
 					'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
 					'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
 					'g', "paneGlassColorless",
-					'm', itemMachineCasingMV));
+					'm', itemStackMachineCasings[1]));
 		}
 		
 		// Cloaking core is 3 Cloaking coils, 4 iridium blocks, 1 ship controller, 1 power interface
@@ -1105,7 +1220,7 @@ public class Recipes {
 				's', WarpDrive.blockShipController,
 				'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE)));
 		
-		// Cloaking coil is 1 Titanium plate, 4 reinforced iridium plate, 1x EV Machine casing (Ti) or 1 Beacon, 4 emerald, 4 diamond
+		// Cloaking coil is 1 Titanium plate, 4 reinforced iridium plate, 1 EV Machine casing (Ti) or 1 Beacon, 4 emerald, 4 diamond
 		ItemStack itemStackGoldIngotOrCoil = new ItemStack(Items.gold_ingot);
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 14);	// Nichrome Coil block
@@ -1146,7 +1261,7 @@ public class Recipes {
 				't', oreEmeraldOrTitaniumPlate,
 				'i', oreEmeraldOrReinforcedIridiumPlate,
 				'c', itemStackGoldIngotOrCoil,
-				'm', itemMachineCasingEV )); 
+				'm', itemStackMachineCasings[3] )); 
 		
 		// Enantiomorphic reactor core is 1 EV Machine casing (Ti), 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorCore), false, "CpC", "lml", "CcC",
@@ -1161,10 +1276,40 @@ public class Recipes {
 				'd', ItemComponent.getItemStack(ComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(ComponentType.LENS),
 				'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
-				'm', itemMachineCasingHV,
+				'm', itemStackMachineCasings[2],
 				'r', Items.redstone,
 				'g', "paneGlassColorless",
 				'h', "blockHull3_plain"));
+		
+		// Force field projector is 1 or 2 EMC Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
+		for (int tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 0), false, " e ", "pm ", " r ",
+			                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR),
+			                                          'm', itemStackMachineCasings[index],
+			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
+			                                          'r', Items.redstone));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 0), false, " e ", " mp", " r ",
+			                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR),
+			                                          'm', itemStackMachineCasings[index],
+			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
+			                                          'r', Items.redstone));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1), false, " e ", "pmp", " r ",
+			                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR),
+			                                          'm', itemStackMachineCasings[index],
+			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
+			                                          'r', Items.redstone));
+		}
+		
+		// Force field relay is 2 Coil crystals + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
+		for (int tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldRelays[index]), false, " e ", "CmC", " r ",
+			                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+			                                          'm', itemStackMachineCasings[index],
+			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
+			                                          'r', Items.redstone));
+		}
 		
 		// Decorative blocks
 		OreDictionary.registerOre("warpDecorative", BlockDecorative.getItemStack(DecorativeType.PLAIN));

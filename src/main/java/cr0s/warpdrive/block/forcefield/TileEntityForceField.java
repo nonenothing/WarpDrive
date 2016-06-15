@@ -3,21 +3,20 @@ package cr0s.warpdrive.block.forcefield;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
-import net.minecraft.item.ItemStack;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
-/**
- * Created by LemADEC on 16/05/2016.
- */
 public class TileEntityForceField extends TileEntityAbstractBase {
 	private VectorI vProjector;
+
 	// cache parameters used for rendering, force projector check for others
 	private int cache_beamFrequency;
-	private ItemStack cache_itemStackCamouflage;
+	private Block cache_blockCamouflage;
+	private int cache_metadataCamouflage;
 	private int gracePeriod_calls = 1;
 	
 	@Override
@@ -33,17 +32,20 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			cache_beamFrequency = tag.getInteger("beamFrequency");
 			if (tag.hasKey("projector")) {
 				try {
-					cache_itemStackCamouflage = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("camouflage"));
+					cache_blockCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock"));
+					cache_metadataCamouflage = tag.getByte("camouflageMeta");
 				} catch (Exception exception) {
 					exception.printStackTrace();
 				}
 			} else {
-				cache_itemStackCamouflage = null;
+				cache_blockCamouflage = null;
+				cache_metadataCamouflage = 0;
 			}
 		} else {
 			vProjector = null;
 			cache_beamFrequency = -1;
-			cache_itemStackCamouflage = null;
+			cache_blockCamouflage = null;
+			cache_metadataCamouflage = 0;
 		}
 	}
 	
@@ -53,8 +55,9 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		if (vProjector != null) {
 			tagCompound.setTag("projector", vProjector.writeToNBT(new NBTTagCompound()));
 			tagCompound.setInteger("beamFrequency", cache_beamFrequency);
-			if (cache_itemStackCamouflage != null) {
-				tagCompound.setTag("camouflage", cache_itemStackCamouflage.writeToNBT(new NBTTagCompound()));
+			if (cache_blockCamouflage != null) {
+				tagCompound.setString("camouflageBlock", Block.blockRegistry.getNameForObject(cache_blockCamouflage));
+				tagCompound.setByte("camouflageMeta", (byte)cache_metadataCamouflage);
 			}
 		}
 	}
@@ -79,18 +82,19 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		if (forceFieldSetup != null) {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
-			cache_itemStackCamouflage = forceFieldSetup.itemStackCamouflage;
+			cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
+			cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
 		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
-	public TileEntityProjector getProjector() {
+	public TileEntityForceFieldProjector getProjector() {
 		if (vProjector != null) {
 			TileEntity tileEntity = vProjector.getTileEntity(worldObj);
-			if (tileEntity instanceof TileEntityProjector) {
-				TileEntityProjector tileEntityProjector = (TileEntityProjector) tileEntity;
-				if (worldObj.isRemote || tileEntityProjector.isPartOfForceField(new VectorI(this))) {
-					return tileEntityProjector;
+			if (tileEntity instanceof TileEntityForceFieldProjector) {
+				TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
+				if (worldObj.isRemote || tileEntityForceFieldProjector.isPartOfForceField(new VectorI(this))) {
+					return tileEntityForceFieldProjector;
 				}
 			}
 		}
@@ -106,10 +110,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {
-		TileEntityProjector tileEntityProjector = getProjector();
-		if (tileEntityProjector == null) {
+		TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector();
+		if (tileEntityForceFieldProjector == null) {
 			return null;
 		}
-		return tileEntityProjector.getForceFieldSetup();
+		return tileEntityForceFieldProjector.getForceFieldSetup();
 	}
 }

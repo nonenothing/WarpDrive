@@ -1,39 +1,50 @@
-package cr0s.warpdrive.block.forcefield;
+package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.DecorativeType;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
 import java.util.List;
 
-public class ItemBlockForceFieldUpgrade extends ItemBlock {
+public class ItemForceFieldUpgrade extends Item {
+	private final IIcon[] icons;
 	private static ItemStack[] itemStackCache;
 	
-	public ItemBlockForceFieldUpgrade(Block block) {
-		super(block);
+	public ItemForceFieldUpgrade() {
+		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.upgrade");
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		
+		icons = new IIcon[EnumForceFieldUpgrade.length];
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];
 	}
 	
-	@Override
-	public int getMetadata(int damage) {
-		return damage;
+	public static ItemStack getItemStack(EnumForceFieldUpgrade enumForceFieldUpgrade) {
+		if (enumForceFieldUpgrade != null) {
+			int damage = enumForceFieldUpgrade.ordinal();
+			if (itemStackCache[damage] == null) {
+				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldUpgrade, 1, damage);
+			}
+			return itemStackCache[damage];
+		}
+		return null;
 	}
-		
+	
+	public static ItemStack getItemStackNoCache(EnumForceFieldUpgrade enumForceFieldUpgrade, int amount) {
+		return new ItemStack(WarpDrive.itemForceFieldUpgrade, amount, enumForceFieldUpgrade.ordinal());
+	}
+	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			list.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
+			icons[enumForceFieldUpgrade.ordinal()] = par1IconRegister.registerIcon("warpdrive:forcefield/upgrade_" + enumForceFieldUpgrade.unlocalizedName);
 		}
 	}
 	
@@ -46,19 +57,21 @@ public class ItemBlockForceFieldUpgrade extends ItemBlock {
 		return getUnlocalizedName();
 	}
 	
-	public static ItemStack getItemStack(EnumForceFieldUpgrade enumForceFieldUpgrade) {
-		if (enumForceFieldUpgrade != null) {
-			int damage = enumForceFieldUpgrade.ordinal();
-			if (itemStackCache[damage] == null) {
-				itemStackCache[damage] = new ItemStack(WarpDrive.itemComponent, 1, damage);
-			}
-			return itemStackCache[damage];
+	@Override
+	public IIcon getIconFromDamage(int damage) {
+		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
+			return icons[damage];
 		}
-		return null;
+		return icons[0];
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumForceFieldUpgrade enumForceFieldUpgrade, int amount) {
-		return new ItemStack(WarpDrive.blockForceFieldUpgrade, amount, enumForceFieldUpgrade.ordinal());
+	@Override
+	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
+			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
+				list.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
+			}
+		}
 	}
 	
 	@Override

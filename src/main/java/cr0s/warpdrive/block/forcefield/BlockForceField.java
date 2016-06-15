@@ -3,9 +3,7 @@ package cr0s.warpdrive.block.forcefield;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IEffector;
 import cr0s.warpdrive.api.IDamageReceiver;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
@@ -36,19 +34,14 @@ import net.minecraftforge.common.util.ForgeDirection;
 import java.util.List;
 import java.util.Random;
 
-public class BlockForceField extends BlockAbstractContainer implements IDamageReceiver {
+public class BlockForceField extends BlockAbstractForceField implements IDamageReceiver {
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
-	private int tier;
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
-	public BlockForceField(final int tier) {
-		super(Material.glass);
-		this.tier = tier;
-		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
-		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
+	public BlockForceField(final byte tier) {
+		super(tier, Material.glass);
 		setStepSound(Block.soundTypeCloth);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.forcefield.block" + tier);
 		setBlockTextureName("warpdrive:forcefield/forcefield");
 	}
@@ -62,12 +55,7 @@ public class BlockForceField extends BlockAbstractContainer implements IDamageRe
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		return null;
 	}
-	
-	@Override
-	public int getMobilityFlag() {
-		return 2;
-	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int metadata) {
@@ -88,12 +76,7 @@ public class BlockForceField extends BlockAbstractContainer implements IDamageRe
 	public boolean renderAsNormalBlock() {
 		return false;
 	}
-	
-	@Override
-	protected boolean canSilkHarvest() {
-		return false;
-	}
-	
+
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
@@ -138,7 +121,7 @@ public class BlockForceField extends BlockAbstractContainer implements IDamageRe
 		return !world.isSideSolid(x, y, z, direction, false);
 	}
 	
-	protected TileEntityProjector getProjector(World world, int x, int y, int z) {
+	protected TileEntityForceFieldProjector getProjector(World world, int x, int y, int z) {
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField) tileEntity).getProjector();
@@ -157,9 +140,7 @@ public class BlockForceField extends BlockAbstractContainer implements IDamageRe
 	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
-			for (IEffector effector : forceFieldSetup.getEffectors()) {
-				effector.onEntityCollided(world, x, y, z, entityPlayer);
-			}
+			forceFieldSetup.onEntityEffect(world, x, y, z, entityPlayer);
 		}
 	}
 	
@@ -190,9 +171,7 @@ public class BlockForceField extends BlockAbstractContainer implements IDamageRe
 		
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
-			for (IEffector effector : forceFieldSetup.getEffectors()) {
-				effector.onEntityCollided(world, x, y, z, entity);
-			}
+			forceFieldSetup.onEntityEffect(world, x, y, z, entity);
 			
 			if (entity instanceof EntityLiving && new Vector3(x, y, z).translate(0.5F).distanceTo_square(entity) < 0.4D) {
 				boolean hasPermission = false;

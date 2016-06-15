@@ -31,6 +31,7 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 		
 		int renderType = -1;
 		Block blockCamouflage = forceFieldSetup.getCamouflageBlock();
+		int metaCamouflage = forceFieldSetup.getCamouflageMetadata();
 		if (blockCamouflage != null) {
 			renderType = blockCamouflage.getRenderType();
 		}
@@ -94,7 +95,7 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 						return false;
 				}
 			} catch(Exception exception) {
-				renderer.renderBlockAsItem(blockCamouflage, forceFieldSetup.itemStackCamouflage.getItemDamage(), 1);
+				renderer.renderBlockAsItem(blockCamouflage, metaCamouflage, 1);
 			}
 			return true;
 		}
