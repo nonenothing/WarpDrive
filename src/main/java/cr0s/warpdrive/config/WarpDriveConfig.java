@@ -95,7 +95,6 @@ public class WarpDriveConfig {
 	public static int G_HYPERSPACE_PROVIDER_ID = 15;
 	public static int G_HYPERSPACE_DIMENSION_ID = -3;
 	public static int G_SPACE_WORLDBORDER_BLOCKS = 100000;
-	public static int G_ENTITY_JUMP_ID = 240;
 	public static int G_ENTITY_SPHERE_GENERATOR_ID = 241;
 	public static int G_ENTITY_STAR_CORE_ID = 242;
 	public static int G_ENTITY_CAMERA_ID = 243;
@@ -370,8 +369,6 @@ public class WarpDriveConfig {
 		G_SPACE_WORLDBORDER_BLOCKS = clamp(0, 3000000,
 				config.get("general", "space_worldborder_blocks", G_SPACE_WORLDBORDER_BLOCKS, "World border applied to hyperspace & space, set to 0 to disable it").getInt());
 		
-		G_ENTITY_JUMP_ID = clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
-				config.get("general", "entity_jump_id", G_ENTITY_JUMP_ID, "Entity jump ID").getInt());
 		G_ENTITY_SPHERE_GENERATOR_ID = clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
 				config.get("general", "entity_sphere_generator_id", G_ENTITY_SPHERE_GENERATOR_ID, "Entity sphere generator ID").getInt());
 		G_ENTITY_STAR_CORE_ID = clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
