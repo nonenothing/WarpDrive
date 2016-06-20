@@ -1,4 +1,4 @@
-death.attack.warpdrive.asphyxia=%s died from asphyxia
+﻿death.attack.warpdrive.asphyxia=%s died from asphyxia
 death.attack.warpdrive.asphyxia.player=%1$s was killed by %2$s using asphyxia
 death.attack.warpdrive.cold=%s died from cold
 death.attack.warpdrive.cold.player=%1$s was frozen to death by %2$s 
@@ -301,7 +301,6 @@ warpdrive.forcefield.shape.statusLine.tunnel=tunnel
 
 warpdrive.forcefield.upgrade.statusLine.none=§cNo upgrade installed.
 warpdrive.forcefield.upgrade.statusLine.valid=Upgraded with %1$s
-warpdrive.forcefield.upgrade.statusLine.none=none
 warpdrive.forcefield.upgrade.statusLine.break=block breaking
 warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
 warpdrive.forcefield.upgrade.statusLine.cool=cooling
