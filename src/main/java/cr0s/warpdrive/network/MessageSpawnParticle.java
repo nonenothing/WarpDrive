@@ -3,8 +3,8 @@ package cr0s.warpdrive.network;
 import java.nio.charset.StandardCharsets;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.EntityExplodeFX;
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.*;
+import net.minecraft.init.Items;
 import net.minecraft.world.World;
 import io.netty.buffer.ByteBuf;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -23,21 +23,29 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	private String type;
 	private Vector3 origin;
 	private Vector3 direction;
-	private float red;
-	private float green;
-	private float blue;
+	private float baseRed;
+	private float baseGreen;
+	private float baseBlue;
+	private float fadeRed;
+	private float fadeGreen;
+	private float fadeBlue;
 	
 	public MessageSpawnParticle() {
 		// required on receiving side
 	}
 	
-	public MessageSpawnParticle(final String type, final Vector3 origin, final Vector3 direction, final float red, final float green, final float blue) {
+	public MessageSpawnParticle(final String type, final Vector3 origin, final Vector3 direction,
+	                            final float baseRed, final float baseGreen, final float baseBlue,
+	                            final float fadeRed, final float fadeGreen, final float fadeBlue) {
 		this.type = type;
 		this.origin = origin;
 		this.direction = direction;
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
+		this.baseRed = baseRed;
+		this.baseGreen = baseGreen;
+		this.baseBlue = baseBlue;
+		this.fadeRed = fadeRed;
+		this.fadeGreen = fadeGreen;
+		this.fadeBlue = fadeBlue;
 	}
 	
 	@Override
@@ -56,9 +64,12 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		z = buffer.readDouble();
 		direction = new Vector3(x, y, z);
 		
-		red = buffer.readFloat();
-		green = buffer.readFloat();
-		blue = buffer.readFloat();
+		baseRed = buffer.readFloat();
+		baseGreen = buffer.readFloat();
+		baseBlue = buffer.readFloat();
+		fadeRed = buffer.readFloat();
+		fadeGreen = buffer.readFloat();
+		fadeBlue = buffer.readFloat();
 	}
 	
 	@Override
@@ -71,24 +82,57 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		buffer.writeDouble(direction.x);
 		buffer.writeDouble(direction.y);
 		buffer.writeDouble(direction.z);
-		buffer.writeFloat(red);
-		buffer.writeFloat(green);
-		buffer.writeFloat(blue);
+		buffer.writeFloat(baseRed);
+		buffer.writeFloat(baseGreen);
+		buffer.writeFloat(baseBlue);
+		buffer.writeFloat(fadeRed);
+		buffer.writeFloat(fadeGreen);
+		buffer.writeFloat(fadeBlue);
+	}
+	
+	private int integerFromRGB(final float red, final float green, final float blue) {
+		return Math.round(red * 255.0F) << 16
+			+  Math.round(green * 255.0F) << 8
+			+  Math.round(blue * 255.0F);
 	}
 	
 	@SideOnly(Side.CLIENT)
 	private void handle(World worldObj) {
 		// Directly spawn particle as per RenderGlobal.doSpawnParticle, bypassing range check
 		// adjust color as needed
+		EntityFX effect;
 		for (int i = 0; i < 5; i++) {
-			direction = new Vector3(
+			Vector3 directionRandomized = new Vector3(
 					direction.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 					direction.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 					direction.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
-			EntityFX effect = new EntityExplodeFX(worldObj, origin.x, origin.y, origin.z,
-					direction.x, direction.y, direction.z); // TODO: implements other effects
-			if (red >= 0.0F && green >= 0.0F && blue >= 0.0F) {
-				effect.setRBGColorF(red, green, blue);
+			switch (type) {
+			case "explode":
+			default:
+				effect = new EntityExplodeFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
+			
+			case "fireworksSpark":
+				EntityFireworkSparkFX entityFireworkSparkFX = new EntityFireworkSparkFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z,
+					                                                                       FMLClientHandler.instance().getClient().effectRenderer);
+				entityFireworkSparkFX.setFadeColour(integerFromRGB(fadeRed, fadeGreen, fadeBlue));
+				effect = entityFireworkSparkFX;
+				break;
+			
+			case "flame":
+				effect = new EntityFlameFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
+			
+			case "snowballpoof":
+				effect = new EntityBreakingFX(worldObj, origin.x, origin.y, origin.z, Items.snowball);
+				break;
+			
+			case "snowshovel":
+				effect = new EntitySnowShovelFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
+			} 
+			if (baseRed >= 0.0F && baseGreen >= 0.0F && baseBlue >= 0.0F) {
+				effect.setRBGColorF(baseRed, baseGreen, baseBlue);
 			}
 			FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
 		}
@@ -105,7 +149,8 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
 			WarpDrive.logger.info("Received particle effect '" + messageSpawnParticle.type + "' from " + messageSpawnParticle.origin + " toward " + messageSpawnParticle.direction
-				+ " as RGB " + messageSpawnParticle.red + " " + messageSpawnParticle.green + " " + messageSpawnParticle.blue);
+				+ " as RGB " + messageSpawnParticle.baseRed + " " + messageSpawnParticle.baseGreen + " " + messageSpawnParticle.baseBlue
+				+ " fading to " + messageSpawnParticle.fadeRed + " " + messageSpawnParticle.fadeGreen + " " + messageSpawnParticle.fadeBlue);
 		}
 		
 		messageSpawnParticle.handle(Minecraft.getMinecraft().theWorld);

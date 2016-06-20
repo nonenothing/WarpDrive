@@ -162,7 +162,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		float directionZ = yawZ * pitchHorizontal;
 		Vector3 vDirection = new Vector3(directionX, pitchVertical, directionZ);
 		Vector3 vSource = new Vector3(this).translate(0.5D).translate(vDirection);
-		Vector3 vReachPoint = Vector3.translate(vSource.clone(), Vector3.scale(vDirection.clone(), beamLengthBlocks));
+		Vector3 vReachPoint = vSource.clone().translateFactor(vDirection, beamLengthBlocks);
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info(this + " Energy " + energy + " over " + beamLengthBlocks + " blocks"
 					+ ", Orientation " + yaw + " " + pitch
@@ -395,7 +395,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 				-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 				-0.2D * vDirection.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
-			PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, 96);
+			PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, r, g, b, 96);
 			
 			// apply custom damages
 			if (block instanceof IDamageReceiver) {
