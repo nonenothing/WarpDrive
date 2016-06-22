@@ -15,33 +15,34 @@ import net.minecraft.world.World;
 import java.util.*;
 
 public class ForceFieldSetup extends GlobalPosition {
-	private static final float FORCEFIELD_BASE_SCAN_SPEED = 1000;
-	private static final float FORCEFIELD_BASE_PLACE_SPEED = 300;
-	private static final float FORCEFIELD_MAX_SCAN_SPEED = 1000;
-	private static final float FORCEFIELD_MAX_PLACE_SPEED = 300;
+	private static final float FORCEFIELD_BASE_SCAN_SPEED = 500;
+	private static final float FORCEFIELD_BASE_PLACE_SPEED = 100;
+	private static final float FORCEFIELD_MAX_SCAN_SPEED = 500;
+	private static final float FORCEFIELD_MAX_PLACE_SPEED = 100;
 	
 	public final int beamFrequency;
 	public final byte tier;
+	public final Set<TileEntityForceFieldProjector> projectors = new HashSet<>();
+	private int lightCamouflage;
 	private Block blockCamouflage;
 	private int metadataCamouflage;
 	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(0, 1, 4, 5, 6, 8, 7, 12, 13, 14, 16, 17, 20, 23, 29, 30, 31, 39);
 	private final HashMap<IForceFieldUpgradeEffector, Float> upgrades = new HashMap<>(EnumForceFieldUpgrade.length);
-	public float maxScanSpeed;
-	public float maxPlaceSpeed;
+	
+	public float scanSpeed;
+	public float placeSpeed;
 	private float startupEnergyCost;
 	public float scanEnergyCost;
 	public float placeEnergyCost;
 	private float entityEnergyCost;
+	
 	public float disintegrationLevel;
 	public float temperatureLevel;
 	public boolean hasStabilize;
 	public boolean hasFusion;
 	public boolean isInverted;
 	public float thickness;
-	
-	// TODO
-	private final Set<TileEntityForceFieldProjector> projectors = new HashSet<>();
-	public boolean hasPump;
+	public float maxPumpViscosity;
 	
 	// Projector provided properties
 	public float rotationYaw;
@@ -81,14 +82,21 @@ public class ForceFieldSetup extends GlobalPosition {
 		return 0;
 	}
 	
+	public int getCamouflageLight() {
+		if (isValidCamouflage(blockCamouflage)) {
+			return lightCamouflage;
+		}
+		return 0;
+	}
+	
 	private float getScaledUpgrade(final IForceFieldUpgradeEffector effector) {
 		Float scaledValue = upgrades.get(effector);
 		return scaledValue == null ? 0.0F : scaledValue;
 	}
 	
-	public void refresh() {
+	private void refresh() {
 		Set<TileEntity> tileEntities = ForceFieldRegistry.getTileEntities(beamFrequency);
-		HashMap<IForceFieldUpgradeEffector, Integer> upgradeValues = new HashMap<>(EnumForceFieldUpgrade.length);
+		HashMap<IForceFieldUpgradeEffector, Float> upgradeValues = new HashMap<>(EnumForceFieldUpgrade.length);
 		
 		for (TileEntity tileEntity : tileEntities) {
 			// only consider same dimension
@@ -117,44 +125,47 @@ public class ForceFieldSetup extends GlobalPosition {
 			if (tileEntity instanceof IForceFieldUpgrade) {
 				IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)tileEntity).getUpgradeEffector();
 				if (upgradeEffector != null) {
-					Integer currentValue = upgradeValues.get(upgradeEffector);
+					Float currentValue = upgradeValues.get(upgradeEffector);
 					if (currentValue == null) {
-						currentValue = 0;
+						currentValue = 0.0F;
 					}
 					upgradeValues.put(upgradeEffector, currentValue + ((IForceFieldUpgrade)tileEntity).getUpgradeValue());
 					
 					// camouflage identification
-					Block blockCandidate = tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
-					if (isValidCamouflage(blockCandidate)) {
-						blockCamouflage = blockCandidate;
-						metadataCamouflage = tileEntity.getWorldObj().getBlockMetadata(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+					if (upgradeEffector == EnumForceFieldUpgrade.CAMOUFLAGE) {
+						Block blockCandidate = tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+						if (isValidCamouflage(blockCandidate)) {
+							blockCamouflage = blockCandidate;
+							metadataCamouflage = tileEntity.getWorldObj().getBlockMetadata(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+							lightCamouflage = blockCandidate.getLightValue(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+						}
 					}
 				}
 			}
 		}
 		
 		// set default coefficients, depending on projector
-		maxScanSpeed = upgradeValues.get(EnumForceFieldUpgrade.SPEED) != null ? FORCEFIELD_MAX_SCAN_SPEED : FORCEFIELD_BASE_SCAN_SPEED;
-		maxPlaceSpeed = upgradeValues.get(EnumForceFieldUpgrade.SPEED) != null ? FORCEFIELD_MAX_PLACE_SPEED : FORCEFIELD_BASE_PLACE_SPEED;
+		scanSpeed = upgradeValues.get(EnumForceFieldUpgrade.SPEED) != null ? FORCEFIELD_MAX_SCAN_SPEED : FORCEFIELD_BASE_SCAN_SPEED;
+		placeSpeed = upgradeValues.get(EnumForceFieldUpgrade.SPEED) != null ? FORCEFIELD_MAX_PLACE_SPEED : FORCEFIELD_BASE_PLACE_SPEED;
 		startupEnergyCost = 60.0F + 20.0F * tier;
 		scanEnergyCost = 1.0F + 1.0F * tier;
 		placeEnergyCost = 3.0F + 3.0F * tier;
 		entityEnergyCost = 2.0F;
 		
 		// apply scaling
-		float maxSpeed;
-		for (Map.Entry<IForceFieldUpgradeEffector, Integer> entry : upgradeValues.entrySet()) {
+		float speedRatio;
+		for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgradeValues.entrySet()) {
 			float scaledValue = entry.getKey().getScaledValue(1.0F, entry.getValue());
 			if (scaledValue != 0.0F) {
 				upgrades.put(entry.getKey(), scaledValue);
 				
-				maxSpeed = entry.getKey().getMaxScanSpeed(scaledValue);
-				if (maxSpeed > 0.0F) {
-					maxScanSpeed = Math.min(maxScanSpeed, maxSpeed);
+				speedRatio = entry.getKey().getScanSpeedFactor(scaledValue);
+				if (speedRatio > 0.0F) {
+					scanSpeed *= speedRatio;
 				}
-				maxSpeed = entry.getKey().getMaxPlaceSpeed(scaledValue);
-				if (maxSpeed > 0.0F) {
-					maxPlaceSpeed = Math.min(maxPlaceSpeed, maxSpeed);
+				speedRatio = entry.getKey().getPlaceSpeedFactor(scaledValue);
+				if (speedRatio > 0.0F) {
+					placeSpeed *= speedRatio;
 				}
 				
 				startupEnergyCost += entry.getKey().getStartupEnergyCost(scaledValue);
@@ -163,18 +174,20 @@ public class ForceFieldSetup extends GlobalPosition {
 				entityEnergyCost +=  entry.getKey().getEntityEffectEnergyCost(scaledValue);
 			}
 		}
+		scanSpeed = Math.min(FORCEFIELD_MAX_SCAN_SPEED, scanSpeed);
+		placeSpeed = Math.min(FORCEFIELD_MAX_PLACE_SPEED, placeSpeed);
 		
-		// fusion and stabilize just needs to be defined
+		// fusion, inversion and stabilize just needs to be defined
 		hasFusion = getScaledUpgrade(EnumForceFieldUpgrade.FUSION) > 0.0F;
 		isInverted = getScaledUpgrade(EnumForceFieldUpgrade.INVERT) > 0.0F;
-		hasPump = getScaledUpgrade(EnumForceFieldUpgrade.PUMP) > 0.0F;
 		hasStabilize = getScaledUpgrade(EnumForceFieldUpgrade.STABILIZE) > 0.0F;
 		
 		// temperature is a compound of cooling and warming
 		temperatureLevel = getScaledUpgrade(EnumForceFieldUpgrade.WARM) - getScaledUpgrade(EnumForceFieldUpgrade.COOL);
 		
-		// disintegration and thickness is the actual value
+		// disintegration, pump and thickness is the actual value
 		disintegrationLevel = getScaledUpgrade(EnumForceFieldUpgrade.BREAK);
+		maxPumpViscosity = getScaledUpgrade(EnumForceFieldUpgrade.PUMP);
 		thickness = 1.0F + getScaledUpgrade(EnumForceFieldUpgrade.THICKNESS);
 	}
 	

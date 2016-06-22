@@ -1,6 +1,8 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
@@ -17,7 +19,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	private int cache_beamFrequency;
 	private Block cache_blockCamouflage;
 	private int cache_metadataCamouflage;
-	private int gracePeriod_calls = 1;
+	protected int cache_lightCamouflage;
+	
+	// number of projectors check ignored before self-destruction
+	private int gracePeriod_calls = 3;
 	
 	@Override
 	public boolean canUpdate() {
@@ -34,18 +39,21 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				try {
 					cache_blockCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock"));
 					cache_metadataCamouflage = tag.getByte("camouflageMeta");
+					cache_lightCamouflage = tag.getByte("camouflageLight");
 				} catch (Exception exception) {
 					exception.printStackTrace();
 				}
 			} else {
 				cache_blockCamouflage = null;
 				cache_metadataCamouflage = 0;
+				cache_lightCamouflage = 0;
 			}
 		} else {
 			vProjector = null;
 			cache_beamFrequency = -1;
 			cache_blockCamouflage = null;
 			cache_metadataCamouflage = 0;
+			cache_lightCamouflage = 0;
 		}
 	}
 	
@@ -58,6 +66,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			if (cache_blockCamouflage != null) {
 				tagCompound.setString("camouflageBlock", Block.blockRegistry.getNameForObject(cache_blockCamouflage));
 				tagCompound.setByte("camouflageMeta", (byte)cache_metadataCamouflage);
+				tagCompound.setByte("camouflageLight", (byte)cache_lightCamouflage);
 			}
 		}
 	}
@@ -84,6 +93,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
 			cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
 			cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
+			cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
 		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
@@ -103,6 +113,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			gracePeriod_calls--;
 			if (gracePeriod_calls < 0) {
 				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+					WarpDrive.logger.info("Removed an invalid force field with no projector defined at "
+						                      + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+				}
 			}
 		}
 		

@@ -6,13 +6,14 @@ import net.minecraft.world.World;
 public interface IForceFieldUpgradeEffector {
 	// Apply scaling to the sum of all upgrades for this upgrade category
 	// Use this to cap the upgrade or apply non-linear scaling.
-	float getScaledValue(final float ratio, final int upgradeValue);
+	float getScaledValue(final float ratio, final float upgradeValue);
 	
-	// Maximum speed of this upgrade in blocks per projector update
-	// Typical values: 0.3 to 30 blocks per upgrade
-	// Return 0 if the upgrade has no effect
-	float getMaxScanSpeed(final float scaledValue);
-	float getMaxPlaceSpeed(final float scaledValue);
+	// Speed factor of this upgrade
+	// Values above 1.0F will increase the speed
+	// Values below 1.0F will decrease the speed
+	// Return 0 or below if the upgrade has no effect
+	float getScanSpeedFactor(final float scaledValue);
+	float getPlaceSpeedFactor(final float scaledValue);
 	
 	// Energy impacts of this upgrade
 	float getStartupEnergyCost(final float scaledValue);

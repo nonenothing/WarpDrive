@@ -15,7 +15,8 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 	
 	@Override
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-		// not supposed to happen
+		// this is not supposed to happen
+		assert(false);
 	}
 	
 	@Override
@@ -38,61 +39,63 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 		
 		if (renderType >= 0) {
 			try {
-				if (blockCamouflage != null) {
-					renderer.setRenderBoundsFromBlock(blockCamouflage);
-				}
+				blockCamouflage.setBlockBoundsBasedOnState(renderer.blockAccess, x, y, z);
+				renderer.setRenderBoundsFromBlock(blockCamouflage);
 				
 				switch (renderType) {
-					case 1 :
-						renderer.renderCrossedSquares(block, x, y, z);
-						break;
-					case 4 :
-						renderer.renderBlockLiquid(block, x, y, z);
-						break;
-					case 5 :
-						renderer.renderBlockRedstoneWire(block, x, y, z);
-						break;
-					case 6 :
-						renderer.renderBlockCrops(block, x, y, z);
-						break;
-					case 7 :
-						renderer.renderBlockDoor(block, x, y, z);
-						break;
-					case 12 :
-						renderer.renderBlockLever(block, x, y, z);
-						break;
-					case 13 :
-						renderer.renderBlockCactus(block, x, y, z);
-						break;
-					case 14 :
-						renderer.renderBlockBed(block, x, y, z);
-						break;
-					case 16 :
-						renderer.renderPistonBase(block, x, y, z, false);
-						break;
-					case 17 :
-						renderer.renderPistonExtension(block, x, y, z, true);
-						break;
-					case 20 :
-						renderer.renderBlockVine(block, x, y, z);
-						break;
-					case 23 :
-						renderer.renderBlockLilyPad(block, x, y, z);
-						break;
-					case 29 :
-						renderer.renderBlockTripWireSource(block, x, y, z);
-						break;
-					case 30 :
-						renderer.renderBlockTripWire(block, x, y, z);
-						break;
-					case 31 :
-						renderer.renderBlockLog(block, x, y, z);
-						break;
-					case 39 :
-						renderer.renderBlockQuartz(block, x, y, z);
-						break;
-					default:
-						return false;
+				case 0 :
+					renderer.renderStandardBlock(blockCamouflage, x, y, z);
+					break;
+				case 1 :
+					renderer.renderCrossedSquares(blockCamouflage, x, y, z);
+					break;
+				case 4 :
+					renderer.renderBlockLiquid(blockCamouflage, x, y, z);
+					break;
+				case 5 :
+					renderer.renderBlockRedstoneWire(blockCamouflage, x, y, z);
+					break;
+				case 6 :
+					renderer.renderBlockCrops(blockCamouflage, x, y, z);
+					break;
+				case 7 :
+					renderer.renderBlockDoor(blockCamouflage, x, y, z);
+					break;
+				case 12 :
+					renderer.renderBlockLever(blockCamouflage, x, y, z);
+					break;
+				case 13 :
+					renderer.renderBlockCactus(blockCamouflage, x, y, z);
+					break;
+				case 14 :
+					renderer.renderBlockBed(blockCamouflage, x, y, z);
+					break;
+				case 16 :
+					renderer.renderPistonBase(blockCamouflage, x, y, z, false);
+					break;
+				case 17 :
+					renderer.renderPistonExtension(blockCamouflage, x, y, z, true);
+					break;
+				case 20 :
+					renderer.renderBlockVine(blockCamouflage, x, y, z);
+					break;
+				case 23 :
+					renderer.renderBlockLilyPad(blockCamouflage, x, y, z);
+					break;
+				case 29 :
+					renderer.renderBlockTripWireSource(blockCamouflage, x, y, z);
+					break;
+				case 30 :
+					renderer.renderBlockTripWire(blockCamouflage, x, y, z);
+					break;
+				case 31 :
+					renderer.renderBlockLog(blockCamouflage, x, y, z);
+					break;
+				case 39 :
+					renderer.renderBlockQuartz(blockCamouflage, x, y, z);
+					break;
+				default:
+					return false;
 				}
 			} catch(Exception exception) {
 				renderer.renderBlockAsItem(blockCamouflage, metaCamouflage, 1);

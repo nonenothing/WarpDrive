@@ -1,11 +1,14 @@
 package cr0s.warpdrive.block.forcefield;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IForceFieldShape;
 import cr0s.warpdrive.config.*;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.data.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLiquid;
+import net.minecraft.block.BlockStaticLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -18,6 +21,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,8 +33,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private static final int PROJECTOR_PROJECTION_UPDATE_TICKS = 8;
 	private static final int PROJECTOR_SETUP_TICKS = 20;
 	private static final int PROJECTOR_SOUND_UPDATE_TICKS = 200; // TODO
-	private static final int PROJECTOR_SCAN_MAX_BLOCKS_PER_UPDATE = 200;
-	private static final int PROJECTOR_PLACE_MAX_BLOCKS_PER_UPDATE = 100;
 	
 	// persistent properties
 	public boolean isDoubleSided;
@@ -221,30 +224,20 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		// compute maximum number of blocks to scan
 		int countScanned = 0;
-		float floatScanSpeed = Math.min(calculated_forceField.size(), PROJECTOR_SCAN_MAX_BLOCKS_PER_UPDATE);
-		floatScanSpeed = Math.min(forceFieldSetup.maxScanSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F + carryScanSpeed, floatScanSpeed);
+		float floatScanSpeed = Math.min(forceFieldSetup.scanSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F + carryScanSpeed, calculated_forceField.size());
 		int countMaxScanned = (int)Math.floor(floatScanSpeed);
 		carryScanSpeed = floatScanSpeed - countMaxScanned;
 		
 		// compute maximum number of blocks to place
 		int countPlaced = 0;
-		float floatPlaceSpeed = Math.min(calculated_forceField.size(), PROJECTOR_PLACE_MAX_BLOCKS_PER_UPDATE);
-		floatPlaceSpeed = Math.min(forceFieldSetup.maxPlaceSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F + carryPlaceSpeed, floatPlaceSpeed);
+		float floatPlaceSpeed = Math.min(forceFieldSetup.placeSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F + carryPlaceSpeed, calculated_forceField.size());
 		int countMaxPlaced = (int)Math.floor(floatPlaceSpeed);
 		carryPlaceSpeed = floatPlaceSpeed - countMaxPlaced;
 		
-		Set<TileEntityForceFieldProjector> projectors = new HashSet<>();
-		if (forceFieldSetup.hasFusion) {
-			for (TileEntity tileEntity : ForceFieldRegistry.getTileEntities(getBeamFrequency())) {
-				if ( (tileEntity instanceof TileEntityForceFieldProjector)
-					&& (tileEntity != this)
-					&& (((TileEntityForceFieldProjector) tileEntity).worldObj == worldObj)
-					&& (((TileEntityForceFieldProjector) tileEntity).isEnabled)
-					&& (((TileEntityForceFieldProjector) tileEntity).isValid())
-					&& (((TileEntityForceFieldProjector) tileEntity).isCalculated())) {
-					projectors.add((TileEntityForceFieldProjector) tileEntity);
-				}
-			}
+		// evaluate force field block metadata
+		int metadataForceField = Math.min(15, (beamFrequency * 16) / IBeamFrequency.BEAM_FREQUENCY_MAX);
+		if (forceFieldSetup.getCamouflageBlock() != null) {
+			metadataForceField = forceFieldSetup.getCamouflageMetadata();
 		}
 		
 		VectorI vector;
@@ -268,7 +261,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// skip if fusion upgrade is present and it's inside another projector area
 			if (forceFieldSetup.hasFusion) {
-				for (TileEntityForceFieldProjector projector : projectors) {
+				for (TileEntityForceFieldProjector projector : forceFieldSetup.projectors) {
 					if (projector.getInteriorPoints().contains(vector)) {
 						doProjectThisBlock = false;
 						break;
@@ -282,44 +275,77 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				// Liquid, vine and snow are replaceable
 				if ((block == null) || (block == Blocks.tallgrass) || (block == Blocks.deadbush) || Dictionary.BLOCKS_EXPANDABLE.contains(block)) {
 					// all good, continue
+				} else if (block instanceof BlockLiquid) {
+					Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+					doProjectThisBlock = fluid == null || forceFieldSetup.maxPumpViscosity >= fluid.getViscosity();
 				} else if (forceFieldSetup.disintegrationLevel > 0) {
 					float blockHardness = block.getBlockHardness(worldObj, vector.x, vector.y, vector.z);
 					// stops on unbreakable or too hard
 					if (blockHardness == -1.0F || blockHardness > forceFieldSetup.disintegrationLevel) {
 						doProjectThisBlock = false;
 					}
-				} else {// doesn't have disintegration
-					doProjectThisBlock = block.isReplaceable(worldObj, vector.x, vector.y, vector.z);
+				} else {// doesn't have disintegration, not a liquid
+					doProjectThisBlock = block.isReplaceable(worldObj, vector.x, vector.y, vector.z) || (block == WarpDrive.blockForceFields[tier - 1]);
 				}
 			}
 			
 			// skip if area is protected
 			if (doProjectThisBlock) {
-				// TODO: check area protection
+				if (forceFieldSetup.disintegrationLevel > 0) {
+					doProjectThisBlock = ! isBlockBreakCanceled(null, worldObj, vector.x, vector.y, vector.z);
+				} else {
+					doProjectThisBlock = ! isBlockPlaceCanceled(null, worldObj, vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField);
+				}
 			}
 			
 			if (doProjectThisBlock) {
 				if ((block != WarpDrive.blockForceFields[tier - 1]) && (!vector.equals(this))) {
 					boolean hasConsumedEnergy = false;
-					if (forceFieldSetup.disintegrationLevel > 0) {
+					if (block instanceof BlockLiquid) {
+						hasConsumedEnergy = true;
+						if (block instanceof BlockStaticLiquid) {// it's a source block
+							// TODO collect fluid
+						}
+						
+						// TODO add fluid repealing block, temporary work around follows
+						if (forceFieldSetup.isInverted || forceFieldSetup.disintegrationLevel > 0) {
+							worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+						} else {
+							worldObj.setBlock(vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField, 2);
+							
+							TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+							if (tileEntity instanceof TileEntityForceField) {
+								((TileEntityForceField) tileEntity).setProjector(new VectorI(this));
+							}
+							
+							vForceFields.add(vector);
+						}
+						
+					} else if (forceFieldSetup.disintegrationLevel > 0) {
 						// TODO break the block
 						// if (forceFieldSetup.attractionLevel > 10.0F) {
 							// TODO store result in chest
 						// } else {
 							// TODO drop
 						// }
+						
 					} else if (forceFieldSetup.hasStabilize) {
 						// TODO collect from chest
 						// TODO place block (ItemBlock.place?)
-					} else if (forceFieldSetup.hasPump) {
-						// TODO fluid support
-					} else if (forceFieldSetup.temperatureLevel != 0.0F && forceFieldSetup.isInverted) {
+						
+					} else if (forceFieldSetup.isInverted && (forceFieldSetup.temperatureLevel < 295.0F || forceFieldSetup.temperatureLevel > 305.0F)) {
+						if (forceFieldSetup.temperatureLevel > 300.0F) {
+							
+						} else {
+							
+						}
 						// TODO glass <> sandstone <> sand <> gravel <> cobblestone <> stone <> obsidian
 						// TODO ice <> snow <> water <> air > fire
 						// TODO obsidian < lava
+						
 					} else {
 						hasConsumedEnergy = true;
-						worldObj.setBlock(vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], 0, 2);
+						worldObj.setBlock(vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField, 2);
 						
 						TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
 						if (tileEntity instanceof TileEntityForceField) {

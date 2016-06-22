@@ -5,5 +5,5 @@ public interface IForceFieldUpgrade {
 	IForceFieldUpgradeEffector getUpgradeEffector();
 	
 	// Bonus provided to this upgrade category (can be positive or negative)
-	int getUpgradeValue();
+	float getUpgradeValue();
 }

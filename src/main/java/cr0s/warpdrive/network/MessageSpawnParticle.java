@@ -91,9 +91,9 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	}
 	
 	private int integerFromRGB(final float red, final float green, final float blue) {
-		return Math.round(red * 255.0F) << 16
-			+  Math.round(green * 255.0F) << 8
-			+  Math.round(blue * 255.0F);
+		return (Math.round(red * 255.0F) << 16)
+			+  (Math.round(green * 255.0F) << 8)
+			+   Math.round(blue * 255.0F);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -101,11 +101,12 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		// Directly spawn particle as per RenderGlobal.doSpawnParticle, bypassing range check
 		// adjust color as needed
 		EntityFX effect;
+		double noiseLevel = direction.getMagnitude() * 0.35D;
 		for (int i = 0; i < 5; i++) {
 			Vector3 directionRandomized = new Vector3(
-					direction.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
-					direction.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
-					direction.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
+					direction.x + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
+					direction.y + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
+					direction.z + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
 			switch (type) {
 			case "explode":
 			default:
