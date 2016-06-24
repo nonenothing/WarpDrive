@@ -96,19 +96,18 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	String getBeamFrequencyStatus() {
-		if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid",
-				beamFrequency);
+		if (beamFrequency == -1) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.undefined");
+		} else if (beamFrequency < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid", beamFrequency);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid",
-				beamFrequency);
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid", beamFrequency);
 		}
 	}
 	
 	public String getStatus() {
 		String strEnergyStatus = getEnergyStatus();
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-			getBlockType().getLocalizedName())
+		return (worldObj != null ? StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : "")
 			+ getBeamFrequencyStatus()
 			+ (strEnergyStatus.isEmpty() ? "" : "\n" + strEnergyStatus);
 	}

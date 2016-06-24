@@ -1,7 +1,10 @@
 package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
+import net.minecraft.world.World;
 
 import java.util.List;
 
@@ -75,6 +79,12 @@ public class ItemForceFieldUpgrade extends Item {
 	}
 	
 	@Override
+	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
+		Block block = world.getBlock(x, y, z);
+		return block instanceof BlockForceFieldRelay || block instanceof BlockForceFieldProjector || super.doesSneakBypassUse(world, x, y, z, player);
+	}
+	
+	@Override
 	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
@@ -87,5 +97,16 @@ public class ItemForceFieldUpgrade extends Item {
 		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
 			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
 		}
+		
+		WarpDrive.addTooltip(list, "\n");
+		
+		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
+		if (enumForceFieldUpgrade.allowOnProjector) {
+			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.projector"));
+		}
+		if (enumForceFieldUpgrade.allowOnRelay) {
+			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.relay"));
+		}
+		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount"));
 	}
 }

@@ -1,9 +1,11 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldShape;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,34 +17,36 @@ import net.minecraft.world.World;
 import java.util.*;
 
 public class ForceFieldSetup extends GlobalPosition {
-	private static final float FORCEFIELD_BASE_SCAN_SPEED = 500;
-	private static final float FORCEFIELD_BASE_PLACE_SPEED = 100;
-	private static final float FORCEFIELD_MAX_SCAN_SPEED = 500;
-	private static final float FORCEFIELD_MAX_PLACE_SPEED = 100;
+	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 500;
+	private static final float FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND = 100;
+	private static final float FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND = 50000;
+	private static final float FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND = 20000;
 	
 	public final int beamFrequency;
 	public final byte tier;
 	public final Set<TileEntityForceFieldProjector> projectors = new HashSet<>();
-	private int lightCamouflage;
 	private Block blockCamouflage;
 	private int metadataCamouflage;
-	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(0, 1, 4, 5, 6, 8, 7, 12, 13, 14, 16, 17, 20, 23, 29, 30, 31, 39);
+	private int colorMultiplierCamouflage;
+	private int lightCamouflage;
+	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(
+		0, 1, 2, 3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41);
 	private final HashMap<IForceFieldUpgradeEffector, Float> upgrades = new HashMap<>(EnumForceFieldUpgrade.length);
 	
 	public float scanSpeed;
 	public float placeSpeed;
-	private float startupEnergyCost;
-	public float scanEnergyCost;
-	public float placeEnergyCost;
-	private float entityEnergyCost;
+	public int startupEnergyCost;
+	public int scanEnergyCost;
+	public int placeEnergyCost;
+	private int entityEnergyCost;
 	
-	public float disintegrationLevel;
+	public float breaking_maxHardness;
 	public float temperatureLevel;
 	public boolean hasStabilize;
 	public boolean hasFusion;
 	public boolean isInverted;
 	public float thickness;
-	public float maxPumpViscosity;
+	public float pumping_maxViscosity;
 	
 	// Projector provided properties
 	public float rotationYaw;
@@ -58,6 +62,16 @@ public class ForceFieldSetup extends GlobalPosition {
 		this.tier = tier;
 		this.beamFrequency = beamFrequency;
 		refresh();
+		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+			WarpDrive.logger.info("Force field projector energy costs:" 
+				                      + " startup " + startupEnergyCost
+				                      + " / " + Math.round(startupEnergyCost + placeEnergyCost * placeSpeed * TileEntityForceFieldProjector.PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F)
+				                      + " scan " + scanEnergyCost
+				                      + " place " + placeEnergyCost
+				                      + " entity " + entityEnergyCost
+				                      + " speeds: scan " + scanSpeed
+				                      + " place " + placeSpeed);
+		}
 	}
 	
 	public boolean isAccessGranted(EntityPlayer entityPlayer, PermissionNode permissionNode) {
@@ -78,6 +92,13 @@ public class ForceFieldSetup extends GlobalPosition {
 	public int getCamouflageMetadata() {
 		if (isValidCamouflage(blockCamouflage)) {
 			return metadataCamouflage;
+		}
+		return 0;
+	}
+	
+	public int getCamouflageColorMultiplier() {
+		if (isValidCamouflage(blockCamouflage)) {
+			return colorMultiplierCamouflage;
 		}
 		return 0;
 	}
@@ -137,6 +158,7 @@ public class ForceFieldSetup extends GlobalPosition {
 						if (isValidCamouflage(blockCandidate)) {
 							blockCamouflage = blockCandidate;
 							metadataCamouflage = tileEntity.getWorldObj().getBlockMetadata(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+							colorMultiplierCamouflage = blockCandidate.colorMultiplier(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
 							lightCamouflage = blockCandidate.getLightValue(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
 						}
 					}
@@ -145,12 +167,12 @@ public class ForceFieldSetup extends GlobalPosition {
 		}
 		
 		// set default coefficients, depending on projector
-		scanSpeed = upgradeValues.get(EnumForceFieldUpgrade.SPEED) != null ? FORCEFIELD_MAX_SCAN_SPEED : FORCEFIELD_BASE_SCAN_SPEED;
-		placeSpeed = upgradeValues.get(EnumForceFieldUpgrade.SPEED) != null ? FORCEFIELD_MAX_PLACE_SPEED : FORCEFIELD_BASE_PLACE_SPEED;
-		startupEnergyCost = 60.0F + 20.0F * tier;
-		scanEnergyCost = 1.0F + 1.0F * tier;
-		placeEnergyCost = 3.0F + 3.0F * tier;
-		entityEnergyCost = 2.0F;
+		scanSpeed = FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND;
+		placeSpeed = FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND;
+		float startupEnergyCost = 60.0F + 20.0F * tier;
+		float scanEnergyCost = 1.0F + 1.0F * tier;
+		float placeEnergyCost = 3.0F + 3.0F * tier;
+		float entityEnergyCost = 2.0F;
 		
 		// apply scaling
 		float speedRatio;
@@ -174,20 +196,26 @@ public class ForceFieldSetup extends GlobalPosition {
 				entityEnergyCost +=  entry.getKey().getEntityEffectEnergyCost(scaledValue);
 			}
 		}
-		scanSpeed = Math.min(FORCEFIELD_MAX_SCAN_SPEED, scanSpeed);
-		placeSpeed = Math.min(FORCEFIELD_MAX_PLACE_SPEED, placeSpeed);
+		// finalize coefficients
+		scanSpeed = Math.min(FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND, scanSpeed);
+		placeSpeed = Math.min(FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND, placeSpeed);
+		this.startupEnergyCost = Math.round(startupEnergyCost);
+		this.scanEnergyCost = Math.round(scanEnergyCost);
+		this.placeEnergyCost = Math.round(placeEnergyCost);
+		this.entityEnergyCost = Math.round(entityEnergyCost);
+		
 		
 		// fusion, inversion and stabilize just needs to be defined
 		hasFusion = getScaledUpgrade(EnumForceFieldUpgrade.FUSION) > 0.0F;
-		isInverted = getScaledUpgrade(EnumForceFieldUpgrade.INVERT) > 0.0F;
-		hasStabilize = getScaledUpgrade(EnumForceFieldUpgrade.STABILIZE) > 0.0F;
+		isInverted = getScaledUpgrade(EnumForceFieldUpgrade.INVERSION) > 0.0F;
+		hasStabilize = getScaledUpgrade(EnumForceFieldUpgrade.STABILIZATION) > 0.0F;
 		
-		// temperature is a compound of cooling and warming
-		temperatureLevel = getScaledUpgrade(EnumForceFieldUpgrade.WARM) - getScaledUpgrade(EnumForceFieldUpgrade.COOL);
+		// temperature is a compound of cooling and heating
+		temperatureLevel = getScaledUpgrade(EnumForceFieldUpgrade.HEATING) - getScaledUpgrade(EnumForceFieldUpgrade.COOLING);
 		
 		// disintegration, pump and thickness is the actual value
-		disintegrationLevel = getScaledUpgrade(EnumForceFieldUpgrade.BREAK);
-		maxPumpViscosity = getScaledUpgrade(EnumForceFieldUpgrade.PUMP);
+		breaking_maxHardness = getScaledUpgrade(EnumForceFieldUpgrade.BREAKING);
+		pumping_maxViscosity = getScaledUpgrade(EnumForceFieldUpgrade.PUMPING);
 		thickness = 1.0F + getScaledUpgrade(EnumForceFieldUpgrade.THICKNESS);
 	}
 	
@@ -208,8 +236,15 @@ public class ForceFieldSetup extends GlobalPosition {
 		return countdown;
 	}
 	
-	public int applyDamages(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
-		// TODO
-		return 0;
+	public int applyDamage(World world, final DamageSource damageSource, final int damageLevel) {
+		assert(damageSource != null);
+		TileEntity tileEntity = world.getTileEntity(this.x, this.y, this.z);
+		if (tileEntity instanceof TileEntityForceFieldProjector) {
+			float scaledDamage = damageLevel * entityEnergyCost / 20000.0F;
+			int energyCost = (int)Math.floor(scaledDamage) + (world.rand.nextFloat() <= scaledDamage - Math.floor(scaledDamage) ? 1 : 0);
+			((TileEntityForceFieldProjector)tileEntity).consumeEnergy(energyCost, false);
+			return 0;
+		}
+		return damageLevel;
 	}
 }

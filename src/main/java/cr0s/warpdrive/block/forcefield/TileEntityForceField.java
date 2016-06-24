@@ -17,8 +17,9 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 
 	// cache parameters used for rendering, force projector check for others
 	private int cache_beamFrequency;
-	private Block cache_blockCamouflage;
-	private int cache_metadataCamouflage;
+	public Block cache_blockCamouflage;
+	public int cache_metadataCamouflage;
+	protected int cache_colorMultiplierCamouflage;
 	protected int cache_lightCamouflage;
 	
 	// number of projectors check ignored before self-destruction
@@ -39,6 +40,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				try {
 					cache_blockCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock"));
 					cache_metadataCamouflage = tag.getByte("camouflageMeta");
+					cache_colorMultiplierCamouflage = tag.getInteger("camouflageColorMultiplier");
 					cache_lightCamouflage = tag.getByte("camouflageLight");
 				} catch (Exception exception) {
 					exception.printStackTrace();
@@ -46,6 +48,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			} else {
 				cache_blockCamouflage = null;
 				cache_metadataCamouflage = 0;
+				cache_colorMultiplierCamouflage = 0;
 				cache_lightCamouflage = 0;
 			}
 		} else {
@@ -53,6 +56,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			cache_beamFrequency = -1;
 			cache_blockCamouflage = null;
 			cache_metadataCamouflage = 0;
+			cache_colorMultiplierCamouflage = 0;
 			cache_lightCamouflage = 0;
 		}
 	}
@@ -66,6 +70,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			if (cache_blockCamouflage != null) {
 				tagCompound.setString("camouflageBlock", Block.blockRegistry.getNameForObject(cache_blockCamouflage));
 				tagCompound.setByte("camouflageMeta", (byte)cache_metadataCamouflage);
+				tagCompound.setInteger("camouflageColorMultiplier", cache_colorMultiplierCamouflage);
 				tagCompound.setByte("camouflageLight", (byte)cache_lightCamouflage);
 			}
 		}
@@ -83,7 +88,6 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
-		// worldObj.markBlockForUpdate(xCoord, yCoord, zCoord); // TODO is it needed?
 	}
 	
 	public void setProjector(final VectorI vectorI) {
@@ -93,6 +97,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
 			cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
 			cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
+			cache_colorMultiplierCamouflage = forceFieldSetup.getCamouflageColorMultiplier();
 			cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
 		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);

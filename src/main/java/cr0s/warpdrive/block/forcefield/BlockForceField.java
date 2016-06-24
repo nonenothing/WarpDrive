@@ -27,6 +27,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -201,18 +202,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Override
 	public int colorMultiplier(IBlockAccess blockAccess, int x, int y, int z) {
 		TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-		if (tileEntity instanceof TileEntityForceField) {
-			ForceFieldSetup forceFieldSetup = ((TileEntityForceField)tileEntity).getForceFieldSetup();
-			if (forceFieldSetup != null) {
-				Block blockCamouflage = forceFieldSetup.getCamouflageBlock();
-				if (blockCamouflage != null) {
-					try {
-						return blockCamouflage.colorMultiplier(blockAccess, x, y, z);
-					} catch (Exception exception) {
-						exception.printStackTrace();
-					}
-				}
-			}
+		if (tileEntity instanceof TileEntityForceField && ((TileEntityForceField)tileEntity).cache_blockCamouflage != null) {
+			return ((TileEntityForceField)tileEntity).cache_colorMultiplierCamouflage;
 		}
 		
 		return super.colorMultiplier(blockAccess, x, y, z);
@@ -223,36 +214,110 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField)tileEntity).cache_lightCamouflage;
-			/*
-			ForceFieldSetup forceFieldSetup = ((TileEntityForceField)tileEntity).getForceFieldSetup();
-			if (forceFieldSetup != null) {
-				Block blockCamouflage = forceFieldSetup.getCamouflageBlock();
-				if (blockCamouflage != null) {
-					try {
-						return blockCamouflage.getLightValue(blockAccess, x, y, z);
-					} catch (Exception exception) {
-						exception.printStackTrace();
-					}
-				}
-			}
-			/**/
 		}
 		
 		return 0;
 	}
 	
+	private double log_explosionX;
+	private double log_explosionY = -1;
+	private double log_explosionZ;
 	@Override
-	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getExplosionResistance(Entity entity, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ) {
+		boolean enableFirstHit = (log_explosionX != explosionX || log_explosionY != explosionY || log_explosionZ != explosionZ); 
+		if (enableFirstHit) {
+			log_explosionX = explosionX;
+			log_explosionY = explosionY;
+			log_explosionZ = explosionZ;
+			if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+				WarpDrive.logger.info("BlockForceField(" + tier + " at " + x + " " + y + " " + z + ")"
+					                      + ".getExplosionResistance" + ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ));
+			}
+		}
+		
+		// find explosion strength, defaults to no effect
+		float strength = 0.0F;
+		if (entity == null && (explosionX == Math.rint(explosionX)) && (explosionY == Math.rint(explosionY)) && (explosionZ == Math.rint(explosionZ)) ) {
+			// IC2 Reactor blowing up => bloc is already air
+			Block block = world.getBlock((int)explosionX, (int)explosionY, (int)explosionZ);
+			TileEntity tileEntity = world.getTileEntity((int)explosionX, (int)explosionY, (int)explosionZ);
+			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
+				WarpDrive.logger.info("Block at location is " + block + " " + block.getUnlocalizedName() + " with tileEntity " + tileEntity);
+			}
+		}
+		
+		if (entity != null) {
+			switch (entity.getClass().toString()) {
+			case "class net.minecraft.entity.item.EntityEnderCrystal": strength = 6.0F; break;
+			case "class net.minecraft.entity.item.EntityMinecartTNT": strength = 4.0F; break;
+			case "class net.minecraft.entity.item.EntityTNTPrimed": strength = 5.0F; break;
+			case "class net.minecraft.entity.monster.EntityCreeper": strength = 3.0F; break;  // *2 for powered ones
+			case "class appeng.entity.EntityTinyTNTPrimed": strength = 0.2F; break;
+			case "class ic2.core.block.EntityItnt": strength = 5.5F; break;
+			case "class ic2.core.block.EntityNuke": strength = 42.0F; break;
+			case "class ic2.core.block.EntityDynamite": strength = 1.0F; break;
+			case "class ic2.core.block.EntityStickyDynamite": strength = 1.0F; break;
+			default:
+				if (enableFirstHit) {
+					WarpDrive.logger.error("Unknown explosion source " + entity.getClass().toString() + " " + entity);
+				}
+				break;
+			}
+		}
+		
+		// apply damages to force field by consuming energy
+		Explosion explosion = new Explosion(world, entity, explosionX, explosionY, explosionZ, 4.0F);
+		Vector3 vDirection = new Vector3(x + 0.5D - explosionX, y + 0.5D - explosionY, z + 0.5D - explosionZ);
+		float magnitude = Math.max(1.0F, (float)vDirection.getMagnitude());
+		if (magnitude != 0) {// normalize
+			vDirection.scale(1 / magnitude);
+		}
+		int damageLevel = Math.round(strength * 1000.0F / magnitude);
+		int damageLeft = applyDamage(world, x, y, z, DamageSource.setExplosionSource(explosion), 0, vDirection, damageLevel);
+		assert(damageLeft >= 0);
+		return 1.0F * super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
+	}
+	
+	@Override
+	public boolean canDropFromExplosion(Explosion p_149659_1_) {
+		return false;
+	}
+	
+	@Override
+	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
+		if (tier > 0) {
+			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 1], world.getBlockMetadata(x, y, z), 2);
+			super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
+			return;
+		}
+		super.onBlockExploded(world, x, y, z, explosion);
+	}
+	
+	@Override
+	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion explosion) {
+		// (block is already set to air by caller, see IC2 iTNT)
+		if (tier > 0) {
+			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 1], 0, 2);
+			super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
+			return;
+		}
+		super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
+	}
+	
+	@Override
+	public float getBlockHardness(World world, final int x, final int y, final int z,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(World world, final int x, final int y, final int z, final DamageSource damageSource,
+	                       final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
-			return forceFieldSetup.applyDamages(world, x, y, z, damageSource, damageParameter, damageDirection, damageLevel);
+			return forceFieldSetup.applyDamage(world, damageSource, damageLevel);
 		}
 		
-		return 0;
+		return damageLevel;
 	}
 }

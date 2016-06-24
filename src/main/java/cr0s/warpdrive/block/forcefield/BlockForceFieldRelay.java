@@ -7,13 +7,12 @@ import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -84,46 +83,63 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		TileEntityForceFieldRelay tileEntityForceFieldRelay = (TileEntityForceFieldRelay) tileEntity;
 		ItemStack itemStackHeld = entityPlayer.getHeldItem();
 		
-		if (itemStackHeld == null) {
-			if (entityPlayer.isSneaking()) {
-				if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
-					// dismount the upgrade item(s)
+		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
+		if (entityPlayer.isSneaking()) {
+			if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
+				if (!entityPlayer.capabilities.isCreativeMode) {
+					// dismount the upgrade item
 					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
 					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.delayBeforeCanPickup = 0;
 					world.spawnEntityInWorld(entityItem);
-					tileEntityForceFieldRelay.setUpgrade(EnumForceFieldUpgrade.NONE);
-				} else {
-					// no upgrade to dismount TODO
-					WarpDrive.addChatMessage(entityPlayer, tileEntityForceFieldRelay.getStatus());
-					return true;
 				}
+				
+				tileEntityForceFieldRelay.setUpgrade(EnumForceFieldUpgrade.NONE);
+				// upgrade dismounted
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.dismounted"));
+				
 			} else {
-				WarpDrive.addChatMessage(entityPlayer, tileEntityForceFieldRelay.getStatus());
+				// no more upgrades to dismount
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.noUpgradeToDismount"));
 				return true;
 			}
+			
+		} else if (itemStackHeld == null) {// no sneaking and no item in hand to show status
+			WarpDrive.addChatMessage(entityPlayer, tileEntityForceFieldRelay.getStatus());
+			return true;
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldUpgrade) {
-			// validate quantity
-			if (itemStackHeld.stackSize < 1) {
-				// not enough upgrade items TODO
-				WarpDrive.addChatMessage(entityPlayer, tileEntityForceFieldRelay.getStatus());
+			// validate type
+			if (!EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()).allowOnRelay) {
+				// invalid upgrade type
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidUpgrade"));
 				return true;
 			}
 			
-			// update player inventory
-			itemStackHeld.stackSize -= 1;
-			
-			// dismount the shape item(s)
-			if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
-				ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
-				EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
-				entityItem.delayBeforeCanPickup = 0;
-				world.spawnEntityInWorld(entityItem);
+			// validate quantity
+			if (itemStackHeld.stackSize < 1) {
+				// not enough upgrade items
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
+				return true;
 			}
 			
-			// mount the new upgrade item(s)
+			if (!entityPlayer.capabilities.isCreativeMode) {
+				// update player inventory
+				itemStackHeld.stackSize -= 1;
+				
+				// dismount the current upgrade item
+				if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
+					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
+					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					entityItem.delayBeforeCanPickup = 0;
+					world.spawnEntityInWorld(entityItem);
+				}
+			}
+			
+			// mount the new upgrade item
 			tileEntityForceFieldRelay.setUpgrade(EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()));
+			// upgrade mounted
+			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.mounted"));
 		}
 		
 		return false;
@@ -132,9 +148,5 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@Override
 	public TileEntity createNewTileEntity(World world, int metadata) {
 		return new TileEntityForceFieldRelay();
-	}
-	
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
-		return null; // FIXME
 	}
 }
