@@ -522,12 +522,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	}
 	
 	protected String getBeamFrequencyStatus() {
-		if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid",
-					beamFrequency );
+		if (beamFrequency == -1) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.undefined");
+		} else if (beamFrequency < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid", beamFrequency );
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid",
-					beamFrequency );
+			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid", beamFrequency );
 		}
 	}
 	

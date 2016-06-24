@@ -124,7 +124,7 @@ public class ItemTuningFork extends Item {
 		tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.videoChannel", getVideoChannel(itemStack));
 		tooltip += "\n" + StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.beamFrequency", getBeamFrequency(itemStack));
 		
-		tooltip += StatCollector.translateToLocal("item.warpdrive.tool.TuningFork.tooltip.usage");
+		tooltip += "\n\n" + StatCollector.translateToLocal("item.warpdrive.tool.TuningFork.tooltip.usage");
 		
 		WarpDrive.addTooltip(list, tooltip);
 	}

@@ -80,24 +80,23 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	}
 	
 	private String getVideoChannelStatus() {
-		if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
-					videoChannel );
+		if (videoChannel == -1) {
+			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+		} else if (videoChannel < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid",
-						videoChannel );
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid",
-						videoChannel );
+				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
 			} else {
 				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
 						videoChannel,
 						camera.position.chunkPosX,
 						camera.position.chunkPosY,
-						camera.position.chunkPosZ );
+						camera.position.chunkPosZ);
 			}
 		}
 	}
