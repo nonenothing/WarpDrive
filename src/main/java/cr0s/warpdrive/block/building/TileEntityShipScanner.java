@@ -20,6 +20,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -486,7 +487,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// Load Tile Entities
 		NBTTagCompound[] tileEntities = new NBTTagCompound[blocksToDeployCount];
-		NBTTagList tagListTileEntities = schematic.getTagList("TileEntities", new NBTTagByteArray(new byte[0]).getId()); //TODO: 0 is not correct
+		NBTTagList tagListTileEntities = schematic.getTagList("TileEntities", Constants.NBT.TAG_BYTE_ARRAY);
 		
 		for (int i = 0; i < tagListTileEntities.tagCount(); i++) {
 			NBTTagCompound tagTileEntity = tagListTileEntities.getCompoundTagAt(i);

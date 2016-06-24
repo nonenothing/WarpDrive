@@ -15,6 +15,7 @@ import net.minecraft.util.ChunkCoordinates;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import net.minecraftforge.common.util.Constants;
 
 public class CompatEnderIO implements IBlockTransformer {
 	
@@ -53,9 +54,6 @@ public class CompatEnderIO implements IBlockTransformer {
 	}
 	
 	private static final short[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
-	private static final byte NBTTagByteArrayId = 7; // new NBTTagByteArray(null).getId();
-	private static final byte NBTTagCompoundId = 10; // new NBTTagCompound().getId();
-	private static final byte NBTTagIntArrayId = 11; // new NBTTagIntArray(null).getId();
 	private static final Map<String, String> rotSideNames;
 	private static final Map<String, String> rotFaceNames;
 	static {
@@ -105,7 +103,7 @@ public class CompatEnderIO implements IBlockTransformer {
 		for (String key : keys) {
 			NBTBase base = nbtConduit.getTag(key);
 			switch(base.getId()) {
-			case NBTTagIntArrayId:	// "connections", "externalConnections"
+			case Constants.NBT.TAG_INT_ARRAY:	// "connections", "externalConnections"
 				int[] data = nbtConduit.getIntArray(key);
 				int[] newData = data.clone();
 				for (int index = 0; index < data.length; index++) {
@@ -126,7 +124,7 @@ public class CompatEnderIO implements IBlockTransformer {
 				nbtNewConduit.setIntArray(key, newData);
 				break;
 				
-			case NBTTagByteArrayId:	// "conModes", "signalColors", "forcedConnections", "signalStrengths"
+			case Constants.NBT.TAG_BYTE_ARRAY:	// "conModes", "signalColors", "forcedConnections", "signalStrengths"
 				nbtNewConduit.setByteArray(key, rotate_byteArray(rotationSteps, nbtConduit.getByteArray(key)));
 				break;
 				
@@ -156,7 +154,7 @@ public class CompatEnderIO implements IBlockTransformer {
 		return nbtNewConduit;
 	}
 	
-	public void rotateReservoir(NBTTagCompound nbtTileEntity, final ITransformation transformation, final byte rotationSteps) {
+	private void rotateReservoir(NBTTagCompound nbtTileEntity, final ITransformation transformation, final byte rotationSteps) {
 		if (nbtTileEntity.hasKey("front")) {
 			short front = nbtTileEntity.getShort("front");
 			switch (rotationSteps) {
@@ -291,7 +289,7 @@ public class CompatEnderIO implements IBlockTransformer {
 		
 		// Conduits
 		if (nbtTileEntity.hasKey("conduits")) {
-			NBTTagList nbtConduits = nbtTileEntity.getTagList("conduits", NBTTagCompoundId);
+			NBTTagList nbtConduits = nbtTileEntity.getTagList("conduits", Constants.NBT.TAG_COMPOUND);
 			NBTTagList nbtNewConduits = new NBTTagList(); 
 			for (int index = 0; index < nbtConduits.tagCount(); index++) {
 				NBTTagCompound conduitTypeAndContent = nbtConduits.getCompoundTagAt(index);
