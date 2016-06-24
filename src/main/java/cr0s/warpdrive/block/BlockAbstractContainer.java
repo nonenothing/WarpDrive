@@ -1,11 +1,15 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
@@ -32,8 +36,8 @@ public abstract class BlockAbstractContainer extends BlockContainer {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemstack) {
-		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemstack);
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		if (isRotating) {
 			if (entityLiving != null) {
 				int metadata;
@@ -64,6 +68,50 @@ public abstract class BlockAbstractContainer extends BlockContainer {
 				world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
 			}
 		}
+		
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (itemStack.hasTagCompound()) {
+			NBTTagCompound nbtTagCompound = (NBTTagCompound)itemStack.getTagCompound().copy();
+			nbtTagCompound.setInteger("x", x);
+			nbtTagCompound.setInteger("y", y);
+			nbtTagCompound.setInteger("z", z);
+			tileEntity.readFromNBT(nbtTagCompound);
+			world.markBlockForUpdate(x, y, z);
+		}
+	}
+	
+	@Override
+	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
+		return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
+	}
+	
+	@Override
+	protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack itemStack) {
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity == null) {
+			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
+		} else {
+			NBTTagCompound nbtTagCompound = new NBTTagCompound();
+			tileEntity.writeToNBT(nbtTagCompound);
+			nbtTagCompound.removeTag("x");
+			nbtTagCompound.removeTag("y");
+			nbtTagCompound.removeTag("z");
+			itemStack.setTagCompound(nbtTagCompound);
+		}
+		world.setBlockToAir(x, y, z);
+		super.dropBlockAsItem(world, x, y, z, itemStack);
+	}
+	
+	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
+		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		tileEntity.writeToNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("x");
+		nbtTagCompound.removeTag("y");
+		nbtTagCompound.removeTag("z");
+		itemStack.setTagCompound(nbtTagCompound);
+		return itemStack;
 	}
 	
 	@Override

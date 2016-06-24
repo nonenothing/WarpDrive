@@ -411,12 +411,12 @@ public class WarpDrive implements LoadingCallback {
 			
 			// FORCE FIELD PROJECTOR
 			blockForceFieldProjectors[index] = new BlockForceFieldProjector(tier);
-			GameRegistry.registerBlock(blockForceFieldProjectors[index], "blockProjector" + tier);
+			GameRegistry.registerBlock(blockForceFieldProjectors[index], ItemBlockForceFieldProjector.class, "blockProjector" + tier);
 			GameRegistry.registerTileEntity(TileEntityForceFieldProjector.class, MODID + ":blockProjector" + tier);
-
+			
 			// FORCE FIELD RELAY
 			blockForceFieldRelays[index] = new BlockForceFieldRelay(tier);
-			GameRegistry.registerBlock(blockForceFieldRelays[index], "blockForceFieldRelay" + tier);
+			GameRegistry.registerBlock(blockForceFieldRelays[index], ItemBlockForceFieldRelay.class, "blockForceFieldRelay" + tier);
 			GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, MODID + ":blockForceFieldRelay" + tier);
 		}
 		/* TODO
