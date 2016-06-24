@@ -40,7 +40,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	private Object[] cofhEnergyReceivers;
 	
-	protected final HashMap<UpgradeType,Integer> upgrades = new HashMap<>();
+	@Deprecated
+	protected final HashMap<UpgradeType,Integer> deprecated_upgrades = new HashMap<>();
 	
 	public TileEntityAbstractEnergy() {
 		super();
@@ -56,8 +57,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		for(UpgradeType type : UpgradeType.values())
 		{
 			int am = 0;
-			if(upgrades.containsKey(type))
-				am = upgrades.get(type);
+			if(deprecated_upgrades.containsKey(type))
+				am = deprecated_upgrades.get(type);
 			retVal[type.ordinal()] = type + ":" + am;
 		}	
 		return retVal;
@@ -127,18 +128,18 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 */
 	public boolean consumeEnergy(int amount_internal, boolean simulate) {
 		int amountUpgraded = amount_internal;
-		if (upgrades.containsKey(UpgradeType.Power)) {
-			double valueMul = Math.pow(0.8, upgrades.get(UpgradeType.Power));
+		if (deprecated_upgrades.containsKey(UpgradeType.Power)) {
+			double valueMul = Math.pow(0.8, deprecated_upgrades.get(UpgradeType.Power));
 			amountUpgraded = (int) Math.ceil(valueMul * amountUpgraded);
 		}
 		
-		if (upgrades.containsKey(UpgradeType.Range)) {
-			double valueMul = Math.pow(1.2, upgrades.get(UpgradeType.Range));
+		if (deprecated_upgrades.containsKey(UpgradeType.Range)) {
+			double valueMul = Math.pow(1.2, deprecated_upgrades.get(UpgradeType.Range));
 			amountUpgraded = (int) Math.ceil(valueMul * amountUpgraded);
 		}
 		
-		if (upgrades.containsKey(UpgradeType.Speed)) {
-			double valueMul = Math.pow(1.2, upgrades.get(UpgradeType.Speed));
+		if (deprecated_upgrades.containsKey(UpgradeType.Speed)) {
+			double valueMul = Math.pow(1.2, deprecated_upgrades.get(UpgradeType.Speed));
 			amountUpgraded = (int) Math.ceil(valueMul * amountUpgraded);
 		}
 		// FIXME: upgrades balancing & implementation to be done...
@@ -420,7 +421,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			NBTTagCompound upgradeTag = tag.getCompoundTag("upgrades");
 			for (UpgradeType type : UpgradeType.values()) {
 				if (upgradeTag.hasKey(type.toString()) && upgradeTag.getInteger(type.toString()) != 0) {
-					upgrades.put(type, upgradeTag.getInteger(type.toString()));
+					deprecated_upgrades.put(type, upgradeTag.getInteger(type.toString()));
 				}
 			}
 		}
@@ -433,11 +434,11 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			energyStored_internal = 0;
 		}
 		tag.setInteger("energy", energyStored_internal);
-		if (!upgrades.isEmpty()) {
+		if (!deprecated_upgrades.isEmpty()) {
 			NBTTagCompound upgradeTag = new NBTTagCompound();
 			for (UpgradeType type : UpgradeType.values()) {
-				if (upgrades.containsKey(type)) {
-					upgradeTag.setInteger(type.toString(), upgrades.get(type));
+				if (deprecated_upgrades.containsKey(type)) {
+					upgradeTag.setInteger(type.toString(), deprecated_upgrades.get(type));
 				}
 			}
 			tag.setTag("upgrades", upgradeTag);

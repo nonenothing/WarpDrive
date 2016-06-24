@@ -170,16 +170,16 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 		if(max == 0)
 			return false;
 
-		if(upgrades.containsKey(upgradeType))
-			if(upgrades.get(upgradeType) >= max)
+		if(deprecated_upgrades.containsKey(upgradeType))
+			if(deprecated_upgrades.get(upgradeType) >= max)
 				return false;
 
 		if(!simulate)
 		{
 			int c = 0;
-			if(upgrades.containsKey(upgradeType))
-				c = upgrades.get(upgradeType);
-			upgrades.put(upgradeType, c+1);
+			if(deprecated_upgrades.containsKey(upgradeType))
+				c = deprecated_upgrades.get(upgradeType);
+			deprecated_upgrades.put(upgradeType, c+1);
 		}
 		return true;
 	}
@@ -187,6 +187,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	@Override
 	public Map<UpgradeType, Integer> getInstalledUpgrades()
 	{
-		return upgrades;
+		return deprecated_upgrades;
 	}
 }

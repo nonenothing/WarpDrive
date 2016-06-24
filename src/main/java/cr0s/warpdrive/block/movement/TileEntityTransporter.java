@@ -433,8 +433,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	private double getLockStrength() {
 		if (isLocked) {
 			double upgradeBoost = 1;
-			if (upgrades.containsKey(UpgradeType.Range))
-				upgradeBoost = Math.pow(1.2, upgrades.get(UpgradeType.Range));
+			if (deprecated_upgrades.containsKey(UpgradeType.Range))
+				upgradeBoost = Math.pow(1.2, deprecated_upgrades.get(UpgradeType.Range));
 			return clamp(0, 1, baseLockStrength * lockStrengthMul * Math.pow(2, powerBoost - 1) * upgradeBoost * (1 + beaconEffect));
 		}
 		return -1;
@@ -504,8 +504,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	@Override
 	public int getMaxEnergyStored() {
 		int max = WarpDriveConfig.TRANSPORTER_MAX_ENERGY_STORED;
-		if (upgrades.containsKey(UpgradeType.Energy)) {
-			max = (int) Math.floor(max * Math.pow(1.2, upgrades.get(UpgradeType.Energy)));
+		if (deprecated_upgrades.containsKey(UpgradeType.Energy)) {
+			max = (int) Math.floor(max * Math.pow(1.2, deprecated_upgrades.get(UpgradeType.Energy)));
 		}
 		return max;
 	}
@@ -543,21 +543,21 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		if (max == 0)
 			return false;
 
-		if (upgrades.containsKey(upgradeType))
-			if (upgrades.get(upgradeType) >= max)
+		if (deprecated_upgrades.containsKey(upgradeType))
+			if (deprecated_upgrades.get(upgradeType) >= max)
 				return false;
 
 		if (!simulate) {
 			int c = 0;
-			if (upgrades.containsKey(upgradeType))
-				c = upgrades.get(upgradeType);
-			upgrades.put(upgradeType, c + 1);
+			if (deprecated_upgrades.containsKey(upgradeType))
+				c = deprecated_upgrades.get(upgradeType);
+			deprecated_upgrades.put(upgradeType, c + 1);
 		}
 		return true;
 	}
 
 	@Override
 	public Map<UpgradeType, Integer> getInstalledUpgrades() {
-		return upgrades;
+		return deprecated_upgrades;
 	}
 }
