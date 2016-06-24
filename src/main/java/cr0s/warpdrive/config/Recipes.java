@@ -856,8 +856,8 @@ public class Recipes {
 		                                          'g', "ingotGold",
 		                                          'd', ItemComponent.getItemStack(ComponentType.DIAMOND_CRYSTAL)));
 		
-		// EMC Projector is 5 coil crystals, 1 power interface, 1 computer interface, 2 motors
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR), false, "CCm", "Cpc", "CCm",
+		// Electromagnetic Projector is 5 coil crystals, 1 power interface, 1 computer interface, 2 motors
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(ComponentType.ELECTROMAGNETIC_PROJECTOR), false, "CCm", "Cpc", "CCm",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'p', ItemComponent.getItemStack(ComponentType.POWER_INTERFACE),
 		                                          'm', ItemComponent.getItemStack(ComponentType.MOTOR),
@@ -888,8 +888,8 @@ public class Recipes {
 		                                          'm', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL)));
 		
 		// *** Force field upgrades
-		// Force field break upgrade is 3 Coil crystal, 1 Diamond axe, 1 diamond shovel, 1 diamond pick
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.BREAK), false, "CCC", "sap", "   ",
+		// Force field breaking upgrade is 3 Coil crystal, 1 Diamond axe, 1 diamond shovel, 1 diamond pick
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.BREAKING), false, "CCC", "sap", "   ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          's', Items.diamond_axe,
 		                                          'a', Items.diamond_shovel,
@@ -900,8 +900,8 @@ public class Recipes {
 		                                          'z', ItemComponent.getItemStack(ComponentType.ZOOM),
 		                                          'r', Blocks.daylight_detector,
 		                                          'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL)));
-		// Force field cool upgrade is 3 Coil crystal, 2 Ice, 1 MV Motor
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.COOL), false, "CCC", "imi", "   ",
+		// Force field cooling upgrade is 3 Coil crystal, 2 Ice, 1 MV Motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.COOLING), false, "CCC", "imi", "   ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'i', Blocks.ice,
 		                                          'm', itemStackMotors[1]));
@@ -910,17 +910,22 @@ public class Recipes {
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE),
 		                                          'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL)));
-		// Force field invert upgrade is 3 Coil crystal, 1 Gold nugget, 2 Redstone
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.INVERT), false, "rgr", "CCC", "CCC",
+		// Force field heating upgrade is 3 Coil crystal, 2 Blaze rod, 1 MV Motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.HEATING), false, "CCC", "bmb", "   ",
+			                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
+			                                          'b', Items.blaze_rod,
+			                                          'm', itemStackMotors[1]));
+		// Force field inversion upgrade is 3 Coil crystal, 1 Gold nugget, 2 Redstone
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.INVERSION), false, "rgr", "CCC", "CCC",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'r', Items.redstone,
 		                                          'g', Items.gold_nugget));
-		// Force field mute upgrade is 3 Coil crystal, 3 Wool
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.MUTE), false, "CCC", "www", "   ",
+		// Force field silencer upgrade is 3 Coil crystal, 3 Wool
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.SILENCER), false, "CCC", "www", "   ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'w', Blocks.wool));
-		// Force field pump upgrade is 3 Coil crystal, 1 MV Motor, 2 glass tanks
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.PUMP), false, "CCC", "tmt", "   ",
+		// Force field pumping upgrade is 3 Coil crystal, 1 MV Motor, 2 glass tanks
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.PUMPING), false, "CCC", "tmt", "   ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'm', itemStackMotors[1],
 		                                          't', ItemComponent.getItemStack(ComponentType.GLASS_TANK)));
@@ -943,25 +948,20 @@ public class Recipes {
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'g', Items.ghast_tear,
 		                                          'e', ItemComponent.getItemStack(ComponentType.EMERALD_CRYSTAL)));
-		// Force field stabilize upgrade is 3 Coil crystal, 1 Memory crystal, 2 Lapis block
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.STABILIZE), "CCC", "lMl", "   ",
+		// Force field stabilization upgrade is 3 Coil crystal, 1 Memory crystal, 2 Lapis block
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.STABILIZATION), "CCC", "lMl", "   ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'M', ItemComponent.getItemStack(ComponentType.MEMORY_CRYSTAL),
 		                                          'l', Blocks.lapis_block));
 		// Force field thickness upgrade is 8 Coil crystal, 1 Diamond crystal
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.THICKNESS), false, "CCC", "CpC", "   ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
-		                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR)));
+		                                          'p', ItemComponent.getItemStack(ComponentType.ELECTROMAGNETIC_PROJECTOR)));
 		// Force field translation upgrade is 3 Coil crystal, 2 MV Motor, 1 Computer interface
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStackNoCache(EnumForceFieldUpgrade.TRANSLATION, 2), false, "CCC", "m m", " c ",
 		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
 		                                          'm', itemStackMotors[1],
 		                                          'c', ItemComponent.getItemStack(ComponentType.COMPUTER_INTERFACE)));
-		// Force field warm upgrade is 3 Coil crystal, 2 Blaze rod, 1 MV Motor
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.WARM), false, "CCC", "bmb", "   ",
-		                                          'C', ItemComponent.getItemStack(ComponentType.COIL_CRYSTAL),
-		                                          'b', Items.blaze_rod,
-		                                          'm', itemStackMotors[1]));
 		
 		// *** Blocks
 		// Ship core is 1 Ghast tear, 4 Capacitive crystal, 2 Tuning ender, 1 Power interface, 1 MV Machine casing
@@ -1281,21 +1281,21 @@ public class Recipes {
 				'g', "paneGlassColorless",
 				'h', "blockHull3_plain"));
 		
-		// Force field projector is 1 or 2 EMC Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
+		// Force field projector is 1 or 2 Electromagnetic Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
 		for (int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 0), false, " e ", "pm ", " r ",
-			                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR),
+			                                          'p', ItemComponent.getItemStack(ComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                          'm', itemStackMachineCasings[index],
 			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
 			                                          'r', Items.redstone));
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 0), false, " e ", " mp", " r ",
-			                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR),
+			                                          'p', ItemComponent.getItemStack(ComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                          'm', itemStackMachineCasings[index],
 			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
 			                                          'r', Items.redstone));
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1), false, " e ", "pmp", " r ",
-			                                          'p', ItemComponent.getItemStack(ComponentType.EMC_PROJECTOR),
+			                                          'p', ItemComponent.getItemStack(ComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                          'm', itemStackMachineCasings[index],
 			                                          'e', ItemComponent.getItemStack(ComponentType.ENDER_CRYSTAL),
 			                                          'r', Items.redstone));

@@ -45,7 +45,7 @@ public class ItemComponent extends Item implements IAirCanister {
 	@Override
 	public void registerIcons(IIconRegister par1IconRegister) {
 		for(ComponentType componentType : ComponentType.values()) {
-			icons[componentType.ordinal()] = par1IconRegister.registerIcon("warpdrive:component" + componentType.unlocalizedName);
+			icons[componentType.ordinal()] = par1IconRegister.registerIcon("warpdrive:component/" + componentType.unlocalizedName);
 		}
 	}
 	
