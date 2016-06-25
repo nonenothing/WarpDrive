@@ -32,7 +32,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			if (enumForceFieldUpgrade.allowOnRelay) {
+			if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
 				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "_" + enumForceFieldUpgrade.unlocalizedName);
 			} else {
 				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "_" + EnumForceFieldUpgrade.NONE.unlocalizedName);
@@ -110,20 +110,20 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldUpgrade) {
 			// validate type
-			if (!EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()).allowOnRelay) {
+			if (EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()).maxCountOnRelay <= 0) {
 				// invalid upgrade type
 				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidUpgrade"));
 				return true;
 			}
 			
-			// validate quantity
-			if (itemStackHeld.stackSize < 1) {
-				// not enough upgrade items
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
-				return true;
-			}
-			
 			if (!entityPlayer.capabilities.isCreativeMode) {
+				// validate quantity
+				if (itemStackHeld.stackSize < 1) {
+					// not enough upgrade items
+					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
+					return true;
+				}
+				
 				// update player inventory
 				itemStackHeld.stackSize -= 1;
 				

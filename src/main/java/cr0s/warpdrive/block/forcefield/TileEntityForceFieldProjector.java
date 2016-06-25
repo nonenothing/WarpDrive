@@ -76,8 +76,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		});
 		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			if (enumForceFieldUpgrade.allowOnProjector) {
-				setUpgradeMaxCount(enumForceFieldUpgrade, 1);
+			if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
+				setUpgradeMaxCount(enumForceFieldUpgrade, enumForceFieldUpgrade.maxCountOnProjector);
 			}
 		}
 	}
@@ -580,14 +580,17 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			// reset field in case of major changes
 			if (legacy_forceFieldSetup != null) {
 				int energyRequired = cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost;
-				if ( legacy_forceFieldSetup.getCamouflageBlock() != cache_forceFieldSetup.getCamouflageBlock() 
-				  || legacy_forceFieldSetup.getCamouflageMetadata() != cache_forceFieldSetup.getCamouflageMetadata() 
+				if (legacy_forceFieldSetup.getCamouflageBlock() != cache_forceFieldSetup.getCamouflageBlock()
+				  || legacy_forceFieldSetup.getCamouflageMetadata() != cache_forceFieldSetup.getCamouflageMetadata()
 				  || legacy_forceFieldSetup.beamFrequency != cache_forceFieldSetup.beamFrequency
-				  || legacy_forceFieldSetup.isInverted != cache_forceFieldSetup.isInverted
-				  || legacy_forceFieldSetup.shapeProvider != cache_forceFieldSetup.shapeProvider
-				  || legacy_forceFieldSetup.thickness != cache_forceFieldSetup.thickness
 				  || !consumeEnergy(energyRequired, false)) {
 					destroyForceField(true);
+					
+				} else if (legacy_forceFieldSetup.isInverted != cache_forceFieldSetup.isInverted
+				         || legacy_forceFieldSetup.shapeProvider != cache_forceFieldSetup.shapeProvider
+				         || legacy_forceFieldSetup.thickness != cache_forceFieldSetup.thickness) {
+					destroyForceField(true);
+					isDirty.set(true);
 				}
 			}
 		}

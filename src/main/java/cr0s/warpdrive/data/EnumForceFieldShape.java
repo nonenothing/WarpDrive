@@ -40,16 +40,16 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 	public Map<VectorI, Boolean> getVertexes(ForceFieldSetup forceFieldSetup) {
 		VectorI vScale = forceFieldSetup.vMax.clone().translateBack(forceFieldSetup.vMin);
 		Map<VectorI, Boolean> mapVertexes = new HashMap<>(vScale.x * vScale.y * vScale.z);
-		int radius;
-		int thickness;
-		int radiusInterior2;
-		int radiusPerimeter2;
+		float radius;
+		float halfThickness = forceFieldSetup.thickness / 2.0F;
+		float radiusInterior2;
+		float radiusPerimeter2;
 		VectorI vCenter;
 		switch(this) {
 		case SPHERE:
 			radius = forceFieldSetup.vMax.y;
-			radiusInterior2 = Math.round((radius - forceFieldSetup.thickness) * (radius - forceFieldSetup.thickness));
-			radiusPerimeter2 = Math.round((radius + forceFieldSetup.thickness) * (radius + forceFieldSetup.thickness));
+			radiusInterior2 = (radius - halfThickness) * (radius - halfThickness);
+			radiusPerimeter2 = (radius + halfThickness) * (radius + halfThickness);
 			vCenter = new VectorI(0, 0, 0);
 			for (int y = forceFieldSetup.vMin.y; y <= forceFieldSetup.vMax.y; y++) {
 				int y2 = (y - vCenter.y) * (y - vCenter.y);
@@ -66,9 +66,9 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			break;
 		
 		case CYLINDER_H:
-			radius = Math.round((forceFieldSetup.vMax.y + forceFieldSetup.vMax.z) / 2);
-			radiusInterior2 = Math.round((radius - forceFieldSetup.thickness) * (radius - forceFieldSetup.thickness));
-			radiusPerimeter2 = Math.round((radius + forceFieldSetup.thickness) * (radius + forceFieldSetup.thickness));
+			radius = (forceFieldSetup.vMax.y + forceFieldSetup.vMax.z) / 2.0F;
+			radiusInterior2 = (radius - halfThickness) * (radius - halfThickness);
+			radiusPerimeter2 = (radius + halfThickness) * (radius + halfThickness);
 			vCenter = new VectorI(0, 0, 0);
 			for (int y = forceFieldSetup.vMin.y; y <= forceFieldSetup.vMax.y; y++) {
 				int y2 = (y - vCenter.y) * (y - vCenter.y);
@@ -85,9 +85,9 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			break;
 		
 		case CYLINDER_V:
-			radius = Math.round((forceFieldSetup.vMax.x + forceFieldSetup.vMax.y) / 2);
-			radiusInterior2 = Math.round((radius - forceFieldSetup.thickness) * (radius - forceFieldSetup.thickness));
-			radiusPerimeter2 = Math.round((radius + forceFieldSetup.thickness) * (radius + forceFieldSetup.thickness));
+			radius = (forceFieldSetup.vMax.x + forceFieldSetup.vMax.y) / 2.0F;
+			radiusInterior2 = (radius - halfThickness) * (radius - halfThickness);
+			radiusPerimeter2 = (radius + halfThickness) * (radius + halfThickness);
 			vCenter = new VectorI(0, 0, 0);
 			for (int x = forceFieldSetup.vMin.x; x <= forceFieldSetup.vMax.x; x++) {
 				int x2 = (x - vCenter.x) * (x - vCenter.x);
@@ -104,9 +104,9 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			break;
 		
 		case TUBE:
-			radius = Math.round((forceFieldSetup.vMax.x + forceFieldSetup.vMax.z) / 2);
-			radiusInterior2 = Math.round((radius - forceFieldSetup.thickness) * (radius - forceFieldSetup.thickness));
-			radiusPerimeter2 = Math.round((radius + forceFieldSetup.thickness) * (radius + forceFieldSetup.thickness));
+			radius =(forceFieldSetup.vMax.x + forceFieldSetup.vMax.z) / 2.0F;
+			radiusInterior2 = (radius - halfThickness) * (radius - halfThickness);
+			radiusPerimeter2 = (radius + halfThickness) * (radius + halfThickness);
 			vCenter = new VectorI(0, 0, 0);
 			for (int x = forceFieldSetup.vMin.x; x <= forceFieldSetup.vMax.x; x++) {
 				int x2 = (x - vCenter.x) * (x - vCenter.x);
@@ -123,16 +123,15 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			break;
 		
 		case CUBE:
-			thickness = Math.round(forceFieldSetup.thickness);
 			for (int y = forceFieldSetup.vMin.y; y <= forceFieldSetup.vMax.y; y++) {
-				boolean yFace = Math.abs(y - forceFieldSetup.vMin.y) <= thickness
-					                || Math.abs(y - forceFieldSetup.vMax.y) <= thickness;
+				boolean yFace = Math.abs(y - forceFieldSetup.vMin.y) <= halfThickness
+				             || Math.abs(y - forceFieldSetup.vMax.y) <= halfThickness;
 				for (int x = forceFieldSetup.vMin.x; x <= forceFieldSetup.vMax.x; x++) {
-					boolean xFace = Math.abs(x - forceFieldSetup.vMin.x) <= thickness
-						                || Math.abs(x - forceFieldSetup.vMax.x) <= thickness;
+					boolean xFace = Math.abs(x - forceFieldSetup.vMin.x) <= halfThickness
+					             || Math.abs(x - forceFieldSetup.vMax.x) <= halfThickness;
 					for (int z = forceFieldSetup.vMin.z; z <= forceFieldSetup.vMax.z; z++) {
-						boolean zFace = Math.abs(z - forceFieldSetup.vMin.z) <= thickness
-							                || Math.abs(z - forceFieldSetup.vMax.z) <= thickness;
+						boolean zFace = Math.abs(z - forceFieldSetup.vMin.z) <= halfThickness
+						             || Math.abs(z - forceFieldSetup.vMax.z) <= halfThickness;
 						mapVertexes.put(new VectorI(x, y, z), xFace || yFace || zFace);
 					}
 				}
@@ -140,10 +139,9 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			break;
 		
 		case PLANE:
-			thickness = Math.round(forceFieldSetup.thickness);
 			for (int y = forceFieldSetup.vMin.y; y <= forceFieldSetup.vMax.y; y++) {
-				boolean yFace = Math.abs(y - forceFieldSetup.vMin.y) <= thickness
-					                || Math.abs(y - forceFieldSetup.vMax.y) <= thickness;
+				boolean yFace = Math.abs(y - forceFieldSetup.vMin.y) <= halfThickness
+				             || Math.abs(y - forceFieldSetup.vMax.y) <= halfThickness;
 				for (int x = forceFieldSetup.vMin.x; x <= forceFieldSetup.vMax.x; x++) {
 					for (int z = forceFieldSetup.vMin.z; z <= forceFieldSetup.vMax.z; z++) {
 						mapVertexes.put(new VectorI(x, y, z), yFace);
@@ -153,15 +151,14 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			break;
 		
 		case TUNNEL:
-			thickness = Math.round(forceFieldSetup.thickness);
 			for (int y = forceFieldSetup.vMin.y; y <= forceFieldSetup.vMax.y; y++) {
 				for (int x = forceFieldSetup.vMin.x; x <= forceFieldSetup.vMax.x; x++) {
-					boolean xFace = Math.abs(x - forceFieldSetup.vMin.x) <= thickness
-						                || Math.abs(x - forceFieldSetup.vMax.x) <= thickness;
+					boolean xFace = Math.abs(x - forceFieldSetup.vMin.x) <= halfThickness
+					             || Math.abs(x - forceFieldSetup.vMax.x) <= halfThickness;
 					for (int z = forceFieldSetup.vMin.z; z <= forceFieldSetup.vMax.z; z++) {
 						boolean isPerimeter = xFace
-							                      || Math.abs(z - forceFieldSetup.vMin.z) <= thickness
-							                      || Math.abs(z - forceFieldSetup.vMax.z) <= thickness;
+						                   || Math.abs(z - forceFieldSetup.vMin.z) <= halfThickness
+						                   || Math.abs(z - forceFieldSetup.vMax.z) <= halfThickness;
 						mapVertexes.put(new VectorI(x, y, z), isPerimeter);
 					}
 				}

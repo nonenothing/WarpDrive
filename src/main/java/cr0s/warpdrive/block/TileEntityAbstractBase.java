@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -313,11 +314,24 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	public Object getFirstUpgradeOfType(final Class clazz, final Object defaultValue) {
 		for (Object object : installedUpgrades.keySet()) {
-			if (clazz.isInstance(object)) {
+			if (clazz != null && clazz.isInstance(object)) {
 				return object;
 			}
 		}
 		return defaultValue;
+	}
+	
+	public Map<Object, Integer> getUpgradesOfType(final Class clazz) {
+		if (clazz == null) {
+			return installedUpgrades;
+		}
+		Map<Object, Integer> mapResult = new HashMap<>(installedUpgrades.size());
+		for (Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
+			if (clazz.isInstance(entry.getKey())) {
+				mapResult.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return mapResult;
 	}
 	
 	public int getUpgradeCount(final Object upgrade) {
@@ -325,7 +339,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return value == null ? 0 : value;
 	}
 	
-	protected int getUpgradeMaxCount(final Object upgrade) {
+	public int getUpgradeMaxCount(final Object upgrade) {
 		Integer value = maxUpgrades.get(upgrade);
 		return value == null ? 0 : value;
 	}

@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.forcefield;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import cr0s.warpdrive.data.ForceFieldSetup;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -86,6 +87,6 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	
 	@Override
 	public float getUpgradeValue() {
-		return isEnabled ? getUpgrade().getUpgradeValue() * tier / 2.0F : 0.0F;
+		return isEnabled ? getUpgrade().getUpgradeValue() * (1.0F + (tier - 1) * ForceFieldSetup.FORCEFIELD_UPGRADE_BOOST_PER_RELAY_TIER) : 0.0F;
 	}
 }

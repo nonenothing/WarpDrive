@@ -101,10 +101,10 @@ public class ItemForceFieldUpgrade extends Item {
 		WarpDrive.addTooltip(list, "\n");
 		
 		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
-		if (enumForceFieldUpgrade.allowOnProjector) {
+		if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
 			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.projector"));
 		}
-		if (enumForceFieldUpgrade.allowOnRelay) {
+		if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
 			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.relay"));
 		}
 		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount"));

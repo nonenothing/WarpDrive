@@ -172,16 +172,16 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldShape) {// no sneaking and shape in hand => mounting a shape
 			if (side == (metadata & 7) || (((TileEntityForceFieldProjector) tileEntity).isDoubleSided && ForgeDirection.OPPOSITES[side] == (metadata & 7))) {
-				// validate quantity
-				if (itemStackHeld.stackSize < (tileEntityForceFieldProjector.isDoubleSided ? 2 : 1)) {
-					// not enough shape items
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted(
-						tileEntityForceFieldProjector.isDoubleSided ?
-							 "warpdrive.forcefield.shape.result.notEnoughShapes.double" : "warpdrive.forcefield.shape.result.notEnoughShapes.single"));
-					return true;
-				}
-				
 				if (!entityPlayer.capabilities.isCreativeMode) {
+					// validate quantity
+					if (itemStackHeld.stackSize < (tileEntityForceFieldProjector.isDoubleSided ? 2 : 1)) {
+						// not enough shape items
+						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted(
+							tileEntityForceFieldProjector.isDoubleSided ?
+								"warpdrive.forcefield.shape.result.notEnoughShapes.double" : "warpdrive.forcefield.shape.result.notEnoughShapes.single"));
+						return true;
+					}
+					
 					// update player inventory
 					itemStackHeld.stackSize -= tileEntityForceFieldProjector.isDoubleSided ? 2 : 1;
 					
@@ -207,20 +207,26 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldUpgrade) {// no sneaking and an upgrade in hand => mounting an upgrade
 			// validate type
-			if (!tileEntityForceFieldProjector.canUpgrade(enumForceFieldUpgrade)) {
+			if (tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade) <= 0) {
 				// invalid upgrade type
 				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidUpgrade"));
 				return true;
 			}
-			
-			// validate quantity
-			if (itemStackHeld.stackSize < 1) {
-				// not enough upgrade items
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
+			if (!tileEntityForceFieldProjector.canUpgrade(enumForceFieldUpgrade)) {
+				// too many upgrades
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.tooManyUpgrades",
+					tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade)));
 				return true;
 			}
 			
 			if (!entityPlayer.capabilities.isCreativeMode) {
+				// validate quantity
+				if (itemStackHeld.stackSize < 1) {
+					// not enough upgrade items
+					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
+					return true;
+				}
+				
 				// update player inventory
 				itemStackHeld.stackSize -= 1;
 			}

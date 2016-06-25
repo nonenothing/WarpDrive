@@ -14,27 +14,27 @@ import java.util.HashMap;
 public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgradeEffector {
 	//            Upgrade         - Compatibility -  ----- Value -----  -- Scan speed --  -- Place speed --  ------- Energy costs -------  comment
 	//            name            projector   relay    incr.       cap  minimum  maximum   minimum  maximum  startup   scan   place  entity  
-	NONE         ("none"         ,   false,   false,    0.0F,     0.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.000F, 0.000F,   0.0F, ""),
-	BREAKING     ("breaking"     ,   false,   true ,    1.0F,    25.0F,  0.400F,  0.500F,   0.010F,  0.100F,   70.0F, 0.020F, 1.000F,   0.0F, "value is hardness level"),
-	CAMOUFLAGE   ("camouflage"   ,   false,   true ,    1.0F,     3.0F,  0.600F,  0.850F,   0.700F,  0.950F,  100.0F, 0.100F, 0.300F,   0.0F, "value is boolean"), 
-	COOLING      ("cooling"      ,   true ,   true ,   30.0F,   300.0F,  0.000F,  0.000F,   0.900F,  0.900F,   15.0F, 0.020F, 0.500F,  10.0F, "value is heat units"),
-	FUSION       ("fusion"       ,   true ,   true ,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,  100.0F, 0.050F, 0.050F,   0.0F, "value is boolean"),
-	HEATING      ("heating"      ,   true ,   true ,  100.0F, 10000.0F,  0.000F,  0.000F,   0.900F,  0.900F,   15.0F, 0.100F, 1.000F,   5.0F, "value is heat units"),
-	INVERSION    ("inversion"    ,   true ,   false,    1.0F,     1.0F,  0.250F,  0.250F,   0.000F,  0.000F,  150.0F, 0.050F, 0.050F,   1.0F, "value is boolean"),
-	PUMPING      ("pumping"      ,   false,   true , 1000.0F, 50000.0F,  0.800F,  1.000F,   0.400F,  1.000F,   80.0F, 0.010F, 0.500F,   0.0F, "value is viscosity"),
-	RANGE        ("range"        ,   true ,   true ,    8.0F,    56.0F,  1.100F,  0.800F,   1.100F,  0.800F,    1.0F, 0.100F, 0.250F,   4.0F, "value is bonus blocks"),
-	ROTATION     ("rotation"     ,   true ,   false,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,   10.0F, 0.000F, 0.000F,   0.0F, "value is boolean"),
-	SHOCK        ("shock"        ,   true ,   true ,    1.0F,    10.0F,  0.800F,  0.800F,   0.800F,  0.800F,   30.0F, 0.100F, 2.000F,  30.0F, "value is damage points"),
-	SILENCER     ("silencer"     ,   true ,   false,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.010F, 0.020F,   0.0F, "value is boolean"),
-	SPEED        ("speed"        ,   true ,   true ,    1.0F,    20.0F,  1.250F,  6.000F,   1.200F,  5.000F,   20.0F, 0.100F, 1.000F,   5.0F, "value is not used (just a counter)"),
-	STABILIZATION("stabilization",   false,   true ,    1.0F,     6.0F,  0.450F,  0.550F,   0.050F,  0.150F,   40.0F, 0.100F, 1.000F,   0.0F, "value is boolean"),
-	THICKNESS    ("thickness"    ,   true ,   true ,    0.2F,     1.0F,  0.800F,  1.600F,   0.000F,  0.000F,   10.0F, 0.100F, 1.000F,   1.0F, "value is bonus ratio"),
-	TRANSLATION  ("translation"  ,   true ,   false,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,   10.0F, 0.000F, 0.000F,   0.0F, "value is boolean"),
+	NONE         ("none"         ,        0,      0,    0.0F,     0.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.000F, 0.000F,   0.0F, ""),
+	BREAKING     ("breaking"     ,        0,      1,    1.0F,    25.0F,  0.400F,  0.500F,   0.010F,  0.100F,   70.0F, 0.020F, 1.000F,   0.0F, "value is hardness level"),
+	CAMOUFLAGE   ("camouflage"   ,        0,      1,    1.0F,     3.0F,  0.600F,  0.850F,   0.700F,  0.950F,  100.0F, 0.100F, 0.300F,   0.0F, "value is boolean"), 
+	COOLING      ("cooling"      ,        3,      1,   30.0F,   300.0F,  0.000F,  0.000F,   0.900F,  0.900F,   15.0F, 0.020F, 0.500F,  10.0F, "value is heat units"),
+	FUSION       ("fusion"       ,        1,      1,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,  100.0F, 0.050F, 0.050F,   0.0F, "value is boolean"),
+	HEATING      ("heating"      ,        3,      1,  100.0F, 10000.0F,  0.000F,  0.000F,   0.900F,  0.900F,   15.0F, 0.100F, 1.000F,   5.0F, "value is heat units"),
+	INVERSION    ("inversion"    ,        1,      0,    1.0F,     1.0F,  0.250F,  0.250F,   0.000F,  0.000F,  150.0F, 0.050F, 0.050F,   1.0F, "value is boolean"),
+	PUMPING      ("pumping"      ,        0,      1, 1000.0F, 50000.0F,  0.800F,  1.000F,   0.400F,  1.000F,   80.0F, 0.010F, 0.500F,   0.0F, "value is viscosity"),
+	RANGE        ("range"        ,        4,      1,    8.0F,    56.0F,  1.100F,  0.800F,   1.100F,  0.800F,    1.0F, 0.100F, 0.250F,   4.0F, "value is bonus blocks"),
+	ROTATION     ("rotation"     ,        1,      0,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,   10.0F, 0.000F, 0.000F,   0.0F, "value is boolean"),
+	SHOCK        ("shock"        ,        3,      1,    1.0F,    10.0F,  0.800F,  0.800F,   0.800F,  0.800F,   30.0F, 0.100F, 2.000F,  30.0F, "value is damage points"),
+	SILENCER     ("silencer"     ,        1,      0,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.010F, 0.020F,   0.0F, "value is boolean"),
+	SPEED        ("speed"        ,        4,      1,    1.0F,    20.0F,  1.250F,  6.000F,   1.200F,  5.000F,   20.0F, 0.100F, 1.000F,   5.0F, "value is not used (just a counter)"),
+	STABILIZATION("stabilization",        0,      1,    1.0F,     6.0F,  0.450F,  0.550F,   0.050F,  0.150F,   40.0F, 0.100F, 1.000F,   0.0F, "value is boolean"),
+	THICKNESS    ("thickness"    ,        5,      1,    0.2F,     1.0F,  0.800F,  1.600F,   0.000F,  0.000F,   10.0F, 0.100F, 1.000F,   1.0F, "value is bonus ratio"),
+	TRANSLATION  ("translation"  ,        1,      0,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,   10.0F, 0.000F, 0.000F,   0.0F, "value is boolean"),
 	;
 	
 	public final String unlocalizedName;
-	public final boolean allowOnProjector;
-	public final boolean allowOnRelay;
+	public final int maxCountOnProjector;
+	public final int maxCountOnRelay;
 	private final float upgradeValue;
 	private final float upgradeValueMax;
 	private final float scanSpeedOffset;
@@ -57,14 +57,14 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 		}
 	}
 	
-	EnumForceFieldUpgrade(final String unlocalizedName, final boolean allowOnProjector, final boolean allowOnRelay,
+	EnumForceFieldUpgrade(final String unlocalizedName, final int allowOnProjector, final int maxCountOnRelay,
 	                      final float upgradeValue, final float upgradeValueMax,
 	                      final float scanSpeedMinimum, final float scanSpeedMaximum, final float placeSpeedMinimum, final float placeSpeedMaximum,
 	                      final float startupEnergyCost, final float scanEnergyCost, final float placeEnergyCost, final float entityEffectEnergyCost,
 	                      final String comment) {
 		this.unlocalizedName = unlocalizedName;
-		this.allowOnProjector = allowOnProjector;
-		this.allowOnRelay = allowOnRelay;
+		this.maxCountOnProjector = allowOnProjector;
+		this.maxCountOnRelay = maxCountOnRelay;
 		
 		this.upgradeValue = upgradeValue;
 		this.upgradeValueMax = upgradeValueMax;

@@ -14,13 +14,21 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class ForceFieldSetup extends GlobalPosition {
 	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 500;
 	private static final float FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND = 100;
 	private static final float FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND = 50000;
 	private static final float FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND = 20000;
+	private static final float FORCEFIELD_UPGRADE_BOOST_PER_PROJECTOR_TIER = 0.50F;
+	public static final float FORCEFIELD_UPGRADE_BOOST_PER_RELAY_TIER = 0.25F;
 	
 	public final int beamFrequency;
 	public final byte tier;
@@ -133,7 +141,21 @@ public class ForceFieldSetup extends GlobalPosition {
 					vTranslation = new VectorI(projector);
 					// TODO vMin = projector.vMin;
 					// TODO vMax = projector.vMax;
-					// TODO upgrades ?
+					for (Entry<Object, Integer> entry : projector.getUpgradesOfType(null).entrySet()) {
+						if (entry.getKey() instanceof IForceFieldUpgrade) {
+							IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)entry.getKey()).getUpgradeEffector();
+							if (upgradeEffector != null) {
+								Float currentValue = upgradeValues.get(upgradeEffector);
+								if (currentValue == null) {
+									currentValue = 0.0F;
+								}
+								float addedValue = ((IForceFieldUpgrade)entry.getKey()).getUpgradeValue() * entry.getValue();
+								addedValue *= 1 + (tier - 1) * FORCEFIELD_UPGRADE_BOOST_PER_PROJECTOR_TIER;
+								upgradeValues.put(upgradeEffector, currentValue + addedValue);
+							}
+						}
+					}
+					
 				} else {
 					if ((((TileEntityForceFieldProjector) tileEntity).isEnabled)
 						&& (((TileEntityForceFieldProjector) tileEntity).isCalculated())
@@ -167,12 +189,20 @@ public class ForceFieldSetup extends GlobalPosition {
 		}
 		
 		// set default coefficients, depending on projector
-		scanSpeed = FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND;
-		placeSpeed = FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND;
+		scanSpeed = FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND * (isDoubleSided ? 2.1F : 1.0F);
+		placeSpeed = FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND * (isDoubleSided ? 2.1F : 1.0F);
 		float startupEnergyCost = 60.0F + 20.0F * tier;
 		float scanEnergyCost = 1.0F + 1.0F * tier;
 		float placeEnergyCost = 3.0F + 3.0F * tier;
 		float entityEnergyCost = 2.0F;
+		if (isDoubleSided) {
+			scanSpeed *= 2.1F;
+			placeSpeed *= 2.1F;
+			startupEnergyCost += 20.0F * tier;
+			scanEnergyCost *= 0.9F;
+			placeEnergyCost *= 0.9F;
+			entityEnergyCost *= 0.9F;
+		}
 		
 		// apply scaling
 		float speedRatio;
