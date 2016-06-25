@@ -51,7 +51,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		addMethods(new String[] { "energy" });
 	}
 	
-	public Object[] getUpgrades()
+	@Deprecated
+	public Object[] getUpgrades_deprecated()
 	{
 		Object[] retVal = new Object[UpgradeType.values().length];
 		for(UpgradeType type : UpgradeType.values())

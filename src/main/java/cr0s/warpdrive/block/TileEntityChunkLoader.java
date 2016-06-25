@@ -152,7 +152,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 					shouldLoad = toBool(arguments[0]);
 				return new Object[]{shouldChunkLoad()};
 			case "upgrades":
-				return getUpgrades();
+				return getUpgrades_deprecated();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
