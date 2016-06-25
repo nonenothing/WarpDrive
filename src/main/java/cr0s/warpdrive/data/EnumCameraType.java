@@ -5,7 +5,7 @@ import java.util.HashMap;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.detection.TileEntityCamera;
 
-public enum CameraType {
+public enum EnumCameraType {
 	SIMPLE_CAMERA    (TileEntityCamera.class),
 	LASER_CAMERA    (TileEntityLaser.class);
 	
@@ -13,20 +13,20 @@ public enum CameraType {
 	
 	// cached values
 	public static final int length;
-	private static final HashMap<Integer, CameraType> ID_MAP = new HashMap<>();
+	private static final HashMap<Integer, EnumCameraType> ID_MAP = new HashMap<>();
 	
 	static {
-		length = CameraType.values().length;
-		for (CameraType cameraType : values()) {
-			ID_MAP.put(cameraType.ordinal(), cameraType);
+		length = EnumCameraType.values().length;
+		for (EnumCameraType enumCameraType : values()) {
+			ID_MAP.put(enumCameraType.ordinal(), enumCameraType);
 		}
 	}
 	
-	private CameraType(Class<?> clazz) {
+	private EnumCameraType(Class<?> clazz) {
 		this.clazz = clazz;
 	}
 	
-	public static CameraType get(final int id) {
+	public static EnumCameraType get(final int id) {
 		return ID_MAP.get(id);
 	}
 }

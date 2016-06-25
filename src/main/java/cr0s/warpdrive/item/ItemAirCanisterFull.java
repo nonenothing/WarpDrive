@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
-import cr0s.warpdrive.data.ComponentType;
+import cr0s.warpdrive.data.EnumComponentType;
 
 public class ItemAirCanisterFull extends Item implements IAirCanister {
 	
@@ -45,7 +45,7 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 	
 	@Override
 	public ItemStack emptyDrop(ItemStack itemStack) {
-		return ItemComponent.getItemStackNoCache(ComponentType.AIR_CANISTER, 1);
+		return ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 1);
 	}
 	
 	@Override

@@ -2,7 +2,7 @@ package cr0s.warpdrive.data;
 
 import java.util.HashMap;
 
-public enum ComponentType {
+public enum EnumComponentType {
 	EMERALD_CRYSTAL            ("EmeraldCrystal"),
 	ENDER_CRYSTAL              ("EnderCrystal"),
 	DIAMOND_CRYSTAL            ("DiamondCrystal"),
@@ -28,20 +28,20 @@ public enum ComponentType {
 	
 	// cached values
 	public static final int length;
-	private static final HashMap<Integer, ComponentType> ID_MAP = new HashMap<>();
+	private static final HashMap<Integer, EnumComponentType> ID_MAP = new HashMap<>();
 	
 	static {
-		length = ComponentType.values().length;
-		for (ComponentType componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		length = EnumComponentType.values().length;
+		for (EnumComponentType enumComponentType : values()) {
+			ID_MAP.put(enumComponentType.ordinal(), enumComponentType);
 		}
 	}
 	
-	ComponentType(String unlocalizedName) {
+	EnumComponentType(String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	
-	public static ComponentType get(final int damage) {
+	public static EnumComponentType get(final int damage) {
 		return ID_MAP.get(damage);
 	}
 }

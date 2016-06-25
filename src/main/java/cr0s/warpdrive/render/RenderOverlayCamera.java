@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CameraType;
+import cr0s.warpdrive.data.EnumCameraType;
 
 public class RenderOverlayCamera {
 	private Minecraft mc;
@@ -34,7 +34,7 @@ public class RenderOverlayCamera {
 		
 		try {
 			String strHelp;
-			if (ClientCameraHandler.overlayType == CameraType.SIMPLE_CAMERA) {
+			if (ClientCameraHandler.overlayType == EnumCameraType.SIMPLE_CAMERA) {
 				mc.getTextureManager().bindTexture(new ResourceLocation("warpdrive", "textures/blocks/detection/cameraOverlay.png"));
 				strHelp = "Left click to zoom / Right click to exit";
 			} else {

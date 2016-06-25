@@ -12,13 +12,13 @@ import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapEntry;
+import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityRadar extends TileEntityAbstractEnergy {
-	private ArrayList<StarMapEntry> results;
+	private ArrayList<StarMapRegistryItem> results;
 	
 	// radius defined for next scan
 	private int radius = 0;
@@ -204,7 +204,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}
 			if (index >= 0 && index < results.size()) {
-				StarMapEntry result = results.get(index);
+				StarMapRegistryItem result = results.get(index);
 				if (result != null) {
 					VectorI spaceCoordinates = result.getSpaceCoordinates();
 					return new Object[] { true, "SHIP", result.name, spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z };

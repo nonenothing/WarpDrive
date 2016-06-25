@@ -7,7 +7,7 @@ import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
-import cr0s.warpdrive.data.PermissionNode;
+import cr0s.warpdrive.data.EnumPermissionNode;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.render.RenderBlockForceField;
 import net.minecraft.block.Block;
@@ -153,7 +153,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			for (EntityPlayer entityPlayer : entities) {
 				if (entityPlayer != null && entityPlayer.isSneaking()) {
 					if ( entityPlayer.capabilities.isCreativeMode 
-					  || forceFieldSetup.isAccessGranted(entityPlayer, PermissionNode.SNEAK_THROUGH)) {
+					  || forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH)) {
 							return null;
 					}
 				}
@@ -181,7 +181,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 				for (EntityPlayer entityPlayer : entities) {
 					if (entityPlayer != null && entityPlayer.isSneaking()) {
 						if ( entityPlayer.capabilities.isCreativeMode
-							|| forceFieldSetup.isAccessGranted(entityPlayer, PermissionNode.SNEAK_THROUGH)) {
+							|| forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH)) {
 							hasPermission = true;
 							break;
 						}

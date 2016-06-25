@@ -29,15 +29,6 @@ public class ItemBlockHull extends ItemBlock {
 		return damage;
 	}
 	
-	/*
-	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTabs, List list) {
-		for (DecorativeType decorativeType : DecorativeType.values()) {
-			list.add(new ItemStack(item, 1, decorativeType.ordinal()));
-		}
-	}
-	/**/
-	
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
 		if (itemstack == null) {

@@ -13,9 +13,9 @@ import net.minecraftforge.common.DimensionManager;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.block.movement.TileEntityShipCore.ShipCoreMode;
+import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapEntry.StarMapEntryType;
+import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 
 /**
  * Registry of all known ships, jumpgates, etc. in the world
@@ -23,17 +23,17 @@ import cr0s.warpdrive.data.StarMapEntry.StarMapEntryType;
  * @author LemADEC
  */
 public class StarMapRegistry {
-	private final LinkedList<StarMapEntry> registry;
+	private final LinkedList<StarMapRegistryItem> registry;
 	
 	public StarMapRegistry() {
 		registry = new LinkedList<>();
 	}
 	
-	public int searchInRegistry(StarMapEntry entryKey) {
+	public int searchInRegistry(StarMapRegistryItem entryKey) {
 		int res = -1;
 		
 		for (int i = 0; i < registry.size(); i++) {
-			StarMapEntry entry = registry.get(i);
+			StarMapRegistryItem entry = registry.get(i);
 			
 			if (entry.dimensionId == entryKey.dimensionId && entry.x == entryKey.x && entry.y == entryKey.y && entry.z == entryKey.z) {
 				return i;
@@ -43,11 +43,11 @@ public class StarMapRegistry {
 		return res;
 	}
 	
-	public boolean isInRegistry(StarMapEntry entryKey) {
+	public boolean isInRegistry(StarMapRegistryItem entryKey) {
 		return (searchInRegistry(entryKey) != -1);
 	}
 	
-	public void updateInRegistry(StarMapEntry entryKey) {
+	public void updateInRegistry(StarMapRegistryItem entryKey) {
 		int idx = searchInRegistry(entryKey);
 		
 		// update
@@ -61,7 +61,7 @@ public class StarMapRegistry {
 		}
 	}
 	
-	public void removeFromRegistry(StarMapEntry entryKey) {
+	public void removeFromRegistry(StarMapRegistryItem entryKey) {
 		int idx = searchInRegistry(entryKey);
 		
 		if (idx != -1) {
@@ -72,13 +72,13 @@ public class StarMapRegistry {
 		}
 	}
 	
-	public ArrayList<StarMapEntry> radarScan(TileEntity tileEntity, final int radius) {
-		ArrayList<StarMapEntry> res = new ArrayList<>(registry.size());
+	public ArrayList<StarMapRegistryItem> radarScan(TileEntity tileEntity, final int radius) {
+		ArrayList<StarMapRegistryItem> res = new ArrayList<>(registry.size());
 		cleanup();
 		
 		// printRegistry();
 		int radius2 = radius * radius;
-		for (StarMapEntry entry : registry) {
+		for (StarMapRegistryItem entry : registry) {
 			double dX = entry.x - tileEntity.xCoord;
 			double dY = entry.y - tileEntity.yCoord;
 			double dZ = entry.z - tileEntity.zCoord;
@@ -97,7 +97,7 @@ public class StarMapRegistry {
 	public void printRegistry(final String trigger) {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
-		for (StarMapEntry entry : registry) {
+		for (StarMapRegistryItem entry : registry) {
 			WarpDrive.logger.info("- " + entry.type + " '" + entry.name + "' @ "
 					+ entry.dimensionId + ": " + entry.x + ", " + entry.y + ", " + entry.z
 					+ " with " + entry.isolationRate + " isolation rate");
@@ -112,13 +112,13 @@ public class StarMapRegistry {
 		core.validateShipSpatialParameters(reason);
 		aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
 		
-		for (StarMapEntry entry : registry) {
+		for (StarMapRegistryItem entry : registry) {
 			// Skip cores in other worlds
 			if (entry.dimensionId != core.getWorldObj().provider.dimensionId) {
 				continue;
 			}
 			// only check cores
-			if (entry.type != StarMapEntryType.SHIP) {
+			if (entry.type != EnumStarMapEntryType.SHIP) {
 				continue;
 			}
 			
@@ -135,7 +135,7 @@ public class StarMapRegistry {
 			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(entry.x, entry.y, entry.z);
 			
 			// Skip offline warp cores
-			if (shipCore.controller == null || shipCore.controller.getMode() == ShipCoreMode.IDLE || !shipCore.validateShipSpatialParameters(reason)) {
+			if (shipCore.controller == null || shipCore.controller.getMode() == EnumShipCoreMode.IDLE || !shipCore.validateShipSpatialParameters(reason)) {
 				continue;
 			}
 			
@@ -161,7 +161,7 @@ public class StarMapRegistry {
 	private void cleanup() {
 		LocalProfiler.start("StarMapRegistry cleanup");
 		
-		StarMapEntry entry;
+		StarMapRegistryItem entry;
 		boolean isValid; 
 		for (int i = registry.size() - 1; i >= 0; i--) {
 			entry = registry.get(i);

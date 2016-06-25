@@ -11,12 +11,12 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CameraType;
+import cr0s.warpdrive.data.EnumCameraType;
 
 public class ClientCameraHandler {
 	public static boolean isOverlayEnabled = false;
 	
-	public static CameraType overlayType = null;
+	public static EnumCameraType overlayType = null;
 	public static int zoomIndex = 0;
 	public static String overlayLoggingMessage = "";
 	public static float originalFOV = 70.0F;
@@ -36,9 +36,9 @@ public class ClientCameraHandler {
 		}
 	}
 	
-	public static void setupViewpoint(final CameraType cameraType, EntityPlayer parEntityPlayer, final float initialYaw, final float initialPitch,
-			final int monitor_x, final int monitor_y, final int monitor_z, final Block blockMonitor,
-			final int camera_x, final int camera_y, final int camera_z, final Block blockCamera) {
+	public static void setupViewpoint(final EnumCameraType enumCameraType, EntityPlayer parEntityPlayer, final float initialYaw, final float initialPitch,
+	                                  final int monitor_x, final int monitor_y, final int monitor_z, final Block blockMonitor,
+	                                  final int camera_x, final int camera_y, final int camera_z, final Block blockCamera) {
 		Minecraft mc = Minecraft.getMinecraft();
 		
 		if (parEntityPlayer == null) {
@@ -49,7 +49,7 @@ public class ClientCameraHandler {
 		// Save initial state
 		originalFOV = mc.gameSettings.fovSetting;
 		originalSensitivity = mc.gameSettings.mouseSensitivity;
-		overlayType = cameraType;
+		overlayType = enumCameraType;
 		entityPlayer = parEntityPlayer;
 		dimensionId = entityPlayer.worldObj.provider.dimensionId;
 		check1_x = monitor_x;

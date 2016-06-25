@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 
-public class StarMapEntry extends GlobalPosition {
-	public StarMapEntryType type;
+public class StarMapRegistryItem extends GlobalPosition {
+	public EnumStarMapEntryType type;
 	public UUID uuid;
 	public int maxX, maxY, maxZ;
 	public int minX, minY, minZ;
@@ -13,7 +13,7 @@ public class StarMapEntry extends GlobalPosition {
 	public double isolationRate = 0.0D;
 	public String name = "default";
 	
-	public enum StarMapEntryType {
+	public enum EnumStarMapEntryType {
 		UNDEFINED(0),
 		SHIP(1),		// a ship core
 		JUMPGATE(2),	// a jump gate
@@ -24,7 +24,7 @@ public class StarMapEntry extends GlobalPosition {
 		
 		private final int code;
 		
-		StarMapEntryType(int code) {
+		EnumStarMapEntryType(int code) {
 			this.code = code;
 		}
 		
@@ -33,13 +33,13 @@ public class StarMapEntry extends GlobalPosition {
 		}
 	}
 	
-	public StarMapEntry(
-			final StarMapEntryType type, final UUID uuid,
-			final int dimensionId, final int x, final int y, final int z,
-			final int maxX, final int maxY, final int maxZ,
-			final int minX, final int minY, final int minZ,
-			final int volume, final double isolationRate,
-			final String name) {
+	public StarMapRegistryItem(
+		                       final EnumStarMapEntryType type, final UUID uuid,
+		                       final int dimensionId, final int x, final int y, final int z,
+		                       final int maxX, final int maxY, final int maxZ,
+		                       final int minX, final int minY, final int minZ,
+		                       final int volume, final double isolationRate,
+		                       final String name) {
 		super(dimensionId, x, y, z);
 		this.type = type;
 		this.uuid = uuid;
@@ -54,9 +54,9 @@ public class StarMapEntry extends GlobalPosition {
 		this.name = name;
 	}
 	
-	public StarMapEntry(TileEntityShipCore core) {
+	public StarMapRegistryItem(TileEntityShipCore core) {
 		this(
-			StarMapEntryType.SHIP, core.uuid,
+			EnumStarMapEntryType.SHIP, core.uuid,
 			core.getWorldObj().provider.dimensionId, core.xCoord, core.yCoord, core.zCoord,
 			core.maxX, core.maxY, core.maxZ,
 			core.minX, core.minY, core.minZ,

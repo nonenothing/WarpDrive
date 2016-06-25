@@ -15,7 +15,7 @@ import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CameraRegistryItem;
-import cr0s.warpdrive.data.CameraType;
+import cr0s.warpdrive.data.EnumCameraType;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -56,7 +56,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 					WarpDrive.logger.info(this + " Updating registry (" + videoChannel + ")");
 				}
-				WarpDrive.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, CameraType.LASER_CAMERA);
+				WarpDrive.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, EnumCameraType.LASER_CAMERA);
 			}
 		}
 	}

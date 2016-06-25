@@ -27,7 +27,7 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Jumpgate;
-import cr0s.warpdrive.data.StarMapEntry;
+import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -49,9 +49,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public int shipLength;
 	public int shipMass;
 	public int shipVolume;
-	private ShipCoreMode currentMode = ShipCoreMode.IDLE;
+	private EnumShipCoreMode currentMode = EnumShipCoreMode.IDLE;
 	
-	public enum ShipCoreMode {
+	public enum EnumShipCoreMode {
 		IDLE(0),
 		BASIC_JUMP(1),		// 0-128
 		LONG_JUMP(2),		// 0-12800
@@ -62,7 +62,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		
 		private final int code;
 		
-		ShipCoreMode(int code) {
+		EnumShipCoreMode(int code) {
 			this.code = code;
 		}
 		
@@ -150,7 +150,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				uuid = UUID.randomUUID();
 			}
 			// recovery registration, shouldn't be needed, in theory...
-			WarpDrive.starMap.updateInRegistry(new StarMapEntry(this));
+			WarpDrive.starMap.updateInRegistry(new StarMapRegistryItem(this));
 			
 			TileEntity controllerFound = findControllerBlock();
 			if (controllerFound == null) {
@@ -766,15 +766,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 		
 		String shipInfo = "" + shipVolume + " blocks inside (" + minX + ", " + minY + ", " + minZ + ") to (" + maxX + ", " + maxY + ", " + maxZ + ") with an actual mass of " + shipMass + " blocks";
-		if (currentMode == ShipCoreMode.GATE_JUMP) {
+		if (currentMode == EnumShipCoreMode.GATE_JUMP) {
 			WarpDrive.logger.info(this + " Performing gate jump of " + shipInfo);
 			doGateJump();
 			return;
-		} else if (currentMode == ShipCoreMode.BEACON_JUMP) {
+		} else if (currentMode == EnumShipCoreMode.BEACON_JUMP) {
 			WarpDrive.logger.info(this + " Performing beacon jump of " + shipInfo);
 			doBeaconJump();
 			return;
-		} else if (currentMode == ShipCoreMode.HYPERSPACE) {
+		} else if (currentMode == EnumShipCoreMode.HYPERSPACE) {
 			WarpDrive.logger.info(this + " Performing hyperspace jump of " + shipInfo);
 			
 			// Check ship size for hyper-space jump
@@ -794,15 +794,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 					return;
 				}
 			}
-		} else if (currentMode == ShipCoreMode.BASIC_JUMP) {
+		} else if (currentMode == EnumShipCoreMode.BASIC_JUMP) {
 			WarpDrive.logger.info(this + " Performing basic jump of " + shipInfo + " toward direction " + direction + " over " + distance + " blocks.");
-		} else if (currentMode == ShipCoreMode.LONG_JUMP) {
+		} else if (currentMode == EnumShipCoreMode.LONG_JUMP) {
 			WarpDrive.logger.info(this + " Performing long jump of " + shipInfo + " toward direction " + direction + " over " + distance + " blocks.");
 		} else {
 			WarpDrive.logger.info(this + " Performing some jump #" + currentMode + " of " + shipInfo);
 		}
 		
-		if (currentMode == ShipCoreMode.BASIC_JUMP || currentMode == ShipCoreMode.LONG_JUMP || currentMode == ShipCoreMode.HYPERSPACE) {
+		if (currentMode == EnumShipCoreMode.BASIC_JUMP || currentMode == EnumShipCoreMode.LONG_JUMP || currentMode == EnumShipCoreMode.HYPERSPACE) {
 			if (!consumeEnergy(requiredEnergy, false)) {
 				messageToAllPlayersOnShip("Insufficient energy level");
 				return;
@@ -811,17 +811,17 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			int moveY = 0;
 			int moveZ = 0;
 			
-			if (currentMode != ShipCoreMode.HYPERSPACE) {
+			if (currentMode != EnumShipCoreMode.HYPERSPACE) {
 				VectorI movement = controller.getMovement();
 				moveX = dx * movement.x - dz * movement.z;
 				moveY = movement.y;
 				moveZ = dz * movement.x + dx * movement.z;
-				if (currentMode == ShipCoreMode.BASIC_JUMP) {
+				if (currentMode == EnumShipCoreMode.BASIC_JUMP) {
 					// VectorI sizes = new VectorI(controller.getBack() + controller.getFront(), controller.getDown() + controller.getUp(), controller.getLeft() + controller.getRight());
 					// moveX += Math.signum((double)moveX) * Math.abs(dx * sizes.x - dz * sizes.z);
 					// moveY += Math.signum((double)moveY) * (sizes.y);
 					// moveZ += Math.signum((double)moveZ) * Math.abs(dz * sizes.x + dx * sizes.z);
-				} else if (currentMode == ShipCoreMode.LONG_JUMP) {
+				} else if (currentMode == EnumShipCoreMode.LONG_JUMP) {
 					moveX *= 100;
 					moveZ *= 100;
 				}
@@ -830,7 +830,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info(this + " Movement adjusted to (" + moveX + " " + moveY + " " + moveZ + ") blocks.");
 			}
-			JumpSequencer jump = new JumpSequencer(this, (currentMode == ShipCoreMode.HYPERSPACE),
+			JumpSequencer jump = new JumpSequencer(this, (currentMode == EnumShipCoreMode.HYPERSPACE),
 					moveX, moveY, moveZ, controller.getRotationSteps(),
 					false, 0, 0, 0);
 			jump.enable();
@@ -968,8 +968,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			+ ((isolationBlocksCount > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
 	}
 	
-	public static int calculateRequiredEnergy(ShipCoreMode shipCoreMode, int shipVolume, int jumpDistance) {
-		switch (shipCoreMode) {
+	public static int calculateRequiredEnergy(EnumShipCoreMode enumShipCoreMode, int shipVolume, int jumpDistance) {
+		switch (enumShipCoreMode) {
 		case TELEPORT:
 			return WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY;
 			
@@ -1107,13 +1107,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			return;
 		}
 		
-		WarpDrive.starMap.updateInRegistry(new StarMapEntry(this));
+		WarpDrive.starMap.updateInRegistry(new StarMapRegistryItem(this));
 	}
 	
 	@Override
 	public void invalidate() {
 		if (!worldObj.isRemote) {
-			WarpDrive.starMap.removeFromRegistry(new StarMapEntry(this));
+			WarpDrive.starMap.removeFromRegistry(new StarMapRegistryItem(this));
 		}
 		super.invalidate();
 	}

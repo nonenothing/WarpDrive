@@ -9,9 +9,9 @@ public class CameraRegistryItem {
 	public int dimensionId = -666;
 	public ChunkPosition position = null;
 	public int videoChannel = -1;
-	public CameraType type = null;
+	public EnumCameraType type = null;
 	
-	public CameraRegistryItem(World parWorldObj, ChunkPosition parPosition, int parFrequency, CameraType parType) {
+	public CameraRegistryItem(World parWorldObj, ChunkPosition parPosition, int parFrequency, EnumCameraType parType) {
 		videoChannel = parFrequency;
 		position = parPosition;
 		dimensionId = parWorldObj.provider.dimensionId;

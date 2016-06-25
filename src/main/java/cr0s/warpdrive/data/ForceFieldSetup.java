@@ -74,7 +74,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		}
 	}
 	
-	public boolean isAccessGranted(EntityPlayer entityPlayer, PermissionNode permissionNode) {
+	public boolean isAccessGranted(EntityPlayer entityPlayer, EnumPermissionNode enumPermissionNode) {
 		return false; // TODO
 	}
 	

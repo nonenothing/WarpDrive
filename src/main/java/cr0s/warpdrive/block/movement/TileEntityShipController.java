@@ -14,7 +14,7 @@ import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
-import cr0s.warpdrive.block.movement.TileEntityShipCore.ShipCoreMode;
+import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -32,7 +32,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private int moveUp = 0;
 	private int moveRight = 0;
 	private byte rotationSteps = 0;
-	private ShipCoreMode mode = ShipCoreMode.IDLE;
+	private EnumShipCoreMode mode = EnumShipCoreMode.IDLE;
 	
 	private boolean jumpFlag = false;
 	private boolean summonFlag = false;
@@ -119,7 +119,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	private void setMode(final int mode) {
-		ShipCoreMode[] modes = ShipCoreMode.values();
+		EnumShipCoreMode[] modes = EnumShipCoreMode.values();
 		if (mode >= 0 && mode <= modes.length) {
 			this.mode = modes[mode];
 			if (WarpDriveConfig.LOGGING_JUMP) {
@@ -357,7 +357,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		return rotationSteps;
 	}
 	
-	public ShipCoreMode getMode() {
+	public EnumShipCoreMode getMode() {
 		return mode;
 	}
 	

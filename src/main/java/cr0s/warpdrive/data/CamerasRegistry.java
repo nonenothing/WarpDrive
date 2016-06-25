@@ -105,8 +105,8 @@ public class CamerasRegistry {
 		}
 	}
 	
-	public void updateInRegistry(World world, ChunkPosition position, int videoChannel, CameraType cameraType) {
-		CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, cameraType);
+	public void updateInRegistry(World world, ChunkPosition position, int videoChannel, EnumCameraType enumCameraType) {
+		CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, enumCameraType);
 		// WarpDrive.debugPrint("updateInRegistry " + cam.position.x + ", " + cam.position.y + ", " + cam.position.z);
 		removeDeadCams(world);
 		
