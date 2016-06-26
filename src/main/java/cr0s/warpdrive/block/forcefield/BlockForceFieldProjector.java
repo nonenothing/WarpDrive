@@ -85,6 +85,13 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	}
 	
 	@Override
+	public int getDamageValue(World world, int x, int y, int z) {
+		super.getDamageValue(world, x, y, z);
+		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(x, y, z);
+		return tileEntityForceFieldProjector.isDoubleSided ? 1 : 0;
+	}
+	
+	@Override
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(x, y, z);

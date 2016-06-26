@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block;
 
-import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -87,6 +86,7 @@ public abstract class BlockAbstractContainer extends BlockContainer {
 	
 	@Override
 	protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack itemStack) {
+		itemStack.setItemDamage(getDamageValue(world, x, y, z));
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity == null) {
 			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
