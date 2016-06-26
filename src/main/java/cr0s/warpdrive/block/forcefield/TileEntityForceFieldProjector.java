@@ -38,6 +38,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	// persistent properties
 	public boolean isDoubleSided;
 	private EnumForceFieldShape shape;
+	// rotation provided by player, before applying block orientation
+	private float rotationYaw;
+	private float rotationPitch;
+	private float rotationRoll;
 	
 	// computed properties
 	private int cooldownTicks;
@@ -453,7 +457,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void destroyForceField(boolean isChunkLoading) {
-		if (worldObj.isRemote) {
+		if (worldObj == null || worldObj.isRemote) {
 			return;
 		}
 		
@@ -506,9 +510,87 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		super.setBeamFrequency(parBeamFrequency);
 		cache_forceFieldSetup = null;
 		isDirty.set(true);
-		if (worldObj != null) {
-			destroyForceField(false);
+		destroyForceField(false);
+	}
+	
+	public float getRotationYaw() {
+		int metadata = getBlockMetadata();
+		float totalYaw;
+		switch (ForgeDirection.getOrientation(metadata & 7)) {
+		case DOWN : totalYaw =   0.0F; break;
+		case UP   : totalYaw =   0.0F; break;
+		case NORTH: totalYaw =  90.0F; break;
+		case SOUTH: totalYaw = 270.0F; break;
+		case WEST : totalYaw =   0.0F; break;
+		case EAST : totalYaw = 180.0F; break;
+		default   : totalYaw =   0.0F; break;
 		}
+		if (hasUpgrade(EnumForceFieldUpgrade.ROTATION)) {
+			totalYaw += rotationYaw;
+		}
+		return (totalYaw + 540.0F) % 360.0F - 180.0F; 
+	}
+	
+	public float getRotationPitch() {
+		int metadata = getBlockMetadata();
+		float totalPitch;
+		switch (ForgeDirection.getOrientation(metadata & 7)) {
+		case DOWN : totalPitch =  180.0F; break;
+		case UP   : totalPitch =    0.0F; break;
+		case NORTH: totalPitch =  -90.0F; break;
+		case SOUTH: totalPitch =  -90.0F; break;
+		case WEST : totalPitch =  -90.0F; break;
+		case EAST : totalPitch =  -90.0F; break;
+		default   : totalPitch =    0.0F; break;
+		}
+		if (hasUpgrade(EnumForceFieldUpgrade.ROTATION)) {
+			totalPitch += rotationPitch;
+		}
+		return (totalPitch + 540.0F) % 360.0F - 180.0F;
+	}
+	
+	public float getRotationRoll() {
+		if (hasUpgrade(EnumForceFieldUpgrade.ROTATION)) {
+			return (rotationRoll + 540.0F) % 360.0F - 180.0F;
+		} else {
+			return 0.0F;
+		}
+	}
+	
+	private void setRotation(final float rotationYaw, final float rotationPitch, final float rotationRoll) {
+		float oldYaw = this.rotationYaw;
+		float oldPitch = this.rotationPitch;
+		float oldRoll = this.rotationRoll;
+		this.rotationYaw = clamp( -45.0F, +45.0F, rotationYaw);
+		this.rotationPitch = clamp( -45.0F, +45.0F, rotationPitch);
+		this.rotationRoll = (rotationRoll + 720.0F) % 360.0F - 180.0F;
+		if (oldYaw != this.rotationYaw || oldPitch != this.rotationPitch || oldRoll != this.rotationRoll) {
+			isDirty.set(true);
+			destroyForceField(false);
+			markDirty();
+		}
+	}
+	
+	@Override
+	public boolean mountUpgrade(Object upgrade) {
+		if  (super.mountUpgrade(upgrade)) {
+			cache_forceFieldSetup = null;
+			isDirty.set(true);
+			destroyForceField(false);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public boolean dismountUpgrade(Object upgrade) {
+		if (super.dismountUpgrade(upgrade)) {
+			cache_forceFieldSetup = null;
+			isDirty.set(true);
+			destroyForceField(false);
+			return true;
+		}
+		return false;
 	}
 	
 	private String getShapeStatus() {
@@ -548,6 +630,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		super.readFromNBT(tag);
 		isDoubleSided = tag.getBoolean("isDoubleSided");
 		setShape(EnumForceFieldShape.get(tag.getByte("shape")));
+		setRotation(tag.getFloat("rotationYaw"), tag.getFloat("rotationPitch"), tag.getFloat("rotationRoll"));
 	}
 	
 	@Override
@@ -555,6 +638,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		super.writeToNBT(tag);
 		tag.setBoolean("isDoubleSided", isDoubleSided);
 		tag.setByte("shape", (byte) getShape().ordinal());
+		tag.setFloat("rotationYaw", rotationYaw);
+		tag.setFloat("rotationPitch", rotationPitch);
+		tag.setFloat("rotationRoll", rotationRoll);
 	}
 	
 	@Override
@@ -618,8 +704,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		this.shape = shape;
 		cache_forceFieldSetup = null;
 		isDirty.set(true);
+		markDirty();
 		if (worldObj != null) {
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 			destroyForceField(false);
 		}
 	}
@@ -653,8 +739,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					for (Map.Entry<VectorI, Boolean> entry : forceFieldSetup.shapeProvider.getVertexes(forceFieldSetup).entrySet()) {
 						VectorI vPosition = entry.getKey();
 						if (forceFieldSetup.isDoubleSided || vPosition.y >= 0) {
-							if ((forceFieldSetup.rotationYaw != 0) || (forceFieldSetup.rotationPitch != 0)) {
-								vPosition.rotateByAngle(forceFieldSetup.rotationYaw, forceFieldSetup.rotationPitch);
+							if ((forceFieldSetup.rotationYaw != 0.0F) || (forceFieldSetup.rotationPitch != 0.0F) || (forceFieldSetup.rotationRoll != 0.0F)) {
+								vPosition.rotateByAngle(forceFieldSetup.rotationYaw, forceFieldSetup.rotationPitch, forceFieldSetup.rotationRoll);
 							}
 							
 							vPosition.translate(forceFieldSetup.vTranslation);

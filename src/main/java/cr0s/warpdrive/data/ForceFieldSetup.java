@@ -59,6 +59,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	// Projector provided properties
 	public float rotationYaw;
 	public float rotationPitch;
+	public float rotationRoll;
 	public VectorI vTranslation = new VectorI(0, 0, 0);
 	public VectorI vMin = new VectorI(-8, -8, -8);
 	public VectorI vMax = new VectorI(8, 8, 8);
@@ -139,6 +140,9 @@ public class ForceFieldSetup extends GlobalPosition {
 					shapeProvider = projector.getShapeProvider();
 					isDoubleSided = projector.isDoubleSided;
 					vTranslation = new VectorI(projector);
+					rotationYaw = projector.getRotationYaw();
+					rotationPitch = projector.getRotationPitch();
+					rotationRoll = projector.getRotationRoll();
 					// TODO vMin = projector.vMin;
 					// TODO vMax = projector.vMax;
 					for (Entry<Object, Integer> entry : projector.getUpgradesOfType(null).entrySet()) {
