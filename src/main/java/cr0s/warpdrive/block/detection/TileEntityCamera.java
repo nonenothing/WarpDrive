@@ -76,6 +76,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 			// force update through main thread since CC runs on server as 'client'
 			packetSendTicks = 0;
 			registryUpdateTicks = 0;
+			markDirty();
 		}
 	}
 	

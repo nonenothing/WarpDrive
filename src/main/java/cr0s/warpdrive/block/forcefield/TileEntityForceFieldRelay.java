@@ -33,9 +33,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	
 	protected void setUpgrade(EnumForceFieldUpgrade upgrade) {
 		this.upgrade = upgrade;
-		if (worldObj != null) {
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-		}
+		markDirty();
 	}
 	
 	private String getUpgradeStatus() {

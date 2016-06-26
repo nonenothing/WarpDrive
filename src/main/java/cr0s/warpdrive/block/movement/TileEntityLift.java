@@ -202,9 +202,9 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] mode(Context context, Arguments arguments) {
 		return mode(
-				new Object[] {
-						arguments.checkString(0)
-				}
+			new Object[] {
+				arguments.checkString(0)
+			}
 		);
 	}
 	
@@ -213,6 +213,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	public Object[] active(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			computerEnabled = arguments.checkBoolean(0);
+			markDirty();
 		}
 		return new Object[] { !computerEnabled && isEnabled };
 	}
@@ -226,6 +227,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			} else {
 				computerMode = MODE_REDSTONE;
 			}
+			markDirty();
 		}
 		
 		switch (computerMode) {

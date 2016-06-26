@@ -283,10 +283,12 @@ public class JumpBlock {
 						CompatForgeMultipart.methodTileMultipart_onChunkLoad.invoke(newTileEntity);
 						CompatForgeMultipart.methodMultipartHelper_sendDescPacket.invoke(null, targetWorld, newTileEntity);
 					}
+					
+					newTileEntity.markDirty();
 					return;
 				} else {
-					WarpDrive.logger.info(" deploy failed to create new tile entity at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta);
-					WarpDrive.logger.info("NBT data was " + nbtToDeploy);
+					WarpDrive.logger.error(" deploy failed to create new tile entity at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta);
+					WarpDrive.logger.error("NBT data was " + nbtToDeploy);
 				}
 			}
 		} catch (Exception exception) {

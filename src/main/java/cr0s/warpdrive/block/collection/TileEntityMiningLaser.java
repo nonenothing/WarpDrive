@@ -445,6 +445,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				mineAllBlocks = ! toBool(arguments[0]);
+				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " onlyOres set to " + !mineAllBlocks);
 				}
@@ -459,6 +460,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				layerOffset = Math.min(256, Math.abs(toInt(arguments[0])));
+				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " offset set to " + layerOffset);
 				}
@@ -473,6 +475,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				enableSilktouch = toBool(arguments[0]);
+				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " silktouch set to " + enableSilktouch);
 				}

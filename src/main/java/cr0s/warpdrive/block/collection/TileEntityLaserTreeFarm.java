@@ -628,9 +628,11 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			if (arguments.length == 1) {
 				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
 				radiusZ = radiusX;
+				markDirty();
 			} else if (arguments.length == 2) {
 				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
 				radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[1]));
+				markDirty();
 			}
 		} catch(NumberFormatException exception) {
 			radiusX = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM;
@@ -643,6 +645,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				breakLeaves = toBool(arguments[0]);
+				markDirty();
 			} catch (Exception exception) {
 				return new Object[] { breakLeaves };
 			}
@@ -654,6 +657,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				enableSilktouch = toBool(arguments[0]);
+				markDirty();
 			} catch (Exception exception) {
 				return new Object[] { enableSilktouch };
 			}
@@ -665,6 +669,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		if (arguments.length == 1) {
 			try {
 				tapTrees = toBool(arguments[0]);
+				markDirty();
 			} catch (Exception exception) {
 				return new Object[] { tapTrees };
 			}

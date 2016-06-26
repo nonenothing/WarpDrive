@@ -387,6 +387,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			} else {
 				tier = 1;
 			}
+			markDirty();
 		}
 		return new Integer[] { (int)tier };
 	}
@@ -402,6 +403,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public Object[] enable(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			isEnabled = arguments.checkBoolean(0);
+			markDirty();
 		}
 		return new Object[] { isEnabled };
 	}
@@ -420,6 +422,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 					} else {
 						tier = 1;
 					}
+					markDirty();
 				}
 				return new Integer[] { (int) tier };
 
@@ -429,6 +432,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			case "enable":
 				if (arguments.length == 1) {
 					isEnabled = toBool(arguments[0]);
+					markDirty();
 				}
 				return new Object[] { isEnabled };
 		}

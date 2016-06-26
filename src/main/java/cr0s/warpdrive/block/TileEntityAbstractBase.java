@@ -55,6 +55,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	@Override
+	public void markDirty() {
+		super.markDirty();
+		if (worldObj != null) {
+			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		}
+	}
 	
 	// Inventory management methods
 	
@@ -238,6 +245,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return Math.min(max, Math.max(value, min));
 	}
 	
+	protected static float clamp(final float min, final float max, final float value) {
+		return Math.min(max, Math.max(value, min));
+	}
+	
 	protected static double clamp(final double min, final double max, final double value) {
 		return Math.min(max, Math.max(value, min));
 	}
@@ -377,6 +388,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	public boolean mountUpgrade(final Object upgrade) {
 		if (canUpgrade(upgrade)) {
 			installedUpgrades.put(upgrade, getUpgradeCount(upgrade) + 1);
+			markDirty();
 			return true;
 		}
 		return false;
@@ -386,10 +398,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		int count = getUpgradeCount(upgrade);
 		if (count > 1) {
 			installedUpgrades.put(upgrade, count - 1);
+			markDirty();
 			return true;
 			
 		} else if (count > 0) {
 			installedUpgrades.remove(upgrade);
+			markDirty();
 			return true;
 		}
 		return false;

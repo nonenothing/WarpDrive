@@ -55,6 +55,10 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void updateEntity() {
 		super.updateEntity();
 		
+		if (worldObj.isRemote) {
+			return;
+		}
+		
 		// Frequency is not set
 		isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
 	}
@@ -89,9 +93,9 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 			beamFrequency = parBeamFrequency;
 			vRGB = IBeamFrequency.getBeamColor(beamFrequency);
 		}
+		markDirty();
 		if (worldObj != null) {
 			ForceFieldRegistry.updateInRegistry(this);
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 	}
 	

@@ -60,6 +60,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 			}
 			// force update through main thread since CC runs on server as 'client'
 			packetSendTicks = 0;
+			markDirty();
 		}
 	}
 	

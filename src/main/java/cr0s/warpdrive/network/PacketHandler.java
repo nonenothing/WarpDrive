@@ -144,9 +144,4 @@ public class PacketHandler {
 		}
 		return null;
 	}
-	
-	@Deprecated
-	public static void sendTileEntityUpdate(TileEntity tileEntity) {
-		tileEntity.getWorldObj().markBlockForUpdate(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
-	}
 }
