@@ -36,9 +36,6 @@ import cr0s.warpdrive.world.SpaceTeleporter;
  * @author Cr0s
  */
 public class TileEntityShipCore extends TileEntityAbstractEnergy {
-	public Boolean ready;
-	
-	public Boolean launchState = false;
 	
 	public int dx, dz;
 	private int direction;
@@ -46,7 +43,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public int maxX, maxY, maxZ;
 	public int minX, minY, minZ;
 	
-	public int shipLength;
 	public int shipMass;
 	public int shipVolume;
 	private EnumShipCoreMode currentMode = EnumShipCoreMode.IDLE;
