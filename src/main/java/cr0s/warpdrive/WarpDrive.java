@@ -820,23 +820,52 @@ public class WarpDrive implements LoadingCallback {
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(List<String> list, String tooltip) {
-		tooltip = tooltip.replace("§", "" + (char)167).replace("\\n", "\n").replace("|", "\n");
+		final String charFormatting = "" + (char)167;
+		tooltip = tooltip.replace("§", charFormatting).replace("\\n", "\n").replace("|", "\n");
+		tooltip = tooltip.replace(charFormatting + "r", charFormatting + "7");
 		
 		String[] split = tooltip.split("\n");
 		for (String line : split) {
 			String lineRemaining = line;
-			while (lineRemaining.length() > 38) {
-				int index = lineRemaining.substring(0, 38).lastIndexOf(' ');
-				if (index == -1) {
+			String formatNextLine = "";
+			while (!lineRemaining.isEmpty()) {
+				int indexToCut = formatNextLine.length();
+				int displayLength = 0;
+				int length = lineRemaining.length();
+				while (indexToCut < length && displayLength <= 38) {
+					if (lineRemaining.charAt(indexToCut) == (char)167 && indexToCut + 1 < length) {
+						indexToCut++;
+					} else {
+						displayLength++;
+					}
+					indexToCut++;
+				}
+				if (indexToCut < length) {
+					indexToCut = lineRemaining.substring(0, indexToCut).lastIndexOf(' ');
+					if (indexToCut == -1) {// no space available, show the whole line 'as is'
+						list.add(lineRemaining);
+						lineRemaining = "";
+					} else {// cut at last space
+						list.add(lineRemaining.substring(0, indexToCut));
+						
+						// compute remaining format
+						int index = formatNextLine.length();
+						while (index <= indexToCut) {
+							if (lineRemaining.charAt(index) == (char)167 && index + 1 < indexToCut) {
+								index++;
+								formatNextLine += ("" + (char)167) + lineRemaining.charAt(index);
+							}
+							index++;
+						}
+						
+						// cut for next line, recovering current format
+						lineRemaining = formatNextLine + " " + lineRemaining.substring(indexToCut + 1);
+					}
+				} else {
 					list.add(lineRemaining);
 					lineRemaining = "";
-				} else {
-					list.add(lineRemaining.substring(0, index));
-					lineRemaining = lineRemaining.substring(index + 1);
 				}
 			}
-			
-			list.add(lineRemaining);
 		}
 	}
 	
