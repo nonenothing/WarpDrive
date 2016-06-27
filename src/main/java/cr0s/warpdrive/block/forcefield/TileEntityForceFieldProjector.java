@@ -6,6 +6,11 @@ import cr0s.warpdrive.api.IForceFieldShape;
 import cr0s.warpdrive.config.*;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.data.*;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockStaticLiquid;
@@ -29,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TileEntityForceFieldProjector extends TileEntityAbstractForceField {
 	private static final int PROJECTOR_MAX_ENERGY_STORED = 10000;
-	private static final int PROJECTOR_COOLDOWN_TICKS = 20;
+	private static final int PROJECTOR_COOLDOWN_TICKS = 100;
 	public static final int PROJECTOR_PROJECTION_UPDATE_TICKS = 8;
 	private static final int PROJECTOR_SETUP_TICKS = 20;
 	private static final int PROJECTOR_SOUND_UPDATE_TICKS = 100;
@@ -76,7 +81,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		peripheralName = "warpdriveForceFieldProjector";
 		addMethods(new String[] {
-			"status"    // isConnected, isPowered, shape
+			"rotation",
+			"state"
 		});
 		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
@@ -243,11 +249,15 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return calculated_forceField.contains(vector);
 	}
 	
-	private Set<VectorI> getInteriorPoints() {
-		if (!isCalculated()) {
-			throw new ConcurrentModificationException("Calculation ongoing...");
+	private boolean isPartOfInterior(VectorI vector) {
+		if (!isEnabled || !isValid()) {
+			return false;
 		}
-		return calculated_interiorField;
+		if (!isCalculated()) {
+			return false;
+		}
+		// only consider the forcefield interior
+		return calculated_interiorField.contains(vector);
 	}
 	
 	private void projectForceField() {
@@ -296,7 +306,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			// skip if fusion upgrade is present and it's inside another projector area
 			if (forceFieldSetup.hasFusion) {
 				for (TileEntityForceFieldProjector projector : forceFieldSetup.projectors) {
-					if (projector.getInteriorPoints().contains(vector)) {
+					if (projector.isPartOfInterior(vector)) {
 						doProjectThisBlock = false;
 						break;
 					}
@@ -359,7 +369,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			if (doProjectThisBlock) {
 				if (forceFieldSetup.breaking_maxHardness > 0) {
 					doProjectThisBlock = ! isBlockBreakCanceled(null, worldObj, vector.x, vector.y, vector.z);
-				} else {
+				} else if (!(block instanceof BlockForceField)) {
 					doProjectThisBlock = ! isBlockPlaceCanceled(null, worldObj, vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField);
 				}
 			}
@@ -571,6 +581,23 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
+	public EnumForceFieldShape getShape() {
+		if (shape == null) {
+			return EnumForceFieldShape.NONE;
+		}
+		return shape;
+	}
+	
+	void setShape(EnumForceFieldShape shape) {
+		this.shape = shape;
+		cache_forceFieldSetup = null;
+		isDirty.set(true);
+		markDirty();
+		if (worldObj != null) {
+			destroyForceField(false);
+		}
+	}
+	
 	@Override
 	public boolean mountUpgrade(Object upgrade) {
 		if  (super.mountUpgrade(upgrade)) {
@@ -693,21 +720,55 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return true;
 	}
 	
-	public EnumForceFieldShape getShape() {
-		if (shape == null) {
-			return EnumForceFieldShape.NONE;
-		}
-		return shape;
+	// OpenComputer callback methods
+	@Callback
+	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	public Object[] state(Context context, Arguments arguments) {
+		return state();
 	}
 	
-	void setShape(EnumForceFieldShape shape) {
-		this.shape = shape;
-		cache_forceFieldSetup = null;
-		isDirty.set(true);
-		markDirty();
-		if (worldObj != null) {
-			destroyForceField(false);
+	@Callback
+	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	public Object[] rotation(Context context, Arguments arguments) {
+		if (arguments.count() == 1) {
+			setRotation((float)arguments.checkDouble(0), rotationPitch, rotationRoll);
+		} else if (arguments.count() == 2) {
+			setRotation((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), rotationRoll);
+		} else if (arguments.count() == 3) {
+			setRotation((float)arguments.checkDouble(0), (float)arguments.checkDouble(1), (float)arguments.checkDouble(2));
 		}
+		return new Float[] { rotationYaw, rotationPitch, rotationRoll };
+	}
+	
+	// Common OC/CC methods
+	private Object[] state() {    // isConnected, isPowered, shape
+		int energy = getEnergyStored();
+		String status = getStatus();
+		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
+	}
+	
+	// ComputerCraft IPeripheral methods implementation
+	@Override
+	@cpw.mods.fml.common.Optional.Method(modid = "ComputerCraft")
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+		String methodName = getMethodName(method);
+		
+		switch (methodName) {
+		case "rotation":
+			if (arguments.length == 1) {
+				setRotation(toFloat(arguments[0]), rotationPitch, rotationRoll);
+			} else if (arguments.length == 2) {
+				setRotation(toFloat(arguments[0]), toFloat(arguments[1]), rotationRoll);
+			} else if (arguments.length == 3) {
+				setRotation(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[2]));
+			}
+			return new Float[] { rotationYaw, rotationPitch, rotationRoll };
+		
+		case "state":
+			return state();
+		}
+		
+		return super.callMethod(computer, context, method, arguments);
 	}
 	
 	private class ThreadCalculation extends Thread {

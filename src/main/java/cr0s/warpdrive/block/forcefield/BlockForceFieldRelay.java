@@ -18,19 +18,19 @@ import net.minecraft.world.World;
 
 public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@SideOnly(Side.CLIENT)
-	private final IIcon[] icons;
+	private IIcon[] icons;
 	
 	public BlockForceFieldRelay(final byte tier) {
 		super(tier, Material.iron);
 		isRotating = false;
 		setBlockName("warpdrive.forcefield.relay" + tier);
 		setBlockTextureName("warpdrive:forcefield/relay");
-		
-		icons = new IIcon[EnumForceFieldUpgrade.length + 1];
 	}
 	
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
+		icons = new IIcon[EnumForceFieldUpgrade.length + 1];
+		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
 				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "_" + enumForceFieldUpgrade.unlocalizedName);

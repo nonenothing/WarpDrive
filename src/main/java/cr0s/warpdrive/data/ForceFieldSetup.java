@@ -184,7 +184,7 @@ public class ForceFieldSetup extends GlobalPosition {
 						if (isValidCamouflage(blockCandidate)) {
 							blockCamouflage = blockCandidate;
 							metadataCamouflage = tileEntity.getWorldObj().getBlockMetadata(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
-							colorMultiplierCamouflage = blockCandidate.colorMultiplier(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+							colorMultiplierCamouflage = 0x808080; // blockCandidate.colorMultiplier(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
 							lightCamouflage = blockCandidate.getLightValue(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
 						}
 					}
