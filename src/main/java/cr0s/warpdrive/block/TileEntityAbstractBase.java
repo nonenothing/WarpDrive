@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -71,30 +72,57 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return ret;
 	}
 	
-	protected IInventory getFirstConnectedInventory() {
-		TileEntity result;
+	protected static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
+		Collection<IInventory> result = new ArrayList<>(6);
 		
 		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			result = worldObj.getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
-			if (result != null && (result instanceof IInventory)) {
-				return (IInventory) result;
+			TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
+				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
+			if (tileEntity != null && (tileEntity instanceof IInventory)) {
+				result.add((IInventory) tileEntity);
+				
+				if (tileEntity instanceof TileEntityChest) {
+					TileEntityChest tileEntityChest = (TileEntityChest) tileEntity;
+					tileEntityChest.checkForAdjacentChests();
+					if (tileEntityChest.adjacentChestXNeg != null) {
+						result.add(tileEntityChest.adjacentChestXNeg);
+					} else if (tileEntityChest.adjacentChestXPos != null) {
+						result.add(tileEntityChest.adjacentChestXPos);
+					} else if (tileEntityChest.adjacentChestZNeg != null) {
+						result.add(tileEntityChest.adjacentChestZNeg);
+					} else if (tileEntityChest.adjacentChestZPos != null) {
+						result.add(tileEntityChest.adjacentChestZPos);
+					}
+				}
 			}
 		}
-		return null;
+		return result;
 	}
 	
-	protected boolean addToConnectedInventory(ItemStack itemStack) {
-		List<ItemStack> stacks = new ArrayList<>(1);
-		stacks.add(itemStack);
-		return addToConnectedInventory(stacks);
+	protected boolean addToConnectedInventories(final ItemStack itemStack) {
+		List<ItemStack> itemStacks = new ArrayList<>(1);
+		itemStacks.add(itemStack);
+		return addToConnectedInventories(itemStacks, getConnectedInventories(this));
 	}
 	
-	protected boolean addToConnectedInventory(List<ItemStack> stacks) {
+	protected boolean addToConnectedInventories(final List<ItemStack> itemStacks) {
+		return addToConnectedInventories(itemStacks, getConnectedInventories(this));
+	}
+	
+	protected boolean addToConnectedInventories(final List<ItemStack> itemStacks, final Collection<IInventory> inventories) {
 		boolean overflow = false;
-		if (stacks != null) {
-			int qtyLeft;
-			for (ItemStack stack : stacks) {
-				qtyLeft = addToInventory(getFirstConnectedInventory(), stack);
+		if (itemStacks != null) {
+			for (ItemStack itemStack : itemStacks) {
+				int qtyLeft = itemStack.stackSize;
+				ItemStack itemStackLeft = itemStack.copy();
+				for (IInventory inventory : inventories) {
+					qtyLeft = addToInventory(inventory, itemStack);
+					if (qtyLeft > 0) {
+						itemStackLeft.stackSize = qtyLeft;
+					} else {
+						break;
+					}
+				}
 				if (qtyLeft > 0) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
 						WarpDrive.logger.info(this + " Overflow detected");
@@ -102,8 +130,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					overflow = true;
 					int transfer;
 					while (qtyLeft > 0) {
-						transfer = Math.min(qtyLeft, stack.getMaxStackSize());
-						ItemStack itemStackDrop = copyWithSize(stack, transfer);
+						transfer = Math.min(qtyLeft, itemStackLeft.getMaxStackSize());
+						ItemStack itemStackDrop = copyWithSize(itemStackLeft, transfer);
 						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, itemStackDrop);
 						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
@@ -114,7 +142,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return overflow;
 	}
 	
-	private int addToInventory(IInventory inventory, ItemStack itemStackSource) {
+	private static int addToInventory(IInventory inventory, final ItemStack itemStackSource) {
 		if (itemStackSource == null) {
 			return 0;
 		}
@@ -304,9 +332,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	private String getUpgradeAsString(Object object) {
 		if (object instanceof Item) {
-			return Item.itemRegistry.getNameForObject((Item) object);
+			return Item.itemRegistry.getNameForObject(object);
 		} else if (object instanceof Block) {
-			return Block.blockRegistry.getNameForObject((Block) object);
+			return Block.blockRegistry.getNameForObject(object);
 		} else if (object instanceof ItemStack) {
 			return Item.itemRegistry.getNameForObject(((ItemStack) object).getItem()) + ":" + ((ItemStack) object).getItemDamage();
 		} else {

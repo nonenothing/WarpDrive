@@ -49,7 +49,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 					2.6F + (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()) * 0.8F);
 		} else {
 			List<ItemStack> stacks = getItemStackFromBlock(valuable.x, valuable.y, valuable.z, block, blockMeta);
-			if (addToConnectedInventory(stacks)) {
+			if (addToConnectedInventories(stacks)) {
 				stop();
 			}
 			// standard harvest block effect

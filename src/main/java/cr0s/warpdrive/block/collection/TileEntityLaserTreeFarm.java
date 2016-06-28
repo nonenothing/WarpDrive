@@ -91,6 +91,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		CC_scripts = Arrays.asList("farm", "stop");
 	}
 	
+	@SuppressWarnings("UnnecessaryReturnStatement")
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
@@ -262,7 +263,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							
 							ItemStack resin = WarpDriveConfig.IC2_Resin.copy();
 							resin.stackSize = (int) Math.round(Math.random() * 4);
-							if (addToConnectedInventory(resin)) {
+							if (addToConnectedInventories(resin)) {
 								stop();
 							}
 							totalHarvested += resin.stackSize;
@@ -326,8 +327,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				VectorI soil = soils.get(soilIndex);
 				Block block = worldObj.getBlock(soil.x, soil.y, soil.z);
 				soilIndex++;
-				IInventory inventory = getFirstConnectedInventory();
-				if (inventory == null) {
+				Collection<IInventory> inventories = getConnectedInventories(this);
+				if (inventories == null || inventories.isEmpty()) {
 					currentState = STATE_WARMUP;
 					delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_SCANNING_LOW_POWER);
@@ -340,39 +341,46 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				ItemStack itemStack = null;
 				Block plant = null;
 				int plantMetadata = -1;
-				while (slotIndex < inventory.getSizeInventory() && !found) {
-					itemStack = inventory.getStackInSlot(slotIndex);
-					if (itemStack == null || itemStack.stackSize <= 0) {
-						slotIndex++;
-						continue;
+				IInventory inventory = null;
+				for (IInventory inventoryLoop : inventories) {
+					if (!found) {
+						slotIndex = 0;
 					}
-					Block blockFromItem = Block.getBlockFromItem(itemStack.getItem());
-					if (!(itemStack.getItem() instanceof IPlantable) && !(blockFromItem instanceof IPlantable)) {
-						slotIndex++;
-						continue;
+					while (slotIndex < inventoryLoop.getSizeInventory() && !found) {
+						itemStack = inventoryLoop.getStackInSlot(slotIndex);
+						if (itemStack == null || itemStack.stackSize <= 0) {
+							slotIndex++;
+							continue;
+						}
+						Block blockFromItem = Block.getBlockFromItem(itemStack.getItem());
+						if (!(itemStack.getItem() instanceof IPlantable) && !(blockFromItem instanceof IPlantable)) {
+							slotIndex++;
+							continue;
+						}
+						plantableCount++;
+						IPlantable plantable = (IPlantable) ((itemStack.getItem() instanceof IPlantable) ? itemStack.getItem() : blockFromItem);
+						plant = plantable.getPlant(worldObj, soil.x, soil.y + 1, soil.z);
+						plantMetadata = plantable.getPlantMetadata(worldObj, soil.x, soil.y + 1, soil.z);
+						if (plantMetadata == 0 && itemStack.getItemDamage() != 0) {
+							plantMetadata = itemStack.getItemDamage();
+						}
+						if (WarpDriveConfig.LOGGING_COLLECTION) {
+							WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant + ":" + plantMetadata);
+						}
+						
+						if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, plantable)) {
+							slotIndex++;
+							continue;
+						}
+						
+						if (!plant.canPlaceBlockAt(worldObj, soil.x, soil.y + 1, soil.z)) {
+							slotIndex++;
+							continue;
+						}
+						
+						found = true;
+						inventory = inventoryLoop;
 					}
-					plantableCount++;
-					IPlantable plantable = (IPlantable)((itemStack.getItem() instanceof IPlantable) ? itemStack.getItem() : blockFromItem);
-					plant = plantable.getPlant(worldObj, soil.x, soil.y + 1, soil.z);
-					plantMetadata = plantable.getPlantMetadata(worldObj, soil.x, soil.y + 1, soil.z);
-					if (plantMetadata == 0 && itemStack.getItemDamage() != 0) {
-						plantMetadata = itemStack.getItemDamage();
-					}
-					if (WarpDriveConfig.LOGGING_COLLECTION) {
-						WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant + ":" + plantMetadata);
-					}
-					
-					if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, plantable)) {
-						slotIndex++;
-						continue;
-					}
-					
-					if (!plant.canPlaceBlockAt(worldObj, soil.x, soil.y + 1, soil.z)) {
-						slotIndex++;
-						continue;
-					}
-					
-					found = true;
 				}
 				
 				// no plantable found at all, back to scanning
@@ -384,13 +392,14 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// no sapling found for this soil, moving on...
-				assert(itemStack != null);
-				if (!found) {
+				if (inventory == null) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
 						WarpDrive.logger.debug("No sapling found");
 					}
 					return;
 				}
+				//noinspection ConstantConditions
+				assert(found);
 				
 				// check area protection
 				if (isBlockPlaceCanceled(null, worldObj, soil.x, soil.y + 1, soil.z, plant, plantMetadata)) {
@@ -452,7 +461,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
 		int xMin = xCoord - Math.min(radiusX, maxRadius);
 		int xMax = xCoord + Math.min(radiusX, maxRadius);
-		int yMin = yCoord + 0;
+		int yMin = yCoord;
 		int yMax = yCoord + 8;
 		int zMin = zCoord - Math.min(radiusZ, maxRadius);
 		int zMax = zCoord + Math.min(radiusZ, maxRadius);
@@ -561,6 +570,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		return start();
 	}
 	
+	@SuppressWarnings("SameReturnValue")
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] stop(Context context, Arguments arguments) {
