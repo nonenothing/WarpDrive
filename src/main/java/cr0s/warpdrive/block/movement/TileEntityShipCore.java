@@ -264,7 +264,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 					if (cooldownTime % 20 == 0) {
 						int seconds = cooldownTime / 20;
 						if ((seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
-							messageToAllPlayersOnShip("Warp core is cooling down... " + cooldownTime / 20 + "s to go...");
+							messageToAllPlayersOnShip("Warp core is cooling down... " + seconds + "s to go...");
 						}
 					}
 					return;
