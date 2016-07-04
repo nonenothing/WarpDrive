@@ -850,8 +850,8 @@ public class Recipes {
 				'm', itemStackMachineCasings[1],
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		
-		// Coil crystal is 6 iron bars, 2 gold ingots, 1 diamond crystal
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL), false, "bbg", "bdb", "gbb",
+		// Coil crystal is 6 iron bars, 2 gold ingots, 1 diamond crystal, return 12x
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.COIL_CRYSTAL, 12), false, "bbg", "bdb", "gbb",
 		                                          'b', ironBars,
 		                                          'g', "ingotGold",
 		                                          'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL)));
@@ -888,12 +888,18 @@ public class Recipes {
 		                                          'm', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL)));
 		
 		// *** Force field upgrades
+		// Force field attraction upgrade is 3 Coil crystal, 1 Iron block, 2 Redstone block, 1 MV motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.ATTRACTION), false, "CCC", "rir", " m ",
+		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
+		                                          'r', Blocks.redstone_block,
+		                                          'i', Blocks.iron_block,
+		                                          'm', itemStackMotorMV));
 		// Force field breaking upgrade is 3 Coil crystal, 1 Diamond axe, 1 diamond shovel, 1 diamond pick
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.BREAKING), false, "CCC", "sap", "   ",
-		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
-		                                          's', Items.diamond_axe,
-		                                          'a', Items.diamond_shovel,
-		                                          'p', Items.diamond_pickaxe));
+			                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
+			                                          's', Items.diamond_axe,
+			                                          'a', Items.diamond_shovel,
+			                                          'p', Items.diamond_pickaxe));
 		// Force field camouflage upgrade is 3 Coil crystal, 2 Diffraction grating, 1 Zoom, 1 Emerald crystal
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.CAMOUFLAGE), false, "CCC", "zre", "   ",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
@@ -920,6 +926,11 @@ public class Recipes {
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
 		                                          'r', Items.redstone,
 		                                          'g', Items.gold_nugget));
+		// Force field item port upgrade is 3 Coil crystal, 3 Chests, 1 MV motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.ITEM_PORT), false, "CCC", "cmc", " c ",
+			                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
+			                                          'c', Blocks.chest,
+			                                          'm', itemStackMotorMV));
 		// Force field silencer upgrade is 3 Coil crystal, 3 Wool
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.SILENCER), false, "CCC", "www", "   ",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
@@ -934,6 +945,12 @@ public class Recipes {
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
 		                                          'M', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
 		                                          'R', Blocks.redstone_block));
+		// Force field repulsion upgrade is 3 Coil crystal, 1 Iron block, 2 Redstone block, 1 MV motor
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.REPULSION), false, " m ", "rir", "CCC",
+			                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
+			                                          'r', Blocks.redstone_block,
+			                                          'i', Blocks.iron_block,
+			                                          'm', itemStackMotorMV));
 		// Force field rotation upgrade is 3 Coil crystal, 2 MV Motors, 1 Computer interface
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStackNoCache(EnumForceFieldUpgrade.ROTATION, 2), false, "CCC", " m ", " mc",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
@@ -1284,17 +1301,17 @@ public class Recipes {
 		// Force field projector is 1 or 2 Electromagnetic Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
 		for (int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 0), false, " e ", "pm ", " r ",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1, 0), false, " e ", "pm ", " r ",
 			                                          'p', ItemComponent.getItemStack(EnumComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                          'm', itemStackMachineCasings[index],
 			                                          'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
 			                                          'r', Items.redstone));
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 0), false, " e ", " mp", " r ",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1, 0), false, " e ", " mp", " r ",
 			                                          'p', ItemComponent.getItemStack(EnumComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                          'm', itemStackMachineCasings[index],
 			                                          'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
 			                                          'r', Items.redstone));
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1), false, " e ", "pmp", " r ",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockForceFieldProjectors[index], 1, 1), false, " e ", "pmp", " r ",
 			                                          'p', ItemComponent.getItemStack(EnumComponentType.ELECTROMAGNETIC_PROJECTOR),
 			                                          'm', itemStackMachineCasings[index],
 			                                          'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),

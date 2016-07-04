@@ -85,6 +85,6 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	
 	@Override
 	public float getUpgradeValue() {
-		return isEnabled ? getUpgrade().getUpgradeValue() * (1.0F + (tier - 1) * ForceFieldSetup.FORCEFIELD_UPGRADE_BOOST_PER_RELAY_TIER) : 0.0F;
+		return isEnabled ? getUpgrade().getUpgradeValue() * (1.0F + (tier - 1) * ForceFieldSetup.FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_RELAY_TIER) : 0.0F;
 	}
 }

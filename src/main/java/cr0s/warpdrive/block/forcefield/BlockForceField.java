@@ -56,7 +56,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		return null;
 	}
-
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIcon(int side, int metadata) {
@@ -173,15 +173,15 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			forceFieldSetup.onEntityEffect(world, x, y, z, entity);
-			
-			if (entity instanceof EntityLiving && new Vector3(x, y, z).translate(0.5F).distanceTo_square(entity) < 0.4D) {
+			double distance2 = new Vector3(x, y, z).translate(0.5F).distanceTo_square(entity);
+			if (entity instanceof EntityLiving && distance2 < 0.26D) {
 				boolean hasPermission = false;
 				
 				List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 0.9D, z + 1));
 				for (EntityPlayer entityPlayer : entities) {
 					if (entityPlayer != null && entityPlayer.isSneaking()) {
 						if ( entityPlayer.capabilities.isCreativeMode
-							|| forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH)) {
+						  || forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH) ) {
 							hasPermission = true;
 							break;
 						}
@@ -193,7 +193,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 				
 				if (!hasPermission) {
 					((EntityLiving) entity).addPotionEffect(new PotionEffect(Potion.confusion.id, 80, 3));
-					entity.attackEntityFrom(WarpDrive.damageShock, 5);
+					if (distance2 < 0.24D) {
+						entity.attackEntityFrom(WarpDrive.damageShock, 5);
+					}
 				}
 			}
 		}

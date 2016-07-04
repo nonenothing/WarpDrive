@@ -39,6 +39,7 @@ public class Dictionary {
 	public static HashSet<Block> BLOCKS_SKIPMINING = null;
 	public static HashSet<Block> BLOCKS_STOPMINING = null;
 	public static HashMap<Block, Integer> BLOCKS_PLACE = null;
+	public static HashSet<Block> BLOCKS_NOCAMOUFLAGE = null;
 	
 	// Entities dictionary
 	public static HashSet<String> ENTITIES_ANCHOR = null;
@@ -75,7 +76,8 @@ public class Dictionary {
 					+ "- PlaceEarlier: this block will be placed fairly soon (default: forcefield blocks).\n"
 					+ "- PlaceNormal: this block will be removed and placed with non-tile entities.\n"
 					+ "- PlaceLater: this block will be placed fairly late (default: IC2 Reactor core).\n"
-					+ "- PlaceLatest: this block will be removed first and placed last (default: IC2 Reactor chamber).");
+					+ "- PlaceLatest: this block will be removed first and placed last (default: IC2 Reactor chamber).\n"
+					+ "- NoCamouflage: this block isn't valid for camouflage.");
 			
 			ConfigCategory categoryBlockTags = config.getCategory("block_tags");
 			String[] taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
@@ -134,7 +136,7 @@ public class Dictionary {
 				config.get("block_tags", "Railcraft:residual.heat"               , "LeftBehind Expandable").getString();
 				config.get("block_tags", "InvisibLights:blockLightSource"        , "NoMass Expandable").getString();
 				config.get("block_tags", "WarpDrive:blockAir"                    , "NoMass Expandable PlaceLatest").getString();
-
+				
 				// mining a mineshaft...
 				config.get("block_tags", "minecraft:web"                         , "Mining").getString();
 				config.get("block_tags", "minecraft:fence"                       , "Mining").getString();
@@ -144,6 +146,26 @@ public class Dictionary {
 				
 				// mining an 'end' moon
 				config.get("block_tags", "WarpDrive:blockIridium"                , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
+				
+				// force field camouflage blacklisting
+				config.get("block_tags", "deepresonance:energyCollectorBlock"          , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:resonatingCrystalBlock"        , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:bloodInfuser"                      , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:darkOre"                           , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:sanguinaryEnvironmentalAccumulator", "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:spiritReanimator"                  , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierWood"             , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierOneBlock"         , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierTwoBlock"         , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierThreeBlock"       , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierFourBlock"        , "NoCamouflage").getString();
+				config.get("block_tags", "Thaumcraft:blockCustomPlant"                 , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Cache"                      , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Device"                     , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Machine"                    , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Sponge"                     , "NoCamouflage").getString();
+				config.get("block_tags", "witchery:leechchest"                         , "NoCamouflage").getString();
+				
 				taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedBlocks = new HashMap<>(taggedBlocksName.length);
@@ -278,6 +300,7 @@ public class Dictionary {
 		BLOCKS_SKIPMINING = new HashSet<>(taggedBlocks.size());
 		BLOCKS_STOPMINING = new HashSet<>(taggedBlocks.size());
 		BLOCKS_PLACE = new HashMap<>(taggedBlocks.size());
+		BLOCKS_NOCAMOUFLAGE = new HashSet<>(taggedBlocks.size());
 		for (Entry<String, String> taggedBlock : taggedBlocks.entrySet()) {
 			Block block = Block.getBlockFromName(taggedBlock.getKey());
 			if (block == null) {
@@ -301,6 +324,7 @@ public class Dictionary {
 				case "PlaceNormal"  : BLOCKS_PLACE.put(block, 2); break;
 				case "PlaceLater"   : BLOCKS_PLACE.put(block, 3); break;
 				case "PlaceLatest"  : BLOCKS_PLACE.put(block, 4); break;
+				case "NoCamouflage" : BLOCKS_NOCAMOUFLAGE.add(block); break;
 				default:
 					WarpDrive.logger.error("Unsupported tag '" + tag + "' for block " + block);
 					break;

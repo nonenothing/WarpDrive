@@ -122,7 +122,9 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		// sneaking with an empty hand or an upgrade/shape item in hand to dismount current upgrade/shape
 		if (entityPlayer.isSneaking()) {
 			// using an upgrade item or no shape defined means dismount upgrade, otherwise dismount shape
-			if ((itemStackHeld != null && itemStackHeld.getItem() instanceof ItemForceFieldUpgrade) || tileEntityForceFieldProjector.getShape() == EnumForceFieldShape.NONE) {
+			if ( (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemForceFieldUpgrade)
+			  || (tileEntityForceFieldProjector.getShape() == EnumForceFieldShape.NONE)
+			  || (side != (metadata & 7) && (!tileEntityForceFieldProjector.isDoubleSided || ForgeDirection.OPPOSITES[side] != (metadata & 7))) ) {
 				// find a valid upgrade to dismount
 				if (!tileEntityForceFieldProjector.hasUpgrade(enumForceFieldUpgrade)) {
 					enumForceFieldUpgrade = (EnumForceFieldUpgrade)tileEntityForceFieldProjector.getFirstUpgradeOfType(EnumForceFieldUpgrade.class, EnumForceFieldUpgrade.NONE);
@@ -216,7 +218,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// validate type
 			if (tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade) <= 0) {
 				// invalid upgrade type
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidUpgrade"));
+				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade"));
 				return true;
 			}
 			if (!tileEntityForceFieldProjector.canUpgrade(enumForceFieldUpgrade)) {

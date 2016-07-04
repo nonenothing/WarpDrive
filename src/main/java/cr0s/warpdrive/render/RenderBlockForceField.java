@@ -3,6 +3,7 @@ package cr0s.warpdrive.render;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.TileEntityForceField;
+import cr0s.warpdrive.config.Dictionary;
 import net.minecraft.block.*;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
@@ -29,8 +30,7 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 		
 		int renderType = -1;
 		Block blockCamouflage = ((TileEntityForceField)tileEntity).cache_blockCamouflage;
-		int metaCamouflage = ((TileEntityForceField)tileEntity).cache_metadataCamouflage;
-		if (blockCamouflage != null) {
+		if (blockCamouflage != null && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockCamouflage)) {
 			renderType = blockCamouflage.getRenderType();
 		}
 		
@@ -82,12 +82,21 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 				// 40 is double plant
 				case 41 : renderer.renderBlockStainedGlassPane(blockCamouflage, x, y, z); break;
 				default:
-					WarpDrive.logger.error("Invalid camouflage renderType " + renderType + " at " + x + " " + y + " " + z + " for block " + blockCamouflage + " metadata " + metaCamouflage);
+					// blacklist the faulty block
+					WarpDrive.logger.error("Disabling camouflage with block " + Block.blockRegistry.getNameForObject(blockCamouflage) + " due to invalid renderType " + renderType);
+					Dictionary.BLOCKS_NOCAMOUFLAGE.add(blockCamouflage);
 					return false;
 				}
 			} catch(Exception exception) {
 				exception.printStackTrace();
-				renderer.renderBlockAsItem(blockCamouflage, metaCamouflage, 1);
+				
+				// blacklist the faulty block
+				WarpDrive.logger.error("Disabling camouflage block " + Block.blockRegistry.getNameForObject(blockCamouflage) + " due to previous exception");
+				Dictionary.BLOCKS_NOCAMOUFLAGE.add(blockCamouflage);
+				
+				// render normal force field
+				renderer.renderStandardBlock(block, x, y, z);
+				// renderer.renderBlockAsItem(blockCamouflage, metaCamouflage, 1);
 			}
 			return true;
 		}

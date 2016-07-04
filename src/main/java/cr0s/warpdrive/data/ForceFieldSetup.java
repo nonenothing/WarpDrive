@@ -4,17 +4,22 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldShape;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
+import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,12 +28,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 public class ForceFieldSetup extends GlobalPosition {
-	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 500;
-	private static final float FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND = 100;
-	private static final float FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND = 50000;
-	private static final float FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND = 20000;
-	private static final float FORCEFIELD_UPGRADE_BOOST_PER_PROJECTOR_TIER = 0.50F;
-	public static final float FORCEFIELD_UPGRADE_BOOST_PER_RELAY_TIER = 0.25F;
+	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 100;
+	private static final float FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND = 20;
+	private static final float FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND = 10000;
+	private static final float FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND = 4000;
+	private static final float FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_PROJECTOR_TIER = 0.50F;
+	public static final float FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_RELAY_TIER = 0.25F;
+	public static final double FORCEFIELD_ACCELERATION_FACTOR = 0.01D;
+	public static final int FORCEFIELD_RELAY_RANGE = 20;
 	
 	public final int beamFrequency;
 	public final byte tier;
@@ -40,6 +47,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(
 		0, 1, 2, 3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41);
 	private final HashMap<IForceFieldUpgradeEffector, Float> upgrades = new HashMap<>(EnumForceFieldUpgrade.length);
+	public final Collection<IInventory> inventories = new ArrayList<>(12);
 	
 	public float scanSpeed;
 	public float placeSpeed;
@@ -50,9 +58,11 @@ public class ForceFieldSetup extends GlobalPosition {
 	
 	public float breaking_maxHardness;
 	public float temperatureLevel;
-	public boolean hasStabilize;
+	public float accelerationLevel;
+	public boolean hasCollection;
 	public boolean hasFusion;
 	public boolean isInverted;
+	public boolean hasStabilize;
 	public float thickness;
 	public float pumping_maxViscosity;
 	
@@ -62,7 +72,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	public float rotationRoll;
 	public VectorI vTranslation = new VectorI(0, 0, 0);
 	public VectorI vMin = new VectorI(-8, -8, -8);
-	public VectorI vMax = new VectorI(8, 8, 8);
+	public VectorI vMax = new VectorI( 8,  8,  8);
 	public IForceFieldShape shapeProvider;
 	public boolean isDoubleSided = true;
 	
@@ -88,7 +98,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	}
 	
 	private static boolean isValidCamouflage(final Block block) {
-		return block != null && block != Blocks.air && ALLOWED_RENDER_TYPES.contains(block.getRenderType());
+		return block != null && block != Blocks.air && ALLOWED_RENDER_TYPES.contains(block.getRenderType()) && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(block);
 	}
 	
 	public Block getCamouflageBlock() {
@@ -125,12 +135,15 @@ public class ForceFieldSetup extends GlobalPosition {
 	}
 	
 	private void refresh() {
-		Set<TileEntity> tileEntities = ForceFieldRegistry.getTileEntities(beamFrequency);
+		Set<TileEntity> tileEntities = ForceFieldRegistry.getTileEntities(beamFrequency, getWorldServerIfLoaded(), x, y, z);
 		HashMap<IForceFieldUpgradeEffector, Float> upgradeValues = new HashMap<>(EnumForceFieldUpgrade.length);
+		Vector3 v3Min = new Vector3(-1.0D, -1.0D, -1.0D);
+		Vector3 v3Max = new Vector3( 1.0D,  1.0D,  1.0D);
+		Vector3 v3Translation = new Vector3(0.0D, 0.0D, 0.0D);
 		
 		for (TileEntity tileEntity : tileEntities) {
 			// only consider same dimension
-			if (tileEntity.getWorldObj().provider.dimensionId != dimensionId) {
+			if (tileEntity.getWorldObj() == null || tileEntity.getWorldObj().provider.dimensionId != dimensionId) {
 				continue;
 			}
 			// projectors
@@ -143,8 +156,9 @@ public class ForceFieldSetup extends GlobalPosition {
 					rotationYaw = projector.getRotationYaw();
 					rotationPitch = projector.getRotationPitch();
 					rotationRoll = projector.getRotationRoll();
-					// TODO vMin = projector.vMin;
-					// TODO vMax = projector.vMax;
+					v3Min = projector.getMin();
+					v3Max = projector.getMax();
+					v3Translation = projector.getTranslation();
 					for (Entry<Object, Integer> entry : projector.getUpgradesOfType(null).entrySet()) {
 						if (entry.getKey() instanceof IForceFieldUpgrade) {
 							IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)entry.getKey()).getUpgradeEffector();
@@ -154,7 +168,7 @@ public class ForceFieldSetup extends GlobalPosition {
 									currentValue = 0.0F;
 								}
 								float addedValue = ((IForceFieldUpgrade)entry.getKey()).getUpgradeValue() * entry.getValue();
-								addedValue *= 1 + (tier - 1) * FORCEFIELD_UPGRADE_BOOST_PER_PROJECTOR_TIER;
+								addedValue *= 1 + (tier - 1) * FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_PROJECTOR_TIER;
 								upgradeValues.put(upgradeEffector, currentValue + addedValue);
 							}
 						}
@@ -188,6 +202,11 @@ public class ForceFieldSetup extends GlobalPosition {
 							lightCamouflage = blockCandidate.getLightValue(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
 						}
 					}
+					
+					// container identification
+					if (upgradeEffector == EnumForceFieldUpgrade.ITEM_PORT) {
+						inventories.addAll(TileEntityAbstractBase.getConnectedInventories(tileEntity));
+					}
 				}
 			}
 		}
@@ -203,9 +222,9 @@ public class ForceFieldSetup extends GlobalPosition {
 			scanSpeed *= 2.1F;
 			placeSpeed *= 2.1F;
 			startupEnergyCost += 20.0F * tier;
-			scanEnergyCost *= 0.9F;
-			placeEnergyCost *= 0.9F;
-			entityEnergyCost *= 0.9F;
+			scanEnergyCost *= 0.45F;
+			placeEnergyCost *= 0.45F;
+			entityEnergyCost *= 0.45F;
 		}
 		
 		// apply scaling
@@ -230,6 +249,7 @@ public class ForceFieldSetup extends GlobalPosition {
 				entityEnergyCost +=  entry.getKey().getEntityEffectEnergyCost(scaledValue);
 			}
 		}
+		
 		// finalize coefficients
 		scanSpeed = Math.min(FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND, scanSpeed);
 		placeSpeed = Math.min(FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND, placeSpeed);
@@ -238,14 +258,34 @@ public class ForceFieldSetup extends GlobalPosition {
 		this.placeEnergyCost = Math.round(placeEnergyCost);
 		this.entityEnergyCost = Math.round(entityEnergyCost);
 		
+		// range is maximum distance
+		double range = getScaledUpgrade(EnumForceFieldUpgrade.RANGE);
+		if (range == 0.0D) {
+			range = 8.0D;
+			v3Min = new Vector3(-1.0D, -1.0D, -1.0D);
+			v3Max = new Vector3( 1.0D,  1.0D,  1.0D);
+		}
+		vMin.x = (int) Math.round(Math.min(0.0D, Math.max(-1.0D, v3Min.x)) * range);
+		vMin.y = (int) Math.round(Math.min(0.0D, Math.max(-1.0D, v3Min.y)) * range);
+		vMin.z = (int) Math.round(Math.min(0.0D, Math.max(-1.0D, v3Min.z)) * range);
+		vMax.x = (int) Math.round(Math.min(1.0D, Math.max( 0.0D, v3Max.x)) * range);
+		vMax.y = (int) Math.round(Math.min(1.0D, Math.max( 0.0D, v3Max.y)) * range);
+		vMax.z = (int) Math.round(Math.min(1.0D, Math.max( 0.0D, v3Max.z)) * range);
+		vTranslation.x += (int) Math.round(Math.min(1.0D, Math.max(-1.0D, v3Translation.x)) * range);
+		vTranslation.y += (int) Math.round(Math.min(1.0D, Math.max(-1.0D, v3Translation.y)) * range);
+		vTranslation.z += (int) Math.round(Math.min(1.0D, Math.max(-1.0D, v3Translation.z)) * range);
 		
-		// fusion, inversion and stabilize just needs to be defined
+		// acceleration is a compound of attraction and repulsion
+		accelerationLevel = getScaledUpgrade(EnumForceFieldUpgrade.ATTRACTION) - getScaledUpgrade(EnumForceFieldUpgrade.REPULSION);
+		
+		// collection, fusion, inversion and stabilize just needs to be defined
+		hasCollection = getScaledUpgrade(EnumForceFieldUpgrade.ITEM_PORT) > 0.0F && accelerationLevel > 1.0F;
 		hasFusion = getScaledUpgrade(EnumForceFieldUpgrade.FUSION) > 0.0F;
 		isInverted = getScaledUpgrade(EnumForceFieldUpgrade.INVERSION) > 0.0F;
-		hasStabilize = getScaledUpgrade(EnumForceFieldUpgrade.STABILIZATION) > 0.0F;
+		hasStabilize = getScaledUpgrade(EnumForceFieldUpgrade.STABILIZATION) > 0.0F && accelerationLevel < 1.0F;
 		
 		// temperature is a compound of cooling and heating
-		temperatureLevel = getScaledUpgrade(EnumForceFieldUpgrade.HEATING) - getScaledUpgrade(EnumForceFieldUpgrade.COOLING);
+		temperatureLevel = Math.max(0.1F, 300.0F + getScaledUpgrade(EnumForceFieldUpgrade.HEATING) - getScaledUpgrade(EnumForceFieldUpgrade.COOLING));
 		
 		// disintegration, pump and thickness is the actual value
 		breaking_maxHardness = getScaledUpgrade(EnumForceFieldUpgrade.BREAKING);
@@ -265,7 +305,13 @@ public class ForceFieldSetup extends GlobalPosition {
 	public int onEntityEffect(World world, final int x, final int y, final int z, Entity entity) {
 		int countdown = 0;
 		for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgrades.entrySet()) {
-			countdown += entry.getKey().onEntityEffect(entry.getValue(), world, x, y, z, entity);
+			Float value = entry.getValue();
+			if (entry.getKey() == EnumForceFieldUpgrade.COOLING || entry.getKey() == EnumForceFieldUpgrade.HEATING) {
+				value = temperatureLevel;
+			} else if (entry.getKey() == EnumForceFieldUpgrade.ATTRACTION || entry.getKey() == EnumForceFieldUpgrade.REPULSION) {
+				value = accelerationLevel;
+			}
+			countdown += entry.getKey().onEntityEffect(value, world, x, y, z, entity);
 		}
 		return countdown;
 	}

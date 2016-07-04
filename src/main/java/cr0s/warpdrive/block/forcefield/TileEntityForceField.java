@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.forcefield;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
@@ -42,6 +43,12 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 					cache_metadataCamouflage = tag.getByte("camouflageMeta");
 					cache_colorMultiplierCamouflage = tag.getInteger("camouflageColorMultiplier");
 					cache_lightCamouflage = tag.getByte("camouflageLight");
+					if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(cache_blockCamouflage)) {
+						cache_blockCamouflage = null;
+						cache_metadataCamouflage = 0;
+						cache_colorMultiplierCamouflage = 0;
+						cache_lightCamouflage = 0;
+					}
 				} catch (Exception exception) {
 					exception.printStackTrace();
 				}

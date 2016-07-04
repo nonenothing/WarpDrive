@@ -72,7 +72,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return ret;
 	}
 	
-	protected static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
+	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
 		Collection<IInventory> result = new ArrayList<>(6);
 		
 		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
@@ -102,21 +102,21 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected boolean addToConnectedInventories(final ItemStack itemStack) {
 		List<ItemStack> itemStacks = new ArrayList<>(1);
 		itemStacks.add(itemStack);
-		return addToConnectedInventories(itemStacks, getConnectedInventories(this));
+		return addToInventories(itemStacks, getConnectedInventories(this));
 	}
 	
 	protected boolean addToConnectedInventories(final List<ItemStack> itemStacks) {
-		return addToConnectedInventories(itemStacks, getConnectedInventories(this));
+		return addToInventories(itemStacks, getConnectedInventories(this));
 	}
 	
-	protected boolean addToConnectedInventories(final List<ItemStack> itemStacks, final Collection<IInventory> inventories) {
+	protected boolean addToInventories(final List<ItemStack> itemStacks, final Collection<IInventory> inventories) {
 		boolean overflow = false;
 		if (itemStacks != null) {
 			for (ItemStack itemStack : itemStacks) {
 				int qtyLeft = itemStack.stackSize;
 				ItemStack itemStackLeft = itemStack.copy();
 				for (IInventory inventory : inventories) {
-					qtyLeft = addToInventory(inventory, itemStack);
+					qtyLeft = addToInventory(itemStack, inventory);
 					if (qtyLeft > 0) {
 						itemStackLeft.stackSize = qtyLeft;
 					} else {
@@ -142,7 +142,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return overflow;
 	}
 	
-	private static int addToInventory(IInventory inventory, final ItemStack itemStackSource) {
+	private static int addToInventory(final ItemStack itemStackSource, IInventory inventory) {
 		if (itemStackSource == null) {
 			return 0;
 		}

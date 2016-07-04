@@ -234,7 +234,7 @@ public class VectorI implements Cloneable {
 	
 	@Override
 	public int hashCode() {
-		return (x + " " + y + " " + z).hashCode();
+		return (x + "X" + y + "Y" + z + "lem").hashCode();
 	}
 	
 	public boolean equals(final TileEntity tileEntity) {
@@ -322,10 +322,10 @@ public class VectorI implements Cloneable {
 		return x * x + y * y + z * z;
 	}
 	
-	public VectorI scale(final int amount) {
-		x *= amount;
-		y *= amount;
-		z *= amount;
+	public VectorI scale(final float amount) {
+		x = Math.round(x * amount);
+		y = Math.round(y * amount);
+		z = Math.round(z * amount);
 		return this;
 	}
 	
