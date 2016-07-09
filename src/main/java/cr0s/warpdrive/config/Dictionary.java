@@ -83,66 +83,74 @@ public class Dictionary {
 			String[] taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			if (taggedBlocksName.length == 0) {
 				// farming
-				config.get("block_tags", "minecraft:dirt"                        , "Soil").getString();
-				config.get("block_tags", "minecraft:farmland"                    , "Soil").getString();
-				config.get("block_tags", "minecraft:grass"                       , "Soil").getString();
-				config.get("block_tags", "minecraft:mycelium"                    , "Soil").getString();
-				config.get("block_tags", "minecraft:sand"                        , "Soil").getString();
-				config.get("block_tags", "minecraft:soul_sand"                   , "Soil").getString();
-				config.get("block_tags", "IC2:blockRubWood"                      , "Log").getString();
-				config.get("block_tags", "TConstruct:slime.gel"                  , "Log").getString();
-				config.get("block_tags", "TConstruct:slime.leaves"               , "Leaf").getString();
+				config.get("block_tags", "minecraft:dirt"                                  , "Soil").getString();
+				config.get("block_tags", "minecraft:farmland"                              , "Soil").getString();
+				config.get("block_tags", "minecraft:grass"                                 , "Soil").getString();
+				config.get("block_tags", "minecraft:mycelium"                              , "Soil").getString();
+				config.get("block_tags", "minecraft:sand"                                  , "Soil").getString();
+				config.get("block_tags", "minecraft:soul_sand"                             , "Soil").getString();
+				config.get("block_tags", "IC2:blockRubWood"                                , "Log").getString();
+				config.get("block_tags", "TConstruct:slime.gel"                            , "Log").getString();
+				config.get("block_tags", "TConstruct:slime.leaves"                         , "Leaf").getString();
 				
 				// anchors
-				config.get("block_tags", "minecraft:bedrock"                     , "Anchor SkipMining").getString();
-				config.get("block_tags", "minecraft:command_block"               , "Anchor StopMining").getString();
-				config.get("block_tags", "minecraft:end_portal_frame"            , "Anchor StopMining").getString();
-				config.get("block_tags", "minecraft:end_portal"                  , "Anchor StopMining").getString();
-				config.get("block_tags", "IC2:blockPersonal"                     , "Anchor SkipMining").getString();
-				config.get("block_tags", "Artifacts:invisible_bedrock"           , "Anchor StopMining").getString();
-				config.get("block_tags", "Artifacts:anti_anti_builder_stone"     , "Anchor StopMining").getString();
-				config.get("block_tags", "Artifacts:anti_builder"                , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:bedrock"                               , "Anchor SkipMining").getString();
+				config.get("block_tags", "minecraft:command_block"                         , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:end_portal_frame"                      , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:end_portal"                            , "Anchor StopMining").getString();
+				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
+				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining").getString();
+				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
+				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
 				
 				// placement priorities
-				config.get("block_tags", "minecraft:lever"                       , "PlaceLatest").getString();
-				config.get("block_tags", "WarpDrive:blockHull1_plain"            , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull2_plain"            , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull3_plain"            , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull1_glass"            , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull2_glass"            , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull3_glass"            , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "IC2:blockReinforcedFoam"               , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "IC2:blockAlloy"                        , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "IC2:blockAlloyGlass"                   , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "minecraft:obsidian"                    , "PlaceEarliest Mining").getString();
-				config.get("block_tags", "AdvancedRepulsionSystems:field"        , "PlaceEarlier StopMining").getString();
-				// config.get("block_tags", "MFFS:field"                            , "PlaceEarlier StopMining"	).getString();
-				config.get("block_tags", "IC2:blockGenerator"                    , "PlaceLater").getString();
-				config.get("block_tags", "IC2:blockReactorChamber"               , "PlaceLatest").getString();
-				config.get("block_tags", "ImmersiveEngineering:metalDevice"      , "PlaceLatest").getString();	// FIXME: need to fine tune at metadata level
-				// config.get("block_tags", "SGCraft:stargateBase"                  , "PlaceEarliest").getString();
-				// config.get("block_tags", "SGCraft:stargateBase"                  , "PlaceEarliest").getString();
-				// config.get("block_tags", "SGCraft:stargateRing"                  , "PlaceEarlier").getString();
-				// config.get("block_tags", "SGCraft:stargateController"            , "PlaceLatest").getString();
-				config.get("block_tags", "OpenComputers:keyboard"                , "PlaceLatest").getString();
-				config.get("block_tags", "StargateTech2:block.shieldEmitter"     , "PlaceLater StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.shieldController"  , "PlaceNormal StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.shield"            , "PlaceNormal StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.busAdapter"        , "PlaceLatest StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.busCable"          , "PlaceNormal StopMining").getString();
+				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
+				config.get("block_tags", "WarpDrive:blockHull1_plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "WarpDrive:blockHull2_plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "WarpDrive:blockHull3_plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "WarpDrive:blockHull1_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "WarpDrive:blockHull2_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "WarpDrive:blockHull3_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "IC2:blockReinforcedFoam"                         , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "IC2:blockAlloy"                                  , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "IC2:blockAlloyGlass"                             , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "minecraft:obsidian"                              , "PlaceEarliest Mining").getString();
+				config.get("block_tags", "AdvancedRepulsionSystems:field"                  , "PlaceEarlier StopMining").getString();
+				// config.get("block_tags", "MFFS:field"                                      , "PlaceEarlier StopMining"	).getString();
+				config.get("block_tags", "IC2:blockGenerator"                              , "PlaceLater").getString();
+				config.get("block_tags", "IC2:blockReactorChamber"                         , "PlaceLatest").getString();
+				config.get("block_tags", "ImmersiveEngineering:metalDevice"                , "PlaceLatest").getString();	// FIXME: need to fine tune at metadata level
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersDaylightSensor"  , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersDoor"            , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersGarageDoor"      , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersHatch"           , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersLadder"          , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersLever"           , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersPressurePlate"   , "PlaceLatest").getString();
+				config.get("block_tags", "CarpentersBlocks:blockCarpentersTorch"           , "PlaceLatest").getString();
+				// config.get("block_tags", "SGCraft:stargateBase"                            , "PlaceEarliest").getString();
+				// config.get("block_tags", "SGCraft:stargateBase"                            , "PlaceEarliest").getString();
+				// config.get("block_tags", "SGCraft:stargateRing"                            , "PlaceEarlier").getString();
+				// config.get("block_tags", "SGCraft:stargateController"                      , "PlaceLatest").getString();
+				config.get("block_tags", "OpenComputers:keyboard"                          , "PlaceLatest").getString();
+				config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining").getString();
+				config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining").getString();
+				config.get("block_tags", "StargateTech2:block.shield"                      , "PlaceNormal StopMining").getString();
+				config.get("block_tags", "StargateTech2:block.busAdapter"                  , "PlaceLatest StopMining").getString();
+				config.get("block_tags", "StargateTech2:block.busCable"                    , "PlaceNormal StopMining").getString();
 				
 				// expendables, a.k.a. "don't blow my ship with this..."
-				config.get("block_tags", "WarpDrive:blockGas"                    , "LeftBehind Expandable").getString();
-				config.get("block_tags", "Railcraft:residual.heat"               , "LeftBehind Expandable").getString();
-				config.get("block_tags", "InvisibLights:blockLightSource"        , "NoMass Expandable").getString();
-				config.get("block_tags", "WarpDrive:blockAir"                    , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
+				config.get("block_tags", "Railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
+				config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
+				config.get("block_tags", "WarpDrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
 				
 				// mining a mineshaft...
-				config.get("block_tags", "minecraft:web"                         , "Mining").getString();
-				config.get("block_tags", "minecraft:fence"                       , "Mining").getString();
-				config.get("block_tags", "minecraft:torch"                       , "Mining").getString();
-				config.get("block_tags", "minecraft:glowstone"                   , "Mining").getString();
-				config.get("block_tags", "minecraft:redstone_block"              , "Mining").getString();
+				config.get("block_tags", "minecraft:web"                                   , "Mining").getString();
+				config.get("block_tags", "minecraft:fence"                                 , "Mining").getString();
+				config.get("block_tags", "minecraft:torch"                                 , "Mining").getString();
+				config.get("block_tags", "minecraft:glowstone"                             , "Mining").getString();
+				config.get("block_tags", "minecraft:redstone_block"                        , "Mining").getString();
 				
 				// mining an 'end' moon
 				config.get("block_tags", "WarpDrive:blockIridium"                , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)

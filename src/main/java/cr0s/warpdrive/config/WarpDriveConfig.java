@@ -3,7 +3,6 @@ package cr0s.warpdrive.config;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,26 +20,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.compat.CompatAdvancedRepulsionSystems;
-import cr0s.warpdrive.compat.CompatAppliedEnergistics2;
-import cr0s.warpdrive.compat.CompatArsMagica2;
-import cr0s.warpdrive.compat.CompatBiblioCraft;
-import cr0s.warpdrive.compat.CompatBotania;
-import cr0s.warpdrive.compat.CompatComputerCraft;
-import cr0s.warpdrive.compat.CompatEnderIO;
-import cr0s.warpdrive.compat.CompatEvilCraft;
-import cr0s.warpdrive.compat.CompatForgeMultipart;
-import cr0s.warpdrive.compat.CompatImmersiveEngineering;
-import cr0s.warpdrive.compat.CompatIndustrialCraft2;
-import cr0s.warpdrive.compat.CompatJABBA;
-import cr0s.warpdrive.compat.CompatMetallurgy;
-import cr0s.warpdrive.compat.CompatNatura;
-import cr0s.warpdrive.compat.CompatOpenComputers;
-import cr0s.warpdrive.compat.CompatRedstonePaste;
-import cr0s.warpdrive.compat.CompatSGCraft;
-import cr0s.warpdrive.compat.CompatStargateTech2;
-import cr0s.warpdrive.compat.CompatTConstruct;
-import cr0s.warpdrive.compat.CompatThaumcraft;
+import cr0s.warpdrive.compat.*;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.config.structures.StructureReference;
@@ -815,6 +795,10 @@ public class WarpDriveConfig {
 		boolean isBibliocraftLoaded = Loader.isModLoaded("BiblioCraft");
 		if (isBibliocraftLoaded) {
 			CompatBiblioCraft.register();
+		}
+		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
+		if (isCarpentersBlocksLoaded) {
+			CompatCarpentersBlocks.register();
 		}
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
