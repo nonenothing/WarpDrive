@@ -758,6 +758,9 @@ public class WarpDriveConfig {
 		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
 		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
 		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
+		if (isThermalExpansionLoaded) {
+			CompatThermalExpansion.register();
+		}
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		if (isAppliedEnergistics2Loaded) {
 			CompatAppliedEnergistics2.register();
@@ -808,6 +811,10 @@ public class WarpDriveConfig {
 		if (isJABBAloaded) {
 			CompatJABBA.register();
 		}
+		boolean isMekanismLoaded = Loader.isModLoaded("Mekanism");
+		if (isMekanismLoaded) {
+			CompatMekanism.register();
+		}
 		boolean isMetallurgyLoaded = Loader.isModLoaded("Metallurgy");
 		if (isMetallurgyLoaded) {
 			CompatMetallurgy.register();
@@ -835,6 +842,10 @@ public class WarpDriveConfig {
 		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
+		}
+		boolean isThermalDynamicsLoaded = Loader.isModLoaded("ThermalDynamics");
+		if (isThermalDynamicsLoaded) {
+			CompatThermalDynamics.register();
 		}
 	}
 	
