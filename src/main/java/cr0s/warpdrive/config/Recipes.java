@@ -602,7 +602,7 @@ public class Recipes {
 			itemStackMachineCasingHV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 2);
 			itemStackMachineCasingEV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 3);
 			
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("EnderIO", "itemMachinePart", 0);     // Machine chassis
 			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("EnderIO", "blockVacuumChest", 0);    // Pulsating crystal => Vacuum chest
 			itemStackMachineCasingHV = WarpDriveConfig.getModItemStack("EnderIO", "blockIngotStorage", 2);   // Vibrant alloy block
@@ -715,7 +715,7 @@ public class Recipes {
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, " m ", "ppp", " m ",
 					'm', itemStackHardenedEnergyCell,
 					'p', Items.paper));
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			ItemStack itemStackBasicCapacitorBank = WarpDriveConfig.getModItemStack("EnderIO", "blockCapBank", 1);
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, " m ", "ppp", " m ",
 					'm', itemStackBasicCapacitorBank,
@@ -1036,7 +1036,7 @@ public class Recipes {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 5); // Compressor
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("ThermalExpansion", "Machine", 5); // Fluid transposer
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("EnderIO", "blockReservoir", 0);
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "aca", "ata", "gmp",
@@ -1120,7 +1120,7 @@ public class Recipes {
 					'e', "ingotEnderium"));
 			// GameRegistry.addShapelessRecipe(new ItemStack(itemStackIridiumAlloy.getItem(), 9), new ItemStack(WarpDrive.blockIridium));
 			
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			ItemStack itemStackVibrantAlloy = WarpDriveConfig.getModItemStack("EnderIO", "itemAlloy", 2);
 			ItemStack itemStackRedstoneAlloy = WarpDriveConfig.getModItemStack("EnderIO", "itemAlloy", 3);
 			ItemStack itemStackFranckNZombie = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
@@ -1247,7 +1247,7 @@ public class Recipes {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("ThermalExpansion", "material", 3);	// Redstone conductance coil
 		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "coil", 2);	// HV wire coil
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("EnderIO", "itemPowerConduit", 2);	// Ender energy conduit
 		}
 		ItemStack oreEmeraldOrTitaniumPlate = new ItemStack(Items.gold_ingot);
@@ -1263,13 +1263,13 @@ public class Recipes {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 11);
 		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "metalDecoration", 5);	// Heavy engineering block
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			oreEmeraldOrTitaniumPlate = WarpDriveConfig.getModItemStack("EnderIO", "itemAlloy", 2);	// Vibrant alloy
 		}
 		Object oreEmeraldOrReinforcedIridiumPlate = "gemEmerald";
 		if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {// IndustrialCraft2 and Gregtech
 			oreEmeraldOrReinforcedIridiumPlate = "plateAlloyIridium";
-		} else if (WarpDriveConfig.isEnderIOloaded) {// EnderIO
+		} else if (WarpDriveConfig.isEnderIOLoaded) {// EnderIO
 			oreEmeraldOrReinforcedIridiumPlate = WarpDriveConfig.getModItemStack("EnderIO", "itemFrankenSkull", 2);
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			oreEmeraldOrReinforcedIridiumPlate = "ingotLumium";

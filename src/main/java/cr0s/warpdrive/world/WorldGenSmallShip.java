@@ -599,7 +599,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 			case 9:
 			case 10:
 			case 11: // Rocket launcher platform Tier3
-				if (WarpDriveConfig.isICBMloaded) {
+				if (WarpDriveConfig.isICBMLoaded) {
 					// TODO: No 1.7 ICBM yet
 					// res = new ItemStack(WarpDriveConfig.ICBM_Machine, 1 +
 					// rand.nextInt(1), 2).copy();
@@ -609,7 +609,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 			
 			
 			case 12: // Missiles from conventional to hypersonic
-				if (WarpDriveConfig.isICBMloaded) {
+				if (WarpDriveConfig.isICBMLoaded) {
 					// TODO: No 1.7 ICBM yet
 					// res = new ItemStack(WarpDriveConfig.ICBM_Missile, 2 +
 					// rand.nextInt(1), rand.nextInt(10)).copy();

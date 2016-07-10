@@ -72,7 +72,7 @@ public class WorldGenStructure {
 				solarPanel_block = WarpDriveConfig.getModBlock("IC2", "blockGenerator");
 				solarPanel_metadata = 3;
 			}
-		} else if (WarpDriveConfig.isEnderIOloaded) {
+		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			solarPanel_block = WarpDriveConfig.getModBlock("EnderIO", "blockSolarPanel");
 			solarPanel_metadata = 0;
 		} else {

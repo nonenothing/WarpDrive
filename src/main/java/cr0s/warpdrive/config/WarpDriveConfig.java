@@ -49,7 +49,7 @@ public class WarpDriveConfig {
 	public static boolean isForgeMultipartLoaded = false;
 	public static boolean isAdvancedSolarPanelLoaded = false;
 	public static boolean isAppliedEnergistics2Loaded = false;
-	public static boolean isICBMloaded = false;
+	public static boolean isICBMLoaded = false;
 	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isComputerCraftLoaded = false;
 	public static boolean isOpenComputersLoaded = false;
@@ -58,7 +58,7 @@ public class WarpDriveConfig {
 	public static boolean isArsMagica2Loaded = false;
 	public static boolean isImmersiveEngineeringLoaded = false;
 	public static boolean isGregTech5Loaded = false;
-	public static boolean isEnderIOloaded = false;
+	public static boolean isEnderIOLoaded = false;
 	public static boolean isAdvancedRepulsionSystemLoaded = false;
 	
 	public static ItemStack IC2_compressedAir;
@@ -782,8 +782,8 @@ public class WarpDriveConfig {
 			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
 			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
 		}
-		isEnderIOloaded = Loader.isModLoaded("EnderIO");
-		if (isEnderIOloaded) {
+		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
+		if (isEnderIOLoaded) {
 			CompatEnderIO.register();
 		}
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
@@ -795,8 +795,8 @@ public class WarpDriveConfig {
 		if (isBotaniaLoaded) {
 			CompatBotania.register();
 		}
-		boolean isBibliocraftLoaded = Loader.isModLoaded("BiblioCraft");
-		if (isBibliocraftLoaded) {
+		boolean isBiblioCraftLoaded = Loader.isModLoaded("BiblioCraft");
+		if (isBiblioCraftLoaded) {
 			CompatBiblioCraft.register();
 		}
 		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
