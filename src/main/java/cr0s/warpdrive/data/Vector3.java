@@ -665,6 +665,6 @@ public class Vector3 implements Cloneable {
 	
 	@Override
 	public String toString() {
-		return "Vector3 [" + x + "," + y + "," + z + "]";
+		return String.format("Vector3 [%.3f %.3f %.3f]", x, y, z);
 	}
 }
