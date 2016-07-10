@@ -231,10 +231,6 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			log_explosionX = explosionX;
 			log_explosionY = explosionY;
 			log_explosionZ = explosionZ;
-			if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-				WarpDrive.logger.info("BlockForceField(" + tier + " at " + x + " " + y + " " + z + ")"
-					                      + ".getExplosionResistance" + ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ));
-			}
 		}
 		
 		// find explosion strength, defaults to no effect
@@ -255,8 +251,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			case "class net.minecraft.entity.item.EntityTNTPrimed": strength = 5.0F; break;
 			case "class net.minecraft.entity.monster.EntityCreeper": strength = 3.0F; break;  // *2 for powered ones
 			case "class appeng.entity.EntityTinyTNTPrimed": strength = 0.2F; break;
-			case "class ic2.core.block.EntityItnt": strength = 5.5F; break;
-			case "class ic2.core.block.EntityNuke": strength = 42.0F; break;
+			case "class ic2.core.block.EntityItnt": strength = 5.5F; break; 
+			case "class ic2.core.block.EntityNuke": strength = 45.0F; break;
 			case "class ic2.core.block.EntityDynamite": strength = 1.0F; break;
 			case "class ic2.core.block.EntityStickyDynamite": strength = 1.0F; break;
 			default:
@@ -270,14 +266,24 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		// apply damages to force field by consuming energy
 		Explosion explosion = new Explosion(world, entity, explosionX, explosionY, explosionZ, 4.0F);
 		Vector3 vDirection = new Vector3(x + 0.5D - explosionX, y + 0.5D - explosionY, z + 0.5D - explosionZ);
-		float magnitude = Math.max(1.0F, (float)vDirection.getMagnitude());
+		double magnitude = Math.max(1.0D, vDirection.getMagnitude());
 		if (magnitude != 0) {// normalize
 			vDirection.scale(1 / magnitude);
 		}
-		int damageLevel = Math.round(strength * 1000.0F / magnitude);
-		int damageLeft = applyDamage(world, x, y, z, DamageSource.setExplosionSource(explosion), 0, vDirection, damageLevel);
+		double damageLevel = strength / (magnitude * magnitude) * 1.0D;
+		double damageLeft = 0;
+		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
+		if (forceFieldSetup != null) {
+			damageLeft = forceFieldSetup.applyDamage(world, DamageSource.setExplosionSource(explosion), (int)damageLevel);
+		}
+		
 		assert(damageLeft >= 0);
-		return 1.0F * super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
+		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+			WarpDrive.logger.info( "BlockForceField(" + tier + " at " + x + " " + y + " " + z + ")"
+				                 + ".getExplosionResistance" + ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ)
+								 + " damageLevel " + damageLevel + " damageLeft " + damageLeft);
+		}
+		return super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
 	}
 	
 	@Override

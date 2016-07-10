@@ -34,8 +34,10 @@ public class ForceFieldSetup extends GlobalPosition {
 	private static final float FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND = 4000;
 	private static final float FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_PROJECTOR_TIER = 0.50F;
 	public static final float FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_RELAY_TIER = 0.25F;
-	public static final double FORCEFIELD_ACCELERATION_FACTOR = 0.01D;
+	public static final double FORCEFIELD_ACCELERATION_FACTOR = 0.04D;
 	public static final int FORCEFIELD_RELAY_RANGE = 20;
+	private static final int FORCEFIELD_MAX_FACTOR_ENTITY_COST = 5;
+	private static final double FORCEFIELD_TAU_FACTOR_ENTITY_COST = - Math.log(ForceFieldSetup.FORCEFIELD_MAX_FACTOR_ENTITY_COST);
 	
 	public final int beamFrequency;
 	public final byte tier;
@@ -51,10 +53,10 @@ public class ForceFieldSetup extends GlobalPosition {
 	
 	public float scanSpeed;
 	public float placeSpeed;
-	public int startupEnergyCost;
-	public int scanEnergyCost;
-	public int placeEnergyCost;
-	private int entityEnergyCost;
+	public double startupEnergyCost;
+	public double scanEnergyCost;
+	public double placeEnergyCost;
+	private double entityEnergyCost;
 	
 	public float breaking_maxHardness;
 	public float temperatureLevel;
@@ -82,14 +84,13 @@ public class ForceFieldSetup extends GlobalPosition {
 		this.beamFrequency = beamFrequency;
 		refresh();
 		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-			WarpDrive.logger.info("Force field projector energy costs:" 
-				                      + " startup " + startupEnergyCost
-				                      + " / " + Math.round(startupEnergyCost + placeEnergyCost * placeSpeed * TileEntityForceFieldProjector.PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F)
-				                      + " scan " + scanEnergyCost
-				                      + " place " + placeEnergyCost
-				                      + " entity " + entityEnergyCost
-				                      + " speeds: scan " + scanSpeed
-				                      + " place " + placeSpeed);
+			WarpDrive.logger.info(String.format("Force field projector energy costs: startup %.3f / %d scan %.3f place %.3f entity %.3f"
+				                                    + " speeds: scan %.3f place %.3f"
+				                                    + " sustain cost: scan %.3f place %.3f",
+				startupEnergyCost, Math.round(startupEnergyCost + placeEnergyCost * placeSpeed * TileEntityForceFieldProjector.PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F),
+				scanEnergyCost, placeEnergyCost, entityEnergyCost,
+				scanSpeed, placeSpeed,
+				(scanEnergyCost * scanSpeed), (placeEnergyCost * placeSpeed)));
 		}
 	}
 	
@@ -214,10 +215,10 @@ public class ForceFieldSetup extends GlobalPosition {
 		// set default coefficients, depending on projector
 		scanSpeed = FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND * (isDoubleSided ? 2.1F : 1.0F);
 		placeSpeed = FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND * (isDoubleSided ? 2.1F : 1.0F);
-		float startupEnergyCost = 60.0F + 20.0F * tier;
-		float scanEnergyCost = 1.0F + 1.0F * tier;
-		float placeEnergyCost = 3.0F + 3.0F * tier;
-		float entityEnergyCost = 2.0F;
+		startupEnergyCost = 60.0F + 20.0F * tier;
+		scanEnergyCost = 0.4F + 0.4F * tier;
+		placeEnergyCost = 3.0F + 3.0F * tier;
+		entityEnergyCost = 2.0F;
 		if (isDoubleSided) {
 			scanSpeed *= 2.1F;
 			placeSpeed *= 2.1F;
@@ -246,17 +247,13 @@ public class ForceFieldSetup extends GlobalPosition {
 				startupEnergyCost += entry.getKey().getStartupEnergyCost(scaledValue);
 				scanEnergyCost += entry.getKey().getScanEnergyCost(scaledValue);
 				placeEnergyCost += entry.getKey().getPlaceEnergyCost(scaledValue);
-				entityEnergyCost +=  entry.getKey().getEntityEffectEnergyCost(scaledValue);
+				entityEnergyCost += entry.getKey().getEntityEffectEnergyCost(scaledValue);
 			}
 		}
 		
 		// finalize coefficients
 		scanSpeed = Math.min(FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND, scanSpeed);
 		placeSpeed = Math.min(FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND, placeSpeed);
-		this.startupEnergyCost = Math.round(startupEnergyCost);
-		this.scanEnergyCost = Math.round(scanEnergyCost);
-		this.placeEnergyCost = Math.round(placeEnergyCost);
-		this.entityEnergyCost = Math.round(entityEnergyCost);
 		
 		// range is maximum distance
 		double range = getScaledUpgrade(EnumForceFieldUpgrade.RANGE);
@@ -293,25 +290,25 @@ public class ForceFieldSetup extends GlobalPosition {
 		thickness = 1.0F + getScaledUpgrade(EnumForceFieldUpgrade.THICKNESS);
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
-			getClass().getSimpleName(), dimensionId,
-			x, y, z,
-			vMin.x, vMin.y, vMin.z,
-			vMax.x, vMax.y, vMax.z);
+	public double getEntityEnergyCost(final int countEntityInteractions) {
+		return entityEnergyCost * FORCEFIELD_MAX_FACTOR_ENTITY_COST * Math.exp(FORCEFIELD_TAU_FACTOR_ENTITY_COST / countEntityInteractions);
 	}
 	
-	public int onEntityEffect(World world, final int x, final int y, final int z, Entity entity) {
+	public int onEntityEffect(World world, final int blockX, final int blockY, final int blockZ, Entity entity) {
 		int countdown = 0;
-		for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgrades.entrySet()) {
-			Float value = entry.getValue();
-			if (entry.getKey() == EnumForceFieldUpgrade.COOLING || entry.getKey() == EnumForceFieldUpgrade.HEATING) {
-				value = temperatureLevel;
-			} else if (entry.getKey() == EnumForceFieldUpgrade.ATTRACTION || entry.getKey() == EnumForceFieldUpgrade.REPULSION) {
-				value = accelerationLevel;
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity instanceof TileEntityForceFieldProjector) {
+			if (((TileEntityForceFieldProjector)tileEntity).onEntityInteracted(entity.getUniqueID())) {
+				for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgrades.entrySet()) {
+					Float value = entry.getValue();
+					if (entry.getKey() == EnumForceFieldUpgrade.COOLING || entry.getKey() == EnumForceFieldUpgrade.HEATING) {
+						value = temperatureLevel;
+					} else if (entry.getKey() == EnumForceFieldUpgrade.ATTRACTION || entry.getKey() == EnumForceFieldUpgrade.REPULSION) {
+						value = accelerationLevel;
+					}
+					countdown += entry.getKey().onEntityEffect(value, world, x, y, z, blockX, blockY, blockZ, entity);
+				}
 			}
-			countdown += entry.getKey().onEntityEffect(value, world, x, y, z, entity);
 		}
 		return countdown;
 	}
@@ -320,11 +317,20 @@ public class ForceFieldSetup extends GlobalPosition {
 		assert(damageSource != null);
 		TileEntity tileEntity = world.getTileEntity(this.x, this.y, this.z);
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
-			float scaledDamage = damageLevel * entityEnergyCost / 20000.0F;
-			int energyCost = (int)Math.floor(scaledDamage) + (world.rand.nextFloat() <= scaledDamage - Math.floor(scaledDamage) ? 1 : 0);
-			((TileEntityForceFieldProjector)tileEntity).consumeEnergy(energyCost, false);
+			double scaledDamage = damageLevel * entityEnergyCost / 20000.0D;
+			WarpDrive.logger.info("Consuming " + scaledDamage);
+			((TileEntityForceFieldProjector)tileEntity).consumeEnergy(scaledDamage, false);
 			return 0;
 		}
 		return damageLevel;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
+			getClass().getSimpleName(), dimensionId,
+			x, y, z,
+			vMin.x, vMin.y, vMin.z,
+			vMax.x, vMax.y, vMax.z);
 	}
 }

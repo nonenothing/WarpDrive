@@ -23,5 +23,6 @@ public interface IForceFieldUpgradeEffector {
 	
 	// Entity impact of this upgrade
 	// Return 
-	int onEntityEffect(final float scaledValue, World world, final int x, final int y, final int z, Entity entity);
+	int onEntityEffect(final float scaledValue, World world, final int projectorX, final int projectorY, final int projectorZ,
+	                   final int blockX, final int blockY, final int blockZ, Entity entity);
 }

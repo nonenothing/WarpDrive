@@ -2,12 +2,10 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldRelay;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.*;
 
@@ -22,7 +20,7 @@ public class ForceFieldRegistry {
 	
 	public static Set<TileEntity> getTileEntities(final int beamFrequency, WorldServer worldSource, final int x, final int y, final int z) {
 		Set<GlobalPosition> setGlobalPositions = registry.get(beamFrequency);
-		if (setGlobalPositions == null) {
+		if (setGlobalPositions == null || worldSource == null) {
 			return new HashSet<>();
 		}
 		// find all relevant tiles by world and frequency, keep relays in range as starting point
@@ -117,8 +115,7 @@ public class ForceFieldRegistry {
 		if (setGlobalPositions == null) {
 			setGlobalPositions = new HashSet<>(FORCE_FIELD_REGISTRY_DEFAULT_ENTRIES_PER_FREQUENCY);
 		}
-		for (Iterator<GlobalPosition> iterator = setGlobalPositions.iterator(); iterator.hasNext();) {
-			GlobalPosition globalPosition = iterator.next();
+		for (GlobalPosition globalPosition : setGlobalPositions) {
 			if (globalPosition.equals(tileEntity)) {
 				// already registered
 				return;
