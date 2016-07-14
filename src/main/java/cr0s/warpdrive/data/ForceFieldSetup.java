@@ -34,7 +34,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	private static final float FORCEFIELD_MAX_PLACE_SPEED_BLOCKS_PER_SECOND = 4000;
 	private static final float FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_PROJECTOR_TIER = 0.50F;
 	public static final float FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_RELAY_TIER = 0.25F;
-	public static final double FORCEFIELD_ACCELERATION_FACTOR = 0.04D;
+	public static final double FORCEFIELD_ACCELERATION_FACTOR = 0.16D;
 	public static final int FORCEFIELD_RELAY_RANGE = 20;
 	private static final int FORCEFIELD_MAX_FACTOR_ENTITY_COST = 5;
 	private static final double FORCEFIELD_TAU_FACTOR_ENTITY_COST = - Math.log(ForceFieldSetup.FORCEFIELD_MAX_FACTOR_ENTITY_COST);
@@ -73,8 +73,8 @@ public class ForceFieldSetup extends GlobalPosition {
 	public float rotationPitch;
 	public float rotationRoll;
 	public VectorI vTranslation = new VectorI(0, 0, 0);
-	public VectorI vMin = new VectorI(-8, -8, -8);
-	public VectorI vMax = new VectorI( 8,  8,  8);
+	public final VectorI vMin = new VectorI(-8, -8, -8);
+	public final VectorI vMax = new VectorI( 8,  8,  8);
 	public IForceFieldShape shapeProvider;
 	public boolean isDoubleSided = true;
 	
@@ -313,14 +313,13 @@ public class ForceFieldSetup extends GlobalPosition {
 		return countdown;
 	}
 	
-	public int applyDamage(World world, final DamageSource damageSource, final int damageLevel) {
+	public double applyDamage(World world, final DamageSource damageSource, final double damageLevel) {
 		assert(damageSource != null);
 		TileEntity tileEntity = world.getTileEntity(this.x, this.y, this.z);
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
-			double scaledDamage = damageLevel * entityEnergyCost / 20000.0D;
-			WarpDrive.logger.info("Consuming " + scaledDamage);
-			((TileEntityForceFieldProjector)tileEntity).consumeEnergy(scaledDamage, false);
-			return 0;
+			double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;
+			((TileEntityForceFieldProjector)tileEntity).onEnergyDamage(scaledDamage);
+			return 0.0D;
 		}
 		return damageLevel;
 	}

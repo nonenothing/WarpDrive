@@ -165,9 +165,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 		// entity classification
 		int entityLevel = 0;
 		if (!entity.isDead) {
-			if (entity instanceof EntityFireworkRocket) {
-				entityLevel = 0;
-			} else if (entity instanceof EntityPlayer) {
+			if (entity instanceof EntityPlayer) {
 				entityLevel = 4;
 			} else if ( entity instanceof EntityMob
 				     || entity instanceof EntityGolem
@@ -182,12 +180,13 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 				entityLevel = 2;
 			} else if ( entity instanceof EntityItem
 				     || entity instanceof EntityArrow
-				     || entity instanceof EntityFallingBlock ) {
+				     || entity instanceof EntityFallingBlock
+				     || entity instanceof EntityFireworkRocket ) {
 				entityLevel = 1;
 			}
 		}
 		
-		double speed = Math.abs(scaledValue) / (entityLevel / 4.0F) * ForceFieldSetup.FORCEFIELD_ACCELERATION_FACTOR;
+		double speed = Math.abs(scaledValue) / (entityLevel == 0 ? 2 : entityLevel) * ForceFieldSetup.FORCEFIELD_ACCELERATION_FACTOR;
 		Vector3 v3Motion = v3Direction.clone().scale(speed); // new Vector3(entity.motionX, entity.motionY, entity.motionZ);
 		/*
 		if (WarpDriveConfig.LOGGING_FORCEFIELD && WarpDrive.isDev) {

@@ -234,7 +234,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 		
 		// find explosion strength, defaults to no effect
-		float strength = 0.0F;
+		double strength = 0.0D;
 		if (entity == null && (explosionX == Math.rint(explosionX)) && (explosionY == Math.rint(explosionY)) && (explosionZ == Math.rint(explosionZ)) ) {
 			// IC2 Reactor blowing up => bloc is already air
 			Block block = world.getBlock((int)explosionX, (int)explosionY, (int)explosionZ);
@@ -242,19 +242,31 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
 				WarpDrive.logger.info("Block at location is " + block + " " + block.getUnlocalizedName() + " with tileEntity " + tileEntity);
 			}
+			// explosion with no entity and block removed, hence we can compute the energy impact => boosting explosion resistance
+			return 2.0F * super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
 		}
 		
 		if (entity != null) {
 			switch (entity.getClass().toString()) {
-			case "class net.minecraft.entity.item.EntityEnderCrystal": strength = 6.0F; break;
-			case "class net.minecraft.entity.item.EntityMinecartTNT": strength = 4.0F; break;
-			case "class net.minecraft.entity.item.EntityTNTPrimed": strength = 5.0F; break;
-			case "class net.minecraft.entity.monster.EntityCreeper": strength = 3.0F; break;  // *2 for powered ones
-			case "class appeng.entity.EntityTinyTNTPrimed": strength = 0.2F; break;
-			case "class ic2.core.block.EntityItnt": strength = 5.5F; break; 
-			case "class ic2.core.block.EntityNuke": strength = 45.0F; break;
-			case "class ic2.core.block.EntityDynamite": strength = 1.0F; break;
-			case "class ic2.core.block.EntityStickyDynamite": strength = 1.0F; break;
+			case "class net.minecraft.entity.item.EntityEnderCrystal": strength = 6.0D; break;
+			case "class net.minecraft.entity.item.EntityMinecartTNT": strength = 4.0D; break;
+			case "class net.minecraft.entity.item.EntityTNTPrimed": strength = 5.0D; break;
+			case "class net.minecraft.entity.monster.EntityCreeper": strength = 3.0D; break;  // *2 for powered ones
+			case "class appeng.entity.EntityTinyTNTPrimed": strength = 0.2D; break;
+			case "class ic2.core.block.EntityItnt": strength = 5.5D; break; 
+			case "class ic2.core.block.EntityNuke": strength = 0.02D; break;
+			case "class ic2.core.block.EntityDynamite": strength = 1.0D; break;
+			case "class ic2.core.block.EntityStickyDynamite": strength = 1.0D; break;
+			
+			// S-mine (initial)
+			case "class defense.common.entity.EntityExplosion": strength = 1.0D; break;
+			
+			// Condensed, Incendiary, Repulsive, Attractive, Fragmentation, Sonic, Breaching, Thermobaric, Nuclear,
+			// Exothermic, Endothermic, Anti-gravitational, Hypersonic, (Antimatter?)
+			case "class defense.common.entity.EntityExplosive": strength = 15.0D; break;
+			
+			// Fragmentation, S-mine
+			case "class defense.common.entity.EntityFragments": strength = 0.02D; break;
 			default:
 				if (enableFirstHit) {
 					WarpDrive.logger.error("Unknown explosion source " + entity.getClass().toString() + " " + entity);
@@ -274,14 +286,14 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		double damageLeft = 0;
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
-			damageLeft = forceFieldSetup.applyDamage(world, DamageSource.setExplosionSource(explosion), (int)damageLevel);
+			damageLeft = forceFieldSetup.applyDamage(world, DamageSource.setExplosionSource(explosion), damageLevel);
 		}
 		
 		assert(damageLeft >= 0);
-		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+		if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
 			WarpDrive.logger.info( "BlockForceField(" + tier + " at " + x + " " + y + " " + z + ")"
-				                 + ".getExplosionResistance" + ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ)
-								 + " damageLevel " + damageLevel + " damageLeft " + damageLeft);
+				                 + " involved in explosion " + ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ)
+								 + (WarpDrive.isDev ? (" damageLevel " + damageLevel + " damageLeft " + damageLeft) : ""));
 		}
 		return super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
 	}
@@ -294,7 +306,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Override
 	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
 		if (tier > 0) {
-			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 1], world.getBlockMetadata(x, y, z), 2);
+			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 1], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
 			super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
 			return;
 		}
@@ -303,9 +315,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion explosion) {
-		// (block is already set to air by caller, see IC2 iTNT)
-		if (tier > 0) {
-			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 1], 0, 2);
+		// (block is already set to air by caller, see IC2 iTNT for example)
+		if (tier > 1) {
+			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 2], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
 			super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
 			return;
 		}
@@ -323,7 +335,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	                       final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
-			return forceFieldSetup.applyDamage(world, damageSource, damageLevel);
+			return (int) Math.round(forceFieldSetup.applyDamage(world, damageSource, damageLevel));
 		}
 		
 		return damageLevel;

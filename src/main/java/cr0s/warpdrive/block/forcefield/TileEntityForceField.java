@@ -115,8 +115,20 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			TileEntity tileEntity = vProjector.getTileEntity(worldObj);
 			if (tileEntity instanceof TileEntityForceFieldProjector) {
 				TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
-				if (worldObj.isRemote || tileEntityForceFieldProjector.isPartOfForceField(new VectorI(this))) {
+				if (worldObj.isRemote) {
 					return tileEntityForceFieldProjector;
+					
+				} else if (tileEntityForceFieldProjector.isPartOfForceField(new VectorI(this))) {
+				    if (tileEntityForceFieldProjector.isOn()) {
+					    return tileEntityForceFieldProjector;
+				    } else {
+					    // projector is disabled or out of power
+					    worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+					    if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+						    WarpDrive.logger.info("Removed a force field from an offline projector at "
+							                     + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+					    }
+				    }
 				}
 			}
 		}
@@ -126,8 +138,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			if (gracePeriod_calls < 0) {
 				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-					WarpDrive.logger.info("Removed an invalid force field with no projector defined at "
-						                      + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+					WarpDrive.logger.info("Removed a force field with no projector defined at "
+						                 + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
 				}
 			}
 		}

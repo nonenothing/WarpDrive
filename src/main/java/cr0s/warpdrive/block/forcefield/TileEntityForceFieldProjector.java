@@ -38,10 +38,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TileEntityForceFieldProjector extends TileEntityAbstractForceField {
 	private static final int PROJECTOR_MAX_ENERGY_STORED = 30000;
-	private static final int PROJECTOR_COOLDOWN_TICKS = 100;
+	private static final int PROJECTOR_COOLDOWN_TICKS = 300;
 	public static final int PROJECTOR_PROJECTION_UPDATE_TICKS = 8;
 	private static final int PROJECTOR_SETUP_TICKS = 20;
-	private static final int PROJECTOR_SOUND_UPDATE_TICKS = 100;
+	private static final int PROJECTOR_SOUND_UPDATE_TICKS = 60;
+	private static final int PROJECTOR_GUIDE_UPDATE_TICKS = 300;
 	private int maxEnergyStored;
 	
 	// persistent properties
@@ -60,6 +61,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private int setupTicks;
 	private int updateTicks;
 	private int soundTicks;
+	private int guideTicks;
+	private double damagesEnergyCost = 0.0D;
 	private final HashSet<UUID> setInteractedEntities = new HashSet<>();
 	protected boolean isPowered = true;
 	private ForceFieldSetup cache_forceFieldSetup;
@@ -105,9 +108,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
 		maxEnergyStored = PROJECTOR_MAX_ENERGY_STORED * (1 + 2 * tier);
-		cooldownTicks = worldObj.rand.nextInt(PROJECTOR_COOLDOWN_TICKS);
+		cooldownTicks = 0;
 		setupTicks = worldObj.rand.nextInt(PROJECTOR_SETUP_TICKS);
 		updateTicks = worldObj.rand.nextInt(PROJECTOR_PROJECTION_UPDATE_TICKS);
+		guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 	}
 	
 	@Override
@@ -131,6 +135,14 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				legacy_forceFieldSetup = cache_forceFieldSetup;
 				cache_forceFieldSetup = null;
 			}
+		}
+		
+		// update counters
+		if (cooldownTicks > 0) {
+			cooldownTicks--;
+		}
+		if (guideTicks > 0) {
+			guideTicks--;
 		}
 		
 		// Powered ?
@@ -164,6 +176,14 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				consumeEnergy(forceFieldSetup.getEntityEnergyCost(countEntityInteractions), false);
 			}
 			
+			if (damagesEnergyCost > 0.0D) {
+				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+					WarpDrive.logger.info(String.format("%s damages received, energy lost: %.6f", toString(), damagesEnergyCost));
+				}
+				consumeEnergy(damagesEnergyCost, false);
+				damagesEnergyCost = 0.0D;
+			}
+			
 			updateTicks--;
 			if (updateTicks <= 0) {
 				updateTicks = PROJECTOR_PROJECTION_UPDATE_TICKS;
@@ -188,24 +208,28 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					WarpDrive.logger.info(this + " shutting down...");
 				}
 				legacy_isOn = false;
+				cooldownTicks = PROJECTOR_COOLDOWN_TICKS;
+				guideTicks = 0;
 			}
 			destroyForceField(false);
-			if (cooldownTicks > 0) {
-				cooldownTicks--;
-			} else if (isEnabledAndValid) {
-				cooldownTicks = PROJECTOR_COOLDOWN_TICKS;
-				String msg = StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName()) 
-				           + StatCollector.translateToLocalFormatted("warpdrive.forcefield.guide.lowPower");
-				
-				AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 10, yCoord - 10, zCoord - 10, xCoord + 10, yCoord + 10, zCoord + 10);
-				List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-				
-				for (Entity entity : list) {
-					if (entity == null || (!(entity instanceof EntityPlayer)) || entity instanceof FakePlayer) {
-						continue;
-					}
+			
+			if (isEnabledAndValid) {
+				if (guideTicks <= 0) {
+					guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 					
-					WarpDrive.addChatMessage((EntityPlayer) entity, msg);
+					String msg = StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName())
+					           + StatCollector.translateToLocalFormatted("warpdrive.forcefield.guide.lowPower");
+					
+					AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 10, yCoord - 10, zCoord - 10, xCoord + 10, yCoord + 10, zCoord + 10);
+					List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+					
+					for (Entity entity : list) {
+						if (entity == null || (!(entity instanceof EntityPlayer)) || entity instanceof FakePlayer) {
+							continue;
+						}
+						
+						WarpDrive.addChatMessage((EntityPlayer) entity, msg);
+					}
 				}
 			}
 		}
@@ -258,6 +282,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		isGlobalThreadRunning.set(false);
 	}
 	
+	boolean isOn() {
+		return legacy_isOn;
+	}
+	
 	boolean isPartOfForceField(VectorI vector) {
 		if (!isEnabled || !isValid()) {
 			return false;
@@ -282,6 +310,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	public boolean onEntityInteracted(final UUID uniqueID) {
 		return setInteractedEntities.add(uniqueID);
+	}
+	
+	public void onEnergyDamage(final double energyCost) {
+		damagesEnergyCost += energyCost;
 	}
 	
 	private void projectForceField() {
