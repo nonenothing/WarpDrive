@@ -83,7 +83,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	public int getEnergyStored() {
-		return energyStored_internal;
+		return clamp(0, getMaxEnergyStored(), energyStored_internal);
 	}
 	
 	// Methods to override
@@ -159,7 +159,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Override this to use custom storage or measure energy consumption statistics of this kind.
 	 */
 	public int consumeAllEnergy() {
-		int temp = energyStored_internal;
+		int temp = getEnergyStored();
 		energyStored_internal = 0;
 		return temp;
 	}
@@ -250,7 +250,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Override
 	@Optional.Method(modid = "IC2")
 	public double getDemandedEnergy() {
-		return Math.max(0.0D, convertInternalToEU(getMaxEnergyStored() - energyStored_internal));
+		return Math.max(0.0D, convertInternalToEU(getMaxEnergyStored() - getEnergyStored()));
 	}
 	
 	@Override
@@ -337,7 +337,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		
 		int toAdd_RF = Math.min(maxReceive_RF, maxStored_RF - energyStored_RF);
 		if (!simulate) {
-			energyStored_internal = Math.min(getMaxEnergyStored(), energyStored_internal + convertRFtoInternal(toAdd_RF));
+			energyStored_internal = Math.min(getMaxEnergyStored(), getEnergyStored() + convertRFtoInternal(toAdd_RF));
 		}
 		
 		return toAdd_RF;
@@ -415,9 +415,6 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		energyStored_internal = tag.getInteger("energy");
-		if (energyStored_internal > getMaxEnergyStored()) {
-			energyStored_internal = getMaxEnergyStored();
-		}
 		if (tag.hasKey("upgrades")) {
 			NBTTagCompound upgradeTag = tag.getCompoundTag("upgrades");
 			for (UpgradeType type : UpgradeType.values()) {
@@ -431,10 +428,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		if (energyStored_internal < 0) {
-			energyStored_internal = 0;
-		}
-		tag.setInteger("energy", energyStored_internal);
+		tag.setInteger("energy", getEnergyStored());
 		if (!deprecated_upgrades.isEmpty()) {
 			NBTTagCompound upgradeTag = new NBTTagCompound();
 			for (UpgradeType type : UpgradeType.values()) {
