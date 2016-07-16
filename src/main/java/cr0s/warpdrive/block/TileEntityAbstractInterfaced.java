@@ -257,12 +257,17 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		int id = computer.getID();
 		connectedComputers.put(id, computer);
 		if (CC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
-			computer.mount("/" + peripheralName, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName));
-			computer.mount("/warpupdater", ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/common/updater"));
-			if (WarpDriveConfig.G_LUA_SCRIPTS == WarpDriveConfig.LUA_SCRIPTS_ALL) {
-				for(String script : CC_scripts) {
-					computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName + "/" + script));
+			try {
+				computer.mount("/" + peripheralName, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName));
+				computer.mount("/warpupdater", ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/common/updater"));
+				if (WarpDriveConfig.G_LUA_SCRIPTS == WarpDriveConfig.LUA_SCRIPTS_ALL) {
+					for (String script : CC_scripts) {
+						computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName + "/" + script));
+					}
 				}
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				WarpDrive.logger.error("Failed to mount ComputerCraft scripts for " + peripheralName);
 			}
 		}
 	}
