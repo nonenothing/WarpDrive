@@ -343,7 +343,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		Block block;
 		boolean doProjectThisBlock;
 		
-		while (countScanned < countMaxScanned && countPlaced < countMaxPlaced
+		while ( countScanned < countMaxScanned
+		     && countPlaced < countMaxPlaced
 			 && consumeEnergy(Math.max(forceFieldSetup.scanEnergyCost, forceFieldSetup.placeEnergyCost), true)) {
 			if (iteratorForcefield == null || !iteratorForcefield.hasNext()) {
 				iteratorForcefield = calculated_forceField.iterator();
@@ -388,9 +389,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					
 					// recover force field blocks
 					if (block instanceof BlockForceField) {
-						// remove block if its missing a valid tile entity
 						TileEntity tileEntity = vector.getTileEntity(worldObj);
 						if (!(tileEntity instanceof TileEntityForceField)) {
+							// missing a valid tile entity
+							// => force a new placement
 							worldObj.setBlockToAir(vector.x, vector.y, vector.z);
 							block = Blocks.air;
 							
@@ -398,18 +400,24 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 							TileEntityForceField tileEntityForceField = ((TileEntityForceField)tileEntity);
 							TileEntityForceFieldProjector tileEntityForceFieldProjector = tileEntityForceField.getProjector();
 							if (tileEntityForceFieldProjector == null) {
-								// orphan force field, probably from an explosion => recover it
+								// orphan force field, probably from an explosion
+								// => recover it
 								tileEntityForceField.setProjector(new VectorI(this));
 								tileEntityForceField.cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
 								tileEntityForceField.cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
 								worldObj.setBlockMetadataWithNotify(vector.x, vector.y, vector.z, tileEntityForceField.cache_metadataCamouflage, 2);
 								
-							} else if ( tileEntityForceFieldProjector == this 
-							         && ( tileEntityForceField.cache_blockCamouflage != forceFieldSetup.getCamouflageBlock()
-								       || tileEntityForceField.cache_metadataCamouflage != forceFieldSetup.getCamouflageMetadata() ) ) {
-								// camouflage changed while chunk was loaded or de-synchronisation => force a new placement
-								worldObj.setBlockToAir(vector.x, vector.y, vector.z);
-								block = Blocks.air;
+							} else if (tileEntityForceFieldProjector == this) {// this is ours
+								if ( tileEntityForceField.cache_blockCamouflage != forceFieldSetup.getCamouflageBlock()
+								  || tileEntityForceField.cache_metadataCamouflage != forceFieldSetup.getCamouflageMetadata()
+								  || block != WarpDrive.blockForceFields[tier - 1]
+								  || vector.getBlockMetadata(worldObj) != metadataForceField ) {
+									// camouflage changed while chunk wasn't loaded or de-synchronisation
+									// force field downgraded during explosion
+									// => force a new placement
+									worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+									block = Blocks.air;
+								}
 							}
 						}
 					}

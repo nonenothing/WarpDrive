@@ -9,6 +9,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.EnumPermissionNode;
 import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.render.RenderBlockForceField;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGlass;
@@ -221,6 +222,20 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return 0;
 	}
 	
+	private void downgrade(World world, final int x, final int y, final int z) {
+		if (tier > 1) {
+			TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, x, y, z);
+			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 2], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity instanceof TileEntityForceField) {
+				((TileEntityForceField) tileEntity).setProjector(new VectorI(tileEntityForceFieldProjector));
+			}
+			
+		} else {
+			world.setBlockToAir(x, y, z);
+		}
+	}
+	
 	private double log_explosionX;
 	private double log_explosionY = -1;
 	private double log_explosionZ;
@@ -306,22 +321,21 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
-		if (tier > 0) {
-			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 1], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
-			super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
-			return;
-		}
+		downgrade(world, x, y, z);
 		super.onBlockExploded(world, x, y, z, explosion);
+	}
+	
+	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
+		if (efficiency > 0.0F) {
+			downgrade(world, x, y, z);
+		}
+		// already handled => no ancestor call
 	}
 	
 	@Override
 	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion explosion) {
 		// (block is already set to air by caller, see IC2 iTNT for example)
-		if (tier > 1) {
-			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 2], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
-			super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
-			return;
-		}
+		downgrade(world, x, y, z);
 		super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
 	}
 	

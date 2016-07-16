@@ -102,10 +102,12 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		if (forceFieldSetup != null) {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
-			cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
-			cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
-			cache_colorMultiplierCamouflage = forceFieldSetup.getCamouflageColorMultiplier();
-			cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
+			if (getBlockMetadata() == forceFieldSetup.getCamouflageMetadata()) {
+				cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
+				cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
+				cache_colorMultiplierCamouflage = forceFieldSetup.getCamouflageColorMultiplier();
+				cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
+			}
 		}
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
@@ -119,16 +121,16 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 					return tileEntityForceFieldProjector;
 					
 				} else if (tileEntityForceFieldProjector.isPartOfForceField(new VectorI(this))) {
-				    if (tileEntityForceFieldProjector.isOn()) {
-					    return tileEntityForceFieldProjector;
-				    } else {
-					    // projector is disabled or out of power
-					    worldObj.setBlockToAir(xCoord, yCoord, zCoord);
-					    if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-						    WarpDrive.logger.info("Removed a force field from an offline projector at "
-							                     + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
-					    }
-				    }
+					if (tileEntityForceFieldProjector.isOn()) {
+						return tileEntityForceFieldProjector;
+					} else {
+						// projector is disabled or out of power
+						worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+						if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+							WarpDrive.logger.info("Removed a force field from an offline projector at "
+							    + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+						}
+					}
 				}
 			}
 		}

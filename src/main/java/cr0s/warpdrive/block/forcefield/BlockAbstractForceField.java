@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.forcefield;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.material.Material;
+import net.minecraft.world.World;
 
 public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 	protected byte tier;
@@ -22,5 +23,10 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 	@Override
 	protected boolean canSilkHarvest() {
 		return false;
+	}
+	
+	@Override
+	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
+		super.onEMP(world, x, y, z, efficiency * (1.0F - 0.2F * (tier - 1)));
 	}
 }

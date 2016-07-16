@@ -1,5 +1,9 @@
 package cr0s.warpdrive.block;
 
+import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import defense.api.IEMPBlock;
+import defense.api.IExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -14,7 +18,10 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public abstract class BlockAbstractContainer extends BlockContainer {
+@Optional.InterfaceList({
+    @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
+})
+public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock {
 	protected boolean isRotating = false;
 	
 	protected BlockAbstractContainer(Material material) {
@@ -158,6 +165,26 @@ public abstract class BlockAbstractContainer extends BlockContainer {
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
+		}
+	}
+	
+	@Optional.Method(modid = "DefenseTech")
+	public void onEMP(World world, int x, int y, int z, IExplosion explosiveEMP) {
+		if (WarpDriveConfig.LOGGING_WEAPON) {
+			WarpDrive.logger.info("EMP received at " + x + " " + y + " " + z + " from " + explosiveEMP + " with energy " + explosiveEMP.getEnergy() + " and radius " + explosiveEMP.getRadius());
+		}
+		// EMP tower = 3k Energy, 60 radius
+		// EMP explosive = 3k Energy, 50 radius
+		onEMP(world, x, y, z, explosiveEMP.getRadius() / 100.0F);
+	}
+	
+	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
+		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (tileEntity instanceof TileEntityAbstractEnergy) {
+			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
+			if (tileEntityAbstractEnergy.getMaxEnergyStored() > 0) {
+				tileEntityAbstractEnergy.consumeEnergy(Math.round(tileEntityAbstractEnergy.getEnergyStored() * efficiency), false);
+			}
 		}
 	}
 }
