@@ -253,6 +253,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			case "class net.minecraft.entity.item.EntityTNTPrimed": strength = 5.0D; break;
 			case "class net.minecraft.entity.monster.EntityCreeper": strength = 3.0D; break;  // *2 for powered ones
 			case "class appeng.entity.EntityTinyTNTPrimed": strength = 0.2D; break;
+			case "class com.arc.bloodarsenal.common.entity.EntityBloodTNT": strength = 1.0D; break;
 			case "class ic2.core.block.EntityItnt": strength = 5.5D; break; 
 			case "class ic2.core.block.EntityNuke": strength = 0.02D; break;
 			case "class ic2.core.block.EntityDynamite": strength = 1.0D; break;
