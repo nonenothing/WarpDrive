@@ -226,9 +226,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		if (tier > 1) {
 			TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 2], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity instanceof TileEntityForceField) {
-				((TileEntityForceField) tileEntity).setProjector(new VectorI(tileEntityForceFieldProjector));
+			if (tileEntityForceFieldProjector != null) {
+				TileEntity tileEntity = world.getTileEntity(x, y, z);
+				if (tileEntity instanceof TileEntityForceField) {
+					((TileEntityForceField) tileEntity).setProjector(new VectorI(tileEntityForceFieldProjector));
+				}
 			}
 			
 		} else {
