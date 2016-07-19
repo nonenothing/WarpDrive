@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.passive;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
@@ -10,9 +11,9 @@ import cr0s.warpdrive.WarpDrive;
 
 public class BlockHighlyAdvancedMachine extends Block {
 	public BlockHighlyAdvancedMachine() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(5.0F);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.HighlyAdvancedMachine");
 	}

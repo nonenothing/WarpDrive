@@ -1,10 +1,12 @@
 package cr0s.warpdrive.event;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
 
 /**
@@ -15,38 +17,42 @@ public class ClientHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onTooltipEvent(ItemTooltipEvent event) {
-		if (event.entityPlayer == null || !event.entityPlayer.capabilities.isCreativeMode) {
+		if (event.getEntityPlayer() == null || !event.getEntityPlayer().capabilities.isCreativeMode) {
 			return;
 		}
 		if (WarpDrive.isDev) {// disabled in production
-			Block block = Block.getBlockFromItem(event.itemStack.getItem());
-			if (block != Blocks.air) {
+			Block block = Block.getBlockFromItem(event.getItemStack().getItem());
+			if (block != Blocks.AIR) {
 				try {
-					String uniqueName = Block.blockRegistry.getNameForObject(block);
-					if (uniqueName != null) {
-						event.toolTip.add("" + uniqueName + "");
+					ResourceLocation resourceLocation = Block.REGISTRY.getNameForObject(block);
+					if (resourceLocation != null) {
+						event.getToolTip().add("" + resourceLocation + "");
 					}
 				} catch(Exception exception) {
 					// no operation
 				}
 				
 				try {
-					String harvestTool = block.getHarvestTool(event.itemStack.getItemDamage());
-					if (harvestTool != null) {
-						event.toolTip.add("Harvest with " + harvestTool + " (" + block.getHarvestLevel(event.itemStack.getItemDamage()) + ")");
-					}
+					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+					String harvestTool = block.getHarvestTool(blockState);
+					event.getToolTip().add("Harvest with " + harvestTool + " (" + block.getHarvestLevel(blockState) + ")");
 				} catch(Exception exception) {
 					// no operation
 				}
-				
-				event.toolTip.add("Light opacity is " + block.getLightOpacity());
 				
 				try {
-					event.toolTip.add("Hardness is " + (float)WarpDrive.fieldBlockHardness.get(block));
+					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+					event.getToolTip().add("Light opacity is " + block.getLightOpacity(blockState));
 				} catch(Exception exception) {
 					// no operation
 				}
-				event.toolTip.add("Explosion resistance is " + block.getExplosionResistance(null));
+				
+				try {
+					event.getToolTip().add("Hardness is " + (float)WarpDrive.fieldBlockHardness.get(block));
+				} catch(Exception exception) {
+					// no operation
+				}
+				event.getToolTip().add("Explosion resistance is " + block.getExplosionResistance(null));
 			}
 		}
 	}

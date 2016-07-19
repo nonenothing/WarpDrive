@@ -8,13 +8,15 @@ import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -42,8 +44,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	public final int beamFrequency;
 	public final byte tier;
 	public final Set<TileEntityForceFieldProjector> projectors = new HashSet<>();
-	private Block blockCamouflage;
-	private int metadataCamouflage;
+	private IBlockState blockStateCamouflage;
 	private int colorMultiplierCamouflage;
 	private int lightCamouflage;
 	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(
@@ -98,33 +99,26 @@ public class ForceFieldSetup extends GlobalPosition {
 		return false; // TODO
 	}
 	
-	private static boolean isValidCamouflage(final Block block) {
-		return block != null && block != Blocks.air && ALLOWED_RENDER_TYPES.contains(block.getRenderType()) && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(block);
+	private static boolean isValidCamouflage(final IBlockState blockState) {
+		return blockState != null && blockState != Blocks.AIR && ALLOWED_RENDER_TYPES.contains(blockState.getRenderType()) && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockState.getBlock());
 	}
 	
-	public Block getCamouflageBlock() {
-		if (isValidCamouflage(blockCamouflage)) {
-			return blockCamouflage;
+	public IBlockState getCamouflageBlockState() {
+		if (isValidCamouflage(blockStateCamouflage)) {
+			return blockStateCamouflage;
 		}
 		return null;
 	}
 	
-	public int getCamouflageMetadata() {
-		if (isValidCamouflage(blockCamouflage)) {
-			return metadataCamouflage;
-		}
-		return 0;
-	}
-	
 	public int getCamouflageColorMultiplier() {
-		if (isValidCamouflage(blockCamouflage)) {
+		if (isValidCamouflage(blockStateCamouflage)) {
 			return colorMultiplierCamouflage;
 		}
 		return 0;
 	}
 	
 	public int getCamouflageLight() {
-		if (isValidCamouflage(blockCamouflage)) {
+		if (isValidCamouflage(blockStateCamouflage)) {
 			return lightCamouflage;
 		}
 		return 0;
@@ -144,13 +138,13 @@ public class ForceFieldSetup extends GlobalPosition {
 		
 		for (TileEntity tileEntity : tileEntities) {
 			// only consider same dimension
-			if (tileEntity.getWorldObj() == null || tileEntity.getWorldObj().provider.dimensionId != dimensionId) {
+			if (tileEntity.getWorld() == null || tileEntity.getWorld().provider.getDimension() != dimensionId) {
 				continue;
 			}
 			// projectors
 			if (tileEntity instanceof TileEntityForceFieldProjector) {
 				TileEntityForceFieldProjector projector = (TileEntityForceFieldProjector) tileEntity;
-				if (tileEntity.xCoord == x && tileEntity.yCoord == y && tileEntity.zCoord == z) {
+				if (tileEntity.getPos().getX() == x && tileEntity.getPos().getY() == y && tileEntity.getPos().getZ() == z) {
 					shapeProvider = projector.getShapeProvider();
 					isDoubleSided = projector.isDoubleSided;
 					vTranslation = new VectorI(projector);
@@ -195,12 +189,12 @@ public class ForceFieldSetup extends GlobalPosition {
 					
 					// camouflage identification
 					if (upgradeEffector == EnumForceFieldUpgrade.CAMOUFLAGE) {
-						Block blockCandidate = tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
-						if (isValidCamouflage(blockCandidate)) {
-							blockCamouflage = blockCandidate;
-							metadataCamouflage = tileEntity.getWorldObj().getBlockMetadata(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
-							colorMultiplierCamouflage = 0x808080; // blockCandidate.colorMultiplier(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
-							lightCamouflage = blockCandidate.getLightValue(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+						BlockPos blockPosCamouflage = tileEntity.getPos().offset(EnumFacing.UP);
+						IBlockState blockStateCandidate = tileEntity.getWorld().getBlockState(blockPosCamouflage);
+						if (isValidCamouflage(blockStateCandidate)) {
+							blockStateCamouflage = blockStateCandidate;
+							colorMultiplierCamouflage = 0x808080; // blockStateCandidate.colorMultiplier(tileEntity.getWorld(), blockPosCamouflage);
+							lightCamouflage = blockStateCandidate.getLightValue(tileEntity.getWorld(), blockPosCamouflage);
 						}
 					}
 					
@@ -296,7 +290,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	
 	public int onEntityEffect(World world, final int blockX, final int blockY, final int blockZ, Entity entity) {
 		int countdown = 0;
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
 			if (((TileEntityForceFieldProjector)tileEntity).onEntityInteracted(entity.getUniqueID())) {
 				for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgrades.entrySet()) {
@@ -315,7 +309,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	
 	public double applyDamage(World world, final DamageSource damageSource, final double damageLevel) {
 		assert(damageSource != null);
-		TileEntity tileEntity = world.getTileEntity(this.x, this.y, this.z);
+		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
 			double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;
 			((TileEntityForceFieldProjector)tileEntity).onEnergyDamage(scaledDamage);

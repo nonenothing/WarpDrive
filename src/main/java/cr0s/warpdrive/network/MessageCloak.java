@@ -1,13 +1,13 @@
 package cr0s.warpdrive.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
 import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CloakedArea;
@@ -75,13 +75,13 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handle(EntityClientPlayerMP player) {
+	private void handle(EntityPlayerSP player) {
 		if (decloak) {
 			// reveal the area
-			WarpDrive.cloaks.removeCloakedArea(player.worldObj.provider.dimensionId, coreX, coreY, coreZ);
+			WarpDrive.cloaks.removeCloakedArea(player.worldObj.provider.getDimension(), coreX, coreY, coreZ);
 		} else { 
 			// Hide the area
-			WarpDrive.cloaks.updateCloakedArea(player.worldObj, player.worldObj.provider.dimensionId, coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
+			WarpDrive.cloaks.updateCloakedArea(player.worldObj, player.worldObj.provider.getDimension(), coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
 		}
 	}
 	
@@ -100,7 +100,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 				+ ") -> (" + cloakMessage.maxX + " " + cloakMessage.maxY + " " + cloakMessage.maxZ + ") tier " + cloakMessage.tier);
 		}
 		
-		EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		if ( cloakMessage.minX <= player.posX && (cloakMessage.maxX + 1) > player.posX
 		  && cloakMessage.minY <= player.posY && (cloakMessage.maxY + 1) > player.posY
 		  && cloakMessage.minZ <= player.posZ && (cloakMessage.maxZ + 1) > player.posZ) {

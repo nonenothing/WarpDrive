@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.passive;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
@@ -10,10 +11,10 @@ import cr0s.warpdrive.WarpDrive;
 
 public class BlockIridium extends Block {
 	public BlockIridium() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.4F);
 		setResistance(360.0F * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.IridiumBlock");
 	}

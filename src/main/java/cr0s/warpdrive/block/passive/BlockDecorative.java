@@ -4,6 +4,7 @@ import java.util.List;
 
 import cr0s.warpdrive.data.EnumDecorativeType;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,9 +18,9 @@ public class BlockDecorative extends Block {
 	private static ItemStack[] itemStackCache;
 	
 	public BlockDecorative() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(1.5f);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setBlockName("warpdrive.passive.Plain");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		

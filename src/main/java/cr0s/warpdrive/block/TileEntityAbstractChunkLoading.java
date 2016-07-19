@@ -3,7 +3,7 @@ package cr0s.warpdrive.block;
 import java.util.ArrayList;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 
@@ -16,8 +16,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	private final ArrayList<Ticket> ticketList = new ArrayList<>();
 	
 	public abstract boolean shouldChunkLoad();
-	protected ChunkCoordIntPair minChunk = null;
-	protected ChunkCoordIntPair maxChunk = null;
+	protected ChunkPos minChunk = null;
+	protected ChunkPos maxChunk = null;
 	
 	protected boolean areChunksLoaded = false;
 
@@ -44,7 +44,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		if (!ticketList.isEmpty()) {
 			if (loadRequested && (!areChunksLoaded || force)) {
 				int ticketSize = ticketList.get(0).getMaxChunkListDepth();
-				ArrayList<ChunkCoordIntPair> chunkList = getChunksToLoad();
+				ArrayList<ChunkPos> chunkList = getChunksToLoad();
 				int numTicketsRequired = (int) Math.ceil((double) chunkList.size() / ticketSize); // FIXME there should be only one ticket per requesting TileEntity
 				if (ticketList.size() != numTicketsRequired) {
 					for(int i = ticketList.size(); i < numTicketsRequired; i++) { 
@@ -56,7 +56,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 				int chunkInTicket = 0;
 				
 				Ticket t = ticketList.get(0);
-				for(ChunkCoordIntPair chunk:chunkList) {
+				for(ChunkPos chunk:chunkList) {
 					if (chunkInTicket >= ticketSize) {
 						chunkInTicket = 0;
 						tickNum++;
@@ -70,8 +70,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 				areChunksLoaded = true;
 			} else if(!loadRequested) {
 				for(Ticket ticket:ticketList) {
-					ImmutableSet<ChunkCoordIntPair> chunks = ticket.getChunkList();
-					for(ChunkCoordIntPair chunk:chunks) {
+					ImmutableSet<ChunkPos> chunks = ticket.getChunkList();
+					for(ChunkPos chunk : chunks) {
 						ForgeChunkManager.unforceChunk(ticket, chunk);
 					}
 					
@@ -91,10 +91,10 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	
 	public void giveTicket(Ticket t) {
 		NBTTagCompound nbt = t.getModData();
-		nbt.setInteger("ticketWorldObj", worldObj.provider.dimensionId);
-		nbt.setInteger("ticketX", xCoord);
-		nbt.setInteger("ticketY", yCoord);
-		nbt.setInteger("ticketZ", zCoord);
+		nbt.setInteger("ticketWorldObj", worldObj.provider.getDimension());
+		nbt.setInteger("ticketX", pos.getX());
+		nbt.setInteger("ticketY", pos.getY());
+		nbt.setInteger("ticketZ", pos.getZ());
 		ticketList.add(t);
 	}
 	
@@ -116,7 +116,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		return 0;
 	}
 	
-	public ArrayList<ChunkCoordIntPair> getChunksFromCentre(ChunkCoordIntPair chunkA,ChunkCoordIntPair chunkB)
+	public ArrayList<ChunkPos> getChunksFromCentre(ChunkPos chunkA, ChunkPos chunkB)
 	{
 		if(!shouldChunkLoad())
 			return null;
@@ -135,14 +135,14 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		WarpDrive.logger.info("Allocating " + deltaX + " x " + deltaZ + " blocks from " + minX + "," + minZ + " to " + maxX + "," + maxZ);
 		
 		int maxEntries = (deltaX) * (deltaZ);
-		ArrayList<ChunkCoordIntPair> chunkList = new ArrayList<>(maxEntries);
+		ArrayList<ChunkPos> chunkList = new ArrayList<>(maxEntries);
 		
 		int dir = 1;
 		int x = minX;
 		int z = maxZ;
 		for(int i = 0; i < maxEntries; i++)
 		{
-			chunkList.add(new ChunkCoordIntPair(x, z));
+			chunkList.add(new ChunkPos(x, z));
 			int dX = dX(dir);
 			int dZ = dZ(dir);
 			if(x + dX > maxX || x + dX < minX || z + dZ > maxZ || z + dZ < minZ)
@@ -174,11 +174,13 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	public void writeToNBT(NBTTagCompound tag)
 	{
 		super.writeToNBT(tag);
-		if(minChunk == null)
-			minChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair();
+		if (minChunk == null) {
+			minChunk = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
+		}
 		
-		if(maxChunk == null)
-			maxChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair();
+		if (maxChunk == null) {
+			maxChunk = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
+		}
 		tag.setInteger("minChunkX", minChunk.chunkXPos);
 		tag.setInteger("minChunkZ", minChunk.chunkZPos);
 		tag.setInteger("maxChunkX", maxChunk.chunkXPos);
@@ -193,10 +195,10 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		{
 			int mx = tag.getInteger("minChunkX");
 			int mz = tag.getInteger("minChunkZ");
-			minChunk = new ChunkCoordIntPair(mx,mz);
+			minChunk = new ChunkPos(mx,mz);
 			mx = tag.getInteger("maxChunkX");
 			mz = tag.getInteger("maxChunkZ");
-			maxChunk = new ChunkCoordIntPair(mx,mz);
+			maxChunk = new ChunkPos(mx,mz);
 		}
 	}
 	
@@ -208,14 +210,14 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		}
 	}
 	
-	public ArrayList<ChunkCoordIntPair> getChunksToLoad()
+	public ArrayList<ChunkPos> getChunksToLoad()
 	{
 		if(minChunk == null || maxChunk == null)
 		{
-			ArrayList<ChunkCoordIntPair> chunkList = new ArrayList<>(1);
-			chunkList.add(worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair());
+			ArrayList<ChunkPos> chunkList = new ArrayList<>(1);
+			chunkList.add(worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair());
 			return chunkList;
 		}
-		return getChunksFromCentre(minChunk,maxChunk);
+		return getChunksFromCentre(minChunk, maxChunk);
 	}
 }

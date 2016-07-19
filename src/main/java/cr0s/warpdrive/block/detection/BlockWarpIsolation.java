@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.detection;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
@@ -13,9 +14,9 @@ public class BlockWarpIsolation extends Block {
 	private IIcon[] iconBuffer;
 
 	public BlockWarpIsolation() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.5F);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.detection.WarpIsolation");
 	}

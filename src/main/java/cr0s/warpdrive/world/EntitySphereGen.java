@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
@@ -95,7 +96,7 @@ public final class EntitySphereGen extends Entity {
 		for (int x = xCoord - radius; x <= xCoord + radius; x++) {
 			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
 				for (int y = minY_clamped; y <= maxY_clamped; y++) {
-					if (worldObj.getBlock(x, y, z) != Blocks.air) {
+					if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) {
 						worldObj.markBlockForUpdate(x, y, z);
 					}
 				}
@@ -205,7 +206,7 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Replace water with random gas (ship in moon)
-		if (worldObj.getBlock(jb.x, jb.y, jb.z).isAssociatedBlock(Blocks.water)) {
+		if (worldObj.getBlockState(new BlockPos(jb.x, jb.y, jb.z)).getBlock().isAssociatedBlock(Blocks.WATER)) {
 			if (worldObj.rand.nextInt(50) != 1) {
 				jb.block = WarpDrive.blockGas;
 				jb.blockMeta = gasColor;
@@ -214,7 +215,7 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Do not replace existing blocks if fillingSphere is true
-		if (!replace && !worldObj.isAirBlock(jb.x, jb.y, jb.z)) {
+		if (!replace && !worldObj.isAirBlock(new BlockPos(jb.x, jb.y, jb.z))) {
 			return;
 		}
 		blocks.add(jb);
