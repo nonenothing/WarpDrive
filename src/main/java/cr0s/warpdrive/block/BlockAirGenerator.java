@@ -38,6 +38,7 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
+		/*
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -47,6 +48,7 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 				return iconBuffer[ICON_SIDE_ACTIVATED];
 			}
 		}
+		/**/
 		
 		if (metadata == 0) { // Inactive state
 			return iconBuffer[ICON_INACTIVE_SIDE];
