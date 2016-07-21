@@ -104,6 +104,14 @@ item.warpdrive.upgrade.Speed.name=Speed Upgrade
 item.warpdrive.upgrade.Range.name=Range Upgrade
 item.warpdrive.upgrade.Energy.name=Energy Upgrade
 
+item.warpdrive.tool.crystalToken.name=Crystal token
+item.warpdrive.tool.crystalToken.tooltip=§bStand in the beam§7 to build your ship
+item.warpdrive.tool.crystalToken0.name=Crystal token #0
+item.warpdrive.tool.crystalToken1.name=Crystal token #1 
+item.warpdrive.tool.crystalToken2.name=Crystal token #2
+item.warpdrive.tool.crystalToken3.name=Crystal token #3
+item.warpdrive.tool.crystalToken4.name=Crystal token #4
+item.warpdrive.tool.crystalToken5.name=Crystal token #5
 
 item.warpdrive.tool.TuningFork.name=Tuning Fork
 item.warpdrive.tool.TuningFork.white.name=White Tuning Fork

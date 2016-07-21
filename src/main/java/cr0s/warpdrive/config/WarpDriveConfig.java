@@ -167,7 +167,8 @@ public class WarpDriveConfig {
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	public static int SS_SEARCH_INTERVAL_TICKS = 20;
 	public static int SS_SCAN_BLOCKS_PER_SECOND = 10;
-	public static int SS_DEPLOY_BLOCKS_PER_SECOND = 10;
+	public static int SS_DEPLOY_BLOCKS_PER_INTERVAL = 10;
+	public static int SS_DEPLOY_INTERVAL_TICKS = 4;
 	
 	// Laser medium
 	public static int LASER_MEDIUM_MAX_ENERGY_STORED = 100000;
@@ -534,6 +535,14 @@ public class WarpDriveConfig {
 		
 		SS_MAX_DEPLOY_RADIUS_BLOCKS = clamp(5, 150,
 				config.get("ship_scanner", "max_deploy_radius_blocks", SS_MAX_DEPLOY_RADIUS_BLOCKS, "Max distance from ship scanner to ship core, measured in blocks (5-150)").getInt());
+		SS_SEARCH_INTERVAL_TICKS = clamp(5, 150,
+			config.get("ship_scanner", "search_interval_ticks", SS_SEARCH_INTERVAL_TICKS, "Max distance from ship scanner to ship core, measured in blocks (5-150)").getInt());
+		SS_SCAN_BLOCKS_PER_SECOND = clamp(1, 50000,
+			config.get("ship_scanner", "scan_blocks_per_second", SS_SCAN_BLOCKS_PER_SECOND, "Scanning speed, measured in blocks (1-5000)").getInt());
+		SS_DEPLOY_BLOCKS_PER_INTERVAL = clamp(1, 3000,
+			config.get("ship_scanner", "deploy_blocks_per_interval", SS_DEPLOY_BLOCKS_PER_INTERVAL, "Deployment speed, measured in blocks (1-3000)").getInt());
+		SS_DEPLOY_INTERVAL_TICKS = clamp(1, 60,
+			config.get("ship_scanner", "deploy_interval_ticks", SS_DEPLOY_INTERVAL_TICKS, "Delay between deployment of 2 sets of blocks, measured in ticks (1-60)").getInt());
 		
 		// Laser medium
 		LASER_MEDIUM_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,

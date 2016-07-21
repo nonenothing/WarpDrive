@@ -171,6 +171,7 @@ public class WarpDrive implements LoadingCallback {
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
+	public static ItemCrystalToken itemCrystalToken;
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningRod;
 	public static ItemForceFieldShape itemForceFieldShape;
@@ -452,6 +453,9 @@ public class WarpDrive implements LoadingCallback {
 		// COMPONENT ITEMS
 		itemComponent = new ItemComponent();
 		GameRegistry.registerItem(itemComponent, "itemComponent");
+		
+		itemCrystalToken = new ItemCrystalToken();
+		GameRegistry.registerItem(itemCrystalToken, "itemCrystalToken");
 		
 		itemHelmet = new ItemHelmet(armorMaterial, 0);
 		GameRegistry.registerItem(itemHelmet, "itemHelmet");

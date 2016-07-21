@@ -418,7 +418,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	private void summonSinglePlayer(String nickname) {
+	public void summonSinglePlayer(String nickname) {
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		for (int i = 0; i < controller.players.size(); i++) {
