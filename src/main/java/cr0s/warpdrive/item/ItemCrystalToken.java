@@ -6,15 +6,16 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
 import java.util.List;
 
 public class ItemCrystalToken extends Item {	
-	private IIcon[] icons;
+	private final IIcon[] icons;
 	private static ItemStack[] itemStackCache;
-	private static int COUNT = 6; 
+	private static final int COUNT = 6; 
 	
 	public ItemCrystalToken() {
 		super();
@@ -36,7 +37,7 @@ public class ItemCrystalToken extends Item {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(final int damage, int amount) {
+	public static ItemStack getItemStackNoCache(final int damage, final int amount) {
 		if (damage < COUNT) {
 			return new ItemStack(WarpDrive.itemCrystalToken, amount, damage);
 		}
@@ -60,7 +61,7 @@ public class ItemCrystalToken extends Item {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		if (damage >= 0 && damage < COUNT) {
 			return icons[damage];
 		}
@@ -74,18 +75,27 @@ public class ItemCrystalToken extends Item {
 		}
 	}
 	
+	public static String getSchematicName(ItemStack itemStack) {
+		String schematicName = "" + itemStack.getItemDamage();
+		NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound != null && tagCompound.hasKey("shipName")) {
+			schematicName = tagCompound.getString("shipName");
+		}
+		return schematicName;
+	}
+	
 	@Override
 	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (StatCollector.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
+			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1, getSchematicName(itemStack)));
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
+			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2, getSchematicName(itemStack)));
 		}
 	}
 }

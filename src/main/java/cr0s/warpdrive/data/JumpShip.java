@@ -10,6 +10,8 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
@@ -18,6 +20,7 @@ import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import net.minecraftforge.common.util.Constants;
 
 public class JumpShip {
 	public World worldObj;
@@ -273,5 +276,48 @@ public class JumpShip {
 			WarpDrive.logger.info(this + " Ship saved as " + jumpBlocks.length + " blocks");
 		}
 		return true;
+	}
+	
+	public void readFromNBT(NBTTagCompound tag) {
+		coreX = tag.getInteger("coreX");
+		coreY = tag.getInteger("coreY");
+		coreZ = tag.getInteger("coreZ");
+		dx = tag.getInteger("dx");
+		dz = tag.getInteger("dz");
+		maxX = tag.getInteger("maxX");
+		maxZ = tag.getInteger("maxZ");
+		maxY = tag.getInteger("maxY");
+		minX = tag.getInteger("minX");
+		minZ = tag.getInteger("minZ");
+		minY = tag.getInteger("minY");
+		actualMass = tag.getInteger("actualMass");
+		NBTTagList tagList = tag.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
+		jumpBlocks = new JumpBlock[tagList.tagCount()];
+		for(int index = 0; index < tagList.tagCount(); index++) {
+			jumpBlocks[index] = new JumpBlock();
+			jumpBlocks[index].readFromNBT(tagList.getCompoundTagAt(index));
+		}
+	}
+	
+	public void writeToNBT(NBTTagCompound tag) {
+		tag.setInteger("coreX", coreX);
+		tag.setInteger("coreY", coreY);
+		tag.setInteger("coreZ", coreZ);
+		tag.setInteger("dx", dx);
+		tag.setInteger("dz", dz);
+		tag.setInteger("maxX", maxX);
+		tag.setInteger("maxZ", maxZ);
+		tag.setInteger("maxY", maxY);
+		tag.setInteger("minX", minX);
+		tag.setInteger("minZ", minZ);
+		tag.setInteger("minY", minY);
+		tag.setInteger("actualMass", actualMass);
+		NBTTagList tagListJumpBlocks = new NBTTagList();
+		for (JumpBlock jumpBlock : jumpBlocks) {
+			NBTTagCompound tagCompoundBlock = new NBTTagCompound();
+			jumpBlock.writeToNBT(tagCompoundBlock);
+			tagListJumpBlocks.appendTag(tagCompoundBlock);
+		}
+		tag.setTag("jumpBlocks", tagListJumpBlocks);
 	}
 }

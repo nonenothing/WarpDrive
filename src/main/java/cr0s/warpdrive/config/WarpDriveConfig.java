@@ -524,13 +524,13 @@ public class WarpDriveConfig {
 		SS_ENERGY_PER_BLOCK_SCAN = config.get("ship_scanner", "energy_per_block_when_scanning", SS_ENERGY_PER_BLOCK_SCAN,
 				"Energy consumed per block when scanning a ship (use -1 to consume everything)").getInt();
 		if (SS_ENERGY_PER_BLOCK_SCAN != -1) {
-			SS_ENERGY_PER_BLOCK_SCAN = clamp(1, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_SCAN);
+			SS_ENERGY_PER_BLOCK_SCAN = clamp(0, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_SCAN);
 		}
 		
 		SS_ENERGY_PER_BLOCK_DEPLOY = config.get("ship_scanner", "energy_per_block_when_deploying", SS_ENERGY_PER_BLOCK_DEPLOY,
 				"Energy consumed per block when deploying a ship (use -1 to consume everything)").getInt();
 		if (SS_ENERGY_PER_BLOCK_DEPLOY != -1) {
-			SS_ENERGY_PER_BLOCK_DEPLOY = clamp(1, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_DEPLOY);
+			SS_ENERGY_PER_BLOCK_DEPLOY = clamp(0, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_DEPLOY);
 		}
 		
 		SS_MAX_DEPLOY_RADIUS_BLOCKS = clamp(5, 150,

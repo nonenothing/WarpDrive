@@ -225,7 +225,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		case GATE_JUMP:
 			if (controller.isJumpFlag()) {
 				// Compute warm-up time
-				int targetWarmup = 0;
+				int targetWarmup;
 				switch (currentMode) {
 				case BASIC_JUMP:
 				case LONG_JUMP:
@@ -244,8 +244,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 					break;
 				}
 				// Select best sound file and adjust offset
-				int soundThreshold = 0;
-				String soundFile = "";
+				int soundThreshold;
+				String soundFile;
 				if (targetWarmup < 10 * 20) {
 					soundThreshold = targetWarmup - 4 * 20;
 					soundFile = "warpdrive:warp_4s";
@@ -418,7 +418,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	public void summonSinglePlayer(String nickname) {
+	public void summonSinglePlayer(final String nickname) {
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		for (int i = 0; i < controller.players.size(); i++) {
@@ -433,7 +433,24 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	private void summonPlayer(EntityPlayerMP player, int x, int y, int z) {
+	public void summonOwnerOnDeploy(final String playerName) {
+		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		
+		TileEntity controllerFound = findControllerBlock();
+		if (controllerFound != null) {
+			controller = (TileEntityShipController) controllerFound;
+			controller.players.clear();
+			controller.players.add(playerName);
+		}
+		
+		EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+		if ( player != null
+		  && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ)) ) {
+			summonPlayer(player, xCoord + 2 * dx, yCoord, zCoord + 2 * dz);
+		}
+	}
+	
+	private void summonPlayer(EntityPlayerMP player, final int x, final int y, final int z) {
 		if (consumeEnergy(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
 			if (player.dimension != worldObj.provider.dimensionId) {
 				player.mcServer.getConfigurationManager().transferPlayerToDimension(
