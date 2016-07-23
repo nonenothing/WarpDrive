@@ -1255,6 +1255,10 @@ function connections_page()
     SetColorSuccess()
     WriteLn(#lasercamAddresses .. " laser cameras detected")
   end
+  
+  WriteLn("")
+  SetColorTitle()
+  WriteLn("Please refer to below menu for keyboard controls")
 end
 
 -- peripheral boot up

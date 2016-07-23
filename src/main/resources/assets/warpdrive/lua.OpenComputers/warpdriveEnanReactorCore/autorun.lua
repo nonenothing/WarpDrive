@@ -810,6 +810,10 @@ function connections_page()
     SetColorSuccess()
     WriteLn(#reactorlasers .. " reactor stabilisation lasers detected")
   end
+  
+  WriteLn("")
+  SetColorTitle()
+  WriteLn("Please refer to below menu for keyboard controls")
 end
 
 -- peripheral boot up

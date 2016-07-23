@@ -2054,6 +2054,10 @@ function connections_page()
     SetColorSuccess()
     WriteLn("Radar detected")
   end
+  
+  WriteLn("")
+  SetColorTitle()
+  WriteLn("Please refer to below menu for keyboard controls")
 end
 
 -- peripheral boot up

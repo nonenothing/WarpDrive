@@ -843,6 +843,10 @@ function connections_page()
     SetColorSuccess()
     WriteLn("Ship controller detected")
   end
+  
+  WriteLn("")
+  SetColorTitle()
+  WriteLn("Please refer to below menu for keyboard controls")
 end
 
 -- peripheral boot up
