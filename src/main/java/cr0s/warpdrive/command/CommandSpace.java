@@ -1,9 +1,8 @@
 package cr0s.warpdrive.command;
 
-import java.util.List;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerSelector;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -32,12 +31,14 @@ public class CommandSpace extends CommandBase {
 		// set defaults
 		int targetDimensionId = Integer.MAX_VALUE;
 		
-		EntityPlayerMP player = null;
+		EntityPlayerMP[] entityPlayerMPs = null;
 		if (sender instanceof EntityPlayerMP) {
-			player = (EntityPlayerMP) sender;
+			entityPlayerMPs = new EntityPlayerMP[1];
+			entityPlayerMPs[0] = (EntityPlayerMP) sender;
 		}
 		
 		// parse arguments
+		//noinspection StatementWithEmptyBody
 		if (params.length == 0) {
 			// nop
 		} else if (params.length == 1) {
@@ -45,16 +46,22 @@ public class CommandSpace extends CommandBase {
 				WarpDrive.addChatMessage(sender, getCommandUsage(sender));
 				return;
 			}
-			
-			EntityPlayerMP playerFound = getOnlinePlayerByName(params[0]);
-			if (playerFound != null) {
-				player = playerFound;
-			} else {
+			EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, params[0]);
+			if (entityPlayerMPs_found != null && entityPlayerMPs_found.length > 0) {
+				entityPlayerMPs = entityPlayerMPs_found.clone();
+			} else if (sender instanceof EntityPlayer) {
 				targetDimensionId = getDimensionId(params[0]);
+			} else {
+				WarpDrive.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				return;
 			}
 			
 		} else if (params.length == 2) {
-			player = getOnlinePlayerByName(params[0]);
+			entityPlayerMPs = PlayerSelector.matchPlayers(sender, params[0]);
+			if (entityPlayerMPs == null || entityPlayerMPs.length <= 0) {
+				WarpDrive.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				return;
+			}
 			targetDimensionId = getDimensionId(params[1]);
 			
 		} else {
@@ -63,68 +70,60 @@ public class CommandSpace extends CommandBase {
 		}
 		
 		// check player
-		if (player == null) {
+		if (entityPlayerMPs == null || entityPlayerMPs.length <= 0) {
 			WarpDrive.addChatMessage(sender, "/space: undefined player");
 			return;
 		}
 		
-		// toggle between overworld and space if no dimension was provided
-		if (targetDimensionId == Integer.MAX_VALUE) {
-			if (player.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
-				targetDimensionId = 0;
-			} else {
-				targetDimensionId = WarpDriveConfig.G_SPACE_DIMENSION_ID;
+		for (EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
+			// toggle between overworld and space if no dimension was provided
+			if (targetDimensionId == Integer.MAX_VALUE) {
+				if (entityPlayerMP.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+					targetDimensionId = 0;
+				} else {
+					targetDimensionId = WarpDriveConfig.G_SPACE_DIMENSION_ID;
+				}
 			}
-		}
-		
-		// get target world
-		WorldServer targetWorld = server.worldServerForDimension(targetDimensionId);
-		if (targetWorld == null) {
-			WarpDrive.addChatMessage(sender, "/space: undefined dimension " + targetDimensionId);
-			return;
-		}
-		
-		// inform player
-		String message = "Teleporting player " + player.getCommandSenderName() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
-		WarpDrive.addChatMessage(sender, message);
-		WarpDrive.logger.info(message);
-		if (sender != player) {
-			WarpDrive.addChatMessage(player, sender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
-		}
-		
-		// find a good spot
-		int newX = MathHelper.floor_double(player.posX);
-		int newY = Math.min(255, Math.max(0, MathHelper.floor_double(player.posY)));
-		int newZ = MathHelper.floor_double(player.posZ);
-		
-		if ( (targetWorld.isAirBlock(newX, newY - 1, newZ) && !player.capabilities.allowFlying)
-		  || !targetWorld.isAirBlock(newX, newY, newZ)
-		  || !targetWorld.isAirBlock(newX, newY + 1, newZ)) {// non solid ground and can't fly, or inside blocks
-			newY = targetWorld.getTopSolidOrLiquidBlock(newX, newZ) + 1;
-			if (newY == 0) {
-				newY = 128;
+			
+			// get target world
+			WorldServer targetWorld = server.worldServerForDimension(targetDimensionId);
+			if (targetWorld == null) {
+				WarpDrive.addChatMessage(sender, "/space: undefined dimension '" + targetDimensionId + "'");
+				return;
 			}
+			
+			// inform player
+			String message = "Teleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
+			WarpDrive.addChatMessage(sender, message);
+			WarpDrive.logger.info(message);
+			if (sender != entityPlayerMP) {
+				WarpDrive.addChatMessage(entityPlayerMP, sender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
+			}
+			
+			// find a good spot
+			int newX = MathHelper.floor_double(entityPlayerMP.posX);
+			int newY = Math.min(255, Math.max(0, MathHelper.floor_double(entityPlayerMP.posY)));
+			int newZ = MathHelper.floor_double(entityPlayerMP.posZ);
+			
+			if ((targetWorld.isAirBlock(newX, newY - 1, newZ) && !entityPlayerMP.capabilities.allowFlying)
+				    || !targetWorld.isAirBlock(newX, newY, newZ)
+				    || !targetWorld.isAirBlock(newX, newY + 1, newZ)) {// non solid ground and can't fly, or inside blocks
+				newY = targetWorld.getTopSolidOrLiquidBlock(newX, newZ) + 1;
+				if (newY == 0) {
+					newY = 128;
+				}
+			}
+			
+			SpaceTeleporter teleporter = new SpaceTeleporter(targetWorld, 0, newX, newY, newZ);
+			server.getConfigurationManager().transferPlayerToDimension(entityPlayerMP, targetDimensionId, teleporter);
+			entityPlayerMP.setPositionAndUpdate(newX + 0.5D, newY + 0.05D, newZ + 0.5D);
+			entityPlayerMP.sendPlayerAbilities();
 		}
-		
-		SpaceTeleporter teleporter = new SpaceTeleporter(targetWorld, 0, newX, newY, newZ);
-		server.getConfigurationManager().transferPlayerToDimension(player, targetDimensionId, teleporter);
-		player.setPositionAndUpdate(newX + 0.5D, newY + 0.05D, newZ + 0.5D);
-		player.sendPlayerAbilities();
 	}
 	
 	@Override
 	public String getCommandUsage(ICommandSender icommandsender) {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";
-	}
-	
-	private EntityPlayerMP getOnlinePlayerByName(final String playerName) {
-		List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		for (EntityPlayer onlinePlayer : onlinePlayers) {
-			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerName) && onlinePlayer instanceof EntityPlayerMP) {
-				return (EntityPlayerMP) onlinePlayer;
-			}
-		}
-		return null;
 	}
 	
 	private int getDimensionId(String stringDimension) {
