@@ -314,12 +314,12 @@ public class BlockAir extends Block {
 					if (WarpDriveConfig.LOGGING_BREATHING) {
 						WarpDrive.logger.info("AirGenerator not found, removing air block at " + x + ", " + y + ", " + z);
 					}
-					world.setBlockMetadataWithNotify(x, y, z, 1, 2);
+					world.setBlockMetadataWithNotify(x, y, z, 1, 0);
 				} else {
 					// keep the block as a source
 				}
 			} else {
-				world.setBlockMetadataWithNotify(x, y, z, new_concentration, 2);
+				world.setBlockMetadataWithNotify(x, y, z, new_concentration, 0);
 			}
 		}
 		
@@ -328,7 +328,7 @@ public class BlockAir extends Block {
 		if (xp_isAir) {
 			if (xp_block == this) {
 				if (xp_concentration != mid_concentration && xp_concentration != 15 && (!isGrowth || xp_concentration < mid_concentration)) {
-					world.setBlockMetadataWithNotify(x + 1, y, z, mid_concentration, 2);
+					world.setBlockMetadataWithNotify(x + 1, y, z, mid_concentration, 0);
 				}
 			} else {
 				world.setBlock(x + 1, y, z, this, mid_concentration, 2);
@@ -338,7 +338,7 @@ public class BlockAir extends Block {
 		if (xn_isAir) {
 			if (xn_block == this) {
 				if (xn_concentration != mid_concentration && xn_concentration != 15 && (!isGrowth || xn_concentration < mid_concentration)) {
-					world.setBlockMetadataWithNotify(x - 1, y, z, mid_concentration, 2);
+					world.setBlockMetadataWithNotify(x - 1, y, z, mid_concentration, 0);
 				}
 			} else {
 				world.setBlock(x - 1, y, z, this, mid_concentration, 2);
@@ -348,7 +348,7 @@ public class BlockAir extends Block {
 		if (yp_isAir) {
 			if (yp_block == this) {
 				if (yp_concentration != mid_concentration && yp_concentration != 15 && (!isGrowth || yp_concentration < mid_concentration)) {
-					world.setBlockMetadataWithNotify(x, y + 1, z, mid_concentration, 2);
+					world.setBlockMetadataWithNotify(x, y + 1, z, mid_concentration, 0);
 				}
 			} else {
 				world.setBlock(x, y + 1, z, this, mid_concentration, 2);
@@ -358,7 +358,7 @@ public class BlockAir extends Block {
 		if (yn_isAir) {
 			if (yn_block == this) {
 				if (yn_concentration != mid_concentration && yn_concentration != 15 && (!isGrowth || yn_concentration < mid_concentration)) {
-					world.setBlockMetadataWithNotify(x, y - 1, z, mid_concentration, 2);
+					world.setBlockMetadataWithNotify(x, y - 1, z, mid_concentration, 0);
 				}
 			} else {
 				world.setBlock(x, y - 1, z, this, mid_concentration, 2);
@@ -368,7 +368,7 @@ public class BlockAir extends Block {
 		if (zp_isAir) {
 			if (zp_block == this) {
 				if (zp_concentration != mid_concentration && zp_concentration != 15 && (!isGrowth || zp_concentration < mid_concentration)) {
-					world.setBlockMetadataWithNotify(x, y, z + 1, mid_concentration, 2);
+					world.setBlockMetadataWithNotify(x, y, z + 1, mid_concentration, 0);
 				}
 			} else {
 				world.setBlock(x, y, z + 1, this, mid_concentration, 2);
@@ -378,7 +378,7 @@ public class BlockAir extends Block {
 		if (zn_isAir) {
 			if (zn_block == this) {
 				if (zn_concentration != mid_concentration && zn_concentration != 15 && (!isGrowth || zn_concentration < mid_concentration)) {
-					world.setBlockMetadataWithNotify(x, y, z - 1, mid_concentration, 2);
+					world.setBlockMetadataWithNotify(x, y, z - 1, mid_concentration, 0);
 				}
 			} else {
 				world.setBlock(x, y, z - 1, this, mid_concentration, 2);
