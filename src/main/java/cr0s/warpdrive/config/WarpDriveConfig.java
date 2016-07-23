@@ -147,6 +147,8 @@ public class WarpDriveConfig {
 	public static int SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
 	public static String[] SHIP_VOLUME_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
 	public static boolean SHIP_WARMUP_SICKNESS = true;
+	public static int SHIP_SUMMON_MAX_RANGE = 500;
+	public static boolean SHIP_SUMMON_ACROSS_DIMENSIONS = false;
 	
 	// Radar
 	public static int RADAR_MAX_ENERGY_STORED = 100000000; // 100kk eU
@@ -473,6 +475,9 @@ public class WarpDriveConfig {
 		SHIP_WARMUP_RANDOM_TICKS = clamp(10, 200,
 				config.get("ship", "warmup_random_ticks", SHIP_WARMUP_RANDOM_TICKS, "Random variation added to warmup (measured in ticks)").getInt());
 		SHIP_WARMUP_SICKNESS = config.get("ship", "warmup_sickness", true, "Enable warp sickness during warmup").getBoolean(true);
+		
+		SHIP_SUMMON_MAX_RANGE = config.get("ship", "summon_max_range", SHIP_SUMMON_MAX_RANGE, "Maximum range from which players can be summoned (measured in blocks), set to -1 for unlimited range").getInt();
+		SHIP_SUMMON_ACROSS_DIMENSIONS = config.get("ship", "summon_across_dimensions", false, "Enable summoning players from another dimension").getBoolean(false);
 		
 		SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
 				config.get("ship", "core_registry_update_interval", SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());

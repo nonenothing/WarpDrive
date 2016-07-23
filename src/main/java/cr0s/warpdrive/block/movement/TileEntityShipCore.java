@@ -413,7 +413,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			
 			if (player != null
 			  && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
-				summonPlayer(player, xCoord + 2 * dx, yCoord, zCoord + 2 * dz);
+				summonPlayer(player);
 			}
 		}
 	}
@@ -427,7 +427,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			
 			if (player != null && nick.equals(nickname)
 			    && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
-				summonPlayer(player, xCoord + 2 * dx, yCoord, zCoord + 2 * dz);
+				summonPlayer(player);
 				return;
 			}
 		}
@@ -446,8 +446,41 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
 		if ( player != null
 		  && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ)) ) {
-			summonPlayer(player, xCoord + 2 * dx, yCoord, zCoord + 2 * dz);
+			summonPlayer(player);
 		}
+	}
+	
+	private static final VectorI[] vSummonOffsets = { new VectorI(2, 0, 0), new VectorI(-1, 0, 0),
+		new VectorI(2, 0, 1), new VectorI(2, 0, -1), new VectorI(-1, 0, 1), new VectorI(-1, 0, -1),
+		new VectorI(1, 0, 1), new VectorI(1, 0, -1), new VectorI( 0, 0, 1), new VectorI( 0, 0, -1) };
+	private void summonPlayer(EntityPlayerMP entityPlayer) {
+		// validate distance
+		double distance = new VectorI(entityPlayer).distance2To(this);
+		if (entityPlayer.worldObj != this.worldObj) {
+			distance += 256;
+			if (!WarpDriveConfig.SHIP_SUMMON_ACROSS_DIMENSIONS) {
+				messageToAllPlayersOnShip(String.format("%1$s is in a different dimension, too far away to be summoned", entityPlayer.getDisplayName()));
+				return;
+			}
+		}
+		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
+			messageToAllPlayersOnShip(String.format("%1$s is too far away to be summoned (max. is %2$d m)", entityPlayer.getDisplayName(), WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
+			return;
+		}
+		
+		// find a free spot
+		for (VectorI vOffset : vSummonOffsets) {
+			VectorI vPosition = new VectorI(
+				xCoord + dx * vOffset.x + dz * vOffset.z,
+			    yCoord,
+			    zCoord + dz * vOffset.x + dx * vOffset.z);
+			if ( worldObj.isAirBlock(vPosition.x, vPosition.y    , vPosition.z)
+			  && worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)) {
+				summonPlayer(entityPlayer, vPosition.x, vPosition.y, vPosition.z);
+				return;
+			}
+		}
+		messageToAllPlayersOnShip(String.format("No safe spot found to summon player %1$s", entityPlayer.getDisplayName()));
 	}
 	
 	private void summonPlayer(EntityPlayerMP player, final int x, final int y, final int z) {

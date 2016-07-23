@@ -211,6 +211,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					currentDeployIndex++;
 				}
 				
+				// deployment done, teleport owner inside
 				if (currentDeployIndex >= blocksToDeployCount) {
 					TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
 					if (tileEntity instanceof TileEntityShipCore) {
