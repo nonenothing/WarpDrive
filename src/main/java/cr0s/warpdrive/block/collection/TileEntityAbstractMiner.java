@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -42,6 +43,9 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	
 	protected void harvestBlock(VectorI valuable) {
 		Block block = worldObj.getBlock(valuable.x, valuable.y, valuable.z);
+		if (block == Blocks.air) {
+			return;
+		}
 		int blockMeta = worldObj.getBlockMetadata(valuable.x, valuable.y, valuable.z);
 		if (block != null && (block instanceof BlockLiquid)) {
 			// Evaporate fluid
@@ -60,6 +64,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	
 	private List<ItemStack> getItemStackFromBlock(int x, int y, int z, Block block, int blockMeta) {
 		if (block == null) {
+			WarpDrive.logger.error(this + " Invalid block at " + x + " " + y + " " + z);
 			return null;
 		}
 		if (enableSilktouch) {

@@ -113,6 +113,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		boolean overflow = false;
 		if (itemStacks != null) {
 			for (ItemStack itemStack : itemStacks) {
+				if (itemStack.getItem() == null) {
+					WarpDrive.logger.error(this + "Invalid itemStack with null item...");
+					continue;
+				}
 				int qtyLeft = itemStack.stackSize;
 				ItemStack itemStackLeft = itemStack.copy();
 				for (IInventory inventory : inventories) {
@@ -143,7 +147,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	private static int addToInventory(final ItemStack itemStackSource, IInventory inventory) {
-		if (itemStackSource == null) {
+		if (itemStackSource == null || itemStackSource.getItem() == null) {
 			return 0;
 		}
 		
