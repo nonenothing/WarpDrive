@@ -2,6 +2,7 @@ package cr0s.warpdrive.event;
 
 import java.util.HashMap;
 
+import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -22,19 +23,18 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
-/**
- *
- * @author Cr0s
- */
 public class LivingHandler {
-	private HashMap<Integer, Integer> entity_airBlock;
-	private HashMap<String, Integer> player_airTank;
-	private HashMap<String, Integer> player_cloakTicks;
+	private final HashMap<Integer, Integer> entity_airBlock;
+	private final HashMap<String, Integer> player_airTank;
+	private final HashMap<String, Integer> player_cloakTicks;
 	
-	private final int CLOAK_CHECK_TIMEOUT_TICKS = 100;
-	private final int AIR_BLOCK_TICKS = 20;
-	private final int AIR_TANK_TICKS = 300;
-	private final int AIR_DROWN_TICKS = 20;
+	private static final int CLOAK_CHECK_TIMEOUT_TICKS = 100;
+	private static final int AIR_BLOCK_TICKS = 20;
+	private static final int AIR_TANK_TICKS = 300;
+	private static final int AIR_DROWN_TICKS = 20;
+	private static final VectorI[] vAirOffsets = { new VectorI(0, 0, 0), new VectorI(0, 1, 0),
+		new VectorI(0, 1, 1), new VectorI(0, 1, -1), new VectorI(1, 1, 0), new VectorI(1, 1, 0),
+		new VectorI(0, 0, 1), new VectorI(0, 0, -1), new VectorI(1, 0, 0), new VectorI(1, 0, 0) };
 	
 	public LivingHandler() {
 		entity_airBlock = new HashMap<>();
@@ -82,9 +82,19 @@ public class LivingHandler {
 		// If entity is in vacuum, check and start consuming air cells
 		if ( entity.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID
 		  || entity.worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
-			Block block1 = entity.worldObj.getBlock(x, y, z);
-			Block block2 = entity.worldObj.getBlock(x, y + 1, z);
-			boolean notInVacuum = block1.isAssociatedBlock(WarpDrive.blockAir) || block2.isAssociatedBlock(WarpDrive.blockAir);
+			// find an air block
+			VectorI vAirBlock = null;	
+			Block block;
+			for (VectorI vOffset : vAirOffsets) {
+				VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
+				block = entity.worldObj.getBlock(vPosition.x, vPosition.y, vPosition.z);
+				if (block.isAssociatedBlock(WarpDrive.blockAir)) {
+					vAirBlock = vPosition;
+					break;
+				}
+			}
+			
+			boolean notInVacuum = vAirBlock != null;
 			Integer air;
 			if (notInVacuum) {// In space with air blocks
 				air = entity_airBlock.get(entity.getEntityId());
@@ -93,17 +103,9 @@ public class LivingHandler {
 				} else if (air <= 1) {// time elapsed => consume air block
 					entity_airBlock.put(entity.getEntityId(), AIR_BLOCK_TICKS);
 					
-					int metadata;
-					if (block1.isAssociatedBlock(WarpDrive.blockAir)) {
-						metadata = entity.worldObj.getBlockMetadata(x, y, z);
-						if (metadata > 0 && metadata < 15) {
-							entity.worldObj.setBlockMetadataWithNotify(x, y, z, metadata - 1, 2);
-						}
-					} else {
-						metadata = entity.worldObj.getBlockMetadata(x, y + 1, z);
-						if (metadata > 0 && metadata < 15) {
-							entity.worldObj.setBlockMetadataWithNotify(x, y + 1, z, metadata - 1, 2);
-						}
+					int metadata = entity.worldObj.getBlockMetadata(vAirBlock.x, vAirBlock.y, vAirBlock.z);
+					if (metadata > 0 && metadata < 15) {
+						entity.worldObj.setBlockMetadataWithNotify(vAirBlock.x, vAirBlock.y, vAirBlock.z, metadata - 1, 2);
 					}
 				} else {
 					entity_airBlock.put(entity.getEntityId(), air - 1);
@@ -111,6 +113,11 @@ public class LivingHandler {
 			} else {// In space without air blocks
 				// Damage entity if in vacuum without protection
 				if (entity instanceof EntityPlayerMP) {
+					air = entity_airBlock.get(entity.getEntityId());
+					if (air != null && air > 0) {
+						entity_airBlock.put(entity.getEntityId(), air - 1);
+						return;
+					}
 					EntityPlayerMP player = (EntityPlayerMP) entity;
 					String playerName = player.getCommandSenderName();
 					air = player_airTank.get(playerName);
