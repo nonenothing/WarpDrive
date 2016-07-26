@@ -434,6 +434,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	public void summonOwnerOnDeploy(final String playerName) {
+		EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+		StringBuilder reason = new StringBuilder();
+		if (!validateShipSpatialParameters(reason)) {
+			WarpDrive.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + reason.toString());
+			return;
+		}
+		
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		TileEntity controllerFound = findControllerBlock();
@@ -443,10 +450,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			controller.players.add(playerName);
 		}
 		
-		EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
-		if ( player != null
-		  && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ)) ) {
-			summonPlayer(player);
+		if ( entityPlayerMP != null
+		  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
+			summonPlayer(entityPlayerMP);
 		}
 	}
 	
@@ -455,7 +461,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		new VectorI(1, 0, 1), new VectorI(1, 0, -1), new VectorI( 0, 0, 1), new VectorI( 0, 0, -1) };
 	private void summonPlayer(EntityPlayerMP entityPlayer) {
 		// validate distance
-		double distance = new VectorI(entityPlayer).distance2To(this);
+		double distance = Math.sqrt(new VectorI(entityPlayer).distance2To(this));
 		if (entityPlayer.worldObj != this.worldObj) {
 			distance += 256;
 			if (!WarpDriveConfig.SHIP_SUMMON_ACROSS_DIMENSIONS) {
