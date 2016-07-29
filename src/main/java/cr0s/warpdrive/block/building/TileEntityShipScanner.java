@@ -626,11 +626,11 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			
 			if (isForced) {
 				if (!worldObj.isAirBlock(targetX, targetY, targetZ)) {
-					worldObj.newExplosion(null, targetX, targetY, targetZ, 3, false, false);
+					worldObj.newExplosion(null, targetX, targetY, targetZ, 1, false, false);
 					if (WarpDriveConfig.LOGGING_BUILDING) {
 						WarpDrive.logger.info("Deployment collision detected at " + targetX + " " + targetY + " " + targetZ);
 					}
-					reason.append(String.format("Deploying area occupied with existing ship. Can't deploy new ship at " + targetX + " " + targetY + " " + targetZ));
+					reason.append(String.format("Deployment area occupied with existing ship. Can't deploy new ship at " + targetX + " " + targetY + " " + targetZ));
 					return 2;
 				}
 				
@@ -654,7 +654,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 							if (!worldObj.isAirBlock(x, y, z)) {
 								occupiedBlockCount++;
 								if (occupiedBlockCount == 1 || (occupiedBlockCount <= 100 && worldObj.rand.nextInt(10) == 0)) {
-									worldObj.newExplosion(null, x, y, z, 3, false, false);
+									worldObj.newExplosion(null, x, y, z, 1, false, false);
 								}
 								if (WarpDriveConfig.LOGGING_BUILDING) {
 									WarpDrive.logger.info("Deployment collision detected at " + x + " " + y + " " + z);
@@ -664,7 +664,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					}
 				}
 				if (occupiedBlockCount > 0) {
-					reason.append(String.format("Deploying area occupied with %d blocks. Can't deploy ship.", occupiedBlockCount));
+					reason.append(String.format("Deployment area occupied with %d blocks. Can't deploy ship.", occupiedBlockCount));
 					return 2;
 				}
 			}
