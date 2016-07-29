@@ -102,6 +102,7 @@ public class Dictionary {
 				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
+				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
