@@ -497,7 +497,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	// Returns error code and reason string
-	private int deployShip(final String fileName, final int offsetX, final int offsetY, final int offsetZ, final byte rotationSteps, final StringBuilder reason) {
+	private int deployShip(final String fileName, final int offsetX, final int offsetY, final int offsetZ, final byte rotationSteps, final boolean isForced, final StringBuilder reason) {
 		// Load schematic
 		NBTTagCompound schematic = readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
 		if (schematic == null) {
@@ -616,35 +616,57 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			ChunkCoordinates targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
 			ChunkCoordinates targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
 			ChunkCoordinates targetLocationMin = new ChunkCoordinates(
-				Math.min(targetLocation1.posX, targetLocation2.posX), 
-				Math.min(targetLocation1.posY, targetLocation2.posY), 
-				Math.min(targetLocation1.posZ, targetLocation2.posZ));
+			                Math.min(targetLocation1.posX, targetLocation2.posX) - 1,
+			    Math.max(0, Math.min(targetLocation1.posY, targetLocation2.posY) - 1),
+			                Math.min(targetLocation1.posZ, targetLocation2.posZ) - 1);
 			ChunkCoordinates targetLocationMax = new ChunkCoordinates(
-				Math.max(targetLocation1.posX, targetLocation2.posX),
-				Math.max(targetLocation1.posY, targetLocation2.posY),
-				Math.max(targetLocation1.posZ, targetLocation2.posZ));
+			                  Math.max(targetLocation1.posX, targetLocation2.posX) + 1,
+			    Math.min(255, Math.max(targetLocation1.posY, targetLocation2.posY) + 1),
+			                  Math.max(targetLocation1.posZ, targetLocation2.posZ) + 1);
+			
+			if (isForced) {
+				if (!worldObj.isAirBlock(targetX, targetY, targetZ)) {
+					worldObj.newExplosion(null, targetX, targetY, targetZ, 3, false, false);
+					if (WarpDriveConfig.LOGGING_BUILDING) {
+						WarpDrive.logger.info("Deployment collision detected at " + targetX + " " + targetY + " " + targetZ);
+					}
+					reason.append(String.format("Deploying area occupied with existing ship. Can't deploy new ship at " + targetX + " " + targetY + " " + targetZ));
+					return 2;
+				}
 				
-			// Check specified area for occupation by blocks
-			// If specified area occupied, break deployment with error message
-			int occupiedBlockCount = 0;
-			for (int x = targetLocationMin.posX; x <= targetLocationMax.posX; x++) {
-				for (int y = targetLocationMin.posY; y <= targetLocationMax.posY; y++) {
-					for (int z = targetLocationMin.posZ; z <= targetLocationMax.posZ; z++) {
-						if (!worldObj.isAirBlock(x, y, z)) {
-							occupiedBlockCount++;
-							if (occupiedBlockCount == 1 || (occupiedBlockCount <= 100 && worldObj.rand.nextInt(10) == 0)) {
-								worldObj.newExplosion(null, x, y, z, 3, false, false);
-							}
-							if (WarpDriveConfig.LOGGING_BUILDING) {
-								WarpDrive.logger.info("Deployment collision detected at " + x + " " + y + " " + z);
+				// Clear specified area for any blocks to avoid corruption and ensure clean full ship
+				for (int x = targetLocationMin.posX; x <= targetLocationMax.posX; x++) {
+					for (int y = targetLocationMin.posY; y <= targetLocationMax.posY; y++) {
+						for (int z = targetLocationMin.posZ; z <= targetLocationMax.posZ; z++) {
+							worldObj.setBlockToAir(x, y, z);
+						}
+					}
+				}
+				
+			} else {
+				
+				// Check specified area for occupation by blocks
+				// If specified area is occupied, break deployment with error message
+				int occupiedBlockCount = 0;
+				for (int x = targetLocationMin.posX; x <= targetLocationMax.posX; x++) {
+					for (int y = targetLocationMin.posY; y <= targetLocationMax.posY; y++) {
+						for (int z = targetLocationMin.posZ; z <= targetLocationMax.posZ; z++) {
+							if (!worldObj.isAirBlock(x, y, z)) {
+								occupiedBlockCount++;
+								if (occupiedBlockCount == 1 || (occupiedBlockCount <= 100 && worldObj.rand.nextInt(10) == 0)) {
+									worldObj.newExplosion(null, x, y, z, 3, false, false);
+								}
+								if (WarpDriveConfig.LOGGING_BUILDING) {
+									WarpDrive.logger.info("Deployment collision detected at " + x + " " + y + " " + z);
+								}
 							}
 						}
 					}
 				}
-			}
-			if (occupiedBlockCount > 0) {
-				reason.append(String.format("Deploying area occupied with %d blocks. Can't deploy ship.", occupiedBlockCount));
-				return 2;
+				if (occupiedBlockCount > 0) {
+					reason.append(String.format("Deploying area occupied with %d blocks. Can't deploy ship.", occupiedBlockCount));
+					return 2;
+				}
 			}
 		}
 		
@@ -745,7 +767,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				return new Object[] { 0, "Specified schematic file was not found!" };
 			} else {
 				StringBuilder reason = new StringBuilder();
-				int result = deployShip(fileName, x, y, z, rotationSteps, reason);
+				int result = deployShip(fileName, x, y, z, rotationSteps, false, reason);
 				return new Object[] { result, reason.toString() };
 			}
 		} else {
@@ -842,7 +864,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// try deploying
 		StringBuilder reason = new StringBuilder();
-		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, reason);
+		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, true, reason);
 		WarpDrive.addChatMessage(entityPlayer, reason.toString());
 		if (!isActive) {
 			// failed

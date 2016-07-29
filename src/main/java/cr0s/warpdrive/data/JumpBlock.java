@@ -375,6 +375,17 @@ public class JumpBlock {
 		blockTileEntity = null;
 		if (tag.hasKey("blockNBT")) {
 			blockNBT = tag.getCompoundTag("blockNBT");
+			
+			// Clear computer IDs
+			if (blockNBT.hasKey("computerID")) {
+				blockNBT.removeTag("computerID");
+			}
+			if (blockNBT.hasKey("oc:computer")) {
+				NBTTagCompound tagComputer = blockNBT.getCompoundTag("oc:computer");
+				tagComputer.removeTag("components");
+				tagComputer.removeTag("node");
+				blockNBT.setTag("oc:computer", tagComputer);
+			}
 		} else {
 			blockNBT = null;
 		}
@@ -453,6 +464,8 @@ public class JumpBlock {
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.World.setBlock to remove lighting computations
 	public static boolean setBlockNoLight(World w, int x, int y, int z, Block block, int blockMeta, int par6) {
+		// return w.setBlock(x, y, z, block, blockMeta, par6);
+		
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
 			if (y < 0) {
 				return false;
@@ -497,6 +510,7 @@ public class JumpBlock {
 		} else {
 			return false;
 		}
+		/**/
 	}
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.Chunk.func_150807_a to remove lighting computations
