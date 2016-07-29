@@ -1,14 +1,15 @@
-﻿death.attack.warpdrive.asphyxia=%s est mort asphyxié
+﻿
+death.attack.warpdrive.asphyxia=%1$s est mort asphyxié
 death.attack.warpdrive.asphyxia.player=%1$s est mort asphyxié grace à %2$s
-death.attack.warpdrive.cold=%s est mort de froid
+death.attack.warpdrive.cold=%1$s est mort de froid
 death.attack.warpdrive.cold.player=%1$s est mort congelé par %2$s 
-death.attack.warpdrive.laser=%s est d'avoir croisé le faisceau
+death.attack.warpdrive.laser=%1$s est d'avoir croisé le faisceau
 death.attack.warpdrive.laser.player=%1$s a été laserifié par %2$s
-death.attack.warpdrive.shock=%s est mort electrocuté
+death.attack.warpdrive.shock=%1$s est mort electrocuté
 death.attack.warpdrive.shock.player=%1$s est mort electrocuté par %2$s
-death.attack.warpdrive.teleportation=%s n'a pas survécu à sa rematérialisation
+death.attack.warpdrive.teleportation=%1$s n'a pas survécu à sa rematérialisation
 death.attack.warpdrive.teleportation.player=%1$s a été tué par %2$s durant sa rematérialisation
-death.attack.warpdrive.warm=%s est mort de brûlure sévère
+death.attack.warpdrive.warm=%1$s est mort de brûlure sévère
 death.attack.warpdrive.warm.player=%1$s a été cuit par %2$s
 
 item.warpdrive.crafting.Malformed.name=Item invalide
@@ -370,6 +371,6 @@ warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
 warpdrive.transporter.status=De %1$.0f %2$.0f %3$.0f à %4$.0f %5$.0f %6$.0f
 
-
-
-
+warpdrive.tooltip.itemTag.breathingIC2=Permet de §brespirer dans le vide§r en consommant des cellules d'air comprimé de IC2 depuis l'inventaire.
+warpdrive.tooltip.itemTag.flyInSpace=Jetpack compatible avec une utilisation §bspatiale§r.
+warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbe les damages de chute§r.

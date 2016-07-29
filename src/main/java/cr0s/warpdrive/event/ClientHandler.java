@@ -1,16 +1,14 @@
 package cr0s.warpdrive.event;
 
+import cr0s.warpdrive.config.Dictionary;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.StatCollector;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
 
-/**
- *
- * @author LemADEC
- */
 public class ClientHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -18,13 +16,22 @@ public class ClientHandler {
 		if (event.entityPlayer == null || !event.entityPlayer.capabilities.isCreativeMode) {
 			return;
 		}
-		if (WarpDrive.isDev) {// disabled in production
+		if (Dictionary.ITEMS_BREATHINGIC2.contains(event.itemStack.getItem())) {
+			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.breathingIC2"));
+		}
+		if (Dictionary.ITEMS_FLYINSPACE.contains(event.itemStack.getItem())) {
+			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.flyInSpace"));
+		}
+		if (Dictionary.ITEMS_NOFALLDAMAGE.contains(event.itemStack.getItem())) {
+			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.noFallDamage"));
+		}
+		if (WarpDrive.isDev && event.entityPlayer.capabilities.isCreativeMode) {// disabled in production
 			Block block = Block.getBlockFromItem(event.itemStack.getItem());
 			if (block != Blocks.air) {
 				try {
 					String uniqueName = Block.blockRegistry.getNameForObject(block);
 					if (uniqueName != null) {
-						event.toolTip.add("" + uniqueName + "");
+						WarpDrive.addTooltip(event.toolTip, "" + uniqueName + "");
 					}
 				} catch(Exception exception) {
 					// no operation
@@ -33,20 +40,20 @@ public class ClientHandler {
 				try {
 					String harvestTool = block.getHarvestTool(event.itemStack.getItemDamage());
 					if (harvestTool != null) {
-						event.toolTip.add("Harvest with " + harvestTool + " (" + block.getHarvestLevel(event.itemStack.getItemDamage()) + ")");
+						WarpDrive.addTooltip(event.toolTip, "Harvest with " + harvestTool + " (" + block.getHarvestLevel(event.itemStack.getItemDamage()) + ")");
 					}
 				} catch(Exception exception) {
 					// no operation
 				}
 				
-				event.toolTip.add("Light opacity is " + block.getLightOpacity());
+				WarpDrive.addTooltip(event.toolTip, "Light opacity is " + block.getLightOpacity());
 				
 				try {
-					event.toolTip.add("Hardness is " + (float)WarpDrive.fieldBlockHardness.get(block));
+					WarpDrive.addTooltip(event.toolTip, "Hardness is " + (float)WarpDrive.fieldBlockHardness.get(block));
 				} catch(Exception exception) {
 					// no operation
 				}
-				event.toolTip.add("Explosion resistance is " + block.getExplosionResistance(null));
+				WarpDrive.addTooltip(event.toolTip, "Explosion resistance is " + block.getExplosionResistance(null));
 			}
 		}
 	}

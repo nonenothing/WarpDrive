@@ -1,14 +1,15 @@
-﻿death.attack.warpdrive.asphyxia=%s died from asphyxia
+﻿
+death.attack.warpdrive.asphyxia=%1$s died from asphyxia
 death.attack.warpdrive.asphyxia.player=%1$s was killed by %2$s using asphyxia
-death.attack.warpdrive.cold=%s died from cold
+death.attack.warpdrive.cold=%1$s died from cold
 death.attack.warpdrive.cold.player=%1$s was frozen to death by %2$s 
-death.attack.warpdrive.laser=%s died from crossing the beam
+death.attack.warpdrive.laser=%1$s died from crossing the beam
 death.attack.warpdrive.laser.player=%1$s was laserified by %2$s
-death.attack.warpdrive.shock=%s was electrocuted
+death.attack.warpdrive.shock=%1$s was electrocuted
 death.attack.warpdrive.shock.player=%1$s was electrocuted by %2$s
-death.attack.warpdrive.teleportation=%s didn't survive from rematerialization
+death.attack.warpdrive.teleportation=%1$s didn't survive from rematerialization
 death.attack.warpdrive.teleportation.player=%1$s was teleporkilled by %2$s
-death.attack.warpdrive.warm=%s died from excessive temperature
+death.attack.warpdrive.warm=%1$s died from excessive temperature
 death.attack.warpdrive.warm.player=%1$s was cooked by %2$s
 
 item.warpdrive.crafting.Malformed.name=Bad Item
@@ -377,6 +378,6 @@ warpdrive.IC2reactorLaserMonitor.noReactor=No reactor found!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) connected.
 warpdrive.transporter.status=From %1$.0f %2$.0f %3$.0f to %4$.0f %5$.0f %6$.0f
 
-
-
-
+warpdrive.tooltip.itemTag.breathingIC2=§bSpace breathing§r consuming IC2 Compressed air cells from your inventory.
+warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r.
+warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbs fall damage§r.
