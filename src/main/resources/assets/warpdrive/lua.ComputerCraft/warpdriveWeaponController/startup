@@ -444,6 +444,7 @@ function data_read()
     local file = fs.open("shipdata.txt", "r")
     data = textutils.unserialize(file.readAll())
     file.close()
+	if data == nil then data = {}; end
   end
   if data.laser_batteries == nil then data.laser_batteries = {}; end
   laser_batteries = data.laser_batteries
@@ -1329,6 +1330,7 @@ function connections_page()
   WriteLn("")
   SetColorTitle()
   WriteLn("Please refer to below menu for keyboard controls")
+  WriteLn("For example, press 1 to access Laser batteries page")
 end
 
 -- peripheral boot up
@@ -1405,4 +1407,5 @@ if monitors ~= nil then
   end
 end
 SetCursorPos(1, 1)
-Write("")
+WriteLn("Program terminated")
+WriteLn("Type startup to restart it")
