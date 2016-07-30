@@ -69,7 +69,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	private int warmupTime = 0;
 	private int cooldownTime = 0;
-	public int randomWarmupAddition = 0;
+	private boolean isCooldownReported = false;
+	protected int randomWarmupAddition = 0;
 	
 	private int chestTeleportUpdateTicks = 0;
 	private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS;
@@ -81,9 +82,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public UUID uuid = null;
 	public String shipName = "default";
 	
-	public int isolationBlocksCount = 0;
+	private int isolationBlocksCount = 0;
 	public double isolationRate = 0.0D;
-	public int isolationUpdateTicks = 0;
+	private int isolationUpdateTicks = 0;
 	
 	public TileEntityShipController controller;
 	
@@ -263,7 +264,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				if (cooldownTime > 0) {
 					if (cooldownTime % 20 == 0) {
 						int seconds = cooldownTime / 20;
-						if ((seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
+						if (!isCooldownReported || (seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
+							isCooldownReported = true;
 							messageToAllPlayersOnShip("Warp core is cooling down... " + seconds + "s to go...");
 						}
 					}
@@ -325,6 +327,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				
 				doJump();
 				cooldownTime = Math.max(1, WarpDriveConfig.SHIP_COOLDOWN_INTERVAL_SECONDS * 20);
+				isCooldownReported = false;
 				controller.setJumpFlag(false);
 			} else {
 				warmupTime = 0;
@@ -418,7 +421,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	public void summonSinglePlayer(final String nickname) {
+	private void summonSinglePlayer(final String nickname) {
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		for (int i = 0; i < controller.players.size(); i++) {
