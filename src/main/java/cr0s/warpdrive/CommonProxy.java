@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 public class CommonProxy {
-	private static WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
+	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
 	
 	void registerEntities() {
 		EntityRegistry.registerModEntity(EntitySphereGen.class, "EntitySphereGenerator", WarpDriveConfig.G_ENTITY_SPHERE_GENERATOR_ID, WarpDrive.instance, 200, 1, false);
@@ -30,7 +30,7 @@ public class CommonProxy {
 		EntityRegistry.registerModEntity(EntityCamera.class   , "EntityCamera"         , WarpDriveConfig.G_ENTITY_CAMERA_ID          , WarpDrive.instance, 300, 1, false);
 	}
 	
-	private WeakReference<EntityPlayer> getFakePlayer(EntityPlayer entityPlayer, WorldServer world, int x, int y, int z) {
+	private EntityPlayer getFakePlayer(EntityPlayer entityPlayer, WorldServer world, int x, int y, int z) {
 		GameProfile gameProfile = entityPlayer == null ? WarpDrive.gameProfile : entityPlayer.getGameProfile();
 		WeakReference<EntityPlayer> weakFakePlayer = fakePlayers.get(gameProfile);
 		EntityPlayer entityFakePlayer = (weakFakePlayer == null) ? null : weakFakePlayer.get();
@@ -45,8 +45,8 @@ public class CommonProxy {
 		entityFakePlayer.posX = x;
 		entityFakePlayer.posY = y;
 		entityFakePlayer.posZ = z;
-
-		return weakFakePlayer;
+		
+		return entityFakePlayer;
 	}
 	
 	public boolean isBlockBreakCanceled(EntityPlayer entityPlayer, int sourceX, int sourceY, int sourceZ,
@@ -56,14 +56,14 @@ public class CommonProxy {
 		}
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
 			WarpDrive.logger.info("isBlockBreakCanceled by " + entityPlayer + " at " + sourceX + " " + sourceY + " " + sourceZ
-				+ " to " + world + " " + eventX + " " + eventY + " " + eventZ);
+				+ " to " + world.provider.getDimensionName() + " " + eventX + " " + eventY + " " + eventZ);
 		}
 		
 		Block block = world.getBlock(eventX, eventY, eventZ);
 		if (!block.isAir(world, eventX, eventY, eventZ)) {
 			BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(eventX, eventY, eventZ, world,
 				world.getBlock(eventX, eventY, eventZ), world.getBlockMetadata(eventX, eventY, eventZ),
-				WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, sourceX, sourceY, sourceZ).get());
+				WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, sourceX, sourceY, sourceZ));
 			MinecraftForge.EVENT_BUS.post(breakEvent);
 			if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
 				WarpDrive.logger.info("isBlockBreakCanceled player " + breakEvent.getPlayer()
@@ -81,11 +81,11 @@ public class CommonProxy {
 		}
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
 			WarpDrive.logger.info("isBlockPlaceCanceled by " + entityPlayer + " at " + sourceX + " " + sourceY + " " + sourceZ
-				+ " to " + world + " " + eventX + " " + eventY + " " + eventZ + " of " + block + ":" + metadata);
+				+ " to " + world.provider.getDimensionName() + " " + eventX + " " + eventY + " " + eventZ + " of " + Block.blockRegistry.getNameForObject(block) + ":" + metadata);
 		}
 		BlockEvent.PlaceEvent placeEvent = new BlockEvent.PlaceEvent(
 			new BlockSnapshot(world, eventX, eventY, eventZ, block, metadata), Blocks.air,
-			WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, sourceX, sourceY, sourceZ).get() );
+			WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, sourceX, sourceY, sourceZ) );
 		
 		MinecraftForge.EVENT_BUS.post(placeEvent);
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
