@@ -178,6 +178,7 @@ public class JumpShip {
 	 * Saving ship to memory
 	 */
 	public boolean save(StringBuilder reason) {
+		VectorI vPosition = new VectorI();
 		try {
 			int estimatedVolume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
 			JumpBlock[][] placeTimeJumpBlocks = { new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume] };
@@ -199,8 +200,11 @@ public class JumpShip {
 					int z2 = Math.min(maxZ, (zc << 4) + 15);
 					
 					for (int y = minY; y <= maxY; y++) {
+						vPosition.y = y;
 						for (int x = x1; x <= x2; x++) {
+							vPosition.x = x;
 							for (int z = z1; z <= z2; z++) {
+								vPosition.z = z;
 								Block block = worldObj.getBlock(x, y, z);
 								
 								// Skipping vanilla air & ignored blocks
@@ -268,7 +272,7 @@ public class JumpShip {
 			actualMass = newMass;
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			reason.append("Exception while saving ship");
+			reason.append("Exception while saving ship, probably a corrupted block at " + vPosition.x + " " + vPosition.y + " " + vPosition.z);
 			return false;
 		}
 		
