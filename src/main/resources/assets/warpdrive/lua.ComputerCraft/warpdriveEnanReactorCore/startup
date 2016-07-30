@@ -269,6 +269,7 @@ function readInputText(currentValue)
   local inputAbort = false
   local input = string.format(currentValue)
   local x, y = term.getCursorPos()
+  Write(input)
   os.pullEventRaw() -- skip first char event
   repeat
     ClearWarning()
