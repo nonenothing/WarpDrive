@@ -148,9 +148,15 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (deployDelayTicks > WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS) {
 				deployDelayTicks = 0;
 				
-				int blocks = Math.min(WarpDriveConfig.SS_DEPLOY_BLOCKS_PER_INTERVAL, blocksToDeployCount - currentDeployIndex);
+				// deploy at most (jump speed / 4), at least (deploy speed), optimally in 10 seconds 
+				final int optimumSpeed = Math.round(blocksToDeployCount * WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS / (20 * 10.0F));
+				int blockToDeployPerTick = Math.max(WarpDriveConfig.SS_DEPLOY_BLOCKS_PER_INTERVAL,
+					Math.min(WarpDriveConfig.G_BLOCKS_PER_TICK / 4, optimumSpeed));
+				int blocksToDeployCurrentTick = Math.min(blockToDeployPerTick, blocksToDeployCount - currentDeployIndex);
+				int periodLaserEffect = Math.max(1, (blocksToDeployCurrentTick / 10));
+				// WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick + " blocksToDeployCurrentTick " + blocksToDeployCurrentTick + " currentDeployIndex " + currentDeployIndex);
 				
-				if (blocks == 0) {
+				if (blocksToDeployCurrentTick == 0) {
 					isDeploying = false;
 					setActive(false); // disable scanner
 					if (WarpDriveConfig.LOGGING_BUILDING) {
@@ -160,11 +166,11 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				}
 				
 				if (WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info(this + " Deploying " + blocks + " more blocks");
+					WarpDrive.logger.info(this + " Deploying " + blocksToDeployCurrentTick + " more blocks");
 				}
 				Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
 				int index = 0;
-				while (index < blocks) {
+				while (index < blocksToDeployCurrentTick && currentDeployIndex < blocksToDeployCount) {
 					// Deploy single block
 					JumpBlock jumpBlock = jumpShip.jumpBlocks[currentDeployIndex];
 					
@@ -183,7 +189,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					} else {
 						index++;
 						if (WarpDriveConfig.LOGGING_BUILDING) {
-							WarpDrive.logger.info("At index " + currentDeployIndex + ", deploying block " + jumpBlock.block + ":" + jumpBlock.blockMeta
+							WarpDrive.logger.info("At index " + currentDeployIndex + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
 								+ " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
 						}
 						ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
@@ -191,14 +197,17 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 						if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
 							jumpBlock.deploy(worldObj, transformation);
 							
-							if (worldObj.rand.nextInt(100) <= 1000) {
-								worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+							if (index % periodLaserEffect == 0) {
+								worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 0.5F, 1.0F);
 								
 								PacketHandler.sendBeamPacket(worldObj,
 										new Vector3(this).translate(0.5D),
 										new Vector3(targetLocation.posX, targetLocation.posY, targetLocation.posZ).translate(0.5D),
 										0f, 1f, 0f, 15, 0, 100);
 							}
+							worldObj.playSoundEffect(targetLocation.posX + 0.5F, targetLocation.posY + 0.5F, targetLocation.posZ + 0.5F,
+								jumpBlock.block.stepSound.func_150496_b(), (jumpBlock.block.stepSound.getVolume() + 1.0F) / 2.0F, jumpBlock.block.stepSound.getPitch() * 0.8F);
+							
 						} else {
 							if (WarpDriveConfig.LOGGING_BUILDING) {
 								WarpDrive.logger.info("Target position is occupied, skipping");

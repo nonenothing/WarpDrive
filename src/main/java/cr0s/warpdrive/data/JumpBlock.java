@@ -371,6 +371,13 @@ public class JumpBlock {
 	
 	public void readFromNBT(NBTTagCompound tag) {
 		block = Block.getBlockFromName(tag.getString("block"));
+		if (block == null) {
+			if (WarpDriveConfig.LOGGING_BUILDING) {
+				WarpDrive.logger.warn("Ignoring unknown block " + tag.getString("block") + " from tag " + tag);
+			}
+			block = Blocks.air;
+			return;
+		}
 		blockMeta = tag.getByte("blockMeta");
 		blockTileEntity = null;
 		if (tag.hasKey("blockNBT")) {
