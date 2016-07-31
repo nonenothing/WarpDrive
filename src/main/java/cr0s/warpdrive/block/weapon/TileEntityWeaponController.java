@@ -3,8 +3,8 @@ package cr0s.warpdrive.block.weapon;
 import java.util.Arrays;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.StatCollector;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import net.minecraft.util.text.translation.I18n;
 
 public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	
@@ -23,7 +23,7 @@ public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	}
 	
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName());
 	}
 	
@@ -33,13 +33,13 @@ public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		return super.writeToNBT(tag);
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ());
 	}
 }

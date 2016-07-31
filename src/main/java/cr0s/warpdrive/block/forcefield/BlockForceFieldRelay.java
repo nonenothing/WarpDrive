@@ -1,7 +1,8 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -96,11 +96,11 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				
 				tileEntityForceFieldRelay.setUpgrade(EnumForceFieldUpgrade.NONE);
 				// upgrade dismounted
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.dismounted"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.dismounted"));
 				
 			} else {
 				// no more upgrades to dismount
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.noUpgradeToDismount"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.noUpgradeToDismount"));
 				return true;
 			}
 			
@@ -112,7 +112,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 			// validate type
 			if (EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()).maxCountOnRelay <= 0) {
 				// invalid upgrade type
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidRelayUpgrade"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidRelayUpgrade"));
 				return true;
 			}
 			
@@ -120,7 +120,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				// validate quantity
 				if (itemStackHeld.stackSize < 1) {
 					// not enough upgrade items
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
 					return true;
 				}
 				
@@ -139,7 +139,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 			// mount the new upgrade item
 			tileEntityForceFieldRelay.setUpgrade(EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()));
 			// upgrade mounted
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.mounted"));
+			WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.mounted"));
 		}
 		
 		return false;

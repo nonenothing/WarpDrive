@@ -2,15 +2,17 @@ package cr0s.warpdrive.block.detection;
 
 import java.util.Arrays;
 
+import cr0s.warpdrive.data.SoundEvents;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -82,7 +84,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			updateTicks = ((tier == 1) ? 20 : (tier == 2) ? 10 : 20) * WarpDriveConfig.CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS; // resetting timer
 			
 			isValid = validateAssembly();
-			isCloaking = WarpDrive.cloaks.isAreaExists(worldObj, xCoord, yCoord, zCoord); 
+			isCloaking = WarpDrive.cloaks.isAreaExists(worldObj, pos); 
 			if (!isEnabled) {// disabled
 				if (isCloaking) {// disabled, cloaking => stop cloaking
 					if (WarpDriveConfig.LOGGING_CLOAKING) {
@@ -100,20 +102,20 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						
 						// Register cloak
 						WarpDrive.cloaks.updateCloakedArea(worldObj,
-								worldObj.provider.dimensionId, xCoord, yCoord, zCoord, tier,
+								worldObj.provider.getDimension(), pos, tier,
 								minX, minY, minZ, maxX, maxY, maxZ);
 						if (!soundPlayed) {
 							soundPlayed = true;
-							worldObj.playSoundEffect(xCoord + 0.5f, yCoord + 0.5f, zCoord + 0.5f, "warpdrive:cloak", 4F, 1F);
+							worldObj.playSound(null, pos, SoundEvents.CLOAK, SoundCategory.BLOCKS, 4F, 1F);
 						}
 						
 						// Refresh the field
-						CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
+						CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, pos);
 						if (area != null) {
 							area.sendCloakPacketToPlayersEx(false); // re-cloak field
 						} else {
 							if (WarpDriveConfig.LOGGING_CLOAKING) {
-								WarpDrive.logger.info("getCloakedArea1 returned null for " + worldObj + " " + xCoord + "," + yCoord + "," + zCoord);
+								WarpDrive.logger.info("getCloakedArea1 returned null for " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 							}
 						}
 					} else {// enabled, not cloaking but not able to
@@ -130,12 +132,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						if (hasEnoughPower) {// enabled, cloaking and able to
 							// IDLE
 							// Refresh the field (workaround to re-synchronize players since client may 'eat up' the packets)
-							CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
+							CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, pos);
 							if (area != null) {
 								area.sendCloakPacketToPlayersEx(false); // re-cloak field
 							} else {
 								if (WarpDriveConfig.LOGGING_CLOAKING) {
-									WarpDrive.logger.info("getCloakedArea2 returned null for " + worldObj + " " + xCoord + "," + yCoord + "," + zCoord);
+									WarpDrive.logger.info("getCloakedArea2 returned null for " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 								}
 							}
 							setCoilsState(true);
@@ -160,15 +162,15 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void setCoilsState(final boolean enabled) {
-		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, (enabled) ? 1 : 0, 2);
+		updateMetadata(enabled ? 1 : 0);
 		
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing direction : EnumFacing.VALID_DIRECTIONS) {
 			setCoilState(innerCoilsDistance, direction, enabled);
 			setCoilState(outerCoilsDistance[direction.ordinal()], direction, enabled);
 		}
 	}
 	
-	private void setCoilState(final int distance, final ForgeDirection direction, final boolean enabled) {
+	private void setCoilState(final int distance, final EnumFacing direction, final boolean enabled) {
 		int x = xCoord + distance * direction.offsetX;
 		int y = yCoord + distance * direction.offsetY;
 		int z = zCoord + distance * direction.offsetZ;
@@ -200,7 +202,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		}
 		
 		// Directions to check (all six directions: left, right, up, down, front, back)
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing direction : EnumFacing.VALID_DIRECTIONS) {
 			PacketHandler.sendBeamPacketToPlayersInArea(worldObj,
 					new Vector3(
 						xCoord + innerCoilsDistance * direction.offsetX,
@@ -216,9 +218,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		
 		// draw connecting coils
 		for (int i = 0; i < 5; i++) {
-			ForgeDirection start = ForgeDirection.VALID_DIRECTIONS[i];
+			EnumFacing start = EnumFacing.VALID_DIRECTIONS[i];
 			for (int j = i + 1; j < 6; j++) {
-				ForgeDirection stop = ForgeDirection.VALID_DIRECTIONS[j];
+				EnumFacing stop = EnumFacing.VALID_DIRECTIONS[j];
 				// skip mirrored coils (removing the inner lines)
 				if (start.getOpposite() == stop) {
 					continue;
@@ -241,12 +243,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	public void disableCloakingField() {
 		setCoilsState(false);
-		if (WarpDrive.cloaks.isAreaExists(worldObj, xCoord, yCoord, zCoord)) {
-			WarpDrive.cloaks.removeCloakedArea(worldObj.provider.dimensionId, xCoord, yCoord, zCoord);
+		if (WarpDrive.cloaks.isAreaExists(worldObj, pos)) {
+			WarpDrive.cloaks.removeCloakedArea(worldObj.provider.getDimension(), pos);
 			
 			if (!soundPlayed) {
 				soundPlayed = true;
-				worldObj.playSoundEffect(xCoord + 0.5f, yCoord + 0.5f, zCoord + 0.5f, "warpdrive:decloak", 4F, 1F);
+				worldObj.playSound(null, pos, SoundEvents.DECLOAK, SoundCategory.BLOCKS, 4F, 1F);
 			}
 		}
 	}
@@ -290,17 +292,18 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setByte("tier", tier);
 		tag.setBoolean("enabled", isEnabled);
+		return tag;
 	}
 	
 	public boolean validateAssembly() {
 		final int maxOuterCoilDistance = WarpDriveConfig.CLOAKING_MAX_FIELD_RADIUS - WarpDriveConfig.CLOAKING_COIL_CAPTURE_BLOCKS; 
 		
 		// Directions to check (all six directions: left, right, up, down, front, back)
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing direction : EnumFacing.VALID_DIRECTIONS) {
 			
 			// check validity of inner coil
 			int x = xCoord + innerCoilsDistance * direction.offsetX;
@@ -370,9 +373,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		} else {
 			unlocalizedStatus = "warpdrive.cloakingCore.cloaking";
 		}
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return new TextComponentTranslation("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
-				+ StatCollector.translateToLocalFormatted(unlocalizedStatus,
+				+ new TextComponentTranslation(unlocalizedStatus,
 						tier,
 						volume);
 	}
@@ -446,7 +449,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return true;
 	}
 }

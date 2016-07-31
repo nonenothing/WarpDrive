@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
@@ -21,9 +23,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class JumpShip {
 	public World worldObj;
-	public int coreX;
-	public int coreY;
-	public int coreZ;
+	public BlockPos core;
 	public int dx;
 	public int dz;
 	public int maxX;
@@ -100,7 +100,7 @@ public class JumpShip {
 				continue;
 			}
 			
-			String playerName = ((EntityPlayer) movingEntity.entity).getDisplayName();
+			String playerName = movingEntity.entity.getName();
 			for (String unlimitedName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
 				if (unlimitedName.equals(playerName)) {
 					return true;
@@ -124,8 +124,8 @@ public class JumpShip {
 		return String.format("%s/%d \'%s\' @ \'%s\' (%d %d %d)",
 			getClass().getSimpleName(), hashCode(),
 			shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.shipName),
-			worldObj == null || worldObj.getWorldInfo() == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			coreX, coreY, coreZ);
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			core.getX(), core.getY(), core.getZ());
 	}
 	
 	public boolean checkBorders(StringBuilder reason) {
@@ -142,27 +142,27 @@ public class JumpShip {
 					if (!(xBorder || yBorder || zBorder)) {
 						continue;
 					}
-					
-					Block block = worldObj.getBlock(x, y, z);
+					BlockPos blockPos = new BlockPos(x, y, z);
+					IBlockState blockState = worldObj.getBlockState(blockPos);
 					
 					// Skipping any air block & ignored blocks
-					if (worldObj.isAirBlock(x, y, z) || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
+					if (worldObj.isAirBlock(blockPos) || Dictionary.BLOCKS_LEFTBEHIND.contains(blockState.getBlock())) {
 						continue;
 					}
 					
 					// Skipping non-movable blocks
-					if (Dictionary.BLOCKS_ANCHOR.contains(block)) {
+					if (Dictionary.BLOCKS_ANCHOR.contains(blockState.getBlock())) {
 						continue;
 					}
 					
 					// Skipping blocks without tile entities
-					TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
+					TileEntity tileEntity = worldObj.getTileEntity(blockPos);
 					if (tileEntity == null) {
 						continue;
 					}
 					
-					reason.append("Ship snagged by " + block.getLocalizedName() + " at " + x + ", " + y + ", " + z + ". Damage report pending...");
-					worldObj.createExplosion((Entity) null, x, y, z, Math.min(4F * 30, 4F * (jumpBlocks.length / 50)), false);
+					reason.append("Ship snagged by " + blockState.getBlock().getLocalizedName() + " at " + x + " " + y + " " + z + ". Damage report pending...");
+					worldObj.createExplosion(null, x, y, z, Math.min(4F * 30, 4F * (jumpBlocks.length / 50)), false);
 					return false;
 				}
 			}
@@ -198,31 +198,31 @@ public class JumpShip {
 					for (int y = minY; y <= maxY; y++) {
 						for (int x = x1; x <= x2; x++) {
 							for (int z = z1; z <= z2; z++) {
-								Block block = worldObj.getBlock(x, y, z);
+								BlockPos blockPos = new BlockPos(x, y, z);
+								IBlockState blockState = worldObj.getBlockState(blockPos);
 								
 								// Skipping vanilla air & ignored blocks
-								if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
+								if (blockState.getBlock() == Blocks.AIR || Dictionary.BLOCKS_LEFTBEHIND.contains(blockState.getBlock())) {
 									continue;
 								}
 								actualVolume++;
 								
 								if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-									WarpDrive.logger.info("Block(" + x + " " + y + " " + z + ") is " + block.getUnlocalizedName() + "@" + worldObj.getBlockMetadata(x, y, z));
+									WarpDrive.logger.info("Block(" + x + " " + y + " " + z + ") is " + blockState);
 								}
 								
-								if (!Dictionary.BLOCKS_NOMASS.contains(block)) {
+								if (!Dictionary.BLOCKS_NOMASS.contains(blockState.getBlock())) {
 									newMass++;
 								}
 								
 								// Stop on non-movable blocks
-								if (Dictionary.BLOCKS_ANCHOR.contains(block)) {
-									reason.append(block.getUnlocalizedName() + " detected onboard at " + x + " " + y + " " + z + ". Aborting.");
+								if (Dictionary.BLOCKS_ANCHOR.contains(blockState.getBlock())) {
+									reason.append(blockState.getBlock().getLocalizedName() + " detected on board at " + x + " " + y + " " + z + ". Aborting.");
 									return false;
 								}
 								
-								int blockMeta = worldObj.getBlockMetadata(x, y, z);
-								TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
-								JumpBlock jumpBlock = new JumpBlock(block, blockMeta, tileEntity, x, y, z);
+								TileEntity tileEntity = worldObj.getTileEntity(blockPos);
+								JumpBlock jumpBlock = new JumpBlock(blockState, tileEntity, blockPos);
 								
 								if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
 									for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
@@ -237,7 +237,7 @@ public class JumpShip {
 								}
 								
 								// default priority is 2 for block, 3 for tile entities
-								Integer placeTime = Dictionary.BLOCKS_PLACE.get(block);
+								Integer placeTime = Dictionary.BLOCKS_PLACE.get(blockState.getBlock());
 								if (placeTime == null) {
 									if (tileEntity == null) {
 										placeTime = 2;

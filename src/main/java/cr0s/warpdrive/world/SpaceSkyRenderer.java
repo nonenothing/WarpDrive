@@ -7,14 +7,13 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.IRenderHandler;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class SpaceSkyRenderer extends IRenderHandler {
 	private static final ResourceLocation overworldTexture = new ResourceLocation("warpdrive:textures/earth.png");
@@ -78,7 +77,7 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		}
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
-		final Vec3 var2 = getCustomSkyColor();
+		final Vec3d var2 = getCustomSkyColor();
 		float var3 = (float) var2.xCoord * (1 - world.getStarBrightness(partialTicks) * 2);
 		float var4 = (float) var2.yCoord * (1 - world.getStarBrightness(partialTicks) * 2);
 		float var5 = (float) var2.zCoord * (1 - world.getStarBrightness(partialTicks) * 2);
@@ -251,8 +250,8 @@ public class SpaceSkyRenderer extends IRenderHandler {
 		var2.draw();
 	}
 
-	private static Vec3 getCustomSkyColor() {
-		return Vec3.createVectorHelper(0.26796875D, 0.1796875D, 0.0D);
+	private static Vec3d getCustomSkyColor() {
+		return new Vec3d(0.26796875D, 0.1796875D, 0.0D);
 	}
 
 	public static float getSkyBrightness(float par1) {

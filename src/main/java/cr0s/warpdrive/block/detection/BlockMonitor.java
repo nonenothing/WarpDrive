@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -58,7 +58,7 @@ public class BlockMonitor extends BlockAbstractContainer {
 					WarpDrive.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
 					return true;
 				} else {
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.monitor.viewingCamera",
+					WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.monitor.viewingCamera",
 							videoChannel,
 							camera.position.chunkPosX,
 							camera.position.chunkPosY,

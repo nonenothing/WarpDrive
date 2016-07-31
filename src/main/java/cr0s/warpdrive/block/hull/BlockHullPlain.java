@@ -2,8 +2,10 @@ package cr0s.warpdrive.block.hull;
 
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.SoundType;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
@@ -26,11 +28,11 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 	private int tier;
 	
 	public BlockHullPlain(final int tier) {
-		super(Material.rock);
+		super(Material.ROCK);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.hull" + tier + ".plain.");
 		setBlockTextureName("warpdrive:hull/plain");
@@ -52,7 +54,7 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 		return p_149692_1_;
 	}
 	
-	public static String getDyeColorName(int metadata) {
+	public static String getDyeColorName(EnumDyeColor enumDyeColor) {
 		return ItemDye.field_150921_b[~metadata & 15];
 	}
 	

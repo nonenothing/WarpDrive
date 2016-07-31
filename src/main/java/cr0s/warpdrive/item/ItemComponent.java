@@ -9,9 +9,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
+import net.minecraft.util.text.translation.I18n;
 
 public class ItemComponent extends Item implements IAirCanister {	
 	private IIcon[] icons;
@@ -107,7 +107,7 @@ public class ItemComponent extends Item implements IAirCanister {
 		String tooltip = "";
 		switch (EnumComponentType.get(itemStack.getItemDamage())) {
 		case AIR_CANISTER:
-			tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.crafting.AirCanisterEmpty.tooltip");
+			tooltip += I18n.translateToLocalFormatted("item.warpdrive.crafting.AirCanisterEmpty.tooltip");
 			break;
 		default:
 			break;

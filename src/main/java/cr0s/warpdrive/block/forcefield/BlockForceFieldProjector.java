@@ -1,7 +1,8 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.EnumForceFieldShape;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
@@ -17,10 +18,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import java.util.List;
 
@@ -59,7 +59,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			return icons[0];
 		}
 		
-		if (side == (metadata & 7) || (((TileEntityForceFieldProjector)tileEntity).isDoubleSided && ForgeDirection.OPPOSITES[side] == (metadata & 7))) {
+		if (side == (metadata & 7) || (((TileEntityForceFieldProjector)tileEntity).isDoubleSided && EnumFacing.OPPOSITES[side] == (metadata & 7))) {
 			return icons[3 + ((TileEntityForceFieldProjector)tileEntity).getShape().ordinal()];
 		} else if (((TileEntityForceFieldProjector)tileEntity).isConnected) {
 			if (((TileEntityForceFieldProjector)tileEntity).isPowered) {
@@ -124,7 +124,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// using an upgrade item or no shape defined means dismount upgrade, otherwise dismount shape
 			if ( (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemForceFieldUpgrade)
 			  || (tileEntityForceFieldProjector.getShape() == EnumForceFieldShape.NONE)
-			  || (side != (metadata & 7) && (!tileEntityForceFieldProjector.isDoubleSided || ForgeDirection.OPPOSITES[side] != (metadata & 7))) ) {
+			  || (side != (metadata & 7) && (!tileEntityForceFieldProjector.isDoubleSided || EnumFacing.OPPOSITES[side] != (metadata & 7))) ) {
 				// find a valid upgrade to dismount
 				if (!tileEntityForceFieldProjector.hasUpgrade(enumForceFieldUpgrade)) {
 					enumForceFieldUpgrade = (EnumForceFieldUpgrade)tileEntityForceFieldProjector.getFirstUpgradeOfType(EnumForceFieldUpgrade.class, EnumForceFieldUpgrade.NONE);
@@ -132,7 +132,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 				if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
 					// no more upgrades to dismount
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.noUpgradeToDismount"));
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.noUpgradeToDismount"));
 					return true;
 				}
 				
@@ -146,12 +146,12 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 				tileEntityForceFieldProjector.dismountUpgrade(enumForceFieldUpgrade);
 				// upgrade dismounted
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.dismounted"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.dismounted"));
 				return false;
 				
 			} else {// default to dismount shape
 				if (tileEntityForceFieldProjector.getShape() != EnumForceFieldShape.NONE) {
-					if (side == (metadata & 7) || (tileEntityForceFieldProjector.isDoubleSided && ForgeDirection.OPPOSITES[side] == (metadata & 7))) {
+					if (side == (metadata & 7) || (tileEntityForceFieldProjector.isDoubleSided && EnumFacing.OPPOSITES[side] == (metadata & 7))) {
 						if (!entityPlayer.capabilities.isCreativeMode) {
 							// dismount the shape item(s)
 							ItemStack itemStackDrop = ItemForceFieldShape.getItemStackNoCache(tileEntityForceFieldProjector.getShape(), tileEntityForceFieldProjector.isDoubleSided ? 2 : 1);
@@ -162,15 +162,15 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 						
 						tileEntityForceFieldProjector.setShape(EnumForceFieldShape.NONE);
 						// shape dismounted
-						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.result.dismounted"));
+						WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.shape.result.dismounted"));
 					} else {
 						// wrong side
-						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.result.wrongSide"));
+						WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.shape.result.wrongSide"));
 						return true;
 					}
 				} else {
 					// no shape to dismount
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.result.noShapeToDismount"));
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.shape.result.noShapeToDismount"));
 					return true;
 				}
 			}
@@ -180,12 +180,12 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			return true;
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldShape) {// no sneaking and shape in hand => mounting a shape
-			if (side == (metadata & 7) || (((TileEntityForceFieldProjector) tileEntity).isDoubleSided && ForgeDirection.OPPOSITES[side] == (metadata & 7))) {
+			if (side == (metadata & 7) || (((TileEntityForceFieldProjector) tileEntity).isDoubleSided && EnumFacing.OPPOSITES[side] == (metadata & 7))) {
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// validate quantity
 					if (itemStackHeld.stackSize < (tileEntityForceFieldProjector.isDoubleSided ? 2 : 1)) {
 						// not enough shape items
-						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted(
+						WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted(
 							tileEntityForceFieldProjector.isDoubleSided ?
 								"warpdrive.forcefield.shape.result.notEnoughShapes.double" : "warpdrive.forcefield.shape.result.notEnoughShapes.single"));
 						return true;
@@ -206,11 +206,11 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				// mount the new shape item(s)
 				tileEntityForceFieldProjector.setShape(EnumForceFieldShape.get(itemStackHeld.getItemDamage()));
 				// shape mounted
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.result.mounted"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.shape.result.mounted"));
 				
 			} else {
 				// wrong side
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.result.wrongSide"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.shape.result.wrongSide"));
 				return true;
 			}
 			
@@ -218,12 +218,12 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// validate type
 			if (tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade) <= 0) {
 				// invalid upgrade type
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade"));
 				return true;
 			}
 			if (!tileEntityForceFieldProjector.canUpgrade(enumForceFieldUpgrade)) {
 				// too many upgrades
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.tooManyUpgrades",
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.tooManyUpgrades",
 					tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade)));
 				return true;
 			}
@@ -232,7 +232,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				// validate quantity
 				if (itemStackHeld.stackSize < 1) {
 					// not enough upgrade items
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.notEnoughUpgrades"));
 					return true;
 				}
 				
@@ -243,7 +243,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// mount the new upgrade item
 			tileEntityForceFieldProjector.mountUpgrade(enumForceFieldUpgrade);
 			// upgrade mounted
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.mounted"));
+			WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.result.mounted"));
 		}
 		
 		return false;

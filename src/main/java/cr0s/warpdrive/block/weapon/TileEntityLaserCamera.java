@@ -5,11 +5,9 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.ChunkPosition;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityLaser;
@@ -47,7 +45,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
+				PacketHandler.sendVideoChannelPacket(worldObj.provider.getDimension(), pos, videoChannel);
 			}
 		} else {
 			registryUpdateTicks--;
@@ -56,7 +54,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 					WarpDrive.logger.info(this + " Updating registry (" + videoChannel + ")");
 				}
-				WarpDrive.cameras.updateInRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord), videoChannel, EnumCameraType.LASER_CAMERA);
+				WarpDrive.cameras.updateInRegistry(worldObj, pos, videoChannel, EnumCameraType.LASER_CAMERA);
 			}
 		}
 	}
@@ -82,29 +80,29 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	private String getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+			return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+				return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+				return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
 						videoChannel,
-						camera.position.chunkPosX,
-						camera.position.chunkPosY,
-						camera.position.chunkPosZ);
+						camera.position.getX(),
+						camera.position.getY(),
+						camera.position.getZ());
 			}
 		}
 	}
 	
 	@Override
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
 				+ (worldObj.isRemote ? getVideoChannelStatus() : getBeamFrequencyStatus());
 	}
@@ -116,35 +114,36 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setInteger("videoChannel", videoChannel);
+		return tag;
 	}
 	
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		// (beam frequency is server side only)
 		tagCompound.setInteger("videoChannel", videoChannel);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		// (beam frequency is server side only)
 		setVideoChannel(tagCompound.getInteger("videoChannel"));
 	}
 	
 	@Override
 	public void invalidate() {
-		WarpDrive.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
+		WarpDrive.cameras.removeFromRegistry(worldObj, pos);
 		super.invalidate();
 	}
 	
 	@Override
 	public void onChunkUnload() {
-		WarpDrive.cameras.removeFromRegistry(worldObj, new ChunkPosition(xCoord, yCoord, zCoord));
+		WarpDrive.cameras.removeFromRegistry(worldObj, pos);
 		super.onChunkUnload();
 	}
 	
@@ -177,6 +176,6 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	@Override
 	public String toString() {
 		return String.format("%s Beam \'%d\' Camera \'%d\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			beamFrequency, videoChannel, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+			beamFrequency, videoChannel, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ());
 	}
 }

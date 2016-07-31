@@ -1,7 +1,8 @@
 package cr0s.warpdrive.block;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 
 import java.util.List;
 
@@ -49,15 +49,15 @@ public class ItemBlockAbstractBase extends ItemBlock {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (StatCollector.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
+		if (I18n.canTranslate(tooltipName1)) {
+			WarpDrive.addTooltip(list, I18n.translateToLocalFormatted(tooltipName1));
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
+		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
+			WarpDrive.addTooltip(list, I18n.translateToLocalFormatted(tooltipName2));
 		}
 		
-		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(getStatus(itemStack.getTagCompound())));
+		WarpDrive.addTooltip(list, I18n.translateToLocalFormatted(getStatus(itemStack.getTagCompound())));
 	}
 }

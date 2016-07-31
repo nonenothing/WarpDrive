@@ -4,11 +4,12 @@ import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockGlass;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -21,7 +22,7 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
-		setStepSound(Block.soundTypeGlass);
+		setSoundType(SoundType.GLASS);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.hull" + tier + ".glass.");
 		setBlockTextureName("warpdrive:hull/glass");
@@ -48,7 +49,7 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 		if (world.isAirBlock(x, y, z)) {
 			return true;
 		}
-		ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
+		EnumFacing direction = EnumFacing.getOrientation(side).getOpposite();
 		Block sideBlock = world.getBlock(x, y, z);
 		if (sideBlock instanceof BlockGlass || sideBlock instanceof BlockHullGlass) {
 			return world.getBlockMetadata(x, y, z)

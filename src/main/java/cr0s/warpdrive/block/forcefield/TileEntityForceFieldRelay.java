@@ -6,9 +6,8 @@ import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.translation.I18n;
 
 public class TileEntityForceFieldRelay extends TileEntityAbstractForceField implements IForceFieldUpgrade {
 
@@ -38,12 +37,12 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	
 	private String getUpgradeStatus() {
 		EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
-		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
+		String strDisplayName = I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.none",
+			return I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.none",
 				strDisplayName);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.valid",
+			return I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.valid",
 				strDisplayName);
 		}
 	}
@@ -60,21 +59,22 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setByte("upgrade", (byte) getUpgrade().ordinal());
+		return tag;
 	}
 	
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	

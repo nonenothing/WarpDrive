@@ -11,7 +11,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -89,17 +89,17 @@ public class ItemForceFieldShape extends Item {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (StatCollector.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
+		if (I18n.canTranslate(tooltipName1)) {
+			WarpDrive.addTooltip(list, I18n.translateToLocalFormatted(tooltipName1));
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
+		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
+			WarpDrive.addTooltip(list, I18n.translateToLocalFormatted(tooltipName2));
 		}
 		
 		WarpDrive.addTooltip(list, "\n");
 		
-		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.shape.tooltip.usage"));
+		WarpDrive.addTooltip(list, I18n.translateToLocalFormatted("item.warpdrive.forcefield.shape.tooltip.usage"));
 	}
 }

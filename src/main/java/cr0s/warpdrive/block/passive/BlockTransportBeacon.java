@@ -2,18 +2,19 @@ package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class BlockTransportBeacon extends Block {
 	public BlockTransportBeacon() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(0.5F);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.passive.TransportBeacon");
 	}
@@ -44,7 +45,7 @@ public class BlockTransportBeacon extends Block {
 	}
 
 	@Override
-	public MovingObjectPosition collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3 par5Vec3, Vec3 par6Vec3) {
+	public RayTraceResult collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3d par5Vec3, Vec3d par6Vec3) {
 		float f = 0.065F;
 		setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
 

@@ -1,6 +1,11 @@
 package cr0s.warpdrive.block;
 
-import cpw.mods.fml.common.Optional;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import defense.api.IEMPBlock;
 import defense.api.IExplosion;
@@ -12,11 +17,9 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
-import net.minecraftforge.common.util.ForgeDirection;
 
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
@@ -28,22 +31,22 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super(material);
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}
 	
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		super.onBlockAdded(world, x, y, z);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+		super.onBlockAdded(world, pos, state);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
 		}
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
-		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, pos, state, entityLiving, itemStack);
 		if (isRotating) {
 			if (entityLiving != null) {
 				int metadata;
@@ -109,7 +112,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super.dropBlockAsItem(world, x, y, z, itemStack);
 	}
 	
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
+	public ItemStack getPickBlock(RayTraceResult target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
@@ -122,7 +125,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(World world, int x, int y, int z, EnumFacing axis) {
 		world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
 		return true;
 	}

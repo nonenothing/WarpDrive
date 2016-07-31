@@ -3,12 +3,13 @@ package cr0s.warpdrive.render;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumCameraType;
@@ -51,7 +52,7 @@ public class ClientCameraHandler {
 		originalSensitivity = mc.gameSettings.mouseSensitivity;
 		overlayType = enumCameraType;
 		entityPlayer = parEntityPlayer;
-		dimensionId = entityPlayer.worldObj.provider.dimensionId;
+		dimensionId = entityPlayer.worldObj.provider.getDimension();
 		check1_x = monitor_x;
 		check1_y = monitor_y;
 		check1_z = monitor_z;
@@ -71,7 +72,7 @@ public class ClientCameraHandler {
 		if (WarpDriveConfig.LOGGING_CAMERA) {
 			WarpDrive.logger.info("Setting viewpoint to " + entityCamera);
 		}
-		mc.renderViewEntity = entityCamera;
+		mc.setRenderViewEntity(entityCamera);
 		mc.gameSettings.thirdPersonView = 0;
 		refreshViewPoint();
 		isOverlayEnabled = true;
@@ -123,7 +124,7 @@ public class ClientCameraHandler {
 	public static void resetViewpoint() {
 		Minecraft mc = Minecraft.getMinecraft();
 		if (entityPlayer != null) {
-			mc.renderViewEntity = entityPlayer;
+			mc.setRenderViewEntity(entityPlayer);
 			entityPlayer = null;
 			if (WarpDriveConfig.LOGGING_CAMERA) {
 				WarpDrive.logger.info("Resetting viewpoint");
@@ -144,14 +145,14 @@ public class ClientCameraHandler {
 	}
 	
 	public static boolean isValidContext(World worldObj) {
-		if (worldObj == null || worldObj.provider.dimensionId != dimensionId) {
+		if (worldObj == null || worldObj.provider.getDimension() != dimensionId) {
 			return false;
 		}
-		if (!worldObj.getBlock(check1_x, check1_y, check1_z).isAssociatedBlock(check1_blockId)) {
+		if (!worldObj.getBlockState(new BlockPos(check1_x, check1_y, check1_z)).getBlock().isAssociatedBlock(check1_blockId)) {
 			WarpDrive.logger.error("checking viewpoint, found invalid block1 at (" + check1_x + ", " + check1_y + ", " + check1_z + ")");
 			return false;
 		}
-		if (!worldObj.getBlock(check2_x, check2_y, check2_z).isAssociatedBlock(check2_blockId)) {
+		if (!worldObj.getBlockState(new BlockPos(check2_x, check2_y, check2_z)).getBlock().isAssociatedBlock(check2_blockId)) {
 			WarpDrive.logger.error("checking viewpoint, found invalid block2 at (" + check2_x + ", " + check2_y + ", " + check2_z + ")");
 			return false;
 		}

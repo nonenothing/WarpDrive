@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import net.minecraft.block.*;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,13 +36,13 @@ public class JumpBlock {
 	public JumpBlock() {
 	}
 
-	public JumpBlock(Block block, int blockMeta, TileEntity tileEntity, int x, int y, int z) {
-		this.block = block;
-		this.blockMeta = blockMeta;
+	public JumpBlock(IBlockState blockState, TileEntity tileEntity, final BlockPos blockPos) {
+		this.block = blockState.getBlock();
+		this.blockMeta = blockState.getBlock().getMetaFromState(blockState);
 		blockTileEntity = tileEntity;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = blockPos.getX();
+		this.y = blockPos.getY();
+		this.z = blockPos.getZ();
 		
 		// save externals
 		for (Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
@@ -55,7 +56,7 @@ public class JumpBlock {
 	public JumpBlock(Filler filler, int x, int y, int z) {
 		if (filler.block == null) {
 			WarpDrive.logger.info("Forcing glass for invalid filler with null block at " + x + " " + y + " " + z);
-			filler.block = Blocks.glass;
+			filler.block = Blocks.GLASS;
 		}
 		block = filler.block;
 		blockMeta = filler.metadata;
@@ -136,7 +137,7 @@ public class JumpBlock {
 		} else if (block instanceof BlockStairs) {
 			mrot = mrotStair;
 		} else if (block instanceof BlockSign) {
-			if (block == Blocks.wall_sign) {
+			if (block == Blocks.WALL_SIGN) {
 				mrot = mrotForgeDirection;
 			} else {
 				mrot = mrotSign;
@@ -210,7 +211,7 @@ public class JumpBlock {
 				newBlockMeta = getMetadataRotation(nbtToDeploy, transformation.getRotationSteps());
 			}
 			BlockPos target = transformation.apply(x, y, z);
-			setBlockNoLight(targetWorld, target, block, newBlockMeta, 2);
+			setBlockNoLight(targetWorld, target, block.getStateFromMeta(newBlockMeta), 2);
 			
 			// Re-schedule air blocks update
 			if (block == WarpDrive.blockAir) {
@@ -265,13 +266,13 @@ public class JumpBlock {
 					
 				} else if (block == WarpDriveConfig.CC_Computer || block == WarpDriveConfig.CC_peripheral
 						|| block == WarpDriveConfig.CCT_Turtle || block == WarpDriveConfig.CCT_Expanded || block == WarpDriveConfig.CCT_Advanced) {
-					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
+					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
 					newTileEntity.invalidate();
 					
 				}
 				
 				if (newTileEntity == null) {
-					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
+					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
 				}
 				
 				if (newTileEntity != null) {
@@ -321,7 +322,8 @@ public class JumpBlock {
 						onUnloaded.invoke(tileEntity);
 						onLoaded.invoke(tileEntity);
 					} else {
-						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "' at " + x + " " + y + " " + z + ". Please report this issue!");
+						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "'"
+							+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ". Please report this issue!");
 					}
 					
 					tileEntity.updateContainingBlockInfo();
@@ -355,7 +357,8 @@ public class JumpBlock {
 						// WarpDrive.logger.info("Tile has no getNetworkedFields method");
 					} catch (NoClassDefFoundError exception) {
 						if (WarpDriveConfig.LOGGING_JUMP) {
-							WarpDrive.logger.info("TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z + " is missing a class definition");
+							WarpDrive.logger.info("TileEntity " + teClass.getName()
+								+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + " is missing a class definition");
 							if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 								exception.printStackTrace();
 							}
@@ -363,7 +366,8 @@ public class JumpBlock {
 					}
 				}
 			} catch (Exception exception) {
-				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z);
+				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName()
+					+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 				exception.printStackTrace();
 			}
 		}
@@ -376,14 +380,7 @@ public class JumpBlock {
 	public static void NetworkHelper_init() {
 		try {
 			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", new Class[] { TileEntity.class, String.class });
-			
 			NetworkManager_instance = Class.forName("ic2.core.IC2").getDeclaredField("network").get(null);
-			// This code is an IC2 hack to fix an issue on 1.7.10 up to industrialcraft-2-2.2.763-experimental, see http://bt.industrial-craft.net/view.php?id=1704
-			if (!NetworkManager_instance.getClass().getName().contains("NetworkManager")) {
-				NetworkManager_instance = Class.forName("ic2.core.util.SideGateway").getMethod("get").invoke(NetworkManager_instance);
-				WarpDrive.logger.error("Patched IC2 API, new instance is '" + NetworkManager_instance + "'");
-			}
-			// IC2 hack ends here
 		} catch (Exception exception) {
 			throw new RuntimeException(exception);
 		}
@@ -402,7 +399,11 @@ public class JumpBlock {
 	// IC2 support ends here
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.World.setBlock to remove lighting computations
-	public static boolean setBlockNoLight(World w, int x, int y, int z, Block block, int blockMeta, int par6) {
+	public static boolean setBlockNoLight(World w, BlockPos blockPos, IBlockState blockState, int flags) {
+		return w.setBlockState(blockPos, blockState, flags);
+		/*
+		// x, y, z -> blockPos
+		// par6 -> flags
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
 			if (y < 0) {
 				return false;
@@ -447,8 +448,9 @@ public class JumpBlock {
 		} else {
 			return false;
 		}
+		/**/
 	}
-	
+	/*
 	// This code is a straight copy from Vanilla net.minecraft.world.Chunk.func_150807_a to remove lighting computations
 	public static boolean myChunkSBIDWMT(Chunk c, int x, int y, int z, Block block, int blockMeta) {
 		int i1 = z << 4 | x;
@@ -535,7 +537,7 @@ public class JumpBlock {
 					}
 				}
 				/**/
-				
+				/*
 				TileEntity tileentity;
 				
 				// Removed onBlockAdded event
@@ -560,4 +562,5 @@ public class JumpBlock {
 			}
 		}
 	}
+	/**/
 }

@@ -15,7 +15,7 @@ public class Transformation implements ITransformation {
 	private final World targetWorld;
 	
 	public Transformation(JumpShip ship, World targetWorld, int moveX, int moveY, int moveZ, byte rotationSteps) {
-		sourceCore = new VectorI(ship.coreX, ship.coreY, ship.coreZ);
+		sourceCore = new VectorI(ship.core);
 		this.targetWorld = targetWorld;
 		move = new VectorI(moveX, moveY, moveZ);
 		targetCore = sourceCore.add(move);

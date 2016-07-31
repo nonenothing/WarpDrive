@@ -78,7 +78,7 @@ public class Planet implements Cloneable {
 		spaceCenterZ = tag.getInteger("spaceCenterZ");
 	}
 	
-	public void writeToNBT(NBTTagCompound tag) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag.setInteger("dimensionId", dimensionId);
 		tag.setInteger("dimensionCenterX", dimensionCenterX);
 		tag.setInteger("dimensionCenterZ", dimensionCenterZ);
@@ -86,6 +86,7 @@ public class Planet implements Cloneable {
 		tag.setInteger("borderSizeZ", borderSizeZ);
 		tag.setInteger("spaceCenterX", spaceCenterX);
 		tag.setInteger("spaceCenterZ", spaceCenterZ);
+		return tag;
 	}
 	
 	@Override

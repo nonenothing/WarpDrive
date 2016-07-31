@@ -5,30 +5,33 @@ import java.util.HashMap;
 
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergyAcceptor;
+import ic2.api.energy.tile.IEnergyEmitter;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
-import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.UpgradeType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @Optional.InterfaceList({
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore"),
+	@Optional.Interface(iface = "cofh.api.energy.IEnergyProvider", modid = "CoFHCore"),
+	@Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = "CoFHCore"),
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2API"),
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2API")
 })
-public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyHandler, IEnergySink, IEnergySource {
+public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyProvider, IEnergyReceiver, IEnergySink, IEnergySource {
 	private boolean addedToEnergyNet = false;
 	private int energyStored_internal = 0;
 	private static final double EU_PER_INTERNAL = 1.0D;
@@ -112,7 +115,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Should return true if that direction can receive energy.
 	 */
 	@SuppressWarnings("UnusedParameters")
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return false;
 	}
 	
@@ -120,7 +123,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Should return true if that direction can output energy.
 	 */
 	@SuppressWarnings("UnusedParameters")
-	public boolean canOutputEnergy(ForgeDirection to) {
+	public boolean canOutputEnergy(EnumFacing to) {
 		return false;
 	}
 	
@@ -173,13 +176,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (getMaxEnergyStored() == 0) {
 			return "";
 		}
-		return StatCollector.translateToLocalFormatted("warpdrive.energy.statusLine",
+		return I18n.translateToLocalFormatted("warpdrive.energy.statusLine",
 			BigDecimal.valueOf(convertInternalToEU(getEnergyStored())).toPlainString(),
 			BigDecimal.valueOf(convertInternalToEU(getMaxEnergyStored())).toPlainString());
 	}
 	
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 			getBlockType().getLocalizedName())
 			       + getEnergyStatus();
 	}
@@ -256,7 +259,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public double injectEnergy(ForgeDirection from, double amount_EU, double voltage) {
+	public double injectEnergy(EnumFacing from, double amount_EU, double voltage) {
 		int leftover_internal = 0;
 		energyStored_internal += convertEUtoInternal(amount_EU);
 		
@@ -270,7 +273,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection from) {
+	public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing from) {
 		return canInputEnergy(from);
 	}
 	
@@ -289,7 +292,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection to) {
+	public boolean emitsEnergyTo(IEnergyAcceptor receiver, EnumFacing to) {
 		return canOutputEnergy(to);
 	}
 	
@@ -308,7 +311,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			addedToEnergyNet = false;
 		}
 	}
-	
+
+	// IndustrialCraft IEnergySink interface
 	@Override
 	@Optional.Method(modid = "IC2")
 	public int getSinkTier() {
@@ -325,7 +329,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	// ThermalExpansion IEnergyHandler interface
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver */
-	public int receiveEnergy(ForgeDirection from, int maxReceive_RF, boolean simulate) {
+	public int receiveEnergy(EnumFacing from, int maxReceive_RF, boolean simulate) {
 		if (!canInputEnergy(from)) {
 			return 0;
 		}
@@ -346,7 +350,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyProvider */
-	public int extractEnergy(ForgeDirection from, int maxExtract_RF, boolean simulate) {
+	public int extractEnergy(EnumFacing from, int maxExtract_RF, boolean simulate) {
 		if (!canOutputEnergy(from)) {
 			return 0;
 		}
@@ -362,27 +366,27 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyConnection */
-	public boolean canConnectEnergy(ForgeDirection from) {
+	public boolean canConnectEnergy(EnumFacing from) {
 		return (getMaxEnergyStored() != 0) && (canInputEnergy(from) || canOutputEnergy(from)); // FIXME deadlock risk
 	}
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
-	public int getEnergyStored(ForgeDirection from) {
+	public int getEnergyStored(EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF(getEnergyStored()) : 0;
 	}
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
-	public int getMaxEnergyStored(ForgeDirection from) {
+	public int getMaxEnergyStored(EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF(getMaxEnergyStored()) : 0;
 	}
 	
 	
 	// WarpDrive overrides for Thermal Expansion
 	@Optional.Method(modid = "CoFHCore")
-	private void outputEnergy(ForgeDirection from, IEnergyReceiver energyReceiver) {
-		if (energyReceiver == null || worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ) == null) {
+	private void outputEnergy(EnumFacing from, IEnergyReceiver energyReceiver) {
+		if (energyReceiver == null || worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null) {
 			return;
 		}
 		int potentialEnergyOutput_internal = getPotentialEnergyOutput();
@@ -398,7 +402,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Optional.Method(modid = "CoFHCore")
 	private void outputEnergy() {
-		for (ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing from : EnumFacing.VALUES) {
 			if (cofhEnergyReceivers[from.ordinal()] != null) {
 				outputEnergy(from, (IEnergyReceiver) cofhEnergyReceivers[from.ordinal()]);
 			}
@@ -407,7 +411,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Optional.Method(modid = "CoFHCore")
 	private void RF_initialiseAPI() {
-		cofhEnergyReceivers = new IEnergyReceiver[ForgeDirection.VALID_DIRECTIONS.length];
+		cofhEnergyReceivers = new IEnergyReceiver[EnumFacing.VALUES.length];
 	}
 	
 	
@@ -427,8 +431,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setInteger("energy", getEnergyStored());
 		if (!deprecated_upgrades.isEmpty()) {
 			NBTTagCompound upgradeTag = new NBTTagCompound();
@@ -439,6 +443,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			}
 			tag.setTag("upgrades", upgradeTag);
 		}
+		return tag;
 	}
 	
 	// WarpDrive overrides
@@ -453,10 +458,10 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Optional.Method(modid = "CoFHCore")
 	private void scanForEnergyHandlers() {
-		for (ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
+		for (EnumFacing from : EnumFacing.VALUES) {
 			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
-				TileEntity tileEntity = worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ);
+				TileEntity tileEntity = worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));
 				if (tileEntity != null && tileEntity instanceof IEnergyReceiver) {
 					IEnergyReceiver energyReceiver = (IEnergyReceiver) tileEntity;
 					if (energyReceiver.canConnectEnergy(from.getOpposite())) {

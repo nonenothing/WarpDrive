@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -13,8 +14,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -26,12 +29,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector {
+public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector, ITickable {
 	private boolean isFirstTick = true;
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
 		if (isFirstTick) {
 			isFirstTick = false;
 			onFirstUpdateTick();
@@ -47,21 +49,23 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	protected boolean isOnPlanet() {
-		return worldObj.provider.dimensionId == 0;
+		return worldObj.provider.getDimension() == 0;
 	}
 	
 	protected void updateMetadata(int metadata) {
 		if (getBlockMetadata() != metadata) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 2);
+			worldObj.setBlockState(pos, blockType.getStateFromMeta(metadata), 2);
 		}
 	}
 	
 	@Override
 	public void markDirty() {
 		super.markDirty();
+		/* TODO 1.10
 		if (worldObj != null) {
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			worldObj.markBlockForUpdate(pos);
 		}
+		/**/
 	}
 	
 	// Inventory management methods
@@ -75,9 +79,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
 		Collection<IInventory> result = new ArrayList<>(6);
 		
-		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
-				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
+		for(EnumFacing side : EnumFacing.VALUES) {
+			TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
+				tileEntityConnection.getPos().offset(side));
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
 				result.add((IInventory) tileEntity);
 				
@@ -132,7 +136,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, itemStackLeft.getMaxStackSize());
 						ItemStack itemStackDrop = copyWithSize(itemStackLeft, transfer);
-						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, itemStackDrop);
+						EntityItem entityItem = new EntityItem(worldObj, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, itemStackDrop);
 						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
 					}
@@ -198,11 +202,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	// searching methods
 	
-	public static final ForgeDirection[] UP_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
-	public static Set<VectorI> getConnectedBlocks(World world, VectorI start, ForgeDirection[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
+	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static Set<VectorI> getConnectedBlocks(World world, VectorI start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
 		return getConnectedBlocks(world, Arrays.asList(start), directions, whitelist, maxRange, ignore);
 	}
-	public static Set<VectorI> getConnectedBlocks(World world, Collection<VectorI> start, ForgeDirection[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
+	public static Set<VectorI> getConnectedBlocks(World world, Collection<VectorI> start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
 		Set<VectorI> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
@@ -219,14 +223,14 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		while(!toIterate.isEmpty() && range < maxRange) {
 			toIterateNext = new HashSet<>();
 			for (VectorI current : toIterate) {
-				if (whitelist.contains(current.getBlock_noChunkLoading(world))) {
+				if (whitelist.contains(current.getBlockState_noChunkLoading(world))) {
 					iterated.add(current);
 				}
 				
-				for(ForgeDirection direction : directions) {
+				for(EnumFacing direction : directions) {
 					VectorI next = current.clone(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
-						if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
+						if (whitelist.contains(next.getBlockState_noChunkLoading(world))) {
 							toIterateNext.add(next);
 						}
 					}
@@ -283,12 +287,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// area protection
-	protected boolean isBlockBreakCanceled(EntityPlayer entityPlayer, World world, int eventX, int eventY, int eventZ) {
-		return WarpDrive.proxy.isBlockBreakCanceled(entityPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ);
+	protected boolean isBlockBreakCanceled(EntityPlayer entityPlayer, World world, BlockPos blockPosEvent) {
+		return WarpDrive.proxy.isBlockBreakCanceled(entityPlayer, pos, world, blockPosEvent);
 	}
 	
-	protected boolean isBlockPlaceCanceled(EntityPlayer entityPlayer, World world, int eventX, int eventY, int eventZ, Block block, int metadata) {
-		return WarpDrive.proxy.isBlockPlaceCanceled(entityPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ, block, metadata);
+	protected boolean isBlockPlaceCanceled(EntityPlayer entityPlayer, World world, BlockPos blockPosEvent, IBlockState blockState) {
+		return WarpDrive.proxy.isBlockPlaceCanceled(entityPlayer, pos, world, blockPosEvent, blockState);
 	}
 	
 	// saved properties
@@ -297,7 +301,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		super.readFromNBT(tag);
 		if (tag.hasKey("upgrades")) {
 			NBTTagCompound nbtTagCompoundUpgrades = tag.getCompoundTag("upgrades");
-			Set<String> keys = nbtTagCompoundUpgrades.func_150296_c();
+			Set<String> keys = nbtTagCompoundUpgrades.getKeySet();
 			for (String key : keys) {
 				Object object = getUpgradeFromString(key);
 				int value = nbtTagCompoundUpgrades.getByte(key);
@@ -311,7 +315,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		if (!installedUpgrades.isEmpty()) {
 			NBTTagCompound nbtTagCompoundUpgrades = new NBTTagCompound();
@@ -321,6 +325,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			}
 			tagCompound.setTag("upgrades", nbtTagCompoundUpgrades);
 		}
+		return tagCompound;
 	}
 	
 	// upgrade system
@@ -332,11 +337,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	private String getUpgradeAsString(Object object) {
 		if (object instanceof Item) {
-			return Item.itemRegistry.getNameForObject(object);
+			return Item.REGISTRY.getNameForObject((Item)object).toString();
 		} else if (object instanceof Block) {
-			return Block.blockRegistry.getNameForObject(object);
+			return Block.REGISTRY.getNameForObject((Block)object).toString();
 		} else if (object instanceof ItemStack) {
-			return Item.itemRegistry.getNameForObject(((ItemStack) object).getItem()) + ":" + ((ItemStack) object).getItemDamage();
+			return Item.REGISTRY.getNameForObject(((ItemStack) object).getItem()) + ":" + ((ItemStack) object).getItemDamage();
 		} else {
 			return object.toString();
 		}

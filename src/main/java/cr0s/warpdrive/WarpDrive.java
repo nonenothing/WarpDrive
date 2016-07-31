@@ -16,9 +16,10 @@ import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -31,17 +32,17 @@ import net.minecraftforge.common.util.EnumHelper;
 import org.apache.logging.log4j.Logger;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLMissingMappingsEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLMissingMappingsEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import cr0s.warpdrive.block.BlockAirGenerator;
 import cr0s.warpdrive.block.BlockChunkLoader;
@@ -187,7 +188,7 @@ public class WarpDrive implements LoadingCallback {
 	public static DamageTeleportation damageTeleportation;
 	public static DamageWarm damageWarm;
 	
-	public static BiomeGenBase spaceBiome;
+	public static Biome spaceBiome;
 	@SuppressWarnings("FieldCanBeLocal")
 	private SpaceWorldGenerator spaceWorldGenerator;
 	@SuppressWarnings("FieldCanBeLocal")
@@ -558,7 +559,7 @@ public class WarpDrive implements LoadingCallback {
 	}
 	
 	private Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {
-		World worldObj = tileEntity.getWorldObj();
+		World worldObj = tileEntity.getWorld();
 		if (ForgeChunkManager.ticketCountAvailableFor(this, worldObj) > 0) {
 			Ticket ticket = ForgeChunkManager.requestTicket(this, worldObj, Type.NORMAL);
 			if (ticket != null) {
@@ -595,7 +596,7 @@ public class WarpDrive implements LoadingCallback {
 				if (w != 0 || x != 0 || y != 0 || z != 0) {
 					WorldServer worldServer = DimensionManager.getWorld(w);
 					if (worldServer != null) {// skip non-loaded worlds
-						TileEntity tileEntity = worldServer.getTileEntity(x, y, z);
+						TileEntity tileEntity = worldServer.getTileEntity(new BlockPos(x, y, z));
 						if (tileEntity != null && tileEntity instanceof TileEntityAbstractChunkLoading) {
 							if (((TileEntityAbstractChunkLoading) tileEntity).shouldChunkLoad()) {
 								WarpDrive.logger.info("ChunkLoadingTicket is loading " + tileEntity);

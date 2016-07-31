@@ -1,6 +1,6 @@
 package cr0s.warpdrive.block.energy;
 
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -29,12 +29,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return true;
 	}
 
 	@Override
-	public boolean canOutputEnergy(ForgeDirection to) {
+	public boolean canOutputEnergy(EnumFacing to) {
 		return true;
 	}
 }

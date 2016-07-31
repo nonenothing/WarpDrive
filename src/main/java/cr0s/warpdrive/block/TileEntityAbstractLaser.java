@@ -6,19 +6,19 @@ import java.util.List;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 
 // Abstract class to manage laser mediums
 public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfaced {
 	// direction of the laser medium stack
-	protected ForgeDirection directionLaserMedium = ForgeDirection.UNKNOWN;
-	protected ForgeDirection[] directionsValidLaserMedium = ForgeDirection.VALID_DIRECTIONS;
+	protected EnumFacing directionLaserMedium = EnumFacing.UNKNOWN;
+	protected EnumFacing[] directionsValidLaserMedium = EnumFacing.VALID_DIRECTIONS;
 	protected int laserMediumMaxCount = 0;
 	protected int laserMediumCount = 0;
 	
@@ -47,7 +47,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		// accelerate update ticks during boot
 		if (bootTicks > 0) {
 			bootTicks--;
-			if (directionLaserMedium == ForgeDirection.UNKNOWN) {
+			if (directionLaserMedium == EnumFacing.UNKNOWN) {
 				updateTicks = 1;
 			}
 		}
@@ -60,7 +60,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	}
 	
 	private void updateLaserMediumStatus() {
-		for(ForgeDirection direction : directionsValidLaserMedium) {
+		for(EnumFacing direction : directionsValidLaserMedium) {
 			TileEntity tileEntity = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ);
 			if (tileEntity != null && tileEntity instanceof TileEntityLaserMedium) {
 				directionLaserMedium = direction;
@@ -75,7 +75,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 				return;
 			}
 		}
-		directionLaserMedium = ForgeDirection.UNKNOWN;
+		directionLaserMedium = EnumFacing.UNKNOWN;
 	}
 	
 	protected int getEnergyStored() {
@@ -87,7 +87,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	}
 	
 	protected int consumeCappedEnergyFromLaserMediums(final int amount, final boolean simulate) {
-		if (directionLaserMedium == ForgeDirection.UNKNOWN) {
+		if (directionLaserMedium == EnumFacing.UNKNOWN) {
 			return 0;
 		}
 		
@@ -143,7 +143,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	}
 	
 	protected Object[] energy() {
-		if (directionLaserMedium == ForgeDirection.UNKNOWN) {
+		if (directionLaserMedium == EnumFacing.UNKNOWN) {
 			return new Object[] { 0, 0 };
 		} else {
 			int energyStored = 0;

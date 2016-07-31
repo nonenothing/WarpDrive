@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
@@ -67,8 +67,8 @@ public class BlockWeaponController extends BlockAbstractContainer {
 			if (tileEntity instanceof TileEntityWeaponController) {
 				WarpDrive.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
 			} else {
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-						getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("warpdrive.guide.prefix",
+						getLocalizedName()) + I18n.translateToLocalFormatted("warpdrive.error.badTileEntity"));
 				WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 			}
 			return false;

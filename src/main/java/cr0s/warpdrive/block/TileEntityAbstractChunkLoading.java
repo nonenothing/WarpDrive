@@ -171,9 +171,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag)
-	{
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		if (minChunk == null) {
 			minChunk = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
 		}
@@ -185,11 +184,11 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		tag.setInteger("minChunkZ", minChunk.chunkZPos);
 		tag.setInteger("maxChunkX", maxChunk.chunkXPos);
 		tag.setInteger("maxChunkZ", maxChunk.chunkZPos);
+		return tag;
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag)
-	{
+	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if(tag.hasKey("minChunkX"))
 		{

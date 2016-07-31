@@ -7,13 +7,13 @@ import java.util.Map;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.DamageTeleportation;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IUpgradable;
@@ -76,10 +76,10 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	
 	@Override
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
 				+ "\n" + getEnergyStatus()
-				+ "\n" + StatCollector.translateToLocalFormatted("warpdrive.transporter.status",
+				+ "\n" + I18n.translateToLocalFormatted("warpdrive.transporter.status",
 						sourceVec.x, sourceVec.y, sourceVec.z,
 						destVec.x, destVec.y, destVec.z);
 	}
@@ -511,17 +511,18 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	}
 
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
-		if (from == ForgeDirection.UP) {
+	public boolean canInputEnergy(EnumFacing from) {
+		if (from == EnumFacing.UP) {
 			return false;
 		}
 		return true;
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setDouble("powerBoost", powerBoost);
+		return tag;
 	}
 
 	@Override

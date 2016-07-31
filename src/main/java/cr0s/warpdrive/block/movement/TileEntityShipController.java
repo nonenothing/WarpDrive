@@ -10,8 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.StatCollector;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
@@ -110,10 +110,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			core = findCoreBlock();
 			if (core != null) {
 				if (mode.getCode() != getBlockMetadata()) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, mode.getCode(), 1 + 2);  // Activated
+					updateMetadata(mode.getCode());  // Activated
 				}
 			} else if (getBlockMetadata() != 0) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);  // Inactive
+				updateMetadata(0);  // Inactive
 			}
 		}
 	}
@@ -194,8 +194,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		updatePlayersString();
 		tag.setString("players", playersString);
 		tag.setInteger("mode", mode.getCode());
@@ -213,6 +213,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		tag.setByte("rotationSteps", rotationSteps);
 		tag.setString("bfreq", getBeaconFrequency());
 		// FIXME: shouldn't we save boolean jumpFlag, boolean summonFlag, String toSummon, String targetJumpgateName?
+		return tag;
 	}
 	
 	public String attachPlayer(EntityPlayer entityPlayer) {
@@ -221,9 +222,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			
 			if (entityPlayer.getDisplayName().equals(name)) {
 				players.remove(i);
-				return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 						getBlockType().getLocalizedName())
-					+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
+					+ I18n.translateToLocalFormatted("warpdrive.ship.playerDetached",
 							core != null && !core.shipName.isEmpty() ? core.shipName : "-",
 							getAttachedPlayersList());
 			}
@@ -232,17 +233,17 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
 		players.add(entityPlayer.getDisplayName());
 		updatePlayersString();
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 					getBlockType().getLocalizedName())
-				+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
+				+ I18n.translateToLocalFormatted("warpdrive.ship.playerAttached",
 						core != null && !core.shipName.isEmpty() ? core.shipName : "-",
 						getAttachedPlayersList());
 	}
 	
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
-				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
+				+ I18n.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
 						getAttachedPlayersList());
 	}
 	
@@ -395,22 +396,22 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private TileEntityShipCore findCoreBlock() {
 		TileEntity tileEntity;
 		
-		tileEntity = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
+		tileEntity = worldObj.getTileEntity(pos.add(1, 0, 0));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
+		tileEntity = worldObj.getTileEntity(pos.add(-1, 0, 0));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
+		tileEntity = worldObj.getTileEntity(pos.add(0, 0, 1));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
+		tileEntity = worldObj.getTileEntity(pos.add(0, 0, -1));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
@@ -548,13 +549,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInSpace(Context context, Arguments arguments) {
-		return new Boolean[] { worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID };
+		return new Boolean[] { worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID };
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInHyperspace(Context context, Arguments arguments) {
-		return new Boolean[] { worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID };
+		return new Boolean[] { worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID };
 	}
 	
 	@Callback
@@ -834,10 +835,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				return shipName(arguments);
 
 			case "isInSpace":
-				return new Boolean[]{worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID};
+				return new Boolean[]{worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID};
 
 			case "isInHyperspace":
-				return new Boolean[]{worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID};
+				return new Boolean[]{worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID};
 
 			case "targetJumpgate":
 				return targetJumpgate(arguments);
@@ -900,6 +901,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
 			core == null ? beaconFrequency : core.shipName,
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			xCoord, yCoord, zCoord);
+			pos.getX(), pos.getY(), pos.getZ());
 	}
 }

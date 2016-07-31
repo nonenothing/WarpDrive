@@ -2,16 +2,20 @@ package cr0s.warpdrive.block.movement;
 
 import java.util.List;
 
+import cr0s.warpdrive.data.SoundEvents;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -58,48 +62,48 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			
 			// Switching mode
 			if (  computerMode == MODE_DOWN
-			  || (computerMode == MODE_REDSTONE && worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord))) {
+			  || (computerMode == MODE_REDSTONE && worldObj.isBlockIndirectlyGettingPowered(pos) > 0)) {
 				mode = MODE_DOWN;
 			} else {
 				mode = MODE_UP;
 			}
 			
 			isEnabled = computerEnabled
-				     && isPassableBlock(yCoord + 1)
-				     && isPassableBlock(yCoord + 2)
-				     && isPassableBlock(yCoord - 1)
-				     && isPassableBlock(yCoord - 2);
+				     && isPassableBlock(pos.getY() + 1)
+				     && isPassableBlock(pos.getY() + 2)
+				     && isPassableBlock(pos.getY() - 1)
+				     && isPassableBlock(pos.getY() - 2);
 			
 			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
 				mode = MODE_INACTIVE;
 				if (getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // disabled
+					worldObj.setBlockMetadataWithNotify(pos, 0, 2); // disabled
 				}
 				return;
 			}
 			
 			if (getBlockMetadata() != mode) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, mode, 2); // current mode
+				worldObj.setBlockMetadataWithNotify(pos, mode, 2); // current mode
 			}
 			
 			// Launch a beam: search non-air blocks under lift
-			for (int ny = yCoord - 2; ny > 0; ny--) {
+			for (int ny = pos.getY() - 2; ny > 0; ny--) {
 				if (!isPassableBlock(ny)) {
 					firstUncoveredY = ny + 1;
 					break;
 				}
 			}
 			
-			if (yCoord - firstUncoveredY >= 2) {
+			if (pos.getY() - firstUncoveredY >= 2) {
 				if (mode == MODE_UP) {
 					PacketHandler.sendBeamPacket(worldObj,
-							new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D),
-							new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
+							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
+							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							0f, 1f, 0f, 40, 0, 100);
 				} else if (mode == MODE_DOWN) {
 					PacketHandler.sendBeamPacket(worldObj,
-							new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
-							new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D), 0f,
+							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
+							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 0f,
 							0f, 1f, 40, 0, 100);
 				}
 				
@@ -109,10 +113,11 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	}
 	
 	private boolean isPassableBlock(int yPosition) {
-		Block block = worldObj.getBlock(xCoord, yPosition, zCoord);
-		return block.isAssociatedBlock(Blocks.air)
-			|| worldObj.isAirBlock(xCoord, yPosition, zCoord)
-			|| block.getCollisionBoundingBoxFromPool(worldObj, xCoord, yPosition, zCoord) == null;
+		BlockPos blockPos = new BlockPos(pos.getX(), yPosition, pos.getZ());
+		IBlockState blockState = worldObj.getBlockState(blockPos);
+		return blockState.getBlock() == Blocks.AIR
+			|| worldObj.isAirBlock(blockPos)
+			|| blockState.getBlock().getCollisionBoundingBoxFromPool(worldObj, blockPos) == null;
 	}
 	
 	private void liftEntity() {
@@ -120,44 +125,44 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 		double xMax, zMax;
 		double xMin, zMin;
 		
-		xMin = xCoord + 0.5 - CUBE_RADIUS;
-		xMax = xCoord + 0.5 + CUBE_RADIUS;
-		zMin = zCoord + 0.5 - CUBE_RADIUS;
-		zMax = zCoord + 0.5 + CUBE_RADIUS;
+		xMin = pos.getX() + 0.5 - CUBE_RADIUS;
+		xMax = pos.getX() + 0.5 + CUBE_RADIUS;
+		zMin = pos.getZ() + 0.5 - CUBE_RADIUS;
+		zMax = pos.getZ() + 0.5 + CUBE_RADIUS;
 		
 		// Lift up
 		if (mode == MODE_UP) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, firstUncoveredY, zMin, xMax, yCoord, zMax);
+			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, firstUncoveredY, zMin, xMax, pos.getY(), zMax);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object o : list) {
 					if ( o != null
 					  && o instanceof EntityLivingBase
 					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) o).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
+						((EntityLivingBase) o).setPositionAndUpdate(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
-								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D),
-								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
+								new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
+								new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 								1F, 1F, 0F, 40, 0, 100);
-						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
+						worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
 						consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 					}
 				}
 			}
 		} else if (mode == MODE_DOWN) {
 			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin,
-					Math.min(firstUncoveredY + 4.0D, yCoord), zMin, xMax, yCoord + 2.0D, zMax);
+					Math.min(firstUncoveredY + 4.0D, pos.getY()), zMin, xMax, pos.getY() + 2.0D, zMax);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object o : list) {
 					if ( o != null
 					  && o instanceof EntityLivingBase
 					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) o).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
+						((EntityLivingBase) o).setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
-								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
-								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D), 1F, 1F, 0F, 40, 0, 100);
-						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
+								new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
+								new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
+						worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
 						consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 					}
 				}
@@ -180,11 +185,12 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setByte("mode", (byte)mode);
 		tag.setBoolean("computerEnabled", computerEnabled);
 		tag.setByte("computerMode", (byte)computerMode);
+		return tag;
 	}
 	
 	@Override
@@ -193,7 +199,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return true;
 	}
 	

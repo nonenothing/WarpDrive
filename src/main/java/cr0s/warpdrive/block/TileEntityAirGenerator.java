@@ -2,7 +2,7 @@ package cr0s.warpdrive.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -29,9 +29,9 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (worldObj.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && worldObj.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (worldObj.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID && worldObj.provider.getDimension() != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
 			if (getBlockMetadata() != 0) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
+				updateMetadata(0); // set disabled texture
 			}
 			return;
 		}
@@ -40,11 +40,11 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		if (cooldownTicks > WarpDriveConfig.AIRGEN_AIR_GENERATION_TICKS) {
 			if (consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_NEWAIRBLOCK, true)) {
 				if (getBlockMetadata() != 1) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 2); // set enabled texture
+					updateMetadata(1); // set enabled texture
 				}
 			} else {
 				if (getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
+					updateMetadata(0); // set disabled texture
 				}
 			}
 			releaseAir(1, 0, 0);
@@ -90,8 +90,8 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		return super.writeToNBT(tag);
 	}
 	
 	@Override
@@ -100,7 +100,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return true;
 	}
 }

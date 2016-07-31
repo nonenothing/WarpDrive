@@ -6,16 +6,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import cr0s.warpdrive.data.SoundEvents;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.SoundCategory;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.IPlantable;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -76,7 +78,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	public TileEntityLaserTreeFarm() {
 		super();
-		laserOutputSide = ForgeDirection.UP;
+		laserOutputSide = EnumFacing.UP;
 		peripheralName = "warpdriveLaserTreeFarm";
 		addMethods(new String[] {
 				"start",
@@ -188,21 +190,21 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				valuables = new ArrayList<>(scanTrees());
 				valuableIndex = 0;
 				if (!valuables.isEmpty()) {
-					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
+					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
 					currentState = tapTrees ? STATE_TAP : STATE_HARVEST;
 					delayTargetTicks = TREE_FARM_HARVEST_LOG_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_FARMING_POWERED);
 					return;
 					
 				} else if (soils != null && !soils.isEmpty()) {
-					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:hilaser", 4F, 1F);
+					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
 					currentState = STATE_PLANT;
 					delayTargetTicks = TREE_FARM_PLANT_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_PLANTING_POWERED);
 					return;
 					
 				} else {
-					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 					currentState = STATE_WARMUP;
 					delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_SCANNING_LOW_POWER);
@@ -302,7 +304,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
 					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable.x, valuable.y, valuable.z).translate(0.5D),
 							0.2F, 0.7F, 0.4F, age, 0, 50);
-					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 					
 					harvestBlock(valuable);
 				}
@@ -368,7 +370,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant + ":" + plantMetadata);
 						}
 						
-						if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, ForgeDirection.UP, plantable)) {
+						if (!block.canSustainPlant(worldObj, soil.x, soil.y, soil.z, EnumFacing.UP, plantable)) {
 							slotIndex++;
 							continue;
 						}
@@ -432,7 +434,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
 				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(soil.x, soil.y + 1, soil.z).translate(0.5D),
 						0.2F, 0.7F, 0.4F, age, 0, 50);
-				worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+				worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 				worldObj.setBlock(soil.x, soil.y + 1, soil.z, plant, plantMetadata, 3);
 			}
 		}
@@ -532,13 +534,14 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setInteger("radiusX", radiusX);
 		tag.setInteger("radiusZ", radiusZ);
 		tag.setBoolean("breakLeaves", breakLeaves);
 		tag.setBoolean("tapTrees", tapTrees);
 		tag.setInteger("currentState", currentState);
+		return tag;
 	}
 	
 	@Override

@@ -7,19 +7,20 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class TileEntityForceField extends TileEntityAbstractBase {
 	private VectorI vProjector;
 
 	// cache parameters used for rendering, force projector check for others
 	private int cache_beamFrequency;
-	public Block cache_blockCamouflage;
-	public int cache_metadataCamouflage;
+	public IBlockState cache_blockStateCamouflage;
 	protected int cache_colorMultiplierCamouflage;
 	protected int cache_lightCamouflage;
 	
@@ -39,13 +40,11 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			cache_beamFrequency = tag.getInteger("beamFrequency");
 			if (tag.hasKey("projector")) {
 				try {
-					cache_blockCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock"));
-					cache_metadataCamouflage = tag.getByte("camouflageMeta");
+					cache_blockStateCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock")).getStateFromMeta(tag.getByte("camouflageMeta"));
 					cache_colorMultiplierCamouflage = tag.getInteger("camouflageColorMultiplier");
 					cache_lightCamouflage = tag.getByte("camouflageLight");
-					if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(cache_blockCamouflage)) {
-						cache_blockCamouflage = null;
-						cache_metadataCamouflage = 0;
+					if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(cache_blockStateCamouflage.getBlock())) {
+						cache_blockStateCamouflage = null;
 						cache_colorMultiplierCamouflage = 0;
 						cache_lightCamouflage = 0;
 					}
@@ -53,47 +52,46 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 					exception.printStackTrace();
 				}
 			} else {
-				cache_blockCamouflage = null;
-				cache_metadataCamouflage = 0;
+				cache_blockStateCamouflage = null;
 				cache_colorMultiplierCamouflage = 0;
 				cache_lightCamouflage = 0;
 			}
 		} else {
 			vProjector = null;
 			cache_beamFrequency = -1;
-			cache_blockCamouflage = null;
-			cache_metadataCamouflage = 0;
+			cache_blockStateCamouflage = null;
 			cache_colorMultiplierCamouflage = 0;
 			cache_lightCamouflage = 0;
 		}
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		if (vProjector != null) {
 			tagCompound.setTag("projector", vProjector.writeToNBT(new NBTTagCompound()));
 			tagCompound.setInteger("beamFrequency", cache_beamFrequency);
-			if (cache_blockCamouflage != null) {
-				tagCompound.setString("camouflageBlock", Block.blockRegistry.getNameForObject(cache_blockCamouflage));
-				tagCompound.setByte("camouflageMeta", (byte)cache_metadataCamouflage);
+			if (cache_blockStateCamouflage != null) {
+				tagCompound.setString("camouflageBlock", cache_blockStateCamouflage.getBlock().getRegistryName().toString());
+				tagCompound.setByte("camouflageMeta", (byte)cache_blockStateCamouflage.getBlock().getMetaFromState(cache_blockStateCamouflage));
 				tagCompound.setInteger("camouflageColorMultiplier", cache_colorMultiplierCamouflage);
 				tagCompound.setByte("camouflageLight", (byte)cache_lightCamouflage);
 			}
 		}
+		return tagCompound;
 	}
 	
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
+		return new SPacketUpdateTileEntity(pos, -1, tagCompound);
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
@@ -102,14 +100,13 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		if (forceFieldSetup != null) {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
-			if (getBlockMetadata() == forceFieldSetup.getCamouflageMetadata()) {
-				cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
-				cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
+			if (getBlockMetadata() == forceFieldSetup.getCamouflageBlockState().getBlock().getMetaFromState(forceFieldSetup.getCamouflageBlockState())) {
+				cache_blockStateCamouflage = forceFieldSetup.getCamouflageBlockState();
 				cache_colorMultiplierCamouflage = forceFieldSetup.getCamouflageColorMultiplier();
 				cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
 			}
 		}
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockForUpdate(pos);
 	}
 	
 	public TileEntityForceFieldProjector getProjector() {
@@ -125,10 +122,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 						return tileEntityForceFieldProjector;
 					} else {
 						// projector is disabled or out of power
-						worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+						worldObj.setBlockToAir(pos);
 						if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 							WarpDrive.logger.info("Removed a force field from an offline projector at "
-							    + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+							    + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 						}
 					}
 				}
@@ -138,10 +135,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		if (!worldObj.isRemote) {
 			gracePeriod_calls--;
 			if (gracePeriod_calls < 0) {
-				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+				worldObj.setBlockToAir(pos);
 				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 					WarpDrive.logger.info("Removed a force field with no projector defined at "
-						                 + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+						+ (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 				}
 			}
 		}

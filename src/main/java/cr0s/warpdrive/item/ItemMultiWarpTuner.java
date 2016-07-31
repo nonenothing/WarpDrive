@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
@@ -126,13 +126,13 @@ public class ItemMultiWarpTuner extends Item {
 			switch (itemStack.getItemDamage()) {
 			case MODE_VIDEO_CHANNEL:
 				setVideoChannel(itemStack, world.rand.nextInt(32768));
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getVideoChannel",
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getVideoChannel",
 						getVideoChannel(itemStack)));
 				return itemStack;
 				
 			case MODE_BEAM_FREQUENCY:
 				setBeamFrequency(itemStack, world.rand.nextInt(65000));
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getBeamFrequency",
+				WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getBeamFrequency",
 						getBeamFrequency(itemStack)));
 				return itemStack;
 				
@@ -176,11 +176,11 @@ public class ItemMultiWarpTuner extends Item {
 			if (tileEntity instanceof IVideoChannel) {
 				if (entityPlayer.isSneaking()) {
 					setVideoChannel(itemStack, ((IVideoChannel)tileEntity).getVideoChannel());
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getVideoChannel",
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getVideoChannel",
 							getVideoChannel(itemStack)));
 				} else {
 					((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStack));
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.setVideoChannel",
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.setVideoChannel",
 							tileEntity.getBlockType().getLocalizedName(),
 							getVideoChannel(itemStack)));
 				}
@@ -192,11 +192,11 @@ public class ItemMultiWarpTuner extends Item {
 			if (tileEntity instanceof IBeamFrequency) {
 				if (entityPlayer.isSneaking()) {
 					setBeamFrequency(itemStack, ((IBeamFrequency)tileEntity).getBeamFrequency());
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getBeamFrequency",
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.getBeamFrequency",
 							getBeamFrequency(itemStack)));
 				} else {
 					((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.setBeamFrequency",
+					WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.use.setBeamFrequency",
 							tileEntity.getBlockType().getLocalizedName(),
 							getBeamFrequency(itemStack)));
 				}
@@ -216,11 +216,11 @@ public class ItemMultiWarpTuner extends Item {
 		String tooltip = "";
 		switch (itemStack.getItemDamage()) {
 		case MODE_VIDEO_CHANNEL:
-			tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.tooltip.videoChannel", getVideoChannel(itemStack));
+			tooltip += I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.tooltip.videoChannel", getVideoChannel(itemStack));
 			// String.format("Video channel set to %1$d", getVideoChannel(itemStack));
 			break;
 		case MODE_BEAM_FREQUENCY:
-			tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.tooltip.beamFrequency", getBeamFrequency(itemStack));
+			tooltip += I18n.translateToLocalFormatted("item.warpdrive.tool.MultiWarpTuner.tooltip.beamFrequency", getBeamFrequency(itemStack));
 			// tooltip = String.format("Laser frequency set to %{0}i", getBeamFrequency(itemStack));
 			break;
 		default:
@@ -228,7 +228,7 @@ public class ItemMultiWarpTuner extends Item {
 			break;
 		}
 		
-		tooltip += StatCollector.translateToLocal("item.warpdrive.tool.MultiWarpTuner.tooltip.usage");
+		tooltip += I18n.translateToLocal("item.warpdrive.tool.MultiWarpTuner.tooltip.usage");
 		
 		WarpDrive.addTooltip(list, tooltip);
 	}

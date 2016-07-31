@@ -79,8 +79,8 @@ public class ForceFieldSetup extends GlobalPosition {
 	public IForceFieldShape shapeProvider;
 	public boolean isDoubleSided = true;
 	
-	public ForceFieldSetup(final int dimensionId, final int x, final int y, final int z, final byte tier, final int beamFrequency) {
-		super(dimensionId, x, y, z);
+	public ForceFieldSetup(final int dimensionId, final BlockPos blockPos, final byte tier, final int beamFrequency) {
+		super(dimensionId, blockPos);
 		this.tier = tier;
 		this.beamFrequency = beamFrequency;
 		refresh();

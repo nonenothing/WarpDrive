@@ -4,7 +4,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.IChunkProvider;
-import cpw.mods.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.IWorldGenerator;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -22,7 +22,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		try {
-			if (world.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+			if (world.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
 				return;
 			}
 			int x = (chunkX * 16) + (5 - random.nextInt(10));

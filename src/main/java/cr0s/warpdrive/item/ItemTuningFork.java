@@ -11,7 +11,7 @@ import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
@@ -98,13 +98,13 @@ public class ItemTuningFork extends Item {
 		}
 		if (hasVideoChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
 			((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.use.setVideoChannel",
+			WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.TuningFork.use.setVideoChannel",
 					tileEntity.getBlockType().getLocalizedName(),
 					getVideoChannel(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
 		} else if (hasBeamFrequency) {
 			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.use.setBeamFrequency",
+			WarpDrive.addChatMessage(entityPlayer, I18n.translateToLocalFormatted("item.warpdrive.tool.TuningFork.use.setBeamFrequency",
 					tileEntity.getBlockType().getLocalizedName(),
 					getBeamFrequency(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
@@ -121,10 +121,10 @@ public class ItemTuningFork extends Item {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
-		tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.videoChannel", getVideoChannel(itemStack));
-		tooltip += "\n" + StatCollector.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.beamFrequency", getBeamFrequency(itemStack));
+		tooltip += I18n.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.videoChannel", getVideoChannel(itemStack));
+		tooltip += "\n" + I18n.translateToLocalFormatted("item.warpdrive.tool.TuningFork.tooltip.beamFrequency", getBeamFrequency(itemStack));
 		
-		tooltip += "\n\n" + StatCollector.translateToLocal("item.warpdrive.tool.TuningFork.tooltip.usage");
+		tooltip += "\n\n" + I18n.translateToLocal("item.warpdrive.tool.TuningFork.tooltip.usage");
 		
 		WarpDrive.addTooltip(list, tooltip);
 	}

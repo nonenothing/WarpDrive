@@ -2,6 +2,7 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
@@ -17,6 +18,13 @@ public class GlobalPosition {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	public GlobalPosition(final int dimensionId, final BlockPos blockPos) {
+		this.dimensionId = dimensionId;
+		this.x = blockPos.getX();
+		this.y = blockPos.getY();
+		this.z = blockPos.getZ();
 	}
 	
 	public GlobalPosition(TileEntity tileEntity) {

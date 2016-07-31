@@ -10,9 +10,9 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -44,14 +44,14 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 	@Optional.Method(modid = "ImmersiveEngineering")
 	public NBTBase saveExternals(final TileEntity tileEntity) {
 		if (tileEntity instanceof IImmersiveConnectable) {
-			ChunkCoordinates node = new ChunkCoordinates(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
-			Collection<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorldObj(), node);
+			BlockPos node = tileEntity.getPos();
+			Collection<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorld(), node);
 			if (connections != null) {
 				NBTTagList nbtImmersiveEngineering = new NBTTagList();
 				for (Connection connection : connections) {
 					nbtImmersiveEngineering.appendTag(connection.writeToNBT());
 				}
-				ImmersiveNetHandler.INSTANCE.clearConnectionsOriginatingFrom(node, tileEntity.getWorldObj());
+				ImmersiveNetHandler.INSTANCE.clearConnectionsOriginatingFrom(node, tileEntity.getWorld());
 				return nbtImmersiveEngineering;
 			}
 		}
@@ -102,8 +102,8 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 			Connection connectionToAdd = Connection.readFromNBT(nbtImmersiveEngineering.getCompoundTagAt(indexConnectionToAdd));
 			connectionToAdd.start = transformation.apply(connectionToAdd.start);
 			connectionToAdd.end = transformation.apply(connectionToAdd.end);
-			ChunkCoordinates node = new ChunkCoordinates(tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
-			Collection<Connection> connectionActuals = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorldObj(), node);
+			BlockPos node = tileEntity.getPos();
+			Collection<Connection> connectionActuals = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorld(), node);
 			boolean existing = false;
 			if (connectionActuals != null) {
 				for (Connection connectionActual : connectionActuals) {
@@ -128,7 +128,7 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 				}
 			}
 			if (!existing) {
-				ImmersiveNetHandler.INSTANCE.addConnection(targetWorld, new ChunkCoordinates(connectionToAdd.start.posX, connectionToAdd.start.posY, connectionToAdd.start.posZ), connectionToAdd);
+				ImmersiveNetHandler.INSTANCE.addConnection(targetWorld, new BlockPos(connectionToAdd.start.posX, connectionToAdd.start.posY, connectionToAdd.start.posZ), connectionToAdd);
 			}
 		}
 	}

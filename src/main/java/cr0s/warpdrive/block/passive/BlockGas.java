@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -112,7 +112,7 @@ public class BlockGas extends Block {
 	@Override
 	public void onBlockAdded(World par1World, int par2, int par3, int par4) {
 		// Gas blocks allow only in space
-		if (par1World.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+		if (par1World.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
 			par1World.setBlockToAir(par2, par3, par4);
 		}
 	}

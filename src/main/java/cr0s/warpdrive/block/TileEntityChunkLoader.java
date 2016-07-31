@@ -105,13 +105,13 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt)
-	{
-		super.writeToNBT(nbt);
-		nbt.setInteger("negDX", negDX);
-		nbt.setInteger("negDZ", negDZ);
-		nbt.setInteger("posDX", posDX);
-		nbt.setInteger("posDZ", posDZ);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
+		tag.setInteger("negDX", negDX);
+		tag.setInteger("negDZ", negDZ);
+		tag.setInteger("posDX", posDX);
+		tag.setInteger("posDZ", posDZ);
+		return tag;
 	}
 
 	// OpenComputer callback methods

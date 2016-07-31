@@ -1,7 +1,7 @@
 package cr0s.warpdrive.block;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
@@ -26,7 +26,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 			
 			int metadata = Math.max(0, Math.min(7, Math.round((getEnergyStored() * 8) / getMaxEnergyStored())));
 			if (getBlockMetadata() != metadata) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 3);
+				updateMetadata(metadata);
 			}
 		}
 	}
@@ -37,8 +37,8 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		return super.writeToNBT(tag);
 	}
 	
 	// IEnergySink methods implementation
@@ -48,7 +48,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return true;
 	}
 }

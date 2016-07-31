@@ -1,7 +1,9 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.SoundType;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
@@ -24,14 +26,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 
 import java.util.List;
 import java.util.Random;
@@ -43,7 +44,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	public BlockForceField(final byte tier) {
 		super(tier, Material.glass);
-		setStepSound(Block.soundTypeCloth);
+		setSoundType(SoundType.CLOTH);
 		setBlockName("warpdrive.forcefield.block" + tier);
 		setBlockTextureName("warpdrive:forcefield/forcefield");
 	}
@@ -54,7 +55,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
+	public ItemStack getPickBlock(RayTraceResult target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		return null;
 	}
 	
@@ -114,7 +115,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		if (world.isAirBlock(x, y, z)) {
 			return true;
 		}
-		ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
+		EnumFacing direction = EnumFacing.getOrientation(side).getOpposite();
 		Block sideBlock = world.getBlock(x, y, z);
 		if (sideBlock instanceof BlockGlass || sideBlock instanceof BlockHullGlass || sideBlock instanceof BlockForceField) {
 			return world.getBlockMetadata(x, y, z)

@@ -3,20 +3,21 @@ package cr0s.warpdrive.block.detection;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.WarpDrive;
 
 public class BlockCloakingCoil extends Block {
 	private IIcon[] iconBuffer;
 	
 	public BlockCloakingCoil() {
-		super(Material.iron);
+		super(Material.IRON);
 		setHardness(3.5F);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.detection.CloakingCoil");
 	}
@@ -77,7 +78,7 @@ public class BlockCloakingCoil extends Block {
 			// outer coils
 			int direction = (metadata & 7) - 2;
 			int activeOffset = (metadata < 8) ? 0 : 2; 
-			if (ForgeDirection.OPPOSITES[direction] == side) {
+			if (EnumFacing.OPPOSITES[direction] == side) {
 				return iconBuffer[0 + activeOffset];
 			} else {
 				return iconBuffer[1 + activeOffset];

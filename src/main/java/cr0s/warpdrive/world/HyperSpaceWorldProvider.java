@@ -3,15 +3,15 @@ package cr0s.warpdrive.world;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManagerHell;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.RenderBlank;
@@ -97,15 +97,15 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
+	public Vec3d getSkyColor(Entity cameraEntity, float partialTicks) {
 		setCloudRenderer(new RenderBlank());
 		setSkyRenderer(new RenderBlank());
-		return Vec3.createVectorHelper(1.0D, 0.0D, 0.0D);
+		return new Vec3d(1.0D, 0.0D, 0.0D);
 	}
 	
 	@Override
-	public Vec3 getFogColor(float par1, float par2) {
-		return Vec3.createVectorHelper(0.1D, 0.0D, 0.0D);
+	public Vec3d getFogColor(float par1, float par2) {
+		return new Vec3d(0.1D, 0.0D, 0.0D);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -113,12 +113,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	public boolean isSkyColored() {
 		return true;
 	}
-	
-	@Override
-	public ChunkCoordinates getEntrancePortalLocation() {
-		return null;
-	}
-	
+		
 	@Override
 	public int getRespawnDimension(EntityPlayerMP player) {
 		return WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
@@ -135,8 +130,8 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public ChunkCoordinates getRandomizedSpawnPoint() {
-		ChunkCoordinates var5 = new ChunkCoordinates(worldObj.getSpawnPoint());
+	public BlockPos getRandomizedSpawnPoint() {
+		BlockPos var5 = new BlockPos(worldObj.getSpawnPoint());
 		// boolean isAdventure = worldObj.getWorldInfo().getGameType() == EnumGameType.ADVENTURE;
 		int spawnFuzz = 100;
 		int spawnFuzzHalf = spawnFuzz / 2;
@@ -147,26 +142,21 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		}
 		
 		if (worldObj.isAirBlock(var5.posX, var5.posY, var5.posZ)) {
-			worldObj.setBlock(var5.posX, var5.posY, var5.posZ, Blocks.stone, 0, 2);
-			worldObj.setBlock(var5.posX + 1, var5.posY + 1, var5.posZ, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX + 1, var5.posY + 2, var5.posZ, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX - 1, var5.posY + 1, var5.posZ, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX - 1, var5.posY + 2, var5.posZ, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ + 1, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 2, var5.posZ + 1, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ - 1, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 2, var5.posZ - 1, Blocks.glass, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 3, var5.posZ, Blocks.glass, 0, 2);
+			worldObj.setBlock(var5.posX, var5.posY, var5.posZ, Blocks.STONE, 0, 2);
+			worldObj.setBlock(var5.posX + 1, var5.posY + 1, var5.posZ, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX + 1, var5.posY + 2, var5.posZ, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX - 1, var5.posY + 1, var5.posZ, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX - 1, var5.posY + 2, var5.posZ, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ + 1, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX, var5.posY + 2, var5.posZ + 1, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ - 1, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX, var5.posY + 2, var5.posZ - 1, Blocks.GLASS, 0, 2);
+			worldObj.setBlock(var5.posX, var5.posY + 3, var5.posZ, Blocks.GLASS, 0, 2);
 			worldObj.setBlock(var5.posX, var5.posY, var5.posZ, WarpDrive.blockAir, 15, 2);
 			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ, WarpDrive.blockAir, 15, 2);
 		}
 		
 		return var5;
-	}
-	
-	@Override
-	public boolean getWorldHasVoidParticles() {
-		return false;
 	}
 	
 	@Override
