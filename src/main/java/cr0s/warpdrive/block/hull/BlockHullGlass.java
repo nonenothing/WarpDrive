@@ -14,7 +14,7 @@ import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class BlockHullGlass extends BlockColored implements IDamageReceiver {
-	private int tier;
+	private final int tier;
 	
 	public BlockHullGlass(final int tier) {
 		super(Material.glass);

@@ -6,13 +6,16 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import cr0s.warpdrive.block.forcefield.*;
+import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.item.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockColored;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemDye;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
@@ -166,8 +169,8 @@ public class WarpDrive implements LoadingCallback {
 	public static BlockDecorative blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
-	public static Block[] blockHulls_stair;
-	public static Block[] blockHulls_slab;
+	public static Block[][] blockHulls_stairs;
+	public static Block[][] blockHulls_slab;
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
@@ -433,8 +436,8 @@ public class WarpDrive implements LoadingCallback {
 		// HULL BLOCKS
 		blockHulls_plain = new Block[3];
 		blockHulls_glass = new Block[3];
-		blockHulls_stair = new Block[3 * 16];
-		blockHulls_slab = new Block[3 * 16];
+		blockHulls_stairs = new Block[3][16];
+		blockHulls_slab = new Block[3][16];
 		
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
@@ -442,6 +445,10 @@ public class WarpDrive implements LoadingCallback {
 			blockHulls_glass[index] = new BlockHullGlass(tier);
 			GameRegistry.registerBlock(blockHulls_plain[index], ItemBlockHull.class, "blockHull" + tier + "_plain");
 			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
+			for (int woolColor = 0; woolColor <= 15; woolColor++) {
+				blockHulls_stairs[index][woolColor] = new BlockHullStairs(blockHulls_plain[index], woolColor, tier);
+				GameRegistry.registerBlock(blockHulls_stairs[index][woolColor], ItemBlockHull.class, "blockHull" + tier + "_stairs_" + ItemDye.field_150923_a[BlockColored.func_150031_c(woolColor)]);
+			}
 		}
 		
 		// REACTOR LASER FOCUS

@@ -23,7 +23,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 public class BlockHullPlain extends Block implements IDamageReceiver {
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
-	private int tier;
+	private final int tier;
 	
 	public BlockHullPlain(final int tier) {
 		super(Material.rock);

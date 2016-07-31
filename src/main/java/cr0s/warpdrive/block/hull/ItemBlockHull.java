@@ -31,7 +31,7 @@ public class ItemBlockHull extends ItemBlock {
 	
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
-		if (itemstack == null) {
+		if (itemstack == null || field_150939_a instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}
 		return getUnlocalizedName() + ItemDye.field_150923_a[BlockColored.func_150031_c(itemstack.getItemDamage())];

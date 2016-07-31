@@ -1383,6 +1383,7 @@ public class Recipes {
 			for (int woolColor = 0; woolColor < 16; woolColor++) {
 				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
 			}
 		}
 		
@@ -1513,6 +1514,17 @@ public class Recipes {
 						'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, BlockColored.func_150031_c(woolColor)),
 						'F', "dustGlowstone" ));
 				
+				// crafting stairs
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 4), false, "p  ", "pp ", "ppp",
+				        'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, BlockColored.func_150031_c(woolColor)) ));
+				
+				// uncrafting
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 6, BlockColored.func_150031_c(woolColor)),
+                        WarpDrive.blockHulls_stairs[index][woolColor],
+                        WarpDrive.blockHulls_stairs[index][woolColor],
+                        WarpDrive.blockHulls_stairs[index][woolColor],
+                        WarpDrive.blockHulls_stairs[index][woolColor] ));
+				
 				// changing colors
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 1, BlockColored.func_150031_c(woolColor)),
 						"dye" + BlockHullPlain.getDyeColorName(woolColor),
@@ -1520,11 +1532,17 @@ public class Recipes {
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 1, BlockColored.func_150031_c(woolColor)),
 						"dye" + BlockHullPlain.getDyeColorName(woolColor),
 						"blockHull" + tier + "_glass"));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1),
+				        "dye" + BlockHullPlain.getDyeColorName(woolColor),
+						"blockHull" + tier + "_stairs"));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_plain",
 						'X', oreDyes[woolColor] ));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_glass",
+						'X', oreDyes[woolColor] ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 8), false, "###", "#X#", "###",
+						'#', "blockHull" + tier + "_stairs",
 						'X', oreDyes[woolColor] ));
 			}
 		}

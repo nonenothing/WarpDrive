@@ -106,6 +106,16 @@ item.warpdrive.upgrade.Range.name=Улучшение - Радиус
 item.warpdrive.upgrade.Energy.name=Улучшение - Хранилище энергии
 
 
+item.warpdrive.tool.crystalToken.name=Crystal token
+item.warpdrive.tool.crystalToken.tooltip=Crystal encapsulation of ship '%1$s'\n§bEnter the scanner field§7 to build your ship
+item.warpdrive.tool.crystalToken0.name=Crystal token #0
+item.warpdrive.tool.crystalToken1.name=Crystal token #1
+item.warpdrive.tool.crystalToken2.name=Crystal token #2
+item.warpdrive.tool.crystalToken3.name=Crystal token #3
+item.warpdrive.tool.crystalToken4.name=Crystal token #4
+item.warpdrive.tool.crystalToken5.name=Crystal token #5
+
+
 item.warpdrive.tool.TuningFork.name=Камертон
 item.warpdrive.tool.TuningFork.white.name=Белый камертон
 item.warpdrive.tool.TuningFork.orange.name=Оранжевый камертон
@@ -226,6 +236,23 @@ tile.warpdrive.hull1.glass.green.name=Зеленое базовое корабе
 tile.warpdrive.hull1.glass.red.name=Красное базовое корабельное стекло
 tile.warpdrive.hull1.glass.black.name=Черное базовое корабельное стекло
 
+tile.warpdrive.hull1.stairs.white.name=White Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.orange.name=Orange Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.magenta.name=Magenta Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.lightBlue.name=Light Blue Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.yellow.name=Yellow Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.lime.name=Lime Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.pink.name=Pink Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.gray.name=Gray Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.silver.name=Silver Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.cyan.name=Cyan Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.purple.name=Purple Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.blue.name=Blue Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.brown.name=Brown Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.green.name=Green Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.red.name=Red Stained Basic Hull Stairs
+tile.warpdrive.hull1.stairs.black.name=Black Stained Basic Hull Stairs
+
 tile.warpdrive.hull2.plain.white.name=Белый улучшенный корабельный корпус
 tile.warpdrive.hull2.plain.orange.name=Оранжевый улучшенный корабельный корпус
 tile.warpdrive.hull2.plain.magenta.name=Пурпурный улучшенный корабельный корпус
@@ -260,6 +287,23 @@ tile.warpdrive.hull2.glass.green.name=Зеленое улучшенное кор
 tile.warpdrive.hull2.glass.red.name=Красное улучшенное корабельное стекло
 tile.warpdrive.hull2.glass.black.name=Черное улучшенное корабельное стекло
 
+tile.warpdrive.hull2.stairs.white.name=White Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.orange.name=Orange Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.magenta.name=Magenta Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.lightBlue.name=Light Blue Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.yellow.name=Yellow Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.lime.name=Lime Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.pink.name=Pink Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.gray.name=Gray Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.silver.name=Silver Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.cyan.name=Cyan Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.purple.name=Purple Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.blue.name=Blue Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.brown.name=Brown Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.green.name=Green Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.red.name=Red Stained Advanced Hull Stairs
+tile.warpdrive.hull2.stairs.black.name=Black Stained Advanced Hull Stairs
+
 tile.warpdrive.hull3.plain.white.name=Белый высококачественный корабельный корпус
 tile.warpdrive.hull3.plain.orange.name=Оранжевый высококачественный корабельный корпус
 tile.warpdrive.hull3.plain.magenta.name=Пурпурный высококачественный корабельный корпус
@@ -293,6 +337,23 @@ tile.warpdrive.hull3.glass.brown.name=Коричневое высококаче�
 tile.warpdrive.hull3.glass.green.name=Зеленое высококачественное корабельное стекло
 tile.warpdrive.hull3.glass.red.name=Красное высококачественное корабельное стекло
 tile.warpdrive.hull3.glass.black.name=Черное высококачественное корабельное стекло
+
+tile.warpdrive.hull3.stairs.white.name=White Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.orange.name=Orange Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.magenta.name=Magenta Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.lightBlue.name=Light Blue Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.yellow.name=Yellow Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.lime.name=Lime Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.pink.name=Pink Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.gray.name=Gray Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.silver.name=Silver Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.cyan.name=Cyan Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.purple.name=Purple Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.blue.name=Blue Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.brown.name=Brown Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.green.name=Green Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.red.name=Red Stained Superior Hull Stairs
+tile.warpdrive.hull3.stairs.black.name=Black Stained Superior Hull Stairs
 
 
 warpdrive.guide.prefix=§6%1$s:§r 
