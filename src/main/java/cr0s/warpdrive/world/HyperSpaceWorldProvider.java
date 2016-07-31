@@ -20,7 +20,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	public HyperSpaceWorldProvider() {
 		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
-		hasNoSky = false;
+		hasNoSky = true;
 	}
 	
 	@Override
@@ -171,7 +171,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean isDaytime() {
-		return true;
+		return false;
 	}
 	
 	@Override
