@@ -14,7 +14,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
-	@SideOnly(Side.CLIENT)
 	private final int tier;
 	private final Block blockHull;
 	private final int metaHull;
