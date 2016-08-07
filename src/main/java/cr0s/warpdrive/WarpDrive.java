@@ -624,6 +624,10 @@ public class WarpDrive implements LoadingCallback {
 	}
 	
 	public static void addChatMessage(final ICommandSender sender, final String message) {
+		if (sender == null) {
+			logger.error("Unable to send message to NULL sender: " + message);
+			return;
+		}
 		String[] lines = message.replace("§", "" + (char)167).replace("\\n", "\n").split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new ChatComponentText(line));
