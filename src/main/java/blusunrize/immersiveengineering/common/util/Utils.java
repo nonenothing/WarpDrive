@@ -3,7 +3,7 @@ package blusunrize.immersiveengineering.common.util;
 import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.DirectionalBlockPos;
 import blusunrize.immersiveengineering.api.Lib;
-import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
+// !!! import blusunrize.immersiveengineering.common.util.inventory.IIEInventory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
@@ -962,7 +962,7 @@ public class Utils
 			}
 		}
 	}
-
+/*
 	public static int calcRedstoneFromInventory(IIEInventory inv)
 	{
 		if(inv==null)
@@ -984,4 +984,5 @@ public class Utils
 			return MathHelper.floor_float(f * 14.0F) + (i > 0 ? 1 : 0);
 		}
 	}
+	/**/
 }

@@ -2,7 +2,7 @@ package blusunrize.immersiveengineering.common.util;
 
 import org.apache.logging.log4j.Level;
 
-import blusunrize.immersiveengineering.ImmersiveEngineering;
+// !!! import blusunrize.immersiveengineering.ImmersiveEngineering;
 import net.minecraftforge.fml.common.FMLLog;
 
 public class IELogger
@@ -10,7 +10,7 @@ public class IELogger
 	public static boolean debug = false;
 	public static void log(Level logLevel, Object object)
 	{
-		FMLLog.log(ImmersiveEngineering.MODID, logLevel, String.valueOf(object));
+		// !!! FMLLog.log(ImmersiveEngineering.MODID, logLevel, String.valueOf(object));
 	}
 
 	public static void error(Object object)

@@ -52,7 +52,7 @@ public class IESaveData extends WorldSavedData
 		for (int i = 0;i<proxies.tagCount();i++)
 			ImmersiveNetHandler.INSTANCE.addProxy(IICProxy.readFromNBT(proxies.getCompoundTagAt(i)));
 		
-		EventHandler.validateConnsNextTick = true;
+		// !!! EventHandler.validateConnsNextTick = true;
 
 		NBTTagList mineralList = nbt.getTagList("mineralDepletion", 10);
 		ExcavatorHandler.mineralCache.clear();		
