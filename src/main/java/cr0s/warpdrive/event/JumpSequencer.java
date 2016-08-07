@@ -1,17 +1,16 @@
 package cr0s.warpdrive.event;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -394,6 +393,40 @@ public class JumpSequencer extends AbstractSequencer {
 	
 	private void state_borders() {
 		LocalProfiler.start("Jump.borders");
+		
+		try {
+			// Generate unique file name
+			SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
+			String shipName = ship.shipCore.shipName.replaceAll("[^ -~]", "").replaceAll("[:/\\\\]", "");
+			String schematicFileName;
+			do {
+				Date now = new Date();
+				schematicFileName = shipName + "_" + sdfDate.format(now);
+			} while (new File(WarpDriveConfig.G_SCHEMALOCATION + "/auto/" + schematicFileName + ".schematic").exists());
+			
+			// Save header
+			NBTTagCompound schematic = new NBTTagCompound();
+			
+			short width = (short) (ship.shipCore.maxX - ship.shipCore.minX + 1);
+			short length = (short) (ship.shipCore.maxZ - ship.shipCore.minZ + 1);
+			short height = (short) (ship.shipCore.maxY - ship.shipCore.minY + 1);
+			schematic.setShort("Width", width);
+			schematic.setShort("Length", length);
+			schematic.setShort("Height", height);
+			schematic.setInteger("shipMass", ship.shipCore.shipMass);
+			schematic.setString("shipName", ship.shipCore.shipName);
+			schematic.setInteger("shipVolume", ship.shipCore.shipVolume);
+			NBTTagCompound tagCompoundShip = new NBTTagCompound();
+			ship.writeToNBT(tagCompoundShip);
+			schematic.setTag("ship", tagCompoundShip);
+			writeNBTToFile(schematicFileName, schematic);
+			if (WarpDriveConfig.LOGGING_JUMP) {
+			//	WarpDrive.logger.info(this + " Ship saved as " + schematicFileName);
+			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Checking ship borders...");
 		}
@@ -410,6 +443,26 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		msCounter = System.currentTimeMillis();
 		LocalProfiler.stop();
+	}
+	
+	private void writeNBTToFile(String fileName, NBTTagCompound nbttagcompound) {
+		WarpDrive.logger.info(this + " writeNBTToFile " + fileName);
+		
+		try {
+			File file = new File(fileName);
+			if (!file.exists()) {
+				//noinspection ResultOfMethodCallIgnored
+				file.createNewFile();
+			}
+			
+			FileOutputStream fileoutputstream = new FileOutputStream(file);
+			
+			CompressedStreamTools.writeCompressed(nbttagcompound, fileoutputstream);
+			
+			fileoutputstream.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 	
 	private void state_transformer() {
