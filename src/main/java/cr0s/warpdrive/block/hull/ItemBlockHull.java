@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 public class ItemBlockHull extends ItemBlock {
 	
 	public ItemBlockHull(Block block) {
-		super(block);	// sets field_150939_a to block
+		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.hull");
@@ -24,7 +24,7 @@ public class ItemBlockHull extends ItemBlock {
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
-		if (itemstack == null) {
+		if (itemstack == null || block instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}
 		return getUnlocalizedName() + EnumDyeColor.byDyeDamage( itemstack.getItemDamage() ).getUnlocalizedName();

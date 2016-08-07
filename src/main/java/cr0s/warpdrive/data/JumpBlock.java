@@ -13,8 +13,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
@@ -60,7 +58,7 @@ public class JumpBlock {
 		}
 		block = filler.block;
 		blockMeta = filler.metadata;
-		blockNBT = (filler.tag != null) ? (NBTTagCompound) filler.tag.copy() : null;
+		blockNBT = (filler.tag != null) ? filler.tag.copy() : null;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -80,7 +78,7 @@ public class JumpBlock {
 		return nbtExternal.copy();
 	}
 	
-	public void setExternal(final String modId, final NBTBase nbtExternal) {
+	private void setExternal(final String modId, final NBTBase nbtExternal) {
 		if (externals == null) {
 			externals = new HashMap<>();
 		}
@@ -198,6 +196,8 @@ public class JumpBlock {
 			if (blockTileEntity != null) {
 				nbtToDeploy = new NBTTagCompound();
 				blockTileEntity.writeToNBT(nbtToDeploy);
+			} else if (blockNBT != null) {
+				nbtToDeploy = blockNBT.copy();
 			}
 			int newBlockMeta = blockMeta;
 			if (externals != null) {
@@ -287,7 +287,6 @@ public class JumpBlock {
 					}
 					
 					newTileEntity.markDirty();
-					return;
 				} else {
 					WarpDrive.logger.error(" deploy failed to create new tile entity at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta);
 					WarpDrive.logger.error("NBT data was " + nbtToDeploy);
@@ -301,8 +300,7 @@ public class JumpBlock {
 			} catch (Exception dropMe) {
 				coordinates = " (unknown coordinates)";
 			}
-			WarpDrive.logger.info("moveBlockSimple exception at " + coordinates);
-			return;
+			WarpDrive.logger.error("moveBlockSimple exception at " + coordinates);
 		}
 	}
 	
@@ -374,20 +372,88 @@ public class JumpBlock {
 		}
 	}
 	
+	public void readFromNBT(NBTTagCompound tag) {
+		block = Block.getBlockFromName(tag.getString("block"));
+		if (block == null) {
+			if (WarpDriveConfig.LOGGING_BUILDING) {
+				WarpDrive.logger.warn("Ignoring unknown block " + tag.getString("block") + " from tag " + tag);
+			}
+			block = Blocks.AIR;
+			return;
+		}
+		blockMeta = tag.getByte("blockMeta");
+		blockTileEntity = null;
+		if (tag.hasKey("blockNBT")) {
+			blockNBT = tag.getCompoundTag("blockNBT");
+			
+			// Clear computer IDs
+			if (blockNBT.hasKey("computerID")) {
+				blockNBT.removeTag("computerID");
+			}
+			if (blockNBT.hasKey("oc:computer")) {
+				NBTTagCompound tagComputer = blockNBT.getCompoundTag("oc:computer");
+				tagComputer.removeTag("components");
+				tagComputer.removeTag("node");
+				blockNBT.setTag("oc:computer", tagComputer);
+			}
+		} else {
+			blockNBT = null;
+		}
+		x = tag.getInteger("x");
+		y = tag.getInteger("y");
+		z = tag.getInteger("z");
+		if (tag.hasKey("externals")) {
+			NBTTagCompound tagCompoundExternals = tag.getCompoundTag("externals");
+			externals = new HashMap<>();
+			for (Object key : tagCompoundExternals.getKeySet()) {
+				assert (key instanceof String);
+				externals.put((String) key, tagCompoundExternals.getTag((String) key));
+			}
+		} else {
+			externals = null;
+		}
+	}
+	
+	public void writeToNBT(NBTTagCompound tag) {
+		tag.setString("block", Block.REGISTRY.getNameForObject(block).toString());
+		tag.setByte("blockMeta", (byte)blockMeta);
+		if (blockTileEntity != null) {
+			NBTTagCompound tagCompound = new NBTTagCompound();
+			blockTileEntity.writeToNBT(tagCompound);
+			tag.setTag("blockNBT", tagCompound);
+		} else if (blockNBT != null) {
+			tag.setTag("blockNBT", blockNBT);
+		}
+		tag.setInteger("x", x);
+		tag.setInteger("y", y);
+		tag.setInteger("z", z);
+		if (externals != null && !externals.isEmpty()) {
+			NBTTagCompound tagCompoundExternals = new NBTTagCompound();
+			for (Entry<String, NBTBase> entry : externals.entrySet()) {
+				if (entry.getValue() == null) {
+					tagCompoundExternals.setString(entry.getKey(), "");
+				} else {
+					tagCompoundExternals.setTag(entry.getKey(), entry.getValue());
+				}
+			}
+			tag.setTag("externals", tagCompoundExternals);
+		}
+	}
+	
 	// IC2 support for updating tile entity fields
 	private static Object NetworkManager_instance;
 	private static Method NetworkManager_updateTileEntityField;
 	
-	public static void NetworkHelper_init() {
+	private static void NetworkHelper_init() {
 		try {
-			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", new Class[] { TileEntity.class, String.class });
+			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", TileEntity.class, String.class);
 			NetworkManager_instance = Class.forName("ic2.core.IC2").getDeclaredField("network").get(null);
 		} catch (Exception exception) {
 			throw new RuntimeException(exception);
 		}
 	}
 	
-	public static void NetworkHelper_updateTileEntityField(TileEntity tileEntity, String field) {
+	private static void NetworkHelper_updateTileEntityField(TileEntity tileEntity, String field) {
 		try {
 			if (NetworkManager_instance == null) {
 				NetworkHelper_init();
@@ -453,7 +519,7 @@ public class JumpBlock {
 	}
 	/*
 	// This code is a straight copy from Vanilla net.minecraft.world.Chunk.func_150807_a to remove lighting computations
-	public static boolean myChunkSBIDWMT(Chunk c, int x, int y, int z, Block block, int blockMeta) {
+	private static boolean myChunkSBIDWMT(Chunk c, int x, int y, int z, Block block, int blockMeta) {
 		int i1 = z << 4 | x;
 		
 		if (y >= c.precipitationHeightMap[i1] - 1) {

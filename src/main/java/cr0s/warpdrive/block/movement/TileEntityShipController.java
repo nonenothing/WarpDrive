@@ -11,6 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -124,7 +125,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		if (mode >= 0 && mode <= modes.length) {
 			this.mode = modes[mode];
 			markDirty();
-			if (WarpDriveConfig.LOGGING_JUMP) {
+			if (WarpDriveConfig.LOGGING_JUMP && worldObj != null) {
 				WarpDrive.logger.info(this + " Mode set to " + this.mode + " (" + this.mode.getCode() + ")");
 			}
 		}
@@ -141,7 +142,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			direction = parDirection;
 		}
 		markDirty();
-		if (WarpDriveConfig.LOGGING_JUMP) {
+		if (WarpDriveConfig.LOGGING_JUMP && worldObj != null) {
 			WarpDrive.logger.info(this + " Direction set to " + direction);
 		}
 	}
@@ -151,7 +152,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		moveUp = parMoveUp;
 		moveRight = parMoveRight;
 		markDirty();
-		if (WarpDriveConfig.LOGGING_JUMP) {
+		if (WarpDriveConfig.LOGGING_JUMP && worldObj != null) {
 			WarpDrive.logger.info(this + " Movement set to " + moveFront + " front, " + moveUp + " up, " + moveRight + " right");
 		}
 	}
@@ -159,7 +160,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private void setRotationSteps(final byte parRotationSteps) {
 		rotationSteps = (byte) ((parRotationSteps + 4) % 4);
 		markDirty();
-		if (WarpDriveConfig.LOGGING_JUMP) {
+		if (WarpDriveConfig.LOGGING_JUMP && worldObj != null) {
 			WarpDrive.logger.info(this + " RotationSteps set to " + rotationSteps);
 		}
 	}
@@ -725,7 +726,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		StringBuilder reason = new StringBuilder();
 		try {
 			if (!core.validateShipSpatialParameters(reason)) {
-				core.messageToAllPlayersOnShip(reason.toString());
+				core.messageToAllPlayersOnShip(new TextComponentString(reason.toString()));
 				if (core.controller == null) {
 					return null;
 				}

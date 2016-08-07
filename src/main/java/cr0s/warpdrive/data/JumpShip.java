@@ -10,6 +10,8 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +23,7 @@ import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import net.minecraftforge.common.util.Constants;
 
 public class JumpShip {
 	public World worldObj;
@@ -177,6 +180,7 @@ public class JumpShip {
 	 * Saving ship to memory
 	 */
 	public boolean save(StringBuilder reason) {
+		BlockPos blockPos = new BlockPos(0, -1, 0);
 		try {
 			int estimatedVolume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
 			JumpBlock[][] placeTimeJumpBlocks = { new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume] };
@@ -200,7 +204,7 @@ public class JumpShip {
 					for (int y = minY; y <= maxY; y++) {
 						for (int x = x1; x <= x2; x++) {
 							for (int z = z1; z <= z2; z++) {
-								BlockPos blockPos = new BlockPos(x, y, z);
+								blockPos = new BlockPos(x, y, z);
 								IBlockState blockState = worldObj.getBlockState(blockPos);
 								
 								// Skipping vanilla air & ignored blocks
@@ -267,7 +271,7 @@ public class JumpShip {
 			actualMass = newMass;
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			reason.append("Exception while saving ship");
+			reason.append("Exception while saving ship, probably a corrupted block at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 			return false;
 		}
 		
@@ -275,5 +279,46 @@ public class JumpShip {
 			WarpDrive.logger.info(this + " Ship saved as " + jumpBlocks.length + " blocks");
 		}
 		return true;
+	}
+	
+	public void readFromNBT(NBTTagCompound tag) {
+		core = new BlockPos(tag.getInteger("coreX"), tag.getInteger("coreY"), tag.getInteger("coreZ"));
+		dx = tag.getInteger("dx");
+		dz = tag.getInteger("dz");
+		maxX = tag.getInteger("maxX");
+		maxZ = tag.getInteger("maxZ");
+		maxY = tag.getInteger("maxY");
+		minX = tag.getInteger("minX");
+		minZ = tag.getInteger("minZ");
+		minY = tag.getInteger("minY");
+		actualMass = tag.getInteger("actualMass");
+		NBTTagList tagList = tag.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
+		jumpBlocks = new JumpBlock[tagList.tagCount()];
+		for(int index = 0; index < tagList.tagCount(); index++) {
+			jumpBlocks[index] = new JumpBlock();
+			jumpBlocks[index].readFromNBT(tagList.getCompoundTagAt(index));
+		}
+	}
+	
+	public void writeToNBT(NBTTagCompound tag) {
+		tag.setInteger("coreX", core.getX());
+		tag.setInteger("coreY", core.getY());
+		tag.setInteger("coreZ", core.getZ());
+		tag.setInteger("dx", dx);
+		tag.setInteger("dz", dz);
+		tag.setInteger("maxX", maxX);
+		tag.setInteger("maxZ", maxZ);
+		tag.setInteger("maxY", maxY);
+		tag.setInteger("minX", minX);
+		tag.setInteger("minZ", minZ);
+		tag.setInteger("minY", minY);
+		tag.setInteger("actualMass", actualMass);
+		NBTTagList tagListJumpBlocks = new NBTTagList();
+		for (JumpBlock jumpBlock : jumpBlocks) {
+			NBTTagCompound tagCompoundBlock = new NBTTagCompound();
+			jumpBlock.writeToNBT(tagCompoundBlock);
+			tagListJumpBlocks.appendTag(tagCompoundBlock);
+		}
+		tag.setTag("jumpBlocks", tagListJumpBlocks);
 	}
 }

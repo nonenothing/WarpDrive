@@ -5,7 +5,6 @@ import java.util.List;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.item.ItemComponent;
@@ -1383,6 +1382,7 @@ public class Recipes {
 			for (int woolColor = 0; woolColor < 16; woolColor++) {
 				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
 			}
 		}
 		
@@ -1513,6 +1513,17 @@ public class Recipes {
 						'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()),
 						'F', "dustGlowstone" ));
 				
+				// crafting stairs
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 4), false, "p  ", "pp ", "ppp",
+				        'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()) ));
+				
+				// uncrafting
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 6, enumDyeColor.getDyeDamage()),
+				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()],
+				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()],
+				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()],
+				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()] ));
+				
 				// changing colors
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 1, enumDyeColor.getDyeDamage()),
 						"dye" + enumDyeColor.getUnlocalizedName(),
@@ -1520,11 +1531,17 @@ public class Recipes {
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 1, enumDyeColor.getDyeDamage()),
 						"dye" + enumDyeColor.getUnlocalizedName(),
 						"blockHull" + tier + "_glass"));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 1),
+						"dye" + enumDyeColor.getUnlocalizedName(),
+						"blockHull" + tier + "_stairs"));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_plain",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_glass",
+						'X', oreDyes[enumDyeColor.getMetadata()] ));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 8), false, "###", "#X#", "###",
+						'#', "blockHull" + tier + "_stairs",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			}
 		}

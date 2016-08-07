@@ -3,7 +3,7 @@ package cr0s.warpdrive.event;
 import java.util.HashMap;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
+import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -13,7 +13,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -26,19 +25,18 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
-/**
- *
- * @author Cr0s
- */
 public class LivingHandler {
 	private HashMap<Integer, Integer> entity_airBlock;
 	private HashMap<UUID, Integer> player_airTank;
 	private HashMap<UUID, Integer> player_cloakTicks;
 	
-	private final int CLOAK_CHECK_TIMEOUT_TICKS = 100;
-	private final int AIR_BLOCK_TICKS = 20;
-	private final int AIR_TANK_TICKS = 300;
-	private final int AIR_DROWN_TICKS = 20;
+	private static final int CLOAK_CHECK_TIMEOUT_TICKS = 100;
+	private static final int AIR_BLOCK_TICKS = 20;
+	private static final int AIR_TANK_TICKS = 300;
+	private static final int AIR_DROWN_TICKS = 20;
+	private static final VectorI[] vAirOffsets = { new VectorI(0, 0, 0), new VectorI(0, 1, 0),
+		new VectorI(0, 1, 1), new VectorI(0, 1, -1), new VectorI(1, 1, 0), new VectorI(1, 1, 0),
+		new VectorI(0, 0, 1), new VectorI(0, 0, -1), new VectorI(1, 0, 0), new VectorI(1, 0, 0) };
 	
 	public LivingHandler() {
 		entity_airBlock = new HashMap<>();
@@ -86,9 +84,19 @@ public class LivingHandler {
 		// If entity is in vacuum, check and start consuming air cells
 		if ( entity.worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID
 		  || entity.worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
-			IBlockState blockState1 = entity.worldObj.getBlockState(new BlockPos(x, y, z));
-			IBlockState blockState2 = entity.worldObj.getBlockState(new BlockPos(x, y + 1, z));
-			boolean notInVacuum = blockState1.getBlock().isAssociatedBlock(WarpDrive.blockAir) || blockState2.getBlock().isAssociatedBlock(WarpDrive.blockAir);
+			// find an air block
+			VectorI vAirBlock = null;	
+			IBlockState blockState = null;
+			for (VectorI vOffset : vAirOffsets) {
+				VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
+				blockState = entity.worldObj.getBlockState(vPosition.getBlockPos());
+				if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
+					vAirBlock = vPosition;
+					break;
+				}
+			}
+			
+			boolean notInVacuum = vAirBlock != null;
 			Integer air;
 			if (notInVacuum) {// In space with air blocks
 				air = entity_airBlock.get(entity.getEntityId());
@@ -97,17 +105,9 @@ public class LivingHandler {
 				} else if (air <= 1) {// time elapsed => consume air block
 					entity_airBlock.put(entity.getEntityId(), AIR_BLOCK_TICKS);
 					
-					int metadata;
-					if (blockState1.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
-						metadata = blockState1.getBlock().getMetaFromState(blockState1);
-						if (metadata > 0 && metadata < 15) {
-							entity.worldObj.setBlockState(new BlockPos(x, y, z), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
-						}
-					} else {
-						metadata = blockState2.getBlock().getMetaFromState(blockState1);
-						if (metadata > 0 && metadata < 15) {
-							entity.worldObj.setBlockState(new BlockPos(x, y + 1, z), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
-						}
+					int metadata = blockState.getBlock().getMetaFromState(blockState);
+					if (metadata > 0 && metadata < 15) {
+						entity.worldObj.setBlockState(vAirBlock.getBlockPos(), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
 					}
 				} else {
 					entity_airBlock.put(entity.getEntityId(), air - 1);
@@ -116,6 +116,11 @@ public class LivingHandler {
 			} else {// In space without air blocks
 				// Damage entity if in vacuum without protection
 				if (entity instanceof EntityPlayerMP) {
+					air = entity_airBlock.get(entity.getEntityId());
+					if (air != null && air > 0) {
+						entity_airBlock.put(entity.getEntityId(), air - 1);
+						return;
+					}
 					EntityPlayerMP player = (EntityPlayerMP) entity;
 					UUID uuidPlayer = player.getUniqueID();
 					air = player_airTank.get(uuidPlayer);

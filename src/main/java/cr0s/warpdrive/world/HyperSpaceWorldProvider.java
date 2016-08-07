@@ -21,7 +21,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	public HyperSpaceWorldProvider() {
 		biomeProvider  = new BiomeProviderSingle(WarpDrive.spaceBiome);
-		hasNoSky = false;
+		hasNoSky = true;
 	}
 	
 	@Override
@@ -163,7 +163,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean isDaytime() {
-		return true;
+		return false;
 	}
 	
 	@Override

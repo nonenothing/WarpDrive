@@ -7,6 +7,7 @@ import cr0s.warpdrive.data.SoundEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -46,6 +47,9 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	
 	protected void harvestBlock(final BlockPos valuable) {
 		IBlockState blockState = worldObj.getBlockState(valuable);
+		if (blockState.getBlock() == Blocks.AIR) {
+			return;
+		}
 		if (blockState.getBlock() instanceof BlockLiquid) {
 			// Evaporate fluid
 			worldObj.playSound(null, valuable, net.minecraft.init.SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
@@ -62,6 +66,10 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	}
 	
 	private List<ItemStack> getItemStackFromBlock(BlockPos blockPos, IBlockState blockState) {
+		if (blockState == null) {
+			WarpDrive.logger.error(this + " Invalid block at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+			return null;
+		}
 		if (enableSilktouch) {
 			boolean isSilkHarvestable = false;
 			try {

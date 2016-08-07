@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import javax.annotation.Nonnull;
 
 public class BlockHullGlass extends BlockColored implements IDamageReceiver {
-	private int tier;
+	private final int tier;
 	
 	public BlockHullGlass(final String registryName, final int tier) {
 		super(Material.GLASS);

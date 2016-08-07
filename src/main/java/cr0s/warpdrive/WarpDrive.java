@@ -6,15 +6,19 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import cr0s.warpdrive.block.forcefield.*;
+import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.item.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockColored;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
+import net.minecraft.item.ItemDye;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -167,11 +171,12 @@ public class WarpDrive implements LoadingCallback {
 	public static BlockDecorative blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
-	public static Block[] blockHulls_stair;
-	public static Block[] blockHulls_slab;
+	public static Block[][] blockHulls_stairs;
+	public static Block[][] blockHulls_slab;
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
+	public static ItemCrystalToken itemCrystalToken;
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningRod;
 	public static ItemForceFieldShape itemForceFieldShape;
@@ -431,8 +436,8 @@ public class WarpDrive implements LoadingCallback {
 		// HULL BLOCKS
 		blockHulls_plain = new Block[3];
 		blockHulls_glass = new Block[3];
-		blockHulls_stair = new Block[3 * 16];
-		blockHulls_slab = new Block[3 * 16];
+		blockHulls_stairs = new Block[3][16];
+		blockHulls_slab = new Block[3][16];
 		
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
@@ -440,6 +445,10 @@ public class WarpDrive implements LoadingCallback {
 			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_plain", tier);
 			GameRegistry.registerBlock(blockHulls_plain[index], ItemBlockHull.class, "blockHull" + tier + "_plain");
 			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
+			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+				blockHulls_stairs[index][enumDyeColor.getMetadata()] = new BlockHullStairs(blockHulls_plain[index].getStateFromMeta(enumDyeColor.getMetadata()), tier);
+				GameRegistry.registerBlock(blockHulls_stairs[index][enumDyeColor.getMetadata()], ItemBlockHull.class, "blockHull" + tier + "_stairs_" + enumDyeColor.getName());
+			}
 		}
 		
 		// REACTOR LASER FOCUS
@@ -452,6 +461,8 @@ public class WarpDrive implements LoadingCallback {
 		itemComponent = new ItemComponent();
 		GameRegistry.registerItem(itemComponent, "itemComponent");
 		
+		itemCrystalToken = new ItemCrystalToken("itemCrystalToken");
+
 		itemHelmet = new ItemHelmet(armorMaterial, EntityEquipmentSlot.HEAD);
 		GameRegistry.registerItem(itemHelmet, "itemHelmet");
 		
@@ -470,10 +481,10 @@ public class WarpDrive implements LoadingCallback {
 		// FORCE FIELD UPGRADES
 		itemForceFieldShape = new ItemForceFieldShape();
 		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-
+		
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
 		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
-
+		
 		// DAMAGE SOURCES
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
@@ -545,7 +556,6 @@ public class WarpDrive implements LoadingCallback {
 		
 		WorldHandler worldHandler = new WorldHandler();
 		MinecraftForge.EVENT_BUS.register(worldHandler);
-		FMLCommonHandler.instance().bus().register(worldHandler);
 	}
 	
 	@EventHandler

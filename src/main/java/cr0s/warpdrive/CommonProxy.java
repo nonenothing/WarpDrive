@@ -9,13 +9,11 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.EntityCamera;
 import cr0s.warpdrive.world.EntitySphereGen;
 import cr0s.warpdrive.world.EntityStarCore;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -25,7 +23,7 @@ import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 public class CommonProxy {
-	private static WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
+	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
 	
 	void registerEntities() {
 		EntityRegistry.registerModEntity(EntitySphereGen.class, "EntitySphereGenerator", WarpDriveConfig.G_ENTITY_SPHERE_GENERATOR_ID, WarpDrive.instance, 200, 1, false);
@@ -33,7 +31,7 @@ public class CommonProxy {
 		EntityRegistry.registerModEntity(EntityCamera.class   , "EntityCamera"         , WarpDriveConfig.G_ENTITY_CAMERA_ID          , WarpDrive.instance, 300, 1, false);
 	}
 	
-	private WeakReference<EntityPlayer> getFakePlayer(EntityPlayer entityPlayer, WorldServer world, BlockPos blockPos) {
+	private EntityPlayer getFakePlayer(EntityPlayer entityPlayer, WorldServer world, BlockPos blockPos) {
 		GameProfile gameProfile = entityPlayer == null ? WarpDrive.gameProfile : entityPlayer.getGameProfile();
 		WeakReference<EntityPlayer> weakFakePlayer = fakePlayers.get(gameProfile);
 		EntityPlayer entityFakePlayer = (weakFakePlayer == null) ? null : weakFakePlayer.get();
@@ -49,7 +47,7 @@ public class CommonProxy {
 		entityFakePlayer.posY = blockPos.getY() + 0.5D;
 		entityFakePlayer.posZ = blockPos.getZ() + 0.5D;
 		
-		return weakFakePlayer;
+		return entityFakePlayer;
 	}
 	
 	public boolean isBlockBreakCanceled(EntityPlayer entityPlayer, BlockPos blockPosSource,
@@ -60,14 +58,14 @@ public class CommonProxy {
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
 			WarpDrive.logger.info("isBlockBreakCanceled by " + entityPlayer
 			    + " at " + blockPosSource.getX() + " " + blockPosSource.getY() + " " + blockPosSource.getZ()
-				+ " to " + world + " " + blockPosEvent.getX() + " " + blockPosEvent.getY() + " " + blockPosEvent.getZ());
+				+ " to " + world.provider.getDimensionType().getName() + " " + blockPosEvent.getX() + " " + blockPosEvent.getY() + " " + blockPosEvent.getZ());
 		}
 		
 		IBlockState blockState = world.getBlockState(blockPosEvent);
 		if (!blockState.getBlock().isAir(blockState, world, blockPosEvent)) {
 			BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(
 			    world, blockPosEvent, world.getBlockState(blockPosEvent),
-				WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, blockPosSource).get());
+				WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, blockPosSource));
 			MinecraftForge.EVENT_BUS.post(breakEvent);
 			if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
 				WarpDrive.logger.info("isBlockBreakCanceled player " + breakEvent.getPlayer()
@@ -86,12 +84,12 @@ public class CommonProxy {
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
 			WarpDrive.logger.info("isBlockPlaceCanceled by " + entityPlayer
 			    + " at " + blockPosSource.getX() + " " + blockPosSource.getY() + " " + blockPosSource.getZ()
-				+ " to " + world + " " + blockPosEvent.getX() + " " + blockPosEvent.getY() + " " + blockPosEvent.getZ()
+				+ " to " + world.provider.getDimensionType().getName() + " " + blockPosEvent.getX() + " " + blockPosEvent.getY() + " " + blockPosEvent.getZ()
 			    + " of " + blockState);
 		}
 		BlockEvent.PlaceEvent placeEvent = new BlockEvent.PlaceEvent(
 			new BlockSnapshot(world, blockPosEvent, blockState), Blocks.AIR.getDefaultState(),
-			WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, blockPosSource).get() );
+			WarpDrive.proxy.getFakePlayer(entityPlayer, (WorldServer) world, blockPosSource) );
 		
 		MinecraftForge.EVENT_BUS.post(placeEvent);
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {

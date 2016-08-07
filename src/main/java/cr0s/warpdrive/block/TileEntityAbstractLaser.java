@@ -80,7 +80,15 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	}
 	
 	protected boolean consumeEnergyFromLaserMediums(final int amount, final boolean simulate) {
-		return amount <= consumeCappedEnergyFromLaserMediums(amount, simulate);
+		if (simulate) {
+			return amount <= consumeCappedEnergyFromLaserMediums(amount, true);
+		} else {
+			if (amount > consumeCappedEnergyFromLaserMediums(amount, true)) {
+				return false;
+			} else {
+				return amount <= consumeCappedEnergyFromLaserMediums(amount, false);
+			}
+		}
 	}
 	
 	protected int consumeCappedEnergyFromLaserMediums(final int amount, final boolean simulate) {
@@ -130,7 +138,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 			int energyStored = laserMedium.getEnergyStored();
 			int energyToConsume = Math.min(energyStored, energyAverage + energyLeftOver);
 			energyLeftOver -= Math.max(0, energyToConsume - energyAverage);
-			laserMedium.consumeEnergy(energyToConsume, simulate); // FIXME simulate is always false here
+			laserMedium.consumeEnergy(energyToConsume, false); // simulate is always false here
 			energyTotalConsumed += energyToConsume;
 		}
 		return energyTotalConsumed;
