@@ -1061,7 +1061,7 @@ public class Recipes {
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", 1); // Mining laser
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
+			// itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "cmr", "tdt", "glg",
 				't', itemStackMotors[1],
