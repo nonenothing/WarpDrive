@@ -106,14 +106,12 @@ public class CloakManager {
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Cloak count is " + cloaks.size()); }
 	}
 	
-	public void removeCloakedArea(final int dimensionId, final int coreX, final int coreY, final int coreZ) {
+	public void removeCloakedArea(final int dimensionId, final BlockPos blockPos) {
 		int index = -1;
 		for (int i = 0; i < cloaks.size(); i++) {
 			CloakedArea area = cloaks.get(i);
 			if ( area.dimensionId == dimensionId
-			  && area.coreX == coreX
-			  && area.coreY == coreY
-			  && area.coreZ == coreZ ) {
+			  && area.blockPosCore.equals(blockPos) ) {
 				if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 					area.clientDecloak();
 				} else {
@@ -131,7 +129,7 @@ public class CloakManager {
 	
 	public CloakedArea getCloakedArea(World world, final BlockPos blockPos) {
 		for (CloakedArea area : cloaks) {
-			if (area.dimensionId == world.provider.getDimension() && area.core.equals(blockPos))
+			if (area.dimensionId == world.provider.getDimension() && area.blockPosCore.equals(blockPos))
 				return area;
 		}
 		
@@ -139,10 +137,10 @@ public class CloakManager {
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public CloakedArea getCloakedArea(int x, int y, int z) {
+	public CloakedArea getCloakedArea(BlockPos blockPos) {
 		// client only 
 		for (CloakedArea area : cloaks) {
-			if (area.coreX == x && area.coreY == y && area.coreZ == z)
+			if (area.blockPosCore.equals(blockPos))
 				return area;
 		}
 		

@@ -2,9 +2,9 @@ package cr0s.warpdrive.compat;
 
 import java.util.Collection;
 
-import blusunrize.immersiveengineering.api.energy.IImmersiveConnectable;
-import blusunrize.immersiveengineering.api.energy.ImmersiveNetHandler;
-import blusunrize.immersiveengineering.api.energy.ImmersiveNetHandler.Connection;
+import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
+import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
+import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler.Connection;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -107,29 +107,21 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 			boolean existing = false;
 			if (connectionActuals != null) {
 				for (Connection connectionActual : connectionActuals) {
-					if ( connectionActual.start.posX == connectionToAdd.start.posX
-					  && connectionActual.start.posY == connectionToAdd.start.posY
-					  && connectionActual.start.posZ == connectionToAdd.start.posZ
-					  && connectionActual.end.posX == connectionToAdd.end.posX
-					  && connectionActual.end.posY == connectionToAdd.end.posY
-					  && connectionActual.end.posZ == connectionToAdd.end.posZ) {
+					if ( connectionActual.start.equals(connectionToAdd.start)
+					  && connectionActual.end.equals(connectionToAdd.end) ) {
 						existing = true;
 						break;
 					} else if (
-					     connectionActual.start.posX == connectionToAdd.end.posX
-					  && connectionActual.start.posY == connectionToAdd.end.posY
-					  && connectionActual.start.posZ == connectionToAdd.end.posZ
-					  && connectionActual.end.posX == connectionToAdd.start.posX
-					  && connectionActual.end.posY == connectionToAdd.start.posY
-					  && connectionActual.end.posZ == connectionToAdd.start.posZ) {
+					     connectionActual.start.equals(connectionToAdd.end)
+					  && connectionActual.end.equals(connectionToAdd.start) ) {
 						existing = true;
 						break;
 					}
 				}
 			}
 			if (!existing) {
-				ImmersiveNetHandler.INSTANCE.addConnection(targetWorld, new BlockPos(connectionToAdd.start.posX, connectionToAdd.start.posY, connectionToAdd.start.posZ), connectionToAdd);
-			}
+				ImmersiveNetHandler.INSTANCE.addConnection(targetWorld, connectionToAdd.start, connectionToAdd);
+		}
 		}
 	}
 }

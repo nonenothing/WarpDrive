@@ -9,6 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 public class ItemBlockDecorative extends ItemBlock {
 	
 	public ItemBlockDecorative(Block block) {
@@ -23,12 +25,13 @@ public class ItemBlockDecorative extends ItemBlock {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTabs, List list) {
+	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
 		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
-			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
+			subItems.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
 		}
 	}
 	
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
 		if (itemstack == null) {

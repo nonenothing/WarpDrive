@@ -87,8 +87,8 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (isFirstUpdate) {
 			isFirstUpdate = false;
@@ -115,7 +115,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		}
 		
 		scanForReactor();
-		if (directionLaserMedium == null) {
+		if (facingLaserMedium == null) {
 			return;
 		}
 		if (reactor == null) {

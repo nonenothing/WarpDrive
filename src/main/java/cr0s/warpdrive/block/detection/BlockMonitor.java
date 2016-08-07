@@ -1,55 +1,43 @@
 package cr0s.warpdrive.block.detection;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.text.translation.I18n;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.render.ClientCameraHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockMonitor extends BlockAbstractContainer {
-	private IIcon iconFront;
-	private IIcon iconSide;
 	
 	public BlockMonitor() {
-		super(Material.iron);
+		super(Material.IRON);
 		isRotating = true;
-		setBlockName("warpdrive.detection.Monitor");
+		setRegistryName("warpdrive.detection.Monitor");
+		GameRegistry.register(this);
 	}
 	
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
-		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
-	}
-	
-	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata  = world.getBlockMetadata(x, y, z);
-		return side == metadata ? iconFront : iconSide;
-	}
-	
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		return side == 3 ? iconFront : iconSide;
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		// Monitor is only reacting client side
 		if (!world.isRemote) {
 			return false;
 		}
 		
-		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (itemStackHeld == null) {
+			TileEntity tileEntity = world.getTileEntity(blockPos);
 			
 			if (tileEntity instanceof TileEntityMonitor) {
 				int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
@@ -60,22 +48,23 @@ public class BlockMonitor extends BlockAbstractContainer {
 				} else {
 					WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.monitor.viewingCamera",
 							videoChannel,
-							camera.position.chunkPosX,
-							camera.position.chunkPosY,
-							camera.position.chunkPosZ ));
+							camera.position.getX(),
+							camera.position.getY(),
+							camera.position.getZ() ));
 					ClientCameraHandler.setupViewpoint(
 							camera.type, entityPlayer, entityPlayer.rotationYaw, entityPlayer.rotationPitch,
-							x, y, z, this,
-							camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ, world.getBlock(camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ));
+							blockPos, blockState,
+							camera.position, world.getBlockState(camera.position));
 				}
 			}
 		}
 		
 		return false;
 	}
-	
+
+	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityMonitor();
 	}
 }

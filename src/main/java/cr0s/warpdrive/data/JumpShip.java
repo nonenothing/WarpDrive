@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -14,6 +13,8 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
@@ -40,15 +41,16 @@ public class JumpShip {
 	public JumpShip() {
 	}
 	
-	public void messageToAllPlayersOnShip(String message) {
+	public void messageToAllPlayersOnShip(ITextComponent textComponent) {
 		if (entitiesOnShip == null) {
-			shipCore.messageToAllPlayersOnShip(message);
+			shipCore.messageToAllPlayersOnShip(textComponent);
 		} else {
-			WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + message);
-			for (MovingEntity me : entitiesOnShip) {
-				if (me.entity instanceof EntityPlayer) {
-					WarpDrive.addChatMessage((EntityPlayer) me.entity, "["
-							+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "WarpCore") + "] " + message);
+			WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent);
+			for (MovingEntity movingEntity : entitiesOnShip) {
+				if (movingEntity.entity instanceof EntityPlayer) {
+					WarpDrive.addChatMessage(movingEntity.entity, new TextComponentString("["
+						+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "WarpCore") + "] ")
+						.appendSibling(textComponent));
 				}
 			}
 		}
@@ -58,7 +60,7 @@ public class JumpShip {
 		String result = null;
 		entitiesOnShip = new ArrayList<>();
 		
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		
 		List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		

@@ -7,7 +7,11 @@ import java.util.Map;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -62,8 +66,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 
 		if (isLocked) {
 			if (lockStrengthMul > 0.8) {
@@ -75,13 +79,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	}
 	
 	@Override
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ "\n" + getEnergyStatus()
-				+ "\n" + I18n.translateToLocalFormatted("warpdrive.transporter.status",
-						sourceVec.x, sourceVec.y, sourceVec.z,
-						destVec.x, destVec.y, destVec.z);
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
+			getBlockType().getLocalizedName())
+			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
+			.appendSibling(new TextComponentString("\n")).appendSibling(new TextComponentTranslation("warpdrive.transporter.status",
+				sourceVec.x, sourceVec.y, sourceVec.z,
+				destVec.x, destVec.y, destVec.z));
 	}
 	
 	
@@ -219,9 +223,9 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 					vec.y = centreOnMe.y;
 					vec.z = centreOnMe.z;
 				} else {
-					vec.x = xCoord + centreOnMe.x;
-					vec.y = yCoord + centreOnMe.y;
-					vec.z = zCoord + centreOnMe.z;
+					vec.x = pos.getX() + centreOnMe.x;
+					vec.y = pos.getY() + centreOnMe.y;
+					vec.z = pos.getZ() + centreOnMe.z;
 				}
 			}
 		} catch (NumberFormatException e) {
@@ -325,13 +329,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		if (ent instanceof EntityLivingBase) {
 			EntityLivingBase livingEnt = (EntityLivingBase) ent;
 			if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
-				livingEnt.setPositionAndUpdate(xCoord + dest.x, yCoord + dest.y, zCoord + dest.z);
+				livingEnt.setPositionAndUpdate(pos.getX() + dest.x, pos.getY() + dest.y, pos.getZ() + dest.z);
 			} else {
 				livingEnt.setPositionAndUpdate(dest.x, dest.y, dest.z);
 			}
 		} else {
 			if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
-				ent.setPosition(xCoord + dest.x, yCoord + dest.y, zCoord + dest.z);
+				ent.setPosition(pos.getX() + dest.x, pos.getY() + dest.y, pos.getZ() + dest.z);
 			} else {
 				ent.setPosition(dest.x, dest.y, dest.z);
 			}
@@ -377,12 +381,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 				}
 
 				for (int z = zL; z <= zU; z++) {
-					if (!worldObj.getBlock(x, y, z).isAssociatedBlock(WarpDrive.blockTransportBeacon)) {
+					IBlockState blockState = worldObj.getBlockState(new BlockPos(x, y, z));
+					if (!blockState.getBlock().isAssociatedBlock(WarpDrive.blockTransportBeacon)) {
 						continue;
 					}
 					double dist = 1 + Math.abs(x - xV) + Math.abs(y - yV) + Math.abs(z - zV);
 					beaconCount++;
-					if (worldObj.getBlockMetadata(x, y, z) == 0) {
+					if (blockState.getBlock().getMetaFromState(blockState) == 0) {
 						beacon += 1 / dist;
 					} else {
 						beacon -= 1 / dist;
@@ -474,7 +479,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			tS = sourceVec.clone().translate(scanPos);
 			bS = sourceVec.clone().translate(scanNeg);
 		}
-		return AxisAlignedBB.getBoundingBox(bS.x, bS.y, bS.z, tS.x, tS.y, tS.z);
+		return new AxisAlignedBB(bS.x, bS.y, bS.z, tS.x, tS.y, tS.z);
 	}
 
 	private ArrayList<Entity> findEntities(Vector3 source, double lockStrength) {

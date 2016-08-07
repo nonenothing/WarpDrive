@@ -3,117 +3,127 @@ package cr0s.warpdrive.block.passive;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockGas extends Block {
-	private IIcon[] iconBuffer;
 
 	public BlockGas() {
-		super(Material.fire);
+		super(Material.FIRE);
 		setHardness(0.0F);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.passive.Gas");
+		setRegistryName("warpdrive.passive.Gas");
+		GameRegistry.register(this);
 	}
-
+	
 	@Override
-	public boolean isOpaqueCube() {
+	public boolean isVisuallyOpaque() {
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isAir(IBlockAccess var1, int var2, int var3, int var4) {
-		return true;
-	}
-
-	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
-		return null;
-	}
-
-	@Override
-	public boolean isReplaceable(IBlockAccess var1, int var2, int var3, int var4) {
-		return true;
-	}
-
-	@Override
-	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return true;
-	}
-
-	@Override
-	public boolean canCollideCheck(int var1, boolean var2) {
+	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public int getRenderBlockPass() {
-		return 1; // transparency enabled
+	public boolean isFullyOpaque(IBlockState state) {
+		return false;
+	}
+	
+	@Override
+	public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+		return true;
 	}
 
+	@SuppressWarnings("deprecation")
+	@Nullable
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = new IIcon[12];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockBlue");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockRed");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockGreen");
-		iconBuffer[3] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockYellow");
-		iconBuffer[4] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockDark");
-		iconBuffer[5] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockDarkness");
-		iconBuffer[6] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockWhite");
-		iconBuffer[7] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockMilk");
-		iconBuffer[8] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockOrange");
-		iconBuffer[9] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockSyren");
-		iconBuffer[10] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockGray");
-		iconBuffer[11] = par1IconRegister.registerIcon("warpdrive:passive/gasBlockViolet");
-	}
-
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		return iconBuffer[metadata % iconBuffer.length];
-	}
-
-	@Override
-	public int getMobilityFlag() {
-		return 1;
-	}
-
-	@Override
-	public Item getItemDropped(int var1, Random var2, int var3) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
 		return null;
 	}
+	
+	@Override
+	public boolean isReplaceable(IBlockAccess worldIn, @Nonnull BlockPos blockPos) {
+		return true;
+	}
+	
+	@Override
+	public boolean canPlaceBlockAt(World worldIn, @Nonnull BlockPos blockPos) {
+		return true;
+	}
+	
+	@Override
+	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid) {
+		return false;
+	}
+	
+	// 0 "warpdrive:passive/gasBlockBlue"
+	// 1 "warpdrive:passive/gasBlockRed"
+	// 2 "warpdrive:passive/gasBlockGreen"
+	// 3 "warpdrive:passive/gasBlockYellow"
+	// 4 "warpdrive:passive/gasBlockDark"
+	// 5 "warpdrive:passive/gasBlockDarkness"
+	// 6 "warpdrive:passive/gasBlockWhite"
+	// 7 "warpdrive:passive/gasBlockMilk"
+	// 8 "warpdrive:passive/gasBlockOrange"
+	// 9 "warpdrive:passive/gasBlockSyren"
+	// 10 "warpdrive:passive/gasBlockGray"
+	// 11 "warpdrive:passive/gasBlockViolet"
 
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public EnumPushReaction getMobilityFlag(IBlockState state) {
+		return EnumPushReaction.DESTROY;
+	}
+
+	@Nullable
+	@Override
+	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+		return null;
+	}
+	
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 0;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		Block sideBlock = world.getBlock(x, y, z);
-		if (sideBlock.isAssociatedBlock(this)) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+		IBlockState blockStateSide = blockAccess.getBlockState(blockPos);
+		if (blockStateSide.getBlock().isAssociatedBlock(this)) {
 			return false;
 		}
-		return world.isAirBlock(x, y, z);
+		return blockAccess.isAirBlock(blockPos);
 	}
-
+	
 	@Override
 	public boolean isCollidable() {
 		return false;
 	}
-
+	
 	@Override
-	public void onBlockAdded(World par1World, int par2, int par3, int par4) {
+	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
 		// Gas blocks allow only in space
-		if (par1World.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
-			par1World.setBlockToAir(par2, par3, par4);
+		if (world.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+			world.setBlockToAir(blockPos);
 		}
 	}
 }

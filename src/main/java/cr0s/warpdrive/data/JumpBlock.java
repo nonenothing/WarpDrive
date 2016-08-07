@@ -211,12 +211,13 @@ public class JumpBlock {
 				newBlockMeta = getMetadataRotation(nbtToDeploy, transformation.getRotationSteps());
 			}
 			BlockPos target = transformation.apply(x, y, z);
-			setBlockNoLight(targetWorld, target, block.getStateFromMeta(newBlockMeta), 2);
+			IBlockState blockState = block.getStateFromMeta(newBlockMeta);
+			setBlockNoLight(targetWorld, target, blockState, 2);
 			
 			// Re-schedule air blocks update
 			if (block == WarpDrive.blockAir) {
-				targetWorld.markBlockForUpdate(target);
-				targetWorld.scheduleBlockUpdate(target, block, 40 + targetWorld.rand.nextInt(20));
+				targetWorld.notifyBlockUpdate(target, blockState, blockState, 3);
+				targetWorld.scheduleBlockUpdate(target, block, 40 + targetWorld.rand.nextInt(20), 0);
 			}
 			
 			if (nbtToDeploy != null) {

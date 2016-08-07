@@ -4,10 +4,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.WorldChunkManagerHell;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,13 +19,13 @@ import cr0s.warpdrive.render.RenderBlank;
 public class SpaceWorldProvider extends WorldProvider {
 	
 	public SpaceWorldProvider() {
-		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
+		biomeProvider = new BiomeProviderSingle(WarpDrive.spaceBiome);
 		hasNoSky = false;
 	}
 	
 	@Override
-	public String getDimensionName() {
-		return "Space";
+	public DimensionType getDimensionType() {
+		return WarpDrive.dimensionTypeSpace;
 	}
 	
 	@Override
@@ -58,7 +60,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public BiomeGenBase getBiomeGenForCoords(int x, int z) {
+	public Biome getBiomeForCoords(BlockPos blockPos) {
 		return WarpDrive.spaceBiome;
 	}
 	
@@ -85,7 +87,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public String getSaveFolder() {
-		return (dimensionId == 0 ? null : "WarpDriveSpace" + dimensionId);
+		return (getDimensionType().getId() == 0 ? null : "WarpDriveSpace" + getDimensionType().getId());
 	}
 	
 	/*
@@ -119,12 +121,12 @@ public class SpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public IChunkProvider createChunkGenerator() {
-		return new SpaceGenerator(worldObj, 45);
+	public IChunkGenerator createChunkGenerator() {
+		return new SpaceChunkProvider(worldObj, 45);
 	}
 	
 	@Override
-	public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
+	public boolean canBlockFreeze(BlockPos blockPos, boolean byWater) {
 		return false;
 	}
 	

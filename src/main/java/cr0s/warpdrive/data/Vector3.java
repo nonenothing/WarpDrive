@@ -297,12 +297,16 @@ public class Vector3 implements Cloneable {
 		return this;
 	}
 	
+	public BlockPos getBlockPos() {
+		return new BlockPos(Math.floor(x), Math.floor(y), Math.floor(z));
+	}
+	
 	/**
 	 * Gets all entities inside of this position in block space.
 	 */
 	public List<Entity> getEntitiesWithin(World worldObj, Class<? extends Entity> par1Class) {
 		return worldObj.getEntitiesWithinAABB(par1Class,
-				AxisAlignedBB.getBoundingBox(intX(), intY(), intZ(), intX() + 1, intY() + 1, intZ() + 1));
+				new AxisAlignedBB(intX(), intY(), intZ(), intX() + 1, intY() + 1, intZ() + 1));
 	}
 	
 	/**
@@ -585,7 +589,7 @@ public class Vector3 implements Cloneable {
 		Vec3d reachPoint = new Vec3d(startingPosition.xCoord + look.xCoord * reachDistance, startingPosition.yCoord + look.yCoord * reachDistance,
 				startingPosition.zCoord + look.zCoord * reachDistance);
 		double playerBorder = 1.1 * reachDistance;
-		AxisAlignedBB boxToScan = AxisAlignedBB.getBoundingBox(-playerBorder, -playerBorder, -playerBorder, playerBorder, playerBorder, playerBorder);
+		AxisAlignedBB boxToScan = new AxisAlignedBB(-playerBorder, -playerBorder, -playerBorder, playerBorder, playerBorder, playerBorder);
 		List<Entity> entitiesHit = world.getEntitiesWithinAABBExcludingEntity(null, boxToScan);
 		double closestEntity = reachDistance;
 		

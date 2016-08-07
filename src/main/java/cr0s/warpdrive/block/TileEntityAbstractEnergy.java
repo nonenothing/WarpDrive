@@ -16,7 +16,9 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
@@ -172,19 +174,19 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		return new Object[] { getEnergyStored(), getMaxEnergyStored() };
 	}
 	
-	public String getEnergyStatus() {
+	public ITextComponent getEnergyStatus() {
 		if (getMaxEnergyStored() == 0) {
-			return "";
+			return new TextComponentString("");
 		}
-		return I18n.translateToLocalFormatted("warpdrive.energy.statusLine",
+		return new TextComponentTranslation("warpdrive.energy.statusLine",
 			BigDecimal.valueOf(convertInternalToEU(getEnergyStored())).toPlainString(),
 			BigDecimal.valueOf(convertInternalToEU(getMaxEnergyStored())).toPlainString());
 	}
 	
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
 			getBlockType().getLocalizedName())
-			       + getEnergyStatus();
+			.appendSibling(getEnergyStatus());
 	}
 	
 	// OpenComputer callback methods
@@ -209,8 +211,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// Minecraft overrides
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;

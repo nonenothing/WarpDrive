@@ -108,7 +108,7 @@ public class StarMapRegistry {
 		cleanup();
 		
 		core.validateShipSpatialParameters(reason);
-		aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
+		aabb1 = new AxisAlignedBB(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
 		
 		for (StarMapRegistryItem entry : registry) {
 			// Skip cores in other worlds
@@ -145,7 +145,7 @@ public class StarMapRegistry {
 			
 			if (distance2 <= ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1) * ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1)) {
 				// Compare warp-fields for intersection
-				aabb2 = AxisAlignedBB.getBoundingBox(entry.minX, entry.minY, entry.minZ, entry.maxX, entry.maxY, entry.maxZ);
+				aabb2 = new AxisAlignedBB(entry.minX, entry.minY, entry.minZ, entry.maxX, entry.maxY, entry.maxZ);
 				if (aabb1.intersectsWith(aabb2)) {
 					return true;
 				}

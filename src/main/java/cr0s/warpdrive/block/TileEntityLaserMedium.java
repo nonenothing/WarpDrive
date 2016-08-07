@@ -13,8 +13,8 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;

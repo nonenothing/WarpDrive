@@ -11,12 +11,16 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
@@ -31,7 +35,6 @@ import net.minecraftforge.common.util.EnumHelper;
 
 import org.apache.logging.log4j.Logger;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -116,13 +119,10 @@ import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
-import cr0s.warpdrive.render.RenderBlockForceField;
-import cr0s.warpdrive.render.RenderBlockStandard;
 import cr0s.warpdrive.render.RenderOverlayCamera;
 import cr0s.warpdrive.world.BiomeSpace;
 import cr0s.warpdrive.world.HyperSpaceWorldProvider;
 import cr0s.warpdrive.world.HyperSpaceWorldGenerator;
-import cr0s.warpdrive.world.SpaceWorldProvider;
 import cr0s.warpdrive.world.SpaceWorldGenerator;
 
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2API;" + " after:CoFHCore;" + " after:ComputerCraft;"
@@ -177,7 +177,7 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemForceFieldShape itemForceFieldShape;
 	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
 	
-	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
+	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", "warp", 18, new int[] { 2, 6, 5, 2 }, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F);
 	public static ItemHelmet itemHelmet;
 	public static ItemAirCanisterFull itemAirCanisterFull;
 	
@@ -189,6 +189,8 @@ public class WarpDrive implements LoadingCallback {
 	public static DamageWarm damageWarm;
 	
 	public static Biome spaceBiome;
+	public static DimensionType dimensionTypeSpace;
+	public static DimensionType dimensionTypeHyperSpace;
 	@SuppressWarnings("FieldCanBeLocal")
 	private SpaceWorldGenerator spaceWorldGenerator;
 	@SuppressWarnings("FieldCanBeLocal")
@@ -222,14 +224,12 @@ public class WarpDrive implements LoadingCallback {
 		
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera(Minecraft.getMinecraft()));
+
+			MinecraftForge.EVENT_BUS.register(new ClientCameraHandler());
 			
-			FMLCommonHandler.instance().bus().register(new ClientCameraHandler());
-			
-			RenderBlockStandard.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockStandard.instance);
-			
-			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
+			// @TODO MC1.10 force field rendering
+			// RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
+			// RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
 		}
 	}
 	
@@ -243,9 +243,7 @@ public class WarpDrive implements LoadingCallback {
 		fieldBlockHardness = WarpDrive.getField(Block.class, "blockHardness", "field_149782_v");
 		
 		// CORE CONTROLLER
-		blockShipController = new BlockShipController();
-		
-		GameRegistry.registerBlock(blockShipController, "blockShipController");
+		blockShipController = new BlockShipController("blockShipController");
 		GameRegistry.registerTileEntity(TileEntityShipController.class, MODID + ":blockShipController");
 		
 		// SHIP CORE
@@ -427,7 +425,7 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerTileEntity(TileEntitySecurityStation.class, MODID + ":blockSecurityStation");
 		*/
 		// DECORATIVE
-		blockDecorative = new BlockDecorative();
+		blockDecorative = new BlockDecorative("blockDecorative");
 		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
 		
 		// HULL BLOCKS
@@ -438,8 +436,8 @@ public class WarpDrive implements LoadingCallback {
 		
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
-			blockHulls_plain[index] = new BlockHullPlain(tier);
-			blockHulls_glass[index] = new BlockHullGlass(tier);
+			blockHulls_plain[index] = new BlockHullPlain("blockHull" + tier + "_plain", tier);
+			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_plain", tier);
 			GameRegistry.registerBlock(blockHulls_plain[index], ItemBlockHull.class, "blockHull" + tier + "_plain");
 			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
 		}
@@ -454,7 +452,7 @@ public class WarpDrive implements LoadingCallback {
 		itemComponent = new ItemComponent();
 		GameRegistry.registerItem(itemComponent, "itemComponent");
 		
-		itemHelmet = new ItemHelmet(armorMaterial, 0);
+		itemHelmet = new ItemHelmet(armorMaterial, EntityEquipmentSlot.HEAD);
 		GameRegistry.registerItem(itemHelmet, "itemHelmet");
 		
 		itemAirCanisterFull = new ItemAirCanisterFull();
@@ -493,13 +491,15 @@ public class WarpDrive implements LoadingCallback {
 		hyperSpaceWorldGenerator = new HyperSpaceWorldGenerator();
 		GameRegistry.registerWorldGenerator(hyperSpaceWorldGenerator, 0);
 		
-		spaceBiome = (new BiomeSpace(WarpDriveConfig.G_SPACE_BIOME_ID)).setColor(0).setDisableRain().setBiomeName("Space");
+		Biome.BiomeProperties biomeProperties = new Biome.BiomeProperties("Space").setRainDisabled().setWaterColor(0);
+		spaceBiome = (new BiomeSpace(biomeProperties));
 		BiomeDictionary.registerBiomeType(spaceBiome, BiomeDictionary.Type.DEAD, BiomeDictionary.Type.WASTELAND);
-		DimensionManager.registerProviderType(WarpDriveConfig.G_SPACE_PROVIDER_ID, SpaceWorldProvider.class, true);
-		DimensionManager.registerDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID, WarpDriveConfig.G_SPACE_PROVIDER_ID);
 		
-		DimensionManager.registerProviderType(WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
-		DimensionManager.registerDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID, WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID);
+		dimensionTypeSpace = DimensionType.register("Space", "_space", WarpDriveConfig.G_SPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
+		DimensionManager.registerDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID, dimensionTypeSpace);
+
+		dimensionTypeHyperSpace = DimensionType.register("Hyperspace", "_hyperspace", WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
+		DimensionManager.registerDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID, dimensionTypeHyperSpace);
 		
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			creativeTabWarpDrive.setBackgroundImageName("items.png");
@@ -613,15 +613,16 @@ public class WarpDrive implements LoadingCallback {
 		}
 	}
 	
-	public static void addChatMessage(final ICommandSender sender, final String message) {
-		String[] lines = message.replace("§", "" + (char)167).replace("\\n", "\n").split("\n");
+	public static void addChatMessage(final ICommandSender sender, final ITextComponent textComponent) {
+		String[] lines = textComponent.getFormattedText().replace("§", "" + (char)167).replace("\\n", "\n").split("\n");
 		for (String line : lines) {
-			sender.addChatMessage(new ChatComponentText(line));
+			sender.addChatMessage(new TextComponentString(line));
 		}
 		
 		// logger.info(message);
 	}
 	
+	@SuppressWarnings("ConstantConditions")
 	@Mod.EventHandler
 	public void onFMLMissingMappings(FMLMissingMappingsEvent event) {
 		for (FMLMissingMappingsEvent.MissingMapping mapping: event.get()) {
@@ -870,7 +871,7 @@ public class WarpDrive implements LoadingCallback {
 		}
 	}
 	
-	public static Field getField(Class<?> clazz, String deobfuscatedName, String obfuscatedName) {
+	private static Field getField(Class<?> clazz, String deobfuscatedName, String obfuscatedName) {
 		Field fieldToReturn = null;
 		
 		try {

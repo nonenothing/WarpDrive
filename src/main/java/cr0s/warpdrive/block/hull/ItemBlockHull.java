@@ -1,13 +1,11 @@
 package cr0s.warpdrive.block.hull;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockColored;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+
+import javax.annotation.Nonnull;
 
 public class ItemBlockHull extends ItemBlock {
 	
@@ -19,21 +17,16 @@ public class ItemBlockHull extends ItemBlock {
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int p_77617_1_) {
-		return field_150939_a.getIcon(2, BlockColored.func_150031_c(p_77617_1_));
-	}
-	
-	@Override
 	public int getMetadata(int damage) {
 		return damage;
 	}
-	
+
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
 		if (itemstack == null) {
 			return getUnlocalizedName();
 		}
-		return getUnlocalizedName() + ItemDye.field_150923_a[BlockColored.func_150031_c(itemstack.getItemDamage())];
+		return getUnlocalizedName() + EnumDyeColor.byDyeDamage( itemstack.getItemDamage() ).getUnlocalizedName();
 	}
 }

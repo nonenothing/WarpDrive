@@ -4,7 +4,8 @@ import java.util.Arrays;
 
 import net.minecraft.nbt.NBTTagCompound;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	
@@ -18,12 +19,12 @@ public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 	}
 	
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName());
 	}
 	

@@ -1,5 +1,9 @@
 package cr0s.warpdrive.render;
 
+public class RenderBlockForceField {
+	
+}
+/* @TODO MC1.10
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.TileEntityForceField;
@@ -114,3 +118,4 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 		return renderId;
 	}
 }
+/**/

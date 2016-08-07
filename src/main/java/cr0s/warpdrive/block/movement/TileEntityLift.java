@@ -8,6 +8,7 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,8 +50,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -77,13 +78,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
 				mode = MODE_INACTIVE;
 				if (getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(pos, 0, 2); // disabled
+					updateMetadata(0); // disabled
 				}
 				return;
 			}
 			
 			if (getBlockMetadata() != mode) {
-				worldObj.setBlockMetadataWithNotify(pos, mode, 2); // current mode
+				updateMetadata(mode); // current mode
 			}
 			
 			// Launch a beam: search non-air blocks under lift
@@ -117,7 +118,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 		IBlockState blockState = worldObj.getBlockState(blockPos);
 		return blockState.getBlock() == Blocks.AIR
 			|| worldObj.isAirBlock(blockPos)
-			|| blockState.getBlock().getCollisionBoundingBoxFromPool(worldObj, blockPos) == null;
+			|| blockState.getBlock().getCollisionBoundingBox(blockState, worldObj, blockPos) == null;
 	}
 	
 	private void liftEntity() {
@@ -132,26 +133,25 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 		
 		// Lift up
 		if (mode == MODE_UP) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, firstUncoveredY, zMin, xMax, pos.getY(), zMax);
-			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
-			if (list != null) {
-				for (Object o : list) {
-					if ( o != null
-					  && o instanceof EntityLivingBase
-					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) o).setPositionAndUpdate(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
-						PacketHandler.sendBeamPacket(worldObj,
-								new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
-								new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
-								1F, 1F, 0F, 40, 0, 100);
-						worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
-						consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
-					}
+			AxisAlignedBB aabb = new AxisAlignedBB(xMin, firstUncoveredY, zMin, xMax, pos.getY(), zMax);
+			List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+			for (Entity entity : list) {
+				if ( entity != null
+				  && entity instanceof EntityLivingBase
+				  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+					entity.setPositionAndUpdate(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
+					PacketHandler.sendBeamPacket(worldObj,
+							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
+							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
+							1F, 1F, 0F, 40, 0, 100);
+					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
+					consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 				}
 			}
 		} else if (mode == MODE_DOWN) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin,
-					Math.min(firstUncoveredY + 4.0D, pos.getY()), zMin, xMax, pos.getY() + 2.0D, zMax);
+			AxisAlignedBB aabb = new AxisAlignedBB(
+					xMin, Math.min(firstUncoveredY + 4.0D, pos.getY()), zMin,
+					xMax, pos.getY() + 2.0D, zMax);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object o : list) {

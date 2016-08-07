@@ -28,7 +28,9 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
@@ -116,8 +118,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -218,10 +220,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				if (guideTicks <= 0) {
 					guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 					
-					String msg = I18n.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName())
-					           + I18n.translateToLocalFormatted("warpdrive.forcefield.guide.lowPower");
+					ITextComponent msg = new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName())
+					    .appendSibling(new TextComponentTranslation("warpdrive.forcefield.guide.lowPower"));
 					
-					AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
+					AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
 					List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 					
 					for (Entity entity : list) {
@@ -229,7 +231,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 							continue;
 						}
 						
-						WarpDrive.addChatMessage((EntityPlayer) entity, msg);
+						WarpDrive.addChatMessage(entity, msg);
 					}
 				}
 			}
@@ -355,7 +357,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			vector = iteratorForcefield.next();
 			
-			if (!worldObj.blockExists(vector.getBlockPos()) || !worldObj.getChunkFromBlockCoords(vector.getBlockPos()).isChunkLoaded) {
+			if (!worldObj.isBlockLoaded(vector.getBlockPos(), false) || !worldObj.getChunkFromBlockCoords(vector.getBlockPos()).isLoaded()) {
 				continue;
 			}
 
@@ -497,7 +499,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				// remove our own force field block
 				if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]) {
 					assert(blockState.getBlock() instanceof BlockForceField);
-					if (((BlockForceField) blockState.getBlock()).getProjector(worldObj, vector.x, vector.y, vector.z) == this) {
+					if (((BlockForceField) blockState.getBlock()).getProjector(worldObj, vector.getBlockPos()) == this) {
 						worldObj.setBlockToAir(vector.getBlockPos());
 						vForceFields.remove(vector);
 					}
@@ -651,7 +653,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		PacketHandler.sendBeamPacket(worldObj, new Vector3(vector.x, vector.y, vector.z).translate(0.5D), new Vector3(this).translate(0.5D),
 			0.7F, 0.4F, 0.2F, age, 0, 50);
 		// standard harvest block effect
-		worldObj.playAuxSFXAtEntity(null, 2001, vector.x, vector.y, vector.z, Block.getIdFromBlock(block) + (metadata << 12));
+		worldObj.playEvent(2001, vector.getBlockPos(), Block.getStateId(blockState));
 		worldObj.setBlockToAir(vector.getBlockPos());
 		return false;
 	}
@@ -666,10 +668,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			for (Iterator<VectorI> iterator = vForceFields.iterator(); iterator.hasNext();) {
 				VectorI vector = iterator.next();
 				if (!isChunkLoading) {
-					if (!(worldObj.blockExists(vector.getBlockPos()))) {// chunk is not loaded, skip it
+					if (!(worldObj.isBlockLoaded(vector.getBlockPos(), false))) {// chunk is not loaded, skip it
 						continue;
 					}
-					if (!worldObj.getChunkFromBlockCoords(vector.getBlockPos()).isChunkLoaded) {// chunk is unloading, skip it
+					if (!worldObj.getChunkFromBlockCoords(vector.getBlockPos()).isLoaded()) {// chunk is unloading, skip it
 						continue;
 					}
 				}
@@ -838,36 +840,36 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return false;
 	}
 	
-	private String getShapeStatus() {
+	private ITextComponent getShapeStatus() {
 		EnumForceFieldShape enumForceFieldShape = getShape();
-		String strDisplayName = I18n.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.unlocalizedName);
+		ITextComponent displayName = new TextComponentTranslation("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.unlocalizedName);
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.none", 
-				strDisplayName);
+			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.none", 
+				displayName);
 		} else if (isDoubleSided) {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.double",
-				strDisplayName);
+			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.double",
+				displayName);
 		} else {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.single", 
-				strDisplayName);
+			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.single", 
+				displayName);
 		}
 	}
 	
-	private String getUpgradeStatus() {
+	private ITextComponent getUpgradeStatus() {
 		String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.none",
+			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.none",
 				strUpgrades);
 		} else {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.valid",
+			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.valid",
 				strUpgrades);
 		}
 	}
 	
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-			+ "\n" + getShapeStatus()
-			+ "\n" + getUpgradeStatus();
+			.appendSibling(new TextComponentString("\n")).appendSibling(getShapeStatus())
+			.appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
 	}
 	
 	@Override
@@ -1045,7 +1047,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	// Common OC/CC methods
 	private Object[] state() {    // isConnected, isPowered, shape
 		int energy = getEnergyStored();
-		String status = getStatus();
+		String status = getStatus().toString();
 		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
 	}
 	

@@ -97,20 +97,18 @@ public class LivingHandler {
 				} else if (air <= 1) {// time elapsed => consume air block
 					entity_airBlock.put(entity.getEntityId(), AIR_BLOCK_TICKS);
 					
-					/* TODO MC1.10 air decrease on breathing
 					int metadata;
 					if (blockState1.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
-						metadata = entity.worldObj.getBlockMetadata(x, y, z);
+						metadata = blockState1.getBlock().getMetaFromState(blockState1);
 						if (metadata > 0 && metadata < 15) {
-							entity.worldObj.setBlockMetadataWithNotify(x, y, z, metadata - 1, 2);
+							entity.worldObj.setBlockState(new BlockPos(x, y, z), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
 						}
 					} else {
-						metadata = entity.worldObj.getBlockMetadata(x, y + 1, z);
+						metadata = blockState2.getBlock().getMetaFromState(blockState1);
 						if (metadata > 0 && metadata < 15) {
-							entity.worldObj.setBlockMetadataWithNotify(x, y + 1, z, metadata - 1, 2);
+							entity.worldObj.setBlockState(new BlockPos(x, y + 1, z), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
 						}
 					}
-					/**/
 				} else {
 					entity_airBlock.put(entity.getEntityId(), air - 1);
 				}

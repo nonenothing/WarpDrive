@@ -44,21 +44,21 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		}
 	}
 	
-	protected void harvestBlock(VectorI valuable) {
-		IBlockState blockState = worldObj.getBlockState(valuable.getBlockPos());
+	protected void harvestBlock(final BlockPos valuable) {
+		IBlockState blockState = worldObj.getBlockState(valuable);
 		if (blockState.getBlock() instanceof BlockLiquid) {
 			// Evaporate fluid
-			worldObj.playSound(null, valuable.getBlockPos(), net.minecraft.init.SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
+			worldObj.playSound(null, valuable, net.minecraft.init.SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
 					2.6F + (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()) * 0.8F);
 		} else {
-			List<ItemStack> itemStacks = getItemStackFromBlock(valuable.getBlockPos(), blockState);
+			List<ItemStack> itemStacks = getItemStackFromBlock(valuable, blockState);
 			if (addToConnectedInventories(itemStacks)) {
 				stop();
 			}
 			// standard harvest block effect
-			worldObj.playAuxSFXAtEntity(null, 2001, valuable.x, valuable.y, valuable.z, Block.getIdFromBlock(block) + (blockMeta << 12));
+			worldObj.playEvent(2001, valuable, Block.getStateId(blockState));
 		}
-		worldObj.setBlockToAir(valuable.getBlockPos());
+		worldObj.setBlockToAir(valuable);
 	}
 	
 	private List<ItemStack> getItemStackFromBlock(BlockPos blockPos, IBlockState blockState) {

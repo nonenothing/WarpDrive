@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -24,7 +25,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraft.util.EnumFacing;
@@ -99,8 +102,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -337,18 +340,22 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			break;
 		}
 	}
-	
-	public void messageToAllPlayersOnShip(String msg) {
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+
+	@Deprecated
+	public void messageToAllPlayersOnShip(String string) {
+		messageToAllPlayersOnShip(new TextComponentString(string));
+	}
+	public void messageToAllPlayersOnShip(ITextComponent textComponent) {
+		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
-		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + msg);
+		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent.getFormattedText());
 		for (Object object : list) {
 			if (!(object instanceof EntityPlayer)) {
 				continue;
 			}
 			
-			WarpDrive.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + msg);
+			WarpDrive.addChatMessage((EntityPlayer) object, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ").appendSibling(textComponent));
 		}
 	}
 	
@@ -394,7 +401,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void makePlayersOnShipDrunk(int tickDuration) {
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
 		for (Object object : list) {
@@ -404,12 +411,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			
 			// Set "drunk" effect
 			((EntityPlayer) object).addPotionEffect(
-					new PotionEffect(Potion.getPotionFromResourceLocation("nausea"), tickDuration, 0, true, true));
+					new PotionEffect(MobEffects.NAUSEA, tickDuration, 0, true, true));
 		}
 	}
 	
 	private void summonPlayers() {
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		for (int i = 0; i < controller.players.size(); i++) {
 			String nick = controller.players.get(i);
@@ -423,7 +430,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void summonSinglePlayer(String nickname) {
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		for (int i = 0; i < controller.players.size(); i++) {
 			String nick = controller.players.get(i);
@@ -527,7 +534,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 		
 		boolean isUnlimited = false;
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		for (Object object : list) {
 			if (object == null || !(object instanceof EntityPlayer)) {
@@ -786,8 +793,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				
 				StringBuilder reason = new StringBuilder();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
-					messageToAllPlayersOnShip("Ship is too small (" + shipMass + "/" + WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE
-							+ ").\nInsufficient ship mass to open hyperspace portal.\nUse a jumpgate to reach or exit hyperspace.");
+					messageToAllPlayersOnShip(new TextComponentString("Ship is too small (" + shipMass + "/" + WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE
+							+ ").\nInsufficient ship mass to open hyperspace portal.\nUse a jumpgate to reach or exit hyperspace."));
 					controller.setJumpFlag(false);
 					return;
 				}
@@ -837,7 +844,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	private void teleportPlayersToSpace() {
 		if (worldObj.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
-			AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(pos.getX() - 2, pos.getY() - 1, pos.getZ() - 2, pos.getX() + 2, pos.getY() + 4, pos.getZ() + 2);
+			AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 1, pos.getZ() - 2, pos.getX() + 2, pos.getY() + 4, pos.getZ() + 2);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 			
 			WorldServer spaceWorld = worldObj.getMinecraftServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
@@ -957,12 +964,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
 				getBlockType().getLocalizedName())
-			+ "\n" + getEnergyStatus()
-			+ ((cooldownTime > 0) ? "\n" + I18n.translateToLocalFormatted("warpdrive.ship.statusLine.cooling", cooldownTime / 20) : "")
-			+ ((isolationBlocksCount > 0) ? "\n" + I18n.translateToLocalFormatted("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
+			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
+			.appendSibling((cooldownTime > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.cooling", cooldownTime / 20)) : new TextComponentString(""))
+			.appendSibling((isolationBlocksCount > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0)) : new TextComponentString(""));
 	}
 	
 	public static int calculateRequiredEnergy(EnumShipCoreMode enumShipCoreMode, int shipVolume, int jumpDistance) {

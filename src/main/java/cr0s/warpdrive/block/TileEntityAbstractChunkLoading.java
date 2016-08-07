@@ -23,8 +23,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 
 	// OVERRIDES
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (shouldChunkLoad() != areChunksLoaded) {
 			refreshLoading();

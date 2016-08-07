@@ -61,11 +61,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	@Override
 	public void markDirty() {
 		super.markDirty();
-		/* TODO 1.10
 		if (worldObj != null) {
-			worldObj.markBlockForUpdate(pos);
+			IBlockState blockState = worldObj.getBlockState(pos);
+			worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
 		}
-		/**/
 	}
 	
 	// Inventory management methods
@@ -201,36 +200,36 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// searching methods
-	
-	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
-	public static Set<VectorI> getConnectedBlocks(World world, VectorI start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
+
+	protected static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static Set<BlockPos> getConnectedBlocks(World world, BlockPos start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, BlockPos... ignore) {
 		return getConnectedBlocks(world, Arrays.asList(start), directions, whitelist, maxRange, ignore);
 	}
-	public static Set<VectorI> getConnectedBlocks(World world, Collection<VectorI> start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, VectorI... ignore) {
-		Set<VectorI> toIgnore = new HashSet<>();
+	protected static Set<BlockPos> getConnectedBlocks(World world, Collection<BlockPos> start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, BlockPos... ignore) {
+		Set<BlockPos> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
 		
-		Set<VectorI> toIterate = new HashSet<>();
+		Set<BlockPos> toIterate = new HashSet<>();
 		toIterate.addAll(start);
 		
-		Set<VectorI> toIterateNext;
+		Set<BlockPos> toIterateNext;
 		
-		Set<VectorI> iterated = new HashSet<>();
+		Set<BlockPos> iterated = new HashSet<>();
 		
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
 			toIterateNext = new HashSet<>();
-			for (VectorI current : toIterate) {
-				if (whitelist.contains(current.getBlockState_noChunkLoading(world))) {
+			for (BlockPos current : toIterate) {
+				if (whitelist.contains(new VectorI(current).getBlockState_noChunkLoading(world).getBlock())) {
 					iterated.add(current);
 				}
 				
 				for(EnumFacing direction : directions) {
-					VectorI next = current.clone(direction);
+					BlockPos next = current.offset(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
-						if (whitelist.contains(next.getBlockState_noChunkLoading(world))) {
+						if (whitelist.contains(new VectorI(next).getBlockState_noChunkLoading(world).getBlock())) {
 							toIterateNext.add(next);
 						}
 					}

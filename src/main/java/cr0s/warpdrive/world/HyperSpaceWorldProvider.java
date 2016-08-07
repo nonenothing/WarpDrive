@@ -5,11 +5,12 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.WorldChunkManagerHell;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
@@ -19,13 +20,13 @@ import cr0s.warpdrive.render.RenderBlank;
 public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	public HyperSpaceWorldProvider() {
-		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
+		biomeProvider  = new BiomeProviderSingle(WarpDrive.spaceBiome);
 		hasNoSky = false;
 	}
 	
 	@Override
-	public String getDimensionName() {
-		return "Hyperspace";
+	public DimensionType getDimensionType() {
+		return WarpDrive.dimensionTypeHyperSpace;
 	}
 	
 	@Override
@@ -60,7 +61,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public BiomeGenBase getBiomeGenForCoords(int x, int z) {
+	public Biome getBiomeForCoords(BlockPos blockPos) {
 		return WarpDrive.spaceBiome;
 	}
 	
@@ -87,13 +88,13 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public String getSaveFolder() {
-		return (dimensionId == 0 ? null : "WarpDriveHyperSpace" + dimensionId);
+		return (getDimensionType().getId() == 0 ? null : "WarpDriveHyperSpace" + getDimensionType().getId());
 	}
 	
 	@Override
-	public boolean canCoordinateBeSpawn(int par1, int par2) {
-		int var3 = worldObj.getTopSolidOrLiquidBlock(par1, par2);
-		return var3 != 0;
+	public boolean canCoordinateBeSpawn(int x, int z) {
+		BlockPos blockPos = worldObj.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z));
+		return blockPos.getY() != 0;
 	}
 	
 	@Override
@@ -120,43 +121,44 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public IChunkProvider createChunkGenerator() {
-		return new HyperSpaceGenerator(worldObj, 46);
+	public IChunkGenerator createChunkGenerator() {
+		return new HyperSpaceChunkProvider(worldObj, 46);
 	}
 	
 	@Override
-	public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
+	public boolean canBlockFreeze(BlockPos blockPos, boolean byWater) {
 		return false;
 	}
 	
 	@Override
 	public BlockPos getRandomizedSpawnPoint() {
-		BlockPos var5 = new BlockPos(worldObj.getSpawnPoint());
+		BlockPos blockPos = new BlockPos(worldObj.getSpawnPoint());
 		// boolean isAdventure = worldObj.getWorldInfo().getGameType() == EnumGameType.ADVENTURE;
 		int spawnFuzz = 100;
 		int spawnFuzzHalf = spawnFuzz / 2;
 		{
-			var5.posX += worldObj.rand.nextInt(spawnFuzz) - spawnFuzzHalf;
-			var5.posZ += worldObj.rand.nextInt(spawnFuzz) - spawnFuzzHalf;
-			var5.posY = 200;
+			blockPos = new BlockPos(
+				blockPos.getX() + worldObj.rand.nextInt(spawnFuzz) - spawnFuzzHalf,
+				200,
+				blockPos.getZ() + worldObj.rand.nextInt(spawnFuzz) - spawnFuzzHalf);
 		}
 		
-		if (worldObj.isAirBlock(var5.posX, var5.posY, var5.posZ)) {
-			worldObj.setBlock(var5.posX, var5.posY, var5.posZ, Blocks.STONE, 0, 2);
-			worldObj.setBlock(var5.posX + 1, var5.posY + 1, var5.posZ, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX + 1, var5.posY + 2, var5.posZ, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX - 1, var5.posY + 1, var5.posZ, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX - 1, var5.posY + 2, var5.posZ, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ + 1, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 2, var5.posZ + 1, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ - 1, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 2, var5.posZ - 1, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 3, var5.posZ, Blocks.GLASS, 0, 2);
-			worldObj.setBlock(var5.posX, var5.posY, var5.posZ, WarpDrive.blockAir, 15, 2);
-			worldObj.setBlock(var5.posX, var5.posY + 1, var5.posZ, WarpDrive.blockAir, 15, 2);
+		if (worldObj.isAirBlock(blockPos)) {
+			worldObj.setBlockState(blockPos, Blocks.STONE.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 1, 1,  0), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 1, 2,  0), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add(-1, 1,  0), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add(-1, 2,  0), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 0, 1,  1), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 0, 2,  1), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 0, 1, -1), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 0, 2, -1), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 0, 3,  0), Blocks.GLASS.getDefaultState(), 2);
+			worldObj.setBlockState(blockPos.add( 0, 0,  0), WarpDrive.blockAir.getStateFromMeta(15), 2);
+			worldObj.setBlockState(blockPos.add( 0, 1,  0), WarpDrive.blockAir.getStateFromMeta(15), 2);
 		}
 		
-		return var5;
+		return blockPos;
 	}
 	
 	@Override

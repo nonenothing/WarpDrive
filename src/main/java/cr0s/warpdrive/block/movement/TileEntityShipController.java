@@ -10,7 +10,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
@@ -89,8 +90,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
     
     @Override
-    public void updateEntity() {
-		super.updateEntity();
+    public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -216,35 +217,35 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		return tag;
 	}
 	
-	public String attachPlayer(EntityPlayer entityPlayer) {
+	public ITextComponent attachPlayer(EntityPlayer entityPlayer) {
 		for (int i = 0; i < players.size(); i++) {
 			String name = players.get(i);
 			
 			if (entityPlayer.getDisplayName().equals(name)) {
 				players.remove(i);
-				return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-						getBlockType().getLocalizedName())
-					+ I18n.translateToLocalFormatted("warpdrive.ship.playerDetached",
-							core != null && !core.shipName.isEmpty() ? core.shipName : "-",
-							getAttachedPlayersList());
+				return new TextComponentTranslation("warpdrive.guide.prefix",
+					getBlockType().getLocalizedName())
+					.appendSibling(new TextComponentTranslation("warpdrive.ship.playerDetached",
+						core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+						getAttachedPlayersList()));
 			}
 		}
 		
 		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
-		players.add(entityPlayer.getDisplayName());
+		players.add(entityPlayer.getDisplayNameString());
 		updatePlayersString();
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-				+ I18n.translateToLocalFormatted("warpdrive.ship.playerAttached",
-						core != null && !core.shipName.isEmpty() ? core.shipName : "-",
-						getAttachedPlayersList());
+		return new TextComponentTranslation("warpdrive.guide.prefix",
+			getBlockType().getLocalizedName())
+			.appendSibling(new TextComponentTranslation("warpdrive.ship.playerAttached",
+				core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+				getAttachedPlayersList()));
 	}
 	
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ I18n.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
-						getAttachedPlayersList());
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
+			getBlockType().getLocalizedName())
+			.appendSibling(new TextComponentTranslation("warpdrive.ship.attachedPlayers",
+				getAttachedPlayersList()));
 	}
 	
 	public void updatePlayersString() {
@@ -489,7 +490,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			return null;
 		}
 		
-		return new Object[] { core.xCoord, core.yCoord, core.zCoord };
+		return new Object[] { core.getPos().getX(), core.getPos().getY(), core.getPos().getZ() };
 	}
 	
 	@Callback
@@ -585,7 +586,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				}
 				setFront(argInt0);
 				setRight(argInt1);
-				setUp(Math.min(255 - yCoord, argInt2));
+				setUp(Math.min(255 - pos.getY(), argInt2));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { getFront(), getRight(), getUp() };
@@ -606,7 +607,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				}
 				setBack(argInt0);
 				setLeft(argInt1);
-				setDown(Math.min(yCoord, argInt2));
+				setDown(Math.min(pos.getY(), argInt2));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { getBack(), getLeft(), getDown() };
@@ -709,7 +710,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] getEnergyRequired(Object[] arguments) {
 		try {
 			if (arguments.length == 1 && core != null) {
-				return new Object[] { core.calculateRequiredEnergy(getMode(), core.shipMass, toInt(arguments[0])) };
+				return new Object[] { TileEntityShipCore.calculateRequiredEnergy(getMode(), core.shipMass, toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {
 			return new Integer[] { -1 };
@@ -803,7 +804,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 					return null;
 				}
 
-				return new Object[]{core.xCoord, core.yCoord, core.zCoord};
+				return new Object[] { core.getPos().getX(), core.getPos().getY(), core.getPos().getZ() };
 
 			case "energy":
 				if (core == null) {

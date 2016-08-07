@@ -56,7 +56,7 @@ public final class EntityStarCore extends Entity {
 		
 		yMin = yCoord - MAX_RANGE;
 		yMax = yCoord + MAX_RANGE;
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, yMin, zMin, xMax, yMax, zMax);
+		AxisAlignedBB aabb = new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, aabb);
 		
 		if (!isLogged) {

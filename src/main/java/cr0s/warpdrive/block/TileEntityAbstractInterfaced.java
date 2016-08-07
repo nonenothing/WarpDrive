@@ -83,10 +83,9 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		return (url != null);
 	}
 	
-	// TileEntity overrides, notably for OpenComputer
 	@Override
- 	public void updateEntity() {
-		super.updateEntity();
+ 	public void update() {
+		super.update();
 		
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (!OC_addedToNetwork && OC_enable) {

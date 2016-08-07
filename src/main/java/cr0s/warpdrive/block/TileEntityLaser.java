@@ -9,19 +9,17 @@ import cr0s.warpdrive.data.SoundEvents;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.*;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
@@ -61,7 +59,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 	}
 	private ScanResultType scanResult_type = ScanResultType.IDLE;
-	private VectorI scanResult_position = null;
+	private BlockPos scanResult_position = null;
 	private String scanResult_blockUnlocalizedName;
 	private int scanResult_blockMetadata = 0;
 	private float scanResult_blockResistance = -2;
@@ -79,8 +77,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		// Legacy tile entity
 		if (legacyCheck) {
@@ -183,28 +181,26 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			scanResult_blockResistance = -2;
 			if (mopResult != null) {
 				scanResult_type = ScanResultType.BLOCK;
-				scanResult_position = new VectorI(mopResult.getBlockPos());
-				Block block = worldObj.getBlock(scanResult_position.x, scanResult_position.y, scanResult_position.z);
-				if (block != null) {
-					scanResult_blockUnlocalizedName = block.getUnlocalizedName();
-					scanResult_blockMetadata = worldObj.getBlockMetadata(scanResult_position.x, scanResult_position.y, scanResult_position.z);
-					scanResult_blockResistance = block.getExplosionResistance(null);
-				}
+				scanResult_position = mopResult.getBlockPos();
+				IBlockState blockState = worldObj.getBlockState(scanResult_position);
+				scanResult_blockUnlocalizedName = blockState.getBlock().getUnlocalizedName();
+				scanResult_blockMetadata = blockState.getBlock().getMetaFromState(blockState);
+				scanResult_blockResistance = blockState.getBlock().getExplosionResistance(null);
 				PacketHandler.sendBeamPacket(worldObj, vSource, new Vector3(mopResult.hitVec), r, g, b, 50, energy, 200);
 			} else {
 				scanResult_type = ScanResultType.NONE;
-				scanResult_position = new VectorI(vReachPoint.intX(), vReachPoint.intY(), vReachPoint.intZ());
+				scanResult_position = vReachPoint.getBlockPos();
 				PacketHandler.sendBeamPacket(worldObj, vSource, vReachPoint, r, g, b, 50, energy, 200);
 			}
 			
 			if (WarpDriveConfig.LOGGING_WEAPON) {
 				WarpDrive.logger.info("Scan result type " + scanResult_type.name
-					+ " at " + scanResult_position.x + " " + scanResult_position.y + " " + scanResult_position.z
+					+ " at " + scanResult_position.getX() + " " + scanResult_position.getY() + " " + scanResult_position.getZ()
 					+ " block " + scanResult_blockUnlocalizedName + " " + scanResult_blockMetadata + " resistance " + scanResult_blockResistance);
 			}
 			
 			sendEvent("laserScanning",
-					scanResult_type.name, scanResult_position.x, scanResult_position.y, scanResult_position.z,
+					scanResult_type.name, scanResult_position.getX(), scanResult_position.getY(), scanResult_position.getZ(),
 					scanResult_blockUnlocalizedName, scanResult_blockMetadata, scanResult_blockResistance);
 			return;
 		}
@@ -303,40 +299,40 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				break;
 			}
 			
-			Block block = worldObj.getBlock(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
+			IBlockState blockState = worldObj.getBlockState(blockHit.getBlockPos());
 			// int blockMeta = worldObj.getBlockMetadata(hit.blockX, hit.blockY, hit.blockZ);
 			// get hardness and blast resistance
 			float hardness = -2.0F;
 			if (WarpDrive.fieldBlockHardness != null) {
 				// WarpDrive.fieldBlockHardness.setAccessible(true);
 				try {
-					hardness = (float)WarpDrive.fieldBlockHardness.get(block);
+					hardness = (float)WarpDrive.fieldBlockHardness.get(blockState.getBlock());
 				} catch (IllegalArgumentException | IllegalAccessException exception) {
 					exception.printStackTrace();
-					WarpDrive.logger.error("Unable to access block hardness value of " + block);
+					WarpDrive.logger.error("Unable to access block hardness value of " + blockState.getBlock());
 				}
 			}
-			if (block instanceof IDamageReceiver) {
-				hardness = ((IDamageReceiver)block).getBlockHardness(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+			if (blockState.getBlock() instanceof IDamageReceiver) {
+				hardness = ((IDamageReceiver) blockState.getBlock()).getBlockHardness(worldObj, blockHit.getBlockPos(),
 					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 			}				
 			if (WarpDriveConfig.LOGGING_WEAPON) {
-				WarpDrive.logger.info("Block collision found at " + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ
-						+ " with block " + block + " of hardness " + hardness);
+				WarpDrive.logger.info("Block collision found at " + blockHit.getBlockPos().getX() + " " + blockHit.getBlockPos().getY() + " " + blockHit.getBlockPos().getZ()
+						+ " with block " + blockState.getBlock() + " of hardness " + hardness);
 			}
 			
 			// check area protection
-			if (isBlockBreakCanceled(null, worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ)) {
+			if (isBlockBreakCanceled(null, worldObj, blockHit.getBlockPos())) {
 				if (WarpDriveConfig.LOGGING_WEAPON) {
-					WarpDrive.logger.info("Laser weapon cancelled at (" + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ + ")");
+					WarpDrive.logger.info("Laser weapon cancelled at (" + blockHit.getBlockPos().getX() + " " + blockHit.getBlockPos().getY() + " " + blockHit.getBlockPos().getZ() + ")");
 				}
 				vHitPoint = new Vector3(blockHit.hitVec);
 				break;
 			}
 			
 			// Boost a laser if it uses same beam frequency
-			if (block.isAssociatedBlock(WarpDrive.blockLaser) || block.isAssociatedBlock(WarpDrive.blockLaserCamera)) {
-				TileEntityLaser tileEntityLaser = (TileEntityLaser) worldObj.getTileEntity(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
+			if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockLaser) || blockState.getBlock().isAssociatedBlock(WarpDrive.blockLaserCamera)) {
+				TileEntityLaser tileEntityLaser = (TileEntityLaser) worldObj.getTileEntity(blockHit.getBlockPos());
 				if (tileEntityLaser != null && tileEntityLaser.getBeamFrequency() == beamFrequency) {
 					tileEntityLaser.addBeamEnergy(energy);
 					vHitPoint = new Vector3(blockHit.hitVec);
@@ -351,7 +347,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("Explosion triggered with strength " + strength);
 				}
-				worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, strength, true, true);
+				worldObj.newExplosion(null, blockHit.getBlockPos().getX(), blockHit.getBlockPos().getY(), blockHit.getBlockPos().getZ(), strength, true, true);
 				vHitPoint = new Vector3(blockHit.hitVec);
 				break;
 			}
@@ -390,9 +386,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			// add 'explode' effect with the beam color
 			// worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, 4, true, true);
 			Vector3 origin = new Vector3(
-				blockHit.blockX -0.3D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
-				blockHit.blockY -0.3D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
-				blockHit.blockZ -0.3D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
+				blockHit.getBlockPos().getX() -0.3D * vDirection.x + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+				blockHit.getBlockPos().getY() -0.3D * vDirection.y + worldObj.rand.nextFloat() - worldObj.rand.nextFloat(),
+				blockHit.getBlockPos().getZ() -0.3D * vDirection.z + worldObj.rand.nextFloat() - worldObj.rand.nextFloat());
 			Vector3 direction = new Vector3(
 				-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 				-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
@@ -400,8 +396,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, r, g, b, 96);
 			
 			// apply custom damages
-			if (block instanceof IDamageReceiver) {
-				energy = ((IDamageReceiver)block).applyDamage(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+			if (blockState.getBlock() instanceof IDamageReceiver) {
+				energy = ((IDamageReceiver)blockState.getBlock()).applyDamage(worldObj,	blockHit.getBlockPos(),
 					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("IDamageReceiver damage applied, remaining energy is " + energy);
@@ -417,10 +413,10 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("Explosion triggered with strength " + strength);
 				}
-				worldObj.newExplosion(null, blockHit.blockX, blockHit.blockY, blockHit.blockZ, strength, true, true);
-				worldObj.setBlock(blockHit.blockX, blockHit.blockY, blockHit.blockZ, (worldObj.rand.nextBoolean()) ? Blocks.fire : Blocks.air);
+				worldObj.newExplosion(null, blockHit.getBlockPos().getX(), blockHit.getBlockPos().getY(), blockHit.getBlockPos().getZ(), strength, true, true);
+				worldObj.setBlockState(blockHit.getBlockPos(), (worldObj.rand.nextBoolean()) ? Blocks.FIRE.getDefaultState() : Blocks.AIR.getDefaultState());
 			} else {
-				worldObj.setBlockToAir(blockHit.blockX, blockHit.blockY, blockHit.blockZ);
+				worldObj.setBlockToAir(blockHit.getBlockPos());
 			}
 		}
 		
@@ -458,17 +454,16 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				vec3Source.zCoord + vDirection.z * reachDistance);
 		
 		// Get all possible entities
-		AxisAlignedBB boxToScan = AxisAlignedBB.getBoundingBox(
-				Math.min(xCoord - raytraceTolerance, vec3Target.xCoord - raytraceTolerance),
-				Math.min(yCoord - raytraceTolerance, vec3Target.yCoord - raytraceTolerance),
-				Math.min(zCoord - raytraceTolerance, vec3Target.zCoord - raytraceTolerance),
-				Math.max(xCoord + raytraceTolerance, vec3Target.xCoord + raytraceTolerance),
-				Math.max(yCoord + raytraceTolerance, vec3Target.yCoord + raytraceTolerance),
-				Math.max(zCoord + raytraceTolerance, vec3Target.zCoord + raytraceTolerance));
-		@SuppressWarnings("unchecked")
+		AxisAlignedBB boxToScan = new AxisAlignedBB(
+				Math.min(pos.getX() - raytraceTolerance, vec3Target.xCoord - raytraceTolerance),
+				Math.min(pos.getY() - raytraceTolerance, vec3Target.yCoord - raytraceTolerance),
+				Math.min(pos.getZ() - raytraceTolerance, vec3Target.zCoord - raytraceTolerance),
+				Math.max(pos.getX() + raytraceTolerance, vec3Target.xCoord + raytraceTolerance),
+				Math.max(pos.getY() + raytraceTolerance, vec3Target.yCoord + raytraceTolerance),
+				Math.max(pos.getZ() + raytraceTolerance, vec3Target.zCoord + raytraceTolerance));
 		List<Entity> entities = worldObj.getEntitiesWithinAABBExcludingEntity(null, boxToScan);
 		
-		if (entities == null || entities.isEmpty()) {
+		if (entities.isEmpty()) {
 			if (WarpDriveConfig.LOGGING_WEAPON) {
 				WarpDrive.logger.info("No entity on trajectory (box)");
 			}
@@ -478,12 +473,12 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		// Pick the closest one on trajectory
 		HashMap<Double, RayTraceResult> entityHits = new HashMap<>(entities.size());
 		for (Entity entity : entities) {
-			if (entity != null && entity.canBeCollidedWith() && entity.boundingBox != null) {
+			if (entity != null && entity.canBeCollidedWith() && entity.getCollisionBoundingBox() != null) {
 				double border = entity.getCollisionBorderSize();
-				AxisAlignedBB aabbEntity = entity.boundingBox.expand(border, border, border);
+				AxisAlignedBB aabbEntity = entity.getCollisionBoundingBox().expand(border, border, border);
 				RayTraceResult hitMOP = aabbEntity.calculateIntercept(vec3Source, vec3Target);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
-					WarpDrive.logger.info("Checking " + entity + " boundingBox " + entity.boundingBox + " border " + border + " aabbEntity " + aabbEntity + " hitMOP " + hitMOP);
+					WarpDrive.logger.info("Checking " + entity + " boundingBox " + entity.getCollisionBoundingBox() + " border " + border + " aabbEntity " + aabbEntity + " hitMOP " + hitMOP);
 				}
 				if (hitMOP != null) {
 					RayTraceResult mopEntity = new RayTraceResult(entity);
@@ -523,20 +518,20 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		b = (float)vRGB.z;
 	}
 	
-	protected String getBeamFrequencyStatus() {
+	protected ITextComponent getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return I18n.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return I18n.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid", beamFrequency );
+			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.invalid", beamFrequency );
 		} else {
-			return I18n.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid", beamFrequency );
+			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.valid", beamFrequency );
 		}
 	}
 	
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ getBeamFrequencyStatus();
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
+		    getBlockType().getLocalizedName())
+		    .appendSibling(getBeamFrequencyStatus());
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {
@@ -623,7 +618,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		if (scanResult_type != ScanResultType.IDLE) {
 			try {
 				Object[] info = { scanResult_type.name,
-						scanResult_position.x, scanResult_position.y, scanResult_position.z,
+						scanResult_position.getX(), scanResult_position.getY(), scanResult_position.getZ(),
 						scanResult_blockUnlocalizedName, scanResult_blockMetadata, scanResult_blockResistance };
 				scanResult_type = ScanResultType.IDLE;
 				scanResult_position = null;

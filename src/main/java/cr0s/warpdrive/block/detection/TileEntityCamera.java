@@ -6,7 +6,7 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.TextComponentBase;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -38,8 +38,8 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		// Update video channel on clients (recovery mechanism, no need to go too fast)
 		if (!worldObj.isRemote) {
@@ -79,7 +79,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		}
 	}
 	
-	private TextComponentBase getVideoChannelStatus() {
+	private ITextComponent getVideoChannelStatus() {
 		if (videoChannel == -1) {
 			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.undefined");
 		} else if (videoChannel < 0) {
@@ -101,10 +101,10 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		}
 	}
 	
-	public TextComponentBase getStatus() {
+	public ITextComponent getStatus() {
 		return new TextComponentTranslation("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-				+ getVideoChannelStatus();
+		    getBlockType().getLocalizedName())
+		    .appendSibling(getVideoChannelStatus());
 	}
 	
 	@Override

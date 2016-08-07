@@ -3,168 +3,135 @@ package cr0s.warpdrive.block.passive;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.render.RenderBlockStandard;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockAir extends Block {
-	private final boolean TRANSPARENT_AIR = true;
-	private final boolean AIR_DEBUG = false;
-	private final int AIR_BLOCK_TICKS = 40;
-	private IIcon[] iconBuffer;
+	private static final boolean TRANSPARENT_AIR = true;
+	private static final boolean AIR_DEBUG = false;
+	private static final int AIR_BLOCK_TICKS = 40;
 	
 	public BlockAir() {
-		super(Material.fire);
+		super(Material.FIRE);
 		setHardness(0.0F);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.passive.Air");
+		setRegistryName("warpdrive.passive.Air");
+		GameRegistry.register(this);
 	}
 	
 	@Override
-	public boolean isOpaqueCube() {
+	public boolean isVisuallyOpaque() {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}
 	
 	@Override
-	public boolean isAir(IBlockAccess var1, int var2, int var3, int var4) {
+	public boolean isAir(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
 		return true;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
-		return null;
-	}
-	
-	@Override
-	public boolean isReplaceable(IBlockAccess var1, int var2, int var3, int var4) {
-		return true;
-	}
-	
-	@Override
-	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return true;
-	}
-	
-	@Override
-	public boolean canCollideCheck(int var1, boolean var2) {
-		return false;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
-		return TRANSPARENT_AIR ? 1 : 0;
-	}
-	
-	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		if (AIR_DEBUG) {
-			iconBuffer = new IIcon[16];
-			iconBuffer[ 0] = par1IconRegister.registerIcon("warpdrive:passive/airBlock0");
-			iconBuffer[ 1] = par1IconRegister.registerIcon("warpdrive:passive/airBlock1");
-			iconBuffer[ 2] = par1IconRegister.registerIcon("warpdrive:passive/airBlock2");
-			iconBuffer[ 3] = par1IconRegister.registerIcon("warpdrive:passive/airBlock3");
-			iconBuffer[ 4] = par1IconRegister.registerIcon("warpdrive:passive/airBlock4");
-			iconBuffer[ 5] = par1IconRegister.registerIcon("warpdrive:passive/airBlock5");
-			iconBuffer[ 6] = par1IconRegister.registerIcon("warpdrive:passive/airBlock6");
-			iconBuffer[ 7] = par1IconRegister.registerIcon("warpdrive:passive/airBlock7");
-			iconBuffer[ 8] = par1IconRegister.registerIcon("warpdrive:passive/airBlock8");
-			iconBuffer[ 9] = par1IconRegister.registerIcon("warpdrive:passive/airBlock9");
-			iconBuffer[10] = par1IconRegister.registerIcon("warpdrive:passive/airBlock10");
-			iconBuffer[11] = par1IconRegister.registerIcon("warpdrive:passive/airBlock11");
-			iconBuffer[12] = par1IconRegister.registerIcon("warpdrive:passive/airBlock12");
-			iconBuffer[13] = par1IconRegister.registerIcon("warpdrive:passive/airBlock13");
-			iconBuffer[14] = par1IconRegister.registerIcon("warpdrive:passive/airBlock14");
-			iconBuffer[15] = par1IconRegister.registerIcon("warpdrive:passive/airBlock15");
-		} else {
-			blockIcon = par1IconRegister.registerIcon("warpdrive:passive/airBlock");
-		}
-	}
-	
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (AIR_DEBUG) {
-			return iconBuffer[metadata];
-		} else {
-			return blockIcon;
-		}
-	}
-	
-	@Override
-	public int getMobilityFlag() {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(int var1, Random var2, int var3) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
 		return null;
 	}
 
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
+	@Override
+	public boolean isReplaceable(IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
+		return true;
+	}
+	
+	@Override
+	public boolean canPlaceBlockAt(World world, @Nonnull BlockPos blockPos) {
+		return true;
+	}
+
+	@Override
+	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public EnumPushReaction getMobilityFlag(IBlockState state) {
+		return EnumPushReaction.DESTROY;
+	}
+
+	@Nullable
+	@Override
+	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+		return null;
+	}
+	
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 0;
 	}
 	
-	/**
-	 * How many world ticks before ticking
-	 */
 	@Override
 	public int tickRate(World par1World) {
 		return AIR_BLOCK_TICKS;
 	}
 	
-	/**
-	 * Ticks the block if it's been scheduled
-	 */
 	@Override
-	public void updateTick(World world, int x, int y, int z, Random par5Random) {
+	public void updateTick(World world, BlockPos blockPos, IBlockState blockState, Random random) {
 		if (world.isRemote) {
 			return;
 		}
 		
-		int concentration = world.getBlockMetadata(x, y, z);
+		int concentration = blockState.getBlock().getMetaFromState(blockState);
 		boolean isInSpaceWorld = world.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID || world.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || !isInSpaceWorld) {
-			world.setBlock(x, y, z, Blocks.air, 0, 3); // replace our air block to vacuum block
+			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3); // replace our air block to vacuum block
 		} else {
 			// Try to spread the air
-			spreadAirBlock(world, x, y, z, concentration);
+			spreadAirBlock(world, blockPos, concentration);
 		}
-		world.scheduleBlockUpdate(x, y, z, this, 30 + 2 * concentration);
+		world.scheduleBlockUpdate(blockPos, this, 30 + 2 * concentration, 0);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
 		if (AIR_DEBUG) {
-			return side == 0 || side == 1;
+			return side == EnumFacing.DOWN || side == EnumFacing.UP;
 		}
 		
-		Block sideBlock = world.getBlock(x, y, z);
-		if (sideBlock == this) {
-			return false;
-		}
-		
-		return world.isAirBlock(x, y, z);
+		Block sideBlock = blockAccess.getBlockState(blockPos).getBlock();
+		return sideBlock != this && blockAccess.isAirBlock(blockPos);
 	}
 	
-	@Override
-	public int getRenderType() {
-		return RenderBlockStandard.renderId;
-	}
-	
-	private void spreadAirBlock(World world, int x, int y, int z, int concentration) {
+	private void spreadAirBlock(World world, final BlockPos blockPos, final int concentration) {
+		/* @TODO MC1.10 air overhaul
 		int air_count = 1;
 		int empty_count = 0;
 		int sum_concentration = concentration + 1;
@@ -384,6 +351,7 @@ public class BlockAir extends Block {
 				world.setBlock(x, y, z - 1, this, mid_concentration, 2);
 			}
 		}
+		/**/
 	}
 	
 	@Override
@@ -392,11 +360,12 @@ public class BlockAir extends Block {
 	}
 	
 	@Override
-	public void onBlockAdded(World par1World, int par2, int par3, int par4) {
-		if (par1World.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID || par1World.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
-			par1World.scheduleBlockUpdate(par2, par3, par4, this, tickRate(par1World));
+	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
+		if (world.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID || world.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+			world.scheduleBlockUpdate(blockPos, this, tickRate(world), 0);
 		} else {
-			par1World.setBlockToAir(par2, par3, par4);
+			world.setBlockToAir(blockPos);
 		}
+		super.onBlockAdded(world, blockPos, blockState);
 	}
 }

@@ -8,6 +8,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
@@ -18,11 +19,7 @@ import cr0s.warpdrive.world.JumpgateGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
 import cr0s.warpdrive.world.WorldGenStation;
 
-/*
- *   /generate <structure>
- *   Possible structures:
- *   moon, ship, asteroid, astfield, gascloud, star
- */
+import javax.annotation.Nonnull;
 
 @MethodsReturnNonnullByDefault
 public class CommandGenerate extends CommandBase {
@@ -38,22 +35,23 @@ public class CommandGenerate extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender commandSender) {
+	public String getCommandUsage(@Nonnull ICommandSender commandSender) {
 		return "/" + getCommandName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
 	}
 	
 	@Override
-	public void execute(MinecraftServer server, ICommandSender commandSender, String[] args) throws CommandException {
+	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
 		World world = commandSender.getEntityWorld();
 		BlockPos blockPos = commandSender.getPosition();
-		
+
+		//noinspection ConstantConditions
 		if (world == null || blockPos == null) {
-			WarpDrive.addChatMessage(commandSender, "* generate: unknown world or coordinates, probably an invalid command sender in action here.");
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("* generate: unknown world or coordinates, probably an invalid command sender in action here."));
 			return;
 		}
 		
 		if (args.length <= 0 || args.length == 3 || args.length > 5) {
-			WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
+			WarpDrive.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
 		}
 		
@@ -68,7 +66,7 @@ public class CommandGenerate extends CommandBase {
 		
 		// Reject command, if player is not in space
 		if (world.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID && (!"ship".equals(structure))) {
-			WarpDrive.addChatMessage(commandSender, "* generate: this structure is only allowed in space!");
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("* generate: this structure is only allowed in space!"));
 			return;
 		}
 		
@@ -103,7 +101,7 @@ public class CommandGenerate extends CommandBase {
 					break;
 				case "jumpgate":
 					if (args.length != 2) {
-						WarpDrive.addChatMessage(commandSender, "Missing jumpgate name");
+						WarpDrive.addChatMessage(commandSender, new TextComponentString("Missing jumpgate name"));
 					} else {
 						WarpDrive.logger.info("/generate: creating jumpgate at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 						blockPos = new BlockPos(blockPos.getX(), Math.min(blockPos.getY(), 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), blockPos.getZ());
@@ -116,7 +114,7 @@ public class CommandGenerate extends CommandBase {
 					}
 					break;
 				default:
-					WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
+					WarpDrive.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 					break;
 			}
 		}
@@ -137,7 +135,7 @@ public class CommandGenerate extends CommandBase {
 	private void generateStructure(ICommandSender commandSender, final String group, final String name, World world, final BlockPos blockPos) {
 		AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
 		if (structure == null) {
-			WarpDrive.addChatMessage(commandSender, "Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group));
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group)));
 		} else {
 			WarpDrive.logger.info("/generate: Generating " + group + ":" + structure.getName() + " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 			structure.generate(world, world.rand, blockPos);

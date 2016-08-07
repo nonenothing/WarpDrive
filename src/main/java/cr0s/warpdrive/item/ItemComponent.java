@@ -3,27 +3,28 @@ package cr0s.warpdrive.item;
 import java.util.List;
 
 import cr0s.warpdrive.data.EnumComponentType;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
 
 public class ItemComponent extends Item implements IAirCanister {	
-	private IIcon[] icons;
 	private static ItemStack[] itemStackCache;
 	
 	public ItemComponent() {
 		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.crafting.component");
+		setRegistryName(getUnlocalizedName());
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		GameRegistry.register(this);
 		
-		icons = new IIcon[EnumComponentType.length];
 		itemStackCache = new ItemStack[EnumComponentType.length];
 	}
 	
@@ -42,13 +43,7 @@ public class ItemComponent extends Item implements IAirCanister {
 		return new ItemStack(WarpDrive.itemComponent, amount, enumComponentType.ordinal());
 	}
 	
-	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
-		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
-			icons[enumComponentType.ordinal()] = par1IconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
-		}
-	}
-	
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
@@ -59,17 +54,9 @@ public class ItemComponent extends Item implements IAirCanister {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
-		if (damage >= 0 && damage < EnumComponentType.length) {
-			return icons[damage];
-		}
-		return icons[0];
-	}
-	
-	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
 		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
-			list.add(new ItemStack(item, 1, enumComponentType.ordinal()));
+			subItems.add(new ItemStack(item, 1, enumComponentType.ordinal()));
 		}
 	}
 	
@@ -101,13 +88,13 @@ public class ItemComponent extends Item implements IAirCanister {
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
 		switch (EnumComponentType.get(itemStack.getItemDamage())) {
 		case AIR_CANISTER:
-			tooltip += I18n.translateToLocalFormatted("item.warpdrive.crafting.AirCanisterEmpty.tooltip");
+			tooltip += new TextComponentTranslation("item.warpdrive.crafting.AirCanisterEmpty.tooltip").getFormattedText();
 			break;
 		default:
 			break;

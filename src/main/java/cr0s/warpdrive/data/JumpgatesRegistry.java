@@ -65,13 +65,13 @@ public final class JumpgatesRegistry {
         gates.add(jg);
     }
 
-    public boolean addGate(String name, int x, int y, int z) {
+    public boolean addGate(String name, BlockPos blockPos) {
         // Gate already exists
         if (findGateByName(name) != null) {
             return false;
         }
 
-        addGate(new Jumpgate(name, x, y, z));
+        addGate(new Jumpgate(name, blockPos));
 
         try {
             saveGates();

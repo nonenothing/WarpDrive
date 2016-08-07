@@ -65,8 +65,8 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -85,7 +85,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (laserTicks > 20) {
 				PacketHandler.sendBeamPacket(worldObj,
 					new Vector3(this).translate(0.5D),
-					new Vector3(xCoord, 255, zCoord).translate(0.5D), 
+					new Vector3(pos.getX(), 255, pos.getZ()).translate(0.5D), 
 					1.0F, 0.2F, 0.0F, 40, 0, 100);
 				laserTicks = 0;
 			}
@@ -97,7 +97,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (laserTicks > 20) {
 				PacketHandler.sendBeamPacket(worldObj,
 					new Vector3(this).translate(0.5D),
-					new Vector3(shipCore.xCoord, shipCore.yCoord, shipCore.zCoord).translate(0.5D),
+					new Vector3(shipCore).translate(0.5D),
 					0.0F, 1.0F, 0.2F, 40, 0, 100);
 				laserTicks = 0;
 			}
@@ -171,7 +171,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 								+ " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
 						}
 						Block blockAtTarget = worldObj.getBlock(targetX + jumpBlock.x, targetY + jumpBlock.y, targetZ + jumpBlock.z);
-						if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
+						if (blockAtTarget == Blocks.AIR || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
 							Transformation transformation = new Transformation(jumpShip, worldObj, targetX, targetY, targetZ, (byte) 0);
 							jumpBlock.deploy(worldObj, transformation);
 							

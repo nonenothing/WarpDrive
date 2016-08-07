@@ -28,11 +28,6 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	private int gracePeriod_calls = 3;
 	
 	@Override
-	public boolean canUpdate() {
-		return false;
-	}
-	
-	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (tag.hasKey("projector")) {
@@ -106,7 +101,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
 			}
 		}
-		worldObj.markBlockForUpdate(pos);
+		IBlockState blockState = worldObj.getBlockState(pos);
+		worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
 	}
 	
 	public TileEntityForceFieldProjector getProjector() {

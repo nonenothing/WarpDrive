@@ -15,8 +15,9 @@ public class SoundEvents {
 	public static final SoundEvent WARP_4_SECONDS;
 	public static final SoundEvent WARP_10_SECONDS;
 	public static final SoundEvent WARP_30_SECONDS;
+    public static final SoundEvent DING;
 
-	static {
+    static {
 		LASER_LOW = registerSound("lowlaser");
 		LASER_MEDIUM = registerSound("midlaser");
 		LASER_HIGH = registerSound("hilaser");
@@ -26,8 +27,10 @@ public class SoundEvents {
 		WARP_4_SECONDS = registerSound("warp_4s");
 		WARP_10_SECONDS = registerSound("warp_10s");
 		WARP_30_SECONDS = registerSound("warp_30s");
+		DING = registerSound("ding");
 	}
 	
+	@SuppressWarnings({"unused", "EmptyMethod"})
 	public static void registerSounds() {
 		// Dummy method to make sure the static initializer runs
 	}

@@ -1,6 +1,8 @@
 package cr0s.warpdrive.block.forcefield;
 
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
@@ -51,8 +53,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -97,22 +99,22 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 			ForceFieldRegistry.updateInRegistry(this);
 		}
 	}
-	
-	String getBeamFrequencyStatus() {
+
+	private ITextComponent getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return I18n.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return I18n.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.invalid", beamFrequency);
 		} else {
-			return I18n.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.valid", beamFrequency);
 		}
 	}
 	
-	public String getStatus() {
-		String strEnergyStatus = getEnergyStatus();
-		return (worldObj != null ? I18n.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : "")
-	        + (strEnergyStatus.isEmpty() ? "" : "\n" + strEnergyStatus)
-			+ "\n" + getBeamFrequencyStatus();
+	public ITextComponent getStatus() {
+		ITextComponent energyStatus = getEnergyStatus();
+		return (worldObj != null ? new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : new TextComponentString(""))
+	        .appendSibling(energyStatus.toString().isEmpty() ? new TextComponentString("") : new TextComponentString("\n").appendSibling(energyStatus))
+			.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package cr0s.warpdrive.network;
 import net.minecraft.client.Minecraft;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -31,9 +32,9 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	}
 	
 	public MessageCloak(CloakedArea area, final boolean decloak) {
-		this.coreX = area.coreX;
-		this.coreY = area.coreY;
-		this.coreZ = area.coreZ;
+		this.coreX = area.blockPosCore.getX();
+		this.coreY = area.blockPosCore.getY();
+		this.coreZ = area.blockPosCore.getZ();
 		this.minX = area.minX;
 		this.minY = area.minY;
 		this.minZ = area.minZ;
@@ -78,10 +79,10 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	private void handle(EntityPlayerSP player) {
 		if (decloak) {
 			// reveal the area
-			WarpDrive.cloaks.removeCloakedArea(player.worldObj.provider.getDimension(), coreX, coreY, coreZ);
+			WarpDrive.cloaks.removeCloakedArea(player.worldObj.provider.getDimension(), new BlockPos(coreX, coreY, coreZ));
 		} else { 
 			// Hide the area
-			WarpDrive.cloaks.updateCloakedArea(player.worldObj, player.worldObj.provider.getDimension(), coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
+			WarpDrive.cloaks.updateCloakedArea(player.worldObj, player.worldObj.provider.getDimension(), new BlockPos(coreX, coreY, coreZ), tier, minX, minY, minZ, maxX, maxY, maxZ);
 		}
 	}
 	

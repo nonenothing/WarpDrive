@@ -4,6 +4,8 @@ import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	
 	public ItemBlockForceFieldProjector(Block block) {
@@ -12,7 +14,8 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.projector");
 	}
-	
+
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {
 		if (itemstack == null) {

@@ -1515,10 +1515,10 @@ public class Recipes {
 				
 				// changing colors
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 1, enumDyeColor.getDyeDamage()),
-						"dye" + BlockHullPlain.getDyeColorName(enumDyeColor),
+						"dye" + enumDyeColor.getUnlocalizedName(),
 						"blockHull" + tier + "_plain"));
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 1, enumDyeColor.getDyeDamage()),
-						"dye" + BlockHullPlain.getDyeColorName(enumDyeColor),
+						"dye" + enumDyeColor.getUnlocalizedName(),
 						"blockHull" + tier + "_glass"));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_plain",

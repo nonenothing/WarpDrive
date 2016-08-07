@@ -288,7 +288,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		return entityEnergyCost * FORCEFIELD_MAX_FACTOR_ENTITY_COST * Math.exp(FORCEFIELD_TAU_FACTOR_ENTITY_COST / countEntityInteractions);
 	}
 	
-	public int onEntityEffect(World world, final int blockX, final int blockY, final int blockZ, Entity entity) {
+	public int onEntityEffect(World world, final BlockPos blockPos, Entity entity) {
 		int countdown = 0;
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
@@ -300,7 +300,7 @@ public class ForceFieldSetup extends GlobalPosition {
 					} else if (entry.getKey() == EnumForceFieldUpgrade.ATTRACTION || entry.getKey() == EnumForceFieldUpgrade.REPULSION) {
 						value = accelerationLevel;
 					}
-					countdown += entry.getKey().onEntityEffect(value, world, x, y, z, blockX, blockY, blockZ, entity);
+					countdown += entry.getKey().onEntityEffect(value, world, x, y, z, blockPos, entity);
 				}
 			}
 		}

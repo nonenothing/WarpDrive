@@ -6,7 +6,8 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
@@ -37,8 +38,8 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		// Update video channel on clients (recovery mechanism, no need to go too fast)
 		if (!worldObj.isRemote) {
@@ -78,20 +79,20 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		}
 	}
 	
-	private String getVideoChannelStatus() {
+	private ITextComponent getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.valid", videoChannel);
 			} else {
-				return I18n.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.validCamera",
 						videoChannel,
 						camera.position.getX(),
 						camera.position.getY(),
@@ -101,10 +102,10 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	}
 	
 	@Override
-	public String getStatus() {
-		return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ (worldObj.isRemote ? getVideoChannelStatus() : getBeamFrequencyStatus());
+	public ITextComponent getStatus() {
+		return new TextComponentTranslation("warpdrive.guide.prefix",
+			getBlockType().getLocalizedName())
+			.appendSibling(worldObj.isRemote ? getVideoChannelStatus() : getBeamFrequencyStatus());
 	}
 	
 	@Override

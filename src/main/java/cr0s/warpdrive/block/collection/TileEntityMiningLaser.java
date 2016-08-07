@@ -13,13 +13,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -47,7 +48,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private boolean enoughPower = false;
 	private int currentLayer;
 	
-	private final ArrayList<VectorI> valuablesInLayer = new ArrayList<>();
+	private final ArrayList<BlockPos> valuablesInLayer = new ArrayList<>();
 	private int valuableIndex = 0;
 	
 	public TileEntityMiningLaser() {
@@ -68,8 +69,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	@SuppressWarnings("UnnecessaryReturnStatement")
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -203,18 +204,18 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 					updateMetadata(BlockMiningLaser.ICON_MINING_POWERED);
 				}
 				
-				VectorI valuable = valuablesInLayer.get(valuableIndex);
+				BlockPos valuable = valuablesInLayer.get(valuableIndex);
 				valuableIndex++;
 				
 				// Mine valuable ore
-				IBlockState blockState = worldObj.getBlockState(valuable.getBlockPos());
+				IBlockState blockState = worldObj.getBlockState(valuable);
 				
 				// Skip if block is too hard or its empty block (check again in case it changed)
-				if (!canDig(blockState, valuable.getBlockPos())) {
+				if (!canDig(blockState, valuable)) {
 					delayTicksMine = Math.round(WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS * 0.8F);
 				}
 				int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
-				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable.x, valuable.y, valuable.z).translate(0.5D),
+				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable).translate(0.5D),
 						1.0F, 1.0F, 0.0F, age, 0, 50);
 				worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 				harvestBlock(valuable);
@@ -296,7 +297,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		blockState = worldObj.getBlockState(blockPos);
 		if (canDig(blockState, blockPos)) {
 			if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
-				valuablesInLayer.add(new VectorI(x, currentLayer, z));
+				valuablesInLayer.add(blockPos);
 			}
 		}
 		for (radius = 1; radius <= WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS; radius++) {
@@ -311,7 +312,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				blockState = worldObj.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
-						valuablesInLayer.add(new VectorI(x, currentLayer, z));
+						valuablesInLayer.add(blockPos);
 					}
 				}
 			}
@@ -322,7 +323,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				blockState = worldObj.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
-						valuablesInLayer.add(new VectorI(x, currentLayer, z));
+						valuablesInLayer.add(blockPos);
 					}
 				}
 			}
@@ -333,7 +334,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				blockState = worldObj.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
-						valuablesInLayer.add(new VectorI(x, currentLayer, z));
+						valuablesInLayer.add(blockPos);
 					}
 				}
 			}
@@ -344,7 +345,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				blockState = worldObj.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
-						valuablesInLayer.add(new VectorI(x, currentLayer, z));
+						valuablesInLayer.add(blockPos);
 					}
 				}
 			}
@@ -355,7 +356,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				blockState = worldObj.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
-						valuablesInLayer.add(new VectorI(x, currentLayer, z));
+						valuablesInLayer.add(blockPos);
 					}
 				}
 			}
@@ -442,15 +443,15 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	private Object[] state() {
 		int energy = getEnergyStored();
-		String status = getStatus();
+		ITextComponent status = getStatus();
 		Integer retValuablesInLayer, retValuablesMined;
 		if (isActive()) {
 			retValuablesInLayer = valuablesInLayer.size();
 			retValuablesMined = valuableIndex;
 			
-			return new Object[] { status, isActive(), energy, currentLayer, retValuablesMined, retValuablesInLayer };
+			return new Object[] { status.getFormattedText(), isActive(), energy, currentLayer, retValuablesMined, retValuablesInLayer };
 		}
-		return new Object[] { status, isActive(), energy, currentLayer, 0, 0 };
+		return new Object[] { status.getFormattedText(), isActive(), energy, currentLayer, 0, 0 };
 	}
 	
 	private Object[] onlyOres(Object[] arguments) {
@@ -528,33 +529,33 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		return super.callMethod(computer, context, method, arguments);
 	}
 	
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		int energy = getEnergyStored();
-		String state = "IDLE (not mining)";
+		ITextComponent state = new TextComponentTranslation("IDLE (not mining)");
 		if (currentState == STATE_IDLE) {
-			state = "IDLE (not mining)";
+			state = new TextComponentTranslation("IDLE (not mining)");
 		} else if (currentState == STATE_WARMUP) {
-			state = "Warming up...";
+			state = new TextComponentTranslation("Warming up...");
 		} else if (currentState == STATE_SCANNING) {
 			if (mineAllBlocks) {
-				state = "Scanning all";
+				state = new TextComponentTranslation("Scanning all");
 			} else {
-				state = "Scanning ores";
+				state = new TextComponentTranslation("Scanning ores");
 			}
 		} else if (currentState == STATE_MINING) {
 			if (mineAllBlocks) {
-				state = "Mining all";
+				state = new TextComponentTranslation("Mining all");
 			} else {
-				state = "Mining ores";
+				state = new TextComponentTranslation("Mining ores");
 			}
 			if (enableSilktouch) {
-				state = state + " with silktouch";
+				state.appendSibling(new TextComponentTranslation(" with silktouch"));
 			}
 		}
 		if (energy <= 0) {
-			state = state + " - Out of energy";
+			state.appendSibling(new TextComponentTranslation(" - Out of energy"));
 		} else if (((currentState == STATE_SCANNING) || (currentState == STATE_MINING)) && !enoughPower) {
-			state = state + " - Not enough power";
+			state.appendSibling(new TextComponentTranslation(" - Not enough power"));
 		}
 		return state;
 	}

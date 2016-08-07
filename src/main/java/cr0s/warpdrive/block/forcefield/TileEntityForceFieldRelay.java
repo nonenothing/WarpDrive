@@ -7,7 +7,9 @@ import cr0s.warpdrive.data.ForceFieldSetup;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityForceFieldRelay extends TileEntityAbstractForceField implements IForceFieldUpgrade {
 
@@ -21,7 +23,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	// onFirstUpdateTick
-	// updateEntity
+	// update
 	
 	protected EnumForceFieldUpgrade getUpgrade() {
 		if (upgrade == null) {
@@ -35,21 +37,21 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 		markDirty();
 	}
 	
-	private String getUpgradeStatus() {
+	private ITextComponent getUpgradeStatus() {
 		EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
-		String strDisplayName = I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
+		ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.none",
+			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.none",
 				strDisplayName);
 		} else {
-			return I18n.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.valid",
+			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.valid",
 				strDisplayName);
 		}
 	}
 	
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-			       + "\n" + getUpgradeStatus();
+		    .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
 	}
 	
 	@Override

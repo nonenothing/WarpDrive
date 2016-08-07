@@ -1,54 +1,44 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
-import net.minecraft.block.Block;
+import net.minecraft.block.BlockTorch;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockTransportBeacon extends Block {
+import java.util.Random;
+
+public class BlockTransportBeacon extends BlockTorch {
 	public BlockTransportBeacon() {
-		super(Material.IRON);
+		super();
 		setHardness(0.5F);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.passive.TransportBeacon");
+		setRegistryName("warpdrive.passive.TransportBeacon");
+		GameRegistry.register(this);
 	}
+	
+	@SideOnly(Side.CLIENT)
+	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
+	{
+		EnumFacing enumfacing = stateIn.getValue(FACING);
+		double d0 = (double)pos.getX() + 0.5D;
+		double d1 = (double)pos.getY() + 0.7D;
+		double d2 = (double)pos.getZ() + 0.5D;
 
-	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World par1World, int par2, int par3, int par4) {
-		return null;
-	}
-
-	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		blockIcon = par1IconRegister.registerIcon("warpdrive:passive/transportBeacon");
-	}
-
-	@Override
-	public boolean isOpaqueCube() {
-		return false;
-	}
-
-	@Override
-	public boolean renderAsNormalBlock() {
-		return false;
-	}
-
-	@Override
-	public int getRenderType() {
-		return 2;
-	}
-
-	@Override
-	public RayTraceResult collisionRayTrace(World par1World, int par2, int par3, int par4, Vec3d par5Vec3, Vec3d par6Vec3) {
-		float f = 0.065F;
-		setBlockBounds(0.5F - f, 0.0F, 0.5F - f, 0.5F + f, 0.6F, 0.5F + f);
-
-		return super.collisionRayTrace(par1World, par2, par3, par4, par5Vec3, par6Vec3);
+		if (enumfacing.getAxis().isHorizontal()) {
+			EnumFacing opposite = enumfacing.getOpposite();
+			worldIn.spawnParticle(EnumParticleTypes.PORTAL, d0 + 0.27D * opposite.getFrontOffsetX(), d1 + 0.22D, d2 + 0.27D * opposite.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+			worldIn.spawnParticle(EnumParticleTypes.SUSPENDED, d0 + 0.27D * opposite.getFrontOffsetX(), d1 + 0.22D, d2 + 0.27D * opposite.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+		} else {
+			worldIn.spawnParticle(EnumParticleTypes.PORTAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+			worldIn.spawnParticle(EnumParticleTypes.SUSPENDED, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+		}
 	}
 }

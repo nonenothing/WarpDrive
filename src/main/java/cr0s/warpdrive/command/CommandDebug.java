@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -89,7 +90,7 @@ public class CommandDebug extends CommandBase {
 			catch (Exception exception)
 			{
 				exception.printStackTrace();
-				WarpDrive.addChatMessage(player, getCommandUsage(commandSender));
+				WarpDrive.addChatMessage(player, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
 
@@ -161,7 +162,7 @@ public class CommandDebug extends CommandBase {
 		}
 		else
 		{
-			WarpDrive.addChatMessage(player, getCommandUsage(commandSender));
+			WarpDrive.addChatMessage(player,  new TextComponentString(getCommandUsage(commandSender)));
 		}
 	}
 

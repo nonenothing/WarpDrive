@@ -13,7 +13,8 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.translation.I18n;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -58,7 +59,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 		
 		byte newActiveSides = 0;
 		for(int i = 0; i < deltaX.length; i++) {
-			TileEntity tileEntity = worldObj.getTileEntity(xCoord + deltaX[i], yCoord + deltaY[i], zCoord + deltaZ[i]);
+			TileEntity tileEntity = worldObj.getTileEntity(pos.add(deltaX[i], deltaY[i], deltaZ[i]));
 			if (tileEntity == null) {
 				continue;
 			}
@@ -68,13 +69,13 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 				output.add((IReactor)tileEntity);
 				
 			} else if (tileEntity instanceof IReactorChamber) {
-				IReactor reactor = ((IReactorChamber)tileEntity).getReactor();
+				IReactor reactor = ((IReactorChamber)tileEntity).getReactorInstance();
 				if (reactor == null) {
 					continue;
 				}
 				
 				// ignore if we're right next to the reactor
-				BlockPos blockPos = reactor.getPosition();
+				BlockPos blockPos = reactor.getReactorPos();
 				if ( Math.abs(blockPos.getX() - pos.getX()) == 1
 				  || Math.abs(blockPos.getY() - pos.getY()) == 1
 				  || Math.abs(blockPos.getZ() - pos.getZ()) == 1) {
@@ -117,8 +118,8 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -142,7 +143,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 			
 			for(IReactor reactor : reactors) {
 				if (coolReactor(reactor)) {
-					PacketHandler.sendBeamPacket(worldObj, myPos, new Vector3(reactor.getPosition()).translate(0.5D), 0.0f, 0.8f, 1.0f, 20, 0, 20);
+					PacketHandler.sendBeamPacket(worldObj, myPos, new Vector3(reactor.getReactorPos()).translate(0.5D), 0.0f, 0.8f, 1.0f, 20, 0, 20);
 				}
 			}
 		}
@@ -186,17 +187,17 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		Set<IReactor> reactors = findReactors();
 		if (reactors != null && !reactors.isEmpty()) {
-			return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-					+ I18n.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.multipleReactors",
-							reactors.size());
+			return new TextComponentTranslation("warpdrive.guide.prefix",
+			    getBlockType().getLocalizedName())
+			    .appendSibling(new TextComponentTranslation("warpdrive.IC2reactorLaserMonitor.multipleReactors",
+			        reactors.size()));
 		} else {
-			return I18n.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-					+ I18n.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.noReactor");
+			return new TextComponentTranslation("warpdrive.guide.prefix",
+			    getBlockType().getLocalizedName())
+			    .appendSibling(new TextComponentTranslation("warpdrive.IC2reactorLaserMonitor.noReactor"));
 		}
 	}
 	

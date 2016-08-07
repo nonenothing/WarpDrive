@@ -11,6 +11,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -45,7 +46,7 @@ public class CommandSpace extends CommandBase {
 			// nop
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-				WarpDrive.addChatMessage(commandSender, getCommandUsage(commandSender));
+				WarpDrive.addChatMessage(commandSender,  new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
 			
@@ -61,13 +62,13 @@ public class CommandSpace extends CommandBase {
 			targetDimensionId = getDimensionId(args[1]);
 			
 		} else {
-			WarpDrive.addChatMessage(commandSender, "/space: too many arguments " + args.length);
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: too many arguments " + args.length));
 			return;
 		}
 		
 		// check player
 		if (player == null) {
-			WarpDrive.addChatMessage(commandSender, "/space: undefined player");
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: undefined player"));
 			return;
 		}
 		
@@ -83,16 +84,16 @@ public class CommandSpace extends CommandBase {
 		// get target world
 		WorldServer targetWorld = server.worldServerForDimension(targetDimensionId);
 		if (targetWorld == null) {
-			WarpDrive.addChatMessage(commandSender, "/space: undefined dimension " + targetDimensionId);
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: undefined dimension " + targetDimensionId));
 			return;
 		}
 		
 		// inform player
 		String message = "Teleporting player " + player.getDisplayNameString() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
-		WarpDrive.addChatMessage(commandSender, message);
+		WarpDrive.addChatMessage(commandSender, new TextComponentString(message));
 		WarpDrive.logger.info(message);
 		if (commandSender != player) {
-			WarpDrive.addChatMessage(player, commandSender.getDisplayName().getFormattedText() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
+			WarpDrive.addChatMessage(player, new TextComponentString(commandSender.getDisplayName().getFormattedText() + " is teleporting you to dimension " + targetDimensionId)); // + ":" + targetWorld.getWorldInfo().getWorldName());
 		}
 		
 		// find a good spot

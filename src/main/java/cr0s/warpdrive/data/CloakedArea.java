@@ -58,7 +58,7 @@ public class CloakedArea {
 		if (worldObj != null) {
 			try {
 				// Add all players currently inside the field
-				List<EntityPlayer> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
+				List<EntityPlayer> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
 				for (EntityPlayer player : list) {
 					addPlayer(player.getUniqueID());
 				}
@@ -178,8 +178,10 @@ public class CloakedArea {
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				for (int y = minY_clamped; y <= maxY_clamped; y++) {
-					if (player.worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) {
-						player.worldObj.markBlockForUpdate(x, y, z);
+					BlockPos blockPos = new BlockPos(x, y, z);
+					IBlockState blockState = player.worldObj.getBlockState(blockPos);
+					if (blockState.getBlock() != Blocks.AIR) {
+						player.worldObj.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 						
 						JumpBlock.refreshBlockStateOnClient(player.worldObj, new BlockPos(x, y, z));
 					}
@@ -207,7 +209,7 @@ public class CloakedArea {
 	}
 	
 	public void revealEntitiesToPlayer(EntityPlayer player) {
-		List<Entity> list = player.worldObj.getEntitiesWithinAABBExcludingEntity(player, AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
+		List<Entity> list = player.worldObj.getEntitiesWithinAABBExcludingEntity(player, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
 		
 		for (Entity entity : list) {
 			Packet packet = PacketHandler.getPacketForThisEntity(entity);
@@ -245,7 +247,7 @@ public class CloakedArea {
 		
 		// Hide any entities inside area
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Refreshing cloaked entities..."); }
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
+		AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX + 1, maxY + 1, maxZ + 1);
 		List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(player, aabb);
 		for (Entity entity : list) {
 			worldObj.removeEntity(entity);
@@ -287,7 +289,7 @@ public class CloakedArea {
 	public String toString() {
 		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
 			getClass().getSimpleName(), dimensionId,
-			coreX, coreY, coreZ,
+			blockPosCore.getX(), blockPosCore.getY(), blockPosCore.getZ(),
 			minX, minY, minZ,
 			maxX, maxY, maxZ);
 	}

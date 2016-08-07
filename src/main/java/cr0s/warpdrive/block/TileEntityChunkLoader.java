@@ -52,9 +52,9 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	}
 
 	@Override
-	public void updateEntity()
+	public void update()
 	{
-		super.updateEntity();
+		super.update();
 
 		if(!initialised)
 		{
