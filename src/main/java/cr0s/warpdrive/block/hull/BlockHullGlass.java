@@ -6,11 +6,8 @@ import net.minecraft.block.BlockGlass;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -35,6 +32,8 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 		setUnlocalizedName("warpdrive.hull" + tier + ".glass.");
 		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockHull(this));
+		
 		setLightLevel(10.0F / 15.0F);
 	}
 	
@@ -49,19 +48,19 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 	public boolean isVisuallyOpaque() {
 		return false;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
@@ -78,22 +77,21 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 	}
 	
 	@Override
-	public float getBlockHardness(World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
-
+	
 	@Override
-	public int applyDamage(World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(blockPos);
 		} else {
-			IBlockState blockState = world.getBlockState(blockPos);
-			int metadata = blockState.getBlock().getMetaFromState(blockState);
-			world.setBlockState(blockPos, WarpDrive.blockHulls_glass[tier - 2].getStateFromMeta(metadata), 2);
+			world.setBlockState(blockPos, WarpDrive.blockHulls_glass[tier - 2]
+					.getDefaultState().withProperty(COLOR, blockState.getValue(COLOR)), 2);
 		}
 		return 0;
 	}

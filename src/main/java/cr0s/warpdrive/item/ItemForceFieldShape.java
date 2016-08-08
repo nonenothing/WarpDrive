@@ -21,11 +21,11 @@ import java.util.*;
 public class ItemForceFieldShape extends Item {	
 	private static ItemStack[] itemStackCache;
 	
-	public ItemForceFieldShape() {
+	public ItemForceFieldShape(final String registryName) {
 		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.shape");
-		setRegistryName(getUnlocalizedName());
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		GameRegistry.register(this);
 		

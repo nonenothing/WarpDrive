@@ -15,10 +15,10 @@ import javax.annotation.Nonnull;
 public class ItemUpgrade extends Item {
 	private static ItemStack[] isCache = new ItemStack[UpgradeType.values().length];
 	
-	public ItemUpgrade() {
+	public ItemUpgrade(final String registryName) {
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.upgrade.Malformed");
-		setRegistryName(getUnlocalizedName());
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		GameRegistry.register(this);
 	}

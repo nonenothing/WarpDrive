@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -13,10 +14,12 @@ import javax.annotation.Nonnull;
 
 public class BlockEnanReactorCore extends BlockAbstractContainer {
 	
-	public BlockEnanReactorCore() {
+	public BlockEnanReactorCore(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.energy.EnanReactorCore");
+		setUnlocalizedName("warpdrive.energy.EnanReactorCore");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityEnanReactorCore.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

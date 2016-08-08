@@ -21,12 +21,12 @@ import java.util.List;
 public class ItemForceFieldUpgrade extends Item {
 	private static ItemStack[] itemStackCache;
 	
-	public ItemForceFieldUpgrade() {
+	public ItemForceFieldUpgrade(final String registryName) {
 		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.upgrade");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName(getUnlocalizedName());
+		setRegistryName(registryName);
 		GameRegistry.register(this);
 		
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];

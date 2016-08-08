@@ -26,6 +26,7 @@ public class BlockDecorative extends Block {
 		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockDecorative(this));
 		
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
 	}

@@ -28,10 +28,12 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 	private static final int ICON_BOTTOM = 1;
 	private static final int ICON_SIDE_ACTIVATED = 2;
 	
-	public BlockAirGenerator() {
+	public BlockAirGenerator(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.machines.AirGenerator");
+		setUnlocalizedName("warpdrive.machines.AirGenerator");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityAirGenerator.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

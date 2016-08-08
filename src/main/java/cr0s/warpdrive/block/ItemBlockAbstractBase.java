@@ -19,7 +19,8 @@ import java.util.List;
 public class ItemBlockAbstractBase extends ItemBlock {
 	
 	public ItemBlockAbstractBase(Block block) {
-		super(block);	// sets field_150939_a to block
+		super(block);
+		setRegistryName(block.getRegistryName());
 	}
 	
 	@Override

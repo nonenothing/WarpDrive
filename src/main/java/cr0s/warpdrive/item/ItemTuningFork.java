@@ -28,15 +28,15 @@ import javax.annotation.Nonnull;
 
 public class ItemTuningFork extends Item {
 	
-	public ItemTuningFork() {
+	public ItemTuningFork(final String registryName) {
 		super();
 		setMaxDamage(0);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.tool.TuningFork");
-		setRegistryName(getUnlocalizedName());
+		setRegistryName(registryName);
 		setFull3D();
 		setHasSubtypes(true);
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		GameRegistry.register(this);
 	}
 	

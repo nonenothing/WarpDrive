@@ -25,11 +25,12 @@ public class BlockAir extends Block {
 	private static final boolean AIR_DEBUG = false;
 	private static final int AIR_BLOCK_TICKS = 40;
 	
-	public BlockAir() {
+	public BlockAir(final String registryName) {
 		super(Material.FIRE);
 		setHardness(0.0F);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.passive.Air");
+		setUnlocalizedName("warpdrive.passive.Air");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
 	}
 	

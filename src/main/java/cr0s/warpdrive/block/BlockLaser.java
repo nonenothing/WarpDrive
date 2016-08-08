@@ -21,12 +21,14 @@ public class BlockLaser extends BlockAbstractContainer {
 	
 	private static final int ICON_SIDE = 0;
 	
-	public BlockLaser() {
+	public BlockLaser(final String registryName) {
 		super(Material.IRON);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setRegistryName("warpdrive.machines.Laser");
+		setUnlocalizedName("warpdrive.machines.Laser");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityLaser.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

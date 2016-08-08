@@ -15,12 +15,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Random;
 
 public class BlockTransportBeacon extends BlockTorch {
-	public BlockTransportBeacon() {
+	public BlockTransportBeacon(final String registryName) {
 		super();
 		setHardness(0.5F);
 		setSoundType(SoundType.METAL);
+		setUnlocalizedName("warpdrive.passive.TransportBeacon");
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.passive.TransportBeacon");
 		GameRegistry.register(this);
 	}
 	

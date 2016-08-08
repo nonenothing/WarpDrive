@@ -21,12 +21,14 @@ import javax.annotation.Nullable;
 
 public class BlockWeaponController extends BlockAbstractContainer {
 	
-	public BlockWeaponController() {
+	public BlockWeaponController(final String registryName) {
 		super(Material.IRON);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setRegistryName("warpdrive.weapon.WeaponController");
+		setUnlocalizedName("warpdrive.weapon.WeaponController");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityWeaponController.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

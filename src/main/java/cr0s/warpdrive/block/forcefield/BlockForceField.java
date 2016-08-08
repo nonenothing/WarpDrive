@@ -2,8 +2,8 @@ package cr0s.warpdrive.block.forcefield;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -18,8 +18,6 @@ import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.EnumPermissionNode;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
-import cr0s.warpdrive.render.RenderBlockForceField;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -45,13 +43,15 @@ import java.util.Random;
 public class BlockForceField extends BlockAbstractForceField implements IDamageReceiver {
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
-	public BlockForceField(final byte tier) {
+	public BlockForceField(final String registryName, final byte tier) {
 		super(tier, Material.GLASS);
 		setSoundType(SoundType.CLOTH);
-		setRegistryName("warpdrive.forcefield.block" + tier);
+		setUnlocalizedName("warpdrive.forcefield.block" + tier);
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityForceField.class, WarpDrive.PREFIX + registryName);
 	}
-
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
@@ -63,19 +63,22 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}
-	
+
+	@Nonnull
 	@Override
-	public ItemStack getPickBlock(IBlockState blockState, RayTraceResult target, World world, BlockPos blockPos, EntityPlayer entityPlayer) {
-		return null;
+	public ItemStack getPickBlock(@Nonnull IBlockState blockState, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
+		return new ItemStack(Blocks.AIR);
 	}
 	
 	@Override
@@ -85,7 +88,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List list) {
 		/* Hide in NEI
 		for (int i = 0; i < 16; ++i) {
 			list.add(new ItemStack(item, 1, i));
@@ -98,7 +101,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public EnumBlockRenderType getRenderType(IBlockState state) {
 		return EnumBlockRenderType.MODEL;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
@@ -131,7 +134,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 		return null;
 	}
-
+	
 	@Override
 	public void onBlockClicked(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
@@ -245,7 +248,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	private double log_explosionX;
 	private double log_explosionY = -1;
 	private double log_explosionZ;
-
+	
 	@Override
 	public float getExplosionResistance(Entity exploder) {
 		return super.getExplosionResistance(exploder);
@@ -337,7 +340,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		downgrade(world, blockPos);
 		super.onBlockExploded(world, blockPos, explosion);
 	}
-
+	
 	@Override
 	public void onEMP(World world, BlockPos blockPos, float efficiency) {
 		if (efficiency > 0.0F) {
@@ -354,13 +357,13 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public float getBlockHardness(World world, final BlockPos blockPos,
+	public float getBlockHardness(IBlockState blockState, World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, final BlockPos blockPos, final DamageSource damageSource,
+	public int applyDamage(IBlockState blockState, World world, final BlockPos blockPos, final DamageSource damageSource,
 	                       final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
 		if (forceFieldSetup != null) {

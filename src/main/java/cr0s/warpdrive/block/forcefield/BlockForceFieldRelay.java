@@ -21,11 +21,14 @@ import javax.annotation.Nullable;
 
 public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
-	public BlockForceFieldRelay(final byte tier) {
+	public BlockForceFieldRelay(final String registryName, final byte tier) {
 		super(tier, Material.IRON);
 		isRotating = false;
-		setRegistryName("warpdrive.forcefield.relay" + tier);
+		setUnlocalizedName("warpdrive.forcefield.relay" + tier);
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockForceFieldRelay(this));
+		GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, WarpDrive.PREFIX + registryName);
 	}
 	
 	@Override

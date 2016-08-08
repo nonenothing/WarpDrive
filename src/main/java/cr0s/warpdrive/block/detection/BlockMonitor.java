@@ -22,11 +22,13 @@ import javax.annotation.Nullable;
 
 public class BlockMonitor extends BlockAbstractContainer {
 	
-	public BlockMonitor() {
+	public BlockMonitor(final String registryName) {
 		super(Material.IRON);
 		isRotating = true;
-		setRegistryName("warpdrive.detection.Monitor");
+		setUnlocalizedName("warpdrive.detection.Monitor");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityMonitor.class, WarpDrive.PREFIX + registryName);
 	}
 	
 	@Override

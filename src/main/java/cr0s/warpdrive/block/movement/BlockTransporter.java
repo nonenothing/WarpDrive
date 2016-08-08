@@ -18,10 +18,12 @@ import javax.annotation.Nullable;
 
 public class BlockTransporter extends BlockAbstractContainer {
 	
-	public BlockTransporter() {
+	public BlockTransporter(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.movement.Transporter");
+		setUnlocalizedName("warpdrive.movement.Transporter");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityTransporter.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

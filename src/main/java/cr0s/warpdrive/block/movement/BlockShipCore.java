@@ -20,12 +20,14 @@ import javax.annotation.Nullable;
 
 public class BlockShipCore extends BlockAbstractContainer {
 	
-	public BlockShipCore() {
+	public BlockShipCore(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.movement.ShipCore");
+		setUnlocalizedName("warpdrive.movement.ShipCore");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityShipCore.class, WarpDrive.PREFIX + registryName);
 	}
-
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {

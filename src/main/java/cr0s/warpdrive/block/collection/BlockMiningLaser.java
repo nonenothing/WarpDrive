@@ -27,10 +27,12 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	private final static int ICON_BOTTOM = 5;
 	private final static int ICON_TOP = 6;
 	
-	public BlockMiningLaser() {
+	public BlockMiningLaser(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.collection.MiningLaser");
+		setUnlocalizedName("warpdrive.collection.MiningLaser");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityMiningLaser.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

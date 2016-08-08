@@ -17,11 +17,11 @@ import javax.annotation.Nonnull;
 public class ItemComponent extends Item implements IAirCanister {	
 	private static ItemStack[] itemStackCache;
 	
-	public ItemComponent() {
+	public ItemComponent(final String registryName) {
 		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.crafting.component");
-		setRegistryName(getUnlocalizedName());
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		GameRegistry.register(this);
 		

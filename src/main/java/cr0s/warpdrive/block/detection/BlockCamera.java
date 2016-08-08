@@ -22,10 +22,12 @@ public class BlockCamera extends BlockAbstractContainer {
 	
 	private static final int ICON_SIDE = 0;
 	
-	public BlockCamera() {
+	public BlockCamera(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.detection.Camera");
+		setUnlocalizedName("warpdrive.detection.Camera");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityCamera.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

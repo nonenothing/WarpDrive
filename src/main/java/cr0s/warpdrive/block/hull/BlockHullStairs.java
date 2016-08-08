@@ -11,6 +11,7 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
@@ -18,12 +19,15 @@ public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
 	private final int tier;
 	private final IBlockState blockStateHull;
 	
-	public BlockHullStairs(final IBlockState blockStateHull, final int tier) {
+	public BlockHullStairs(final String registryName, final IBlockState blockStateHull, final int tier) {
 		super(blockStateHull);
 		this.blockStateHull = blockStateHull;
 		this.tier = tier;
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.hull" + tier + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getName());
+		setRegistryName(registryName);
+		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockHull(this));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -34,22 +38,21 @@ public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
 	}
 	
 	@Override
-	public float getBlockHardness(World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(blockPos);
 		} else {
-			IBlockState blockState = world.getBlockState(blockPos);
-			int metadata = blockState.getBlock().getMetaFromState(blockState);
-			world.setBlockState(blockPos, WarpDrive.blockHulls_stairs[tier - 2][blockState.getBlock().getMetaFromState(blockStateHull)].getStateFromMeta(metadata), 2);
+			world.setBlockState(blockPos, WarpDrive.blockHulls_stairs[tier - 2][blockState.getBlock().getMetaFromState(blockStateHull)]
+					.getDefaultState().withProperty(FACING, blockState.getValue(FACING)), 2);
 		}
 		return 0;
 	}

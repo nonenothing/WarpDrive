@@ -20,10 +20,12 @@ import javax.annotation.Nullable;
 
 public class BlockShipScanner extends BlockAbstractContainer {
 	
-	public BlockShipScanner() {
+	public BlockShipScanner(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.building.ShipScanner");
+		setUnlocalizedName("warpdrive.building.ShipScanner");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityShipScanner.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

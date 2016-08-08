@@ -1,13 +1,13 @@
 package cr0s.warpdrive.block.hull;
 
+import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import net.minecraft.block.Block;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class ItemBlockHull extends ItemBlock {
+public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	public ItemBlockHull(Block block) {
 		super(block);

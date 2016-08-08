@@ -313,7 +313,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				}
 			}
 			if (blockState.getBlock() instanceof IDamageReceiver) {
-				hardness = ((IDamageReceiver) blockState.getBlock()).getBlockHardness(worldObj, blockHit.getBlockPos(),
+				hardness = ((IDamageReceiver) blockState.getBlock()).getBlockHardness(blockState, worldObj, blockHit.getBlockPos(),
 					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 			}				
 			if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -397,7 +397,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			
 			// apply custom damages
 			if (blockState.getBlock() instanceof IDamageReceiver) {
-				energy = ((IDamageReceiver)blockState.getBlock()).applyDamage(worldObj,	blockHit.getBlockPos(),
+				energy = ((IDamageReceiver)blockState.getBlock()).applyDamage(blockState, worldObj,	blockHit.getBlockPos(),
 					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("IDamageReceiver damage applied, remaining energy is " + energy);

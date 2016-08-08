@@ -11,12 +11,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockCloakingCoil extends Block {
 	
-	public BlockCloakingCoil() {
+	public BlockCloakingCoil(final String registryName) {
 		super(Material.IRON);
 		setHardness(3.5F);
 		setSoundType(SoundType.METAL);
+		setUnlocalizedName("warpdrive.detection.CloakingCoil");
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.detection.CloakingCoil");
 		GameRegistry.register(this);
 	}
 	

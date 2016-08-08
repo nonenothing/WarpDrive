@@ -9,13 +9,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemAirCanisterFull extends Item implements IAirCanister {
 	
-	public ItemAirCanisterFull() {
+	public ItemAirCanisterFull(final String registryName) {
 		super();
 		setMaxDamage(20);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.armor.AirCanisterFull");
-		setRegistryName(getUnlocalizedName());
+		setRegistryName(registryName);
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		GameRegistry.register(this);
 	}
 	

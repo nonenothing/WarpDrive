@@ -2,16 +2,16 @@ package cr0s.warpdrive.block.passive;
 
 import java.util.List;
 
+import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.data.EnumDecorativeType;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class ItemBlockDecorative extends ItemBlock {
+public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	
 	public ItemBlockDecorative(Block block) {
 		super(block);

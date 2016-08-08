@@ -9,13 +9,14 @@ import cr0s.warpdrive.WarpDrive;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockIridium extends Block {
-	public BlockIridium() {
+	public BlockIridium(final String registryName) {
 		super(Material.IRON);
 		setHardness(3.4F);
 		setResistance(360.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.passive.IridiumBlock");
+		setUnlocalizedName("warpdrive.passive.IridiumBlock");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
 	}
 	

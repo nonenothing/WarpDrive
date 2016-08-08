@@ -14,7 +14,7 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.projector");
 	}
-
+	
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemstack) {

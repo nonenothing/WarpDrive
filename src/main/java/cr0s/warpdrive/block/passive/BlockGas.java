@@ -21,11 +21,12 @@ import javax.annotation.Nullable;
 
 public class BlockGas extends Block {
 
-	public BlockGas() {
+	public BlockGas(final String registryName) {
 		super(Material.FIRE);
 		setHardness(0.0F);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.passive.Gas");
+		setUnlocalizedName("warpdrive.passive.Gas");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
 	}
 	

@@ -29,11 +29,14 @@ import java.util.List;
 
 public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
-	public BlockForceFieldProjector(final byte tier) {
+	public BlockForceFieldProjector(final String registryName, final byte tier) {
 		super(tier, Material.IRON);
 		isRotating = true;
-		setRegistryName("warpdrive.forcefield.projector" + tier);
+		setUnlocalizedName("warpdrive.forcefield.projector" + tier);
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockForceFieldProjector(this));
+		GameRegistry.registerTileEntity(TileEntityForceFieldProjector.class, WarpDrive.PREFIX + registryName);
 	}
 	
 	@SideOnly(Side.CLIENT)

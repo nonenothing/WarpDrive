@@ -18,10 +18,12 @@ import javax.annotation.Nullable;
 
 public class BlockEnergyBank extends BlockAbstractContainer {
 	
-	public BlockEnergyBank() {
+	public BlockEnergyBank(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.energy.EnergyBank");
+		setUnlocalizedName("warpdrive.energy.EnergyBank");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityEnergyBank.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

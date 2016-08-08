@@ -28,7 +28,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import javax.annotation.Nonnull;
 
 public class BlockHullPlain extends Block implements IDamageReceiver {
-	private static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.<EnumDyeColor>create("color", EnumDyeColor.class);
+	private static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
 	private int tier;
 	
 	public BlockHullPlain(final String registryName, final int tier) {
@@ -42,6 +42,7 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 		setRegistryName(registryName);
 		setDefaultState(blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
 		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockHull(this));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -90,22 +91,21 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 	}
 	
 	@Override
-	public float getBlockHardness(World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(blockPos);
 		} else {
-			IBlockState blockState = world.getBlockState(blockPos);
-			int metadata = blockState.getBlock().getMetaFromState(blockState);
-			world.setBlockState(blockPos, WarpDrive.blockHulls_plain[tier - 2].getStateFromMeta(metadata), 2);
+			world.setBlockState(blockPos, WarpDrive.blockHulls_plain[tier - 2]
+					.getDefaultState().withProperty(COLOR, blockState.getValue(COLOR)), 2);
 		}
 		return 0;
 	}

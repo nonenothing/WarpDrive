@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 
+import javax.annotation.Nonnull;
+
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
@@ -114,21 +116,25 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		world.setBlockToAir(blockPos);
 		super.dropBlockAsItemWithChance(world, blockPos, blockState, chance, fortune);
 	}
-
-	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos blockPos, EntityPlayer entityPlayer) {
+	
+	@Nonnull
+	@Override
+	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
 		ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(blockPos);
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		tileEntity.writeToNBT(nbtTagCompound);
-		nbtTagCompound.removeTag("x");
-		nbtTagCompound.removeTag("y");
-		nbtTagCompound.removeTag("z");
-		itemStack.setTagCompound(nbtTagCompound);
+		if (tileEntity != null) {
+			NBTTagCompound nbtTagCompound = new NBTTagCompound();
+			tileEntity.writeToNBT(nbtTagCompound);
+			nbtTagCompound.removeTag("x");
+			nbtTagCompound.removeTag("y");
+			nbtTagCompound.removeTag("z");
+			itemStack.setTagCompound(nbtTagCompound);
+		}
 		return itemStack;
 	}
 	
 	@Override
-	public boolean rotateBlock(World world, BlockPos blockPos, EnumFacing axis) {
+	public boolean rotateBlock(World world, @Nonnull BlockPos blockPos, EnumFacing axis) {
 		world.setBlockState(blockPos, getStateFromMeta(axis.ordinal()), 3);
 		return true;
 	}
@@ -165,6 +171,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	/**/
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void neighborChanged(IBlockState blockState, World world, BlockPos blockPos, Block block) {
 		super.neighborChanged(blockState, world, blockPos, block);

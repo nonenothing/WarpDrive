@@ -16,11 +16,11 @@ import javax.annotation.Nonnull;
 
 public class ItemHelmet extends ItemArmor implements IBreathingHelmet {
 	
-	public ItemHelmet(ArmorMaterial mat, EntityEquipmentSlot entityEquipmentSlot) {
+	public ItemHelmet(final String registryName, ArmorMaterial mat, EntityEquipmentSlot entityEquipmentSlot) {
 		super(mat, 0, entityEquipmentSlot);
 		setUnlocalizedName("warpdrive.armor.Helmet");
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName(getUnlocalizedName());
 		GameRegistry.register(this);
 	}
 	

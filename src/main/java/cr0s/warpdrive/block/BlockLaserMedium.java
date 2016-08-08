@@ -18,10 +18,12 @@ import javax.annotation.Nullable;
 
 public class BlockLaserMedium extends BlockAbstractContainer {
 	
-	public BlockLaserMedium() {
+	public BlockLaserMedium(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.machines.LaserMedium");
+		setUnlocalizedName("warpdrive.machines.LaserMedium");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityLaserMedium.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

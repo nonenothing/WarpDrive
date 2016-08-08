@@ -29,10 +29,12 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	private final static int ICON_BOTTOM = 7;
 	private final static int ICON_TOP = 8;
 	
-	public BlockLaserTreeFarm() {
+	public BlockLaserTreeFarm(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.collection.LaserTreeFarm");
+		setUnlocalizedName("warpdrive.collection.LaserTreeFarm");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityLaserTreeFarm.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

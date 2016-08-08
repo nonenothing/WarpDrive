@@ -9,12 +9,13 @@ import cr0s.warpdrive.WarpDrive;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockHighlyAdvancedMachine extends Block {
-	public BlockHighlyAdvancedMachine() {
+	public BlockHighlyAdvancedMachine(final String registryName) {
 		super(Material.IRON);
 		setHardness(5.0F);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.passive.HighlyAdvancedMachine");
+		setUnlocalizedName("warpdrive.passive.HighlyAdvancedMachine");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
 	}
 	

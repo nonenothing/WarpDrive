@@ -10,12 +10,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockWarpIsolation extends Block {
 	
-	public BlockWarpIsolation() {
+	public BlockWarpIsolation(final String registryName) {
 		super(Material.IRON);
 		setHardness(3.5F);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName("warpdrive.detection.WarpIsolation");
+		setUnlocalizedName("warpdrive.detection.WarpIsolation");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
 	}
 	

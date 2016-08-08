@@ -25,6 +25,7 @@ public class BlockShipController extends BlockAbstractContainer {
 		setUnlocalizedName("warpdrive.movement.ShipController");
 		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityShipController.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull

@@ -20,10 +20,12 @@ import javax.annotation.Nullable;
 
 public class BlockRadar extends BlockAbstractContainer {
 	
-	public BlockRadar() {
+	public BlockRadar(final String registryName) {
 		super(Material.IRON);
-		setRegistryName("warpdrive.detection.Radar");
+		setUnlocalizedName("warpdrive.detection.Radar");
+		setRegistryName(registryName);
 		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityRadar.class, WarpDrive.PREFIX + registryName);
 	}
 
 	@Nonnull
