@@ -281,8 +281,8 @@ public class WarpDriveConfig {
 	public static int ENERGY_BANK_MAX_ENERGY_STORED = 1000000;
 	
 	// Laser lift
-	public static int LIFT_MAX_ENERGY_STORED = 2400;
-	public static int LIFT_ENERGY_PER_ENTITY = 800;
+	public static int LIFT_MAX_ENERGY_STORED = 900;
+	public static int LIFT_ENERGY_PER_ENTITY = 150;
 	public static int LIFT_UPDATE_INTERVAL_TICKS = 10;
 	
 	// Chunk loader
