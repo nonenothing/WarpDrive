@@ -144,8 +144,9 @@ public class Dictionary {
 				config.get("block_tags", "StargateTech2:block.busCable"                    , "PlaceNormal StopMining").getString();
 				
 				// expendables, a.k.a. "don't blow my ship with this..."
-				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
+				config.get("block_tags", "chisel:cloud"                                    , "LeftBehind Expandable").getString();
 				config.get("block_tags", "Railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
+				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
 				config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
 				config.get("block_tags", "WarpDrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
 				
