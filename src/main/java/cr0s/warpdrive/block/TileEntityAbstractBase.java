@@ -327,6 +327,14 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		writeToNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("x");
+		nbtTagCompound.removeTag("y");
+		nbtTagCompound.removeTag("z");
+		return nbtTagCompound;
+	}
+	
 	// upgrade system
 	private final HashMap<Object, Integer> installedUpgrades = new HashMap<>(10);
 	private final HashMap<Object, Integer> maxUpgrades = new HashMap<>(10);

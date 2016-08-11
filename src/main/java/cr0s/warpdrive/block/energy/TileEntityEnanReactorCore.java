@@ -539,6 +539,21 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("energy");
+		nbtTagCompound.removeTag("releaseMode");
+		nbtTagCompound.removeTag("releaseRate");
+		nbtTagCompound.removeTag("releaseAbove");
+		nbtTagCompound.removeTag("i0");
+		nbtTagCompound.removeTag("i1");
+		nbtTagCompound.removeTag("i2");
+		nbtTagCompound.removeTag("i3");
+		nbtTagCompound.removeTag("active");
+		return nbtTagCompound;
+	}
+	
+	@Override
 	public String toString() {
 		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)",
 			getClass().getSimpleName(),

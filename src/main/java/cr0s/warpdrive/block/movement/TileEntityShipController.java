@@ -215,6 +215,27 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		// FIXME: shouldn't we save boolean jumpFlag, boolean summonFlag, String toSummon, String targetJumpgateName?
 	}
 	
+	@Override
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("players");
+		nbtTagCompound.removeTag("mode");
+		nbtTagCompound.removeTag("front");
+		nbtTagCompound.removeTag("right");
+		nbtTagCompound.removeTag("up");
+		nbtTagCompound.removeTag("back");
+		nbtTagCompound.removeTag("left");
+		nbtTagCompound.removeTag("down");
+		nbtTagCompound.removeTag("distance");
+		nbtTagCompound.removeTag("direction");
+		nbtTagCompound.removeTag("moveFront");
+		nbtTagCompound.removeTag("moveUp");
+		nbtTagCompound.removeTag("moveRight");
+		nbtTagCompound.removeTag("rotationSteps");
+		nbtTagCompound.removeTag("bfreq");
+		return nbtTagCompound;
+	}
+	
 	public String attachPlayer(EntityPlayer entityPlayer) {
 		for (int i = 0; i < players.size(); i++) {
 			String name = players.get(i);

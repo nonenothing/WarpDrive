@@ -172,6 +172,14 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	@Override
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("oc:node");
+		nbtTagCompound.removeTag("oc:fs");
+		return nbtTagCompound;
+	}
+	
+	@Override
 	public int hashCode() {
 		return (((((super.hashCode() + (worldObj == null ? 0 : worldObj.provider.dimensionId) << 4) + xCoord) << 4) + yCoord) << 4) + zCoord;
 	}

@@ -97,12 +97,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity == null) {
 			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
-		} else {
+		} else if (tileEntity instanceof TileEntityAbstractBase) {
 			NBTTagCompound nbtTagCompound = new NBTTagCompound();
-			tileEntity.writeToNBT(nbtTagCompound);
-			nbtTagCompound.removeTag("x");
-			nbtTagCompound.removeTag("y");
-			nbtTagCompound.removeTag("z");
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
 			itemStack.setTagCompound(nbtTagCompound);
 		}
 		world.setBlockToAir(x, y, z);
@@ -113,11 +110,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
-		tileEntity.writeToNBT(nbtTagCompound);
-		nbtTagCompound.removeTag("x");
-		nbtTagCompound.removeTag("y");
-		nbtTagCompound.removeTag("z");
-		itemStack.setTagCompound(nbtTagCompound);
+		if (tileEntity instanceof TileEntityAbstractBase) {
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
+			itemStack.setTagCompound(nbtTagCompound);
+		}
 		return itemStack;
 	}
 	
