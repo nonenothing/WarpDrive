@@ -394,6 +394,20 @@ public class JumpSequencer extends AbstractSequencer {
 	private void state_borders() {
 		LocalProfiler.start("Jump.borders");
 		
+		if (WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " Checking ship borders...");
+		}
+		
+		StringBuilder reason = new StringBuilder();
+		
+		if (!ship.checkBorders(reason)) {
+			String msg = reason.toString();
+			disable(msg);
+			ship.messageToAllPlayersOnShip(msg);
+			LocalProfiler.stop();
+			return;
+		}
+		
 		try {
 			// Generate unique file name
 			SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
@@ -401,8 +415,8 @@ public class JumpSequencer extends AbstractSequencer {
 			String schematicFileName;
 			do {
 				Date now = new Date();
-				schematicFileName = shipName + "_" + sdfDate.format(now);
-			} while (new File(WarpDriveConfig.G_SCHEMALOCATION + "/auto/" + schematicFileName + ".schematic").exists());
+				schematicFileName = WarpDriveConfig.G_SCHEMALOCATION + "/auto/" + shipName + "_" + sdfDate.format(now) + ".schematic";
+			} while (new File(schematicFileName).exists());
 			
 			// Save header
 			NBTTagCompound schematic = new NBTTagCompound();
@@ -421,24 +435,10 @@ public class JumpSequencer extends AbstractSequencer {
 			schematic.setTag("ship", tagCompoundShip);
 			writeNBTToFile(schematicFileName, schematic);
 			if (WarpDriveConfig.LOGGING_JUMP) {
-			//	WarpDrive.logger.info(this + " Ship saved as " + schematicFileName);
+				//	WarpDrive.logger.info(this + " Ship saved as " + schematicFileName);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-		}
-		
-		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Checking ship borders...");
-		}
-		
-		StringBuilder reason = new StringBuilder();
-		
-		if (!ship.checkBorders(reason)) {
-			String msg = reason.toString();
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
-			LocalProfiler.stop();
-			return;
 		}
 		
 		msCounter = System.currentTimeMillis();
@@ -446,7 +446,7 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	private void writeNBTToFile(String fileName, NBTTagCompound nbttagcompound) {
-		WarpDrive.logger.info(this + " writeNBTToFile " + fileName);
+		WarpDrive.logger.info(this + " Saving ship state prior to jump in " + fileName);
 		
 		try {
 			File file = new File(fileName);
