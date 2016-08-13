@@ -30,7 +30,7 @@ public class ClientHandler {
 		}
 		if (WarpDrive.isDev && event.getEntityPlayer().capabilities.isCreativeMode) {// disabled in production
 			Block block = Block.getBlockFromItem(event.getItemStack().getItem());
-			if (block != Blocks.AIR) {
+			if (block != Blocks.AIR && block != null) {
 				try {
 					ResourceLocation resourceLocation = Block.REGISTRY.getNameForObject(block);
 					WarpDrive.addTooltip(event.getToolTip(), "" + resourceLocation + "");
@@ -58,7 +58,11 @@ public class ClientHandler {
 				} catch(Exception exception) {
 					// no operation
 				}
-				WarpDrive.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
+				try {
+					WarpDrive.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
+				} catch(Exception exception) {
+					// no operation
+				}
 			}
 		}
 	}
