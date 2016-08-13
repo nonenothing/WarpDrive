@@ -1,6 +1,7 @@
 package cr0s.warpdrive.event;
 
 import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.StatCollector;
@@ -16,7 +17,7 @@ public class ClientHandler {
 		if (event.entityPlayer == null || !event.entityPlayer.capabilities.isCreativeMode) {
 			return;
 		}
-		if (Dictionary.ITEMS_BREATHINGIC2.contains(event.itemStack.getItem())) {
+		if (Dictionary.ITEMS_BREATHINGIC2.contains(event.itemStack.getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
 			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.breathingIC2"));
 		}
 		if (Dictionary.ITEMS_FLYINSPACE.contains(event.itemStack.getItem())) {
