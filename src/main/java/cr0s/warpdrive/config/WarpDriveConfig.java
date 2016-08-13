@@ -255,10 +255,10 @@ public class WarpDriveConfig {
 	public static int CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS = 3;
 	
 	// Air generator
-	public static int AIRGEN_ENERGY_PER_CANISTER = 20;
+	public static int AIRGEN_ENERGY_PER_CANISTER = 200;
 	public static int AIRGEN_ENERGY_PER_NEWAIRBLOCK = 12;
 	public static int AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK = 4;
-	public static int AIRGEN_MAX_ENERGY_STORED = 4000;
+	public static int AIRGEN_MAX_ENERGY_STORED = 1400;
 	public static int AIRGEN_AIR_GENERATION_TICKS = 40;
 	
 	// IC2 Reactor monitor
@@ -687,11 +687,11 @@ public class WarpDriveConfig {
 		AIRGEN_ENERGY_PER_CANISTER = clamp(1, AIRGEN_MAX_ENERGY_STORED,
 				config.get("air_generator", "energy_per_canister", AIRGEN_ENERGY_PER_CANISTER, "Energy cost per air canister refilled").getInt());
 		AIRGEN_ENERGY_PER_NEWAIRBLOCK = clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_new_air_block", AIRGEN_ENERGY_PER_NEWAIRBLOCK, "Energy cost to start air distribution per open side").getInt());
+				config.get("air_generator", "energy_per_new_air_block", AIRGEN_ENERGY_PER_NEWAIRBLOCK, "Energy cost to start air distribution per open side per interval").getInt());
 		AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK = clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_existing_air_block", AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK, "Energy cost to sustain air distribution per open side").getInt());
+				config.get("air_generator", "energy_per_existing_air_block", AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK, "Energy cost to sustain air distribution per open side per interval").getInt());
 		AIRGEN_AIR_GENERATION_TICKS = clamp(1, 300,
-				config.get("air_generator", "air_generation_ticks", AIRGEN_AIR_GENERATION_TICKS).getInt());
+				config.get("air_generator", "air_generation_interval_ticks", AIRGEN_AIR_GENERATION_TICKS, "Update speed of air generation").getInt());
 		
 		// IC2 Reactor monitor
 		IC2_REACTOR_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
