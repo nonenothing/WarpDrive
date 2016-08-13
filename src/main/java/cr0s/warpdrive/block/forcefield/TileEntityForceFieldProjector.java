@@ -967,7 +967,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				         || legacy_forceFieldSetup.thickness != cache_forceFieldSetup.thickness
 				         || !legacy_forceFieldSetup.vMin.equals(cache_forceFieldSetup.vMin)
 				         || !legacy_forceFieldSetup.vMax.equals(cache_forceFieldSetup.vMax)
-				         || !legacy_forceFieldSetup.vTranslation.equals(cache_forceFieldSetup.vTranslation)) {
+				         || !legacy_forceFieldSetup.vTranslation.equals(cache_forceFieldSetup.vTranslation)
+						 || (legacy_forceFieldSetup.breaking_maxHardness <= 0 && cache_forceFieldSetup.breaking_maxHardness > 0) ) {
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.info(this + " rebooting with new shape...");
 					}
