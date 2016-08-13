@@ -365,9 +365,12 @@ warpdrive.ship.playerDetached=You've been detached from ship %1$s.\nAttached pla
 warpdrive.ship.statusLine.cooling=%1$d s left of cooldown.
 warpdrive.ship.statusLine.isolation=%1$d active isolation blocks providing %2$2.1f%% absorption.
 warpdrive.energy.statusLine=Energy level is %1$s/%2$s EU.
+warpdrive.energy.side.changedToInput=%1$s side changed to energy Input mode!
+warpdrive.energy.side.changedToOutput=%1$s side changed to energy Output mode!
+warpdrive.energy.side.changedToDisabled=%1$s side changed to Disabled mode!
 warpdrive.beamFrequency.statusLine.valid=Beam frequency %1$d is valid.
 warpdrive.beamFrequency.statusLine.invalid=§cBeam frequency %1$d is invalid.
-warpdrive.beamFrequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set Beam frequency.
+warpdrive.beamFrequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set it.
 
 warpdrive.forcefield.guide.lowPower=We're running out of power captain, reduce our consumption or get that scottish engineer to boost our power!
 

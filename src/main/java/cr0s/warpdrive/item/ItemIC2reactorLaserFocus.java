@@ -1,6 +1,7 @@
 package cr0s.warpdrive.item;
 
 import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -111,7 +112,9 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 	@Override
 	@Optional.Method(modid = "IC2")
 	public int alterHeat(IReactor reactor, ItemStack yourStack, int x, int y, int heat) {
-		//WarpDrive.debugPrint("ReactorLaserAlter:" + heat);
+		if (WarpDriveConfig.LOGGING_ENERGY) {
+			WarpDrive.logger.info(this + " alterHeat " + heat);
+		}
 		int transferred = Math.min(heat, maxHeat - yourStack.getItemDamage());
 		damageComponent(yourStack, transferred);
 		return heat - transferred;

@@ -292,7 +292,6 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public boolean equals(IPeripheral other) {
-		// WarpDrive.debugPrint("WarpInterfacedTE.equals");
 		return other.hashCode() == hashCode();
 	}
 	
