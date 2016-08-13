@@ -18,7 +18,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
 
 
-class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSpawnParticle, IMessage> {
+public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSpawnParticle, IMessage> {
 	
 	private String type;
 	private Vector3 origin;

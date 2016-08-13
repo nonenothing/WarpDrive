@@ -297,12 +297,12 @@ public class WarpDrive implements LoadingCallback {
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			blockHulls_plain[index] = new BlockHullPlain("blockHull" + tier + "_plain", tier);
-			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_plain", tier);
+			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_glass", tier);
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 				blockHulls_stairs[index][enumDyeColor.getMetadata()] = new BlockHullStairs("blockHull" + tier + "_stairs_" + enumDyeColor.getName(), blockHulls_plain[index].getStateFromMeta(enumDyeColor.getMetadata()), tier);
 			}
 		}
-				
+		
 		// generic items
 		itemComponent = new ItemComponent("itemComponent");
 		itemCrystalToken = new ItemCrystalToken("itemCrystalToken");
