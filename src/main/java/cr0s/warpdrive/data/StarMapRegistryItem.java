@@ -57,7 +57,7 @@ public class StarMapRegistryItem extends GlobalPosition {
 	public StarMapRegistryItem(TileEntityShipCore core) {
 		this(
 			EnumStarMapEntryType.SHIP, core.uuid,
-			core.getWorldObj().provider.dimensionId, core.xCoord, core.yCoord, core.zCoord,
+			core.getWorld().provider.getDimension(), core.getPos().getX(), core.getPos().getY(), core.getPos().getZ(),
 			core.maxX, core.maxY, core.maxZ,
 			core.minX, core.minY, core.minZ,
 			core.shipMass, core.isolationRate,

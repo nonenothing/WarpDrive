@@ -1,19 +1,27 @@
 package cr0s.warpdrive.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.PlayerSelector;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.WorldServer;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
-import java.util.List;
+import javax.annotation.Nonnull;
 
+@MethodsReturnNonnullByDefault
 public class CommandSpace extends CommandBase {
 	@Override
 	public int getRequiredPermissionLevel() {
@@ -26,63 +34,62 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender sender, String[] params) {
-		if (sender == null) { return; } 
-		MinecraftServer server = MinecraftServer.getServer();
+	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
+		if (commandSender == null) { return; } 
 		
 		// set defaults
 		int targetDimensionId = Integer.MAX_VALUE;
-		
-		EntityPlayerMP[] entityPlayerMPs = null;
-		if (sender instanceof EntityPlayerMP) {
-			entityPlayerMPs = new EntityPlayerMP[1];
-			entityPlayerMPs[0] = (EntityPlayerMP) sender;
+
+		List<EntityPlayerMP> entityPlayerMPs = null;
+		if (commandSender instanceof EntityPlayerMP) {
+			entityPlayerMPs = new ArrayList<>(1);
+			entityPlayerMPs.add((EntityPlayerMP) commandSender);
 		}
 		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
-		if (params.length == 0) {
+		if (args.length == 0) {
 			// nop
-		} else if (params.length == 1) {
-			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
-				WarpDrive.addChatMessage(sender, getCommandUsage(sender));
+		} else if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+				WarpDrive.addChatMessage(commandSender,  new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
-			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(sender, params[0]);
+			List<EntityPlayerMP> entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(server, commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
-			} else if (sender instanceof EntityPlayer) {
-				targetDimensionId = getDimensionId(params[0]);
+			} else if (commandSender instanceof EntityPlayer) {
+				targetDimensionId = getDimensionId(args[0]);
 			} else {
-				WarpDrive.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: player not found '" + args[0] + "'"));
 				return;
 			}
 			
-		} else if (params.length == 2) {
-			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(sender, params[0]);
+		} else if (args.length == 2) {
+			List<EntityPlayerMP> entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(server, commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
-				WarpDrive.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: player not found '" + args[0] + "'"));
 				return;
 			}
-			targetDimensionId = getDimensionId(params[1]);
+			targetDimensionId = getDimensionId(args[1]);
 			
 		} else {
-			WarpDrive.addChatMessage(sender, "/space: too many arguments " + params.length);
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: too many arguments " + args.length));
 			return;
 		}
 		
 		// check player
-		if (entityPlayerMPs == null || entityPlayerMPs.length <= 0) {
-			WarpDrive.addChatMessage(sender, "/space: undefined player");
+		if (entityPlayerMPs == null || !entityPlayerMPs.isEmpty()) {
+			WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: undefined player"));
 			return;
 		}
 		
 		for (EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
 			// toggle between overworld and space if no dimension was provided
 			if (targetDimensionId == Integer.MAX_VALUE) {
-				if (entityPlayerMP.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+				if (entityPlayerMP.worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
 					targetDimensionId = 0;
 				} else {
 					targetDimensionId = WarpDriveConfig.G_SPACE_DIMENSION_ID;
@@ -92,16 +99,16 @@ public class CommandSpace extends CommandBase {
 			// get target world
 			WorldServer targetWorld = server.worldServerForDimension(targetDimensionId);
 			if (targetWorld == null) {
-				WarpDrive.addChatMessage(sender, "/space: undefined dimension '" + targetDimensionId + "'");
+				WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: undefined dimension '" + targetDimensionId + "'"));
 				return;
 			}
 			
 			// inform player
-			String message = "Teleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
-			WarpDrive.addChatMessage(sender, message);
+			String message = "Teleporting player " + entityPlayerMP.getName() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
+			WarpDrive.addChatMessage(commandSender, new TextComponentString(message));
 			WarpDrive.logger.info(message);
-			if (sender != entityPlayerMP) {
-				WarpDrive.addChatMessage(entityPlayerMP, sender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
+			if (commandSender != entityPlayerMP) {
+				WarpDrive.addChatMessage(entityPlayerMP, new TextComponentString(commandSender.getName() + " is teleporting you to dimension " + targetDimensionId)); // + ":" + targetWorld.getWorldInfo().getWorldName());
 			}
 			
 			// find a good spot
@@ -109,17 +116,17 @@ public class CommandSpace extends CommandBase {
 			int newY = Math.min(255, Math.max(0, MathHelper.floor_double(entityPlayerMP.posY)));
 			int newZ = MathHelper.floor_double(entityPlayerMP.posZ);
 			
-			if ( (targetWorld.isAirBlock(newX, newY - 1, newZ) && !entityPlayerMP.capabilities.allowFlying)
-			  || !targetWorld.isAirBlock(newX, newY, newZ)
-			  || !targetWorld.isAirBlock(newX, newY + 1, newZ) ) {// non solid ground and can't fly, or inside blocks
-				newY = targetWorld.getTopSolidOrLiquidBlock(newX, newZ) + 1;
+			if ( (targetWorld.isAirBlock(new BlockPos(newX, newY - 1, newZ)) && !entityPlayerMP.capabilities.allowFlying)
+			  || !targetWorld.isAirBlock(new BlockPos(newX, newY    , newZ))
+			  || !targetWorld.isAirBlock(new BlockPos(newX, newY + 1, newZ)) ) {// non solid ground and can't fly, or inside blocks
+				newY = targetWorld.getTopSolidOrLiquidBlock(new BlockPos(newX, newY, newZ)).getY() + 1;
 				if (newY == 0) {
 					newY = 128;
 				} else {
 					for (int safeY = newY - 3; safeY > Math.max(1, newY - 20); safeY--) {
-						if (!targetWorld.isAirBlock(newX, safeY - 1, newZ)
-						  && targetWorld.isAirBlock(newX, safeY    , newZ)
-						  && targetWorld.isAirBlock(newX, safeY + 1, newZ)) {
+						if (!targetWorld.isAirBlock(new BlockPos(newX, safeY - 1, newZ))
+						  && targetWorld.isAirBlock(new BlockPos(newX, safeY    , newZ))
+						  && targetWorld.isAirBlock(new BlockPos(newX, safeY + 1, newZ))) {
 							newY = safeY;
 							break;
 						}
@@ -129,29 +136,31 @@ public class CommandSpace extends CommandBase {
 			
 			// actual teleportation
 			SpaceTeleporter teleporter = new SpaceTeleporter(targetWorld, 0, newX, newY, newZ);
-			server.getConfigurationManager().transferPlayerToDimension(entityPlayerMP, targetDimensionId, teleporter);
+			server.getPlayerList().transferPlayerToDimension(entityPlayerMP, targetDimensionId, teleporter);
 			entityPlayerMP.setPositionAndUpdate(newX + 0.5D, newY + 0.2D, newZ + 0.5D);
 			entityPlayerMP.sendPlayerAbilities();
 		}
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
+	public String getCommandUsage(@Nonnull ICommandSender commandSender) {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";
 	}
 	
-	private EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
-		@SuppressWarnings("unchecked")
-		List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		for (EntityPlayer onlinePlayer : onlinePlayers) {
-			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
-				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
+	private List<EntityPlayerMP> getOnlinePlayerByNameOrSelector(MinecraftServer server, ICommandSender sender, final String playerNameOrSelector) {
+		List<EntityPlayerMP> result = new ArrayList<>();
+		List<EntityPlayerMP> onlinePlayers = server.getPlayerList().getPlayerList();
+		for (EntityPlayerMP onlinePlayer : onlinePlayers) {
+			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector)) {
+				result.add(onlinePlayer);
+				return result;
 			}
 		}
 		
-		EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, playerNameOrSelector);
-		if (entityPlayerMPs_found != null && entityPlayerMPs_found.length > 0) {
-			return entityPlayerMPs_found.clone();
+		List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(sender, playerNameOrSelector, EntityPlayerMP.class);
+		if (entityPlayerMPs_found != null && !entityPlayerMPs_found.isEmpty()) {
+			result.addAll(entityPlayerMPs_found);
+			return result;
 		}
 		
 		return null;

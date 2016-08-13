@@ -4,54 +4,43 @@ import java.util.List;
 
 import cr0s.warpdrive.data.EnumDecorativeType;
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 import cr0s.warpdrive.WarpDrive;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
 
 public class BlockDecorative extends Block {
-	private static IIcon[] icons;
 	private static ItemStack[] itemStackCache;
 	
-	public BlockDecorative() {
-		super(Material.iron);
+	public BlockDecorative(final String registryName) {
+		super(Material.IRON);
 		setHardness(1.5f);
-		setStepSound(Block.soundTypeMetal);
-		setBlockName("warpdrive.passive.Plain");
+		setSoundType(SoundType.METAL);
+		setUnlocalizedName("warpdrive.passive.Plain");
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		GameRegistry.register(this);
+		GameRegistry.register(new ItemBlockDecorative(this));
 		
-		icons = new IIcon[EnumDecorativeType.length];
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
 	}
 	
 	@Override
-	public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list) {
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
 		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
 		}
 	}
 	
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
-			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:passive/decorative" + enumDecorativeType.unlocalizedName);
-		}
-	}
-	
-	@Override
-	public IIcon getIcon(int side, int damage) {
-		if (damage >= 0 && damage < EnumDecorativeType.length) {
-			return icons[damage];
-		}
-		return icons[0];
-	}
-	
-	@Override
-	public int damageDropped(int damage) {
-		return damage;
+	public int damageDropped(IBlockState blockState) {
+		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
 	public static ItemStack getItemStack(EnumDecorativeType enumDecorativeType) {

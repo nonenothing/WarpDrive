@@ -1,29 +1,30 @@
 package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.WarpDrive;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 public class ItemCrystalToken extends Item {	
-	private final IIcon[] icons;
 	private static ItemStack[] itemStackCache;
 	private static final int COUNT = 6; 
 	
-	public ItemCrystalToken() {
+	public ItemCrystalToken(final String registryName) {
 		super();
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.tool.crystalToken");
+		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		GameRegistry.register(this);
 		
-		icons = new IIcon[COUNT];
 		itemStackCache = new ItemStack[COUNT];
 	}
 	
@@ -44,13 +45,7 @@ public class ItemCrystalToken extends Item {
 		return new ItemStack(WarpDrive.itemCrystalToken, amount, 0);
 	}
 	
-	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
-		for(int damage = 0; damage < COUNT; damage++) {
-			icons[damage] = par1IconRegister.registerIcon("warpdrive:tool/crystalToken" + damage);
-		}
-	}
-	
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
@@ -61,15 +56,7 @@ public class ItemCrystalToken extends Item {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(final int damage) {
-		if (damage >= 0 && damage < COUNT) {
-			return icons[damage];
-		}
-		return icons[0];
-	}
-	
-	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
 		for(int damage = 0; damage < COUNT; damage++) {
 			list.add(new ItemStack(item, 1, damage));
 		}
@@ -85,17 +72,17 @@ public class ItemCrystalToken extends Item {
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (StatCollector.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1, getSchematicName(itemStack)));
+		if (I18n.hasKey(tooltipName1)) {
+			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName1, getSchematicName(itemStack)).getFormattedText());
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2, getSchematicName(itemStack)));
+		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
+			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName2, getSchematicName(itemStack)).getFormattedText());
 		}
 	}
 }

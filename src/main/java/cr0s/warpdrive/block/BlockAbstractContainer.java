@@ -1,6 +1,12 @@
 package cr0s.warpdrive.block;
 
-import cpw.mods.fml.common.Optional;
+import net.minecraft.block.BlockFlowerPot;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import defense.api.IEMPBlock;
 import defense.api.IExplosion;
@@ -12,11 +18,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
-import net.minecraftforge.common.util.ForgeDirection;
+
+import javax.annotation.Nonnull;
 
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
@@ -28,22 +34,22 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super(material);
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}
 	
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		super.onBlockAdded(world, x, y, z);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+		super.onBlockAdded(world, pos, state);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
 		}
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
-		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, pos, state, entityLiving, itemStack);
 		if (isRotating) {
 			if (entityLiving != null) {
 				int metadata;
@@ -71,44 +77,48 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 							break;
 					}
 				}
-				world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
+				world.setBlockState(pos, getStateFromMeta(metadata), 3);
 			}
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (itemStack.hasTagCompound()) {
 			NBTTagCompound nbtTagCompound = (NBTTagCompound)itemStack.getTagCompound().copy();
-			nbtTagCompound.setInteger("x", x);
-			nbtTagCompound.setInteger("y", y);
-			nbtTagCompound.setInteger("z", z);
+			nbtTagCompound.setInteger("x", pos.getX());
+			nbtTagCompound.setInteger("y", pos.getY());
+			nbtTagCompound.setInteger("z", pos.getZ());
 			tileEntity.readFromNBT(nbtTagCompound);
-			world.markBlockForUpdate(x, y, z);
+			IBlockState blockState = world.getBlockState(pos);
+			world.notifyBlockUpdate(pos, blockState, blockState, 3);
 		}
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-		return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
+	public boolean removedByPlayer(IBlockState blockState, World world, BlockPos blockPos, EntityPlayer player, boolean willHarvest) {
+		return willHarvest || super.removedByPlayer(blockState, world, blockPos, player, false);
 	}
 	
 	@Override
-	protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack itemStack) {
-		itemStack.setItemDamage(getDamageValue(world, x, y, z));
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void dropBlockAsItemWithChance(World world, BlockPos blockPos, IBlockState blockState, float chance, int fortune) {
+		ItemStack itemStack = new ItemStack(this);
+		itemStack.setItemDamage(damageDropped(blockState));
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
-			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
+			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 		} else if (tileEntity instanceof TileEntityAbstractBase) {
 			NBTTagCompound nbtTagCompound = new NBTTagCompound();
 			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
 			itemStack.setTagCompound(nbtTagCompound);
 		}
-		world.setBlockToAir(x, y, z);
-		super.dropBlockAsItem(world, x, y, z, itemStack);
+		world.setBlockToAir(blockPos);
+		super.dropBlockAsItemWithChance(world, blockPos, blockState, chance, fortune);
 	}
 	
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
-		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	@Nonnull
+	@Override
+	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
+		ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
@@ -118,15 +128,15 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-		world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
+	public boolean rotateBlock(World world, @Nonnull BlockPos blockPos, EnumFacing axis) {
+		world.setBlockState(blockPos, getStateFromMeta(axis.ordinal()), 3);
 		return true;
 	}
 	
 	// FIXME untested
 	/*
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
@@ -155,10 +165,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	/**/
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
-		super.onNeighborBlockChange(world, x, y, z, block);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void neighborChanged(IBlockState blockState, World world, BlockPos blockPos, Block block) {
+		super.neighborChanged(blockState, world, blockPos, block);
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
 		}
@@ -171,11 +182,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 		// EMP tower = 3k Energy, 60 radius
 		// EMP explosive = 3k Energy, 50 radius
-		onEMP(world, x, y, z, explosiveEMP.getRadius() / 100.0F);
+		onEMP(world, new BlockPos(x, y, z), explosiveEMP.getRadius() / 100.0F);
 	}
 	
-	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void onEMP(World world, final BlockPos blockPos, final float efficiency) {
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityAbstractEnergy) {
 			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
 			if (tileEntityAbstractEnergy.getMaxEnergyStored() > 0) {

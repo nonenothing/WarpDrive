@@ -1,7 +1,7 @@
 package cr0s.warpdrive.data;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Transition planes between dimensions to land on a planet or take off from it to reach space.
@@ -97,7 +97,7 @@ public class Planet implements Cloneable {
 		spaceCenterZ = tag.getInteger("spaceCenterZ");
 	}
 	
-	public void writeToNBT(NBTTagCompound tag) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag.setInteger("dimensionId", dimensionId);
 		tag.setInteger("dimensionCenterX", dimensionCenterX);
 		tag.setInteger("dimensionCenterZ", dimensionCenterZ);
@@ -105,6 +105,7 @@ public class Planet implements Cloneable {
 		tag.setInteger("borderSizeZ", borderSizeZ);
 		tag.setInteger("spaceCenterX", spaceCenterX);
 		tag.setInteger("spaceCenterZ", spaceCenterZ);
+		return tag;
 	}
 	
 	@Override

@@ -3,56 +3,43 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockTransporter extends BlockAbstractContainer {
-
-	private IIcon[] iconBuffer;
-
-	public BlockTransporter() {
-		super(Material.iron);
-		setBlockName("warpdrive.movement.Transporter");
+	
+	public BlockTransporter(final String registryName) {
+		super(Material.IRON);
+		setUnlocalizedName("warpdrive.movement.Transporter");
+		setRegistryName(registryName);
+		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityTransporter.class, WarpDrive.PREFIX + registryName);
 	}
 
+	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityTransporter();
 	}
-
-	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = new IIcon[3];
-		// Solid textures
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:movement/transporterBottom");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:movement/transporterTop");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:movement/transporterSide");
-	}
-
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (side == 0 || side == 1) {
-			return iconBuffer[side];
-		}
-
-		return iconBuffer[2];
-	}
 	
-	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (itemStackHeld == null) {
+			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityTransporter) {
 				WarpDrive.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
 				return true;

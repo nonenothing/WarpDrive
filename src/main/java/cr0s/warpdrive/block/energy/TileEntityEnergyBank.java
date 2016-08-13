@@ -2,10 +2,8 @@ package cr0s.warpdrive.block.energy;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -40,12 +38,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return modeSide[from.ordinal()] == MODE_INPUT;
 	}
 	
 	@Override
-	public boolean canOutputEnergy(ForgeDirection to) {
+	public boolean canOutputEnergy(EnumFacing to) {
 		return modeSide[to.ordinal()] == MODE_OUTPUT;
 	}
 	
@@ -60,16 +58,17 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	// Forge overrides
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-		nbt.setByteArray("modeSide", modeSide);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+		super.writeToNBT(nbtTagCompound);
+		nbtTagCompound.setByteArray("modeSide", modeSide);
+		return nbtTagCompound;
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		modeSide = nbt.getByteArray("modeSide");
-		if (modeSide == null || modeSide.length != 6) {
+		if (modeSide.length != 6) {
 			modeSide = MODE_DEFAULT_SIDES.clone();
 		}
 	}
@@ -79,18 +78,18 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
 		return nbtTagCompound;
 	}
-	
+
 	@Override
-	public Packet getDescriptionPacket() {
+	public SPacketUpdateTileEntity getUpdatePacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
 	}
-	
+
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockRangeForRenderUpdate(pos, pos);
 	}
 }

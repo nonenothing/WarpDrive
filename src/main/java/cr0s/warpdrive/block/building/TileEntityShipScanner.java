@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cr0s.warpdrive.data.JumpShip;
+import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.item.ItemCrystalToken;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
@@ -22,20 +23,20 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.JumpBlock;
-import cr0s.warpdrive.data.Transformation;
-import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -74,8 +75,8 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -99,7 +100,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (laserTicks > 20) {
 				PacketHandler.sendBeamPacket(worldObj,
 					new Vector3(this).translate(0.5D),
-					new Vector3(xCoord, yCoord + 5, zCoord).translate(0.5D), 
+					new Vector3(pos.getX(), pos.getY() + 5, pos.getZ()).translate(0.5D), 
 					1.0F, 0.2F, 0.0F, 40, 0, 100);
 				laserTicks = 0;
 			}
@@ -111,7 +112,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (laserTicks > 20) {
 				PacketHandler.sendBeamPacket(worldObj,
 					new Vector3(this).translate(0.5D),
-					new Vector3(shipCore.xCoord, shipCore.yCoord, shipCore.zCoord).translate(0.5D),
+					new Vector3(shipCore).translate(0.5D),
 					0.0F, 1.0F, 0.2F, 40, 0, 100);
 				laserTicks = 0;
 			}
@@ -124,8 +125,8 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					int randomX = shipCore.minX + worldObj.rand.nextInt(shipCore.maxX - shipCore.minX + 1);
 					int randomY = shipCore.minY + worldObj.rand.nextInt(shipCore.maxY - shipCore.minY + 1);
 					int randomZ = shipCore.minZ + worldObj.rand.nextInt(shipCore.maxZ - shipCore.minZ + 1);
-					
-					worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+
+					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.HOSTILE, 4F, 1F);
 					float r = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
 					float g = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
 					float b = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
@@ -168,7 +169,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
 					WarpDrive.logger.info(this + " Deploying " + blocksToDeployCurrentTick + " more blocks");
 				}
-				Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
+				Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.core.getX(), targetY - jumpShip.core.getY(), targetZ - jumpShip.core.getZ(), rotationSteps);
 				int index = 0;
 				while (index < blocksToDeployCurrentTick && currentDeployIndex < blocksToDeployCount) {
 					// Deploy single block
@@ -178,7 +179,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 						if (WarpDriveConfig.LOGGING_BUILDING) {
 							WarpDrive.logger.info("At index " + currentDeployIndex + ", skipping undefined block");
 						}
-					} else if (jumpBlock.block == Blocks.air) {
+					} else if (jumpBlock.block == Blocks.AIR) {
 						if (WarpDriveConfig.LOGGING_BUILDING) {
 							WarpDrive.logger.info("At index " + currentDeployIndex + ", skipping air block");
 						}
@@ -189,24 +190,24 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					} else {
 						index++;
 						if (WarpDriveConfig.LOGGING_BUILDING) {
-							WarpDrive.logger.info("At index " + currentDeployIndex + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
+							WarpDrive.logger.info("At index " + currentDeployIndex + ", deploying block " + Block.REGISTRY.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
 								+ " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
 						}
-						ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-						Block blockAtTarget = worldObj.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);
-						if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
+						BlockPos targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+						Block blockAtTarget = worldObj.getBlockState(targetLocation).getBlock();
+						if (blockAtTarget == Blocks.AIR || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
 							jumpBlock.deploy(worldObj, transformation);
 							
 							if (index % periodLaserEffect == 0) {
-								worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 0.5F, 1.0F);
+								worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.HOSTILE, 0.5F, 1.0F);
 								
 								PacketHandler.sendBeamPacket(worldObj,
 										new Vector3(this).translate(0.5D),
-										new Vector3(targetLocation.posX, targetLocation.posY, targetLocation.posZ).translate(0.5D),
+										new Vector3(targetLocation).translate(0.5D),
 										0f, 1f, 0f, 15, 0, 100);
 							}
-							worldObj.playSoundEffect(targetLocation.posX + 0.5F, targetLocation.posY + 0.5F, targetLocation.posZ + 0.5F,
-								jumpBlock.block.stepSound.func_150496_b(), (jumpBlock.block.stepSound.getVolume() + 1.0F) / 2.0F, jumpBlock.block.stepSound.getPitch() * 0.8F);
+							worldObj.playSound(null, targetLocation, jumpBlock.block.getSoundType().getPlaceSound(), SoundCategory.BLOCKS,
+								(jumpBlock.block.getSoundType().getVolume() + 1.0F) / 2.0F, jumpBlock.block.getSoundType().getPitch() * 0.8F);
 							
 						} else {
 							if (WarpDriveConfig.LOGGING_BUILDING) {
@@ -222,7 +223,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				
 				// deployment done, teleport owner inside
 				if (currentDeployIndex >= blocksToDeployCount) {
-					TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
+					TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(targetX, targetY, targetZ));
 					if (tileEntity instanceof TileEntityShipCore) {
 						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
 					}
@@ -236,7 +237,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	private void setActive(boolean newState) {
 		isActive = newState;
 		if ((getBlockMetadata() == 1) == newState) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, isActive ? 1 : 0, 2);
+			updateMetadata(isActive ? 1 : 0);
 		}
 	}
 	
@@ -245,9 +246,10 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		TileEntityShipCore result = null;
 		
 		// Search for ship cores above
-		for (int newY = yCoord + 1; newY <= 255; newY++) {
-			if (worldObj.getBlock(xCoord, newY, zCoord).isAssociatedBlock(WarpDrive.blockShipCore)) { // found ship core above
-				result = (TileEntityShipCore) worldObj.getTileEntity(xCoord, newY, zCoord);
+		for (int newY = pos.getY() + 1; newY <= 255; newY++) {
+			BlockPos blockPos = new BlockPos(pos.getX(), newY, pos.getZ());
+			if (worldObj.getBlockState(blockPos).getBlock().isAssociatedBlock(WarpDrive.blockShipCore)) { // found ship core above
+				result = (TileEntityShipCore) worldObj.getTileEntity(blockPos);
 				
 				if (result != null) {
 					if (!result.validateShipSpatialParameters(reason)) { // If we can't refresh ship's spatial parameters
@@ -311,10 +313,8 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// Save new format
 		JumpShip ship = new JumpShip();
-		ship.worldObj = shipCore.getWorldObj();
-		ship.coreX = shipCore.xCoord;
-		ship.coreY = shipCore.yCoord;
-		ship.coreZ = shipCore.zCoord;
+		ship.worldObj = shipCore.getWorld();
+		ship.core = shipCore.getPos();
 		ship.dx = shipCore.dx;
 		ship.dz = shipCore.dz;
 		ship.minX = shipCore.minX;
@@ -340,19 +340,20 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				for (int z = 0; z < length; z++) {
-					Block block = worldObj.getBlock(shipCore.minX + x, shipCore.minY + y, shipCore.minZ + z);
+					BlockPos blockPos = new BlockPos(shipCore.minX + x, shipCore.minY + y, shipCore.minZ + z);
+					IBlockState blockState = worldObj.getBlockState(blockPos);
 					
 					// Skip leftBehind and anchor blocks
-					if (Dictionary.BLOCKS_LEFTBEHIND.contains(block) || Dictionary.BLOCKS_ANCHOR.contains(block)) {
-						block = Blocks.air;
+					if (Dictionary.BLOCKS_LEFTBEHIND.contains(blockState.getBlock()) || Dictionary.BLOCKS_ANCHOR.contains(blockState.getBlock())) {
+						blockState = Blocks.AIR.getDefaultState();
 					}
 					
 					int index = x + (y * length + z) * width;
-					stringBlockRegistryNames[index] = Block.blockRegistry.getNameForObject(block);
-					byteMetadatas[index] = (byte) worldObj.getBlockMetadata(shipCore.minX + x, shipCore.minY + y, shipCore.minZ + z);
+					stringBlockRegistryNames[index] = Block.REGISTRY.getNameForObject(blockState.getBlock()).toString();
+					byteMetadatas[index] = (byte) blockState.getBlock().getMetaFromState(blockState);
 					
-					if (!block.isAssociatedBlock(Blocks.air)) {
-						TileEntity tileEntity = worldObj.getTileEntity(shipCore.minX + x, shipCore.minY + y, shipCore.minZ + z);
+					if (!blockState.getBlock().isAssociatedBlock(Blocks.AIR)) {
+						TileEntity tileEntity = worldObj.getTileEntity(blockPos);
 						if (tileEntity != null) {
 							try {
 								NBTTagCompound tagTileEntity = new NBTTagCompound();
@@ -409,9 +410,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 								
 								// Transform TE's coordinates from local axis to .schematic offset-axis
 								// Warning: this is a cheap workaround for World Edit. Use the native format for proper transformation
-								tagTileEntity.setInteger("x", tileEntity.xCoord - shipCore.minX);
-								tagTileEntity.setInteger("y", tileEntity.yCoord - shipCore.minY);
-								tagTileEntity.setInteger("z", tileEntity.zCoord - shipCore.minZ);
+								tagTileEntity.setInteger("x", tileEntity.getPos().getX() - shipCore.minX);
+								tagTileEntity.setInteger("y", tileEntity.getPos().getY() - shipCore.minY);
+								tagTileEntity.setInteger("z", tileEntity.getPos().getZ() - shipCore.minZ);
 								
 								tileEntitiesList.appendTag(tagTileEntity);
 							} catch (Exception exception) {
@@ -515,9 +516,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		}
 		
 		jumpShip = new JumpShip();
-		targetX = xCoord + offsetX;
-		targetY = yCoord + offsetY;
-		targetZ = zCoord + offsetZ;
+		targetX = pos.getX() + offsetX;
+		targetY = pos.getY() + offsetY;
+		targetZ = pos.getZ() + offsetZ;
 		this.rotationSteps = rotationSteps;
 		
 		// Compute geometry
@@ -542,9 +543,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			jumpShip.maxY = height - 1;
 			jumpShip.minZ = 0;
 			jumpShip.maxZ = length - 1;
-			jumpShip.coreX = 0;
-			jumpShip.coreY = 0;
-			jumpShip.coreZ = 0;
+			jumpShip.core = new BlockPos(0, -1, 0);
 			blocksToDeployCount = width * height * length;
 			jumpShip.jumpBlocks = new JumpBlock[blocksToDeployCount];
 			
@@ -603,9 +602,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		// Validate context
 		{
 			// Check distance
-			double dX = xCoord - targetX;
-			double dY = yCoord - targetY;
-			double dZ = zCoord - targetZ;
+			double dX = pos.getX() - targetX;
+			double dY = pos.getY() - targetY;
+			double dZ = pos.getZ() - targetZ;
 			double distance = MathHelper.sqrt_double(dX * dX + dY * dY + dZ * dZ);
 			
 			if (distance > WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS) {
@@ -621,20 +620,20 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 			
 			// Compute target area
-			Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
-			ChunkCoordinates targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
-			ChunkCoordinates targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
-			ChunkCoordinates targetLocationMin = new ChunkCoordinates(
-			                Math.min(targetLocation1.posX, targetLocation2.posX) - 1,
-			    Math.max(0, Math.min(targetLocation1.posY, targetLocation2.posY) - 1),
-			                Math.min(targetLocation1.posZ, targetLocation2.posZ) - 1);
-			ChunkCoordinates targetLocationMax = new ChunkCoordinates(
-			                  Math.max(targetLocation1.posX, targetLocation2.posX) + 1,
-			    Math.min(255, Math.max(targetLocation1.posY, targetLocation2.posY) + 1),
-			                  Math.max(targetLocation1.posZ, targetLocation2.posZ) + 1);
+			Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.core.getX(), targetY - jumpShip.core.getY(), targetZ - jumpShip.core.getZ(), rotationSteps);
+			BlockPos targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
+			BlockPos targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
+			BlockPos targetLocationMin = new BlockPos(
+			                Math.min(targetLocation1.getX(), targetLocation2.getX()) - 1,
+			    Math.max(0, Math.min(targetLocation1.getY(), targetLocation2.getY()) - 1),
+			                Math.min(targetLocation1.getZ(), targetLocation2.getZ()) - 1);
+			BlockPos targetLocationMax = new BlockPos(
+			                  Math.max(targetLocation1.getX(), targetLocation2.getX()) + 1,
+			    Math.min(255, Math.max(targetLocation1.getY(), targetLocation2.getY()) + 1),
+			                  Math.max(targetLocation1.getZ(), targetLocation2.getZ()) + 1);
 			
 			if (isForced) {
-				if (!worldObj.isAirBlock(targetX, targetY, targetZ)) {
+				if (!worldObj.isAirBlock(new BlockPos(targetX, targetY, targetZ))) {
 					worldObj.newExplosion(null, targetX, targetY, targetZ, 1, false, false);
 					if (WarpDriveConfig.LOGGING_BUILDING) {
 						WarpDrive.logger.info("Deployment collision detected at " + targetX + " " + targetY + " " + targetZ);
@@ -644,10 +643,10 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				}
 				
 				// Clear specified area for any blocks to avoid corruption and ensure clean full ship
-				for (int x = targetLocationMin.posX; x <= targetLocationMax.posX; x++) {
-					for (int y = targetLocationMin.posY; y <= targetLocationMax.posY; y++) {
-						for (int z = targetLocationMin.posZ; z <= targetLocationMax.posZ; z++) {
-							worldObj.setBlockToAir(x, y, z);
+				for (int x = targetLocationMin.getX(); x <= targetLocationMax.getX(); x++) {
+					for (int y = targetLocationMin.getY(); y <= targetLocationMax.getY(); y++) {
+						for (int z = targetLocationMin.getZ(); z <= targetLocationMax.getZ(); z++) {
+							worldObj.setBlockToAir(new BlockPos(x, y, z));
 						}
 					}
 				}
@@ -657,10 +656,10 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				// Check specified area for occupation by blocks
 				// If specified area is occupied, break deployment with error message
 				int occupiedBlockCount = 0;
-				for (int x = targetLocationMin.posX; x <= targetLocationMax.posX; x++) {
-					for (int y = targetLocationMin.posY; y <= targetLocationMax.posY; y++) {
-						for (int z = targetLocationMin.posZ; z <= targetLocationMax.posZ; z++) {
-							if (!worldObj.isAirBlock(x, y, z)) {
+				for (int x = targetLocationMin.getX(); x <= targetLocationMax.getX(); x++) {
+					for (int y = targetLocationMin.getY(); y <= targetLocationMax.getY(); y++) {
+						for (int z = targetLocationMin.getZ(); z <= targetLocationMax.getZ(); z++) {
+							if (!worldObj.isAirBlock(new BlockPos(x, y, z))) {
 								occupiedBlockCount++;
 								if (occupiedBlockCount == 1 || (occupiedBlockCount <= 100 && worldObj.rand.nextInt(10) == 0)) {
 									worldObj.newExplosion(null, x, y, z, 1, false, false);
@@ -699,13 +698,14 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		tag.setString("schematic", schematicFileName);
 		tag.setInteger("targetX", targetX);
 		tag.setInteger("targetY", targetY);
 		tag.setInteger("targetZ", targetZ);
 		tag.setByte("rotationSteps", rotationSteps);
+		return tag;
 	}
 	
 	// OpenComputer callback methods
@@ -833,7 +833,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		}
 		
 		// find a unique player in range
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 1.0D, yCoord + 1.0D, zCoord - 1.0D, xCoord + 1.99D, yCoord + 5.0D, zCoord + 1.99D);
+		AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 1.0D, pos.getY() + 1.0D, pos.getZ() - 1.0D, pos.getX() + 1.99D, pos.getY() + 5.0D, pos.getZ() + 1.99D);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		List<EntityPlayer> entityPlayers = new ArrayList<>(10);
 		for (Object object : list) {
@@ -846,7 +846,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		}
 		if (entityPlayers.size() > 1) {
 			for (EntityPlayer entityPlayer : entityPlayers) {
-				WarpDrive.addChatMessage(entityPlayer, "Too many players detected: please stand in the beam one at a time.");
+				WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time."));
 				cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			}
 			return;
@@ -865,16 +865,16 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 		}
 		if (itemStack == null || slotIndex >= entityPlayer.inventory.getSizeInventory()) {
-			WarpDrive.addChatMessage(entityPlayer, "Please come back once you've a Crystal token.");
+			WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("Please come back once you've a Crystal token."));
 			cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
-		playerName = entityPlayer.getCommandSenderName();
+		playerName = entityPlayer.getName();
 		
 		// try deploying
 		StringBuilder reason = new StringBuilder();
-		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, true, reason);
-		WarpDrive.addChatMessage(entityPlayer, reason.toString());
+		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - pos.getX(), targetY - pos.getY(), targetZ - pos.getZ(), rotationSteps, true, reason);
+		WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()));
 		if (!isActive) {
 			// failed
 			cooldownPlayerDetection = 5 * SS_SEARCH_INTERVAL_TICKS;
@@ -900,13 +900,13 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean canInputEnergy(EnumFacing from) {
 		return true;
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ());
 	}
 }

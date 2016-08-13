@@ -3,18 +3,22 @@ package cr0s.warpdrive.block.collection;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockLaserTreeFarm extends BlockAbstractContainer {
-	private IIcon[] iconBuffer;
 	public final static int ICON_IDLE = 0;
 	public final static int ICON_FARMING_LOW_POWER = 1;
 	public final static int ICON_FARMING_POWERED = 2;
@@ -25,53 +29,17 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	private final static int ICON_BOTTOM = 7;
 	private final static int ICON_TOP = 8;
 	
-	public BlockLaserTreeFarm() {
-		super(Material.iron);
-		setBlockName("warpdrive.collection.LaserTreeFarm");
+	public BlockLaserTreeFarm(final String registryName) {
+		super(Material.IRON);
+		setUnlocalizedName("warpdrive.collection.LaserTreeFarm");
+		setRegistryName(registryName);
+		GameRegistry.register(this);
+		GameRegistry.registerTileEntity(TileEntityLaserTreeFarm.class, WarpDrive.PREFIX + registryName);
 	}
-	
+
+	@Nonnull
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
-		iconBuffer[ICON_FARMING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
-		iconBuffer[ICON_FARMING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
-		iconBuffer[ICON_SCANNING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
-		iconBuffer[ICON_SCANNING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
-		iconBuffer[ICON_PLANTING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
-		iconBuffer[ICON_PLANTING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
-		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
-		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
-	}
-	
-	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata  = world.getBlockMetadata(x, y, z);
-		if (side == 0) {
-			return iconBuffer[ICON_BOTTOM];
-		}
-		if (side == 1) {
-			return iconBuffer[ICON_TOP];
-		}
-		if (metadata < iconBuffer.length) {
-			return iconBuffer[metadata];
-		}
-		return null;
-	}
-	
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (side == 0) {
-			return iconBuffer[ICON_BOTTOM];
-		}
-		if (side == 1) {
-			return iconBuffer[ICON_TOP];
-		}
-		return iconBuffer[ICON_PLANTING_LOW_POWER];
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityLaserTreeFarm();
 	}
 	
@@ -80,22 +48,14 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		return 1;
 	}
 	
-	/**
-	 * Returns the item to drop on destruction.
-	 */
 	@Override
-	public Item getItemDropped(int par1, Random random, int par3) {
-		return Item.getItemFromBlock(this);
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (itemStackHeld == null) {
+			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLaserTreeFarm) {
 				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm)tileEntity).getStatus());
 				return true;

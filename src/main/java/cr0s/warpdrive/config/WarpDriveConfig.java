@@ -11,13 +11,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.minecraft.util.ResourceLocation;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.compat.*;
@@ -300,7 +301,7 @@ public class WarpDriveConfig {
 	
 	public static Block getModBlock(final String mod, final String id) {
 		try {
-			return GameRegistry.findBlock(mod, id);
+			return Block.REGISTRY.getObject(new ResourceLocation(mod, id));
 		} catch (Exception exception) {
 			WarpDrive.logger.info("Failed to get mod block for " + mod + ":" + id);
 			exception.printStackTrace();
@@ -310,12 +311,18 @@ public class WarpDriveConfig {
 	
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
 		try {
-			ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
-			if (meta != -1) {
-				item.setItemDamage(meta);
+			Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
+			if (item == null) {
+				WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
+				return null;
 			}
-			return item;
+			ItemStack itemStack = new ItemStack(item);
+			if (meta != -1) {
+				itemStack.setItemDamage(meta);
+			}
+			return itemStack;
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
 		}
 		return null;

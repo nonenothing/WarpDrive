@@ -4,15 +4,15 @@ import java.nio.charset.StandardCharsets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.*;
-import net.minecraft.init.Items;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -30,13 +30,14 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	private float fadeGreen;
 	private float fadeBlue;
 	
+	@SuppressWarnings("unused")
 	public MessageSpawnParticle() {
 		// required on receiving side
 	}
 	
-	public MessageSpawnParticle(final String type, final Vector3 origin, final Vector3 direction,
-	                            final float baseRed, final float baseGreen, final float baseBlue,
-	                            final float fadeRed, final float fadeGreen, final float fadeBlue) {
+	MessageSpawnParticle(final String type, final Vector3 origin, final Vector3 direction,
+	                     final float baseRed, final float baseGreen, final float baseBlue,
+	                     final float fadeRed, final float fadeGreen, final float fadeBlue) {
 		this.type = type;
 		this.origin = origin;
 		this.direction = direction;
@@ -97,45 +98,62 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handle(World worldObj) {
-		// Directly spawn particle as per RenderGlobal.doSpawnParticle, bypassing range check
+	private void handle(World world) {
+		// Directly spawn particle as per RenderGlobal.spawnParticle, bypassing range check
 		// adjust color as needed
-		EntityFX effect;
+		Minecraft mc = Minecraft.getMinecraft();
+		Entity entity = mc.getRenderViewEntity();
+		if (entity == null || mc.effectRenderer == null) {
+			return;
+		}
+		if (mc.gameSettings.particleSetting == 1 && world.rand.nextInt(3) != 0) {
+			return;
+		}
+		
+		Particle particle;
 		double noiseLevel = direction.getMagnitude() * 0.35D;
 		for (int i = 0; i < 5; i++) {
 			Vector3 directionRandomized = new Vector3(
-					direction.x + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
-					direction.y + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
-					direction.z + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
+					direction.x + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
+					direction.y + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
+					direction.z + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()));
 			switch (type) {
 			case "explode":
 			default:
-				effect = new EntityExplodeFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.EXPLOSION_NORMAL.getParticleID(),
+						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
 			
 			case "fireworksSpark":
-				EntityFireworkSparkFX entityFireworkSparkFX = new EntityFireworkSparkFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z,
-					                                                                       FMLClientHandler.instance().getClient().effectRenderer);
-				entityFireworkSparkFX.setFadeColour(integerFromRGB(fadeRed, fadeGreen, fadeBlue));
-				effect = entityFireworkSparkFX;
+				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.FIREWORKS_SPARK.getParticleID(),
+						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				if (particle instanceof ParticleFirework.Spark) {
+					((ParticleFirework.Spark) particle).setColorFade(integerFromRGB(fadeRed, fadeGreen, fadeBlue));
+				}
 				break;
 			
 			case "flame":
-				effect = new EntityFlameFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.FLAME.getParticleID(),
+						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
 			
 			case "snowballpoof":
-				effect = new EntityBreakingFX(worldObj, origin.x, origin.y, origin.z, Items.snowball);
+				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.SNOWBALL.getParticleID(),
+						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
 			
 			case "snowshovel":
-				effect = new EntitySnowShovelFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.SNOW_SHOVEL.getParticleID(),
+						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
-			} 
-			if (baseRed >= 0.0F && baseGreen >= 0.0F && baseBlue >= 0.0F) {
-				effect.setRBGColorF(baseRed, baseGreen, baseBlue);
 			}
-			FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
+			if (particle == null) {
+				continue;
+			}
+			if (baseRed >= 0.0F && baseGreen >= 0.0F && baseBlue >= 0.0F) {
+				particle.setRBGColorF(baseRed, baseGreen, baseBlue);
+			}
+			mc.effectRenderer.addEffect(particle);
 		}
 	}
 	

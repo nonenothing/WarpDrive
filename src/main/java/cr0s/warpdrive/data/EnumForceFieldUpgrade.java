@@ -13,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -148,14 +149,14 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	
 	@Override
 	public int onEntityEffect(final float scaledValue, World world, final int projectorX, final int projectorY, final int projectorZ,
-	                          final int blockX, final int blockY, final int blockZ, Entity entity) {
+							  final BlockPos blockPos, Entity entity) {
 		if (scaledValue == 0.0F) {
 			return 0;
 		}
 		
 		// common particle effects properties
 		Vector3 v3Projector = new Vector3(projectorX + 0.5D, projectorY + 0.5D, projectorZ + 0.5D);
-		double distanceCollision = v3Projector.distanceTo_square(new Vector3(blockX + 0.5D, blockY + 0.5D, blockZ + 0.5D));
+		double distanceCollision = v3Projector.distanceTo_square(new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D));
 		double distanceEntity = v3Projector.distanceTo_square(entity);
 		Vector3 v3Entity = new Vector3(entity);
 		Vector3 v3Direction = new Vector3(entity).subtract(v3Projector).normalize();
@@ -208,7 +209,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			// pass through forcefield
 			if (distanceCollision <= distanceEntity) {
 				if (entity instanceof EntityLivingBase) {
-					((EntityLivingBase)entity).setPositionAndUpdate(
+					entity.setPositionAndUpdate(
 						entity.posX - v3Direction.x * 2.0D,
 						entity.posY - v3Direction.y * 2.0D,
 						entity.posZ - v3Direction.z * 2.0D);
@@ -220,7 +221,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 				}
 				v3Entity.translateFactor(v3Direction, 2.0D);
 			} else if (entity instanceof EntityPlayer) {
-				((EntityLivingBase)entity).setPositionAndUpdate(
+				entity.setPositionAndUpdate(
 					entity.posX - v3Direction.x * 0.4D,
 					entity.posY - v3Direction.y * 0.4D,
 					entity.posZ - v3Direction.z * 0.4D);
@@ -241,7 +242,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			// pass through forcefield
 			if (distanceCollision >= distanceEntity) {
 				if (entity instanceof EntityLivingBase) {
-					((EntityLivingBase)entity).setPositionAndUpdate(
+					entity.setPositionAndUpdate(
 						entity.posX + v3Direction.x * 2.0D,
 						entity.posY + v3Direction.y * 2.0D,
 						entity.posZ + v3Direction.z * 2.0D);
@@ -253,7 +254,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 				}
 				v3Entity.translateFactor(v3Direction, 2.0D);
 			} else if (entity instanceof EntityPlayer) {
-				((EntityLivingBase)entity).setPositionAndUpdate(
+				entity.setPositionAndUpdate(
 					entity.posX + v3Direction.x * 0.4D,
 					entity.posY + v3Direction.y * 0.4D,
 					entity.posZ + v3Direction.z * 0.4D);

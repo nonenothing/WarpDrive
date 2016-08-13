@@ -1,13 +1,13 @@
 package cr0s.warpdrive.item;
 
-import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import net.minecraftforge.fml.common.Optional;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cr0s.warpdrive.WarpDrive;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "ic2.api.reactor.IReactorComponent", modid = "IC2")
@@ -15,16 +15,13 @@ import cr0s.warpdrive.WarpDrive;
 public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent {
 	private final static int maxHeat = 3000;
 	
-	public ItemIC2reactorLaserFocus() {
+	public ItemIC2reactorLaserFocus(final String registryName) {
 		super();
 		setMaxDamage(maxHeat);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.energy.IC2reactorLaserFocus");
-	}
-	
-	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
-		itemIcon = par1IconRegister.registerIcon("warpdrive:reactorFocus");
+		setRegistryName(registryName);
+		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		GameRegistry.register(this);
 	}
 	
 	private static void damageComponent(ItemStack self, int damage) {
@@ -46,9 +43,9 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 	@Optional.Method(modid = "IC2")
 	private static void coolComponent(ItemStack self, IReactorComponent comp, IReactor reactor, ItemStack stack, int x, int y) {
 		int maxTransfer = maxHeat - self.getItemDamage();
-		int compHeat = comp.getCurrentHeat(reactor, stack, x, y);
+		int compHeat = comp.getCurrentHeat(stack, reactor, x, y);
 		int transferHeat = -Math.min(compHeat, maxTransfer);
-		int retained = comp.alterHeat(reactor, stack, x, y, transferHeat);
+		int retained = comp.alterHeat(stack, reactor, x, y, transferHeat);
 		damageComponent(self, retained - transferHeat);
 	}
 	
@@ -63,7 +60,7 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public void processChamber(IReactor reactor, ItemStack yourStack, int x, int y, boolean heatrun) {
+	public void processChamber(ItemStack yourStack, IReactor reactor, int x, int y, boolean heatrun) {
 		if (heatrun) {
 			int[] xDif = { -1, 0, 0, 1 };
 			int[] yDif = { 0, -1, 1, 0 };
@@ -87,31 +84,31 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean acceptUraniumPulse(IReactor reactor, ItemStack yourStack, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatrun) {
+	public boolean acceptUraniumPulse(ItemStack yourStack, IReactor reactor, ItemStack pulsingStack, int youX, int youY, int pulseX, int pulseY, boolean heatrun) {
 		return false;
 	}
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean canStoreHeat(IReactor reactor, ItemStack yourStack, int x, int y) {
+	public boolean canStoreHeat(ItemStack yourStack, IReactor reactor, int x, int y) {
 		return true;
 	}
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public int getMaxHeat(IReactor reactor, ItemStack yourStack, int x, int y) {
+	public int getMaxHeat(ItemStack yourStack, IReactor reactor, int x, int y) {
 		return maxHeat;
 	}
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public int getCurrentHeat(IReactor reactor, ItemStack yourStack, int x, int y) {
+	public int getCurrentHeat(ItemStack yourStack, IReactor reactor, int x, int y) {
 		return yourStack.getItemDamage();
 	}
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public int alterHeat(IReactor reactor, ItemStack yourStack, int x, int y, int heat) {
+	public int alterHeat(ItemStack yourStack, IReactor reactor, int x, int y, int heat) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " alterHeat " + heat);
 		}
@@ -122,7 +119,7 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public float influenceExplosion(IReactor reactor, ItemStack yourStack) {
+	public float influenceExplosion(ItemStack yourStack, IReactor reactor) {
 		return 0;
 	}
 	
