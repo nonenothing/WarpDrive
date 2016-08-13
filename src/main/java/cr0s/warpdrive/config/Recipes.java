@@ -1052,7 +1052,7 @@ public class Recipes {
 				'd', ItemComponent.getItemStack(EnumComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
-				'm', itemStackMachineCasings[2],
+				'm', itemStackMachineCasings[1],
 				'r', Items.REDSTONE,
 				'g', "paneGlassColorless"));
 		
@@ -1061,7 +1061,7 @@ public class Recipes {
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", 1); // Mining laser
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
+			// itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "cmr", "tdt", "glg",
 				't', itemStackMotors[1],
@@ -1279,7 +1279,7 @@ public class Recipes {
 				'c', itemStackGoldIngotOrCoil,
 				'm', itemStackMachineCasings[3] )); 
 		
-		// Enantiomorphic reactor core is 1 EV Machine casing (Ti), 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
+		// Enantiomorphic reactor core is 1 EV Machine casing, 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorCore), false, "CpC", "lml", "CcC",
 				'm', ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE),
 				'l', ItemComponent.getItemStack(EnumComponentType.LENS),
@@ -1287,15 +1287,22 @@ public class Recipes {
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
 				'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL))); 
 		
-		// Enantiomorphic reactor stabilization laser is 1 EV Machine casing (Ti), 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
+		// Enantiomorphic reactor stabilization laser is 1 HV Machine casing, 2 Advanced hull, 1 Computer interface, 1 Power interface, 1 Lense, 1 Redstone, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorLaser), false, "ghr", "ldm", "ghc",
 				'd', ItemComponent.getItemStack(EnumComponentType.DIFFRACTION_GRATING),
 				'l', ItemComponent.getItemStack(EnumComponentType.LENS),
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
-				'm', itemStackMachineCasings[2],
+				'm', itemStackMachineCasings[1],
 				'r', Items.REDSTONE,
 				'g', "paneGlassColorless",
-				'h', "blockHull3_plain"));
+				'h', "blockHull2_plain"));
+		
+		// Anuic Energy bank is 1 capacitive crystal + 1 MV Machine casing + 3 Power interfaces 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank), false, "pip", "pcp", "pmp",
+		                                          'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
+		                                          'm', itemStackMachineCasings[1],
+		                                          'i', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
 		
 		// Force field projector is 1 or 2 Electromagnetic Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
 		for (int tier = 1; tier <= 3; tier++) {

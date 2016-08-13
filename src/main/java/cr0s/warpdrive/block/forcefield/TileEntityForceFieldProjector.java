@@ -866,6 +866,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
 		return super.getStatus()
 			.appendSibling(new TextComponentString("\n")).appendSibling(getShapeStatus())

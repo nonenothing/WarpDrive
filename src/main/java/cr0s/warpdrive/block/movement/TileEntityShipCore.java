@@ -1020,8 +1020,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
+		return super.getStatus()
 			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
 			.appendSibling((cooldownTime > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.cooling", cooldownTime / 20)) : new TextComponentString(""))
 			.appendSibling((isolationBlocksCount > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0)) : new TextComponentString(""));

@@ -110,9 +110,10 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		}
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
 		ITextComponent energyStatus = getEnergyStatus();
-		return (worldObj != null ? new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : new TextComponentString(""))
+		return super.getStatus()
 	        .appendSibling(energyStatus.toString().isEmpty() ? new TextComponentString("") : new TextComponentString("\n").appendSibling(energyStatus))
 			.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
 	}

@@ -367,7 +367,7 @@ warpdrive.ship.statusLine.isolation=Les %1$d blocs d'isolations actifs fournisse
 warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s/%2$s EU.
 warpdrive.beamFrequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
 warpdrive.beamFrequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
-warpdrive.beamFrequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour ajuster la fréquence de faisceau.
+warpdrive.beamFrequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
 
 warpdrive.forcefield.guide.lowPower=Nous sommes à court d'énergie Capitaine, réduissez la consommation ou appelez l'ingénieur écossais pour booster notre production!
 

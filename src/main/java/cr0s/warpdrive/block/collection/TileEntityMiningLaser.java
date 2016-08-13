@@ -526,7 +526,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		return super.callMethod(computer, context, method, arguments);
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
+		// @TODO merge with base
 		int energy = getEnergyStored();
 		ITextComponent state = new TextComponentTranslation("IDLE (not mining)");
 		if (currentState == STATE_IDLE) {

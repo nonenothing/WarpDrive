@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
+import cr0s.warpdrive.block.*;
 import cr0s.warpdrive.block.forcefield.*;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.item.*;
@@ -458,6 +459,10 @@ public class WarpDrive implements LoadingCallback {
 	}
 	
 	public static void addChatMessage(final ICommandSender sender, final ITextComponent textComponent) {
+		if (sender == null) {
+			logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
+			return;
+		}
 		String[] lines = textComponent.getFormattedText().replace("§", "" + (char)167).replace("\\n", "\n").split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new TextComponentString(line));

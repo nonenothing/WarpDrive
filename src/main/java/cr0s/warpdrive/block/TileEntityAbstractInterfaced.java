@@ -172,6 +172,14 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	@Override
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("oc:node");
+		nbtTagCompound.removeTag("oc:fs");
+		return nbtTagCompound;
+	}
+	
+	@Override
 	public int hashCode() {
 		return (((((super.hashCode() + (worldObj == null ? 0 : worldObj.provider.getDimension()) << 4) + pos.getX()) << 4) + pos.getY()) << 4) + pos.getZ();
 	}
@@ -284,7 +292,6 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public boolean equals(IPeripheral other) {
-		// WarpDrive.debugPrint("WarpInterfacedTE.equals");
 		return other.hashCode() == hashCode();
 	}
 	

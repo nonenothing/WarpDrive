@@ -17,6 +17,9 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -329,6 +332,19 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			tagCompound.setTag("upgrades", nbtTagCompoundUpgrades);
 		}
 		return tagCompound;
+	}
+	
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		writeToNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("x");
+		nbtTagCompound.removeTag("y");
+		nbtTagCompound.removeTag("z");
+		return nbtTagCompound;
+	}
+	
+	// status
+	public ITextComponent getStatus() {
+		return (worldObj != null ? new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : new TextComponentString(""));
 	}
 	
 	// upgrade system

@@ -80,8 +80,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	
 	@Override
 	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-			getBlockType().getLocalizedName())
+		return super.getStatus()
 			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
 			.appendSibling(new TextComponentString("\n")).appendSibling(new TextComponentTranslation("warpdrive.transporter.status",
 				sourceVec.x, sourceVec.y, sourceVec.z,

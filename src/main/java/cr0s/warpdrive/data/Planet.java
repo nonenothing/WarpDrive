@@ -49,7 +49,7 @@ public class Planet implements Cloneable {
 	 */
 	public int isInsideBorder(AxisAlignedBB aabb) {
 		double rangeX = Math.max(Math.abs(aabb.minX - dimensionCenterX), Math.abs(aabb.maxX - dimensionCenterX));
-		double rangeZ = Math.max(Math.abs(aabb.minX - dimensionCenterX), Math.abs(aabb.maxX - dimensionCenterX));
+		double rangeZ = Math.max(Math.abs(aabb.minZ - dimensionCenterZ), Math.abs(aabb.maxZ - dimensionCenterZ));
 		if ((rangeX <= borderSizeX) && (rangeZ <= borderSizeZ)) {
 			return 0;
 		}

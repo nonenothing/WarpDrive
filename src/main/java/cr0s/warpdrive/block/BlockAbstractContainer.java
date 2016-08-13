@@ -105,12 +105,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
 			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
-		} else {
+		} else if (tileEntity instanceof TileEntityAbstractBase) {
 			NBTTagCompound nbtTagCompound = new NBTTagCompound();
-			tileEntity.writeToNBT(nbtTagCompound);
-			nbtTagCompound.removeTag("x");
-			nbtTagCompound.removeTag("y");
-			nbtTagCompound.removeTag("z");
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
 			itemStack.setTagCompound(nbtTagCompound);
 		}
 		world.setBlockToAir(blockPos);
@@ -122,12 +119,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
 		ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (tileEntity != null) {
-			NBTTagCompound nbtTagCompound = new NBTTagCompound();
-			tileEntity.writeToNBT(nbtTagCompound);
-			nbtTagCompound.removeTag("x");
-			nbtTagCompound.removeTag("y");
-			nbtTagCompound.removeTag("z");
+		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		if (tileEntity instanceof TileEntityAbstractBase) {
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
 			itemStack.setTagCompound(nbtTagCompound);
 		}
 		return itemStack;

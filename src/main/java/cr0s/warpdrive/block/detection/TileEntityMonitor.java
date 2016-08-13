@@ -72,7 +72,6 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				WarpDrive.cameras.printRegistry(worldObj);
 				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalidOrNotLoaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
 				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.valid", videoChannel);
@@ -86,9 +85,9 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		}
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-		    getBlockType().getLocalizedName())
+		return super.getStatus()
 		    .appendSibling(getVideoChannelStatus());
 	}
 	

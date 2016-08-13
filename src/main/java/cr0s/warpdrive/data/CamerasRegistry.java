@@ -17,6 +17,9 @@ public class CamerasRegistry {
 	}
 	
 	public CameraRegistryItem getCameraByVideoChannel(World world, int videoChannel) {
+		if (world == null) {
+			return null;
+		}
 		CameraRegistryItem cam;
 		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
@@ -107,7 +110,6 @@ public class CamerasRegistry {
 	
 	public void updateInRegistry(World world, BlockPos position, int videoChannel, EnumCameraType enumCameraType) {
 		CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, enumCameraType);
-		// WarpDrive.debugPrint("updateInRegistry " + cam.position.x + ", " + cam.position.y + ", " + cam.position.z);
 		removeDeadCams(world);
 		
 		if (isCamAlive(world, cam)) {
@@ -135,6 +137,9 @@ public class CamerasRegistry {
 	}
 	
 	public void printRegistry(World world) {
+		if (world == null) {
+			return;
+		}
 		WarpDrive.logger.info("Cameras registry for dimension " + world.provider.getDimension() + ":");
 		
 		for (CameraRegistryItem cam : registry) {

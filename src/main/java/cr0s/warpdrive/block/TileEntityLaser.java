@@ -19,6 +19,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.*;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -29,7 +30,6 @@ import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -528,10 +528,14 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-		    getBlockType().getLocalizedName())
-		    .appendSibling(getBeamFrequencyStatus());
+		if (worldObj == null || !worldObj.isRemote) {
+			return super.getStatus()
+					.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
+		} else {
+			return super.getStatus();
+		}
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {

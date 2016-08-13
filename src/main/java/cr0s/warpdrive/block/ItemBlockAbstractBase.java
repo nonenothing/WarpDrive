@@ -30,11 +30,11 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	
 	public ITextComponent getStatus(final NBTTagCompound nbtTagCompound) {
 		TileEntity tileEntity = block.createTileEntity(Minecraft.getMinecraft().theWorld, block.getDefaultState());
-		if (tileEntity instanceof TileEntityAbstractEnergy) {
+		if (tileEntity instanceof TileEntityAbstractBase) {
 			if (nbtTagCompound != null) {
 				tileEntity.readFromNBT(nbtTagCompound);
 			}
-			return ((TileEntityAbstractEnergy)tileEntity).getStatus();
+			return ((TileEntityAbstractBase)tileEntity).getStatus();
 			
 		} else {
 			return new TextComponentString("");

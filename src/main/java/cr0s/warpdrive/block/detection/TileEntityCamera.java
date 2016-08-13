@@ -101,9 +101,9 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		}
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-		    getBlockType().getLocalizedName())
+			return super.getStatus()
 		    .appendSibling(getVideoChannelStatus());
 	}
 	

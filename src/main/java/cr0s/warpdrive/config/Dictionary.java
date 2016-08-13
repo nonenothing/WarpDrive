@@ -144,8 +144,9 @@ public class Dictionary {
 				config.get("block_tags", "StargateTech2:block.busCable"                    , "PlaceNormal StopMining").getString();
 				
 				// expendables, a.k.a. "don't blow my ship with this..."
-				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
+				config.get("block_tags", "chisel:cloud"                                    , "LeftBehind Expandable").getString();
 				config.get("block_tags", "Railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
+				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
 				config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
 				config.get("block_tags", "WarpDrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
 				
@@ -242,13 +243,24 @@ public class Dictionary {
 			ConfigCategory categoryItemTags = config.getCategory("item_tags");
 			String[] taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			if (taggedItemsName.length == 0) {
+				config.get("item_tags", "AWWayofTime:boundHelmet", "BreathingIC2").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetEarth", "BreathingIC2").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetFire", "BreathingIC2").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetWater", "BreathingIC2").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetWind", "BreathingIC2").getString();
+				config.get("item_tags", "AdvancedSolarPanel:advanced_solar_helmet", "BreathingIC2").getString();
+				config.get("item_tags", "AdvancedSolarPanel:hybrid_solar_helmet", "BreathingIC2").getString();
+				config.get("item_tags", "AdvancedSolarPanel:ultimate_solar_helmet", "BreathingIC2").getString();
+				config.get("item_tags", "Botania:elementiumHelm", "BreathingIC2").getString();
+				config.get("item_tags", "Botania:elementiumHelmReveal", "BreathingIC2").getString();
+				config.get("item_tags", "Botania:terrasteelHelm", "BreathingIC2").getString();
+				config.get("item_tags", "Botania:terrasteelHelmReveal", "BreathingIC2").getString();
+				config.get("item_tags", "EnderIO:item.darkSteel_helmet", "BreathingIC2").getString();
 				config.get("item_tags", "IC2:itemArmorHazmatHelmet", "BreathingIC2").getString();
 				config.get("item_tags", "IC2:itemSolarHelmet", "BreathingIC2").getString();
 				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingIC2").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingIC2").getString();
-				config.get("item_tags", "AdvancedSolarPanel:advanced_solar_helmet", "BreathingIC2").getString();
-				config.get("item_tags", "AdvancedSolarPanel:hybrid_solar_helmet", "BreathingIC2").getString();
-				config.get("item_tags", "AdvancedSolarPanel:ultimate_solar_helmet", "BreathingIC2").getString();
+				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingIC2").getString();
 				
 				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();

@@ -7,6 +7,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -103,9 +104,12 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	@Override
 	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-			getBlockType().getLocalizedName())
-			.appendSibling(worldObj.isRemote ? getVideoChannelStatus() : getBeamFrequencyStatus());
+		if (worldObj == null || worldObj.isRemote) {
+			return super.getStatus()
+					.appendSibling(new TextComponentString("\n")).appendSibling(getVideoChannelStatus());
+		} else {
+			return super.getStatus();
+		}
 	}
 	
 	@Override

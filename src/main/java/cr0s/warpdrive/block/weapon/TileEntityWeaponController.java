@@ -23,11 +23,6 @@ public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 		super.update();
 	}
 	
-	public ITextComponent getStatus() {
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName());
-	}
-	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
