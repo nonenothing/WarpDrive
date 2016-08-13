@@ -65,8 +65,7 @@ dependencies {
 
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -91,9 +90,9 @@ processResources
 
 jar {
     manifest {
-        attributes 'FMLAT': 'CoFH_at.cfg'
-        attributes 'FMLCorePlugin': 'cr0s.warpdrive.core.FMLLoadingPlugin',
-                        'FMLCorePluginContainsFMLMod': 'true'
+		attributes FMLAT: "warpdrive_at.cfg"
+        attributes FMLCorePlugin: "cr0s.warpdrive.core.FMLLoadingPlugin"
+        attributes FMLCorePluginContainsFMLMod: "true"
     }
 }
 
