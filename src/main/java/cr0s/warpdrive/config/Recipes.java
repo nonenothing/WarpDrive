@@ -1297,6 +1297,13 @@ public class Recipes {
 				'g', "paneGlassColorless",
 				'h', "blockHull2_plain"));
 		
+		// Anuic Energy bank is 1 capacitive crystal + 1 MV Machine casing + 3 Power interfaces 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank), false, "pip", "pcp", "pmp",
+		                                          'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
+		                                          'm', itemStackMachineCasings[1],
+		                                          'i', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
+		
 		// Force field projector is 1 or 2 Electromagnetic Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
 		for (int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;

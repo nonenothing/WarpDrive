@@ -157,8 +157,8 @@ public class WarpDriveConfig {
 	public static int RADAR_SCAN_MIN_DELAY_SECONDS = 1;
 	public static double[] RADAR_SCAN_DELAY_FACTORS_SECONDS = { 1.0, 0.001, 0.0, 0.0 };
 	public static int RADAR_MAX_ISOLATION_RANGE = 2;
-	public static int RADAR_MIN_ISOLATION_BLOCKS = 5;
-	public static int RADAR_MAX_ISOLATION_BLOCKS = 60;
+	public static int RADAR_MIN_ISOLATION_BLOCKS = 2;
+	public static int RADAR_MAX_ISOLATION_BLOCKS = 16;
 	public static double RADAR_MIN_ISOLATION_EFFECT = 0.12;
 	public static double RADAR_MAX_ISOLATION_EFFECT = 1.00;
 	
@@ -752,6 +752,8 @@ public class WarpDriveConfig {
 	}
 	
 	public static void onFMLInitialization() {
+		CompatWarpDrive.register();
+		
 		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
 		if (isForgeMultipartLoaded) {
 			isForgeMultipartLoaded = CompatForgeMultipart.register();
