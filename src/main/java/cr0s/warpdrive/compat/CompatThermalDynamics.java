@@ -50,14 +50,18 @@ public class CompatThermalDynamics implements IBlockTransformer {
 	private static final Map<String, String> rotConAttachmentNames;
 	static {
 		Map<String, String> map = new HashMap<>();
-		map.put("conTypes2", "conTypes5");
-		map.put("conTypes5", "conTypes3");
-		map.put("conTypes3", "conTypes4");
-		map.put("conTypes4", "conTypes2");
 		map.put("attachment2", "attachment5");
 		map.put("attachment5", "attachment3");
 		map.put("attachment3", "attachment4");
 		map.put("attachment4", "attachment2");
+		map.put("conTypes2", "conTypes5");
+		map.put("conTypes5", "conTypes3");
+		map.put("conTypes3", "conTypes4");
+		map.put("conTypes4", "conTypes2");
+		map.put("facade2", "facade5");
+		map.put("facade5", "facade3");
+		map.put("facade3", "facade4");
+		map.put("facade4", "facade2");
 		rotConAttachmentNames = Collections.unmodifiableMap(map);
 	}
 	
