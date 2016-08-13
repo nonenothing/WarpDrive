@@ -514,7 +514,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		return super.callMethod(computer, context, method, arguments);
 	}
 	
+	@Override
 	public String getStatus() {
+		// @TODO merge with base
 		int energy = getEnergyStored();
 		String state = "IDLE (not mining)";
 		if (currentState == STATE_IDLE) {

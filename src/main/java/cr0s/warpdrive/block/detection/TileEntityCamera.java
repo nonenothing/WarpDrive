@@ -102,9 +102,9 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		}
 	}
 	
+	@Override
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
+		return super.getStatus()
 				+ getVideoChannelStatus();
 	}
 	

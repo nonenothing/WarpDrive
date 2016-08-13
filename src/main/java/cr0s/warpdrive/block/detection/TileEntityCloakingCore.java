@@ -360,6 +360,10 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String getStatus() {
+		if (worldObj == null) {
+			return super.getStatus();
+		}
+		
 		String unlocalizedStatus;
 		if (!isValid) {
 			unlocalizedStatus = "warpdrive.cloakingCore.invalidAssembly";
@@ -370,11 +374,10 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		} else {
 			unlocalizedStatus = "warpdrive.cloakingCore.cloaking";
 		}
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ StatCollector.translateToLocalFormatted(unlocalizedStatus,
-						tier,
-						volume);
+		return super.getStatus()
+		    + "\n" + StatCollector.translateToLocalFormatted(unlocalizedStatus,
+				tier,
+				volume);
 	}
 	
 	// OpenComputer callback methods

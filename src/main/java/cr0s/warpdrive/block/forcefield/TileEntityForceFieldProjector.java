@@ -864,6 +864,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
+	@Override
 	public String getStatus() {
 		return super.getStatus()
 			+ "\n" + getShapeStatus()

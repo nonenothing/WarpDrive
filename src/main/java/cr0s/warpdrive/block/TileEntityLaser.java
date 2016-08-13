@@ -531,10 +531,14 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 	}
 	
+	@Override
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ getBeamFrequencyStatus();
+		if (worldObj == null || !worldObj.isRemote) {
+			return super.getStatus()
+			       + "\n" + getBeamFrequencyStatus();
+		} else {
+			return super.getStatus();
+		}
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {

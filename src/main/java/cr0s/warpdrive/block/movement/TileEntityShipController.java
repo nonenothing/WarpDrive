@@ -260,9 +260,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 						getAttachedPlayersList());
 	}
 	
+	@Override
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
+		return super.getStatus()
 				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
 						getAttachedPlayersList());
 	}

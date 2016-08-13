@@ -21,12 +21,7 @@ public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	public void updateEntity() {
 		super.updateEntity();
 	}
-	
-	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName());
-	}
-	
+		
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);

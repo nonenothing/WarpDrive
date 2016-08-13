@@ -109,10 +109,9 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		}
 	}
 	
+	@Override
 	public String getStatus() {
-		String strEnergyStatus = getEnergyStatus();
-		return (worldObj != null ? StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : "")
-	        + (strEnergyStatus.isEmpty() ? "" : "\n" + strEnergyStatus)
+		return super.getStatus()
 			+ "\n" + getBeamFrequencyStatus();
 	}
 	

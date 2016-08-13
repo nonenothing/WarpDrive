@@ -76,9 +76,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	
 	@Override
 	public String getStatus() {
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-				getBlockType().getLocalizedName())
-				+ "\n" + getEnergyStatus()
+		return super.getStatus()
 				+ "\n" + StatCollector.translateToLocalFormatted("warpdrive.transporter.status",
 						sourceVec.x, sourceVec.y, sourceVec.z,
 						destVec.x, destVec.y, destVec.z);

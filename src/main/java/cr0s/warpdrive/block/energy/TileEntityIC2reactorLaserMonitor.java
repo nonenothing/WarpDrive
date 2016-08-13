@@ -187,16 +187,18 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	@Override
 	@Optional.Method(modid = "IC2")
 	public String getStatus() {
+		if (worldObj == null) {
+			return super.getStatus();
+		}
+		
 		Set<IReactor> reactors = findReactors();
 		if (reactors != null && !reactors.isEmpty()) {
-			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-					+ StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.multipleReactors",
-							reactors.size());
+			return super.getStatus() 
+			       + StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.multipleReactors",
+			reactors.size());
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-					getBlockType().getLocalizedName())
-					+ StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.noReactor");
+			return super.getStatus() 
+			       + StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.noReactor");
 		}
 	}
 	

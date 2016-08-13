@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -333,6 +334,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		nbtTagCompound.removeTag("y");
 		nbtTagCompound.removeTag("z");
 		return nbtTagCompound;
+	}
+	
+	// status
+	public String getStatus() {
+		return (worldObj != null ? StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : "");
 	}
 	
 	// upgrade system

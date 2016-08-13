@@ -33,11 +33,11 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	
 	public String getStatus(final NBTTagCompound nbtTagCompound) {
 		TileEntity tileEntity = field_150939_a.createTileEntity(null, 0);
-		if (tileEntity instanceof TileEntityAbstractEnergy) {
+		if (tileEntity instanceof TileEntityAbstractBase) {
 			if (nbtTagCompound != null) {
 				tileEntity.readFromNBT(nbtTagCompound);
 			}
-			return ((TileEntityAbstractEnergy)tileEntity).getStatus();
+			return ((TileEntityAbstractBase)tileEntity).getStatus();
 			
 		} else {
 			return "";

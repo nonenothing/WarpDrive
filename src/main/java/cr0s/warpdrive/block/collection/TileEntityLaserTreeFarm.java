@@ -720,7 +720,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		return super.callMethod(computer, context, method, arguments);
 	}
 	
+	@Override
 	public String getStatus() {
+		// @TODO merge with base
 		int energy = getEnergyStored();
 		String state = "IDLE (not farming)";
 		if (currentState == STATE_IDLE) {
