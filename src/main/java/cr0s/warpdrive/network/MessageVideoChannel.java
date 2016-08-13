@@ -18,7 +18,8 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVideoChannel, IMessage> {
 	private BlockPos blockPos;
 	private int videoChannel;
-	
+
+	@SuppressWarnings("unused")
 	public MessageVideoChannel() {
 		// required on receiving side
 	}

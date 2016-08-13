@@ -18,7 +18,8 @@ public class MessageTargeting implements IMessage, IMessageHandler<MessageTarget
 	private int z;
 	private float yaw;
 	private float pitch;
-	
+
+	@SuppressWarnings("unused")
 	public MessageTargeting() {
 		// required on receiving side
 	}

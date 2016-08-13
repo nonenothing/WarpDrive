@@ -24,7 +24,8 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 	private float blue;
 	private int age;
 	private int energy;
-	
+
+	@SuppressWarnings("unused")
 	public MessageBeamEffect() {
 		// required on receiving side
 	}

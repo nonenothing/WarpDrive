@@ -422,29 +422,12 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		energyStored_internal = tag.getInteger("energy");
-		if (tag.hasKey("upgrades")) {
-			NBTTagCompound upgradeTag = tag.getCompoundTag("upgrades");
-			for (UpgradeType type : UpgradeType.values()) {
-				if (upgradeTag.hasKey(type.toString()) && upgradeTag.getInteger(type.toString()) != 0) {
-					deprecated_upgrades.put(type, upgradeTag.getInteger(type.toString()));
-				}
-			}
-		}
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag = super.writeToNBT(tag);
 		tag.setInteger("energy", getEnergyStored());
-		if (!deprecated_upgrades.isEmpty()) {
-			NBTTagCompound upgradeTag = new NBTTagCompound();
-			for (UpgradeType type : UpgradeType.values()) {
-				if (deprecated_upgrades.containsKey(type)) {
-					upgradeTag.setInteger(type.toString(), deprecated_upgrades.get(type));
-				}
-			}
-			tag.setTag("upgrades", upgradeTag);
-		}
 		return tag;
 	}
 	

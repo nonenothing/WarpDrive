@@ -26,7 +26,8 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	private int maxZ;
 	private byte tier;
 	private boolean decloak;
-	
+
+	@SuppressWarnings("unused")
 	public MessageCloak() {
 		// required on receiving side
 	}
