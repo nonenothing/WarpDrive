@@ -493,7 +493,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void summonPlayer(EntityPlayerMP player, final int x, final int y, final int z) {
-		if (consumeEnergy(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
+		if (energy_consume(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
 			if (player.dimension != worldObj.provider.dimensionId) {
 				player.mcServer.getConfigurationManager().transferPlayerToDimension(
 					player,
@@ -637,7 +637,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		// Now make jump to a beacon
 		if (isBeaconFound) {
 			// Consume energy
-			if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
+			if (energy_consume(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 				WarpDrive.logger.info(this + " Moving ship to beacon (" + beaconX + "; " + yCoord + "; " + beaconZ + ")");
 				JumpSequencer jump = new JumpSequencer(this, false, 0, 0, 0, (byte)0, true, beaconX, yCoord, beaconZ);
 				jump.enable();
@@ -800,7 +800,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 		
 		// Consume energy
-		if (consumeEnergy(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
+		if (energy_consume(calculateRequiredEnergy(currentMode, shipMass, controller.getDistance()), false)) {
 			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
 			JumpSequencer jump = new JumpSequencer(this, false, 0, 0, 0, (byte)0, true, destX, destY, destZ);
 			jump.enable();
@@ -813,8 +813,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		int distance = controller.getDistance();
 		int requiredEnergy = calculateRequiredEnergy(currentMode, shipMass, distance);
 		
-		if (!consumeEnergy(requiredEnergy, true)) {
-			messageToAllPlayersOnShip("Insufficient energy to jump! Core is currently charged with " + getEnergyStored() + " EU while jump requires "
+		if (!energy_consume(requiredEnergy, true)) {
+			messageToAllPlayersOnShip("Insufficient energy to jump! Core is currently charged with " + energy_getEnergyStored() + " EU while jump requires "
 					+ requiredEnergy + " EU");
 			controller.setJumpFlag(false);
 			return;
@@ -858,7 +858,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		}
 		
 		if (currentMode == EnumShipCoreMode.BASIC_JUMP || currentMode == EnumShipCoreMode.LONG_JUMP || currentMode == EnumShipCoreMode.HYPERSPACE) {
-			if (!consumeEnergy(requiredEnergy, false)) {
+			if (!energy_consume(requiredEnergy, false)) {
 				messageToAllPlayersOnShip("Insufficient energy level");
 				return;
 			}
@@ -904,7 +904,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				return;
 			}
 			for (Object o : list) {
-				if (!consumeEnergy(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
+				if (!energy_consume(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
 					return;
 				}
 				
@@ -1119,12 +1119,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.SHIP_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return true;
 	}
 	

@@ -25,27 +25,22 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getPotentialEnergyOutput() {
-		return getEnergyStored();
+	public int energy_getPotentialOutput() {
+		return energy_getEnergyStored();
 	}
 	
 	@Override
-	protected void energyOutputDone(int energyOutput) {
-		consumeEnergy(energyOutput, false);
-	}
-	
-	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return modeSide[from.ordinal()] == MODE_INPUT;
 	}
 	
 	@Override
-	public boolean canOutputEnergy(ForgeDirection to) {
+	public boolean energy_canOutput(ForgeDirection to) {
 		return modeSide[to.ordinal()] == MODE_OUTPUT;
 	}
 	
@@ -56,6 +51,7 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	void setMode(final EnumFacing facing, final byte mode) {
 		modeSide[facing.ordinal()] = (byte)(mode % 3);
 		markDirty();
+		energy_resetConnections(facing);
 	}
 	
 	// Forge overrides
@@ -92,5 +88,14 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s @ \'%s\' (%d %d %d) %8d",
+		getClass().getSimpleName(),
+		worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		xCoord, yCoord, zCoord,
+		energy_getEnergyStored());
 	}
 }

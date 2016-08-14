@@ -1,19 +1,17 @@
 package cr0s.warpdrive.block;
 
-import java.util.Map;
 
 import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.item.ItemUpgrade;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.chunk.Chunk;
-import cr0s.warpdrive.api.IUpgradable;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.UpgradeType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implements IUpgradable
-{
+public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	private boolean canLoad = false;
 	private boolean shouldLoad = false;
 
@@ -38,10 +36,13 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 				"active",
 				"upgrades"
 		});
+		
+		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Energy), 2);
+		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Power), 2);
 	}
 
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.CL_MAX_ENERGY;
 	}
 
@@ -65,11 +66,11 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 
 		if(shouldLoad)
 		{
-			canLoad = consumeEnergy(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, false);
+			canLoad = energy_consume(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, false);
 		}
 		else
 		{
-			canLoad = consumeEnergy(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, true);
+			canLoad = energy_consume(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, true);
 		}
 	}
 	
@@ -152,41 +153,9 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 					shouldLoad = toBool(arguments[0]);
 				return new Object[]{shouldChunkLoad()};
 			case "upgrades":
-				return getUpgrades_deprecated();
+				return new Object[] { getUpgradesAsString() };
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
-	}
-
-	@Override
-	public boolean takeUpgrade(UpgradeType upgradeType, boolean simulate)
-	{
-		int max = 0;
-		if(upgradeType == UpgradeType.Energy)
-			max = 2;
-		else if(upgradeType == UpgradeType.Power)
-			max = 2;
-
-		if(max == 0)
-			return false;
-
-		if(deprecated_upgrades.containsKey(upgradeType))
-			if(deprecated_upgrades.get(upgradeType) >= max)
-				return false;
-
-		if(!simulate)
-		{
-			int c = 0;
-			if(deprecated_upgrades.containsKey(upgradeType))
-				c = deprecated_upgrades.get(upgradeType);
-			deprecated_upgrades.put(upgradeType, c+1);
-		}
-		return true;
-	}
-
-	@Override
-	public Map<UpgradeType, Integer> getInstalledUpgrades()
-	{
-		return deprecated_upgrades;
 	}
 }

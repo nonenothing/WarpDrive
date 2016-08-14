@@ -124,7 +124,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						if (WarpDriveConfig.LOGGING_CLOAKING) {
 							WarpDrive.logger.info(this + " Coil(s) lost, cloak field is collapsing...");
 						}
-						consumeAllEnergy();
+						energy_consume(energy_getEnergyStored());
 						disableCloakingField();				
 					} else {// enabled, cloaking and valid
 						if (hasEnoughPower) {// enabled, cloaking and able to
@@ -279,7 +279,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		}
 		
 		// WarpDrive.logger.info(this + " Consuming " + energyToConsume + " EU for " + blocksCount + " blocks");
-		return consumeEnergy(energyToConsume, false);
+		return energy_consume(energyToConsume, false);
 	}
 	
 	@Override
@@ -444,12 +444,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.CLOAKING_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return true;
 	}
 }

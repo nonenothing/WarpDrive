@@ -24,7 +24,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 		if (ticks > 20) {
 			ticks = 0;
 			
-			int metadata = Math.max(0, Math.min(7, Math.round((getEnergyStored() * 8) / getMaxEnergyStored())));
+			int metadata = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
 			if (getBlockMetadata() != metadata) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 3);
 			}
@@ -43,12 +43,12 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	
 	// IEnergySink methods implementation
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.LASER_MEDIUM_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return true;
 	}
 }

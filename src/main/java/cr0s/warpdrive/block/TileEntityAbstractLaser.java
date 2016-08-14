@@ -112,7 +112,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 				break;
 			}
 			laserMediums.add((TileEntityLaserMedium) tileEntity);
-			totalEnergy += ((TileEntityLaserMedium) tileEntity).getEnergyStored();
+			totalEnergy += ((TileEntityLaserMedium) tileEntity).energy_getEnergyStored();
 		}
 		count--;
 		if (count == 0) {
@@ -132,7 +132,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		
 		// Secondary scan for laser medium below the required average
 		for (TileEntityLaserMedium laserMedium : laserMediums) {
-			int energyStored = laserMedium.getEnergyStored();
+			int energyStored = laserMedium.energy_getEnergyStored();
 			if (energyStored < energyAverage) {
 				energyLeftOver += energyAverage - energyStored;
 			}
@@ -141,10 +141,10 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		// Third and final pass for energy consumption
 		int energyTotalConsumed = 0;
 		for (TileEntityLaserMedium laserMedium : laserMediums) {
-			int energyStored = laserMedium.getEnergyStored();
+			int energyStored = laserMedium.energy_getEnergyStored();
 			int energyToConsume = Math.min(energyStored, energyAverage + energyLeftOver);
 			energyLeftOver -= Math.max(0, energyToConsume - energyAverage);
-			laserMedium.consumeEnergy(energyToConsume, false); // simulate is always false here
+			laserMedium.energy_consume(energyToConsume, false); // simulate is always false here
 			energyTotalConsumed += energyToConsume;
 		}
 		return energyTotalConsumed;
@@ -167,8 +167,8 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 					break;
 				}
 				// laserMediums.add((TileEntityLaserMedium) tileEntity);
-				energyStored += ((TileEntityLaserMedium) tileEntity).getEnergyStored();
-				energyStoredMax += ((TileEntityLaserMedium) tileEntity).getMaxEnergyStored();
+				energyStored += ((TileEntityLaserMedium) tileEntity).energy_getEnergyStored();
+				energyStoredMax += ((TileEntityLaserMedium) tileEntity).energy_getMaxStorage();
 			}
 			return new Object[] { energyStored, energyStoredMax };
 		}

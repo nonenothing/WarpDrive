@@ -74,7 +74,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void increaseInstability(ForgeDirection from, boolean isNatural) {
-		if (canOutputEnergy(from)) {
+		if (energy_canOutput(from)) {
 			return;
 		}
 		
@@ -100,14 +100,14 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	public void decreaseInstability(ForgeDirection from, int energy) {
-		if (canOutputEnergy(from)) {
+		if (energy_canOutput(from)) {
 			return;
 		}
 		
 		// laser is active => start updating reactor
 		hold = false;
 		
-		int amount = convertInternalToRF(energy);
+		int amount = convertInternalToRF_floor(energy);
 		if (amount <= 1) {
 			return;
 		}
@@ -454,7 +454,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	// POWER INTERFACES
 	@Override
-	public int getPotentialEnergyOutput() {
+	public int energy_getPotentialOutput() {
 		if (hold) {// still loading/booting => hold output
 			return 0;
 		}
@@ -463,31 +463,31 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		if (releaseMode == MODE_MANUAL_RELEASE) {
 			result = Math.min(Math.max(0, containedEnergy), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("PotentialOutput Manual " + result + " RF (" + convertRFtoInternal(result) + " internal) capacity " + capacity);
+				WarpDrive.logger.info("PotentialOutput Manual " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
 			}
 		} else if (releaseMode == MODE_RELEASE_ABOVE) {
 			result = Math.min(Math.max(0, containedEnergy - releaseAbove), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("PotentialOutput Above " + result + " RF (" + convertRFtoInternal(result) + " internal) capacity " + capacity);
+				WarpDrive.logger.info("PotentialOutput Above " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
 			}
 		} else if (releaseMode == MODE_RELEASE_AT_RATE) {
 			int remainingRate = Math.max(0, releaseRate - releasedThisTick);
 			result = Math.min(Math.max(0, containedEnergy), Math.min(remainingRate, capacity));
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("PotentialOutput Rated " + result + " RF (" + convertRFtoInternal(result) + " internal) remainingRate " + remainingRate + " RF/t capacity " + capacity);
+				WarpDrive.logger.info("PotentialOutput Rated " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) remainingRate " + remainingRate + " RF/t capacity " + capacity);
 			}
 		}
-		return convertRFtoInternal(result);
+		return convertRFtoInternal_floor(result);
 	}
 	
 	@Override
-	public boolean canOutputEnergy(ForgeDirection from) {
+	public boolean energy_canOutput(ForgeDirection from) {
 		return from.equals(ForgeDirection.UP) || from.equals(ForgeDirection.DOWN);
 	}
 	
 	@Override
-	protected void energyOutputDone(int energyOutput_internal) {
-		int energyOutput_RF = convertInternalToRF(energyOutput_internal);
+	protected void energy_outputDone(int energyOutput_internal) {
+		int energyOutput_RF = convertRFtoInternal_ceil(energyOutput_internal);
 		containedEnergy -= energyOutput_RF;
 		if (containedEnergy < 0) {
 			containedEnergy = 0;
@@ -500,13 +500,13 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getEnergyStored() {
-		return convertRFtoInternal(containedEnergy);
+	public int energy_getEnergyStored() {
+		return convertRFtoInternal_floor(containedEnergy);
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
-		return convertRFtoInternal(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
+	public int energy_getMaxStorage() {
+		return convertRFtoInternal_floor(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
 	}
 	
 	// Forge overrides

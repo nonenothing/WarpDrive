@@ -178,7 +178,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			return new Object[] { false, "Invalid radius" };
 		}
 		int energyRequired = calculateEnergyRequired(radius);
-		if (!consumeEnergy(energyRequired, false)) {
+		if (!energy_consume(energyRequired, false)) {
 			return new Object[] { false, "Insufficient energy" };
 		}
 		
@@ -264,12 +264,12 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.RADAR_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return true;
 	}
 }

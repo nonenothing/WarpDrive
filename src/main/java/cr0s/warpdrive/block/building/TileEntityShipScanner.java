@@ -294,7 +294,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// Consume energy
 		int energyCost = getScanningEnergyCost(shipCore.shipMass);
-		if (!consumeEnergy(energyCost, false)) {
+		if (!energy_consume(energyCost, false)) {
 			reason.append(String.format("Insufficient energy (%d required)", energyCost));
 			return false;
 		}
@@ -383,7 +383,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 								// Empty energy storage
 								// IC2
 								if (tagTileEntity.hasKey("energy")) {
-									consumeEnergy((int)Math.round(tagTileEntity.getDouble("energy")), true);
+									energy_consume((int)Math.round(tagTileEntity.getDouble("energy")), true);
 									tagTileEntity.setDouble("energy", 0);
 								}
 								// Gregtech
@@ -392,7 +392,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 								}
 								// Immersive Engineering & Thermal Expansion
 								if (tagTileEntity.hasKey("Energy")) {
-									consumeEnergy(tagTileEntity.getInteger("Energy"), true);
+									energy_consume(tagTileEntity.getInteger("Energy"), true);
 									tagTileEntity.setInteger("Energy", 0);
 								}
 								if (tagTileEntity.hasKey("Owner")) {
@@ -615,7 +615,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			
 			// Consume energy
 			int energyCost = getDeploymentEnergyCost(blocksToDeployCount);
-			if (!consumeEnergy(energyCost, false)) {
+			if (!energy_consume(energyCost, false)) {
 				reason.append(String.format("Insufficient energy (%d required)", energyCost));
 				return 1;
 			}
@@ -743,7 +743,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			return new Object[] { false, 1, "Ship-Core not found" };
 		}
 		int energyCost = getScanningEnergyCost(shipCore.shipMass);
-		if (!consumeEnergy(energyCost, true)) {
+		if (!energy_consume(energyCost, true)) {
 			return new Object[] { false, 2, "Not enough energy! " + energyCost + " required." };
 		} else {
 			StringBuilder reason = new StringBuilder();
@@ -895,12 +895,12 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	// IEnergySink methods implementation
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.SS_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return true;
 	}
 	

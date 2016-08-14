@@ -2,8 +2,8 @@ package cr0s.warpdrive.block.movement;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import cr0s.warpdrive.item.ItemUpgrade;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
@@ -16,7 +16,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.DamageTeleportation;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IUpgradable;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.UpgradeType;
@@ -24,7 +23,7 @@ import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
-public class TileEntityTransporter extends TileEntityAbstractEnergy implements IUpgradable {
+public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	private double scanRange = 2;
 
 	private int scanDist = 4;
@@ -59,6 +58,10 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 				"getEnergyRequired",
 				"upgrades"
 		});
+		
+		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Energy), 2);
+		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Power), 4);
+		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Range), 4);
 	}
 
 	@Override
@@ -300,7 +303,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			}
 			Vector3 modDest = destVec.clone().translate(centreOnMe);
 			for (Entity ent : entitiesToTransport) {
-				if (consumeEnergy(energyRequired, false)) {
+				if (energy_consume(energyRequired, false)) {
 					if (WarpDriveConfig.LOGGING_TRANSPORTER) {
 						WarpDrive.logger.info(this + " Transporting entity " + ent.getEntityId());
 					}
@@ -430,9 +433,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 
 	private double getLockStrength() {
 		if (isLocked) {
-			double upgradeBoost = 1;
-			if (deprecated_upgrades.containsKey(UpgradeType.Range))
-				upgradeBoost = Math.pow(1.2, deprecated_upgrades.get(UpgradeType.Range));
+			int rangeUgrades = getUpgradeCount(ItemUpgrade.getItemStack(UpgradeType.Range));
+			double upgradeBoost = Math.pow(1.2, rangeUgrades);
 			return clamp(0, 1, baseLockStrength * lockStrengthMul * Math.pow(2, powerBoost - 1) * upgradeBoost * (1 + beaconEffect));
 		}
 		return -1;
@@ -500,16 +502,14 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	}
 
 	@Override
-	public int getMaxEnergyStored() {
-		int max = WarpDriveConfig.TRANSPORTER_MAX_ENERGY_STORED;
-		if (deprecated_upgrades.containsKey(UpgradeType.Energy)) {
-			max = (int) Math.floor(max * Math.pow(1.2, deprecated_upgrades.get(UpgradeType.Energy)));
-		}
+	public int energy_getMaxStorage() {
+		int energyUgrades = getUpgradeCount(ItemUpgrade.getItemStack(UpgradeType.Energy));
+		int max = (int) Math.floor(WarpDriveConfig.TRANSPORTER_MAX_ENERGY_STORED * Math.pow(1.2, energyUgrades));
 		return max;
 	}
 
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		if (from == ForgeDirection.UP) {
 			return false;
 		}
@@ -526,36 +526,5 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		powerBoost = tag.getDouble("powerBoost");
-	}
-
-	@Override
-	public boolean takeUpgrade(UpgradeType upgradeType, boolean simulate) {
-		int max = 0;
-		if (upgradeType == UpgradeType.Energy)
-			max = 2;
-		else if (upgradeType == UpgradeType.Power)
-			max = 4;
-		else if (upgradeType == UpgradeType.Range)
-			max = 4;
-
-		if (max == 0)
-			return false;
-
-		if (deprecated_upgrades.containsKey(upgradeType))
-			if (deprecated_upgrades.get(upgradeType) >= max)
-				return false;
-
-		if (!simulate) {
-			int c = 0;
-			if (deprecated_upgrades.containsKey(upgradeType))
-				c = deprecated_upgrades.get(upgradeType);
-			deprecated_upgrades.put(upgradeType, c + 1);
-		}
-		return true;
-	}
-
-	@Override
-	public Map<UpgradeType, Integer> getInstalledUpgrades() {
-		return deprecated_upgrades;
 	}
 }

@@ -70,7 +70,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				     && isPassableBlock(yCoord - 1)
 				     && isPassableBlock(yCoord - 2);
 			
-			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
+			if (energy_getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
 				mode = MODE_INACTIVE;
 				if (getBlockMetadata() != 0) {
 					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // disabled
@@ -133,14 +133,14 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				for (Object o : list) {
 					if ( o != null
 					  && o instanceof EntityLivingBase
-					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 						((EntityLivingBase) o).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
 								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D),
 								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
 								1F, 1F, 0F, 40, 0, 100);
 						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
-						consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 					}
 				}
 			}
@@ -152,13 +152,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				for (Object o : list) {
 					if ( o != null
 					  && o instanceof EntityLivingBase
-					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 						((EntityLivingBase) o).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
 								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
 								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D), 1F, 1F, 0F, 40, 0, 100);
 						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
-						consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 					}
 				}
 			}
@@ -188,12 +188,12 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.LIFT_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(ForgeDirection from) {
+	public boolean energy_canInput(ForgeDirection from) {
 		return true;
 	}
 	

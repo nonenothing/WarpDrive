@@ -178,8 +178,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityAbstractEnergy) {
 			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
-			if (tileEntityAbstractEnergy.getMaxEnergyStored() > 0) {
-				tileEntityAbstractEnergy.consumeEnergy(Math.round(tileEntityAbstractEnergy.getEnergyStored() * efficiency), false);
+			if (tileEntityAbstractEnergy.energy_getMaxStorage() > 0) {
+				tileEntityAbstractEnergy.energy_consume(Math.round(tileEntityAbstractEnergy.energy_getEnergyStored() * efficiency), false);
 			}
 		}
 	}
