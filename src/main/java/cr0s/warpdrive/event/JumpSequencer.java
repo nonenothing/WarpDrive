@@ -909,14 +909,14 @@ public class JumpSequencer extends AbstractSequencer {
 				if (entity instanceof EntityPlayerMP) {
 					EntityPlayerMP player = (EntityPlayerMP) entity;
 					
-					ChunkCoordinates bedLocation = player.getBedLocation(player.worldObj.provider.dimensionId);
+					ChunkCoordinates bedLocation = player.getBedLocation(sourceWorld.provider.dimensionId);
 					
 					if (bedLocation != null
 					  && ship.minX <= bedLocation.posX && ship.maxX >= bedLocation.posX
 					  && ship.minY <= bedLocation.posY && ship.maxY >= bedLocation.posY
 					  && ship.minZ <= bedLocation.posZ && ship.maxZ >= bedLocation.posZ) {
 						bedLocation = transformation.apply(bedLocation);
-						player.setSpawnChunk(bedLocation, false);
+						player.setSpawnChunk(bedLocation, false, targetWorld.provider.dimensionId);
 					}
 					player.setPositionAndUpdate(newEntityX, newEntityY, newEntityZ);
 				} else {

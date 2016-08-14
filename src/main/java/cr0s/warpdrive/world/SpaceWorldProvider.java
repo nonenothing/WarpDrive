@@ -28,7 +28,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean canRespawnHere() {
-		return false;
+		return true;
 	}
 	
 	@SideOnly(Side.CLIENT)
