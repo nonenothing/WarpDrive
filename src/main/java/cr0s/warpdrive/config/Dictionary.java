@@ -10,6 +10,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.block.hull.BlockHullPlain;
+import cr0s.warpdrive.block.hull.BlockHullStairs;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -483,7 +484,8 @@ public class Dictionary {
 				if (hardness != -2.0F) {
 					if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
 						WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-					} else if (hardness > WarpDriveConfig.HULL_HARDNESS[0] && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || BLOCKS_ANCHOR.contains(block))) {
+					} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
+					         && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || block instanceof BlockHullStairs || BLOCKS_ANCHOR.contains(block)) ) {
 						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
 					}
 				}
