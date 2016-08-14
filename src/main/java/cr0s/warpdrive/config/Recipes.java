@@ -274,16 +274,16 @@ public class Recipes {
 	}
 	
 	public static void initIC2() {
-		ItemStack advancedAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartAlloy", -1);
-		ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
-		ItemStack advancedMachine = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 12);
-		ItemStack miner = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 7);
-		ItemStack magnetizer = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 9);
-		ItemStack fiberGlassCable = WarpDriveConfig.getModItemStack("IC2", "itemCable", 9);
-		ItemStack circuit = WarpDriveConfig.getModItemStack("IC2", "itemPartCircuit", -1);
-		ItemStack advancedCircuit = WarpDriveConfig.getModItemStack("IC2", "itemPartCircuitAdv", -1);
-		ItemStack ironPlate = WarpDriveConfig.getModItemStack("IC2", "itemPlates", 4);
-		ItemStack mfe = WarpDriveConfig.getModItemStack("IC2", "blockElectric", 1);
+		ItemStack advancedAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 3);
+		ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 4); // Iridium reinforced place
+		ItemStack advancedMachine = WarpDriveConfig.getModItemStack("ic2", "resource", 13); // Advanced machine casing
+		ItemStack miner = WarpDriveConfig.getModItemStack("ic2", "te", 60);
+		ItemStack magnetizer = WarpDriveConfig.getModItemStack("ic2", "te", 37);
+		ItemStack fiberGlassCable = WarpDriveConfig.getModItemStack("ic2", "cable", 1);
+		ItemStack circuit = WarpDriveConfig.getModItemStack("ic2", "crafting", 1);
+		ItemStack advancedCircuit = WarpDriveConfig.getModItemStack("ic2", "crafting", 2);
+		ItemStack ironPlate = WarpDriveConfig.getModItemStack("ic2", "plate", 3);
+		ItemStack mfe = WarpDriveConfig.getModItemStack("ic2", "te", 74);
 		
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockShipCore), "ici", "cmc", "ici",
 				'i', iridiumAlloy,
@@ -298,10 +298,10 @@ public class Recipes {
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockRadar), "ifi", "imi", "imi",
 				'i', iridiumAlloy,
 				'm', advancedMachine,
-				'f', WarpDriveConfig.getModItemStack("IC2", "itemFreq", -1));
+				'f', WarpDriveConfig.getModItemStack("ic2", "frequency_transmitter", -1));
 		
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockWarpIsolation), "iii", "idi", "iii",
-				'i', WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1),
+				'i', iridiumAlloy,
 				'm', advancedMachine,
 				'd', Blocks.DIAMOND_BLOCK);
 		
@@ -328,7 +328,7 @@ public class Recipes {
 		
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockLift), "aca", "ama", "a#a",
 				'c', advancedCircuit,
-				'a', WarpDriveConfig.getModItemStack("IC2", "itemPartAlloy", -1),
+				'a', advancedAlloy,
 				'm', magnetizer);
 		
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockIridium), "iii", "iii", "iii",
@@ -393,20 +393,20 @@ public class Recipes {
 	}
 	
 	public static void initHardIC2() {
-		ItemStack advancedAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartAlloy", -1);
-		ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
-		ItemStack advancedMachine = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 12);
-		ItemStack magnetizer = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 9);
-		ItemStack fiberGlassCable = WarpDriveConfig.getModItemStack("IC2", "itemCable", 9);
-		ItemStack mfe = WarpDriveConfig.getModItemStack("IC2", "blockElectric", 1);
-		ItemStack mfsu = WarpDriveConfig.getModItemStack("IC2", "blockElectric", 2);
-		ItemStack energiumDust = WarpDriveConfig.getModItemStack("IC2", "itemDust2", 2);
-		ItemStack crystalmemory = WarpDriveConfig.getModItemStack("IC2", "itemcrystalmemory", -1);
+		ItemStack advancedAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 3);
+		ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 4); // Iridium reinforced place
+		ItemStack advancedMachine = WarpDriveConfig.getModItemStack("ic2", "resource", 13);
+		ItemStack magnetizer = WarpDriveConfig.getModItemStack("ic2", "te", 37);
+		ItemStack fiberGlassCable = WarpDriveConfig.getModItemStack("ic2", "cable", 1);
+		ItemStack mfe = WarpDriveConfig.getModItemStack("ic2", "te", 74);
+		ItemStack mfsu = WarpDriveConfig.getModItemStack("ic2", "te", 75);
+		ItemStack energiumDust = WarpDriveConfig.getModItemStack("ic2", "dust", 6);
+		ItemStack crystalMemory = WarpDriveConfig.getModItemStack("ic2", "crystal_memory", -1);
 		ItemStack itemHAMachine = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
 		
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockShipCore),"uau", "tmt", "uau",
 				'a', advancedAlloy,
-				't', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 0), // Teleporter
+				't', WarpDriveConfig.getModItemStack("ic2", "te", 39), // Teleporter
 				'm', itemHAMachine,
 				'u', mfsu);
 		
@@ -415,28 +415,28 @@ public class Recipes {
 					'a', advancedAlloy,
 					'm', itemHAMachine,
 					'c', "circuitAdvanced",
-					'h', crystalmemory,
+					'h', crystalMemory,
 					'p', WarpDriveConfig.getModItemStack("OpenComputers", "adapter", -1)}));
 		} else if (WarpDriveConfig.isComputerCraftLoaded) {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockShipController), false, new Object[] { "aha", "cmc", "apa", // With CC Modem
 					'a', advancedAlloy,
 					'm', itemHAMachine,
 					'c', "circuitAdvanced",
-					'h', crystalmemory,
+					'h', crystalMemory,
 					'p', WarpDriveConfig.getModItemStack("ComputerCraft", "CC-Cable", 1)}));
 		} else {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockShipController), false, new Object[] { "aha", "cmc", "aca",
 				'a', advancedAlloy,
 				'm', itemHAMachine,
 				'c', "circuitAdvanced",
-				'h', crystalmemory}));
+				'h', crystalMemory}));
 		}
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockRadar), false, new Object[] { "afa", "cmc", "aca",
 				'a', advancedAlloy,
 				'm', itemHAMachine,
 				'c', "circuitAdvanced",
-				'f', WarpDriveConfig.getModItemStack("IC2", "itemFreq", -1)}));
+				'f', WarpDriveConfig.getModItemStack("ic2", "frequency_transmitter", -1)}));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockWarpIsolation), false, new Object[] { "sls", "lml", "sls",
 				's', "plateDenseSteel",
@@ -445,21 +445,21 @@ public class Recipes {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, new Object[] { "lel", "vmv", "lcl",
 				'l', Blocks.LEAVES, 
-				'm', WarpDriveConfig.getModItemStack("IC2", "blockMachine", 0),
+				'm', WarpDriveConfig.getModItemStack("ic2", "resource", 12), // Basic machine casing
 				'c', "circuitBasic",
-				'e', WarpDriveConfig.getModItemStack("IC2", "blockMachine", 5), // Compressor
-				'v', WarpDriveConfig.getModItemStack("IC2", "reactorVent", -1)}));
+				'e', WarpDriveConfig.getModItemStack("ic2", "te", 43), // Compressor
+				'v', WarpDriveConfig.getModItemStack("ic2", "reactorVent", -1)}));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaser), false, new Object[] { "aca", "cmc", "ala",
 				'm', advancedMachine,
 				'a', advancedAlloy,
 				'c', "circuitAdvanced",
-				'l', WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", -1)}));
+				'l', WarpDriveConfig.getModItemStack("ic2", "mining_laser", -1)}));	// Mining laser
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, new Object[] { "pcp", "pap", "plp",
 				'c', "circuitAdvanced",
 				'p', advancedAlloy,
-				'a', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11), // Advanced Miner
+				'a', WarpDriveConfig.getModItemStack("ic2", "te", 57), // Advanced Miner
 				'l', WarpDrive.blockLaser}));
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserMedium), false, new Object[] { "efe", "aca", "ama",
@@ -488,11 +488,11 @@ public class Recipes {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCamera), false, new Object[] { "aed", "cma", "aga",
 				'a', advancedAlloy,
-				'e', WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1), // Electric Motor
+				'e', WarpDriveConfig.getModItemStack("ic2", "crafting", 6), // Electric Motor
 				'd', "gemDiamond",
-				'c', crystalmemory,
+				'c', crystalMemory,
 				'm', advancedMachine,
-				'g', WarpDriveConfig.getModItemStack("IC2", "itemCable", 2)}));
+				'g', WarpDriveConfig.getModItemStack("ic2", "cable", 2)})); // Gold cable
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMonitor), false, new Object[] { "ala", "aca", "aga",
 				'a', advancedAlloy,
@@ -504,21 +504,21 @@ public class Recipes {
 				'm', mfsu,
 				'i', iridiumAlloy,
 				'c', "circuitAdvanced",
-				's', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 7) })); // Scanner
+				's', WarpDriveConfig.getModItemStack("ic2", "te", 64) })); // Scanner
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserTreeFarm), false, new Object[] { "awa", "cmc", "asa",
 				'a', advancedAlloy,
 				'c', "circuitAdvanced",
 				'w', "logWood",
 				'm', WarpDrive.blockMiningLaser,
-				's', WarpDriveConfig.getModItemStack("IC2", "itemToolChainsaw", -1) }));
+				's', WarpDriveConfig.getModItemStack("ic2", "chainsaw", -1) })); // Chainsaw
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporter), false, new Object[] { "aea", "ctc", "ama",
 				'a', advancedAlloy,
 				'e', Items.ENDER_PEARL,
 				'c', "circuitAdvanced",
 				'm', advancedMachine,
-				't', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 0) })); // Teleporter
+				't', WarpDriveConfig.getModItemStack("ic2", "te", 39) })); // Teleporter
 		
 		// IC2 is loaded for this recipe set
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemIC2reactorLaserFocus), false, new Object[] { "a a", " d ", "a a",
@@ -538,7 +538,7 @@ public class Recipes {
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCloakingCoil), false, new Object[] { "iai", "ccc", "iai",
 				'i', iridiumAlloy,
-				'c', WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 0), // Coil
+				'c', WarpDriveConfig.getModItemStack("ic2", "crafting", 5), // Coil
 				'a', advancedAlloy })); 
 		
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine), "iii", "imi", "iii",
@@ -556,7 +556,7 @@ public class Recipes {
 		
 		// Add Reinforced iridium plate to ore registry as applicable (it's missing in IC2 without GregTech)
 		if (WarpDriveConfig.isIndustrialCraft2Loaded && (!OreDictionary.doesOreNameExist("plateAlloyIridium") || OreDictionary.getOres("plateAlloyIridium").isEmpty())) {
-			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
+			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 4); // Iridium reinforced place
 			OreDictionary.registerOre("plateAlloyIridium", iridiumAlloy);
 		}
 		
@@ -582,18 +582,18 @@ public class Recipes {
 			itemStackMotorEV = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.01", 32603);    // EV Motor
 			
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 0);     // Basic machine casing
-			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 12);    // Advanced machine casing
+			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("ic2", "resource", 12);          // Basic machine casing
+			itemStackMachineCasingMV = WarpDriveConfig.getModItemStack("ic2", "resource", 13);          // Advanced machine casing
 			itemStackMachineCasingHV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
 			itemStackMachineCasingEV = new ItemStack(WarpDrive.blockHighlyAdvancedMachine);
 			
-			itemStackMotorHV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);            // Electric motor
-			itemStackMotorEV = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 1);
+			itemStackMotorHV = WarpDriveConfig.getModItemStack("ic2", "crafting", 6);                   // Electric motor
+			itemStackMotorEV = WarpDriveConfig.getModItemStack("ic2", "crafting", 6);                   // Electric motor
 			
-			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
+			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 4);				// Iridium reinforced place
 			GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine), "iii", "imi", "iii",
-			'i', iridiumAlloy,
-			'm', itemStackMachineCasingMV);
+				'i', iridiumAlloy,
+				'm', itemStackMachineCasingMV);
 			
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 0);
@@ -1032,7 +1032,7 @@ public class Recipes {
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("gregtech", "gt.metaitem.02", 21300); // Bronze rotor
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 5); // Compressor
+			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("ic2", "te", 43); // Compressor
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("ThermalExpansion", "Machine", 5); // Fluid transposer
 		} else if (WarpDriveConfig.isEnderIOLoaded) {
@@ -1059,9 +1059,9 @@ public class Recipes {
 		// Mining laser is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 MV Machine casing, 1 diamond pick, 2 glass pane
 		ItemStack itemStackDiamondPick = new ItemStack(Items.DIAMOND_PICKAXE);
 		if (WarpDriveConfig.isGregTech5Loaded) {
-			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", 1); // Mining laser
+			itemStackDiamondPick = WarpDriveConfig.getModItemStack("ic2", "mining_laser", 1); // Mining laser
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			// itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
+			// itemStackDiamondPick = WarpDriveConfig.getModItemStack("ic2", "te", 57); // Advanced Miner
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "cmr", "tdt", "glg",
 				't', itemStackMotors[1],
@@ -1084,7 +1084,7 @@ public class Recipes {
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			oreMagnetizer = WarpDriveConfig.getModItemStack("gregtech", "gt.blockmachines", 551);	// Basic polarizer
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			oreMagnetizer = WarpDriveConfig.getModItemStack("IC2", "blockMachine", 9);
+			oreMagnetizer = WarpDriveConfig.getModItemStack("ic2", "te", 37); // Magnetizer
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			oreMagnetizer = WarpDriveConfig.getModItemStack("ThermalExpansion", "Plate", 3);
 		} else if (OreDictionary.doesOreNameExist("ingotRedstoneAlloy") && !OreDictionary.getOres("ingotRedstoneAlloy").isEmpty()) {// EnderIO
@@ -1103,11 +1103,11 @@ public class Recipes {
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockIridium), "iii", "iii", "iii",
 					'i', "plateAlloyIridium"));
-			ItemStack itemStackIridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
+			ItemStack itemStackIridiumAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 4); // Iridium reinforced place
 			GameRegistry.addShapelessRecipe(new ItemStack(itemStackIridiumAlloy.getItem(), 9), new ItemStack(WarpDrive.blockIridium));
 			
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			ItemStack itemStackIridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
+			ItemStack itemStackIridiumAlloy = WarpDriveConfig.getModItemStack("ic2", "crafting", 4); // Iridium reinforced place
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockIridium), "iii", "iii", "iii",
 					'i', itemStackIridiumAlloy));
 			GameRegistry.addShapelessRecipe(new ItemStack(itemStackIridiumAlloy.getItem(), 9), new ItemStack(WarpDrive.blockIridium));
@@ -1182,7 +1182,7 @@ public class Recipes {
 				'm', mfsu,
 				'i', iridiumAlloy,
 				'c', "circuitAdvanced",
-				's', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 7) )); // Scanner
+				's', WarpDriveConfig.getModItemStack("ic2", "te", 64) )); // Scanner
 		/**/
 		
 		// Laser tree farm is 2 motors, 2 lenses, 1 computer interface, 1 LV Machine casing, 1 diamond axe, 2 glass pane
@@ -1201,13 +1201,13 @@ public class Recipes {
 				'e', Items.ender_pearl,
 				'c', "circuitAdvanced",
 				'm', advancedMachine,
-				't', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 0) )); // Teleporter
+				't', WarpDriveConfig.getModItemStack("ic2", "te", 39) )); // Teleporter
 		/**/
 		
 		// IC2 needs to loaded for the following 2 recipes
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			ItemStack itemStackOverclockedHeatVent = WarpDriveConfig.getModItemStack("IC2", "reactorVentGold", 1);
-			ItemStack itemStackReactorCoolant1 = WarpDriveConfig.getModItemStack("IC2", "reactorCoolantSix", -1);
+			ItemStack itemStackOverclockedHeatVent = WarpDriveConfig.getModItemStack("ic2", "overclocked_heat_vent", 1);
+			ItemStack itemStackReactorCoolant1 = WarpDriveConfig.getModItemStack("ic2", "hex_heat_storage", -1);
 			ItemStack itemStackReactorCoolant2 = itemStackReactorCoolant1;
 			if (WarpDriveConfig.isGregTech5Loaded) {
 				itemStackReactorCoolant1 = WarpDriveConfig.getModItemStack("gregtech", "gt.360k_Helium_Coolantcell", -1);
@@ -1241,7 +1241,7 @@ public class Recipes {
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("gregtech", "gt.blockcasings", 14);	// Nichrome Coil block
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("IC2", "itemRecipePart", 0);	// Coil
+			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("ic2", "crafting", 5);				// Coil
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackGoldIngotOrCoil = WarpDriveConfig.getModItemStack("ThermalExpansion", "material", 3);	// Redstone conductance coil
 		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
@@ -1401,7 +1401,7 @@ public class Recipes {
 		// Tier 1 = 5 stone + 4 bronze ingots gives 5
 		// Tier 1 = 5 stone + 4 aluminium ingots gives 3
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("IC2", "blockAlloy", -1);
+			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("ic2", "resource", 11); // Reinforced stone
 			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', Blocks.OBSIDIAN,
 					'c', reinforcedStone ));
@@ -1443,7 +1443,7 @@ public class Recipes {
 						'c', tungstensteelReinforcedBlock,
 						'X', oreDyes[enumDyeColor.getMetadata()] ));    // TODO MC1.10 not tested
 			} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-				ItemStack carbonPlate = WarpDriveConfig.getModItemStack("IC2", "itemPartCarbonPlate", -1);
+				ItemStack carbonPlate = WarpDriveConfig.getModItemStack("ic2", "crafting", 15); // Carbon plate
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
 						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, enumDyeColor.getDyeDamage()),
 						'c', carbonPlate ));
