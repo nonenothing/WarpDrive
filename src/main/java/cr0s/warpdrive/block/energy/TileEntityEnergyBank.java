@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.data.EnumComponentType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -28,6 +29,8 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		super();
 		this.tier = tier;
 		peripheralName = "warpdriveEnergyBank";
+		
+		setUpgradeMaxCount(EnumComponentType.SUPERCONDUCTOR, WarpDriveConfig.ENERGY_BANK_EFFICIENCY_PER_UPGRADE.length - 1);
 	}
 	
 	@Override
@@ -40,6 +43,11 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 			IC2_sourceTier = WarpDriveConfig.ENERGY_BANK_IC2_TIER[tier - 1];
 		}
 		super.onFirstUpdateTick();
+	}
+	
+	private double getEfficiency() {
+		int upgradeCount = clamp(0, getUpgradeMaxCount(EnumComponentType.SUPERCONDUCTOR), getUpgradeCount(EnumComponentType.SUPERCONDUCTOR));
+		return WarpDriveConfig.ENERGY_BANK_EFFICIENCY_PER_UPGRADE[upgradeCount];
 	}
 	
 	@Override
@@ -56,7 +64,7 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		if (tier == 0) {
 			return Integer.MAX_VALUE;
 		} else {
-			return Math.min(energy_getEnergyStored(), WarpDriveConfig.ENERGY_BANK_TRANSFER_PER_TICK[tier - 1]);
+			return (int) Math.round(Math.min(energy_getEnergyStored() * getEfficiency(), WarpDriveConfig.ENERGY_BANK_TRANSFER_PER_TICK[tier - 1]));
 		}
 	}
 	
@@ -70,6 +78,23 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
+	public boolean energy_consume(final int amount_internal, final boolean simulate) {
+		int amountWithLoss = (int) Math.round(amount_internal / getEfficiency());
+		if (energy_getEnergyStored() >= amountWithLoss) {
+			if (!simulate) {
+				super.energy_consume(amountWithLoss);
+			}
+			return true;
+		}
+		return false;
+	}
+	@Override
+	public void energy_consume(final int amount_internal) {
+		int amountWithLoss = (int) Math.round(amount_internal > 0 ? amount_internal / getEfficiency() : amount_internal * getEfficiency());
+		super.energy_consume(amountWithLoss);
+	}
+	
+	@Override
 	public boolean energy_canInput(ForgeDirection from) {
 		return modeSide[from.ordinal()] == MODE_INPUT;
 	}
@@ -77,6 +102,10 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	@Override
 	public boolean energy_canOutput(ForgeDirection to) {
 		return modeSide[to.ordinal()] == MODE_OUTPUT;
+	}
+	
+	byte getTier() {
+		return tier;
 	}
 	
 	byte getMode(final EnumFacing facing) {
@@ -87,6 +116,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		modeSide[facing.ordinal()] = (byte)(mode % 3);
 		markDirty();
 		energy_resetConnections(facing);
+	}
+	
+	@Override
+	public String getStatus() {
+		return super.getStatus()
+		       + "\n" + getUpgradeStatus();
 	}
 	
 	// Forge overrides

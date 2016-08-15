@@ -281,6 +281,7 @@ public class WarpDriveConfig {
 	public static int[] ENERGY_BANK_MAX_ENERGY_STORED = { 800000, 4000000, 20000000 };
 	public static int[] ENERGY_BANK_IC2_TIER = { 2, 3, 4 };
 	public static int[] ENERGY_BANK_TRANSFER_PER_TICK = { 200, 1000, 5000 };
+	public static double[] ENERGY_BANK_EFFICIENCY_PER_UPGRADE = { 0.95D, 0.98D, 1.0D };
 	
 	// Laser lift
 	public static int LIFT_MAX_ENERGY_STORED = 900;
@@ -738,6 +739,12 @@ public class WarpDriveConfig {
 		ENERGY_BANK_TRANSFER_PER_TICK[0] = clamp(                               0, ENERGY_BANK_TRANSFER_PER_TICK[1], ENERGY_BANK_TRANSFER_PER_TICK[0]);
 		ENERGY_BANK_TRANSFER_PER_TICK[1] = clamp(ENERGY_BANK_TRANSFER_PER_TICK[0], ENERGY_BANK_TRANSFER_PER_TICK[2], ENERGY_BANK_TRANSFER_PER_TICK[1]);
 		ENERGY_BANK_TRANSFER_PER_TICK[2] = clamp(ENERGY_BANK_TRANSFER_PER_TICK[1], Integer.MAX_VALUE               , ENERGY_BANK_TRANSFER_PER_TICK[2]);
+		
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE = config.get("energy_bank", "efficiency_per_upgrade", ENERGY_BANK_EFFICIENCY_PER_UPGRADE, "Energy transfer efficiency for each upgrade apply, first value is without upgrades (0.8 means 20% loss)").getDoubleList();
+		assert(ENERGY_BANK_EFFICIENCY_PER_UPGRADE.length >= 1);
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0] = Math.min(1.0D, clamp(                                 0.5D, ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0]));
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1] = Math.min(1.0D, clamp(ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1]));
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2] = Math.min(1.0D, clamp(ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1], Integer.MAX_VALUE                    , ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2]));
 		
 		// Lift
 		LIFT_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
