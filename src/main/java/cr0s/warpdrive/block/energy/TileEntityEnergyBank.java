@@ -15,23 +15,58 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	static final byte MODE_INPUT = 1;
 	static final byte MODE_OUTPUT = 2;
 	private static final byte[] MODE_DEFAULT_SIDES = { MODE_INPUT, MODE_INPUT, MODE_OUTPUT, MODE_OUTPUT, MODE_OUTPUT, MODE_OUTPUT };
+	
+	// persistent properties
+	private byte tier = -1;
 	private byte[] modeSide = MODE_DEFAULT_SIDES.clone();
 	
 	public TileEntityEnergyBank() {
+		this((byte) 1);
+	}
+	
+	public TileEntityEnergyBank(final byte tier) {
 		super();
-		IC2_sinkTier = 0;
-		IC2_sourceTier = 0;
+		this.tier = tier;
 		peripheralName = "warpdriveEnergyBank";
 	}
 	
 	@Override
+	protected void onFirstUpdateTick() {
+		if (tier == 0) {
+			IC2_sinkTier = Integer.MAX_VALUE;
+			IC2_sourceTier = Integer.MAX_VALUE;
+		} else {
+			IC2_sinkTier = WarpDriveConfig.ENERGY_BANK_IC2_TIER[tier - 1];
+			IC2_sourceTier = WarpDriveConfig.ENERGY_BANK_IC2_TIER[tier - 1];
+		}
+		super.onFirstUpdateTick();
+	}
+	
+	@Override
+	public int energy_getEnergyStored() {
+		if (tier == 0) {
+			return WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[2] / 2;
+		} else {
+			return super.energy_getEnergyStored();
+		}
+	}
+	
+	@Override
 	public int energy_getPotentialOutput() {
-		return energy_getEnergyStored();
+		if (tier == 0) {
+			return Integer.MAX_VALUE;
+		} else {
+			return Math.min(energy_getEnergyStored(), WarpDriveConfig.ENERGY_BANK_TRANSFER_PER_TICK[tier - 1]);
+		}
 	}
 	
 	@Override
 	public int energy_getMaxStorage() {
-		return WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED;
+		if (tier == 0) {
+			return WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[2];
+		} else {
+			return WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1];
+		}
 	}
 	
 	@Override
@@ -56,15 +91,17 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	// Forge overrides
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
-		nbt.setByteArray("modeSide", modeSide);
+	public void writeToNBT(NBTTagCompound nbtTagCompound) {
+		super.writeToNBT(nbtTagCompound);
+		nbtTagCompound.setByte("tier", tier);
+		nbtTagCompound.setByteArray("modeSide", modeSide);
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
-		modeSide = nbt.getByteArray("modeSide");
+	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+		super.readFromNBT(nbtTagCompound);
+		tier = nbtTagCompound.getByte("tier");
+		modeSide = nbtTagCompound.getByteArray("modeSide");
 		if (modeSide == null || modeSide.length != 6) {
 			modeSide = MODE_DEFAULT_SIDES.clone();
 		}

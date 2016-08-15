@@ -278,7 +278,9 @@ public class WarpDriveConfig {
 	public static int ENAN_REACTOR_MAX_LASERS_PER_SECOND = 6;
 	
 	// Power store
-	public static int ENERGY_BANK_MAX_ENERGY_STORED = 1000000;
+	public static int[] ENERGY_BANK_MAX_ENERGY_STORED = { 800000, 4000000, 20000000 };
+	public static int[] ENERGY_BANK_IC2_TIER = { 2, 3, 4 };
+	public static int[] ENERGY_BANK_TRANSFER_PER_TICK = { 200, 1000, 5000 };
 	
 	// Laser lift
 	public static int LIFT_MAX_ENERGY_STORED = 900;
@@ -719,7 +721,23 @@ public class WarpDriveConfig {
 				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabilisation laser shots per seconds before loosing efficiency").getInt());
 		
 		// Energy bank
-		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored").getInt();
+		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored for each energy bank").getIntList();
+		assert(ENERGY_BANK_MAX_ENERGY_STORED.length == 3);
+		ENERGY_BANK_MAX_ENERGY_STORED[0] = clamp(                               0, ENERGY_BANK_MAX_ENERGY_STORED[1], ENERGY_BANK_MAX_ENERGY_STORED[0]);
+		ENERGY_BANK_MAX_ENERGY_STORED[1] = clamp(ENERGY_BANK_MAX_ENERGY_STORED[0], ENERGY_BANK_MAX_ENERGY_STORED[2], ENERGY_BANK_MAX_ENERGY_STORED[1]);
+		ENERGY_BANK_MAX_ENERGY_STORED[2] = clamp(ENERGY_BANK_MAX_ENERGY_STORED[1], Integer.MAX_VALUE               , ENERGY_BANK_MAX_ENERGY_STORED[2]);
+		
+		ENERGY_BANK_IC2_TIER = config.get("energy_bank", "ic2_tier", ENERGY_BANK_IC2_TIER, "IC2 energy tier for each energy bank (0 is BatBox, etc.)").getIntList();
+		assert(ENERGY_BANK_IC2_TIER.length == 3);
+		ENERGY_BANK_IC2_TIER[0] = clamp(                      0, ENERGY_BANK_IC2_TIER[1], ENERGY_BANK_IC2_TIER[0]);
+		ENERGY_BANK_IC2_TIER[1] = clamp(ENERGY_BANK_IC2_TIER[0], ENERGY_BANK_IC2_TIER[2], ENERGY_BANK_IC2_TIER[1]);
+		ENERGY_BANK_IC2_TIER[2] = clamp(ENERGY_BANK_IC2_TIER[1], Integer.MAX_VALUE      , ENERGY_BANK_IC2_TIER[2]);
+		
+		ENERGY_BANK_TRANSFER_PER_TICK = config.get("energy_bank", "transfer_per_tick", ENERGY_BANK_TRANSFER_PER_TICK, "Internal energy transferred per tick for each energy bank").getIntList();
+		assert(ENERGY_BANK_TRANSFER_PER_TICK.length == 3);
+		ENERGY_BANK_TRANSFER_PER_TICK[0] = clamp(                               0, ENERGY_BANK_TRANSFER_PER_TICK[1], ENERGY_BANK_TRANSFER_PER_TICK[0]);
+		ENERGY_BANK_TRANSFER_PER_TICK[1] = clamp(ENERGY_BANK_TRANSFER_PER_TICK[0], ENERGY_BANK_TRANSFER_PER_TICK[2], ENERGY_BANK_TRANSFER_PER_TICK[1]);
+		ENERGY_BANK_TRANSFER_PER_TICK[2] = clamp(ENERGY_BANK_TRANSFER_PER_TICK[1], Integer.MAX_VALUE               , ENERGY_BANK_TRANSFER_PER_TICK[2]);
 		
 		// Lift
 		LIFT_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,

@@ -22,7 +22,8 @@ public enum EnumComponentType {
 	ACTIVATED_CARBON           ("ActivatedCarbon"),
 	LASER_MEDIUM_EMPTY         ("LaserMediumEmpty"),
 	COIL_CRYSTAL               ("CoilCrystal"),
-	ELECTROMAGNETIC_PROJECTOR  ("ElectromagneticProjector");
+	ELECTROMAGNETIC_PROJECTOR  ("ElectromagneticProjector"),
+	SUPERCONDUCTOR             ("Superconductor");
 	
 	public final String unlocalizedName;
 	

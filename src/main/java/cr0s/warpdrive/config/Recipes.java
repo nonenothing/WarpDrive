@@ -245,7 +245,7 @@ public class Recipes {
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
 		
 		// Power Store
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank), false, "ipi", "isi", "ici",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1), false, "ipi", "isi", "ici",
 				'i', Items.iron_ingot,
 				's', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
@@ -693,38 +693,35 @@ public class Recipes {
 		
 		// Power interface is 4 redstone, 2 iron ingot, 3 gold ingot
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.POWER_INTERFACE, 2), false, "rgr", "igi", "rgr",
-				'g', Items.gold_ingot,
+				'g', "ingotGold",
 				'r', Items.redstone,
 				'i', Items.iron_ingot));
 		
 		// Capacitive crystal is 3 redstone block, 3 paper, 3 lapis block or 1 HV capacitor from IE or 1 MFE from IC2
-		if (OreDictionary.doesOreNameExist("dustLithium") && !OreDictionary.getOres("dustLithium").isEmpty()) {// comes with GregTech and Industrial Craft 2
+		if (OreDictionary.doesOreNameExist("dustLithium") && !OreDictionary.getOres("dustLithium").isEmpty()) {// comes with GregTech, Industrial Craft 2 and Mekanism
 			// (Lithium is processed from nether quartz)
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "plp", "lRl", "plp",
-					'R', new ItemStack(Items.potionitem, 1, 8225),	// Regeneration II
+					'R', new ItemStack(Items.potionitem, 1, 8225),  // Regeneration II (ghast tear + glowstone)
 					'l', "dustLithium",
 					'p', Items.paper));
-		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
-			ItemStack itemStackCapacitorHV = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "metalDevice", 7);
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, " m ", "ppp", " m ",
-					'm', itemStackCapacitorHV,
-					'p', Items.paper));
-		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			ItemStack itemStackHardenedEnergyCell = WarpDriveConfig.getModItemStack("ThermalExpansion", "Cell", 2);
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, " m ", "ppp", " m ",
-					'm', itemStackHardenedEnergyCell,
-					'p', Items.paper));
-		} else if (WarpDriveConfig.isEnderIOLoaded) {
-			ItemStack itemStackBasicCapacitorBank = WarpDriveConfig.getModItemStack("EnderIO", "blockCapBank", 1);
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, " m ", "ppp", " m ",
-					'm', itemStackBasicCapacitorBank,
-					'p', Items.paper));
+		} else if (OreDictionary.doesOreNameExist("dustElectrum") && !OreDictionary.getOres("dustElectrum").isEmpty()) {// comes with ImmersiveEngineering, ThermalFoundation, Metallurgy
+			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "eRe", "prp",
+			        'R', new ItemStack(Items.potionitem, 1, 8225),	// Regeneration II (ghast tear + glowstone)
+			        'r', "blockRedstone",
+					'e', "dustElectrum",
+			        'p', Items.paper));
+		} else if (OreDictionary.doesOreNameExist("ingotElectricalSteel") && !OreDictionary.getOres("ingotElectricalSteel").isEmpty()) {// comes with EnderIO
+			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "eRe", "prp",
+			        'R', new ItemStack(Items.potionitem, 1, 8225),	// Regeneration II (ghast tear + glowstone)
+			        'r', "blockRedstone",
+			        'e', "ingotElectricalSteel",
+			        'p', Items.paper));
 		} else {// Vanilla
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "qrq", "pSp", "qrq",
+			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "gSg", "prp",
 					'S', new ItemStack(Items.potionitem, 1, 8265),	// Strength I long (blaze powder + redstone)
-					'r', Blocks.redstone_block,
+					'r', "blockRedstone",
 					'p', Items.paper,
-					'q', Items.quartz));
+					'g', "ingotGold"));
 		}
 		
 		// Air canister is 4 iron bars, 2 leather/rubber, 2 yellow wool, 1 tank
@@ -753,19 +750,19 @@ public class Recipes {
 						'd', "lensDiamond"));
 			} else {
 				GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.LENS), false, " g ", "pdp", " g ",
-						'g', Items.gold_ingot,
+						'g', "ingotGold",
 						'p', "paneGlassColorless",
 						'd', "lensDiamond"));
 			}
 		} else if (WarpDriveConfig.isAdvancedRepulsionSystemLoaded) {
 			ItemStack diamondLens = WarpDriveConfig.getModItemStack("AdvancedRepulsionSystems", "{A8F3AF2F-0384-4EAA-9486-8F7E7A1B96E7}", 1);
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.LENS), false, " g ", "pdp", " g ",
-					'g', Items.gold_ingot,
+					'g', "ingotGold",
 					'p', "paneGlassColorless",
 					'd', diamondLens));
 		} else {
 			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.LENS, 2), false, " g ", "pdp", " g ",
-					'g', Items.gold_ingot,
+					'g', "ingotGold",
 					'p', "paneGlassColorless",
 					'd', "gemDiamond"));
 		}
@@ -862,6 +859,18 @@ public class Recipes {
 		                                          'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
 		                                          'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		
+		// Superconductor is 1 Ender crystal, 4 Power interface, 4 Cryotheum dust/Lapis block/10k Coolant cell
+		Object oreCoolant = "blockLapis";
+		if (WarpDriveConfig.isThermalExpansionLoaded) {
+			oreCoolant = "dustCryotheum";
+		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+			oreCoolant = WarpDriveConfig.getModItemStack("IC2", "reactorCoolantSimple", -1);
+		}
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR), false, "pcp", "cec", "pcp",
+		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+		                                          'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
+		                                          'c', oreCoolant ));
+		
 		// *** Force field shapes
 		// Force field shapes are 1 Memory crystal, 3 to 5 Coil crystal
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldShape.getItemStack(EnumForceFieldShape.SPHERE), false, "   ", "CmC", "CCC",
@@ -890,7 +899,7 @@ public class Recipes {
 		// Force field attraction upgrade is 3 Coil crystal, 1 Iron block, 2 Redstone block, 1 MV motor
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.ATTRACTION), false, "CCC", "rir", " m ",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
-		                                          'r', Blocks.redstone_block,
+		                                          'r', "blockRedstone",
 		                                          'i', Blocks.iron_block,
 		                                          'm', itemStackMotorMV));
 		// Force field breaking upgrade is 3 Coil crystal, 1 Diamond axe, 1 diamond shovel, 1 diamond pick
@@ -943,11 +952,11 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.RANGE), false, "CCC", "RMR", "   ",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
 		                                          'M', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
-		                                          'R', Blocks.redstone_block));
+		                                          'R', "blockRedstone"));
 		// Force field repulsion upgrade is 3 Coil crystal, 1 Iron block, 2 Redstone block, 1 MV motor
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.REPULSION), false, " m ", "rir", "CCC",
 			                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
-			                                          'r', Blocks.redstone_block,
+			                                          'r', "blockRedstone",
 			                                          'i', Blocks.iron_block,
 			                                          'm', itemStackMotorMV));
 		// Force field rotation upgrade is 3 Coil crystal, 2 MV Motors, 1 Computer interface
@@ -968,7 +977,7 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.STABILIZATION), "CCC", "lMl", "   ",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
 		                                          'M', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
-		                                          'l', Blocks.lapis_block));
+		                                          'l', "blockLapis"));
 		// Force field thickness upgrade is 8 Coil crystal, 1 Diamond crystal
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemForceFieldUpgrade.getItemStack(EnumForceFieldUpgrade.THICKNESS), false, "CCC", "CpC", "   ",
 		                                          'C', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL),
@@ -1076,8 +1085,8 @@ public class Recipes {
 		// TODO: add fluid transposer/canning support
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserMedium), false, "lrl", "rmr", "lrl",
 				'm', ItemComponent.getItemStack(EnumComponentType.LASER_MEDIUM_EMPTY),
-				'r', Blocks.redstone_block,
-				'l', Blocks.lapis_block));
+				'r', "blockRedstone",
+				'l', "blockLapis"));
 		
 		// Laser lift is ...
 		Object oreMagnetizer = itemStackMachineCasings[0];
@@ -1297,12 +1306,35 @@ public class Recipes {
 				'g', "paneGlassColorless",
 				'h', "blockHull2_plain"));
 		
-		// Anuic Energy bank is 1 capacitive crystal + 1 MV Machine casing + 3 Power interfaces 
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank), false, "pip", "pcp", "pmp",
+		// Basic Energy bank is 1 Capacitive crystal + 1 Power interface + 3 paper + 4 iron bars 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1, 1), false, "iPi", "pcp", "ipi",
 		                                          'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
-		                                          'm', itemStackMachineCasings[1],
-		                                          'i', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
-		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
+		                                          'i', ironBars,
+												  'p', Items.paper,
+		                                          'P', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
+		
+		// Advanced Energy bank is 4 Basic energy bank + 1 Power interface 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1, 2), false, " c ", "cpc", " c ",
+		                                          'c', new ItemStack(WarpDrive.blockEnergyBank, 1, 1),
+		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
+		// or 4 Capacitive crystal + 1 Gold ingot + 4 Power interface
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1, 2), false, "pcp", "cgc", "pcp",
+		                                          'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
+												  'g', "ingotGold",
+		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
+		
+		// Superior Energy bank is 4 Advanced energy bank + 1 Ender tuned crystal + 4 Iron ingot 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1, 3), false, "ici", "cec", "ici",
+		                                          'c', new ItemStack(WarpDrive.blockEnergyBank, 1, 2),
+		                                          'i', "ingotIron",
+		                                          'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL) ));
+		// or 4 Capacitive crystal block + 1 Superconductor + 4 Iron ingot
+		/*
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1, 3), false, "ici", "csc", "ici",
+		                                          'c', @TODO MC1.10 Capacitive crystal block,
+		                                          'i', "ingotIron",
+		                                          's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR) ));
+		/**/
 		
 		// Force field projector is 1 or 2 Electromagnetic Projector + 1 LV/MV/HV Machine casing + 1 Ender crystal + 1 Redstone
 		for (int tier = 1; tier <= 3; tier++) {
