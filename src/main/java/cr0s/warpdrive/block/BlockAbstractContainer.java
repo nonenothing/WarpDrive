@@ -9,6 +9,7 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -23,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock {
 	protected boolean isRotating = false;
+	protected boolean hasSubBlocks = false;
 	
 	protected BlockAbstractContainer(Material material) {
 		super(material);
@@ -106,6 +108,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super.dropBlockAsItem(world, x, y, z, itemStack);
 	}
 	
+	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
@@ -164,6 +167,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
+	@Override
 	@Optional.Method(modid = "DefenseTech")
 	public void onEMP(World world, int x, int y, int z, IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -181,6 +185,20 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			if (tileEntityAbstractEnergy.energy_getMaxStorage() > 0) {
 				tileEntityAbstractEnergy.energy_consume(Math.round(tileEntityAbstractEnergy.energy_getEnergyStored() * efficiency), false);
 			}
+		}
+	}
+	
+	public byte getTier(final ItemStack itemStack) {
+		return 1;
+	}
+	
+	EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+		switch (getTier(itemStack)) {
+			case 0:	return EnumRarity.epic;
+			case 1:	return EnumRarity.common;
+			case 2:	return EnumRarity.uncommon;
+			case 3:	return EnumRarity.rare;
+			default: return rarity;
 		}
 	}
 }

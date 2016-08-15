@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.energy;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -73,5 +74,10 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorLaserTopBottom");
 		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorLaserSides");
 		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorLaserActive");
+	}
+	
+	@Override
+	public byte getTier(final ItemStack itemStack) {
+		return 3;
 	}
 }

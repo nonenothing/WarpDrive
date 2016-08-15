@@ -338,7 +338,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	// status
 	public String getStatus() {
-		return (worldObj != null ? StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : "");
+		if (worldObj == null) {
+			return "";
+		} else {
+			ItemStack itemStack = new ItemStack(Item.getItemFromBlock(getBlockType()), 1, getBlockMetadata());
+			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"));
+		}
 	}
 	
 	// upgrade system

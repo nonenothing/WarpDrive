@@ -431,7 +431,7 @@ public class WarpDrive implements LoadingCallback {
 		blockHulls_stairs = new Block[3][16];
 		blockHulls_slab = new Block[3][16];
 		
-		for(int tier = 1; tier <= 3; tier++) {
+		for(byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			blockHulls_plain[index] = new BlockHullPlain(tier);
 			blockHulls_glass[index] = new BlockHullGlass(tier);

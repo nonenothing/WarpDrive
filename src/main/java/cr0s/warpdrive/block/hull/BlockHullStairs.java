@@ -1,7 +1,5 @@
 package cr0s.warpdrive.block.hull;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -14,11 +12,11 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
-	private final int tier;
+	protected final byte tier;
 	private final Block blockHull;
 	private final int metaHull;
 	
-	public BlockHullStairs(final Block blockHull, final int metaHull, final int tier) {
+	public BlockHullStairs(final Block blockHull, final int metaHull, final byte tier) {
 		super(blockHull, metaHull);
 		this.blockHull = blockHull;
 		this.metaHull = metaHull;

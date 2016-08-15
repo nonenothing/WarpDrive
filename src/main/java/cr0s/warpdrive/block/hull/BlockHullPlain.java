@@ -23,9 +23,9 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 public class BlockHullPlain extends Block implements IDamageReceiver {
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
-	private final int tier;
+	final byte tier;
 	
-	public BlockHullPlain(final int tier) {
+	public BlockHullPlain(final byte tier) {
 		super(Material.rock);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);

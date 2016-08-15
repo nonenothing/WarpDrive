@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -56,6 +57,11 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
+	}
+	
+	@Override
+	public byte getTier(final ItemStack itemStack) {
+		return 3;
 	}
 	
 	/**

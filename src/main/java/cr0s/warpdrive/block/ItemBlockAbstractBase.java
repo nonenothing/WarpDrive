@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -31,8 +32,27 @@ public class ItemBlockAbstractBase extends ItemBlock {
 		return damage;
 	}
 	
-	public String getStatus(final NBTTagCompound nbtTagCompound) {
-		TileEntity tileEntity = field_150939_a.createTileEntity(null, 0);
+	@Override
+	public String getUnlocalizedName(ItemStack itemStack) {
+		if ( itemStack == null 
+		  || !(field_150939_a instanceof BlockAbstractContainer)
+		  || !((BlockAbstractContainer) field_150939_a).hasSubBlocks ) {
+			return getUnlocalizedName();
+		}
+		return getUnlocalizedName() + itemStack.getItemDamage();
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack) {
+		if ( itemStack == null
+		  || !(field_150939_a instanceof BlockAbstractContainer) ) {
+			return super.getRarity(itemStack);
+		}
+		return ((BlockAbstractContainer)field_150939_a).getRarity(itemStack, super.getRarity(itemStack));
+	}
+	
+	private String getStatus(final NBTTagCompound nbtTagCompound, final int metadata) {
+		TileEntity tileEntity = field_150939_a.createTileEntity(null, metadata);
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			if (nbtTagCompound != null) {
 				tileEntity.readFromNBT(nbtTagCompound);
@@ -58,6 +78,6 @@ public class ItemBlockAbstractBase extends ItemBlock {
 			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
 		}
 		
-		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(getStatus(itemStack.getTagCompound())));
+		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(getStatus(itemStack.getTagCompound(), itemStack.getItemDamage())));
 	}
 }
