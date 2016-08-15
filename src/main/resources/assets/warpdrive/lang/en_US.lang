@@ -160,6 +160,11 @@ tile.warpdrive.building.ShipScanner.name=Ship Scanner
 tile.warpdrive.collection.LaserTreeFarm.name=Laser Tree Farm
 tile.warpdrive.collection.MiningLaser.name=Mining Laser
 
+tile.siren_industrial.name=Industrial Siren
+tile.siren_raid_basic.name=Basic Air Raid Siren
+tile.siren_raid_advanced.name=Advanced Air Raid Siren
+tile.siren_raid_superior.name=Superior Air Raid Siren
+
 tile.warpdrive.detection.Camera.name=Camera
 tile.warpdrive.detection.CloakingCoil.name=Cloaking Coil
 tile.warpdrive.detection.CloakingCore.name=Cloaking Core

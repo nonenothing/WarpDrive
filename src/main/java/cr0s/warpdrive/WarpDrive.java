@@ -6,17 +6,23 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import cr0s.warpdrive.block.*;
+import cr0s.warpdrive.block.detection.*;
 import cr0s.warpdrive.block.forcefield.*;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
+import cr0s.warpdrive.compat.CompatMekanism;
 import cr0s.warpdrive.item.*;
+import ic2.api.item.IC2Items;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemDye;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
@@ -53,16 +59,6 @@ import cr0s.warpdrive.block.collection.BlockLaserTreeFarm;
 import cr0s.warpdrive.block.collection.BlockMiningLaser;
 import cr0s.warpdrive.block.collection.TileEntityLaserTreeFarm;
 import cr0s.warpdrive.block.collection.TileEntityMiningLaser;
-import cr0s.warpdrive.block.detection.BlockCamera;
-import cr0s.warpdrive.block.detection.BlockCloakingCoil;
-import cr0s.warpdrive.block.detection.BlockCloakingCore;
-import cr0s.warpdrive.block.detection.BlockMonitor;
-import cr0s.warpdrive.block.detection.BlockRadar;
-import cr0s.warpdrive.block.detection.BlockWarpIsolation;
-import cr0s.warpdrive.block.detection.TileEntityCamera;
-import cr0s.warpdrive.block.detection.TileEntityCloakingCore;
-import cr0s.warpdrive.block.detection.TileEntityMonitor;
-import cr0s.warpdrive.block.detection.TileEntityRadar;
 import cr0s.warpdrive.block.energy.BlockEnanReactorCore;
 import cr0s.warpdrive.block.energy.BlockEnanReactorLaser;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
@@ -126,7 +122,12 @@ public class WarpDrive implements LoadingCallback {
 	public static final String VERSION = "@version@";
 	public static final boolean isDev = VERSION.equals("@" + "version" + "@") || VERSION.contains("-dev");
 	public static GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes("[WarpDrive]".getBytes()), "[WarpDrive]");
-	
+
+	public static Block blockSirenIndustrial;
+	public static Block blockSirenRaidBasic;
+	public static Block blockSirenRaidAdvanced;
+	public static Block blockSirenRaidSuperior;
+
 	public static Block blockShipCore;
 	public static Block blockShipController;
 	public static Block blockRadar;
@@ -236,7 +237,35 @@ public class WarpDrive implements LoadingCallback {
 		
 		// open access to Block.blockHardness
 		fieldBlockHardness = WarpDrive.getField(Block.class, "blockHardness", "field_149782_v");
-		
+
+		// SIRENS
+		blockSirenIndustrial = new BlockSiren("siren_industrial", false, 32.0F);
+		blockSirenRaidBasic = new BlockSiren("siren_raid_basic", true, 32.0F);
+		blockSirenRaidAdvanced = new BlockSiren("siren_raid_advanced", true, 64.0F);
+		blockSirenRaidSuperior = new BlockSiren("siren_raid_superior", true, 128.0F);
+
+		GameRegistry.registerBlock(blockSirenIndustrial, "siren_industrial");
+		GameRegistry.registerBlock(blockSirenRaidBasic, "siren_raid_basic");
+		GameRegistry.registerBlock(blockSirenRaidAdvanced, "siren_raid_advanced");
+		GameRegistry.registerBlock(blockSirenRaidSuperior, "siren_raid_superior");
+
+		GameRegistry.addRecipe(new ItemStack(blockSirenIndustrial, 1), "ICI", "ICI", "NRN",
+				Character.valueOf('I'), new ItemStack(Blocks.planks, 1),
+				Character.valueOf('C'), new ItemStack(Items.iron_ingot, 1),
+				Character.valueOf('N'), new ItemStack(Blocks.noteblock, 1),
+				Character.valueOf('R'), new ItemStack(Items.redstone, 1));
+		GameRegistry.addRecipe(new ItemStack(blockSirenRaidBasic, 1), " I ", "ISI", " I ",
+				Character.valueOf('I'), new ItemStack(Items.iron_ingot, 1),
+				Character.valueOf('S'), new ItemStack(blockSirenIndustrial, 1));
+		GameRegistry.addRecipe(new ItemStack(blockSirenRaidAdvanced, 1), " I ", "ISI", " I ",
+				Character.valueOf('I'), new ItemStack(Items.gold_ingot, 1),
+				Character.valueOf('S'), new ItemStack(blockSirenRaidBasic, 1));
+		GameRegistry.addRecipe(new ItemStack(blockSirenRaidSuperior, 1), " I ", "ISI", " I ",
+				Character.valueOf('I'), new ItemStack(Items.diamond, 1),
+				Character.valueOf('S'), new ItemStack(blockSirenRaidAdvanced, 1));
+
+		GameRegistry.registerTileEntity(TileEntitySiren.class, MODID + ":tileEntitySiren");
+
 		// CORE CONTROLLER
 		blockShipController = new BlockShipController();
 		
