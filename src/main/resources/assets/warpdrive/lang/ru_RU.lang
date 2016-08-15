@@ -32,8 +32,9 @@ item.warpdrive.crafting.Motor.name=Мотор
 item.warpdrive.crafting.BoneCharcoal.name=Костяной уголь
 item.warpdrive.crafting.ActivatedCarbon.name=Активированный уголь
 item.warpdrive.crafting.LaserMediumEmpty.name=Лазерный излучатель (Пустой)
-item.warpdrive.crafting.ElectromagneticProjector.name=Electromagnetic Projector
 item.warpdrive.crafting.CoilCrystal.name=Coil Crystal
+item.warpdrive.crafting.ElectromagneticProjector.name=Electromagnetic Projector
+item.warpdrive.crafting.Superconductor.name=Superconductor
 
 item.warpdrive.armor.AirCanisterFull.name=Баллон с воздухом
 item.warpdrive.armor.Helmet.name=Космический шлем
@@ -169,7 +170,11 @@ tile.warpdrive.detection.WarpIsolation.name=Блок изоляции варп-�
 
 tile.warpdrive.energy.EnanReactorCore.name=Ядро энантиоморфного реактора
 tile.warpdrive.energy.EnanReactorLaser.name=Лазер стабилизации энантиоморфного реактора
-tile.warpdrive.energy.EnergyBank.name=Хранилище энергии Ану
+tile.warpdrive.energy.EnergyBank.0.name=Zero-Point Module
+tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subspace Capacitor
+tile.warpdrive.energy.EnergyBank.1.name=Basic Subspace Capacitor
+tile.warpdrive.energy.EnergyBank.2.name=Advanced Subspace Capacitor
+tile.warpdrive.energy.EnergyBank.3.name=Superior Subspace Capacitor
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=Лазерный монитор реактора IC2
 
 tile.warpdrive.forcefield.block1.name=Basic Force Field Block

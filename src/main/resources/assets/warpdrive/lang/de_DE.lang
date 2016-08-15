@@ -32,8 +32,9 @@ item.warpdrive.crafting.Motor.name=Motor
 item.warpdrive.crafting.BoneCharcoal.name=Knochenkohle
 item.warpdrive.crafting.ActivatedCarbon.name=Aktivkohle
 item.warpdrive.crafting.LaserMediumEmpty.name=Medium Laser (leer)
-item.warpdrive.crafting.ElectromagneticProjector.name=Elektromagnetischer Projektor
 item.warpdrive.crafting.CoilCrystal.name=Spulenkristall
+item.warpdrive.crafting.ElectromagneticProjector.name=Elektromagnetischer Projektor
+item.warpdrive.crafting.Superconductor.name=Superconductor !!!
 
 item.warpdrive.armor.AirCanisterFull.name=Luftkanister
 item.warpdrive.armor.Helmet.name=Warp Helm
@@ -169,7 +170,11 @@ tile.warpdrive.detection.WarpIsolation.name=Warp-Feld Isolations Block
 
 tile.warpdrive.energy.EnanReactorCore.name=Enantiomorpher Reaktorkern
 tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorper Reaktor Stabilisierungs Laser
-tile.warpdrive.energy.EnergyBank.name=Anuic Energie Speicher
+tile.warpdrive.energy.EnergyBank.0.name=Zero-Point-Modul
+tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subspace Capacitor !!!
+tile.warpdrive.energy.EnergyBank.1.name=Basic Subspace Capacitor !!!
+tile.warpdrive.energy.EnergyBank.2.name=Advanced Subspace Capacitor !!!
+tile.warpdrive.energy.EnergyBank.3.name=Superior Subspace Capacitor !!!
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reaktor Laser Monitor
 
 tile.warpdrive.forcefield.block1.name=Standard Kraftfeld

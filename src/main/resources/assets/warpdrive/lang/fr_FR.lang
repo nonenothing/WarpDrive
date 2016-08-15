@@ -32,8 +32,9 @@ item.warpdrive.crafting.Motor.name=Moteur
 item.warpdrive.crafting.BoneCharcoal.name=Charbon d'ossements
 item.warpdrive.crafting.ActivatedCarbon.name=Charbon actif
 item.warpdrive.crafting.LaserMediumEmpty.name=Milieu amplificateur (vide)
-item.warpdrive.crafting.ElectromagneticProjector.name=Projecteur électromagnétique
 item.warpdrive.crafting.CoilCrystal.name=Cristal bobiné
+item.warpdrive.crafting.ElectromagneticProjector.name=Projecteur électromagnétique
+item.warpdrive.crafting.Superconductor.name=Superconducteur
 
 item.warpdrive.armor.AirCanisterFull.name=Cartouche d'air
 item.warpdrive.armor.Helmet.name=Casque warp
@@ -169,7 +170,11 @@ tile.warpdrive.detection.WarpIsolation.name=Bloc d'isolation de champ de Warp
 
 tile.warpdrive.energy.EnanReactorCore.name=Noyau de réacteur Enantiomorphic
 tile.warpdrive.energy.EnanReactorLaser.name=Laser de stabilisation pour réacteur Enantiomorphic
-tile.warpdrive.energy.EnergyBank.name=Réserve d'énergie Anuic
+tile.warpdrive.energy.EnergyBank.0.name=Extracteur du potentiel de point zéro
+tile.warpdrive.energy.EnergyBank.0.tooltip=Condensateur subspatial creatif
+tile.warpdrive.energy.EnergyBank.1.name=Condensateur subspatial élémentaire
+tile.warpdrive.energy.EnergyBank.2.name=Condensateur subspatial avancé
+tile.warpdrive.energy.EnergyBank.3.name=Condensateur subspatial supérieur
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=Laser de monitoring pour réacteur IC2
 
 tile.warpdrive.forcefield.block1.name=Bloc de champ de force élémentaire
