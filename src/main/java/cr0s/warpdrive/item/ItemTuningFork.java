@@ -2,6 +2,8 @@ package cr0s.warpdrive.item;
 
 import java.util.List;
 
+import cr0s.warpdrive.block.energy.BlockEnergyBank;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -114,6 +116,12 @@ public class ItemTuningFork extends Item {
 					+ "\nand " + tileEntity);
 		}
 		return true;
+	}
+	
+	@Override
+	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
+		Block block = world.getBlock(x, y, z);
+		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, player);
 	}
 	
 	@Override

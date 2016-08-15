@@ -337,6 +337,17 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	// status
+	protected String getUpgradeStatus() {
+		String strUpgrades = getUpgradesAsString();
+		if (strUpgrades.isEmpty()) {
+			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.none",
+				strUpgrades);
+		} else {
+			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.valid",
+				strUpgrades);
+		}
+	}
+	
 	public String getStatus() {
 		if (worldObj == null) {
 			return "";

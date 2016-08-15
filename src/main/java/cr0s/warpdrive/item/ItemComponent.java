@@ -2,7 +2,9 @@ package cr0s.warpdrive.item;
 
 import java.util.List;
 
+import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.EnumComponentType;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +14,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
+import net.minecraft.world.World;
 
 public class ItemComponent extends Item implements IAirCanister {	
 	private IIcon[] icons;
@@ -98,6 +101,12 @@ public class ItemComponent extends Item implements IAirCanister {
 			return WarpDrive.itemAirCanisterFull.emptyDrop(itemStack);
 		}
 		return null;
+	}
+	
+	@Override
+	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
+		Block block = world.getBlock(x, y, z);
+		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, player);
 	}
 	
 	@Override

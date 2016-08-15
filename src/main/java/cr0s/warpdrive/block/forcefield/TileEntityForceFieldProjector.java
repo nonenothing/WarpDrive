@@ -853,17 +853,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
-	private String getUpgradeStatus() {
-		String strUpgrades = getUpgradesAsString();
-		if (strUpgrades.isEmpty()) {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.none",
-				strUpgrades);
-		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine.valid",
-				strUpgrades);
-		}
-	}
-	
 	@Override
 	public String getStatus() {
 		return super.getStatus()
