@@ -369,19 +369,17 @@ warpdrive.ship.playerAttached=Вы были прикреплены к кораб
 warpdrive.ship.playerDetached=Вы были откреплены от корабля %1$s.\nПрикрепленные игроки: %2$s
 warpdrive.ship.statusLine.cooling=Осталось %1$d с до остывания.
 warpdrive.ship.statusLine.isolation=%1$d активных блоков изоляции предоставляют %2$2.1f%% поглощения.
+
 warpdrive.energy.statusLine=Содержит энергии: %1$s/%2$s EU.
+warpdrive.energy.side.changedToInput=%1$s side changed to energy Input mode!
+warpdrive.energy.side.changedToOutput=%1$s side changed to energy Output mode!
+warpdrive.energy.side.changedToDisabled=%1$s side changed to Disabled mode!
+
 warpdrive.beamFrequency.statusLine.valid=Частота луча %1$d действительна.
 warpdrive.beamFrequency.statusLine.invalid=§cЧастота луча %1$d недействительна.
 warpdrive.beamFrequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set Beam frequency.
 
 warpdrive.forcefield.guide.lowPower=We're running out of power captain, reduce our consumption or get that scottish engineer to boost our power!
-
-warpdrive.forcefield.shape.result.wrongSide=§cThere's no Electromagnetic projector on this side.
-warpdrive.forcefield.shape.result.noShapeToDismount=§cNo shape to dismount.
-warpdrive.forcefield.shape.result.notEnoughShapes.double=§cYou need at least 2 items to set the shape of a double sided projector.
-warpdrive.forcefield.shape.result.notEnoughShapes.single=§cYou need at least 1 item to set the shape of a single sided projector.
-warpdrive.forcefield.shape.result.dismounted=Shape dismounted successfully.
-warpdrive.forcefield.shape.result.mounted=Shape mounted successfully.
 
 warpdrive.forcefield.shape.statusLine.none=§cShape isn't defined.
 warpdrive.forcefield.shape.statusLine.double=Shape is a full %1$s
@@ -394,16 +392,6 @@ warpdrive.forcefield.shape.statusLine.plane=plane
 warpdrive.forcefield.shape.statusLine.tube=tube
 warpdrive.forcefield.shape.statusLine.tunnel=tunnel
 
-warpdrive.forcefield.upgrade.result.noUpgradeToDismount=§cNo upgrade to dismount.
-warpdrive.forcefield.upgrade.result.notEnoughUpgrades=§cYou need at least 1 item to upgrade this block.
-warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade=§cThis upgrade is too big for a projector, use a relay instead.
-warpdrive.forcefield.upgrade.result.invalidRelayUpgrade=§cThis upgrade only applies to projectors.
-warpdrive.forcefield.upgrade.result.tooManyUpgrades=§cThere's already %1$s upgrades installed, use a relay to add more.
-warpdrive.forcefield.upgrade.result.dismounted=Upgrade dismounted successfully.
-warpdrive.forcefield.upgrade.result.mounted=Upgrade mounted successfully.
-
-warpdrive.forcefield.upgrade.statusLine.none=§7No upgrade installed.
-warpdrive.forcefield.upgrade.statusLine.valid=Upgraded with %1$s
 warpdrive.forcefield.upgrade.statusLine.attraction=attraction
 warpdrive.forcefield.upgrade.statusLine.breaking=block breaking
 warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
@@ -422,6 +410,26 @@ warpdrive.forcefield.upgrade.statusLine.speed=speed
 warpdrive.forcefield.upgrade.statusLine.stabilization=stabilization
 warpdrive.forcefield.upgrade.statusLine.thickness=thickness
 warpdrive.forcefield.upgrade.statusLine.translation=translation
+
+warpdrive.upgrade.result.noUpgradeToDismount=§cNo upgrade to dismount.
+warpdrive.upgrade.result.notEnoughUpgrades=§cYou need at least 1 item to upgrade this block.
+warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block.
+warpdrive.upgrade.result.invalidProjectorUpgrade=§cThis upgrade is too big for a projector, use a relay instead.
+warpdrive.upgrade.result.invalidRelayUpgrade=§cThis upgrade only applies to projectors.
+warpdrive.upgrade.result.validUpgrades=Valid upgrades for this block include: %1$s. @TODO not implemented yet
+warpdrive.upgrade.result.tooManyUpgrades=§cThere's already %1$d upgrades installed.
+warpdrive.upgrade.result.dismounted=Upgrade %1$s was dismounted successfully.
+warpdrive.upgrade.result.mounted=Upgrade %1$s was mounted successfully.
+
+warpdrive.upgrade.result.wrongShapeSide=§cThere's no Electromagnetic projector on this side.
+warpdrive.upgrade.result.noShapeToDismount=§cNo shape to dismount.
+warpdrive.upgrade.result.notEnoughShapes.double=§cYou need at least 2 items to set the shape of a double sided projector.
+warpdrive.upgrade.result.notEnoughShapes.single=§cYou need at least 1 item to set the shape of a single sided projector.
+warpdrive.upgrade.result.shapeDismounted=Shape dismounted successfully.
+warpdrive.upgrade.result.shapeMounted=Shape mounted successfully.
+
+warpdrive.upgrade.statusLine.none=§7No upgrade installed.
+warpdrive.upgrade.statusLine.valid=Upgraded with %1$s.
 
 warpdrive.videoChannel.statusLine.valid=Видеоканал %1$d действителен.
 warpdrive.videoChannel.statusLine.validCamera=Видеоканал %1$d действителен для камеры на %2$d, %3$d, %4$d.

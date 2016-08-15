@@ -369,19 +369,17 @@ warpdrive.ship.playerAttached=Tu es désormais attaché au vaisseau %1$s.\nLes j
 warpdrive.ship.playerDetached=Tu es désormais détaché du vaisseau %1$s.\nLes joueurs attachés sont %2$s
 warpdrive.ship.statusLine.cooling=Encore %1$d s de refroidissement.
 warpdrive.ship.statusLine.isolation=Les %1$d blocs d'isolations actifs fournissent %2$2.1f%% d'absorption.
+
 warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s/%2$s EU.
+warpdrive.energy.side.changedToInput=Le coté %1$s est en mode Réception d'énergie!
+warpdrive.energy.side.changedToOutput=Le coté %1$s est en mode Emission d'énergie!
+warpdrive.energy.side.changedToDisabled=Le coté %1$s side est en mode Inactif!
+
 warpdrive.beamFrequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
 warpdrive.beamFrequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
 warpdrive.beamFrequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
 
 warpdrive.forcefield.guide.lowPower=Nous sommes à court d'énergie Capitaine, réduissez la consommation ou appelez l'ingénieur écossais pour booster notre production!
-
-warpdrive.forcefield.shape.result.wrongSide=§cIl n'y a pas de projecteur électromagnétique sur cette face.
-warpdrive.forcefield.shape.result.noShapeToDismount=§cAucune forme à démonter.
-warpdrive.forcefield.shape.result.notEnoughShapes.double=§cIl faut au moins 2 objets pour établir la forme d'un projecteur double face.
-warpdrive.forcefield.shape.result.notEnoughShapes.single=§cIl faut au moins 1 object pour établir la forme d'un projecteur simple face.
-warpdrive.forcefield.shape.result.dismounted=Forme démontée correctement.
-warpdrive.forcefield.shape.result.mounted=Forme montée correctement.
 
 warpdrive.forcefield.shape.statusLine.none=§cLa forme n'est pas définie.
 warpdrive.forcefield.shape.statusLine.double=La forme est %1$s plein(e)
@@ -394,16 +392,6 @@ warpdrive.forcefield.shape.statusLine.plane=un plan
 warpdrive.forcefield.shape.statusLine.tube=un tube
 warpdrive.forcefield.shape.statusLine.tunnel=un tunnel
 
-warpdrive.forcefield.upgrade.result.noUpgradeToDismount=§cAucune amélioration à démonter.
-warpdrive.forcefield.upgrade.result.notEnoughUpgrades=§cIl faut au moins 1 object pour améliorer ce bloc.
-warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade=§cCette amélioration est trop grosse pour un projecteur, utilises un relais à la place.
-warpdrive.forcefield.upgrade.result.invalidRelayUpgrade=§cCette amélioration s'applique uniquement sur un projecteur.
-warpdrive.forcefield.upgrade.result.tooManyUpgrades=§cCette amélioration est déjà montée %1$s fois sur ce bloc, utilises un relais à la place.
-warpdrive.forcefield.upgrade.result.dismounted=Amélioration démontée correctement.
-warpdrive.forcefield.upgrade.result.mounted=Amélioration montée correctement.
-
-warpdrive.forcefield.upgrade.statusLine.none=§7Pas d'augmentation installée.
-warpdrive.forcefield.upgrade.statusLine.valid=Augmentation avec %1$s
 warpdrive.forcefield.upgrade.statusLine.attraction=attraction
 warpdrive.forcefield.upgrade.statusLine.breaking=casseur de bloc
 warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
@@ -422,6 +410,26 @@ warpdrive.forcefield.upgrade.statusLine.speed=vitesse
 warpdrive.forcefield.upgrade.statusLine.stabilization=stabilisation
 warpdrive.forcefield.upgrade.statusLine.thickness=épaisseur
 warpdrive.forcefield.upgrade.statusLine.translation=translation
+
+warpdrive.upgrade.result.noUpgradeToDismount=§cAucune amélioration à démonter.
+warpdrive.upgrade.result.notEnoughUpgrades=§cIl faut au moins 1 object pour améliorer ce bloc.
+warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block.
+warpdrive.upgrade.result.invalidProjectorUpgrade=§cCette amélioration est trop grosse pour un projecteur, utilises un relais à la place.
+warpdrive.upgrade.result.invalidRelayUpgrade=§cCette amélioration s'applique uniquement sur un projecteur.
+warpdrive.upgrade.result.validUpgrades=Valid upgrades for this block include: %1$s. @TODO not implemented yet
+warpdrive.upgrade.result.tooManyUpgrades=§cCette amélioration est déjà montée %1$s fois sur ce bloc, utilises un relais à la place.
+warpdrive.upgrade.result.dismounted=Amélioration %1$s démontée correctement.
+warpdrive.upgrade.result.mounted=Amélioration %1$s montée correctement.
+
+warpdrive.upgrade.result.wrongShapeSide=§cIl n'y a pas de projecteur électromagnétique sur cette face.
+warpdrive.upgrade.result.noShapeToDismount=§cAucune forme à démonter.
+warpdrive.upgrade.result.notEnoughShapes.double=§cIl faut au moins 2 objets pour établir la forme d'un projecteur double face.
+warpdrive.upgrade.result.notEnoughShapes.single=§cIl faut au moins 1 object pour établir la forme d'un projecteur simple face.
+warpdrive.upgrade.result.shapeDismounted=Forme démontée correctement.
+warpdrive.upgrade.result.shapeMounted=Forme montée correctement.
+
+warpdrive.forcefield.upgrade.statusLine.none=§7Pas d'augmentation installée.
+warpdrive.forcefield.upgrade.statusLine.valid=Augmenté avec %1$s.
 
 warpdrive.videoChannel.statusLine.valid=Le canal vidéo %1$d est valide.
 warpdrive.videoChannel.statusLine.validCamera=Le canal vidéo %1$d est valide pour la caméra à %2$d %3$d %4$d.

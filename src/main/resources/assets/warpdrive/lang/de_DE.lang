@@ -369,19 +369,17 @@ warpdrive.ship.playerAttached=Du bist jetzt mit dem Schiff %1$s verbunden.\nVerb
 warpdrive.ship.playerDetached=Du wurdest vom Schiff %1$s getrennt.\nVerbundene Spieler sind %2$s
 warpdrive.ship.statusLine.cooling=%1$d s Abklingzeit verbleibend.
 warpdrive.ship.statusLine.isolation=%1$d aktive Isolations Blöcke bieten %2$2.1f%% Absorption.
+
 warpdrive.energy.statusLine=Das Energie Level ist %1$s/%2$s EU.
+warpdrive.energy.side.changedToInput=%1$s side changed to energy Input mode! !!!
+warpdrive.energy.side.changedToOutput=%1$s side changed to energy Output mode! !!!
+warpdrive.energy.side.changedToDisabled=%1$s side changed to Disabled mode! !!!
+
 warpdrive.beamFrequency.statusLine.valid=Strahlfrequenz %1$d ist gültig.
 warpdrive.beamFrequency.statusLine.invalid=§cStrahlfrequenz %1$d ist ungültig.
 warpdrive.beamFrequency.statusLine.undefined=§7Undefinierte Strahlfrequenz.\n§bNutze eine Stimmgabel§f um die Strahlfrequenz festzulegen.
 
 warpdrive.forcefield.guide.lowPower=Uns geht die Energie aus, Captain. Verringere unseren Energieverbrauch oder hol den schottischen Ingenieur!
-
-warpdrive.forcefield.shape.result.wrongSide=§cAuf dieser Seite gibt es keinen Elektromagnetischen Projektor.
-warpdrive.forcefield.shape.result.noShapeToDismount=§cKeine Form zum deinstallieren vorhanden.
-warpdrive.forcefield.shape.result.notEnoughShapes.double=§cDu brauchst mindestens 2 Items um einen doppelseitigen Projektor einzustellen.
-warpdrive.forcefield.shape.result.notEnoughShapes.single=§cDu brauchst mindestens 1 Item um einen einseitigen Projektor einzustellen.
-warpdrive.forcefield.shape.result.dismounted=Form erfolgreich deinstalliert.
-warpdrive.forcefield.shape.result.mounted=Form erfolgreich installiert.
 
 warpdrive.forcefield.shape.statusLine.none=§cForm ist nicht definiert
 warpdrive.forcefield.shape.statusLine.double=Die Form ist ein(e) volle(r) %1$s
@@ -394,15 +392,6 @@ warpdrive.forcefield.shape.statusLine.plane=Ebene
 warpdrive.forcefield.shape.statusLine.tube=Röhre
 warpdrive.forcefield.shape.statusLine.tunnel=Tunnel
 
-warpdrive.forcefield.upgrade.result.noUpgradeToDismount=§cKein Upgrade zum deinstallieren vorhanden.
-warpdrive.forcefield.upgrade.result.notEnoughUpgrades=§cDu brauchst mindestens 1 Item um diesen Block aufzuwerten.
-warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade=§cDieses Upgrade ist zu groß für einen Projektor. Nutze ein Relais.
-warpdrive.forcefield.upgrade.result.invalidRelayUpgrade=§cDieses Upgrade funktioniert nur bei Projektoren!
-warpdrive.forcefield.upgrade.result.dismounted=Upgrade erfolgreich deinstalliert.
-warpdrive.forcefield.upgrade.result.mounted=Upgrade erfolgreich installiert.
-
-warpdrive.forcefield.upgrade.statusLine.none=§7Kein Upgrade installiert.
-warpdrive.forcefield.upgrade.statusLine.valid=%1$s Upgrade installiert
 warpdrive.forcefield.upgrade.statusLine.attraction=Anziehung
 warpdrive.forcefield.upgrade.statusLine.breaking=Block Brecher
 warpdrive.forcefield.upgrade.statusLine.camouflage=Camouflage
@@ -411,7 +400,7 @@ warpdrive.forcefield.upgrade.statusLine.fusion=Fusions
 warpdrive.forcefield.upgrade.statusLine.heating=Heizungs
 warpdrive.forcefield.upgrade.statusLine.inversion=Inversions
 warpdrive.forcefield.upgrade.statusLine.itemPort=Item Anschluss
-warpdrive.forcefield.upgrade.statusLine.pump=Pumpen
+warpdrive.forcefield.upgrade.statusLine.pumping=Pumpen
 warpdrive.forcefield.upgrade.statusLine.range=Reichweiten
 warpdrive.forcefield.upgrade.statusLine.repulsion=Rückstoß
 warpdrive.forcefield.upgrade.statusLine.rotation=Rotations
@@ -421,6 +410,26 @@ warpdrive.forcefield.upgrade.statusLine.speed=Geschwindigkeits
 warpdrive.forcefield.upgrade.statusLine.stabilization=Stabilisations
 warpdrive.forcefield.upgrade.statusLine.thickness=Stärke
 warpdrive.forcefield.upgrade.statusLine.translation=Translations
+
+warpdrive.upgrade.result.noUpgradeToDismount=§cKein Upgrade zum deinstallieren vorhanden.
+warpdrive.upgrade.result.notEnoughUpgrades=§cDu brauchst mindestens 1 Item um diesen Block aufzuwerten.
+warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block. !!!
+warpdrive.upgrade.result.invalidProjectorUpgrade=§cDieses Upgrade ist zu groß für einen Projektor. Nutze ein Relais.
+warpdrive.upgrade.result.invalidRelayUpgrade=§cDieses Upgrade funktioniert nur bei Projektoren!
+warpdrive.upgrade.result.validUpgrades=Valid upgrades for this block include: %1$s. @TODO not implemented yet !!!
+warpdrive.upgrade.result.tooManyUpgrades=§cThere's already %1$d upgrades installed. !!!
+warpdrive.upgrade.result.dismounted=Upgrade %1$s erfolgreich deinstalliert. !!!
+warpdrive.upgrade.result.mounted=Upgrade %1$s erfolgreich installiert. !!!
+
+warpdrive.upgrade.result.wrongShapeSide=§cAuf dieser Seite gibt es keinen Elektromagnetischen Projektor.
+warpdrive.upgrade.result.noShapeToDismount=§cKeine Form zum deinstallieren vorhanden.
+warpdrive.upgrade.result.notEnoughShapes.double=§cDu brauchst mindestens 2 Items um einen doppelseitigen Projektor einzustellen.
+warpdrive.upgrade.result.notEnoughShapes.single=§cDu brauchst mindestens 1 Item um einen einseitigen Projektor einzustellen.
+warpdrive.upgrade.result.shapeDismounted=Form erfolgreich deinstalliert.
+warpdrive.upgrade.result.shapeMounted=Form erfolgreich installiert.
+
+warpdrive.forcefield.upgrade.statusLine.none=§7Kein Upgrade installiert.
+warpdrive.forcefield.upgrade.statusLine.valid=%1$s Upgrade installiert.
 
 warpdrive.videoChannel.statusLine.valid=Videokanal %1$d ist gültig.
 warpdrive.videoChannel.statusLine.validCamera=Videokanal %1$d ist gültig für die Kamera bei %2$d, %3$d, %4$d.
