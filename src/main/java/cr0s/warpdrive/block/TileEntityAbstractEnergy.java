@@ -3,8 +3,6 @@ package cr0s.warpdrive.block;
 import java.math.BigDecimal;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.EnumComponentType;
-import cr0s.warpdrive.item.ItemComponent;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
@@ -142,14 +140,6 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		return false;
 	}
 	public void energy_consume(final int amount_internal) {
-		int amountUpgraded = amount_internal;
-		double absorption = Math.min(1.0D, 0.8D + 0.025D * getUpgradeCount(ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
-		if (amount_internal > 0) {
-			amountUpgraded = (int) Math.ceil(amount_internal * absorption);
-		} else {
-			amountUpgraded = (int) Math.floor(amount_internal / absorption);
-		}
-		
 		energyStored_internal -= amount_internal;
 	}
 	
@@ -458,6 +448,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 	}
 	
+	@SuppressWarnings("UnusedParameters")
 	protected void energy_resetConnections(final EnumFacing facing) {
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			IC2_removeFromEnergyNet();
