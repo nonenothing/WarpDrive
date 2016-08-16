@@ -1,7 +1,5 @@
 package cr0s.warpdrive.block;
 
-import java.math.BigDecimal;
-
 import cr0s.warpdrive.WarpDrive;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
@@ -152,8 +150,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			return "";
 		}
 		return StatCollector.translateToLocalFormatted("warpdrive.energy.statusLine",
-			BigDecimal.valueOf(convertInternalToEU_floor(energy_getEnergyStored())).toPlainString(),
-			BigDecimal.valueOf(convertInternalToEU_floor(energy_getMaxStorage())).toPlainString());
+			WarpDrive.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
+			WarpDrive.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
 	}
 	
 	@Override

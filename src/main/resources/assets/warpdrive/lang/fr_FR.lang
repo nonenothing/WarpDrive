@@ -370,7 +370,7 @@ warpdrive.ship.playerDetached=Tu es désormais détaché du vaisseau %1$s.\nLes 
 warpdrive.ship.statusLine.cooling=Encore %1$d s de refroidissement.
 warpdrive.ship.statusLine.isolation=Les %1$d blocs d'isolations actifs fournissent %2$2.1f%% d'absorption.
 
-warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s/%2$s EU.
+warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=Le coté %1$s est en mode Réception d'énergie!
 warpdrive.energy.side.changedToOutput=Le coté %1$s est en mode Emission d'énergie!
 warpdrive.energy.side.changedToDisabled=Le coté %1$s side est en mode Inactif!

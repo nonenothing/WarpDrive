@@ -902,4 +902,9 @@ public class WarpDrive implements LoadingCallback {
 		}
 		return fieldToReturn;
 	}
+	
+	public static String format(final long value) {
+		// alternate: BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_EVEN).toPlainString(),
+		return String.format("%,d", Math.round(value)).replaceAll("\u00A0", " ");
+	}
 }
