@@ -249,21 +249,6 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockSirenRaidAdvanced, "siren_raid_advanced");
 		GameRegistry.registerBlock(blockSirenRaidSuperior, "siren_raid_superior");
 
-		GameRegistry.addRecipe(new ItemStack(blockSirenIndustrial, 1), "ICI", "ICI", "NRN",
-				Character.valueOf('I'), new ItemStack(Blocks.planks, 1),
-				Character.valueOf('C'), new ItemStack(Items.iron_ingot, 1),
-				Character.valueOf('N'), new ItemStack(Blocks.noteblock, 1),
-				Character.valueOf('R'), new ItemStack(Items.redstone, 1));
-		GameRegistry.addRecipe(new ItemStack(blockSirenRaidBasic, 1), " I ", "ISI", " I ",
-				Character.valueOf('I'), new ItemStack(Items.iron_ingot, 1),
-				Character.valueOf('S'), new ItemStack(blockSirenIndustrial, 1));
-		GameRegistry.addRecipe(new ItemStack(blockSirenRaidAdvanced, 1), " I ", "ISI", " I ",
-				Character.valueOf('I'), new ItemStack(Items.gold_ingot, 1),
-				Character.valueOf('S'), new ItemStack(blockSirenRaidBasic, 1));
-		GameRegistry.addRecipe(new ItemStack(blockSirenRaidSuperior, 1), " I ", "ISI", " I ",
-				Character.valueOf('I'), new ItemStack(Items.diamond, 1),
-				Character.valueOf('S'), new ItemStack(blockSirenRaidAdvanced, 1));
-
 		GameRegistry.registerTileEntity(TileEntitySiren.class, MODID + ":tileEntitySiren");
 
 		// CORE CONTROLLER
