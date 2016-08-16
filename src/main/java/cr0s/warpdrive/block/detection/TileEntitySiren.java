@@ -17,6 +17,7 @@ public class TileEntitySiren extends TileEntity {
     private boolean isRaidSiren;
     private String name;
     private float range;
+    private int timeToLastUpdate = 0;
 
     @SideOnly(Side.CLIENT)
     private SirenSound sound;
@@ -32,6 +33,18 @@ public class TileEntitySiren extends TileEntity {
     @Override
     public void updateEntity() {
         super.updateEntity();
+
+        /*Updating the sound to quickly breaks Minecraft's sounds handler.
+        * Therefor, we only update our sound once every 0.5 seconds.
+        * It's less responsive like this, but doesn't completely freak out when
+        * spamming the redstone on and off.*/
+
+        if (this.timeToLastUpdate <= 0) {
+            this.timeToLastUpdate = 10;
+        } else {
+            this.timeToLastUpdate--;
+            return;
+        }
 
         if (!this.hasWorldObj() || !worldObj.isRemote) return;
         if (this.sound == null) this.setSound();
@@ -100,8 +113,6 @@ public class TileEntitySiren extends TileEntity {
     //Create a new SirenSound object that the siren will use.
     @SideOnly(Side.CLIENT)
     private void setSound() {
-        System.out.println("Reset sound for TileEntity at " + this.xCoord + ", " + this.yCoord + ", " + this.zCoord + ".");
-
         String resource = WarpDrive.MODID + ":siren_" + (isRaidSiren ? "raid" : "industrial");
         this.sound = new SirenSound(new ResourceLocation(resource), this.range, this.xCoord, this.yCoord, this.zCoord);
     }
@@ -109,11 +120,15 @@ public class TileEntitySiren extends TileEntity {
     //Forces the siren to start playing its sound;
     @SideOnly(Side.CLIENT)
     public boolean startSound() {
-        try {
-            Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+        if (!isPlaying()) {
+            try {
+                Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        } else {
             return true;
-        } catch (IllegalArgumentException e) {
-            return false;
         }
     }
 
