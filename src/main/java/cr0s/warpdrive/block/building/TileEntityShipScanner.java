@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.item.ItemCrystalToken;
@@ -15,12 +16,14 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
@@ -148,20 +151,35 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (deployDelayTicks > WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS) {
 				deployDelayTicks = 0;
 				
+				// refresh player object
+				EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+				
 				// deploy at most (jump speed / 4), at least (deploy speed), optimally in 10 seconds 
 				final int optimumSpeed = Math.round(blocksToDeployCount * WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS / (20 * 10.0F));
 				int blockToDeployPerTick = Math.max(WarpDriveConfig.SS_DEPLOY_BLOCKS_PER_INTERVAL,
 					Math.min(WarpDriveConfig.G_BLOCKS_PER_TICK / 4, optimumSpeed));
 				int blocksToDeployCurrentTick = Math.min(blockToDeployPerTick, blocksToDeployCount - currentDeployIndex);
 				int periodLaserEffect = Math.max(1, (blocksToDeployCurrentTick / 10));
-				// WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick + " blocksToDeployCurrentTick " + blocksToDeployCurrentTick + " currentDeployIndex " + currentDeployIndex);
+				if (WarpDrive.isDev && WarpDriveConfig.LOGGING_BUILDING) {
+					WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick + " blocksToDeployCurrentTick " + blocksToDeployCurrentTick + " currentDeployIndex " + currentDeployIndex);
+				}
 				
+				// deployment done?
 				if (blocksToDeployCurrentTick == 0) {
+					TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
+					if (tileEntity instanceof TileEntityShipCore) {
+						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
+						if (entityPlayerMP != null) {
+							WarpDrive.addChatMessage(entityPlayerMP, "§6" + "Welcome aboard captain. Use the computer to get moving...");
+						}
+					}
+					
 					isDeploying = false;
 					setActive(false); // disable scanner
 					if (WarpDriveConfig.LOGGING_BUILDING) {
 						WarpDrive.logger.info(this + " Deployment done");
 					}
+					cooldownPlayerDetection = SS_SEARCH_INTERVAL_TICKS * 3;
 					return;
 				}
 				
@@ -218,16 +236,13 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					}
 					
 					currentDeployIndex++;
-				}
-				
-				// deployment done, teleport owner inside
-				if (currentDeployIndex >= blocksToDeployCount) {
-					TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
-					if (tileEntity instanceof TileEntityShipCore) {
-						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
+					
+					// Warn owner if deployment done but wait next tick for teleportation 
+					if (currentDeployIndex >= blocksToDeployCount) {
+						if (entityPlayerMP != null) {
+							WarpDrive.addChatMessage(entityPlayerMP, "Ship complete. Teleporting captain to the main deck");
+						}
 					}
-					isDeploying = false;
-					setActive(false); // disable scanner
 				}
 			}
 		}
@@ -819,6 +834,10 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	private static final int SS_SEARCH_INTERVAL_TICKS = 20;
 	private int cooldownPlayerDetection = 5;
+	private static final int SS_SEARCH_WARMUP_INTERVALS = 5;
+	private UUID warmupPlayerId = null;
+	private int warmupPlayer = SS_SEARCH_WARMUP_INTERVALS;
+	private String warmupSchematicName = "";
 	private void checkPlayerToken() {
 		// cooldown to prevent player chat spam and server lag
 		cooldownPlayerDetection--;
@@ -842,13 +861,15 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 		}
 		if (entityPlayers.isEmpty()) {
+			warmupPlayerId = null;
 			return;
 		}
 		if (entityPlayers.size() > 1) {
 			for (EntityPlayer entityPlayer : entityPlayers) {
-				WarpDrive.addChatMessage(entityPlayer, "Too many players detected: please stand in the beam one at a time.");
+				WarpDrive.addChatMessage(entityPlayer, "§c" + "Too many players detected: please stand in the beam one at a time.");
 				cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			}
+			warmupPlayerId = null;
 			return;
 		}
 		EntityPlayer entityPlayer = entityPlayers.get(0);
@@ -869,17 +890,33 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
+		
+		// short warmup so payer can cancel eventually
+		if (entityPlayer.getUniqueID() != warmupPlayerId || !warmupSchematicName.equals(ItemCrystalToken.getSchematicName(itemStack))) {
+			warmupPlayerId = entityPlayer.getUniqueID();
+			warmupPlayer = SS_SEARCH_WARMUP_INTERVALS + 1;
+			warmupSchematicName = ItemCrystalToken.getSchematicName(itemStack);
+			WarpDrive.addChatMessage(entityPlayer, "§6" + String.format("Token '%1$s' detected!", warmupSchematicName, SS_SEARCH_WARMUP_INTERVALS));
+		}
+		warmupPlayer--;
+		if (warmupPlayer > 0) {
+			WarpDrive.addChatMessage(entityPlayer, String.format("Stand by for ship materialization in %2$d...", warmupSchematicName, warmupPlayer));
+			return;
+		}
+		// warmup done
+		warmupPlayerId = null;
 		playerName = entityPlayer.getCommandSenderName();
 		
 		// try deploying
 		StringBuilder reason = new StringBuilder();
 		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, true, reason);
-		WarpDrive.addChatMessage(entityPlayer, reason.toString());
 		if (!isActive) {
 			// failed
+			WarpDrive.addChatMessage(entityPlayer, "§c" + reason.toString());
 			cooldownPlayerDetection = 5 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
+		WarpDrive.addChatMessage(entityPlayer, "§6" + reason.toString());
 		
 		// success => remove token
 		if (!entityPlayer.capabilities.isCreativeMode) {

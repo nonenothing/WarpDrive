@@ -440,7 +440,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
 		StringBuilder reason = new StringBuilder();
 		if (!validateShipSpatialParameters(reason)) {
-			WarpDrive.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + reason.toString());
+			WarpDrive.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString());
 			return;
 		}
 		
@@ -468,12 +468,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		if (entityPlayer.worldObj != this.worldObj) {
 			distance += 256;
 			if (!WarpDriveConfig.SHIP_SUMMON_ACROSS_DIMENSIONS) {
-				messageToAllPlayersOnShip(String.format("%1$s is in a different dimension, too far away to be summoned", entityPlayer.getDisplayName()));
+				messageToAllPlayersOnShip("§c" + String.format("%1$s is in a different dimension, too far away to be summoned", entityPlayer.getDisplayName()));
 				return;
 			}
 		}
 		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
-			messageToAllPlayersOnShip(String.format("%1$s is too far away to be summoned (max. is %2$d m)", entityPlayer.getDisplayName(), WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
+			messageToAllPlayersOnShip("§c" + String.format("%1$s is too far away to be summoned (max. is %2$d m)", entityPlayer.getDisplayName(), WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
+			WarpDrive.addChatMessage(entityPlayer, "§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
 			return;
 		}
 		
@@ -489,7 +490,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				return;
 			}
 		}
-		messageToAllPlayersOnShip(String.format("No safe spot found to summon player %1$s", entityPlayer.getDisplayName()));
+		messageToAllPlayersOnShip("§c" + String.format("No safe spot found to summon player %1$s", entityPlayer.getDisplayName()));
 	}
 	
 	private void summonPlayer(EntityPlayerMP player, final int x, final int y, final int z) {
