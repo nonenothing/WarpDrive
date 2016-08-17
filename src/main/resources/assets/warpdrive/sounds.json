@@ -7,5 +7,7 @@
   "lowlaser": {"category": "master","sounds": [{"name": "lowlaser","stream": false}]},
   "cloak": {"category": "master","sounds": [{"name": "cloak","stream": false}]},
   "decloak": {"category": "master","sounds": [{"name": "decloak","stream": false}]},
-  "projecting": {"category": "master","sounds": [{"name": "projecting","stream": false}]}
+  "projecting": {"category": "master","sounds": [{"name": "projecting","stream": false}]},
+  "siren_raid": {"category": "master","sounds": [{"name": "siren_raid","stream": true}]},
+  "siren_industrial": {"category": "master","sounds": [{"name": "siren_industrial","stream": true}]}
 }

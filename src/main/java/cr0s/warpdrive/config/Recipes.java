@@ -284,7 +284,7 @@ public class Recipes {
 		ItemStack advancedCircuit = WarpDriveConfig.getModItemStack("IC2", "itemPartCircuitAdv", -1);
 		ItemStack ironPlate = WarpDriveConfig.getModItemStack("IC2", "itemPlates", 4);
 		ItemStack mfe = WarpDriveConfig.getModItemStack("IC2", "blockElectric", 1);
-		
+
 		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockShipCore), "ici", "cmc", "ici",
 				'i', iridiumAlloy,
 				'm', advancedMachine,
@@ -1412,6 +1412,22 @@ public class Recipes {
 		
 		// HULL blocks and variations
 		initDynamicHull();
+
+		//Sirens
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenIndustrial, 1), "ICI", "ICI", "NRN",
+				Character.valueOf('I'), "plankWood",
+				Character.valueOf('C'), "ingotIron",
+				Character.valueOf('N'), new ItemStack(Blocks.noteblock, 1),
+				Character.valueOf('R'), "dustRedstone"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenRaidBasic, 1), " I ", "ISI", " I ",
+				Character.valueOf('I'), "ingotIron",
+				Character.valueOf('S'), new ItemStack(WarpDrive.blockSirenIndustrial, 1)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenRaidAdvanced, 1), " I ", "ISI", " I ",
+				Character.valueOf('I'), "ingotGold",
+				Character.valueOf('S'), new ItemStack(WarpDrive.blockSirenRaidBasic, 1)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenRaidSuperior, 1), " I ", "ISI", " I ",
+				Character.valueOf('I'), "gemDiamond",
+				Character.valueOf('S'), new ItemStack(WarpDrive.blockSirenRaidAdvanced, 1)));
 	}
 	
 	private static void initDynamicHull() {
