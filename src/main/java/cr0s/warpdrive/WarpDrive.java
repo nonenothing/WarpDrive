@@ -620,7 +620,7 @@ public class WarpDrive implements LoadingCallback {
 			logger.error("Unable to send message to NULL sender: " + message);
 			return;
 		}
-		String[] lines = message.replace("§", "" + (char)167).replace("\\n", "\n").split("\n");
+		String[] lines = message.replace("§", "" + (char)167).replace("\\n", "\n").replaceAll("\u00A0", " ").split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new ChatComponentText(line));
 		}
@@ -853,7 +853,7 @@ public class WarpDrive implements LoadingCallback {
 						list.add(lineRemaining);
 						lineRemaining = "";
 					} else {// cut at last space
-						list.add(lineRemaining.substring(0, indexToCut));
+						list.add(lineRemaining.substring(0, indexToCut).replaceAll("\u00A0", " "));
 						
 						// compute remaining format
 						int index = formatNextLine.length();
@@ -869,7 +869,7 @@ public class WarpDrive implements LoadingCallback {
 						lineRemaining = formatNextLine + " " + lineRemaining.substring(indexToCut + 1);
 					}
 				} else {
-					list.add(lineRemaining);
+					list.add(lineRemaining.replaceAll("\u00A0", " "));
 					lineRemaining = "";
 				}
 			}
@@ -905,6 +905,6 @@ public class WarpDrive implements LoadingCallback {
 	
 	public static String format(final long value) {
 		// alternate: BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_EVEN).toPlainString(),
-		return String.format("%,d", Math.round(value)).replaceAll("\u00A0", " ");
+		return String.format("%,d", Math.round(value));
 	}
 }
