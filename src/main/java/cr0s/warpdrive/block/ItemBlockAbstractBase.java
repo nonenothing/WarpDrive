@@ -19,6 +19,9 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	
 	public ItemBlockAbstractBase(Block block) {
 		super(block);	// sets field_150939_a to block
+		if (block instanceof BlockAbstractContainer) {
+			setHasSubtypes(((BlockAbstractContainer) block).hasSubBlocks);
+		}
 	}
 	
 	@Override

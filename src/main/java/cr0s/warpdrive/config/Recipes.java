@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.detection.BlockSiren;
 import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.item.ItemComponent;
@@ -1413,21 +1414,21 @@ public class Recipes {
 		// HULL blocks and variations
 		initDynamicHull();
 
-		//Sirens
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenIndustrial, 1), "ICI", "ICI", "NRN",
-				Character.valueOf('I'), "plankWood",
-				Character.valueOf('C'), "ingotIron",
-				Character.valueOf('N'), new ItemStack(Blocks.noteblock, 1),
-				Character.valueOf('R'), "dustRedstone"));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenRaidBasic, 1), " I ", "ISI", " I ",
-				Character.valueOf('I'), "ingotIron",
-				Character.valueOf('S'), new ItemStack(WarpDrive.blockSirenIndustrial, 1)));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenRaidAdvanced, 1), " I ", "ISI", " I ",
-				Character.valueOf('I'), "ingotGold",
-				Character.valueOf('S'), new ItemStack(WarpDrive.blockSirenRaidBasic, 1)));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSirenRaidSuperior, 1), " I ", "ISI", " I ",
-				Character.valueOf('I'), "gemDiamond",
-				Character.valueOf('S'), new ItemStack(WarpDrive.blockSirenRaidAdvanced, 1)));
+		// Sirens
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_INDUSTRIAL), "ICI", "ICI", "NRN",
+				'I', "plankWood",
+				'C', "ingotIron",
+				'N', new ItemStack(Blocks.noteblock, 1),
+				'R', "dustRedstone"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_BASIC), " I ", "ISI", " I ",
+				'I', "ingotIron",
+				'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_INDUSTRIAL)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED), " I ", "ISI", " I ",
+				'I', "ingotGold",
+				'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_BASIC)));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_SUPERIOR), " I ", "ISI", " I ",
+				'I', "gemDiamond",
+				'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED)));
 	}
 	
 	private static void initDynamicHull() {

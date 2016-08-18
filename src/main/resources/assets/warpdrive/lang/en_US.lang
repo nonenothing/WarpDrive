@@ -161,17 +161,22 @@ tile.warpdrive.building.ShipScanner.name=Ship Scanner
 tile.warpdrive.collection.LaserTreeFarm.name=Laser Tree Farm
 tile.warpdrive.collection.MiningLaser.name=Mining Laser
 
-tile.siren_industrial.name=Industrial Siren
-tile.siren_raid_basic.name=Basic Air Raid Siren
-tile.siren_raid_advanced.name=Advanced Air Raid Siren
-tile.siren_raid_superior.name=Superior Air Raid Siren
-
 tile.warpdrive.detection.Camera.name=Camera
 tile.warpdrive.detection.CloakingCoil.name=Cloaking Coil
 tile.warpdrive.detection.CloakingCore.name=Cloaking Core
 tile.warpdrive.detection.Monitor.name=Monitor
 tile.warpdrive.detection.Radar.name=Radar
 tile.warpdrive.detection.WarpIsolation.name=Warp-field Isolation Block
+
+tile.warpdrive.detection.Siren.tooltip=Triggered by redstone
+tile.warpdrive.detection.Siren0.name=Industrial Siren
+tile.warpdrive.detection.Siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
+tile.warpdrive.detection.Siren4.name=Basic Air Raid Siren
+tile.warpdrive.detection.Siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
+tile.warpdrive.detection.Siren5.name=Advanced Air Raid Siren
+tile.warpdrive.detection.Siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
+tile.warpdrive.detection.Siren6.name=Superior Air Raid Siren
+tile.warpdrive.detection.Siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
 
 tile.warpdrive.energy.EnanReactorCore.name=Enantiomorphic Reactor Core
 tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorphic Reactor Stabilization Laser

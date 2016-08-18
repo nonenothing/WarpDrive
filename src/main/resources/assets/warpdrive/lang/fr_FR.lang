@@ -168,6 +168,16 @@ tile.warpdrive.detection.Monitor.name=Moniteur
 tile.warpdrive.detection.Radar.name=Radar
 tile.warpdrive.detection.WarpIsolation.name=Bloc d'isolation de champ de Warp
 
+tile.warpdrive.detection.Siren.tooltip=Déclenchement par redstone
+tile.warpdrive.detection.Siren0.name=Sirène industrielle
+tile.warpdrive.detection.Siren0.tooltip=Emet une alarme industrielle audible à 32 m.
+tile.warpdrive.detection.Siren4.name=Sirène de raid aérien basique 
+tile.warpdrive.detection.Siren4.tooltip=Sonne l'alerte de raid aérien audible à 32 m.
+tile.warpdrive.detection.Siren5.name=Sirène de raid aérien avancée
+tile.warpdrive.detection.Siren5.tooltip=Sonne l'alerte de raid aérien audible à 64 m.
+tile.warpdrive.detection.Siren6.name=Sirène de raid aérien supérieure
+tile.warpdrive.detection.Siren6.tooltip=Sonne l'alerte de raid aérien audible à 128 m.
+
 tile.warpdrive.energy.EnanReactorCore.name=Noyau de réacteur Enantiomorphic
 tile.warpdrive.energy.EnanReactorLaser.name=Laser de stabilisation pour réacteur Enantiomorphic
 tile.warpdrive.energy.EnergyBank.0.name=Extracteur du potentiel de point zéro

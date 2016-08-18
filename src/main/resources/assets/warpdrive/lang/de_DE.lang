@@ -168,6 +168,16 @@ tile.warpdrive.detection.Monitor.name=Monitor
 tile.warpdrive.detection.Radar.name=Radar
 tile.warpdrive.detection.WarpIsolation.name=Warp-Feld Isolations Block
 
+tile.warpdrive.detection.Siren.tooltip=Triggered by redstone !!!
+tile.warpdrive.detection.Siren0.name=Industrial Siren !!!
+tile.warpdrive.detection.Siren0.tooltip=Sounds an Industrial alarm up to 32 m away. !!!
+tile.warpdrive.detection.Siren4.name=Basic Air Raid Siren
+tile.warpdrive.detection.Siren4.tooltip=Sounds an Air raid alarm up to 32 m away. !!!
+tile.warpdrive.detection.Siren5.name=Advanced Air Raid Siren
+tile.warpdrive.detection.Siren5.tooltip=Sounds an Air raid alarm up to 64 m away. !!!
+tile.warpdrive.detection.Siren6.name=Superior Air Raid Siren !!!
+tile.warpdrive.detection.Siren6.tooltip=Sounds an Air raid alarm up to 128 m away. !!!
+
 tile.warpdrive.energy.EnanReactorCore.name=Enantiomorpher Reaktorkern
 tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorper Reaktor Stabilisierungs Laser
 tile.warpdrive.energy.EnergyBank.0.name=Zero-Point-Modul

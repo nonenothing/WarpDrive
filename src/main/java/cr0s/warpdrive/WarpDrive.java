@@ -9,20 +9,15 @@ import cr0s.warpdrive.block.*;
 import cr0s.warpdrive.block.detection.*;
 import cr0s.warpdrive.block.forcefield.*;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
-import cr0s.warpdrive.compat.CompatMekanism;
 import cr0s.warpdrive.item.*;
-import ic2.api.item.IC2Items;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemDye;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
@@ -123,11 +118,6 @@ public class WarpDrive implements LoadingCallback {
 	public static final boolean isDev = VERSION.equals("@" + "version" + "@") || VERSION.contains("-dev");
 	public static GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes("[WarpDrive]".getBytes()), "[WarpDrive]");
 
-	public static Block blockSirenIndustrial;
-	public static Block blockSirenRaidBasic;
-	public static Block blockSirenRaidAdvanced;
-	public static Block blockSirenRaidSuperior;
-
 	public static Block blockShipCore;
 	public static Block blockShipController;
 	public static Block blockRadar;
@@ -164,6 +154,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block[] blockHulls_glass;
 	public static Block[][] blockHulls_stairs;
 	public static Block[][] blockHulls_slab;
+	public static Block blockSiren;
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
@@ -237,20 +228,7 @@ public class WarpDrive implements LoadingCallback {
 		
 		// open access to Block.blockHardness
 		fieldBlockHardness = WarpDrive.getField(Block.class, "blockHardness", "field_149782_v");
-
-		// SIRENS
-		blockSirenIndustrial = new BlockSiren("siren_industrial", false, 32.0F);
-		blockSirenRaidBasic = new BlockSiren("siren_raid_basic", true, 32.0F);
-		blockSirenRaidAdvanced = new BlockSiren("siren_raid_advanced", true, 64.0F);
-		blockSirenRaidSuperior = new BlockSiren("siren_raid_superior", true, 128.0F);
-
-		GameRegistry.registerBlock(blockSirenIndustrial, "siren_industrial");
-		GameRegistry.registerBlock(blockSirenRaidBasic, "siren_raid_basic");
-		GameRegistry.registerBlock(blockSirenRaidAdvanced, "siren_raid_advanced");
-		GameRegistry.registerBlock(blockSirenRaidSuperior, "siren_raid_superior");
-
-		GameRegistry.registerTileEntity(TileEntitySiren.class, MODID + ":tileEntitySiren");
-
+		
 		// CORE CONTROLLER
 		blockShipController = new BlockShipController();
 		
@@ -456,6 +434,12 @@ public class WarpDrive implements LoadingCallback {
 				GameRegistry.registerBlock(blockHulls_stairs[index][woolColor], ItemBlockHull.class, "blockHull" + tier + "_stairs_" + ItemDye.field_150923_a[BlockColored.func_150031_c(woolColor)]);
 			}
 		}
+		
+		// SIRENS
+		blockSiren = new BlockSiren();
+		
+		GameRegistry.registerBlock(blockSiren, ItemBlockAbstractBase.class, "siren");
+		GameRegistry.registerTileEntity(TileEntitySiren.class, MODID + ":tileEntitySiren");
 		
 		// REACTOR LASER FOCUS
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
