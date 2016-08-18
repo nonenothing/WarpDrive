@@ -10,6 +10,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -95,14 +96,16 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack itemStack) {
-		itemStack.setItemDamage(getDamageValue(world, x, y, z));
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (tileEntity == null) {
-			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
-		} else if (tileEntity instanceof TileEntityAbstractBase) {
-			NBTTagCompound nbtTagCompound = new NBTTagCompound();
-			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
-			itemStack.setTagCompound(nbtTagCompound);
+		if (itemStack.getItem() == Item.getItemFromBlock(this)) {
+			itemStack.setItemDamage(getDamageValue(world, x, y, z));
+			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			if (tileEntity == null) {
+				WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
+			} else if (tileEntity instanceof TileEntityAbstractBase) {
+				NBTTagCompound nbtTagCompound = new NBTTagCompound();
+				((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
+				itemStack.setTagCompound(nbtTagCompound);
+			}
 		}
 		world.setBlockToAir(x, y, z);
 		super.dropBlockAsItem(world, x, y, z, itemStack);

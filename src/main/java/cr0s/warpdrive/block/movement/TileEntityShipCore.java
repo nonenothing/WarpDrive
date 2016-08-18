@@ -10,6 +10,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
@@ -85,6 +88,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	private int isolationBlocksCount = 0;
 	public double isolationRate = 0.0D;
 	private int isolationUpdateTicks = 0;
+	
+	public int jumpCount = 0;
 	
 	public TileEntityShipController controller;
 	
@@ -329,6 +334,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 				cooldownTime = Math.max(1, WarpDriveConfig.SHIP_COOLDOWN_INTERVAL_SECONDS * 20);
 				isCooldownReported = false;
 				controller.setJumpFlag(false);
+				jumpCount++;
 			} else {
 				warmupTime = 0;
 			}
@@ -1139,6 +1145,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		shipName = tag.getString("corefrequency") + tag.getString("shipName");	// coreFrequency is the legacy tag name
 		isolationBlocksCount = tag.getInteger("isolation");
 		cooldownTime = tag.getInteger("cooldownTime");
+		jumpCount = tag.getInteger("jumpCount");
 	}
 	
 	@Override
@@ -1151,6 +1158,21 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		tag.setString("shipName", shipName);
 		tag.setInteger("isolation", isolationBlocksCount);
 		tag.setInteger("cooldownTime", cooldownTime);
+		tag.setInteger("jumpCount", jumpCount);
+	}
+	
+	@Override
+	public Packet getDescriptionPacket() {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		writeToNBT(tagCompound);
+		
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.func_148857_g();
+		readFromNBT(tagCompound);
 	}
 	
 	@Override
