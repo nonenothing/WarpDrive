@@ -1206,6 +1206,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		int x, y, z;
 		ChunkCoordinates coordTarget;
+		ChunkCoordinates coordCoreAtTarget = transformation.apply(ship.coreX, ship.coreY, ship.coreZ);
 		Block blockSource;
 		Block blockTarget;
 		for (y = ship.minY; y <= ship.maxY; y++) {
@@ -1243,7 +1244,7 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if (blockSource != Blocks.air && WarpDrive.proxy.isBlockPlaceCanceled(null, ship.coreX, ship.coreY, ship.coreZ,
+					if (blockSource != Blocks.air && WarpDrive.proxy.isBlockPlaceCanceled(null, coordCoreAtTarget.posX, coordCoreAtTarget.posY, coordCoreAtTarget.posZ,
 						targetWorld, coordTarget.posX, coordTarget.posY, coordTarget.posZ, blockSource, 0)) {
 						result.add(x, y, z,
 							coordTarget.posX,
