@@ -137,6 +137,10 @@ public class Dictionary {
 				// config.get("block_tags", "SGCraft:stargateBase"                            , "PlaceEarliest").getString();
 				// config.get("block_tags", "SGCraft:stargateRing"                            , "PlaceEarlier").getString();
 				// config.get("block_tags", "SGCraft:stargateController"                      , "PlaceLatest").getString();
+				config.get("block_tags", "OpenComputers:case1"                             , "PlaceLatest").getString();
+				config.get("block_tags", "OpenComputers:case2"                             , "PlaceLatest").getString(); 
+				config.get("block_tags", "OpenComputers:case3"                             , "PlaceLatest").getString(); 
+				config.get("block_tags", "OpenComputers:caseCreative"                      , "PlaceLatest").getString(); 
 				config.get("block_tags", "OpenComputers:keyboard"                          , "PlaceLatest").getString();
 				config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining").getString();
 				config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining").getString();
