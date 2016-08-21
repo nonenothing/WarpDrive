@@ -93,6 +93,11 @@ public class BlockSiren extends BlockAbstractContainer {
 		}
 	}
 	
+	@Override
+	public int damageDropped(int metadata) {
+		return metadata;
+	}
+	
 	// Silences the siren if the block is destroyed.
 	// If this fails, the siren will still be stopped when it's invalidated.
 	@Override
