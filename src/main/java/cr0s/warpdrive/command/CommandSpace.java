@@ -81,7 +81,7 @@ public class CommandSpace extends CommandBase {
 		}
 		
 		// check player
-		if (entityPlayerMPs == null || !entityPlayerMPs.isEmpty()) {
+		if (entityPlayerMPs == null || entityPlayerMPs.isEmpty()) {
 			WarpDrive.addChatMessage(commandSender, new TextComponentString("/space: undefined player"));
 			return;
 		}
