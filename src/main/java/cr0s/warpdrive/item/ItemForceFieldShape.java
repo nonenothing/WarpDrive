@@ -13,21 +13,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class ItemForceFieldShape extends Item {	
+public class ItemForceFieldShape extends ItemAbstractBase {	
 	private static ItemStack[] itemStackCache;
 	
 	public ItemForceFieldShape(final String registryName) {
-		super();
+		super(registryName);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.shape");
-		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 		
 		itemStackCache = new ItemStack[EnumForceFieldShape.length];
 	}

@@ -21,10 +21,8 @@ import javax.annotation.Nullable;
 public class BlockLift extends BlockAbstractContainer {
 	
 	public BlockLift(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.movement.Lift");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityLift.class, WarpDrive.PREFIX + registryName);
 	}
 

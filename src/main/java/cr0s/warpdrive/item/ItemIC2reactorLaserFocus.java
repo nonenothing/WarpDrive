@@ -7,21 +7,17 @@ import ic2.api.reactor.IReactorComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cr0s.warpdrive.WarpDrive;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "ic2.api.reactor.IReactorComponent", modid = "IC2")
 	})
-public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent {
+public class ItemIC2reactorLaserFocus extends ItemAbstractBase implements IReactorComponent {
 	private final static int maxHeat = 3000;
 	
 	public ItemIC2reactorLaserFocus(final String registryName) {
-		super();
+		super(registryName);
 		setMaxDamage(maxHeat);
 		setUnlocalizedName("warpdrive.energy.IC2reactorLaserFocus");
-		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 	}
 	
 	private static void damageComponent(ItemStack self, int damage) {
@@ -123,4 +119,8 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 		return 0;
 	}
 	
+	@Override
+	public boolean canBePlacedIn(ItemStack stack, IReactor reactor) {
+		return true;
+	}
 }

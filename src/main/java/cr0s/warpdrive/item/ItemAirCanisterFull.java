@@ -1,22 +1,17 @@
 package cr0s.warpdrive.item;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.data.EnumComponentType;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class ItemAirCanisterFull extends Item implements IAirCanister {
+public class ItemAirCanisterFull extends ItemAbstractBase implements IAirCanister {
 	
 	public ItemAirCanisterFull(final String registryName) {
-		super();
+		super(registryName);
 		setMaxDamage(20);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.armor.AirCanisterFull");
-		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 	}
 	
 	@Override

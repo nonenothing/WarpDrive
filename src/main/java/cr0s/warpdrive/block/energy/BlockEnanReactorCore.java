@@ -15,10 +15,8 @@ import javax.annotation.Nonnull;
 public class BlockEnanReactorCore extends BlockAbstractContainer {
 	
 	public BlockEnanReactorCore(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.energy.EnanReactorCore");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityEnanReactorCore.class, WarpDrive.PREFIX + registryName);
 	}
 

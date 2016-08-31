@@ -19,10 +19,8 @@ import javax.annotation.Nullable;
 public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	public BlockIC2reactorLaserMonitor(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.energy.IC2ReactorLaserMonitor");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, WarpDrive.PREFIX + registryName);
 	}
 

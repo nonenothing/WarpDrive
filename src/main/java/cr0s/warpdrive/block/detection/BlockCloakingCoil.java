@@ -2,23 +2,15 @@ package cr0s.warpdrive.block.detection;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import net.minecraft.block.material.Material;
-import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.WarpDrive;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class BlockCloakingCoil extends Block {
+public class BlockCloakingCoil extends BlockAbstractBase {
 	
 	public BlockCloakingCoil(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setHardness(3.5F);
-		setSoundType(SoundType.METAL);
 		setUnlocalizedName("warpdrive.detection.CloakingCoil");
-		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 	}
 	
 	@Override

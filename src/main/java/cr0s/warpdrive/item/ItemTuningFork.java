@@ -3,18 +3,14 @@ package cr0s.warpdrive.item;
 import java.util.List;
 
 import cr0s.warpdrive.data.SoundEvents;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -22,22 +18,20 @@ import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IVideoChannel;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public class ItemTuningFork extends Item {
+public class ItemTuningFork extends ItemAbstractBase {
 	
 	public ItemTuningFork(final String registryName) {
-		super();
+		super(registryName);
 		setMaxDamage(0);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.tool.TuningFork");
-		setRegistryName(registryName);
 		setFull3D();
 		setHasSubtypes(true);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 	}
 	
 	@Override
@@ -46,7 +40,19 @@ public class ItemTuningFork extends Item {
 			subItems.add(new ItemStack(item, 1, dyeColor));
 		}
 	}
-
+	
+	@Nonnull
+	@Override
+	@SideOnly(Side.CLIENT)
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		int damage = itemStack.getItemDamage();
+		ResourceLocation resourceLocation = getRegistryName();
+		if (damage >= 0 && damage < 16) {
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "_" + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName());
+		}
+		return new ModelResourceLocation(resourceLocation, "inventory");
+	}
+	
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemStack) {

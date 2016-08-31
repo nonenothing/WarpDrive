@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.passive;
 
 import java.util.Random;
 
+import cr0s.warpdrive.block.BlockAbstractBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
@@ -13,25 +14,20 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockAir extends Block {
+public class BlockAir extends BlockAbstractBase {
 	private static final boolean TRANSPARENT_AIR = true;
 	private static final boolean AIR_DEBUG = false;
 	private static final int AIR_BLOCK_TICKS = 40;
 	
 	public BlockAir(final String registryName) {
-		super(Material.FIRE);
+		super(registryName, Material.FIRE);
 		setHardness(0.0F);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.passive.Air");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 	}
 	
 	@Override
@@ -122,13 +118,14 @@ public class BlockAir extends Block {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
 		if (AIR_DEBUG) {
-			return side == EnumFacing.DOWN || side == EnumFacing.UP;
+			return facing == EnumFacing.DOWN || facing == EnumFacing.UP;
 		}
-		
-		Block sideBlock = blockAccess.getBlockState(blockPos).getBlock();
-		return sideBlock != this && blockAccess.isAirBlock(blockPos);
+
+		BlockPos blockPosSide = blockPos.offset(facing);
+		Block sideBlock = blockAccess.getBlockState(blockPosSide).getBlock();
+		return sideBlock != this && blockAccess.isAirBlock(blockPosSide);
 	}
 	
 	private void spreadAirBlock(World world, final BlockPos blockPos, final int concentration) {

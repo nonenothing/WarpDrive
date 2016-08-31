@@ -13,8 +13,8 @@ import javax.annotation.Nonnull;
 public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 	protected byte tier;
 	
-	BlockAbstractForceField(final byte tier, final Material material) {
-		super(material);
+	BlockAbstractForceField(final String registryName, final byte tier, final Material material) {
+		super(registryName, material);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);

@@ -1,9 +1,11 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.client.ClientProxy;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -18,11 +20,9 @@ public class BlockTransportBeacon extends BlockTorch {
 	public BlockTransportBeacon(final String registryName) {
 		super();
 		setHardness(0.5F);
-		setSoundType(SoundType.METAL);
 		setUnlocalizedName("warpdrive.passive.TransportBeacon");
 		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
+		WarpDrive.register(this);
 	}
 	
 	@SideOnly(Side.CLIENT)

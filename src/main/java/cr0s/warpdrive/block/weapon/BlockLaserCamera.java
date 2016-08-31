@@ -23,12 +23,10 @@ import javax.annotation.Nullable;
 public class BlockLaserCamera extends BlockAbstractContainer {
 	
 	public BlockLaserCamera(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
 		setUnlocalizedName("warpdrive.weapon.LaserCamera");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityLaserCamera.class, WarpDrive.PREFIX + registryName);
 	}
 	

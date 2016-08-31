@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,14 +21,11 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class BlockMonitor extends BlockAbstractContainer {
+public class BlockMonitor extends BlockAbstractRotatingContainer {
 	
 	public BlockMonitor(final String registryName) {
-		super(Material.IRON);
-		isRotating = true;
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.detection.Monitor");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityMonitor.class, WarpDrive.PREFIX + registryName);
 	}
 	

@@ -12,11 +12,9 @@ import javax.annotation.Nonnull;
 public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	
 	public BlockEnanReactorLaser(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setResistance(60.0F * 5 / 3);
 		setUnlocalizedName("warpdrive.energy.EnanReactorLaser");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityEnanReactorLaser.class, WarpDrive.PREFIX + registryName);
 	}
 

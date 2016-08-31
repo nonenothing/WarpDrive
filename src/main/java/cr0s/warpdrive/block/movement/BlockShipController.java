@@ -21,10 +21,8 @@ import javax.annotation.Nullable;
 public class BlockShipController extends BlockAbstractContainer {
 	
 	public BlockShipController(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.movement.ShipController");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityShipController.class, WarpDrive.PREFIX + registryName);
 	}
 

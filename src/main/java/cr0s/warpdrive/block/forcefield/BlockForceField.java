@@ -44,11 +44,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
 	public BlockForceField(final String registryName, final byte tier) {
-		super(tier, Material.GLASS);
+		super(registryName, tier, Material.GLASS);
 		setSoundType(SoundType.CLOTH);
 		setUnlocalizedName("warpdrive.forcefield.block" + tier);
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityForceField.class, WarpDrive.PREFIX + registryName);
 	}
 	
@@ -104,19 +102,20 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
-		if (blockAccess.isAirBlock(blockPos)) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+		BlockPos blockPosSide = blockPos.offset(facing);
+		if (blockAccess.isAirBlock(blockPosSide)) {
 			return true;
 		}
-		EnumFacing opposite = side.getOpposite();
-		IBlockState blockStateSide = blockAccess.getBlockState(blockPos);
+		EnumFacing opposite = facing.getOpposite();
+		IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
 		if ( blockStateSide.getBlock() instanceof BlockGlass 
 		  || blockStateSide.getBlock() instanceof BlockHullGlass
 		  || blockStateSide.getBlock() instanceof BlockForceField ) {
 			return blockState.getBlock().getMetaFromState(blockState)
 				!= blockStateSide.getBlock().getMetaFromState(blockStateSide);
 		}
-		return !blockAccess.isSideSolid(blockPos, opposite, false);
+		return !blockAccess.isSideSolid(blockPosSide, opposite, false);
 	}
 	
 	protected TileEntityForceFieldProjector getProjector(World world, @Nonnull BlockPos blockPos) {

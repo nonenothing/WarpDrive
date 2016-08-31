@@ -8,19 +8,16 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.UpgradeType;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
-public class ItemUpgrade extends Item {
+public class ItemUpgrade extends ItemAbstractBase {
 	private static ItemStack[] isCache = new ItemStack[UpgradeType.values().length];
 	
 	public ItemUpgrade(final String registryName) {
+		super(registryName);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.upgrade.Malformed");
-		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 	}
 	
 	private static boolean isValidDamage(int damage) {

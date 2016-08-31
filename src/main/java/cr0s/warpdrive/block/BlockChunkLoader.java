@@ -11,10 +11,8 @@ import javax.annotation.Nonnull;
 public class BlockChunkLoader extends BlockAbstractContainer {
 	
 	public BlockChunkLoader(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.machines.ChunkLoader");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, WarpDrive.PREFIX + registryName);
 	}
 	

@@ -1,6 +1,9 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.api.IItemBase;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -16,11 +19,10 @@ import net.minecraft.util.text.TextComponentTranslation;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ItemBlockAbstractBase extends ItemBlock {
+public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	public ItemBlockAbstractBase(Block block) {
 		super(block);
-		setRegistryName(block.getRegistryName());
 	}
 	
 	@Override
@@ -39,6 +41,12 @@ public class ItemBlockAbstractBase extends ItemBlock {
 		} else {
 			return new TextComponentString("");
 		}
+	}
+	
+	@Nonnull
+	@Override
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		return ClientProxy.getModelResourceLocation(itemStack);
 	}
 	
 	@Override

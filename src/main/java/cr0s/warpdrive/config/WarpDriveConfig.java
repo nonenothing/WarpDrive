@@ -339,6 +339,25 @@ public class WarpDriveConfig {
 		
 		// read configuration file
 		loadWarpDriveConfig(new File(configDirectory, WarpDrive.MODID + ".cfg"));
+		
+		// read mod dependencies
+		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
+		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
+		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
+		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
+		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
+		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
+		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
+		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
+		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
+		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
+		isGregTech5Loaded = false;
+		if (Loader.isModLoaded("gregtech")) {
+			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+		}
+		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
+		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 	}
 	
 	public static void loadWarpDriveConfig(File file) {
@@ -761,55 +780,35 @@ public class WarpDriveConfig {
 	public static void onFMLInitialization() {
 		CompatWarpDrive.register();
 		
-		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
 		if (isForgeMultipartLoaded) {
 			isForgeMultipartLoaded = CompatForgeMultipart.register();
 		}
-		
-		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
 		if (isIndustrialCraft2Loaded) {
 			loadIC2();
 			CompatIndustrialCraft2.register();
 		}
-		
-		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
 		if (isComputerCraftLoaded) {
 			loadCC();
 			CompatComputerCraft.register();
 		}
-		
-		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
-		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
-		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		if (isThermalExpansionLoaded) {
 			CompatThermalExpansion.register();
 		}
-		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		if (isAppliedEnergistics2Loaded) {
 			CompatAppliedEnergistics2.register();
 		}
-		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
 		if (isOpenComputersLoaded) {
 			CompatOpenComputers.register();
 		}
-		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
 		if (isArsMagica2Loaded) {
 			CompatArsMagica2.register();
 		}
-		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
 		if (isImmersiveEngineeringLoaded) {
 			CompatImmersiveEngineering.register();
 		}
-		isGregTech5Loaded = false;
-		if (Loader.isModLoaded("gregtech")) {
-			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
-		}
-		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
 		if (isEnderIOLoaded) {
 			CompatEnderIO.register();
 		}
-		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 		if (isAdvancedRepulsionSystemLoaded) {
 			CompatAdvancedRepulsionSystems.register();
 		}

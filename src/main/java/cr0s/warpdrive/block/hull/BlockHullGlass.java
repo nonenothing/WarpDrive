@@ -15,7 +15,6 @@ import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
@@ -31,8 +30,7 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.hull" + tier + ".glass.");
 		setRegistryName(registryName);
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlockHull(this));
+		WarpDrive.register(this, new ItemBlockHull(this));
 		
 		setLightLevel(10.0F / 15.0F);
 	}
@@ -63,17 +61,18 @@ public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
-		if (blockAccess.isAirBlock(blockPos)) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+		BlockPos blockPosSide = blockPos.offset(facing);
+		if (blockAccess.isAirBlock(blockPosSide)) {
 			return true;
 		}
-		EnumFacing direction = side.getOpposite();
-		IBlockState blockStateSide = blockAccess.getBlockState(blockPos);
+		EnumFacing opposite = facing.getOpposite();
+		IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
 		if (blockStateSide.getBlock() instanceof BlockGlass || blockStateSide.getBlock() instanceof BlockHullGlass) {
 			return blockState.getBlock().getMetaFromState(blockState)
 				!= blockStateSide.getBlock().getMetaFromState(blockStateSide);
 		}
-		return !blockAccess.isSideSolid(blockPos, direction, false);
+		return !blockAccess.isSideSolid(blockPosSide, opposite, false);
 	}
 	
 	@Override

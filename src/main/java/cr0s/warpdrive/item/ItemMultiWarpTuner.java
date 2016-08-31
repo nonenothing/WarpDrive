@@ -16,25 +16,21 @@ import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IVideoChannel;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
-public class ItemMultiWarpTuner extends Item {
+public class ItemMultiWarpTuner extends ItemAbstractBase {
 	static final private int MODE_VIDEO_CHANNEL = 0;
 	static final private int MODE_BEAM_FREQUENCY = 1;
 	static final private String TAG_VIDEO_CHANNEL = "videoChannel";
 	static final private String TAG_BEAM_FREQUENCY = "beamFrequency";
 	
-	public ItemMultiWarpTuner() {
-		super();
+	public ItemMultiWarpTuner(final String registryName) {
+		super(registryName);
 		setMaxDamage(0);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.tool.MultiWarpTuner");
-		setRegistryName(getUnlocalizedName());
 		setFull3D();
-		GameRegistry.register(this);
 	}
 	
 	@Override

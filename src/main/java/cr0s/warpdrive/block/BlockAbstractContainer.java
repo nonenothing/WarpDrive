@@ -1,9 +1,12 @@
 package cr0s.warpdrive.block;
 
-import net.minecraft.block.BlockFlowerPot;
+import cr0s.warpdrive.api.IBlockBase;
+import cr0s.warpdrive.client.ClientProxy;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Optional;
@@ -21,21 +24,46 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
-public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock {
-	protected boolean isRotating = false;
+public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock, IBlockBase {
 	
-	protected BlockAbstractContainer(Material material) {
+	protected BlockAbstractContainer(final String registryName, final Material material) {
 		super(material);
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setRegistryName(registryName);
+		WarpDrive.register(this);
+		
+		setDefaultState(blockState.getBaseState());
+	}
+		
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlock(this);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		Item item = Item.getItemFromBlock(this);
+		ClientProxy.modelInitialisation(item);
+	}
+	
+	@Nonnull
+	@Override
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.MODEL;
 	}
 	
 	@Override
@@ -50,40 +78,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack) {
 		super.onBlockPlacedBy(world, pos, state, entityLiving, itemStack);
-		if (isRotating) {
-			if (entityLiving != null) {
-				int metadata;
-				if (entityLiving.rotationPitch > 65) {
-					metadata = 1;
-				} else if (entityLiving.rotationPitch < -65) {
-					metadata = 0;
-				} else {
-					int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
-					switch (direction) {
-						case 0:
-							metadata = 2;
-							break;
-						case 1:
-							metadata = 5;
-							break;
-						case 2:
-							metadata = 3;
-							break;
-						case 3:
-							metadata = 4;
-							break;
-						default:
-							metadata = 2;
-							break;
-					}
-				}
-				world.setBlockState(pos, getStateFromMeta(metadata), 3);
-			}
-		}
 		
 		TileEntity tileEntity = world.getTileEntity(pos);
-		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbtTagCompound = (NBTTagCompound)itemStack.getTagCompound().copy();
+		if (tileEntity != null && itemStack.getTagCompound() != null) {
+			NBTTagCompound nbtTagCompound = itemStack.getTagCompound().copy();
 			nbtTagCompound.setInteger("x", pos.getX());
 			nbtTagCompound.setInteger("y", pos.getY());
 			nbtTagCompound.setInteger("z", pos.getZ());
@@ -94,12 +92,12 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public boolean removedByPlayer(IBlockState blockState, World world, BlockPos blockPos, EntityPlayer player, boolean willHarvest) {
+	public boolean removedByPlayer(@Nonnull IBlockState blockState, World world, @Nonnull BlockPos blockPos, @Nonnull EntityPlayer player, boolean willHarvest) {
 		return willHarvest || super.removedByPlayer(blockState, world, blockPos, player, false);
 	}
 	
 	@Override
-	public void dropBlockAsItemWithChance(World world, BlockPos blockPos, IBlockState blockState, float chance, int fortune) {
+	public void dropBlockAsItemWithChance(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState, float chance, int fortune) {
 		ItemStack itemStack = new ItemStack(this);
 		itemStack.setItemDamage(damageDropped(blockState));
 		TileEntity tileEntity = world.getTileEntity(blockPos);
@@ -125,12 +123,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			itemStack.setTagCompound(nbtTagCompound);
 		}
 		return itemStack;
-	}
-	
-	@Override
-	public boolean rotateBlock(World world, @Nonnull BlockPos blockPos, EnumFacing axis) {
-		world.setBlockState(blockPos, getStateFromMeta(axis.ordinal()), 3);
-		return true;
 	}
 	
 	// FIXME untested

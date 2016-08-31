@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.forcefield;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -22,15 +23,17 @@ import javax.annotation.Nullable;
 public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
 	public BlockForceFieldRelay(final String registryName, final byte tier) {
-		super(tier, Material.IRON);
-		isRotating = false;
+		super(registryName, tier, Material.IRON);
 		setUnlocalizedName("warpdrive.forcefield.relay" + tier);
-		setRegistryName(registryName);
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlockForceFieldRelay(this));
 		GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, WarpDrive.PREFIX + registryName);
 	}
-	
+
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockForceFieldRelay(this);
+	}
+
 	@Override
 	public int damageDropped(IBlockState blockState) {
 		return blockState.getBlock().getMetaFromState(blockState);

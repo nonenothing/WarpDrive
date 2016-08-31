@@ -97,4 +97,8 @@ public class CommonProxy {
 		}
 		return placeEvent.isCanceled();
 	}
+
+	public void onForgePreInitialisation() {
+		
+	}
 }

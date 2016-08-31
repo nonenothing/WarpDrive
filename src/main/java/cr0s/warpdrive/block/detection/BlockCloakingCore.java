@@ -24,10 +24,8 @@ import javax.annotation.Nullable;
 public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	public BlockCloakingCore(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.detection.CloakingCore");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityCloakingCore.class, WarpDrive.PREFIX + registryName);
 	}
 

@@ -8,22 +8,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ItemCrystalToken extends Item {	
+public class ItemCrystalToken extends ItemAbstractBase {	
 	private static ItemStack[] itemStackCache;
 	private static final int COUNT = 6; 
 	
 	public ItemCrystalToken(final String registryName) {
-		super();
+		super(registryName);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.tool.crystalToken");
-		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
 		
 		itemStackCache = new ItemStack[COUNT];
 	}

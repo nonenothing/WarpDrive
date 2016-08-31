@@ -41,8 +41,7 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 		setUnlocalizedName("warpdrive.hull" + tier + ".plain.");
 		setRegistryName(registryName);
 		setDefaultState(blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlockHull(this));
+		WarpDrive.register(this, new ItemBlockHull(this));
 	}
 	
 	@SuppressWarnings("deprecation")

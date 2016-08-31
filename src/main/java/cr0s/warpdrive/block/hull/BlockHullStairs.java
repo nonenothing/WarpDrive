@@ -26,8 +26,7 @@ public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.hull" + tier + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getName());
 		setRegistryName(registryName);
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlockHull(this));
+		WarpDrive.register(this, new ItemBlockHull(this));
 	}
 	
 	@SuppressWarnings("deprecation")

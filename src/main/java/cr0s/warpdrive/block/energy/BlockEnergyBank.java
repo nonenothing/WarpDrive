@@ -21,10 +21,8 @@ import javax.annotation.Nullable;
 public class BlockEnergyBank extends BlockAbstractContainer {
 	
 	public BlockEnergyBank(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.energy.EnergyBank");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityEnergyBank.class, WarpDrive.PREFIX + registryName);
 	}
 

@@ -21,10 +21,8 @@ import javax.annotation.Nullable;
 public class BlockRadar extends BlockAbstractContainer {
 	
 	public BlockRadar(final String registryName) {
-		super(Material.IRON);
+		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.detection.Radar");
-		setRegistryName(registryName);
-		GameRegistry.register(this);
 		GameRegistry.registerTileEntity(TileEntityRadar.class, WarpDrive.PREFIX + registryName);
 	}
 
