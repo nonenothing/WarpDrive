@@ -28,7 +28,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
-		return new ItemBlock(this);
+		return new ItemBlockAbstractBase(this);
 	}
 	
 	@SideOnly(Side.CLIENT)

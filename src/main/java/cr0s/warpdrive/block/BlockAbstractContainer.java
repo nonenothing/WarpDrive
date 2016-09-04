@@ -46,11 +46,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		
 		setDefaultState(blockState.getBaseState());
 	}
-		
+	
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
-		return new ItemBlock(this);
+		return new ItemBlockAbstractBase(this);
 	}
 	
 	@SideOnly(Side.CLIENT)

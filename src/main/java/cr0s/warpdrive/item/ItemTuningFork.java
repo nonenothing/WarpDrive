@@ -48,7 +48,7 @@ public class ItemTuningFork extends ItemAbstractBase {
 		int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
 		if (damage >= 0 && damage < 16) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "_" + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName());
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

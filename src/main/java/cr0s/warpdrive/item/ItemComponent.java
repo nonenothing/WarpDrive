@@ -67,7 +67,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirCanister {
 		int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
 		if (damage >= 0 && damage < EnumComponentType.length) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "_" + EnumComponentType.get(damage).getUnlocalizedName());
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumComponentType.get(damage).getUnlocalizedName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

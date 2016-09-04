@@ -1,12 +1,19 @@
 package cr0s.warpdrive.block.passive;
 
+import java.util.List;
 import java.util.Random;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.data.EnumGasColor;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -18,24 +25,64 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockGas extends BlockAbstractBase {
-
+	public static final PropertyEnum<EnumGasColor> COLOR = PropertyEnum.create("color", EnumGasColor.class);
+	
 	public BlockGas(final String registryName) {
 		super(registryName, Material.FIRE);
 		setHardness(0.0F);
 		setUnlocalizedName("warpdrive.passive.Gas");
+		
+		setDefaultState(getDefaultState().withProperty(COLOR, EnumGasColor.RED));
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, COLOR);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+				.withProperty(COLOR, EnumGasColor.get(metadata));
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(COLOR).ordinal();
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockGas(this);
+	}
+	
+	@Override
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
+		for (EnumGasColor enumGasColor : EnumGasColor.values()) {
+			list.add(new ItemStack(item, 1, enumGasColor.ordinal()));
+		}
+	}
+	
+	@Override
+	public int damageDropped(IBlockState blockState) {
+		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
 	@Override
 	public boolean isVisuallyOpaque() {
 		return false;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isOpaqueCube(IBlockState state) {
 		return false;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isFullyOpaque(IBlockState state) {
@@ -46,7 +93,7 @@ public class BlockGas extends BlockAbstractBase {
 	public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
 		return true;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
@@ -69,19 +116,6 @@ public class BlockGas extends BlockAbstractBase {
 		return false;
 	}
 	
-	// 0 "warpdrive:passive/gasBlockBlue"
-	// 1 "warpdrive:passive/gasBlockRed"
-	// 2 "warpdrive:passive/gasBlockGreen"
-	// 3 "warpdrive:passive/gasBlockYellow"
-	// 4 "warpdrive:passive/gasBlockDark"
-	// 5 "warpdrive:passive/gasBlockDarkness"
-	// 6 "warpdrive:passive/gasBlockWhite"
-	// 7 "warpdrive:passive/gasBlockMilk"
-	// 8 "warpdrive:passive/gasBlockOrange"
-	// 9 "warpdrive:passive/gasBlockSyren"
-	// 10 "warpdrive:passive/gasBlockGray"
-	// 11 "warpdrive:passive/gasBlockViolet"
-
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override

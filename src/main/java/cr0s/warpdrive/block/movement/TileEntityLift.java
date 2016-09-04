@@ -2,11 +2,11 @@ package cr0s.warpdrive.block.movement;
 
 import java.util.List;
 
+import cr0s.warpdrive.data.EnumLiftMode;
 import cr0s.warpdrive.data.SoundEvents;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,16 +25,12 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityLift extends TileEntityAbstractEnergy {
-	private static final int MODE_REDSTONE = -1;
-	private static final int MODE_INACTIVE = 0;
-	private static final int MODE_UP = 1;
-	private static final int MODE_DOWN = 2;
 	
 	private int firstUncoveredY;
-	private int mode = MODE_INACTIVE;
+	private EnumLiftMode mode = EnumLiftMode.INACTIVE;
 	private boolean isEnabled = false;
 	private boolean computerEnabled = true;
-	private int computerMode = MODE_REDSTONE;
+	private EnumLiftMode computerMode = EnumLiftMode.REDSTONE;
 	
 	private int tickCount = 0;
 	
@@ -62,11 +58,11 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			tickCount = 0;
 			
 			// Switching mode
-			if (  computerMode == MODE_DOWN
-			  || (computerMode == MODE_REDSTONE && worldObj.isBlockIndirectlyGettingPowered(pos) > 0)) {
-				mode = MODE_DOWN;
+			if (  computerMode == EnumLiftMode.DOWN
+			  || (computerMode == EnumLiftMode.REDSTONE && worldObj.isBlockIndirectlyGettingPowered(pos) > 0)) {
+				mode = EnumLiftMode.DOWN;
 			} else {
-				mode = MODE_UP;
+				mode = EnumLiftMode.UP;
 			}
 			
 			isEnabled = computerEnabled
@@ -74,17 +70,18 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				     && isPassableBlock(pos.getY() + 2)
 				     && isPassableBlock(pos.getY() - 1)
 				     && isPassableBlock(pos.getY() - 2);
-			
+
+			IBlockState blockState = worldObj.getBlockState(pos);
 			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
-				mode = MODE_INACTIVE;
-				if (getBlockMetadata() != 0) {
-					updateMetadata(0); // disabled
+				mode = EnumLiftMode.INACTIVE;
+				if (blockState.getValue(BlockLift.MODE) != EnumLiftMode.INACTIVE) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockLift.MODE, EnumLiftMode.INACTIVE));
 				}
 				return;
 			}
-			
-			if (getBlockMetadata() != mode) {
-				updateMetadata(mode); // current mode
+
+			if (blockState.getValue(BlockLift.MODE) != mode) {
+				worldObj.setBlockState(pos, blockState.withProperty(BlockLift.MODE, mode));
 			}
 			
 			// Launch a beam: search non-air blocks under lift
@@ -96,12 +93,12 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			}
 			
 			if (pos.getY() - firstUncoveredY >= 2) {
-				if (mode == MODE_UP) {
+				if (mode == EnumLiftMode.UP) {
 					PacketHandler.sendBeamPacket(worldObj,
 							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
 							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							0f, 1f, 0f, 40, 0, 100);
-				} else if (mode == MODE_DOWN) {
+				} else if (mode == EnumLiftMode.DOWN) {
 					PacketHandler.sendBeamPacket(worldObj,
 							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 0f,
@@ -118,7 +115,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 		IBlockState blockState = worldObj.getBlockState(blockPos);
 		return blockState.getBlock() == Blocks.AIR
 			|| worldObj.isAirBlock(blockPos)
-			|| blockState.getBlock().getCollisionBoundingBox(blockState, worldObj, blockPos) == null;
+			|| blockState.getCollisionBoundingBox(worldObj, blockPos) == null;
 	}
 	
 	private void liftEntity() {
@@ -132,7 +129,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 		zMax = pos.getZ() + 0.5 + CUBE_RADIUS;
 		
 		// Lift up
-		if (mode == MODE_UP) {
+		if (mode == EnumLiftMode.UP) {
 			AxisAlignedBB aabb = new AxisAlignedBB(xMin, firstUncoveredY, zMin, xMax, pos.getY(), zMax);
 			List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			for (Entity entity : list) {
@@ -148,17 +145,17 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 					consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 				}
 			}
-		} else if (mode == MODE_DOWN) {
+		} else if (mode == EnumLiftMode.DOWN) {
 			AxisAlignedBB aabb = new AxisAlignedBB(
 					xMin, Math.min(firstUncoveredY + 4.0D, pos.getY()), zMin,
 					xMax, pos.getY() + 2.0D, zMax);
-			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+			List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
-				for (Object o : list) {
-					if ( o != null
-					  && o instanceof EntityLivingBase
+				for (Entity entity : list) {
+					if ( entity != null
+					  && entity instanceof EntityLivingBase
 					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) o).setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
+						entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
 								new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 								new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
@@ -174,23 +171,31 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (tag.hasKey("mode")) {
-			mode = clamp(-1, 2, tag.getByte("mode"));
+			mode = EnumLiftMode.get(clamp(-1, 2, tag.getByte("mode")));
 		}
 		if (tag.hasKey("computerEnabled")) {
 			computerEnabled = tag.getBoolean("computerEnabled");
 		}
 		if (tag.hasKey("computerMode")) {
-			computerMode = clamp(-1, 2, tag.getByte("computerMode"));
+			byte byteValue = tag.getByte("computerMode");
+			computerMode = EnumLiftMode.get(clamp(0, 3, byteValue == -1 ? 3 : byteValue));
 		}
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag = super.writeToNBT(tag);
-		tag.setByte("mode", (byte)mode);
+		tag.setByte("mode", (byte)mode.ordinal());
 		tag.setBoolean("computerEnabled", computerEnabled);
-		tag.setByte("computerMode", (byte)computerMode);
+		tag.setByte("computerMode", (byte)computerMode.ordinal());
 		return tag;
+	}
+	
+	@Override
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+		nbtTagCompound.removeTag("mode");
+		return nbtTagCompound;
 	}
 	
 	@Override
@@ -227,26 +232,25 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	private Object[] mode(Object[] arguments) {
 		if (arguments.length == 1) {
 			if (arguments[0].toString().equals("up")) {
-				computerMode = MODE_UP;
+				computerMode = EnumLiftMode.UP;
 			} else if (arguments[0].toString().equals("down")) {
-				computerMode = MODE_DOWN;
+				computerMode = EnumLiftMode.DOWN;
 			} else {
-				computerMode = MODE_REDSTONE;
+				computerMode = EnumLiftMode.REDSTONE;
 			}
 			markDirty();
 		}
 		
 		switch (computerMode) {
-		case MODE_REDSTONE:
+		case REDSTONE:
 			return new Object[] { "redstone" };
-		case MODE_UP:
+		case UP:
 			return new Object[] { "up" };
-		case MODE_DOWN:
+		case DOWN:
 			return new Object[] { "down" };
 		default:
-			break;
+			return null;
 		}
-		return null;
 	}
 	
 	// ComputerCraft IPeripheral methods implementation

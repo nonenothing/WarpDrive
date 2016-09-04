@@ -7,6 +7,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.api.IItemBase;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -38,8 +39,8 @@ public class ClientProxy extends CommonProxy {
 		// IModelInitialisation(WarpDrive.blockLaserTreeFarm);
 		IModelInitialisation(WarpDrive.blockLift);
 		// IModelInitialisation(WarpDrive.blockShipScanner);
-		// IModelInitialisation(WarpDrive.blockCloakingCore);
-		// IModelInitialisation(WarpDrive.blockCloakingCoil);
+		IModelInitialisation(WarpDrive.blockCloakingCore);
+		IModelInitialisation(WarpDrive.blockCloakingCoil);
 		// IModelInitialisation(WarpDrive.blockTransporter);
 		// if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 		// 	IModelInitialisation(WarpDrive.blockIC2reactorLaserMonitor);
@@ -52,20 +53,20 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockIridium);
 		IModelInitialisation(WarpDrive.blockHighlyAdvancedMachine);
 		// IModelInitialisation(WarpDrive.blockTransportBeacon);
-		// IModelInitialisation(WarpDrive.blockChunkLoader);
-		// for (int index = 0; index < 3; index++) {
-		// 	IModelInitialisation(WarpDrive.blockForceFields[index]);
+		IModelInitialisation(WarpDrive.blockChunkLoader);
+		for (int index = 0; index < 3; index++) {
+			IModelInitialisation(WarpDrive.blockForceFields[index]);
 		// 	IModelInitialisation(WarpDrive.blockForceFieldProjectors[index]);
 		// 	IModelInitialisation(WarpDrive.blockForceFieldRelays[index]);
-		// }
+		}
 		
 		IModelInitialisation(WarpDrive.blockDecorative);
 		/*
 		for (int index = 0; index < 3; index++) {
 			IModelInitialisation(WarpDrive.blockHulls_plain[index]);
-			IModelInitialisation(WarpDrive.blockHulls_glass[index]);
+			// IModelInitialisation(WarpDrive.blockHulls_glass[index]);
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-				IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
+				// IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);
 			}
 		}/**/
@@ -80,8 +81,8 @@ public class ClientProxy extends CommonProxy {
 			IModelInitialisation(WarpDrive.itemUpgrade);
 		}
 		IModelInitialisation(WarpDrive.itemTuningRod);
-		// IModelInitialisation(WarpDrive.itemForceFieldShape);
-		// IModelInitialisation(WarpDrive.itemForceFieldUpgrade);
+		IModelInitialisation(WarpDrive.itemForceFieldShape);
+		IModelInitialisation(WarpDrive.itemForceFieldUpgrade);
 		IModelInitialisation(WarpDrive.itemHelmet);
 		IModelInitialisation(WarpDrive.itemAirCanisterFull);
 		
@@ -112,7 +113,7 @@ public class ClientProxy extends CommonProxy {
 		Item item = itemStack.getItem();
 		ResourceLocation resourceLocation = item.getRegistryName();
 		if (item.getHasSubtypes()) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "_" + itemStack.getItemDamage());
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + itemStack.getItemDamage());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}

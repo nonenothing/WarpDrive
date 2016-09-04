@@ -55,9 +55,16 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return worldObj.provider.getDimension() == 0;
 	}
 	
-	protected void updateMetadata(int metadata) {
+	protected void updateBlockState(final IBlockState blockState) {
+		if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
+			worldObj.setBlockState(pos, blockState, 2);
+		}
+	}
+	
+	@Deprecated
+	protected void updateMetadata(final int metadata) {
 		if (getBlockMetadata() != metadata) {
-			worldObj.setBlockState(pos, blockType.getStateFromMeta(metadata), 2);
+			worldObj.setBlockState(pos, getBlockType().getStateFromMeta(metadata), 2);
 		}
 	}
 	

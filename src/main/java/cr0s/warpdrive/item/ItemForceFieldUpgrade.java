@@ -3,16 +3,21 @@ package cr0s.warpdrive.item;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
+import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -48,7 +53,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
-			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).unlocalizedName;
+			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).getName();
 		}
 		return getUnlocalizedName();
 	}
@@ -60,6 +65,18 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 				subItems.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
 			}
 		}
+	}
+	
+	@Nonnull
+	@Override
+	@SideOnly(Side.CLIENT)
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		int damage = itemStack.getItemDamage();
+		ResourceLocation resourceLocation = getRegistryName();
+		if (damage >= 0 && damage < EnumComponentType.length) {
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldUpgrade.get(damage).getName());
+		}
+		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
 	
 	@Override

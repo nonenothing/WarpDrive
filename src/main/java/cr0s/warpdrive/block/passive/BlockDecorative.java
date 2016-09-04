@@ -25,7 +25,7 @@ public class BlockDecorative extends BlockAbstractBase {
 		super(registryName, Material.IRON);
 		setHardness(1.5f);
 		setUnlocalizedName("warpdrive.passive.Decorative.Plain");
-
+		
 		setDefaultState(getDefaultState().withProperty(TYPE, EnumDecorativeType.PLAIN));
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
 	}
