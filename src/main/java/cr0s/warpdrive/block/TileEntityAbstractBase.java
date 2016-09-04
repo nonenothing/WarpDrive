@@ -3,8 +3,12 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumRadarMode;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,6 +36,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import static com.sun.jmx.snmp.EnumRowStatus.active;
+
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector, ITickable {
 	private boolean isFirstTick = true;
 	
@@ -55,7 +61,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return worldObj.provider.getDimension() == 0;
 	}
 	
-	protected void updateBlockState(final IBlockState blockState) {
+	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, IProperty<T> property, V value) {
+		IBlockState blockState = blockState_in;
+		if (blockState == null) {
+			blockState = worldObj.getBlockState(pos);
+		}
+		blockState = blockState.withProperty(property, value);
 		if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
 			worldObj.setBlockState(pos, blockState, 2);
 		}

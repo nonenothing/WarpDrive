@@ -18,6 +18,18 @@
 					"side": "warpdrive:blocks/detection/cloaking_coil-side_active"
 				}
 			}
+		},
+		"outer": {
+			"false": {},
+			"true": {}
+		},
+		"facing": {
+			"north": {},
+			"south": {},
+			"west" : {},
+			"east" : {},
+			"up"   : {},
+			"down" : {}
 		}
 	}
 }

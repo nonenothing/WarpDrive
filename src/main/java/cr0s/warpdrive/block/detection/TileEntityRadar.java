@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.detection;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import cr0s.warpdrive.data.EnumRadarMode;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
@@ -58,7 +59,8 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 					if (WarpDriveConfig.LOGGING_RADAR) {
 						WarpDrive.logger.info(this + " Scan found " + results.size() + " results in " + scanningRadius + " radius...");
 					}
-					updateMetadata(1);
+					
+					updateBlockState(null, BlockRadar.MODE, EnumRadarMode.ACTIVE);
 					scanning_ticks = 0;
 				}
 			}
@@ -186,9 +188,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		scanningRadius = radius;
 		scanningDuration_ticks = calculateScanDuration(radius);
 		scanning_ticks = 0;
-		if (getBlockMetadata() != 2) {
-			updateMetadata(2);
-		}
+		updateBlockState(null, BlockRadar.MODE, EnumRadarMode.SCANNING);
 		if (WarpDriveConfig.LOGGING_RADAR) {
 			WarpDrive.logger.info(this + "Starting scan over radius " + scanningRadius + " for " + energyRequired + " EU, results expected in " + scanningDuration_ticks + " ticks");
 		}
@@ -220,7 +220,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	public void attach(IComputerAccess computer) {
 		super.attach(computer);
 		if (getBlockMetadata() == 0) {
-			updateMetadata(1);
+			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.ACTIVE);
 		}
 	}
 	
@@ -228,7 +228,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Optional.Method(modid = "ComputerCraft")
 	public void detach(IComputerAccess computer) {
 		super.detach(computer);
-		// updateMetadata(0);
+		if (connectedComputers.isEmpty()) {
+			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.INACTIVE);
+		}
 	}
 	
 	@Override
@@ -251,7 +253,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 
 			case "getResultsCount":
 				if (results != null) {
-					return new Integer[]{results.size()};
+					return new Integer[] { results.size() };
 				}
 				return new Integer[]{-1};
 

@@ -165,7 +165,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void setCoilsState(final boolean enabled) {
-		updateMetadata(enabled ? 1 : 0);
+		updateBlockState(null, BlockCloakingCore.ACTIVE, enabled);
 		
 		for (EnumFacing direction : EnumFacing.VALUES) {
 			setCoilState(innerCoilsDistance, direction, enabled);
@@ -177,9 +177,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		BlockPos blockPos = pos.offset(facing);
 		if (worldObj.getBlockState(blockPos).getBlock().isAssociatedBlock(WarpDrive.blockCloakingCoil)) {
 			if (distance == innerCoilsDistance) {
-				worldObj.setBlockState(blockPos, WarpDrive.blockCloakingCoil.getStateFromMeta(((enabled) ? 9 : 1)), 2);
+				BlockCloakingCoil.setBlockState(worldObj, blockPos, enabled, false, EnumFacing.UP);
 			} else {
-				worldObj.setBlockState(blockPos, WarpDrive.blockCloakingCoil.getStateFromMeta(((enabled) ? 10 : 2) + facing.ordinal()), 2);
+				BlockCloakingCoil.setBlockState(worldObj, blockPos, enabled, true, null);
 			}
 		}
 	}
@@ -315,7 +315,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			// check validity of inner coil
 			BlockPos blockPos = new BlockPos(pos.offset(direction, innerCoilsDistance));
 			if (worldObj.getBlockState(blockPos).getBlock().isAssociatedBlock(WarpDrive.blockCloakingCoil)) {
-				worldObj.setBlockState(blockPos, WarpDrive.blockCloakingCoil.getStateFromMeta(1), 2);
+				BlockCloakingCoil.setBlockState(worldObj, blockPos, true, false, EnumFacing.UP);
 			} else {
 				return false;
 			}
@@ -326,7 +326,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 				blockPos = blockPos.offset(direction);
 				
 				if (worldObj.getBlockState(blockPos).getBlock().isAssociatedBlock(WarpDrive.blockCloakingCoil)) {
-					worldObj.setBlockState(blockPos, WarpDrive.blockCloakingCoil.getStateFromMeta(2 + direction.ordinal()), 2);
+					BlockCloakingCoil.setBlockState(worldObj, blockPos, true, true, direction);
 					newCoilDistance = distance;
 					break;
 				}
@@ -337,7 +337,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			if ( newCoilDistance != oldCoilDistance && oldCoilDistance > 0) {
 				BlockPos blockPosOld = pos.offset(direction, oldCoilDistance);
 				if (worldObj.getBlockState(blockPosOld).getBlock().isAssociatedBlock(WarpDrive.blockCloakingCoil)) {
-					worldObj.setBlockState(blockPosOld, WarpDrive.blockCloakingCoil.getStateFromMeta(0), 2);
+					BlockCloakingCoil.setBlockState(worldObj, blockPos, false, false, EnumFacing.UP);
 				}
 			}
 			
