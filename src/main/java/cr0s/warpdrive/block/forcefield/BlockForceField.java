@@ -1,9 +1,16 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.block.passive.ItemBlockDecorative;
+import cr0s.warpdrive.data.*;
 import net.minecraft.block.SoundType;
+import net.minecraft.block.material.MapColor;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -14,10 +21,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.ForceFieldSetup;
-import cr0s.warpdrive.data.EnumPermissionNode;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
@@ -42,12 +45,47 @@ import java.util.Random;
 
 public class BlockForceField extends BlockAbstractForceField implements IDamageReceiver {
 	private static final float BOUNDING_TOLERANCE = 0.05F;
+	public static final PropertyInteger FREQUENCY = PropertyInteger.create("frequency", 0, 15);
 	
 	public BlockForceField(final String registryName, final byte tier) {
 		super(registryName, tier, Material.GLASS);
 		setSoundType(SoundType.CLOTH);
 		setUnlocalizedName("warpdrive.forcefield.block" + tier);
+		
+		setDefaultState(getDefaultState().withProperty(FREQUENCY, 0));
 		GameRegistry.registerTileEntity(TileEntityForceField.class, WarpDrive.PREFIX + registryName);
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, FREQUENCY);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public MapColor getMapColor(IBlockState state) {
+		// @TODO: color from force field frequency
+		return super.getMapColor(state);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int meta) {
+		return this.getDefaultState().withProperty(FREQUENCY, meta);
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState state) {
+		return state.getValue(FREQUENCY);
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockForceField(this);
 	}
 	
 	@Nonnull
@@ -86,12 +124,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List list) {
-		/* Hide in NEI
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+		// @TODO: Hide in NEI
 		for (int i = 0; i < 16; ++i) {
 			list.add(new ItemStack(item, 1, i));
 		}
-		/**/
 	}
 	
 	@Nonnull
@@ -230,8 +267,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		if (tier > 1) {
 			TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, blockPos);
 			IBlockState blockState = world.getBlockState(blockPos);
-			int metadata = blockState.getBlock().getMetaFromState(blockState);
-			world.setBlockState(blockPos, WarpDrive.blockForceFields[tier - 2].getStateFromMeta((metadata + 1) % 16), 2);
+			int frequency = blockState.getValue(FREQUENCY);
+			world.setBlockState(blockPos, WarpDrive.blockForceFields[tier - 2].getDefaultState().withProperty(FREQUENCY, (frequency + 1) % 16), 2);
 			if (tileEntityForceFieldProjector != null) {
 				TileEntity tileEntity = world.getTileEntity(blockPos);
 				if (tileEntity instanceof TileEntityForceField) {

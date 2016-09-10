@@ -24,11 +24,12 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
-		ResourceLocation resourceLocation = getRegistryName();
-		if (damage >= 0 && damage < EnumDecorativeType.length) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumDecorativeType.get(damage).getUnlocalizedName());
+		if (damage < 0 || damage > EnumDecorativeType.length) {
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
-		return new ModelResourceLocation(resourceLocation, "inventory");
+		ResourceLocation resourceLocation = getRegistryName();
+		String variant = String.format("type=%s", EnumDecorativeType.get( itemStack.getItemDamage() ).getName());
+		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	
 	@Nonnull

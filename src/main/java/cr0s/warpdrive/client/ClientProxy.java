@@ -61,10 +61,10 @@ public class ClientProxy extends CommonProxy {
 		}
 		
 		IModelInitialisation(WarpDrive.blockDecorative);
-		/*
+		
 		for (int index = 0; index < 3; index++) {
 			IModelInitialisation(WarpDrive.blockHulls_plain[index]);
-			// IModelInitialisation(WarpDrive.blockHulls_glass[index]);
+			IModelInitialisation(WarpDrive.blockHulls_glass[index]);
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 				// IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);

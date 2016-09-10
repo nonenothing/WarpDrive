@@ -4,6 +4,7 @@ import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.data.EnumGasColor;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,10 +25,11 @@ public class ItemBlockGas extends ItemBlockAbstractBase {
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
-		ResourceLocation resourceLocation = getRegistryName();
-		if (damage >= 0 && damage < EnumGasColor.length) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumGasColor.get(damage).getUnlocalizedName());
+		if (damage < 0 || damage > EnumGasColor.length) {
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
-		return new ModelResourceLocation(resourceLocation, "inventory");
+		ResourceLocation resourceLocation = getRegistryName();
+		String variant = String.format("color=%s", EnumGasColor.get( itemStack.getItemDamage() ).getName());
+		return new ModelResourceLocation(resourceLocation, variant);
 	}
 }
