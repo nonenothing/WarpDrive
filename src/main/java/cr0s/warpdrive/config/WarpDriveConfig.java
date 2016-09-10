@@ -435,7 +435,11 @@ public class WarpDriveConfig {
 		{
 			config.addCustomCategoryComment("planets",
 					  "Planets are other dimensions connected through the Space dimension. Default is overworld with 100k radius.\n"
-					+ "Each planet orbit is square shaped and defined as a list of 7 integers (all measured in blocks).");
+					+ "Each planet orbit is square shaped and defined as a list of 7 integers (all measured in blocks):\n" 
+					+ "dimensionId = dimension ID (0, 1, -1 or something like -13)\n"
+					+ "dimensionCenterX, dimensionCenterZ = center of the transfer area inside the dimension itself\n"
+					+ "radiusX, radiusZ = world borders of the dimension\n"
+					+ "spaceCenterX, spaceCenterZ = coordinates of the transfer area in Space dimension\n");
 			
 			ConfigCategory categoryPlanets = config.getCategory("planets");
 			String[] planetsName = categoryPlanets.getValues().keySet().toArray(new String[0]);
