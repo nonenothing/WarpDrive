@@ -66,10 +66,10 @@ public class ClientProxy extends CommonProxy {
 			IModelInitialisation(WarpDrive.blockHulls_plain[index]);
 			IModelInitialisation(WarpDrive.blockHulls_glass[index]);
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-				// IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
+				IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);
 			}
-		}/**/
+		}
 		
 		// items
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {

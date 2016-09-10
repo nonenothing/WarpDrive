@@ -8,6 +8,7 @@ import net.minecraft.block.BlockStairs;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,7 +27,7 @@ public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.hull" + tier + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getName());
 		setRegistryName(registryName);
-		WarpDrive.register(this, new ItemBlockHull(this));
+		WarpDrive.register(this, new ItemBlock(this));
 	}
 	
 	@SuppressWarnings("deprecation")
