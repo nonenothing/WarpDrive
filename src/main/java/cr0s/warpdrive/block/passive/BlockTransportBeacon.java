@@ -26,13 +26,12 @@ public class BlockTransportBeacon extends BlockTorch {
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
-	{
+	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
 		EnumFacing enumfacing = stateIn.getValue(FACING);
 		double d0 = (double)pos.getX() + 0.5D;
 		double d1 = (double)pos.getY() + 0.7D;
 		double d2 = (double)pos.getZ() + 0.5D;
-
+		
 		if (enumfacing.getAxis().isHorizontal()) {
 			EnumFacing opposite = enumfacing.getOpposite();
 			worldIn.spawnParticle(EnumParticleTypes.PORTAL, d0 + 0.27D * opposite.getFrontOffsetX(), d1 + 0.22D, d2 + 0.27D * opposite.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);

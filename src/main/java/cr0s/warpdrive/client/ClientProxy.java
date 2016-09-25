@@ -52,7 +52,7 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockGas);
 		IModelInitialisation(WarpDrive.blockIridium);
 		IModelInitialisation(WarpDrive.blockHighlyAdvancedMachine);
-		// IModelInitialisation(WarpDrive.blockTransportBeacon);
+		IModelInitialisation(WarpDrive.blockTransportBeacon);
 		IModelInitialisation(WarpDrive.blockChunkLoader);
 		for (int index = 0; index < 3; index++) {
 			IModelInitialisation(WarpDrive.blockForceFields[index]);
