@@ -2,7 +2,10 @@ package cr0s.warpdrive.block.collection;
 
 import java.util.Random;
 
+import cr0s.warpdrive.data.EnumLaserTreeFarmMode;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,22 +22,35 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockLaserTreeFarm extends BlockAbstractContainer {
-	public final static int ICON_IDLE = 0;
-	public final static int ICON_FARMING_LOW_POWER = 1;
-	public final static int ICON_FARMING_POWERED = 2;
-	public final static int ICON_SCANNING_LOW_POWER = 3;
-	public final static int ICON_SCANNING_POWERED = 4;
-	public final static int ICON_PLANTING_LOW_POWER = 5;
-	public final static int ICON_PLANTING_POWERED = 6;
-	private final static int ICON_BOTTOM = 7;
-	private final static int ICON_TOP = 8;
+	public static final PropertyEnum<EnumLaserTreeFarmMode> MODE = PropertyEnum.create("mode", EnumLaserTreeFarmMode.class);
 	
 	public BlockLaserTreeFarm(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.collection.LaserTreeFarm");
 		GameRegistry.registerTileEntity(TileEntityLaserTreeFarm.class, WarpDrive.PREFIX + registryName);
-	}
 
+		setDefaultState(getDefaultState().withProperty(MODE, EnumLaserTreeFarmMode.INACTIVE));
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, MODE);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+				.withProperty(MODE, EnumLaserTreeFarmMode.get(metadata));
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(MODE).ordinal();
+	}
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {

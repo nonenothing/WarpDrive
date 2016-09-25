@@ -2,7 +2,10 @@ package cr0s.warpdrive.block.collection;
 
 import java.util.Random;
 
+import cr0s.warpdrive.data.EnumMiningLaserMode;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,20 +22,35 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockMiningLaser extends BlockAbstractContainer {
-	public final static int ICON_IDLE = 0;
-	public final static int ICON_MINING_LOW_POWER = 1;
-	public final static int ICON_MINING_POWERED = 2;
-	public final static int ICON_SCANNING_LOW_POWER = 3;
-	public final static int ICON_SCANNING_POWERED = 4;
-	private final static int ICON_BOTTOM = 5;
-	private final static int ICON_TOP = 6;
+	public static final PropertyEnum<EnumMiningLaserMode> MODE = PropertyEnum.create("mode", EnumMiningLaserMode.class);
 	
 	public BlockMiningLaser(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.collection.MiningLaser");
 		GameRegistry.registerTileEntity(TileEntityMiningLaser.class, WarpDrive.PREFIX + registryName);
-	}
 
+		setDefaultState(getDefaultState().withProperty(MODE, EnumMiningLaserMode.INACTIVE));
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, MODE);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+				.withProperty(MODE, EnumMiningLaserMode.get(metadata));
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(MODE).ordinal();
+	}
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
