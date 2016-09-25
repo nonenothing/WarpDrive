@@ -39,7 +39,6 @@ import javax.annotation.Nullable;
 
 public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 	public static final PropertyBool ACTIVE = PropertyBool.create("active");
-	public static final PropertyDirection FACING = PropertyDirection.create("facing");
 	
 	public BlockAirGenerator(final String registryName) {
 		super(registryName, Material.IRON);

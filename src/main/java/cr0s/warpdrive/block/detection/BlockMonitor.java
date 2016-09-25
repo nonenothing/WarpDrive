@@ -28,7 +28,13 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 		setUnlocalizedName("warpdrive.detection.Monitor");
 		GameRegistry.registerTileEntity(TileEntityMonitor.class, WarpDrive.PREFIX + registryName);
 	}
-	
+
+	@Nonnull
+	@Override
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+		return new TileEntityMonitor();
+	}
+
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		// Monitor is only reacting client side
@@ -60,11 +66,5 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 		}
 		
 		return false;
-	}
-
-	@Nonnull
-	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
-		return new TileEntityMonitor();
 	}
 }

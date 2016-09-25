@@ -18,9 +18,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockLaser extends BlockAbstractContainer {
-	
-	private static final int ICON_SIDE = 0;
-	
+		
 	public BlockLaser(final String registryName) {
 		super(registryName, Material.IRON);
 		setHardness(50.0F);

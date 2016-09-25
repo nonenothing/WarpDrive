@@ -96,7 +96,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 	public TileEntityShipCore() {
 		super();
 		peripheralName = "warpdriveShipCore";
-		// methodsArray = Arrays.asList("", "");;
+		// methodsArray = Arrays.asList("", "");
 	}
 	
 	@Override

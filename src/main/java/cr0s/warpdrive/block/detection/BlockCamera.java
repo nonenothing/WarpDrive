@@ -20,14 +20,12 @@ import javax.annotation.Nullable;
 
 public class BlockCamera extends BlockAbstractContainer {
 	
-	private static final int ICON_SIDE = 0;
-	
 	public BlockCamera(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.detection.Camera");
 		GameRegistry.registerTileEntity(TileEntityCamera.class, WarpDrive.PREFIX + registryName);
 	}
-
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {

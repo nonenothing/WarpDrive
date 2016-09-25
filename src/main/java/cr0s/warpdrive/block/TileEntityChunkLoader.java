@@ -16,13 +16,13 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 	
 	private boolean canLoad = false;
 	private boolean shouldLoad = false;
-
+	
 	private boolean initialised = false;
 	private ChunkPos myChunk;
-
+	
 	int negDX, posDX, negDZ, posDZ;
 	int area = 1;
-
+	
 	public TileEntityChunkLoader() {
 		super();
 		IC2_sinkTier = 2;
@@ -39,30 +39,30 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading implem
 				"upgrades"
 		});
 	}
-
+	
 	@Override
 	public int getMaxEnergyStored() {
 		return WarpDriveConfig.CL_MAX_ENERGY;
 	}
-
+	
 	@Override
 	public boolean shouldChunkLoad()
 	{
 		return shouldLoad && canLoad;
 	}
-
+	
 	@Override
 	public void update()
 	{
 		super.update();
-
+		
 		if(!initialised)
 		{
 			initialised = true;
 			myChunk = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
 			changedDistance();
 		}
-
+		
 		if(shouldLoad)
 		{
 			canLoad = consumeEnergy(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, false);
