@@ -26,22 +26,22 @@ public class ClientProxy extends CommonProxy {
 		// blocks
 		// IModelInitialisation(WarpDrive.blockShipCore);
 		// IModelInitialisation(WarpDrive.blockShipController);
-		// IModelInitialisation(WarpDrive.blockRadar);
+		IModelInitialisation(WarpDrive.blockRadar);
 		IModelInitialisation(WarpDrive.blockWarpIsolation);
 		IModelInitialisation(WarpDrive.blockAirGenerator);
-		// IModelInitialisation(WarpDrive.blockLaser);
-		// IModelInitialisation(WarpDrive.blockLaserCamera);
-		// IModelInitialisation(WarpDrive.blockWeaponController);
-		// IModelInitialisation(WarpDrive.blockCamera);
-		// IModelInitialisation(WarpDrive.blockMonitor);
-		// IModelInitialisation(WarpDrive.blockLaserMedium);
+		IModelInitialisation(WarpDrive.blockLaser);
+		IModelInitialisation(WarpDrive.blockLaserCamera);
+		IModelInitialisation(WarpDrive.blockWeaponController);
+		IModelInitialisation(WarpDrive.blockCamera);
+		IModelInitialisation(WarpDrive.blockMonitor);
+		IModelInitialisation(WarpDrive.blockLaserMedium);
 		// IModelInitialisation(WarpDrive.blockMiningLaser);
 		// IModelInitialisation(WarpDrive.blockLaserTreeFarm);
 		IModelInitialisation(WarpDrive.blockLift);
-		// IModelInitialisation(WarpDrive.blockShipScanner);
+		IModelInitialisation(WarpDrive.blockShipScanner);
 		IModelInitialisation(WarpDrive.blockCloakingCore);
 		IModelInitialisation(WarpDrive.blockCloakingCoil);
-		// IModelInitialisation(WarpDrive.blockTransporter);
+		IModelInitialisation(WarpDrive.blockTransporter);
 		// if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 		// 	IModelInitialisation(WarpDrive.blockIC2reactorLaserMonitor);
 		// }

@@ -3,6 +3,8 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,13 +19,35 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockTransporter extends BlockAbstractContainer {
+	public static final PropertyBool ACTIVE = PropertyBool.create("active");
 	
 	public BlockTransporter(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.movement.Transporter");
 		GameRegistry.registerTileEntity(TileEntityTransporter.class, WarpDrive.PREFIX + registryName);
+		
+		setDefaultState(getDefaultState().withProperty(ACTIVE, false));
 	}
-
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, ACTIVE);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+				.withProperty(ACTIVE, metadata != 0);
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(ACTIVE) ? 1 : 0;
+	}
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {

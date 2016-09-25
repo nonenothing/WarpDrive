@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -24,9 +25,10 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 		if (ticks > 20) {
 			ticks = 0;
 			
-			int metadata = Math.max(0, Math.min(7, Math.round((getEnergyStored() * 8) / getMaxEnergyStored())));
-			if (getBlockMetadata() != metadata) {
-				updateMetadata(metadata);
+			int level = Math.max(0, Math.min(7, Math.round((getEnergyStored() * 8) / getMaxEnergyStored())));
+			IBlockState blockState = worldObj.getBlockState(pos);
+			if (blockState.getValue(BlockLaserMedium.LEVEL) != level) {
+				updateBlockState(blockState, BlockLaserMedium.LEVEL, level);
 			}
 		}
 	}
