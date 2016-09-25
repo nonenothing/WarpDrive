@@ -214,6 +214,8 @@ public class EntityFXBeam extends Particle
         double var17b = 0.15D * size * endModifier;
         GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
         
+        // close parent ongoing
+        Tessellator tessellator = Tessellator.getInstance();
         for (int t = 0; t < 3; t++)
         {
             double var29 = length * size * var9;
@@ -223,13 +225,12 @@ public class EntityFXBeam extends Particle
             double var37 = length * size * var9 + var35;
             GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
             
-            Tessellator tessellator = Tessellator.getInstance();
             // @TODO MC1.10: tessellator.setBrightness(200);
             GlStateManager.color(particleRed, particleGreen, particleBlue, op);
             vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
             vertexBuffer.pos(var44b, var29, 0.0D).tex(var33, var37).endVertex();
             vertexBuffer.pos(var44, 0.0D, 0.0D).tex(var33, var35).endVertex();
-            vertexBuffer.pos(var17, 0.0D, 0.0D).tex(var31, var35).endVertex();;
+            vertexBuffer.pos(var17, 0.0D, 0.0D).tex(var31, var35).endVertex();
             vertexBuffer.pos(var17b, var29, 0.0D).tex(var31, var37).endVertex();
             tessellator.draw();
         }
@@ -241,5 +242,10 @@ public class EntityFXBeam extends Particle
         GL11.glPopMatrix();
         prevSize = size;
         Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/particle/particles.png"));
+    }
+
+    @Override
+    public int getFXLayer() {
+        return 3;
     }
 }
