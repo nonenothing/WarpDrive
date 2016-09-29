@@ -10,6 +10,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.UpgradeType;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	private boolean canLoad = false;
@@ -40,18 +41,23 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Energy), 2);
 		setUpgradeMaxCount(ItemUpgrade.getItemStack(UpgradeType.Power), 2);
 	}
-
+	
 	@Override
 	public int energy_getMaxStorage() {
 		return WarpDriveConfig.CL_MAX_ENERGY;
 	}
-
+	
+	@Override
+	public boolean energy_canInput(ForgeDirection from) {
+		return true;
+	}
+	
 	@Override
 	public boolean shouldChunkLoad()
 	{
 		return shouldLoad && canLoad;
 	}
-
+	
 	@Override
 	public void updateEntity()
 	{
