@@ -85,6 +85,7 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 		map.put("SOUTH", "WEST");
 		map.put("WEST", "NORTH");
 		map.put("NORTH", "EAST");
+		map.put("UNKNOWN", "UNKNOWN");
 		rotSideNames = Collections.unmodifiableMap(map);
 		map = new HashMap<>();
 		map.put("2", "5");
