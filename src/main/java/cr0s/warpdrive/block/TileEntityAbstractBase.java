@@ -26,6 +26,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,6 +87,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			IBlockState blockState = worldObj.getBlockState(pos);
 			worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
 		}
+	}
+	
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState blockStateOld, @Nonnull IBlockState blockStateNew) {
+		return false;
 	}
 	
 	// Inventory management methods
