@@ -1351,7 +1351,24 @@ public class Recipes {
 				's', "warpDecorative",
 				'c', "dyeBlue"));
 		
-		// Armor
+		// Lamp
+		// @TODO: add 16 color variations
+		GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp, false, " g ", "glg", " h ",
+				'g', "blockGlass",
+                'l', Blocks.REDSTONE_LAMP,
+				'h', "blockHull1_plain"));
+		
+        // Plasma cutter
+        GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp, false, "tcr", "mgb", "i  ",
+                't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
+                'c', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
+                'r', Items.BLAZE_ROD,
+                'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
+                'g', Items.GOLD_INGOT,
+                'b', Blocks.STONE_BUTTON,
+                'i', Items.IRON_INGOT));
+        
+        // Armor
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemHelmet), false, "iii", "iwi", "gcg",
 				'i', Items.IRON_INGOT,
 				'w', Blocks.WOOL,

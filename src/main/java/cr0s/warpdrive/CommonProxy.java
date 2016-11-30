@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameType;
+import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.EntityCamera;
@@ -21,6 +22,8 @@ import net.minecraftforge.event.world.BlockEvent;
 
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
+
+import static cr0s.warpdrive.WarpDrive.MODID;
 
 public class CommonProxy {
 	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
@@ -99,6 +102,6 @@ public class CommonProxy {
 	}
 
 	public void onForgePreInitialisation() {
-		
+		OBJLoader.INSTANCE.addDomain(MODID);
 	}
 }
