@@ -1,9 +1,25 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumForceFieldState;
+import cr0s.warpdrive.render.TileEntityForceFieldProjectorRenderer;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.common.property.Properties;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,15 +44,108 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockForceFieldProjector extends BlockAbstractForceField {
+	public static final PropertyBool IS_DOUBLE_SIDED = PropertyBool.create("is_double_sided");
+	public static final IUnlistedProperty<EnumForceFieldShape> SHAPE = Properties.toUnlisted(PropertyEnum.create("shape", EnumForceFieldShape.class));
+	public static final IUnlistedProperty<EnumForceFieldState> STATE = Properties.toUnlisted(PropertyEnum.create("state", EnumForceFieldState.class));
 	
 	public BlockForceFieldProjector(final String registryName, final byte tier) {
-		super(tier, Material.IRON);
-		isRotating = true;
+		super(registryName, tier, Material.IRON);
 		setUnlocalizedName("warpdrive.forcefield.projector" + tier);
-		setRegistryName(registryName);
-		GameRegistry.register(this);
-		GameRegistry.register(new ItemBlockForceFieldProjector(this));
+
+		IExtendedBlockState extendedBlockState = (IExtendedBlockState) getDefaultState();
+		setDefaultState(extendedBlockState
+				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
+				.withProperty(IS_DOUBLE_SIDED, false)
+				/*
+				.withProperty(SHAPE, EnumForceFieldShape.NONE)
+				.withProperty(STATE, EnumForceFieldState.NOT_CONNECTED)/* !!! not needed? */
+				);
 		GameRegistry.registerTileEntity(TileEntityForceFieldProjector.class, WarpDrive.PREFIX + registryName);
+		// ModelLoader.setCustomMeshDefinition();
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new ExtendedBlockState(this,
+				new IProperty[] { BlockProperties.FACING, IS_DOUBLE_SIDED },
+				new IUnlistedProperty[] { SHAPE, STATE });
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7))
+				.withProperty(IS_DOUBLE_SIDED, metadata > 7);
+	}
+	
+	@Nonnull
+	@Override
+	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess world, BlockPos blockPos) {
+		TileEntity tileEntity = world.getTileEntity(blockPos);
+		EnumForceFieldShape forceFieldShape = EnumForceFieldShape.NONE;
+		EnumForceFieldState forceFieldState = EnumForceFieldState.NOT_CONNECTED;
+		if (tileEntity instanceof TileEntityForceFieldProjector) {
+			TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
+			forceFieldShape = tileEntityForceFieldProjector.getShape();
+			if (tileEntityForceFieldProjector.isConnected) {
+				if (tileEntityForceFieldProjector.isPowered) {
+					if (tileEntityForceFieldProjector.isOn()) {
+						forceFieldState = EnumForceFieldState.CONNECTED_OFFLINE;
+					} else {
+						forceFieldState = EnumForceFieldState.CONNECTED_POWERED;
+					}
+				} else {
+					forceFieldState = EnumForceFieldState.CONNECTED_NOT_POWERED;
+				}
+			}
+		}
+		
+		return ((IExtendedBlockState) blockState)
+				.withProperty(SHAPE, forceFieldShape)
+				.withProperty(STATE, forceFieldState);
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(BlockProperties.FACING).getIndex()
+			+ (blockState.getValue(IS_DOUBLE_SIDED) ? 8 : 0);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		Item item = Item.getItemFromBlock(this);
+		ClientProxy.modelInitialisation(item);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@SideOnly(Side.CLIENT)
+	@Override
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+		return true;
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isBlockNormalCube(IBlockState blockState) {
+		return false;
+	}
+	
+	@Nonnull
+	@SuppressWarnings("deprecation")
+	@Override
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase entityLiving) {
+		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
+		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockForceFieldProjector(this);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -48,16 +157,14 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@Override
 	public int damageDropped(IBlockState state) {
-		// TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(blockPos);
-		// return tileEntityForceFieldProjector.isDoubleSided ? 1 : 0;
-		return 0;	// @TODO MC1.10 drop double sided projector
+		return state.getValue(IS_DOUBLE_SIDED) ? 1 : 0;
 	}
-
+	
 	@Override
 	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState blockState, EntityLivingBase entityLiving, ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(blockPos);
-		if (!itemStack.hasTagCompound()) {
+		if (!itemStack.hasTagCompound() && tileEntityForceFieldProjector != null) {
 			tileEntityForceFieldProjector.isDoubleSided = (itemStack.getItemDamage() == 1);
 		}
 	}
@@ -73,7 +180,6 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			return false;
 		}
 		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
-		int metadata = blockState.getBlock().getMetaFromState(blockState);
 		
 		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.NONE;
 		if (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemForceFieldUpgrade) {
@@ -85,7 +191,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// using an upgrade item or no shape defined means dismount upgrade, otherwise dismount shape
 			if ( (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemForceFieldUpgrade)
 			  || (tileEntityForceFieldProjector.getShape() == EnumForceFieldShape.NONE)
-			/*  || (side != (metadata & 7) && (!tileEntityForceFieldProjector.isDoubleSided || EnumFacing.OPPOSITES[side] != (metadata & 7))) /* @TODO MC1.10 projector double sided */ ) {
+			  || (side != blockState.getValue(BlockProperties.FACING) && (!tileEntityForceFieldProjector.isDoubleSided || side.getOpposite() != blockState.getValue(BlockProperties.FACING))) ) {
 				// find a valid upgrade to dismount
 				if (!tileEntityForceFieldProjector.hasUpgrade(enumForceFieldUpgrade)) {
 					enumForceFieldUpgrade = (EnumForceFieldUpgrade)tileEntityForceFieldProjector.getFirstUpgradeOfType(EnumForceFieldUpgrade.class, EnumForceFieldUpgrade.NONE);
@@ -112,7 +218,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 			} else {// default to dismount shape
 				if (tileEntityForceFieldProjector.getShape() != EnumForceFieldShape.NONE) {
-					if (side == EnumFacing.UP) { /* side == (metadata & 7) || (tileEntityForceFieldProjector.isDoubleSided && EnumFacing.OPPOSITES[side] == (metadata & 7))) { /* @TODO MC1.10 projector double sided */
+					if (side == blockState.getValue(BlockProperties.FACING) || (tileEntityForceFieldProjector.isDoubleSided && side.getOpposite() == blockState.getValue(BlockProperties.FACING))) {
 						if (!entityPlayer.capabilities.isCreativeMode) {
 							// dismount the shape item(s)
 							ItemStack itemStackDrop = ItemForceFieldShape.getItemStackNoCache(tileEntityForceFieldProjector.getShape(), tileEntityForceFieldProjector.isDoubleSided ? 2 : 1);
@@ -129,7 +235,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 						WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.forcefield.shape.result.wrongSide"));
 						return true;
 					}
-					/* @TODO MC1.10 projector double sided */
+					
 				} else {
 					// no shape to dismount
 					WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.forcefield.shape.result.noShapeToDismount"));
@@ -142,7 +248,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			return true;
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldShape) {// no sneaking and shape in hand => mounting a shape
-			if (side == EnumFacing.UP) { /* side == (metadata & 7) || (((TileEntityForceFieldProjector) tileEntity).isDoubleSided && EnumFacing.OPPOSITES[side] == (metadata & 7))) { /* @TODO MC1.10 projector double sided */
+			if (side == blockState.getValue(BlockProperties.FACING) || (tileEntityForceFieldProjector.isDoubleSided && side.getOpposite() == blockState.getValue(BlockProperties.FACING))) {
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// validate quantity
 					if (itemStackHeld.stackSize < (tileEntityForceFieldProjector.isDoubleSided ? 2 : 1)) {

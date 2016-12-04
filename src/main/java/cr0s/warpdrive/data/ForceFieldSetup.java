@@ -107,7 +107,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		if (isValidCamouflage(blockStateCamouflage)) {
 			return blockStateCamouflage;
 		}
-		return null;
+		return Blocks.AIR.getDefaultState();
 	}
 	
 	public int getCamouflageColorMultiplier() {

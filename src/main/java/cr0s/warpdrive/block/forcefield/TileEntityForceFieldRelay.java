@@ -39,7 +39,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	
 	private ITextComponent getUpgradeStatus() {
 		EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
-		ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
+		ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.getName());
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
 			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.none",
 				strDisplayName);
