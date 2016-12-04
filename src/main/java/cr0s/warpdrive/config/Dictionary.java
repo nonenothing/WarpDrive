@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
+import cr0s.warpdrive.block.hull.BlockHullStairs;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.GameData;
 import cr0s.warpdrive.WarpDrive;
@@ -484,11 +486,21 @@ public class Dictionary {
 				if (hardness != -2.0F) {
 					if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
 						WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + resourceLocation + "' " + block + " (" + hardness + ")");
-					} else if (hardness > WarpDriveConfig.HULL_HARDNESS[0] && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || BLOCKS_ANCHOR.contains(block))) {
+					} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
+							  && !( block instanceof BlockHullPlain
+							     || block instanceof BlockHullGlass
+							     || block instanceof BlockHullStairs
+							     || block instanceof BlockForceFieldProjector
+							     || BLOCKS_ANCHOR.contains(block))) {
 						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + resourceLocation + "' " + block + " (" + hardness + ")");
 					}
 				}
-				if (blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0] && !((block instanceof BlockHullPlain) || (block instanceof BlockHullGlass) || BLOCKS_ANCHOR.contains(block))) {
+				if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
+				  && !( block instanceof BlockHullPlain
+				     || block instanceof BlockHullGlass
+				     || block instanceof BlockHullStairs
+				     || block instanceof BlockForceFieldProjector
+				     || BLOCKS_ANCHOR.contains(block))) {
 					block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
 					WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + resourceLocation + "' " + block + " (" + hardness + ")");
 					if (adjustResistance) {// TODO: not implemented
