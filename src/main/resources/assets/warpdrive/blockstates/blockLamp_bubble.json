@@ -1,10 +1,7 @@
 {
 	"forge_marker": 1,
 	"defaults": {
-		"model": "warpdrive:decoration/lamp.obj",
-		"textures": {
-			"#lamp"  : "warpdrive:blocks/decoration/lamp"
-		},
+		"model": "warpdrive:decoration/lamp_bubble.obj",
 		"transform": "forge:default-block"
 	},
 	"variants": {

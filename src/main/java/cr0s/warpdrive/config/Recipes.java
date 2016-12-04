@@ -1353,13 +1353,21 @@ public class Recipes {
 		
 		// Lamp
 		// @TODO: add 16 color variations
-		GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp, false, " g ", "glg", " h ",
+		GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp_bubble, false, " g ", "glg", "h  ",
 				'g', "blockGlass",
                 'l', Blocks.REDSTONE_LAMP,
 				'h', "blockHull1_plain"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp_flat, false, " g ", "glg", " h ",
+				'g', "blockGlass",
+				'l', Blocks.REDSTONE_LAMP,
+				'h', "blockHull1_plain"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp_long, false, " g ", "glg", "  h",
+				'g', "blockGlass",
+				'l', Blocks.REDSTONE_LAMP,
+				'h', "blockHull1_plain"));
 		
         // Plasma cutter
-        GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp, false, "tcr", "mgb", "i  ",
+        GameRegistry.addRecipe(new ShapedOreRecipe(WarpDrive.blockLamp_bubble, false, "tcr", "mgb", "i  ",
                 't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
                 'c', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
                 'r', Items.BLAZE_ROD,

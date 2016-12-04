@@ -51,7 +51,9 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockAir);
 		IModelInitialisation(WarpDrive.blockGas);
 		IModelInitialisation(WarpDrive.blockIridium);
-		IModelInitialisation(WarpDrive.blockLamp);
+		IModelInitialisation(WarpDrive.blockLamp_bubble);
+		IModelInitialisation(WarpDrive.blockLamp_flat);
+		IModelInitialisation(WarpDrive.blockLamp_long);
 		IModelInitialisation(WarpDrive.blockHighlyAdvancedMachine);
 		IModelInitialisation(WarpDrive.blockTransportBeacon);
 		IModelInitialisation(WarpDrive.blockChunkLoader);

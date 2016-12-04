@@ -1,6 +1,6 @@
-# Blender v2.76 (sub 0) OBJ File: 'lamp.blend' by Rashintawak for WarpDrive mod
+# Blender v2.76 (sub 0) OBJ File: 'lamp_flat.blend' by Rashintawak for WarpDrive mod
 # All rights reserved
-mtllib lamp.mtl
+mtllib lamp_flat.mtl
 o Cylinder
 v 0.500000 0.160401 0.940000
 v 0.500000 0.000401 1.000000
@@ -74,7 +74,7 @@ vt 0.447227 0.245675
 vt 0.345386 0.248527
 vt 0.333692 0.820521
 vt 0.197395 0.899212
-usemtl lamp
+usemtl txt_lamp_flat
 s off
 f 13/1 2/2 4/3 14/4
 f 14/1 4/2 6/3 15/4

@@ -3,10 +3,10 @@ package cr0s.warpdrive.block.passive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -27,23 +27,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-public class BlockLamp extends BlockAbstractBase {
-	public static final PropertyDirection FACING = PropertyDirection.create("facing");
+public class BlockAbstractLamp extends BlockAbstractBase {
 	
-	protected static final AxisAlignedBB AABB_DOWN  = new AxisAlignedBB(0.00D, 0.84D, 0.00D, 1.00D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_UP    = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 0.16D, 1.00D);
-	protected static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.00D, 0.00D, 0.84D, 1.00D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 1.00D, 0.16D);
-	protected static final AxisAlignedBB AABB_WEST  = new AxisAlignedBB(0.84D, 0.00D, 0.00D, 1.00D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 0.16D, 1.00D, 1.00D);
-	
-	public BlockLamp(final String registryName) {
+	BlockAbstractLamp(final String registryName, final String unlocalizedName) {
 		super(registryName, Material.ROCK);
 		setHardness(WarpDriveConfig.HULL_HARDNESS[0]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0] * 5 / 3);
 		setSoundType(SoundType.METAL);
-		setUnlocalizedName("warpdrive.passive.lamp");
-		setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		setUnlocalizedName(unlocalizedName);
+		setDefaultState(blockState.getBaseState().withProperty(BlockProperties.FACING, EnumFacing.NORTH));
 		
 		setLightLevel(14.0F / 15.0F);
 	}
@@ -52,7 +44,7 @@ public class BlockLamp extends BlockAbstractBase {
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new ExtendedBlockState(this,
-				new IProperty[] { FACING },
+				new IProperty[] { BlockProperties.FACING },
 				new IUnlistedProperty[] {  });
 	}
 	
@@ -61,7 +53,7 @@ public class BlockLamp extends BlockAbstractBase {
 	@Override
 	public IBlockState getStateFromMeta(int metadata) {
 		return getDefaultState()
-				.withProperty(FACING, EnumFacing.getFront(metadata & 7));
+				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
 	}
 	
 	@Nonnull
@@ -72,7 +64,7 @@ public class BlockLamp extends BlockAbstractBase {
 	
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
-		return blockState.getValue(FACING).getIndex();
+		return blockState.getValue(BlockProperties.FACING).getIndex();
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -110,37 +102,16 @@ public class BlockLamp extends BlockAbstractBase {
 	}
 		
 	@Nonnull
+	@SuppressWarnings("deprecation")
 	@Override
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase entityLiving) {
-		EnumFacing enumFacing = getFacingFromEntity(pos, entityLiving);
-		return this.getDefaultState().withProperty(FACING, enumFacing);
+		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
+		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
 	}
-	
-	public static EnumFacing getFacingFromEntity(BlockPos clickedBlock, EntityLivingBase entity) {
-		return EnumFacing.getFacingFromVector(
-				(float) (entity.posX - clickedBlock.getX()),
-				(float) (entity.posY - clickedBlock.getY()),
-				(float) (entity.posZ - clickedBlock.getZ()));
-	}
-	
+		
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
-	}
-	
-	@Nonnull
-	@SuppressWarnings("deprecation")
-	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		switch (state.getValue(FACING)) {
-			case DOWN : return AABB_DOWN ;
-			case UP   : return AABB_UP   ;
-			case NORTH: return AABB_NORTH;
-			case SOUTH: return AABB_SOUTH;
-			case WEST : return AABB_WEST ;
-			case EAST : return AABB_EAST ;
-			default   : return AABB_UP;
-		}
 	}
 	
 	@Nullable
@@ -153,15 +124,14 @@ public class BlockLamp extends BlockAbstractBase {
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot)
-	{
-		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+	public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot) {
+		return state.withProperty(BlockProperties.FACING, rot.rotate(state.getValue(BlockProperties.FACING)));
 	}
 
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
 	public IBlockState withMirror(@Nonnull IBlockState state, Mirror mirrorIn) {
-		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
+		return state.withRotation(mirrorIn.toRotation(state.getValue(BlockProperties.FACING)));
 	}
 }
