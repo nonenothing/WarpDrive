@@ -1,4 +1,4 @@
-package cr0s.warpdrive.block.passive;
+package cr0s.warpdrive.block.breathing;
 
 import java.util.Random;
 

@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.passive.BlockDecorative;
+import cr0s.warpdrive.block.decoration.BlockDecorative;
 import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemForceFieldShape;

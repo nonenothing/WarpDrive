@@ -1,4 +1,4 @@
-package cr0s.warpdrive.block.passive;
+package cr0s.warpdrive.block.decoration;
 
 import java.util.List;
 import java.util.Random;

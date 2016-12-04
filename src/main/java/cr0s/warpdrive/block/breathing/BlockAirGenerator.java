@@ -1,7 +1,9 @@
-package cr0s.warpdrive.block;
+package cr0s.warpdrive.block.breathing;
 
 import java.util.Random;
 
+import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
 import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;

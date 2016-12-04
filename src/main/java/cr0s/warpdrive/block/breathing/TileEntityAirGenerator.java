@@ -1,5 +1,6 @@
-package cr0s.warpdrive.block;
+package cr0s.warpdrive.block.breathing;
 
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
