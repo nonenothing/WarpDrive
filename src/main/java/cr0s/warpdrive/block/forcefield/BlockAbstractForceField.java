@@ -19,7 +19,7 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
@@ -27,6 +27,7 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 		return EnumPushReaction.BLOCK;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean canSilkHarvest() {
 		return false;

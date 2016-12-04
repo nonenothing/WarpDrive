@@ -1,7 +1,9 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cr0s.warpdrive.block.passive.ItemBlockDecorative;
-import cr0s.warpdrive.data.*;
+import cr0s.warpdrive.data.EnumPermissionNode;
+import cr0s.warpdrive.data.ForceFieldSetup;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.properties.PropertyInteger;
@@ -9,7 +11,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
@@ -281,6 +282,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 	}
 	
+	/* @TODO MC1.10 explosion effect redesign
 	private double log_explosionX;
 	private double log_explosionY = -1;
 	private double log_explosionZ;
@@ -289,7 +291,6 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public float getExplosionResistance(Entity exploder) {
 		return super.getExplosionResistance(exploder);
 	}
-	/* @TODO MC1.10 explosion effect redesign
 	@Override
 	public float getExplosionResistance(Entity entity, World world, BlockPos blockPos, double explosionX, double explosionY, double explosionZ) {
 		boolean enableFirstHit = (log_explosionX != explosionX || log_explosionY != explosionY || log_explosionZ != explosionZ); 
