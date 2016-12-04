@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -32,8 +33,8 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		// Air generator works only in space & hyperspace
 		if (worldObj.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID && worldObj.provider.getDimension() != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
 			IBlockState blockState = worldObj.getBlockState(pos);
-			if (blockState.getValue(BlockAirGenerator.ACTIVE)) {
-				worldObj.setBlockState(pos, blockState.withProperty(BlockAirGenerator.ACTIVE, false)); // set disabled texture
+			if (blockState.getValue(BlockProperties.ACTIVE)) {
+				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 			}
 			return;
 		}
@@ -42,12 +43,12 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		if (cooldownTicks > WarpDriveConfig.AIRGEN_AIR_GENERATION_TICKS) {
 			IBlockState blockState = worldObj.getBlockState(pos);
 			if (consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_NEWAIRBLOCK, true)) {
-				if (!blockState.getValue(BlockAirGenerator.ACTIVE)) {
-					worldObj.setBlockState(pos, blockState.withProperty(BlockAirGenerator.ACTIVE, true)); // set enabled texture
+				if (!blockState.getValue(BlockProperties.ACTIVE)) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, true)); // set enabled texture
 				}
 			} else {
-				if (blockState.getValue(BlockAirGenerator.ACTIVE)) {
-					worldObj.setBlockState(pos, blockState.withProperty(BlockAirGenerator.ACTIVE, false)); // set disabled texture
+				if (blockState.getValue(BlockProperties.ACTIVE)) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 				}
 			}
 			releaseAir(pos.add( 1,  0,  0));

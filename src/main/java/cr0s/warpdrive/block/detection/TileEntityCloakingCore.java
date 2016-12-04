@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import java.util.Arrays;
 
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.SoundEvents;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
@@ -165,7 +166,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	private void setCoilsState(final boolean enabled) {
-		updateBlockState(null, BlockCloakingCore.ACTIVE, enabled);
+		updateBlockState(null, BlockProperties.ACTIVE, enabled);
 		
 		for (EnumFacing direction : EnumFacing.VALUES) {
 			setCoilState(innerCoilsDistance, direction, enabled);

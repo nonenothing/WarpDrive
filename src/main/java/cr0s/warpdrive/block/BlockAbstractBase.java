@@ -6,8 +6,11 @@ import cr0s.warpdrive.client.ClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -36,5 +39,12 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	public void modelInitialisation() {
 		Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
+	}
+	
+	public static EnumFacing getFacingFromEntity(BlockPos clickedBlock, EntityLivingBase entity) {
+		return EnumFacing.getFacingFromVector(
+		(float) (entity.posX - clickedBlock.getX()),
+		(float) (entity.posY - clickedBlock.getY()),
+		(float) (entity.posZ - clickedBlock.getZ()));
 	}
 }

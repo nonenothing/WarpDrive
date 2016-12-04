@@ -2,8 +2,8 @@ package cr0s.warpdrive.block.detection;
 
 import java.util.Random;
 
+import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,20 +23,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockCloakingCore extends BlockAbstractContainer {
-	public static final PropertyBool ACTIVE = PropertyBool.create("active");
 	
 	public BlockCloakingCore(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.detection.CloakingCore");
 		GameRegistry.registerTileEntity(TileEntityCloakingCore.class, WarpDrive.PREFIX + registryName);
 		
-		setDefaultState(getDefaultState().withProperty(ACTIVE, false));
+		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false));
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ACTIVE);
+		return new BlockStateContainer(this, BlockProperties.ACTIVE);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -44,12 +43,12 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	@Override
 	public IBlockState getStateFromMeta(int metadata) {
 		return getDefaultState()
-				.withProperty(ACTIVE, metadata != 0);
+				.withProperty(BlockProperties.ACTIVE, metadata != 0);
 	}
 	
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
-		return blockState.getValue(ACTIVE) ? 1 : 0;
+		return blockState.getValue(BlockProperties.ACTIVE) ? 1 : 0;
 	}
 	
 	@Nonnull

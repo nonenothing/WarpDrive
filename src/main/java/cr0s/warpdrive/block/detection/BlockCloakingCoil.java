@@ -3,9 +3,9 @@ package cr0s.warpdrive.block.detection;
 import java.util.Random;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -15,22 +15,21 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public class BlockCloakingCoil extends BlockAbstractBase {
-	public static final PropertyBool ACTIVE = PropertyBool.create("active");
+	
 	public static final PropertyBool OUTER = PropertyBool.create("outer");
-	public static final PropertyDirection FACING = PropertyDirection.create("facing");
 	
 	public BlockCloakingCoil(final String registryName) {
 		super(registryName, Material.IRON);
 		setHardness(3.5F);
 		setUnlocalizedName("warpdrive.detection.CloakingCoil");
 		
-		setDefaultState(getDefaultState().withProperty(ACTIVE, false).withProperty(OUTER, false).withProperty(FACING, EnumFacing.UP));
+		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false).withProperty(OUTER, false).withProperty(BlockProperties.FACING, EnumFacing.UP));
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, ACTIVE, OUTER, FACING);
+		return new BlockStateContainer(this, BlockProperties.ACTIVE, OUTER, BlockProperties.FACING);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -40,27 +39,27 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		boolean isActive = (metadata & 7) != 0;
 		boolean isOuter = (metadata & 7) > 1;
 		return getDefaultState()
-				.withProperty(ACTIVE, isActive)
+				.withProperty(BlockProperties.ACTIVE, isActive)
 				.withProperty(OUTER, isOuter)
-				.withProperty(FACING, isOuter ? EnumFacing.getFront(metadata & 7 - 1) : EnumFacing.UP);
+				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.getFront(metadata & 7 - 1) : EnumFacing.UP);
 	}
 	
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
-		if (!blockState.getValue(ACTIVE)) {
+		if (!blockState.getValue(BlockProperties.ACTIVE)) {
 			return 0;
 		}
 		if (!blockState.getValue(OUTER)) {
 			return 1;
 		}
-		return 2 + blockState.getValue(FACING).ordinal();
+		return 2 + blockState.getValue(BlockProperties.FACING).ordinal();
 	}
 	
 	public static void setBlockState(@Nonnull World world, @Nonnull final BlockPos blockPos, final boolean isActive, final boolean isOuter, final EnumFacing enumFacing) {
 		IBlockState blockStateActual = world.getBlockState(blockPos);
-		IBlockState blockStateNew = blockStateActual.withProperty(ACTIVE, isActive).withProperty(OUTER, isOuter);
+		IBlockState blockStateNew = blockStateActual.withProperty(BlockProperties.ACTIVE, isActive).withProperty(OUTER, isOuter);
 		if (enumFacing != null) {
-			blockStateNew = blockStateNew.withProperty(FACING, enumFacing);
+			blockStateNew = blockStateNew.withProperty(BlockProperties.FACING, enumFacing);
 		}
 		if (blockStateActual.getBlock().getMetaFromState(blockStateActual) != blockStateActual.getBlock().getMetaFromState(blockStateNew)) {
 			world.setBlockState(blockPos, blockStateNew);
