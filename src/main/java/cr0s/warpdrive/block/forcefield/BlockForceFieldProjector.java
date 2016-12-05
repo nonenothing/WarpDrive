@@ -15,6 +15,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
@@ -51,7 +52,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	public BlockForceFieldProjector(final String registryName, final byte tier) {
 		super(registryName, tier, Material.IRON);
 		setUnlocalizedName("warpdrive.forcefield.projector" + tier);
-
+		
 		IExtendedBlockState extendedBlockState = (IExtendedBlockState) getDefaultState();
 		setDefaultState(extendedBlockState
 				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
@@ -119,6 +120,20 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	public void modelInitialisation() {
 		Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
+		/*
+		// To make sure that our ISBM model is chosen for all states we use this custom state mapper:
+		StateMapperBase ignoreState = new StateMapperBase() {
+			@Nonnull
+			@Override
+			protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState iBlockState) {
+				return ExampleBakedModel.BAKED_MODEL;
+			}
+		};
+		ModelLoader.setCustomStateMapper(this, ignoreState);
+		/**/
+		
+		// Bind our TESR to our tile entity
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForceFieldProjector.class, new TileEntityForceFieldProjectorRenderer());
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -127,7 +142,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
 		return true;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isBlockNormalCube(IBlockState blockState) {

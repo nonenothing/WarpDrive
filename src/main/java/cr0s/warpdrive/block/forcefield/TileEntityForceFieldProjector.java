@@ -72,6 +72,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private ForceFieldSetup legacy_forceFieldSetup;
 	private boolean legacy_isOn = true;     // we assume it's on so we don't consume startup energy on chunk loading
 	private double consumptionLeftOver = 0.0D;
+	public EnumFacing enumFacing = EnumFacing.UP;
+	public float rotation_deg = 0.0F;
+	public float rotationSpeed_degPerTick = 2.0F;
 	
 	// carry over speed to next tick, useful for slow interactions
 	private float carryScanSpeed;
@@ -115,6 +118,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		setupTicks = worldObj.rand.nextInt(PROJECTOR_SETUP_TICKS);
 		updateTicks = worldObj.rand.nextInt(PROJECTOR_PROJECTION_UPDATE_TICKS);
 		guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
+		enumFacing = worldObj.getBlockState(pos).getValue(BlockProperties.FACING);
 	}
 	
 	@Override
@@ -122,6 +126,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		super.update();
 		
 		if (worldObj.isRemote) {
+			rotation_deg += rotationSpeed_degPerTick;
 			return;
 		}
 		
@@ -842,7 +847,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	private ITextComponent getShapeStatus() {
 		EnumForceFieldShape enumForceFieldShape = getShape();
-		ITextComponent displayName = new TextComponentTranslation("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.unlocalizedName);
+		ITextComponent displayName = new TextComponentTranslation("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.getName());
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
 			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.none", 
 				displayName);
