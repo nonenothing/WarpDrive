@@ -89,7 +89,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	@Override
 	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState blockStateOld, @Nonnull IBlockState blockStateNew) {
-		return false;
+		return blockStateOld.getBlock() != blockStateNew.getBlock();
 	}
 	
 	// Inventory management methods
