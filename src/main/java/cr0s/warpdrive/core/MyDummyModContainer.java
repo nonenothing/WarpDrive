@@ -25,7 +25,7 @@ public class MyDummyModContainer extends DummyModContainer {
 		meta.authorList = Arrays.asList("LemADEC", "cr0s");
 		meta.description = "";
 		meta.url = "";
-		meta.updateUrl = "";
+		meta.updateJSON = "";
 		meta.screenshots = new String[0];
 		meta.logoFile = "";
 	}
