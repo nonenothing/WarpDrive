@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -35,8 +36,8 @@ public class PacketHandler {
 		
 		// Entity packets for 'uncloaking' entities
 		try {
-			EntityTrackerEntry_getPacketForThisEntity = Class.forName("net.minecraft.entity.EntityTrackerEntry").getDeclaredMethod("func_151260_c"); 
-			EntityTrackerEntry_getPacketForThisEntity.setAccessible(true);
+			EntityTrackerEntry_getPacketForThisEntity = ReflectionHelper.findMethod(
+				EntityTrackerEntry.class, null, new String[] { "createSpawnPacket", "func_151260_c" } );
 		} catch (Exception exception) {
 			throw new RuntimeException(exception);
 		}
