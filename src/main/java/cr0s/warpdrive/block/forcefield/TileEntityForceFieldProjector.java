@@ -67,7 +67,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private int guideTicks;
 	private double damagesEnergyCost = 0.0D;
 	private final HashSet<UUID> setInteractedEntities = new HashSet<>();
-	protected boolean isPowered = true;
+	private boolean isPowered = true;
 	private ForceFieldSetup cache_forceFieldSetup;
 	private ForceFieldSetup legacy_forceFieldSetup;
 	private boolean legacy_isOn = true;     // we assume it's on so we don't consume startup energy on chunk loading
@@ -119,6 +119,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		updateTicks = worldObj.rand.nextInt(PROJECTOR_PROJECTION_UPDATE_TICKS);
 		guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 		enumFacing = worldObj.getBlockState(pos).getValue(BlockProperties.FACING);
+		rotation_deg = worldObj.rand.nextFloat() * 360.0F;
 	}
 	
 	@Override
@@ -126,6 +127,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		super.update();
 		
 		if (worldObj.isRemote) {
+			rotationSpeed_degPerTick = 0.98F * rotationSpeed_degPerTick
+			                         + 0.02F * getState().getRotationSpeed_degPerTick();
 			rotation_deg += rotationSpeed_degPerTick;
 			return;
 		}
@@ -175,6 +178,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					WarpDrive.logger.info(this + " starting up...");
 				}
 				legacy_isOn = true;
+				markDirty();
 			}
 			cooldownTicks = 0;
 			
@@ -216,6 +220,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					WarpDrive.logger.info(this + " shutting down...");
 				}
 				legacy_isOn = false;
+				markDirty();
 				cooldownTicks = PROJECTOR_COOLDOWN_TICKS;
 				guideTicks = 0;
 			}
@@ -668,7 +673,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return;
 		}
 		
-		legacy_isOn = false;
+		if (legacy_isOn) {
+			legacy_isOn = false;
+			markDirty();
+		}
 		if (!vForceFields.isEmpty()) {
 			for (Iterator<VectorI> iterator = vForceFields.iterator(); iterator.hasNext();) {
 				VectorI vector = iterator.next();
@@ -811,6 +819,22 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
+	public EnumForceFieldState getState() {
+		EnumForceFieldState forceFieldState = EnumForceFieldState.NOT_CONNECTED;
+		if (isConnected && isValid()) {
+			if (isPowered) {
+				if (isOn()) {
+					forceFieldState = EnumForceFieldState.CONNECTED_POWERED;
+				} else {
+					forceFieldState = EnumForceFieldState.CONNECTED_OFFLINE;
+				}
+			} else {
+				forceFieldState = EnumForceFieldState.CONNECTED_NOT_POWERED;
+			}
+		}
+		return forceFieldState;
+	}
+	
 	public Vector3 getTranslation() {
 		if (hasUpgrade(EnumForceFieldUpgrade.TRANSLATION)) {
 			return v3Translation;
@@ -939,17 +963,19 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		writeToNBT(tagCompound);
+		SPacketUpdateTileEntity packetUpdateTileEntity = super.getUpdatePacket();
+		NBTTagCompound tagCompound = packetUpdateTileEntity.getNbtCompound();
 		tagCompound.setBoolean("isPowered", isPowered);
+		tagCompound.setBoolean("isOn", legacy_isOn);
 		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		super.onDataPacket(networkManager, packet);
 		NBTTagCompound tagCompound = packet.getNbtCompound();
-		readFromNBT(tagCompound);
 		isPowered = tagCompound.getBoolean("isPowered");
+		legacy_isOn = tagCompound.getBoolean("isOn");
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {

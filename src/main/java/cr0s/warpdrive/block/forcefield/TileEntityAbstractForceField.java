@@ -61,7 +61,11 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		}
 		
 		// Frequency is not set
+		boolean legacy_isConnected = isConnected; 
 		isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
+		if (legacy_isConnected != isConnected) {
+			markDirty();
+		}
 	}
 	
 	@Override
@@ -123,7 +127,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		super.readFromNBT(tag);
 		tier = tag.getByte("tier");
 		setBeamFrequency(tag.getInteger("beamFrequency"));
-		isEnabled = tag.getBoolean("isEnabled");
+		isEnabled = !tag.hasKey("isEnabled") || tag.getBoolean("isEnabled"); 
 	}
 	
 	@Override

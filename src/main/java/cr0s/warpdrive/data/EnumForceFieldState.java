@@ -6,12 +6,13 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumForceFieldState implements IStringSerializable {
-	NOT_CONNECTED           ("not_connected"),
-	CONNECTED_NOT_POWERED   ("connected_not_powered"),
-	CONNECTED_OFFLINE       ("connected_offline"),
-	CONNECTED_POWERED       ("connected_powered");
+	NOT_CONNECTED           ("not_connected"        ,  0.1F ),
+	CONNECTED_NOT_POWERED   ("connected_not_powered",  0.5F ),
+	CONNECTED_OFFLINE       ("connected_offline"    ,  2.5F ),
+	CONNECTED_POWERED       ("connected_powered"    , 15.0F );
 	
 	private final String name;
+	private final float rotationSpeed_degPerTick;
 	
 	// cached values
 	public static final int length;
@@ -24,14 +25,19 @@ public enum EnumForceFieldState implements IStringSerializable {
 		}
 	}
 	
-	EnumForceFieldState(String name) {
+	EnumForceFieldState(final String name, final float rotationSpeed_degPerTick) {
 		this.name = name;
+		this.rotationSpeed_degPerTick = rotationSpeed_degPerTick;
 	}
 	
 	@Nonnull
 	@Override
 	public String getName() {
 		return name;
+	}
+	
+	public float getRotationSpeed_degPerTick() {
+		return rotationSpeed_degPerTick;
 	}
 	
 	public static EnumForceFieldState get(final int damage) {

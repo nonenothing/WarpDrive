@@ -12,10 +12,10 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
@@ -45,9 +45,17 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class BlockForceFieldProjector extends BlockAbstractForceField {
+
 	public static final PropertyBool IS_DOUBLE_SIDED = PropertyBool.create("is_double_sided");
 	public static final IUnlistedProperty<EnumForceFieldShape> SHAPE = Properties.toUnlisted(PropertyEnum.create("shape", EnumForceFieldShape.class));
 	public static final IUnlistedProperty<EnumForceFieldState> STATE = Properties.toUnlisted(PropertyEnum.create("state", EnumForceFieldState.class));
+	
+	private static final AxisAlignedBB AABB_DOWN  = new AxisAlignedBB(0.00D, 0.27D, 0.00D, 1.00D, 0.73D, 1.00D);
+	private static final AxisAlignedBB AABB_UP    = new AxisAlignedBB(0.00D, 0.27D, 0.00D, 1.00D, 0.73D, 1.00D);
+	private static final AxisAlignedBB AABB_NORTH = new AxisAlignedBB(0.00D, 0.00D, 0.27D, 1.00D, 1.00D, 0.73D);
+	private static final AxisAlignedBB AABB_SOUTH = new AxisAlignedBB(0.00D, 0.00D, 0.27D, 1.00D, 1.00D, 0.73D);
+	private static final AxisAlignedBB AABB_WEST  = new AxisAlignedBB(0.27D, 0.00D, 0.00D, 0.73D, 1.00D, 1.00D);
+	private static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.27D, 0.00D, 0.00D, 0.73D, 1.00D, 1.00D);
 	
 	public BlockForceFieldProjector(final String registryName, final byte tier) {
 		super(registryName, tier, Material.IRON);
@@ -91,17 +99,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
 			TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
 			forceFieldShape = tileEntityForceFieldProjector.getShape();
-			if (tileEntityForceFieldProjector.isConnected) {
-				if (tileEntityForceFieldProjector.isPowered) {
-					if (tileEntityForceFieldProjector.isOn()) {
-						forceFieldState = EnumForceFieldState.CONNECTED_OFFLINE;
-					} else {
-						forceFieldState = EnumForceFieldState.CONNECTED_POWERED;
-					}
-				} else {
-					forceFieldState = EnumForceFieldState.CONNECTED_NOT_POWERED;
-				}
-			}
+			forceFieldState = tileEntityForceFieldProjector.getState();
 		}
 		
 		return ((IExtendedBlockState) blockState)
@@ -147,6 +145,33 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@Override
 	public boolean isBlockNormalCube(IBlockState blockState) {
 		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isFullCube(IBlockState state) {
+		return false;
+	}
+	
+	@Nonnull
+	@SuppressWarnings("deprecation")
+	@Override
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+		switch (state.getValue(BlockProperties.FACING)) {
+			case DOWN : return AABB_DOWN ;
+			case UP   : return AABB_UP   ;
+			case NORTH: return AABB_NORTH;
+			case SOUTH: return AABB_SOUTH;
+			case WEST : return AABB_WEST ;
+			case EAST : return AABB_EAST ;
+			default   : return AABB_UP;
+		}
 	}
 	
 	@Nonnull
