@@ -59,8 +59,8 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockChunkLoader);
 		for (int index = 0; index < 3; index++) {
 			IModelInitialisation(WarpDrive.blockForceFields[index]);
-		 	IModelInitialisation(WarpDrive.blockForceFieldProjectors[index]);
-		// 	IModelInitialisation(WarpDrive.blockForceFieldRelays[index]);
+			IModelInitialisation(WarpDrive.blockForceFieldProjectors[index]);
+			IModelInitialisation(WarpDrive.blockForceFieldRelays[index]);
 		}
 		
 		IModelInitialisation(WarpDrive.blockDecorative);
