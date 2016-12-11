@@ -61,13 +61,9 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		super(registryName, tier, Material.IRON);
 		setUnlocalizedName("warpdrive.forcefield.projector" + tier);
 		
-		IExtendedBlockState extendedBlockState = (IExtendedBlockState) getDefaultState();
-		setDefaultState(extendedBlockState
+		setDefaultState(getDefaultState()
 				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
 				.withProperty(IS_DOUBLE_SIDED, false)
-				/*
-				.withProperty(SHAPE, EnumForceFieldShape.NONE)
-				.withProperty(STATE, EnumForceFieldState.NOT_CONNECTED)/* !!! not needed? */
 				);
 		GameRegistry.registerTileEntity(TileEntityForceFieldProjector.class, WarpDrive.PREFIX + registryName);
 		// ModelLoader.setCustomMeshDefinition();
@@ -119,17 +115,16 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
 		/*
-		// To make sure that our ISBM model is chosen for all states we use this custom state mapper:
-		StateMapperBase ignoreState = new StateMapperBase() {
+		// Force a single model through through a custom state mapper
+		StateMapperBase stateMapperBase = new StateMapperBase() {
 			@Nonnull
 			@Override
 			protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState iBlockState) {
-				return ExampleBakedModel.BAKED_MODEL;
+				return ForceFieldProjectorBakedModel.MODEL_RESOURCE_LOCATION;
 			}
 		};
-		ModelLoader.setCustomStateMapper(this, ignoreState);
+		ModelLoader.setCustomStateMapper(this, stateMapperBase);
 		/**/
-		
 		// Bind our TESR to our tile entity
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForceFieldProjector.class, new TileEntityForceFieldProjectorRenderer());
 	}

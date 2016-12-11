@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.api.IItemBase;
+import cr0s.warpdrive.render.MyCustomModelLoader;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.EnumDyeColor;
@@ -12,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void onForgePreInitialisation() {
 		super.onForgePreInitialisation();
+		
+		ModelLoaderRegistry.registerLoader(MyCustomModelLoader.INSTANCE);
 		
 		// blocks
 		// IModelInitialisation(WarpDrive.blockShipCore);
