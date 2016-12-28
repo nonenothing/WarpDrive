@@ -1143,7 +1143,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			uuid = UUID.randomUUID();
 		}
 		shipName = tag.getString("corefrequency") + tag.getString("shipName");	// coreFrequency is the legacy tag name
-		isolationBlocksCount = tag.getInteger("isolation");
+		isolationRate = tag.getDouble("isolationRate");
 		cooldownTime = tag.getInteger("cooldownTime");
 		jumpCount = tag.getInteger("jumpCount");
 	}
@@ -1156,7 +1156,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			tag.setLong("uuidLeast", uuid.getLeastSignificantBits());
 		}
 		tag.setString("shipName", shipName);
-		tag.setInteger("isolation", isolationBlocksCount);
+		tag.setDouble("isolationRate", isolationRate);
 		tag.setInteger("cooldownTime", cooldownTime);
 		tag.setInteger("jumpCount", jumpCount);
 	}
