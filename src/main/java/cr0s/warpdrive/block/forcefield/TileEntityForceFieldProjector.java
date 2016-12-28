@@ -93,8 +93,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		peripheralName = "warpdriveForceFieldProjector";
 		addMethods(new String[] {
+			"min",
+			"max",
 			"rotation",
-			"state"
+			"state",
+			"translation"
 		});
 		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
