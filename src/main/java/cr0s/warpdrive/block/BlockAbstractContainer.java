@@ -125,8 +125,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-		world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
-		return true;
+		if (isRotating) {
+			world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
+			return true;
+		}
+		return false;
 	}
 	
 	// FIXME untested
