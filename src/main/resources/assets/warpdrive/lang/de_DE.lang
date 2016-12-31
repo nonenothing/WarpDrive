@@ -156,6 +156,37 @@ tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Medium Laser (Partikel Beschleuniger)
 
+tile.warpdrive.atomic.accelerator_controller.name=Accelerator Controller
+tile.warpdrive.atomic.accelerator_controller.tooltip=Controls one or more particle accelerators.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.accelerator_control_point.name=Accelerator control point
+tile.warpdrive.atomic.accelerator_control_point.tooltip=Control accelerator nodes like collider, input and output.\nShall be placed exactly 1 block away from a void shell.\nStore results in any directly connected storage.
+tile.warpdrive.atomic.chiller1.name=Basic Chiller
+tile.warpdrive.atomic.chiller1.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.chiller2.name=Advanced Chiller
+tile.warpdrive.atomic.chiller2.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.chiller3.name=Superior Chiller
+tile.warpdrive.atomic.chiller3.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.electromagnet1.plain.name=Basic Plain Electromagnet
+tile.warpdrive.atomic.electromagnet1.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet1.glass.name=Basic Glass Electromagnet
+tile.warpdrive.atomic.electromagnet1.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.electromagnet2.plain.name=Advanced Plain Electromagnet
+tile.warpdrive.atomic.electromagnet2.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet2.glass.name=Advanced Glass Electromagnet
+tile.warpdrive.atomic.electromagnet2.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.electromagnet3.plain.name=Superior Plain Electromagnet
+tile.warpdrive.atomic.electromagnet3.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet3.glass.name=Superior Glass Electromagnet
+tile.warpdrive.atomic.electromagnet3.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.particles_collider.name=Particles Collider
+tile.warpdrive.atomic.particles_collider.tooltip=Deviates particles to collide against each others or a fixed target.\nRequires 12 blocks and an Accelerator control point to collect results.
+tile.warpdrive.atomic.particles_injector.name=Particles Injector
+tile.warpdrive.atomic.particles_injector.tooltip=Inject items or particles from a connected storage into a Basic Accelerator.
+tile.warpdrive.atomic.void_shell_plain.name=Plain Void Shell
+tile.warpdrive.atomic.void_shell_plain.tooltip=Provides 2 empty channels for particles to travel inside an accelerator setup.\nConnects only horizontally to other Void Shells.
+tile.warpdrive.atomic.void_shell_glass.name=Glass Void Shell
+tile.warpdrive.atomic.void_shell_glass.tooltip=Same as a Plain Void Shell, except you can see particles moving through it.
+
 tile.warpdrive.building.ShipScanner.name=Raumschiff Scanner
 
 tile.warpdrive.collection.LaserTreeFarm.name=Laser Baumfarm

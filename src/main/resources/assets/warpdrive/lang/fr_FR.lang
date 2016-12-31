@@ -156,6 +156,37 @@ tile.warpdrive.machines.ChunkLoader.name=Chargeur de chunk
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Milieu amplificateur
 
+tile.warpdrive.atomic.accelerator_controller.name=Controlleur d'accélérateurs
+tile.warpdrive.atomic.accelerator_controller.tooltip=Contrôle un ou plusieurs accélérateurs de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.accelerator_control_point.name=Point de contrôle d'accélérateur
+tile.warpdrive.atomic.accelerator_control_point.tooltip=Contrôle un noeud de l'accélérateur tel que collisionneur, entrée et sortie.\nDoit être placé à exactement 1 block de distance d'une coquille sous vide.\nStocke les résultats dans tout conteneur directement connecté.
+tile.warpdrive.atomic.chiller1.name=Refroidisseur élémentaire
+tile.warpdrive.atomic.chiller1.tooltip=Refroidit progressivement les électroaimants d'un même accélérateur de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.chiller2.name=Refroidisseur avancé
+tile.warpdrive.atomic.chiller2.tooltip=Refroidit progressivement les électroaimants d'un même accélérateur de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.chiller3.name=Refroidisseur supérieur
+tile.warpdrive.atomic.chiller3.tooltip=Refroidit progressivement les électroaimants d'un même accélérateur de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.electromagnet1.plain.name=Electroaimant élémentaire
+tile.warpdrive.atomic.electromagnet1.plain.tooltip=Accélère, focalise et oriente les particules dans la coquille sous vide attachée.
+tile.warpdrive.atomic.electromagnet1.glass.name=Vitre d'électroaiment élémentaire
+tile.warpdrive.atomic.electromagnet1.glass.tooltip=Variante transparente de l'électroaimant.
+tile.warpdrive.atomic.electromagnet2.plain.name=Electroaimant avancé
+tile.warpdrive.atomic.electromagnet2.plain.tooltip=Accélère, focalise et oriente les particules dans la coquille sous vide attachée.
+tile.warpdrive.atomic.electromagnet2.glass.name=Vitre d'électroaimant avancé
+tile.warpdrive.atomic.electromagnet2.glass.tooltip=Variante transparente de l'électroaimant.
+tile.warpdrive.atomic.electromagnet3.plain.name=Electroaimant supérieur
+tile.warpdrive.atomic.electromagnet3.plain.tooltip=Accélère, focalise et oriente les particules dans la coquille sous vide attachée.
+tile.warpdrive.atomic.electromagnet3.glass.name=Vite d'électroaimant supérieur
+tile.warpdrive.atomic.electromagnet3.glass.tooltip=Variante transparente de l'électroaimant.
+tile.warpdrive.atomic.particles_collider.name=Collisionneur de particules
+tile.warpdrive.atomic.particles_collider.tooltip=Dévie les particules pour qu'elles entrent en collision frontale ou contre une cible.\nRequiert 12 blocs et un Point de contrôle d'accélérateur qui collectera les résultats.
+tile.warpdrive.atomic.particles_injector.name=Injecteur de particules
+tile.warpdrive.atomic.particles_injector.tooltip=Injecte des items ou particules depuis un conteneur attaché dans un accélérateur élémentaire.
+tile.warpdrive.atomic.void_shell_plain.name=Coquille sous vide
+tile.warpdrive.atomic.void_shell_plain.tooltip=Fournit 2 canaux de parcours des particules dans un accélérateur.\nSe connecte uniquement horizontalement avec d'autres Coquille sous vide.
+tile.warpdrive.atomic.void_shell_glass.name=Vitre de coquille sous vide
+tile.warpdrive.atomic.void_shell_glass.tooltip=Variante transparente de la Coquille sous vide permettant de voir les particules en mouvement.
+
 tile.warpdrive.building.ShipScanner.name=Scanneur de vaisseau
 
 tile.warpdrive.collection.LaserTreeFarm.name=Laser de plantation arboricole
