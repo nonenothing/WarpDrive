@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import cr0s.warpdrive.block.*;
+import cr0s.warpdrive.block.atomic.*;
 import cr0s.warpdrive.block.detection.*;
 import cr0s.warpdrive.block.forcefield.*;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
@@ -149,6 +150,15 @@ public class WarpDrive implements LoadingCallback {
 	public static Block[] blockForceFields;
 	public static Block[] blockForceFieldProjectors;
 	public static Block[] blockForceFieldRelays;
+	public static Block blockAcceleratorController;
+	public static Block blockAcceleratorControlPoint;
+	public static Block blockParticlesCollider;
+	public static Block blockParticlesInjector;
+	public static Block blockVoidShellPlain;
+	public static Block blockVoidShellGlass;
+	public static Block[] blockElectromagnetPlain;
+	public static Block[] blockElectromagnetGlass;
+	public static Block[] blockChiller;
 	public static BlockDecorative blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
@@ -413,6 +423,50 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockSecurityStation, ItemBlockAbstractBase.class, "blockSecurityStation");
 		GameRegistry.registerTileEntity(TileEntitySecurityStation.class, MODID + ":blockSecurityStation");
 		*/
+		/*
+		// ACCELERATOR CONTROLLER
+		blockAcceleratorController = new BlockAcceleratorController();
+		GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
+		GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
+		/**/
+		// ACCELERATOR CONTROL POINT 
+		blockAcceleratorControlPoint = new BlockAcceleratorControlPoint();
+		GameRegistry.registerBlock(blockAcceleratorControlPoint, ItemBlockAbstractBase.class, "blockAcceleratorControlPoint");
+		GameRegistry.registerTileEntity(TileEntityAcceleratorControlPoint.class, MODID + ":blockAcceleratorControlPoint");
+		
+		// PARTICLES COLLIDER 
+		blockParticlesCollider = new BlockParticlesCollider();
+		GameRegistry.registerBlock(blockParticlesCollider, ItemBlockAbstractBase.class, "blockParticlesCollider");
+		
+		// PARTICLES INJECTOR 
+		blockParticlesInjector = new BlockParticlesInjector();
+		GameRegistry.registerBlock(blockParticlesInjector, ItemBlockAbstractBase.class, "blockParticlesInjector");
+		GameRegistry.registerTileEntity(TileEntityParticlesInjector.class, MODID + ":blockParticlesInjector");
+		
+		// VOID SHELL PLAIN/GLASS 
+		blockVoidShellPlain = new BlockVoidShellPlain();
+		GameRegistry.registerBlock(blockVoidShellPlain, ItemBlockAbstractBase.class, "blockVoidShellPlain");
+		blockVoidShellGlass = new BlockVoidShellGlass();
+		GameRegistry.registerBlock(blockVoidShellGlass, ItemBlockAbstractBase.class, "blockVoidShellGlass");
+		
+		blockElectromagnetPlain = new Block[3];
+		blockElectromagnetGlass = new Block[3];
+		blockChiller = new Block[3];
+		for(byte tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
+			// ELECTROMAGNETS PLAIN 
+			blockElectromagnetPlain[index] = new BlockElectromagnetPlain(tier);
+			GameRegistry.registerBlock(blockElectromagnetPlain[index], ItemBlockAbstractBase.class, "blockElectromagnetPlain" + tier);
+			
+			// ELECTROMAGNETS GLASS
+			blockElectromagnetGlass[index] = new BlockElectromagnetGlass(tier);
+			GameRegistry.registerBlock(blockElectromagnetGlass[index], ItemBlockAbstractBase.class, "blockElectromagnetGlass" + tier);
+			
+			// CHILLER
+			blockChiller[index] = new BlockChiller(tier);
+			GameRegistry.registerBlock(blockChiller[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
+		}
+		
 		// DECORATIVE
 		blockDecorative = new BlockDecorative();
 		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
