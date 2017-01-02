@@ -51,7 +51,7 @@ public class Dictionary {
 	// Items dictionary
 	public static HashSet<Item> ITEMS_FLYINSPACE = null;
 	public static HashSet<Item> ITEMS_NOFALLDAMAGE = null;
-	public static HashSet<Item> ITEMS_BREATHINGIC2 = null;
+	public static HashSet<Item> ITEMS_BREATHING_HELMET = null;
 	
 	public static void loadConfig(Configuration config) {
 		
@@ -243,29 +243,30 @@ public class Dictionary {
 					+ "Tags shall be separated by at least one space, comma or tabulation.\n" + "Invalid tags will be ignored silently. Tags and block names are case sensitive.\n"
 					+ "In case of conflicts, the latest tag overwrite the previous ones.\n" + "- FlyInSpace: player can move without gravity effect while wearing this item (default: jetpacks).\n"
 					+ "- NoFallDamage: player doesn't take fall damage while wearing this armor item (default: IC2 rubber boots).\n"
-					+ "- BreathingIC2: player can breath IC2 compressed air while wearing this armor item (default: IC2 nano helmet and Cie).\n");
+					+ "- BreathingHelmet: player can breath from WarpDrive air canister or IC2 compressed air while wearing this armor item (default: IC2 nano helmet and Cie).\n");
 			
 			ConfigCategory categoryItemTags = config.getCategory("item_tags");
 			String[] taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			if (taggedItemsName.length == 0) {
-				config.get("item_tags", "AWWayofTime:boundHelmet", "BreathingIC2").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetEarth", "BreathingIC2").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetFire", "BreathingIC2").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetWater", "BreathingIC2").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetWind", "BreathingIC2").getString();
-				config.get("item_tags", "AdvancedSolarPanel:advanced_solar_helmet", "BreathingIC2").getString();
-				config.get("item_tags", "AdvancedSolarPanel:hybrid_solar_helmet", "BreathingIC2").getString();
-				config.get("item_tags", "AdvancedSolarPanel:ultimate_solar_helmet", "BreathingIC2").getString();
-				config.get("item_tags", "Botania:elementiumHelm", "BreathingIC2").getString();
-				config.get("item_tags", "Botania:elementiumHelmReveal", "BreathingIC2").getString();
-				config.get("item_tags", "Botania:terrasteelHelm", "BreathingIC2").getString();
-				config.get("item_tags", "Botania:terrasteelHelmReveal", "BreathingIC2").getString();
-				config.get("item_tags", "EnderIO:item.darkSteel_helmet", "BreathingIC2").getString();
-				config.get("item_tags", "IC2:itemArmorHazmatHelmet", "BreathingIC2").getString();
-				config.get("item_tags", "IC2:itemSolarHelmet", "BreathingIC2").getString();
-				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingIC2").getString();
-				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingIC2").getString();
-				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingIC2").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetEarth", "BreathingHelmet").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetFire", "BreathingHelmet").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetWater", "BreathingHelmet").getString();
+				config.get("item_tags", "AWWayofTime:boundHelmetWind", "BreathingHelmet").getString();
+				config.get("item_tags", "AdvancedSolarPanel:advanced_solar_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "AdvancedSolarPanel:hybrid_solar_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "AdvancedSolarPanel:ultimate_solar_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "Botania:elementiumHelm", "BreathingHelmet").getString();
+				config.get("item_tags", "Botania:elementiumHelmReveal", "BreathingHelmet").getString();
+				config.get("item_tags", "Botania:terrasteelHelm", "BreathingHelmet").getString();
+				config.get("item_tags", "Botania:terrasteelHelmReveal", "BreathingHelmet").getString();
+				config.get("item_tags", "EnderIO:item.darkSteel_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "IC2:itemArmorHazmatHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "IC2:itemSolarHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
+				config.get("item_tags", "WarpDrive:warpArmor_helmet", "BreathingHelmet").getString();
 				
 				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();
@@ -390,7 +391,7 @@ public class Dictionary {
 		// translate tagged items
 		ITEMS_FLYINSPACE = new HashSet<>(taggedItems.size());
 		ITEMS_NOFALLDAMAGE = new HashSet<>(taggedItems.size());
-		ITEMS_BREATHINGIC2 = new HashSet<>(taggedItems.size());
+		ITEMS_BREATHING_HELMET = new HashSet<>(taggedItems.size());
 		for (Entry<String, String> taggedItem : taggedItems.entrySet()) {
 			String itemId = taggedItem.getKey();
 			Item item = GameData.getItemRegistry().getObject(itemId);
@@ -402,7 +403,7 @@ public class Dictionary {
 				switch (tag) {
 				case "FlyInSpace"     : ITEMS_FLYINSPACE.add(item); break;
 				case "NoFallDamage"   : ITEMS_NOFALLDAMAGE.add(item); break;
-				case "BreathingIC2"   : ITEMS_BREATHINGIC2.add(item); break;
+				case "BreathingHelmet": ITEMS_BREATHING_HELMET.add(item); break;
 				default:
 					WarpDrive.logger.error("Unsupported tag '" + tag + "' for item " + item);
 					break;
@@ -441,7 +442,7 @@ public class Dictionary {
 		WarpDrive.logger.info("Active items dictionary:");
 		WarpDrive.logger.info("- " + ITEMS_FLYINSPACE.size() + " allowing fly in space: " + getHashMessage(ITEMS_FLYINSPACE));
 		WarpDrive.logger.info("- " + ITEMS_NOFALLDAMAGE.size() + " absorbing fall damages: " + getHashMessage(ITEMS_NOFALLDAMAGE));
-		WarpDrive.logger.info("- " + ITEMS_BREATHINGIC2.size() + " allowing breathing compressed air: " + getHashMessage(ITEMS_BREATHINGIC2));
+		WarpDrive.logger.info("- " + ITEMS_BREATHING_HELMET.size() + " allowing breathing compressed air: " + getHashMessage(ITEMS_BREATHING_HELMET));
 	}
 	
 	private static void adjustHardnessAndResistance() {

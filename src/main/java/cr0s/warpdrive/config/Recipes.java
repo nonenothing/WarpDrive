@@ -266,8 +266,8 @@ public class Recipes {
 				'c', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
 				'f', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		
-		// Helmet
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemHelmet), false, "iii", "iwi", "gcg",
+		// Warp Helmet
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[0]), false, "iii", "iwi", "gcg",
 				'i', Items.iron_ingot,
 				'w', Blocks.wool,
 				'g', Blocks.glass,
@@ -1384,12 +1384,33 @@ public class Recipes {
 				's', "warpDecorative",
 				'c', "dyeBlue"));
 		
-		// Armor
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemHelmet), false, "iii", "iwi", "gcg",
+		// Warp helmet
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[0]), false, "iii", "iwi", "gcg",
 				'i', Items.iron_ingot,
 				'w', Blocks.wool,
 				'g', "blockGlass",
-				'c', WarpDrive.itemAirCanisterFull));
+				'c', ItemComponent.getItemStack(EnumComponentType.AIR_CANISTER)));
+		
+		// Warp chestplate
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[1]), false, "gcg", "wiw", "GmG",
+				'i', Items.iron_chestplate,
+				'w', Blocks.wool,
+				'g', "blockHull3_glass",
+				'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
+				'G', Items.gold_ingot,
+				'c', ItemComponent.getItemStack(EnumComponentType.AIR_CANISTER)));
+		
+		// Warp Leggings
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[2]), false, "gig", "m m", "w w",
+				'i', Items.iron_leggings,
+				'w', Blocks.wool,
+				'g', "blockHull2_glass"));
+		
+		// Warp boots
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[3]), false, "gig", "r r", "   ",
+				'i', Items.iron_boots,
+				'g', "blockHull1_glass",
+				'r', rubberOrLeather));
 		
 		// Tuning rod ore dictionary
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {

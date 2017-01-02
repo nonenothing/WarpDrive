@@ -2,8 +2,10 @@ package cr0s.warpdrive.event;
 
 import java.util.HashMap;
 
+import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +20,6 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBreathingHelmet;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -126,30 +127,12 @@ public class LivingHandler {
 					ItemStack helmetStack = player.getCurrentArmor(3);
 					if (helmetStack != null) {
 						Item helmet = helmetStack.getItem();
-						if (helmet instanceof IBreathingHelmet) {
-							IBreathingHelmet breathHelmet = (IBreathingHelmet) helmet;
-							int airTicks = breathHelmet.ticksPerCanDamage();
-							if (breathHelmet.canBreath(player)) {
-								hasHelmet = true;
-								if (air == null) {// new player in space => grace period
-									player_airTank.put(playerName, airTicks);
-								} else if (air <= 1) {
-									if (breathHelmet.removeAir(player)) {
-										player_airTank.put(playerName, airTicks);
-									} else {
-										player_airTank.put(playerName, AIR_DROWN_TICKS);
-										player.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
-									}
-								} else {
-									player_airTank.put(playerName, air - 1);
-								}
-							}
-						} else if (Dictionary.ITEMS_BREATHINGIC2.contains(helmet)) {
+						if (Dictionary.ITEMS_BREATHING_HELMET.contains(helmet)) {
 							hasHelmet = true;
 							if (air == null) {// new player in space => grace period
 								player_airTank.put(playerName, AIR_TANK_TICKS);
 							} else if (air <= 1) {
-								if (consumeCompressedAir(player.inventory.mainInventory, player)) {
+								if (consumeAirCanister(player)) {
 									player_airTank.put(playerName, AIR_TANK_TICKS);
 								} else {
 									player_airTank.put(playerName, AIR_DROWN_TICKS);
@@ -210,24 +193,83 @@ public class LivingHandler {
 		}
 	}
 	
-	private static boolean consumeCompressedAir(ItemStack[] inventory, EntityPlayerMP entityPlayer) {
-		for (int j = 0; j < inventory.length; ++j) {
-			if (inventory[j] != null && inventory[j].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
-				inventory[j].stackSize--;
-				if (inventory[j].stackSize <= 0) {
-					inventory[j] = null;
-				}
-				
-				if (WarpDriveConfig.IC2_emptyCell != null) {
-					ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
-					if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
-						World world = entityPlayer.worldObj;
-						EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
-						entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+	static public boolean consumeAirCanister(Entity entity) {
+		if (WarpDriveConfig.LOGGING_BREATHING) {
+			WarpDrive.logger.info("Checking inventory for air reserves...");
+		}
+		if (entity instanceof EntityPlayerMP) {
+			EntityPlayerMP entityPlayer = (EntityPlayerMP) entity;
+			ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+			int slotAirCanisterFound = -1;
+			float fillingRatioAirCanisterFound = 0.0F;
+			
+			// find most consumed air canister with smallest stack
+			for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
+				ItemStack itemStack = playerInventory[slotIndex];
+				if (itemStack != null && itemStack.getItem() instanceof IAirCanister) {
+					IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+					if (airCanister.containsAir(itemStack)) {
+						float fillingRatio = 1.0F - itemStack.getItemDamage() / (float)itemStack.getMaxDamage();
+						fillingRatio -= itemStack.stackSize / 1000;
+						if (fillingRatioAirCanisterFound <= 0.0F || fillingRatio < fillingRatioAirCanisterFound) {
+							slotAirCanisterFound = slotIndex;
+							fillingRatioAirCanisterFound = fillingRatio;
+						}
 					}
-					entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				}
-				return true;
+			}
+			// consume air on the selected Air canister
+			if (slotAirCanisterFound >= 0) {
+				ItemStack itemStack = playerInventory[slotAirCanisterFound];
+				if (itemStack != null && itemStack.getItem() instanceof IAirCanister) {
+					IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+					if (airCanister.containsAir(itemStack)) {
+						if (itemStack.stackSize > 1) {// unstack
+							itemStack.stackSize--;
+							ItemStack toAdd = itemStack.copy();
+							toAdd.stackSize = 1;
+							toAdd.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+							if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+								toAdd = airCanister.emptyDrop(itemStack);
+							}
+							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
+								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+							}
+							entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
+						} else {
+							itemStack.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+							if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+								playerInventory[slotAirCanisterFound] = airCanister.emptyDrop(itemStack);
+							}
+						}
+						return true;
+					}
+				}
+			}
+			
+			// (no air canister or all empty)
+			// check IC2 compressed air cells
+			if (WarpDriveConfig.IC2_compressedAir != null) {
+				for (int j = 0; j < playerInventory.length; ++j) {
+					if (playerInventory[j] != null && playerInventory[j].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
+						playerInventory[j].stackSize--;
+						if (playerInventory[j].stackSize <= 0) {
+							playerInventory[j] = null;
+						}
+						
+						if (WarpDriveConfig.IC2_emptyCell != null) {
+							ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
+							if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
+								World world = entityPlayer.worldObj;
+								EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
+								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+							}
+							entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
+						}
+						return true;
+					}
+				}
 			}
 		}
 		return false;

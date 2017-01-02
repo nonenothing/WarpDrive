@@ -17,8 +17,8 @@ public class ClientHandler {
 		if (event.entityPlayer == null || !event.entityPlayer.capabilities.isCreativeMode) {
 			return;
 		}
-		if (Dictionary.ITEMS_BREATHINGIC2.contains(event.itemStack.getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
-			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.breathingIC2"));
+		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.itemStack.getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
+			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.breathingHelmet"));
 		}
 		if (Dictionary.ITEMS_FLYINSPACE.contains(event.itemStack.getItem())) {
 			WarpDrive.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.flyInSpace"));

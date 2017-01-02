@@ -17,6 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemDye;
 import net.minecraft.nbt.NBTTagCompound;
@@ -175,7 +176,7 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
 	
 	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
-	public static ItemHelmet itemHelmet;
+	public static ItemArmor[] itemWarpArmor;
 	public static ItemAirCanisterFull itemAirCanisterFull;
 	
 	public static DamageAsphyxia damageAsphyxia;
@@ -508,8 +509,11 @@ public class WarpDrive implements LoadingCallback {
 		itemCrystalToken = new ItemCrystalToken();
 		GameRegistry.registerItem(itemCrystalToken, "itemCrystalToken");
 		
-		itemHelmet = new ItemHelmet(armorMaterial, 0);
-		GameRegistry.registerItem(itemHelmet, "itemHelmet");
+		itemWarpArmor = new ItemArmor[4];
+		for (int armorPart = 0; armorPart < 4; armorPart++) {
+			itemWarpArmor[armorPart] = new ItemWarpArmor(armorMaterial, 3, armorPart);
+			GameRegistry.registerItem(itemWarpArmor[armorPart], "itemWarpArmor_" + ItemWarpArmor.suffixes[armorPart]);
+		}
 		
 		itemAirCanisterFull = new ItemAirCanisterFull();
 		GameRegistry.registerItem(itemAirCanisterFull, "itemAirCanisterFull");
@@ -722,7 +726,8 @@ public class WarpDrive implements LoadingCallback {
 						mapping.remap(Item.getItemFromBlock(blockGas));
 						break;
 					case "WarpDrive:helmet":
-						mapping.remap(itemHelmet);
+					case "WarpDrive:itemHelmet":
+						mapping.remap(itemWarpArmor[0]);
 						break;
 					case "WarpDrive:iridiumBlock":
 						mapping.remap(Item.getItemFromBlock(blockIridium));

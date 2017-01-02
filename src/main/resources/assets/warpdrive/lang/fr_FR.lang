@@ -37,7 +37,10 @@ item.warpdrive.crafting.ElectromagneticProjector.name=Projecteur électromagnét
 item.warpdrive.crafting.Superconductor.name=Superconducteur
 
 item.warpdrive.armor.AirCanisterFull.name=Cartouche d'air
-item.warpdrive.armor.Helmet.name=Casque warp
+item.warpdrive.armor.helmet.name=Casque warp
+item.warpdrive.armor.chestplate.name=Plastron warp
+item.warpdrive.armor.leggings.name=Jambières warp
+item.warpdrive.armor.boots.name=Bottes warp
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=Focus laser pour réacteur IC2
 
@@ -485,6 +488,6 @@ warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
 warpdrive.transporter.status=De %1$.0f %2$.0f %3$.0f à %4$.0f %5$.0f %6$.0f
 
-warpdrive.tooltip.itemTag.breathingIC2=Permet de §brespirer dans le vide§r en consommant des cellules d'air comprimé de IC2 depuis l'inventaire.
+warpdrive.tooltip.itemTag.breathingHelmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.
 warpdrive.tooltip.itemTag.flyInSpace=Jetpack compatible avec une utilisation §bspatiale§r.
 warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbe les damages de chute§r.

@@ -37,7 +37,10 @@ item.warpdrive.crafting.ElectromagneticProjector.name=Elektromagnetischer Projek
 item.warpdrive.crafting.Superconductor.name=Superconductor !!!
 
 item.warpdrive.armor.AirCanisterFull.name=Luftkanister
-item.warpdrive.armor.Helmet.name=Warp Helm
+item.warpdrive.armor.helmet.name=Warp Helm
+item.warpdrive.armor.chestplate.name=Warp Brustpanzer !!!
+item.warpdrive.armor.leggings.name=Warp Beinschutz !!!
+item.warpdrive.armor.boots.name=Warp Stiefel !!!
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 Reaktor-Laser-Fokus
 
@@ -485,6 +488,6 @@ warpdrive.IC2reactorLaserMonitor.noReactor=Kein Reaktor gefunden!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d Reaktor(en) verbunden.
 warpdrive.transporter.status=Von %1$.0f %2$.0f %3$.0f zu %4$.0f %5$.0f %6$.0f
 
-warpdrive.tooltip.itemTag.breathingIC2=§bSpace breathing§r consuming IC2 Compressed air cells from your inventory. !!!
+warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory. !!!
 warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r. !!!
 warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbs fall damage§r. !!!
