@@ -7,7 +7,13 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.WorldServer;
 
-import java.util.*;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Registry of all known forcefield in the loaded worlds, grouped by frequency
@@ -15,13 +21,21 @@ import java.util.*;
  * @author LemADEC
  */
 public class ForceFieldRegistry {
-	private static final int FORCE_FIELD_REGISTRY_DEFAULT_ENTRIES_PER_FREQUENCY = 10;
-	private static final HashMap<Integer, HashSet<GlobalPosition>> registry = new HashMap<>();
+	private static final HashMap<Integer, CopyOnWriteArraySet<GlobalPosition>> registry = new HashMap<>();
+	private static int countAdd = 0;
+	private static int countRemove = 0;
+	private static int countRead = 0;
 	
 	public static Set<TileEntity> getTileEntities(final int beamFrequency, WorldServer worldSource, final int x, final int y, final int z) {
-		Set<GlobalPosition> setGlobalPositions = registry.get(beamFrequency);
+		countRead++;
+		if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
+			if (countRead % 1000 == 0) {
+				WarpDrive.logger.info("ForceFieldRegistry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
+			}
+		}
+		CopyOnWriteArraySet<GlobalPosition> setGlobalPositions = registry.get(beamFrequency);
 		if (setGlobalPositions == null || worldSource == null) {
-			return new HashSet<>();
+			return new CopyOnWriteArraySet<>();
 		}
 		// find all relevant tiles by world and frequency, keep relays in range as starting point
 		Set<TileEntity> setNonRelays = new HashSet<>();
@@ -29,8 +43,7 @@ public class ForceFieldRegistry {
 		Set<TileEntity> setToIterate = new HashSet<>();
 		int range2;
 		int maxRange2 = ForceFieldSetup.FORCEFIELD_RELAY_RANGE * ForceFieldSetup.FORCEFIELD_RELAY_RANGE;
-		for (Iterator<GlobalPosition> iterator = setGlobalPositions.iterator(); iterator.hasNext();) {
-			GlobalPosition globalPosition = iterator.next();
+		for (GlobalPosition globalPosition : setGlobalPositions) {
 			WorldServer world = globalPosition.getWorldServerIfLoaded();
 			if (world != null) {
 				// skip if it's in another dimension
@@ -56,7 +69,8 @@ public class ForceFieldRegistry {
 				}
 			}
 			// world isn't loaded or block no longer exist => remove from registry
-			iterator.remove();
+			countRemove++;
+			setGlobalPositions.remove(globalPosition);
 			if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
 				printRegistry("removed");
 			}
@@ -111,9 +125,10 @@ public class ForceFieldRegistry {
 	public static void updateInRegistry(IBeamFrequency tileEntity) {
 		assert(tileEntity instanceof TileEntity);
 		
-		HashSet<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());
+		countRead++;
+		CopyOnWriteArraySet<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());
 		if (setGlobalPositions == null) {
-			setGlobalPositions = new HashSet<>(FORCE_FIELD_REGISTRY_DEFAULT_ENTRIES_PER_FREQUENCY);
+			setGlobalPositions = new CopyOnWriteArraySet<>();
 		}
 		for (GlobalPosition globalPosition : setGlobalPositions) {
 			if (globalPosition.equals(tileEntity)) {
@@ -122,6 +137,7 @@ public class ForceFieldRegistry {
 			}
 		}
 		// not found => add
+		countAdd++;
 		setGlobalPositions.add(new GlobalPosition((TileEntity)tileEntity));
 		registry.put(tileEntity.getBeamFrequency(), setGlobalPositions);
 		if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
@@ -132,6 +148,7 @@ public class ForceFieldRegistry {
 	public static void removeFromRegistry(IBeamFrequency tileEntity) {
 		assert(tileEntity instanceof TileEntity);
 		
+		countRead++;
 		Set<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());
 		if (setGlobalPositions == null) {
 			// noting to remove
@@ -141,6 +158,7 @@ public class ForceFieldRegistry {
 			GlobalPosition globalPosition = iterator.next();
 			if (globalPosition.equals(tileEntity)) {
 				// found it, remove and exit
+				countRemove++;
 				iterator.remove();
 				return;
 			}
@@ -151,7 +169,7 @@ public class ForceFieldRegistry {
 	public static void printRegistry(final String trigger) {
 		WarpDrive.logger.info("Forcefield registry (" + registry.size() + " entries after " + trigger + "):");
 		
-		for (Map.Entry<Integer, HashSet<GlobalPosition>> entry : registry.entrySet()) {
+		for (Map.Entry<Integer, CopyOnWriteArraySet<GlobalPosition>> entry : registry.entrySet()) {
 			String message = "";
 			for (GlobalPosition globalPosition : entry.getValue()) {
 				if (!message.isEmpty()) {
