@@ -1403,13 +1403,14 @@ public class Recipes {
 		// Warp Leggings
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[2]), false, "gig", "m m", "w w",
 				'i', Items.iron_leggings,
+				'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
 				'w', Blocks.wool,
 				'g', "blockHull2_glass"));
 		
 		// Warp boots
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[3]), false, "gig", "r r", "   ",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[3]), false, "wiw", "r r", "   ",
 				'i', Items.iron_boots,
-				'g', "blockHull1_glass",
+				'w', Blocks.wool,
 				'r', rubberOrLeather));
 		
 		// Tuning rod ore dictionary
