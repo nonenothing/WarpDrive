@@ -276,15 +276,15 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes");
 	}
 	
-	protected static int clamp(final int min, final int max, final int value) {
+	public static int clamp(final int min, final int max, final int value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	
-	protected static float clamp(final float min, final float max, final float value) {
+	public static float clamp(final float min, final float max, final float value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	
-	protected static double clamp(final double min, final double max, final double value) {
+	public static double clamp(final double min, final double max, final double value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	

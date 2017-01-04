@@ -29,8 +29,8 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyHandler, IEnergySink, IEnergySource {
 	private boolean addedToEnergyNet = false;
 	private int energyStored_internal = 0;
-	private static final double EU_PER_INTERNAL = 1.0D;
-	private static final double RF_PER_INTERNAL = 1800.0D / 437.5D;
+	public static final double EU_PER_INTERNAL = 1.0D;
+	public static final double RF_PER_INTERNAL = 1800.0D / 437.5D;
 	protected int IC2_sinkTier = 3;
 	protected int IC2_sourceTier = 3;
 	
@@ -48,35 +48,35 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	// WarpDrive methods
-	protected static int convertInternalToRF_ceil(int energy) {
+	public static int convertInternalToRF_ceil(int energy) {
 		return (int) Math.ceil(energy * RF_PER_INTERNAL);
 	}
 	
-	protected static int convertInternalToRF_floor(int energy) {
+	public static int convertInternalToRF_floor(int energy) {
 		return (int) Math.floor(energy * RF_PER_INTERNAL);
 	}
 	
-	protected static int convertRFtoInternal_ceil(int energy) {
+	public static int convertRFtoInternal_ceil(int energy) {
 		return (int) Math.ceil(energy / RF_PER_INTERNAL);
 	}
 	
-	protected static int convertRFtoInternal_floor(int energy) {
+	public static int convertRFtoInternal_floor(int energy) {
 		return (int) Math.floor(energy / RF_PER_INTERNAL);
 	}
 	
-	protected static double convertInternalToEU_ceil(int energy) {
+	public static double convertInternalToEU_ceil(int energy) {
 		return Math.ceil(energy * EU_PER_INTERNAL);
 	}
 	
-	protected static double convertInternalToEU_floor(int energy) {
+	public static double convertInternalToEU_floor(int energy) {
 		return Math.floor(energy * EU_PER_INTERNAL);
 	}
 	
-	protected static int convertEUtoInternal_ceil(double amount) {
+	public static int convertEUtoInternal_ceil(double amount) {
 		return (int) Math.ceil(amount / EU_PER_INTERNAL);
 	}
 	
-	protected static int convertEUtoInternal_floor(double amount) {
+	public static int convertEUtoInternal_floor(double amount) {
 		return (int) Math.floor(amount / EU_PER_INTERNAL);
 	}
 	

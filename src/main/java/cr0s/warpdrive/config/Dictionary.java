@@ -266,7 +266,7 @@ public class Dictionary {
 				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
-				config.get("item_tags", "WarpDrive:warpArmor_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "WarpDrive:itemWarpArmor_helmet", "BreathingHelmet").getString();
 				
 				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();
@@ -276,6 +276,8 @@ public class Dictionary {
 				
 				config.get("item_tags", "IC2:itemArmorRubBoots", "NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumBoots", "NoFallDamage").getString();
+				config.get("item_tags", "WarpDrive:itemWarpArmor_leggings", "NoFallDamage").getString();
+				config.get("item_tags", "WarpDrive:itemWarpArmor_boots", "NoFallDamage").getString();
 				taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedItems = new HashMap<>(taggedItemsName.length);
