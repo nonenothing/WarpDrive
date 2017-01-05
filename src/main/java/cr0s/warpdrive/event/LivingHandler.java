@@ -3,6 +3,7 @@ package cr0s.warpdrive.event;
 import java.util.HashMap;
 
 import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IBreathingHelmet;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.item.ItemEnergyWrapper;
 import net.minecraft.block.Block;
@@ -129,8 +130,26 @@ public class LivingHandler {
 					boolean hasHelmet = false;
 					ItemStack helmetStack = player.getCurrentArmor(3);
 					if (helmetStack != null) {
-						Item helmet = helmetStack.getItem();
-						if (Dictionary.ITEMS_BREATHING_HELMET.contains(helmet)) {
+						Item itemHelmet = helmetStack.getItem();
+						if (itemHelmet instanceof IBreathingHelmet) {
+							IBreathingHelmet breathingHelmet = (IBreathingHelmet) itemHelmet;
+							int airTicks = breathingHelmet.ticksPerCanDamage();
+							if (breathingHelmet.canBreath(player)) {
+								hasHelmet = true;
+								if (air == null) {// new player in space => grace period
+									player_airTank.put(playerName, airTicks);
+								} else if (air <= 1) {
+									if (breathingHelmet.removeAir(player) || consumeAirCanister(player)) {
+										player_airTank.put(playerName, airTicks);
+									} else {
+										hasHelmet = false;
+									}
+								} else {
+									player_airTank.put(playerName, air - 1);
+								}
+							}
+						}
+						if (Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet)) {
 							hasHelmet = true;
 							if (air == null) {// new player in space => grace period
 								player_airTank.put(playerName, AIR_TANK_TICKS);
@@ -138,8 +157,7 @@ public class LivingHandler {
 								if (consumeAirCanister(player)) {
 									player_airTank.put(playerName, AIR_TANK_TICKS);
 								} else {
-									player_airTank.put(playerName, AIR_DROWN_TICKS);
-									entity.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
+									hasHelmet = false;
 								}
 							} else {
 								player_airTank.put(playerName, air - 1);
