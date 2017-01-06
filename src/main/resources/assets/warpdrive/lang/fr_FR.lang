@@ -243,7 +243,9 @@ tile.warpdrive.forcefield.relay3.tooltip=Supporte jusqu'à 1 augmentation de cha
 
 tile.warpdrive.movement.Lift.name=Ascenseur
 tile.warpdrive.movement.ShipController.name=Controlleur de vaisseau
+tile.warpdrive.movement.ShipController.tooltip=Défini l'avant du vaisseau par rapport au coeur. Attache un ordinateur pour ouvrir l'interface utilisateur.\nDoit être placé horizontalement directement à coté du Coeur de vaisseau.
 tile.warpdrive.movement.ShipCore.name=Coeur de vaisseau
+tile.warpdrive.movement.ShipCore.tooltip=Défini le centre du vaisseau par rapport au controlleur. Connecte une source d'énergie pour charger le coeur\nDoit être placé horizontalement directement à coté du Controlleur de vaisseau.
 tile.warpdrive.movement.Transporter.name=Transporteur
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Caméra

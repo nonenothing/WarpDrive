@@ -243,7 +243,9 @@ tile.warpdrive.forcefield.relay3.tooltip=Unterstützt bis zu 1 Upgrade im Netzwe
 
 tile.warpdrive.movement.Lift.name=Lift
 tile.warpdrive.movement.ShipController.name=Raumschiff Steuerung
+tile.warpdrive.movement.ShipController.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core. !!!
 tile.warpdrive.movement.ShipCore.name=Raumschiff Kern
+tile.warpdrive.movement.ShipCore.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller. !!!
 tile.warpdrive.movement.Transporter.name=Transporter
 
 tile.warpdrive.weapon.LaserCamera.name=Laser und Kamera
