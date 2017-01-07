@@ -1,5 +1,6 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.render.SpaceSkyRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -15,6 +16,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.RenderBlank;
+import net.minecraftforge.client.IRenderHandler;
 
 public class HyperSpaceWorldProvider extends WorldProvider {
 	
@@ -35,8 +37,8 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public float getStarBrightness(float par1) {
-		return 0F;
+	public float getStarBrightness(float partialTicks) {
+		return 0.2F;
 	}
 	
 	@Override
@@ -48,10 +50,10 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	public int getAverageGroundLevel() {
 		return 1;
 	}
-
+	
 	@Override
 	public double getHorizon() {
-		return 1;
+		return -256;
 	}
 	
 	@Override
@@ -70,7 +72,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public float calculateCelestialAngle(long par1, float par3) {
+	public float calculateCelestialAngle(long time, float partialTick) {
 		return 0.5F;
 	}
 	
@@ -98,8 +100,11 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
-		setCloudRenderer(new RenderBlank());
-		setSkyRenderer(new RenderBlank());
+		IRenderHandler renderHandlerSky = getSkyRenderer();
+		if (renderHandlerSky == null || !(renderHandlerSky instanceof SpaceSkyRenderer)) {
+			setCloudRenderer(new RenderBlank());
+			setSkyRenderer(new SpaceSkyRenderer());
+		}
 		return Vec3.createVectorHelper(1.0D, 0.0D, 0.0D);
 	}
 	
