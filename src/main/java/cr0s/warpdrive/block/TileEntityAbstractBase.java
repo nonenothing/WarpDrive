@@ -258,10 +258,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	protected static double toDouble(Object object) {
+		assert(!(object instanceof Object[]));
 		return Double.parseDouble(object.toString());
 	}
 	
 	protected static float toFloat(Object object) {
+		assert(!(object instanceof Object[]));
 		return Float.parseFloat(object.toString());
 	}
 	
@@ -269,7 +271,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (object == null) {
 			 return false;
 		}
-		assert(object instanceof Object[] == false);
+		assert(!(object instanceof Object[]));
 		if (object instanceof Boolean) {
 			 return ((Boolean) object);
 		}
