@@ -23,8 +23,8 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore"),
-	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2API"),
-	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2API")
+	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2"),
+	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2")
 })
 public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyHandler, IEnergySink, IEnergySource {
 	private boolean addedToEnergyNet = false;
