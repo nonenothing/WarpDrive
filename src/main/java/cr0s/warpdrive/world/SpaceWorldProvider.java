@@ -1,6 +1,7 @@
 package cr0s.warpdrive.world;
 
-import cr0s.warpdrive.render.SpaceSkyRenderer;
+import cr0s.warpdrive.render.RenderBlockForceField;
+import cr0s.warpdrive.render.RenderSpaceSky;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
@@ -100,10 +101,11 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
-		IRenderHandler renderHandlerSky = getSkyRenderer();
-		if (renderHandlerSky == null || !(renderHandlerSky instanceof SpaceSkyRenderer)) {
-			setCloudRenderer(new RenderBlank());
-			setSkyRenderer(new SpaceSkyRenderer());
+		if (getCloudRenderer() == null) {
+			setCloudRenderer(RenderBlank.getInstance());
+		}
+		if (getSkyRenderer() == null) {
+			setSkyRenderer(RenderSpaceSky.getInstance());
 		}
 		return Vec3.createVectorHelper(0.0D, 0.0D, 0.0D);
 	}

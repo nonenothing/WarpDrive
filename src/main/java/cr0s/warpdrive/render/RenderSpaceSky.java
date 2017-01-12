@@ -18,7 +18,16 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class SpaceSkyRenderer extends IRenderHandler {
+public class RenderSpaceSky extends IRenderHandler {
+	private static RenderSpaceSky INSTANCE = null;
+	
+	public static RenderSpaceSky getInstance() {
+		if (INSTANCE == null) {
+			INSTANCE = new RenderSpaceSky();
+		}
+		return INSTANCE;
+	}
+	
 	private static final ResourceLocation[] texturePlanets = {
 		new ResourceLocation("warpdrive:textures/celestial/planet_green.png"),
 		new ResourceLocation("warpdrive:textures/celestial/planet_yellow.png"),

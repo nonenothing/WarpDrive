@@ -1,6 +1,6 @@
 package cr0s.warpdrive.world;
 
-import cr0s.warpdrive.render.SpaceSkyRenderer;
+import cr0s.warpdrive.render.RenderSpaceSky;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -100,10 +100,11 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
-		IRenderHandler renderHandlerSky = getSkyRenderer();
-		if (renderHandlerSky == null || !(renderHandlerSky instanceof SpaceSkyRenderer)) {
-			setCloudRenderer(new RenderBlank());
-			setSkyRenderer(new SpaceSkyRenderer());
+		if (getCloudRenderer() == null) {
+			setCloudRenderer(RenderBlank.getInstance());
+		}
+		if (getSkyRenderer() == null) {
+			setSkyRenderer(RenderSpaceSky.getInstance());
 		}
 		return Vec3.createVectorHelper(1.0D, 0.0D, 0.0D);
 	}

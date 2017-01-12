@@ -6,11 +6,18 @@ import net.minecraftforge.client.IRenderHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class RenderBlank extends IRenderHandler
-{
+public class RenderBlank extends IRenderHandler {
+    private static RenderBlank INSTANCE = null;
+    
+    public static RenderBlank getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new RenderBlank();
+        }
+        return INSTANCE;
+    }
+    
     @SideOnly(Side.CLIENT)
     @Override
-    public void render(float partialTicks, WorldClient world, Minecraft mc)
-    {
+    public void render(float partialTicks, WorldClient world, Minecraft mc) {
     }
 }
