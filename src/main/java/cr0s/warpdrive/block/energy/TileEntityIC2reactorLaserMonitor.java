@@ -23,6 +23,8 @@ import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.network.PacketHandler;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	private int ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;
 	private byte activeSides = 0;
@@ -172,11 +174,12 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 		activeSides = tag.getByte("activeSides");
 	}
 	
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override

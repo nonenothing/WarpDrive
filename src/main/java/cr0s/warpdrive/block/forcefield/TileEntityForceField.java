@@ -15,6 +15,8 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityForceField extends TileEntityAbstractBase {
 	private VectorI vProjector;
 
@@ -76,12 +78,12 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		return tagCompound;
 	}
 	
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		
-		return new SPacketUpdateTileEntity(pos, -1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override

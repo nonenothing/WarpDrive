@@ -7,6 +7,8 @@ import net.minecraft.util.EnumFacing;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	static final byte MODE_DISABLED = 0;
@@ -79,11 +81,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		return nbtTagCompound;
 	}
 
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
+		return tagCompound;
 	}
 
 	@Override

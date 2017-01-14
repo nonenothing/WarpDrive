@@ -20,6 +20,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityAbstractForceField extends TileEntityAbstractEnergy implements IBeamFrequency {
 	// persistent properties
 	protected byte tier = -1;
@@ -139,12 +141,13 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		tagCompound.setBoolean("isConnected", isConnected);
-		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override

@@ -20,6 +20,8 @@ import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChannel {
 	private int videoChannel = -1;
 	
@@ -125,12 +127,13 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		// (beam frequency is server side only)
 		tagCompound.setInteger("videoChannel", videoChannel);
-		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override

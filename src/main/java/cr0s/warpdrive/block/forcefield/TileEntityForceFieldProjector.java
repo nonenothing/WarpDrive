@@ -36,6 +36,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -961,13 +962,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
-		SPacketUpdateTileEntity packetUpdateTileEntity = super.getUpdatePacket();
-		NBTTagCompound tagCompound = packetUpdateTileEntity.getNbtCompound();
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound tagCompound = super.getUpdateTag();
 		tagCompound.setBoolean("isPowered", isPowered);
 		tagCompound.setBoolean("isOn", legacy_isOn);
-		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override

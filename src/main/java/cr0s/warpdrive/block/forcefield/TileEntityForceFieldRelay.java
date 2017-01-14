@@ -11,6 +11,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityForceFieldRelay extends TileEntityAbstractForceField implements IForceFieldUpgrade {
 
 	// persistent properties
@@ -67,11 +69,12 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new SPacketUpdateTileEntity(pos, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
