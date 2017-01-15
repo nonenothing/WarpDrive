@@ -1,6 +1,5 @@
 package cr0s.warpdrive.world;
 
-import cr0s.warpdrive.render.RenderBlockForceField;
 import cr0s.warpdrive.render.RenderSpaceSky;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,7 +14,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.render.RenderBlank;
-import net.minecraftforge.client.IRenderHandler;
 
 public class SpaceWorldProvider extends WorldProvider {
 	
