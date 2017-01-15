@@ -4,7 +4,6 @@ import java.util.Random;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Planet;
-import cr0s.warpdrive.world.SpaceWorldProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
@@ -83,7 +82,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	@Override
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
-		boolean isSpace = (world.provider instanceof SpaceWorldProvider);
+		boolean isSpace = world.provider == null || world.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID;
 		
 		final Tessellator tessellator = Tessellator.instance;
 		
@@ -295,7 +294,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		
 		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, isSpace ? 1.0F : 0.2F);
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanets[planet.dimensionId % 3]);
+		FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanets[Math.abs(planet.dimensionId) % 3]);
 		tessellator.startDrawingQuads();
 		for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
 			final double offset1 = ((indexVertex     & 2) - 1) * renderSize;
