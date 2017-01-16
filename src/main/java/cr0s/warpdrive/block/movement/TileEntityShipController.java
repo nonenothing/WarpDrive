@@ -365,7 +365,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	private void setDistance(int distance) {
 		this.distance = Math.max(1, Math.min(WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE, distance));
-		if (WarpDriveConfig.LOGGING_JUMP) {
+		if (WarpDriveConfig.LOGGING_JUMP && worldObj != null) {
 			WarpDrive.logger.info(this + " Jump distance set to " + distance);
 		}
 	}
