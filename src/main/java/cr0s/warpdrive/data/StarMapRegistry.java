@@ -1,12 +1,17 @@
 package cr0s.warpdrive.data;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
@@ -23,53 +28,76 @@ import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
  * @author LemADEC
  */
 public class StarMapRegistry {
-	private final LinkedList<StarMapRegistryItem> registry;
+	private final HashMap<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> registry;
+	private int countAdd = 0;
+	private int countRemove = 0;
+	private int countRead = 0;
 	
 	public StarMapRegistry() {
-		registry = new LinkedList<>();
+		registry = new HashMap<>();
 	}
 	
-	public int searchInRegistry(StarMapRegistryItem entryKey) {
-		int res = -1;
+	public void updateInRegistry(IStarMapRegistryTileEntity tileEntity) {
+		assert(tileEntity instanceof TileEntity);
 		
-		for (int i = 0; i < registry.size(); i++) {
-			StarMapRegistryItem entry = registry.get(i);
-			
-			if (entry.dimensionId == entryKey.dimensionId && entry.x == entryKey.x && entry.y == entryKey.y && entry.z == entryKey.z) {
-				return i;
+		countRead++;
+		if (WarpDriveConfig.LOGGING_STARMAP) {
+			if (countRead % 1000 == 0) {
+				WarpDrive.logger.info("Starmap registry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
+			}
+		}
+		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
+		if (setRegistryItems == null) {
+			setRegistryItems = new CopyOnWriteArraySet<>();
+		}
+		for (StarMapRegistryItem registryItem : setRegistryItems) {
+			if (registryItem.sameIdOrCoordinates(tileEntity)) {
+				// already registered
+				registryItem.update(tileEntity);    // @TODO probably not thread safe
+				return;
 			}
 		}
 		
-		return res;
-	}
-	
-	public boolean isInRegistry(StarMapRegistryItem entryKey) {
-		return (searchInRegistry(entryKey) != -1);
-	}
-	
-	public void updateInRegistry(StarMapRegistryItem entryKey) {
-		int idx = searchInRegistry(entryKey);
-		
-		// update
-		if (idx != -1) {
-			registry.set(idx, entryKey);
-		} else {
-			registry.add(entryKey);
-			if (WarpDriveConfig.LOGGING_STARMAP) {
-				printRegistry("added");
-			}
+		// not found => add
+		countAdd++;
+		setRegistryItems.add(new StarMapRegistryItem(tileEntity));
+		registry.put(((TileEntity) tileEntity).getWorldObj().provider.dimensionId, setRegistryItems);
+		if (WarpDriveConfig.LOGGING_STARMAP) {
+			printRegistry("added");
 		}
 	}
 	
-	public void removeFromRegistry(StarMapRegistryItem entryKey) {
-		int idx = searchInRegistry(entryKey);
+	public void removeFromRegistry(IStarMapRegistryTileEntity tileEntity) {
+		assert(tileEntity instanceof TileEntity);
 		
-		if (idx != -1) {
-			registry.remove(idx);
-			if (WarpDriveConfig.LOGGING_STARMAP) {
-				printRegistry("removed");
+		countRead++;
+		Set<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
+		if (setRegistryItems == null) {
+			// noting to remove
+			return;
+		}
+		
+		for (StarMapRegistryItem registryItem : setRegistryItems) {
+			if (registryItem.isSameTileEntity(tileEntity)) {
+				// found it, remove and exit
+				countRemove++;
+				setRegistryItems.remove(registryItem);
+				return;
 			}
 		}
+		// not found => ignore it
+	}
+	
+	public void onBlockUpdated(World world, final int x, final int y, final int z) {
+		CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.dimensionId);
+		for (StarMapRegistryItem registryItem : setStarMapRegistryItems) {
+			if (registryItem.contains(x, y, z)) {
+				TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+				if (tileEntity instanceof IStarMapRegistryTileEntity) {
+					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(x, y, z));
+				}
+			}
+		}		
 	}
 	
 	public ArrayList<StarMapRegistryItem> radarScan(TileEntity tileEntity, final int radius) {
@@ -78,16 +106,18 @@ public class StarMapRegistry {
 		
 		// printRegistry();
 		int radius2 = radius * radius;
-		for (StarMapRegistryItem entry : registry) {
-			double dX = entry.x - tileEntity.xCoord;
-			double dY = entry.y - tileEntity.yCoord;
-			double dZ = entry.z - tileEntity.zCoord;
-			double distance2 = dX * dX + dY * dY + dZ * dZ;
-			
-			if ( distance2 <= radius2
-			  && (entry.isolationRate == 0.0D || tileEntity.getWorldObj().rand.nextDouble() >= entry.isolationRate)
-			  && (entry.getSpaceCoordinates() != null)) {
-				res.add(entry);
+		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
+			for (StarMapRegistryItem entry : entryDimension.getValue()) {
+				double dX = entry.x - tileEntity.xCoord;
+				double dY = entry.y - tileEntity.yCoord;
+				double dZ = entry.z - tileEntity.zCoord;
+				double distance2 = dX * dX + dY * dY + dZ * dZ;
+				
+				if (distance2 <= radius2
+				    && (entry.isolationRate == 0.0D || tileEntity.getWorldObj().rand.nextDouble() >= entry.isolationRate)
+				    && (entry.getSpaceCoordinates() != null)) {
+					res.add(entry);
+				}
 			}
 		}
 		
@@ -97,10 +127,14 @@ public class StarMapRegistry {
 	public void printRegistry(final String trigger) {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
-		for (StarMapRegistryItem entry : registry) {
-			WarpDrive.logger.info("- " + entry.type + " '" + entry.name + "' @ "
-					+ entry.dimensionId + ": " + entry.x + ", " + entry.y + ", " + entry.z
-					+ " with " + entry.isolationRate + " isolation rate");
+		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
+			String message = "";
+			for (StarMapRegistryItem registryItem : entryDimension.getValue()) {
+				message += "\n- " + registryItem.type + " '" + registryItem.name + "' @ "
+						+ registryItem.dimensionId + ": " + registryItem.x + " " + registryItem.y + " " + registryItem.z
+						+ " with " + registryItem.isolationRate + " isolation rate";
+			}
+			WarpDrive.logger.info("- " + entryDimension.getValue().size() + " entries in dimension " + entryDimension.getKey() + ": " + message);
 		}
 	}
 	
@@ -112,45 +146,39 @@ public class StarMapRegistry {
 		core.validateShipSpatialParameters(reason);
 		aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
 		
-		for (StarMapRegistryItem entry : registry) {
-			// Skip cores in other worlds
-			if (entry.dimensionId != core.getWorldObj().provider.dimensionId) {
-				continue;
-			}
+		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorldObj().provider.dimensionId);
+		if (setRegistryItems == null) {
+			return false;
+		}
+		for (StarMapRegistryItem registryItem : setRegistryItems) {
+			assert(registryItem.dimensionId == core.getWorldObj().provider.dimensionId);
+			
 			// only check cores
-			if (entry.type != EnumStarMapEntryType.SHIP) {
+			if (registryItem.type != EnumStarMapEntryType.SHIP) {
 				continue;
 			}
 			
 			// Skip self
-			if (entry.x == core.xCoord && entry.y == core.yCoord && entry.z == core.zCoord) {
+			if (registryItem.x == core.xCoord && registryItem.y == core.yCoord && registryItem.z == core.zCoord) {
 				continue;
 			}
 			
 			// Skip missing ship cores
-			TileEntity tileEntity = core.getWorldObj().getTileEntity(entry.x, entry.y, entry.z);
+			TileEntity tileEntity = core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(entry.x, entry.y, entry.z);
+			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			
 			// Skip offline warp cores
 			if (shipCore.controller == null || shipCore.controller.getMode() == EnumShipCoreMode.IDLE || !shipCore.validateShipSpatialParameters(reason)) {
 				continue;
 			}
 			
-			// Search for nearest warp cores
-			double d3 = entry.x - core.xCoord;
-			double d4 = entry.y - core.yCoord;
-			double d5 = entry.z - core.zCoord;
-			double distance2 = d3 * d3 + d4 * d4 + d5 * d5;
-			
-			if (distance2 <= ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1) * ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1)) {
-				// Compare warp-fields for intersection
-				aabb2 = AxisAlignedBB.getBoundingBox(entry.minX, entry.minY, entry.minZ, entry.maxX, entry.maxY, entry.maxZ);
-				if (aabb1.intersectsWith(aabb2)) {
-					return true;
-				}
+			// Compare areas for intersection
+			aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+			if (aabb1.intersectsWith(aabb2)) {
+				return true;
 			}
 		}
 		
@@ -159,65 +187,76 @@ public class StarMapRegistry {
 	
 	// do not call during tileEntity construction (readFromNBT and validate)
 	private void cleanup() {
-		LocalProfiler.start("StarMapRegistry cleanup");
+		LocalProfiler.start("Starmap registry cleanup");
 		
-		StarMapRegistryItem entry;
-		boolean isValid; 
-		for (int i = registry.size() - 1; i >= 0; i--) {
-			entry = registry.get(i);
-			isValid = false;
-			if (entry != null) {
-				WorldServer world = DimensionManager.getWorld(entry.dimensionId);
-				// skip unloaded worlds
-				if (world == null) {
-					continue;
-				}
-				
-				boolean isLoaded;
-				if (world.getChunkProvider() instanceof ChunkProviderServer) {
-					ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
-					try {
-						isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(entry.x >> 4, entry.z >> 4));
-					} catch (NoSuchFieldError exception) {
-						isLoaded = chunkProviderServer.chunkExists(entry.x >> 4, entry.z >> 4);
-					}
-				} else {
-					isLoaded = world.getChunkProvider().chunkExists(entry.x >> 4, entry.z >> 4);
-				}
-				// skip unloaded chunks
-				if (!isLoaded) {
-					continue;
-				}
-				
-				// get block and tile entity
-				Block block = world.getBlock(entry.x, entry.y, entry.z);
-				
-				TileEntity tileEntity = world.getTileEntity(entry.x, entry.y, entry.z);
-				isValid = true;
-				switch (entry.type) {
-				case UNDEFINED: break;
-				case SHIP:
-					isValid = block == WarpDrive.blockShipCore && tileEntity != null && !tileEntity.isInvalid();
-					break;
-				case JUMPGATE: break;
-				case PLANET: break;
-				case STAR: break;
-				case STRUCTURE: break;
-				case WARP_ECHO: break;
-				default: break;
-				}
+		boolean isValid;
+		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
+			WorldServer world = DimensionManager.getWorld(entryDimension.getKey());
+			// skip unloaded worlds
+			if (world == null) {
+				continue;
 			}
-			
-			if (!isValid) {
-				if (WarpDriveConfig.LOGGING_STARMAP) {
-					if (entry == null) {
-						WarpDrive.logger.info("Cleaning up starmap object ~null~");
+			for (StarMapRegistryItem registryItem : entryDimension.getValue()) {
+				isValid = false;
+				if (registryItem != null) {
+					
+					boolean isLoaded;
+					if (world.getChunkProvider() instanceof ChunkProviderServer) {
+						ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
+						try {
+							isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+						} catch (NoSuchFieldError exception) {
+							isLoaded = chunkProviderServer.chunkExists(registryItem.x >> 4, registryItem.z >> 4);
+						}
 					} else {
-						WarpDrive.logger.info("Cleaning up starmap object " + entry.type + " at "
-								+ entry.dimensionId + " " + entry.x + " " + entry.y + " " + entry.z);
+						isLoaded = world.getChunkProvider().chunkExists(registryItem.x >> 4, registryItem.z >> 4);
+					}
+					// skip unloaded chunks
+					if (!isLoaded) {
+						continue;
+					}
+					
+					// get block and tile entity
+					Block block = world.getBlock(registryItem.x, registryItem.y, registryItem.z);
+					
+					TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+					isValid = true;
+					switch (registryItem.type) {
+						case UNDEFINED:
+							break;
+						case SHIP:
+							isValid = block == WarpDrive.blockShipCore && tileEntity != null && !tileEntity.isInvalid();
+							break;
+						case JUMPGATE:
+							break;
+						case PLANET:
+							break;
+						case STAR:
+							break;
+						case STRUCTURE:
+							break;
+						case WARP_ECHO:
+							break;
+						case ACCELERATOR:
+							isValid = block == WarpDrive.blockAcceleratorController && tileEntity != null && !tileEntity.isInvalid();
+							break;
+						default:
+							break;
 					}
 				}
-				registry.remove(i);
+				
+				if (!isValid) {
+					if (WarpDriveConfig.LOGGING_STARMAP) {
+						if (registryItem == null) {
+							WarpDrive.logger.info("Cleaning up starmap object ~null~");
+						} else {
+							WarpDrive.logger.info("Cleaning up starmap object " + registryItem.type + " at "
+							                      + registryItem.dimensionId + " " + registryItem.x + " " + registryItem.y + " " + registryItem.z);
+						}
+					}
+					countRemove++;
+					entryDimension.getValue().remove(registryItem);
+				}
 			}
 		}
 		

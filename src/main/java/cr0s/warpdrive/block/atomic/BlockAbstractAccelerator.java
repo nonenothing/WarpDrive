@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class BlockAbstractAccelerator extends Block {
 	public final byte tier;
@@ -42,5 +43,11 @@ public class BlockAbstractAccelerator extends Block {
 	@Override
 	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
 		return false;
+	}
+	
+	@Override
+	public void breakBlock(World world, int x, int y, int z, Block block, int metadata) {
+		WarpDrive.starMap.onBlockUpdated(world, x, y, z);
+		super.breakBlock(world, x, y, z, block, metadata);
 	}
 }

@@ -3,6 +3,8 @@ package cr0s.warpdrive.block.movement;
 import java.util.List;
 import java.util.UUID;
 
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,7 +40,7 @@ import cr0s.warpdrive.world.SpaceTeleporter;
 /**
  * @author Cr0s
  */
-public class TileEntityShipCore extends TileEntityAbstractEnergy {
+public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
 	public int dx, dz;
 	private int direction;
@@ -151,8 +153,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			if (uuid == null || (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0)) {
 				uuid = UUID.randomUUID();
 			}
-			// recovery registration, shouldn't be needed, in theory...
-			WarpDrive.starMap.updateInRegistry(new StarMapRegistryItem(this));
+			// recover registration, shouldn't be needed, in theory...
+			WarpDrive.starMap.updateInRegistry(this);
 			
 			TileEntity controllerFound = findControllerBlock();
 			if (controllerFound == null) {
@@ -386,6 +388,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			}
 		}
 		isolationBlocksCount = newCount;
+		double legacy_isolationRate = isolationRate;
 		if (isolationBlocksCount >= WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS) {
 			isolationRate = Math.min(1.0, WarpDriveConfig.RADAR_MIN_ISOLATION_EFFECT
 					+ (isolationBlocksCount - WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS) // bonus blocks
@@ -394,7 +397,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 		} else {
 			isolationRate = 0.0D;
 		}
-		if (WarpDriveConfig.LOGGING_RADAR) {
+		if (WarpDriveConfig.LOGGING_RADAR && (WarpDrive.isDev || legacy_isolationRate != isolationRate)) {
 			WarpDrive.logger.info(this + " Isolation updated to " + isolationBlocksCount + " (" + String.format("%.1f", isolationRate * 100.0) + "%)");
 		}
 	}
@@ -1183,15 +1186,51 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy {
 			return;
 		}
 		
-		WarpDrive.starMap.updateInRegistry(new StarMapRegistryItem(this));
+		WarpDrive.starMap.updateInRegistry(this);
 	}
 	
 	@Override
 	public void invalidate() {
 		if (!worldObj.isRemote) {
-			WarpDrive.starMap.removeFromRegistry(new StarMapRegistryItem(this));
+			WarpDrive.starMap.removeFromRegistry(this);
 		}
 		super.invalidate();
+	}
+	
+	// IStarMapRegistryTileEntity overrides
+	@Override
+	public String getStarMapType() {
+		return EnumStarMapEntryType.SHIP.getName();
+	}
+	
+	@Override
+	public UUID getUUID() {
+		return uuid;
+	}
+	
+	@Override
+	public AxisAlignedBB getStarMapArea() {
+		return AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+	}
+	
+	@Override
+	public int getMass() {
+		return shipMass;
+	}
+	
+	@Override
+	public double getIsolationRate() {
+		return isolationRate;
+	}
+	
+	@Override
+	public String getStarMapName() {
+		return shipName;
+	}
+	
+	@Override
+	public void onBlockUpdatedInArea(VectorI vector) {
+		// no operation
 	}
 	
 	@Override
