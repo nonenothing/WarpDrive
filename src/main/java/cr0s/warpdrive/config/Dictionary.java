@@ -142,6 +142,7 @@ public class Dictionary {
 				config.get("block_tags", "OpenComputers:case3"                             , "PlaceLatest").getString(); 
 				config.get("block_tags", "OpenComputers:caseCreative"                      , "PlaceLatest").getString(); 
 				config.get("block_tags", "OpenComputers:keyboard"                          , "PlaceLatest").getString();
+				config.get("block_tags", "PneumaticCraft:pressureChamberValve"             , "PlaceEarlier").getString();
 				config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining").getString();
 				config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining").getString();
 				config.get("block_tags", "StargateTech2:block.shield"                      , "PlaceNormal StopMining").getString();

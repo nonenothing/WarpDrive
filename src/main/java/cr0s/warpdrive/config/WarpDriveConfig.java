@@ -114,6 +114,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_BREAK_PLACE = false;
 	public static boolean LOGGING_FORCEFIELD = false;
 	public static boolean LOGGING_FORCEFIELD_REGISTRY = false;
+	public static boolean LOGGING_ACCELERATOR = false;
 	
 	// Planets
 	public static Planet[] PLANETS = null;
@@ -164,7 +165,7 @@ public class WarpDriveConfig {
 	
 	// Ship Scanner
 	public static int SS_MAX_ENERGY_STORED = 500000000;
-	public static int SS_ENERGY_PER_BLOCK_SCAN = 100; // eU per block of ship volume (including air)
+	public static int SS_ENERGY_PER_BLOCK_SCAN = 100;
 	public static int SS_ENERGY_PER_BLOCK_DEPLOY = 5000;
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	public static int SS_SEARCH_INTERVAL_TICKS = 20;
@@ -407,6 +408,7 @@ public class WarpDriveConfig {
 		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_FORCEFIELD = config.get("logging", "enable_forcefield_logs", LOGGING_FORCEFIELD, "Detailed forcefield logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_FORCEFIELD_REGISTRY = config.get("logging", "enable_forcefield_registry_logs", LOGGING_FORCEFIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
+		LOGGING_ACCELERATOR = config.get("logging", "enable_accelerator_logs", LOGGING_ACCELERATOR, "Detailed accelerator logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		
 		// Planets
 		{
@@ -863,6 +865,10 @@ public class WarpDriveConfig {
 		boolean isNaturaLoaded = Loader.isModLoaded("Natura");
 		if (isNaturaLoaded) {
 			CompatNatura.register();
+		}
+		boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
+		if (isPneumaticCraftLoaded) {
+			CompatPneumaticCraft.register();
 		}
 		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
 		if (isRedstonePasteLoaded) {
