@@ -1385,8 +1385,8 @@ public class Recipes {
 				'c', "dyeBlue"));
 		
 		// Warp helmet
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[0]), false, "iii", "iwi", "gcg",
-				'i', Items.iron_ingot,
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[0]), false, "ggg", "gig", "wcw",
+				'i', Items.iron_helmet,
 				'w', Blocks.wool,
 				'g', "blockGlass",
 				'c', ItemComponent.getItemStack(EnumComponentType.AIR_CANISTER)));
