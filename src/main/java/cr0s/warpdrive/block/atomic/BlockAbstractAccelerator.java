@@ -44,10 +44,4 @@ public class BlockAbstractAccelerator extends Block {
 	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
 		return false;
 	}
-	
-	@Override
-	public void breakBlock(World world, int x, int y, int z, Block block, int metadata) {
-		WarpDrive.starMap.onBlockUpdated(world, x, y, z);
-		super.breakBlock(world, x, y, z, block, metadata);
-	}
 }

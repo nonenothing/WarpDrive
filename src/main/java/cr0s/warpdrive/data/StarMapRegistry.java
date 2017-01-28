@@ -88,13 +88,13 @@ public class StarMapRegistry {
 		// not found => ignore it
 	}
 	
-	public void onBlockUpdated(World world, final int x, final int y, final int z) {
+	public void onBlockUpdated(World world, final int x, final int y, final int z, final Block block, final int metadata) {
 		CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.dimensionId);
 		for (StarMapRegistryItem registryItem : setStarMapRegistryItems) {
 			if (registryItem.contains(x, y, z)) {
 				TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 				if (tileEntity instanceof IStarMapRegistryTileEntity) {
-					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(x, y, z));
+					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(x, y, z), block, metadata);
 				}
 			}
 		}		

@@ -8,9 +8,11 @@ import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -77,5 +79,15 @@ public class WorldHandler {
 		}
 		
 		AbstractSequencer.updateTick();
+	}
+	
+	@SubscribeEvent
+	public void onBlockUpdated(BlockEvent blockEvent) {
+		if (WarpDriveConfig.LOGGING_BREAK_PLACE && WarpDrive.isDev) {
+			WarpDrive.logger.info("onBlockUpdate args " + blockEvent.block + "@" + blockEvent.blockMetadata
+			                      + " actual " + blockEvent.world.getBlock(blockEvent.x, blockEvent.y, blockEvent.z)
+			                      + "@" + blockEvent.world.getBlockMetadata(blockEvent.x, blockEvent.y, blockEvent.z));
+		}
+		WarpDrive.starMap.onBlockUpdated(blockEvent.world, blockEvent.x, blockEvent.y, blockEvent.z, blockEvent.block, blockEvent.blockMetadata);
 	}
 }

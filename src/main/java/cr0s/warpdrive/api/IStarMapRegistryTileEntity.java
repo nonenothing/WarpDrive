@@ -1,6 +1,7 @@
 package cr0s.warpdrive.api;
 
 import cr0s.warpdrive.data.VectorI;
+import net.minecraft.block.Block;
 import net.minecraft.util.AxisAlignedBB;
 
 import java.util.UUID;
@@ -26,5 +27,5 @@ public interface IStarMapRegistryTileEntity {
 	String getStarMapName();
 	
 	// report an update in the area
-	void onBlockUpdatedInArea(final VectorI vector);
+	void onBlockUpdatedInArea(final VectorI vector, final Block block, final int metadata);
 }

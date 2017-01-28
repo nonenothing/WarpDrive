@@ -142,4 +142,13 @@ public class StarMapRegistryItem extends GlobalPosition {
 	public int hashCode() {
 		return dimensionId << 24 + (x >> 10) << 12 + y << 10 + (z >> 10);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
+			getClass().getSimpleName(), dimensionId,
+			x, y, z,
+			minX, minY, minZ,
+			maxX, maxY, maxZ);
+	}
 }
