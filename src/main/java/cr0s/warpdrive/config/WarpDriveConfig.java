@@ -116,8 +116,9 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_FORCEFIELD_REGISTRY = false;
 	public static boolean LOGGING_ACCELERATOR = false;
 	
-	// Planets
+	// Starmap
 	public static Planet[] PLANETS = null;
+	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
 	
 	// Space generator
 	public static int SPACE_GENERATOR_Y_MIN_CENTER = 55;
@@ -143,7 +144,6 @@ public class WarpDriveConfig {
 	public static int SHIP_SHORTJUMP_WARMUP_SECONDS = 10;
 	public static int SHIP_LONGJUMP_WARMUP_SECONDS = 30;
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
-	public static int SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
 	public static int SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
 	public static int SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
 	public static String[] SHIP_VOLUME_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
@@ -439,6 +439,8 @@ public class WarpDriveConfig {
 			// FIXME: check planets aren't overlapping
 			// We're not checking invalid dimension id, so they can be pre-allocated (see MystCraft)
 		}
+		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
+		config.get("starmap", "registry_update_interval", STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		
 		// Ship
 		SHIP_MAX_ENERGY_STORED = clamp(0, Integer.MAX_VALUE,
@@ -484,8 +486,6 @@ public class WarpDriveConfig {
 		SHIP_SUMMON_MAX_RANGE = config.get("ship", "summon_max_range", SHIP_SUMMON_MAX_RANGE, "Maximum range from which players can be summoned (measured in blocks), set to -1 for unlimited range").getInt();
 		SHIP_SUMMON_ACROSS_DIMENSIONS = config.get("ship", "summon_across_dimensions", false, "Enable summoning players from another dimension").getBoolean(false);
 		
-		SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
-				config.get("ship", "core_registry_update_interval", SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
 				config.get("ship", "core_isolation_update_interval", SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = clamp(0, 300,

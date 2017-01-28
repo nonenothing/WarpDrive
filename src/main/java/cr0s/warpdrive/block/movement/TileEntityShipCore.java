@@ -78,7 +78,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	protected int randomWarmupAddition = 0;
 	
 	private int chestTeleportUpdateTicks = 0;
-	private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS;
+	private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS;
 	private int registryUpdateTicks = 0;
 	private int bootTicks = 20;
 	private static final int logInterval_ticks = 20 * 60;
@@ -1229,7 +1229,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public void onBlockUpdatedInArea(VectorI vector) {
+	public void onBlockUpdatedInArea(final VectorI vector, final Block block, final int metadata) {
 		// no operation
 	}
 	
