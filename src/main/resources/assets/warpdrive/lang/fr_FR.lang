@@ -13,30 +13,34 @@ death.attack.warpdrive.warm=%1$s est mort de brûlure sévère
 death.attack.warpdrive.warm.player=%1$s a été cuit par %2$s
 
 item.warpdrive.component.malformed.name=Item invalide
-item.warpdrive.component.emeraldCrystal.name=Cristal d'émeraude accordé
-item.warpdrive.component.enderCrystal.name=Cristal de l'ender accordé
-item.warpdrive.component.diamondCrystal.name=Cristal de diamond accordé
-item.warpdrive.component.diffractionGrating.name=Réseau de diffraction
-item.warpdrive.component.reactorCore.name=Noyeau de réacteur
-item.warpdrive.component.computerInterface.name=Interface informatique
-item.warpdrive.component.powerInterface.name=Power Interface
-item.warpdrive.component.capacitiveCrystal.name=Cristal capacitif
-item.warpdrive.component.airCanisterEmpty.name=Cartouche d'air vide
-item.warpdrive.component.airCanisterEmpty.tooltip=§bClique droit sur un Générateur d'air§r pour me remplir
+item.warpdrive.component.emerald_crystal.name=Cristal d'émeraude accordé
+item.warpdrive.component.ender_crystal.name=Cristal de l'ender accordé
+item.warpdrive.component.diamond_crystal.name=Cristal de diamond accordé
+item.warpdrive.component.diffraction_grating.name=Réseau de diffraction
+item.warpdrive.component.reactor_core.name=Noyeau de réacteur
+item.warpdrive.component.computer_interface.name=Interface informatique
+item.warpdrive.component.power_interface.name=Power Interface
+item.warpdrive.component.capacitive_crystal.name=Cristal capacitif
+item.warpdrive.component.air_canister_empty.name=Cartouche d'air vide
+item.warpdrive.component.air_canister_empty.tooltip=§bClique droit sur un Générateur d'air§r pour me remplir
 item.warpdrive.component.lens.name=Lentille
 item.warpdrive.component.zoom.name=Zoom
-item.warpdrive.component.glassTank.name=Réservoir en verre
-item.warpdrive.component.flatScreen.name=Ecran plat
-item.warpdrive.component.memoryCrystal.name=Cristal de mémoire
+item.warpdrive.component.glass_tank.name=Réservoir en verre
+item.warpdrive.component.flat_screen.name=Ecran plat
+item.warpdrive.component.memory_crystal.name=Cristal de mémoire
 item.warpdrive.component.motor.name=Moteur
-item.warpdrive.component.boneCharcoal.name=Charbon d'ossements
-item.warpdrive.component.activatedCarbon.name=Charbon actif
-item.warpdrive.component.laserMediumEmpty.name=Milieu amplificateur (vide)
-item.warpdrive.component.electromagneticProjector.name=Projecteur électromagnétique
-item.warpdrive.component.coilCrystal.name=Cristal bobiné
+item.warpdrive.component.bone_charcoal.name=Charbon d'ossements
+item.warpdrive.component.activated_carbon.name=Charbon actif
+item.warpdrive.component.laser_medium_empty.name=Milieu amplificateur (vide)
+item.warpdrive.component.coil_crystal.name=Cristal bobiné
+item.warpdrive.component.electromagnetic_projector.name=Projecteur électromagnétique
+item.warpdrive.component.superconductor.name=Superconducteur
 
 item.warpdrive.armor.AirCanisterFull.name=Cartouche d'air
-item.warpdrive.armor.Helmet.name=Casque warp
+item.warpdrive.armor.helmet.name=Casque warp
+item.warpdrive.armor.chestplate.name=Plastron warp
+item.warpdrive.armor.leggings.name=Jambières warp
+item.warpdrive.armor.boots.name=Bottes warp
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=Focus laser pour réacteur IC2
 
@@ -142,12 +146,12 @@ item.warpdrive.tool.TuningFork.use.setBeamFrequency=%1$s est désormais accordé
 
 
 tile.warpdrive.passive.Air.name=Bloc d'air
-tile.warpdrive.passive.Energized.name=Block energisé
+tile.warpdrive.passive.Decorative.energized.name=Block energisé
+tile.warpdrive.passive.Decorative.network.name=Bloc de réseau
+tile.warpdrive.passive.Decorative.plain.name=Bloc ordinaire
 tile.warpdrive.passive.Gas.name=Bloc de gaz
 tile.warpdrive.passive.IridiumBlock.name=Bloc d'iridium
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Bloc de machine hyper avancé
-tile.warpdrive.passive.Network.name=Bloc de réseau
-tile.warpdrive.passive.Plain.name=Bloc ordinaire
 tile.warpdrive.passive.lamp_bubble.name=Lampe bulle
 tile.warpdrive.passive.lamp_flat.name=Lampe plate
 tile.warpdrive.passive.lamp_long.name=Lamp allongée
@@ -157,6 +161,37 @@ tile.warpdrive.machines.AirGenerator.name=Générateur d'air
 tile.warpdrive.machines.ChunkLoader.name=Chargeur de chunk
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Milieu amplificateur
+
+tile.warpdrive.atomic.accelerator_controller.name=Controlleur d'accélérateurs
+tile.warpdrive.atomic.accelerator_controller.tooltip=Contrôle un ou plusieurs accélérateurs de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.accelerator_control_point.name=Point de contrôle d'accélérateur
+tile.warpdrive.atomic.accelerator_control_point.tooltip=Contrôle un noeud de l'accélérateur tel que collisionneur, entrée et sortie.\nDoit être placé à exactement 1 block de distance d'une coquille sous vide.\nStocke les résultats dans tout conteneur directement connecté.
+tile.warpdrive.atomic.chiller1.name=Refroidisseur élémentaire
+tile.warpdrive.atomic.chiller1.tooltip=Refroidit progressivement les électroaimants d'un même accélérateur de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.chiller2.name=Refroidisseur avancé
+tile.warpdrive.atomic.chiller2.tooltip=Refroidit progressivement les électroaimants d'un même accélérateur de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.chiller3.name=Refroidisseur supérieur
+tile.warpdrive.atomic.chiller3.tooltip=Refroidit progressivement les électroaimants d'un même accélérateur de particules.\nDoit être placé à coté d'un électroaimant.
+tile.warpdrive.atomic.electromagnet1.plain.name=Electroaimant élémentaire
+tile.warpdrive.atomic.electromagnet1.plain.tooltip=Accélère, focalise et oriente les particules dans la coquille sous vide attachée.
+tile.warpdrive.atomic.electromagnet1.glass.name=Vitre d'électroaiment élémentaire
+tile.warpdrive.atomic.electromagnet1.glass.tooltip=Variante transparente de l'électroaimant.
+tile.warpdrive.atomic.electromagnet2.plain.name=Electroaimant avancé
+tile.warpdrive.atomic.electromagnet2.plain.tooltip=Accélère, focalise et oriente les particules dans la coquille sous vide attachée.
+tile.warpdrive.atomic.electromagnet2.glass.name=Vitre d'électroaimant avancé
+tile.warpdrive.atomic.electromagnet2.glass.tooltip=Variante transparente de l'électroaimant.
+tile.warpdrive.atomic.electromagnet3.plain.name=Electroaimant supérieur
+tile.warpdrive.atomic.electromagnet3.plain.tooltip=Accélère, focalise et oriente les particules dans la coquille sous vide attachée.
+tile.warpdrive.atomic.electromagnet3.glass.name=Vite d'électroaimant supérieur
+tile.warpdrive.atomic.electromagnet3.glass.tooltip=Variante transparente de l'électroaimant.
+tile.warpdrive.atomic.particles_collider.name=Collisionneur de particules
+tile.warpdrive.atomic.particles_collider.tooltip=Dévie les particules pour qu'elles entrent en collision frontale ou contre une cible.\nRequiert 12 blocs et un Point de contrôle d'accélérateur qui collectera les résultats.
+tile.warpdrive.atomic.particles_injector.name=Injecteur de particules
+tile.warpdrive.atomic.particles_injector.tooltip=Injecte des items ou particules depuis un conteneur attaché dans un accélérateur élémentaire.
+tile.warpdrive.atomic.void_shell_plain.name=Coquille sous vide
+tile.warpdrive.atomic.void_shell_plain.tooltip=Fournit 2 canaux de parcours des particules dans un accélérateur.\nSe connecte uniquement horizontalement avec d'autres Coquille sous vide.
+tile.warpdrive.atomic.void_shell_glass.name=Vitre de coquille sous vide
+tile.warpdrive.atomic.void_shell_glass.tooltip=Variante transparente de la Coquille sous vide permettant de voir les particules en mouvement.
 
 tile.warpdrive.building.ShipScanner.name=Scanneur de vaisseau
 
@@ -170,9 +205,23 @@ tile.warpdrive.detection.Monitor.name=Moniteur
 tile.warpdrive.detection.Radar.name=Radar
 tile.warpdrive.detection.WarpIsolation.name=Bloc d'isolation de champ de Warp
 
+tile.warpdrive.detection.Siren.tooltip=Déclenchement par redstone
+tile.warpdrive.detection.Siren0.name=Sirène industrielle
+tile.warpdrive.detection.Siren0.tooltip=Emet une alarme industrielle audible à 32 m.
+tile.warpdrive.detection.Siren4.name=Sirène de raid aérien basique 
+tile.warpdrive.detection.Siren4.tooltip=Sonne l'alerte de raid aérien audible à 32 m.
+tile.warpdrive.detection.Siren5.name=Sirène de raid aérien avancée
+tile.warpdrive.detection.Siren5.tooltip=Sonne l'alerte de raid aérien audible à 64 m.
+tile.warpdrive.detection.Siren6.name=Sirène de raid aérien supérieure
+tile.warpdrive.detection.Siren6.tooltip=Sonne l'alerte de raid aérien audible à 128 m.
+
 tile.warpdrive.energy.EnanReactorCore.name=Noyau de réacteur Enantiomorphic
 tile.warpdrive.energy.EnanReactorLaser.name=Laser de stabilisation pour réacteur Enantiomorphic
-tile.warpdrive.energy.EnergyBank.name=Réserve d'énergie Anuic
+tile.warpdrive.energy.EnergyBank.0.name=Extracteur du potentiel de point zéro
+tile.warpdrive.energy.EnergyBank.0.tooltip=Condensateur subspatial creatif
+tile.warpdrive.energy.EnergyBank.1.name=Condensateur subspatial élémentaire
+tile.warpdrive.energy.EnergyBank.2.name=Condensateur subspatial avancé
+tile.warpdrive.energy.EnergyBank.3.name=Condensateur subspatial supérieur
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=Laser de monitoring pour réacteur IC2
 
 tile.warpdrive.forcefield.block1.name=Bloc de champ de force élémentaire
@@ -197,7 +246,9 @@ tile.warpdrive.forcefield.relay3.tooltip=Supporte jusqu'à 1 augmentation de cha
 
 tile.warpdrive.movement.Lift.name=Ascenseur
 tile.warpdrive.movement.ShipController.name=Controlleur de vaisseau
+tile.warpdrive.movement.ShipController.tooltip=Défini l'avant du vaisseau par rapport au coeur. Attache un ordinateur pour ouvrir l'interface utilisateur.\nDoit être placé horizontalement directement à coté du Coeur de vaisseau.
 tile.warpdrive.movement.ShipCore.name=Coeur de vaisseau
+tile.warpdrive.movement.ShipCore.tooltip=Défini le centre du vaisseau par rapport au controlleur. Connecte une source d'énergie pour charger le coeur\nDoit être placé horizontalement directement à coté du Controlleur de vaisseau.
 tile.warpdrive.movement.Transporter.name=Transporteur
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Caméra
@@ -367,19 +418,17 @@ warpdrive.ship.playerAttached=Tu es désormais attaché au vaisseau %1$s.\nLes j
 warpdrive.ship.playerDetached=Tu es désormais détaché du vaisseau %1$s.\nLes joueurs attachés sont %2$s
 warpdrive.ship.statusLine.cooling=Encore %1$d s de refroidissement.
 warpdrive.ship.statusLine.isolation=Les %1$d blocs d'isolations actifs fournissent %2$2.1f%% d'absorption.
-warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s/%2$s EU.
+
+warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s / %2$s EU.
+warpdrive.energy.side.changedToInput=Le coté %1$s est en mode Réception d'énergie!
+warpdrive.energy.side.changedToOutput=Le coté %1$s est en mode Emission d'énergie!
+warpdrive.energy.side.changedToDisabled=Le coté %1$s side est en mode Inactif!
+
 warpdrive.beamFrequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
 warpdrive.beamFrequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
 warpdrive.beamFrequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
 
 warpdrive.forcefield.guide.lowPower=Nous sommes à court d'énergie Capitaine, réduissez la consommation ou appelez l'ingénieur écossais pour booster notre production!
-
-warpdrive.forcefield.shape.result.wrongSide=§cIl n'y a pas de projecteur électromagnétique sur cette face.
-warpdrive.forcefield.shape.result.noShapeToDismount=§cAucune forme à démonter.
-warpdrive.forcefield.shape.result.notEnoughShapes.double=§cIl faut au moins 2 objets pour établir la forme d'un projecteur double face.
-warpdrive.forcefield.shape.result.notEnoughShapes.single=§cIl faut au moins 1 object pour établir la forme d'un projecteur simple face.
-warpdrive.forcefield.shape.result.dismounted=Forme démontée correctement.
-warpdrive.forcefield.shape.result.mounted=Forme montée correctement.
 
 warpdrive.forcefield.shape.statusLine.none=§cLa forme n'est pas définie.
 warpdrive.forcefield.shape.statusLine.double=La forme est %1$s plein(e)
@@ -392,16 +441,6 @@ warpdrive.forcefield.shape.statusLine.plane=un plan
 warpdrive.forcefield.shape.statusLine.tube=un tube
 warpdrive.forcefield.shape.statusLine.tunnel=un tunnel
 
-warpdrive.forcefield.upgrade.result.noUpgradeToDismount=§cAucune amélioration à démonter.
-warpdrive.forcefield.upgrade.result.notEnoughUpgrades=§cIl faut au moins 1 object pour améliorer ce bloc.
-warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade=§cCette amélioration est trop grosse pour un projecteur, utilises un relais à la place.
-warpdrive.forcefield.upgrade.result.invalidRelayUpgrade=§cCette amélioration s'applique uniquement sur un projecteur.
-warpdrive.forcefield.upgrade.result.tooManyUpgrades=§cCette amélioration est déjà montée %1$s fois sur ce bloc, utilises un relais à la place.
-warpdrive.forcefield.upgrade.result.dismounted=Amélioration démontée correctement.
-warpdrive.forcefield.upgrade.result.mounted=Amélioration montée correctement.
-
-warpdrive.forcefield.upgrade.statusLine.none=§7Pas d'augmentation installée.
-warpdrive.forcefield.upgrade.statusLine.valid=Augmentation avec %1$s
 warpdrive.forcefield.upgrade.statusLine.attraction=attraction
 warpdrive.forcefield.upgrade.statusLine.breaking=casseur de bloc
 warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
@@ -421,6 +460,26 @@ warpdrive.forcefield.upgrade.statusLine.stabilization=stabilisation
 warpdrive.forcefield.upgrade.statusLine.thickness=épaisseur
 warpdrive.forcefield.upgrade.statusLine.translation=translation
 
+warpdrive.upgrade.result.noUpgradeToDismount=§cAucune amélioration à démonter.
+warpdrive.upgrade.result.notEnoughUpgrades=§cIl faut au moins 1 object pour améliorer ce bloc.
+warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block.
+warpdrive.upgrade.result.invalidProjectorUpgrade=§cCette amélioration est trop grosse pour un projecteur, utilises un relais à la place.
+warpdrive.upgrade.result.invalidRelayUpgrade=§cCette amélioration s'applique uniquement sur un projecteur.
+warpdrive.upgrade.result.validUpgrades=Valid upgrades for this block include: %1$s. @TODO not implemented yet
+warpdrive.upgrade.result.tooManyUpgrades=§cCette amélioration est déjà montée %1$s fois sur ce bloc, utilises un relais à la place.
+warpdrive.upgrade.result.dismounted=Amélioration %1$s démontée correctement.
+warpdrive.upgrade.result.mounted=Amélioration %1$s montée correctement.
+
+warpdrive.upgrade.result.wrongShapeSide=§cIl n'y a pas de projecteur électromagnétique sur cette face.
+warpdrive.upgrade.result.noShapeToDismount=§cAucune forme à démonter.
+warpdrive.upgrade.result.notEnoughShapes.double=§cIl faut au moins 2 objets pour établir la forme d'un projecteur double face.
+warpdrive.upgrade.result.notEnoughShapes.single=§cIl faut au moins 1 object pour établir la forme d'un projecteur simple face.
+warpdrive.upgrade.result.shapeDismounted=Forme démontée correctement.
+warpdrive.upgrade.result.shapeMounted=Forme montée correctement.
+
+warpdrive.forcefield.upgrade.statusLine.none=§7Pas d'augmentation installée.
+warpdrive.forcefield.upgrade.statusLine.valid=Augmenté avec %1$s.
+
 warpdrive.videoChannel.statusLine.valid=Le canal vidéo %1$d est valide.
 warpdrive.videoChannel.statusLine.validCamera=Le canal vidéo %1$d est valide pour la caméra à %2$d %3$d %4$d.
 warpdrive.videoChannel.statusLine.invalid=§cLe canal vidéo %1$d est invalide.
@@ -434,6 +493,6 @@ warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
 warpdrive.transporter.status=De %1$.0f %2$.0f %3$.0f à %4$.0f %5$.0f %6$.0f
 
-warpdrive.tooltip.itemTag.breathingIC2=Permet de §brespirer dans le vide§r en consommant des cellules d'air comprimé de IC2 depuis l'inventaire.
+warpdrive.tooltip.itemTag.breathingHelmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.
 warpdrive.tooltip.itemTag.flyInSpace=Jetpack compatible avec une utilisation §bspatiale§r.
 warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbe les damages de chute§r.

@@ -1,5 +1,6 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.render.RenderSpaceSky;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
@@ -10,11 +11,12 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkGenerator;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.render.RenderBlank;
+
+import javax.annotation.Nonnull;
 
 public class SpaceWorldProvider extends WorldProvider {
 	
@@ -23,6 +25,7 @@ public class SpaceWorldProvider extends WorldProvider {
 		hasNoSky = false;
 	}
 	
+	@Nonnull
 	@Override
 	public DimensionType getDimensionType() {
 		return WarpDrive.dimensionTypeSpace;
@@ -30,13 +33,13 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean canRespawnHere() {
-		return false;
+		return true;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public float getStarBrightness(float par1) {
-		return 1.0F;
+	public float getStarBrightness(float partialTicks) {
+		return 0.9F;
 	}
 	
 	@Override
@@ -51,7 +54,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public double getHorizon() {
-		return 1;
+		return -256;
 	}
 	
 	@Override
@@ -59,8 +62,9 @@ public class SpaceWorldProvider extends WorldProvider {
 		super.resetRainAndThunder();
 	}
 	
+	@Nonnull
 	@Override
-	public Biome getBiomeForCoords(BlockPos blockPos) {
+	public Biome getBiomeForCoords(@Nonnull BlockPos blockPos) {
 		return WarpDrive.spaceBiome;
 	}
 	
@@ -70,8 +74,8 @@ public class SpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public float calculateCelestialAngle(long par1, float par3) {
-		return 0F;
+	public float calculateCelestialAngle(long time, float partialTick) {
+		return 0.0F;
 	}
 	
 	@Override
@@ -98,13 +102,19 @@ public class SpaceWorldProvider extends WorldProvider {
 	}
 	/**/
 	
+	@Nonnull
 	@Override
-	public Vec3d getSkyColor(Entity cameraEntity, float partialTicks) {
-		setCloudRenderer(new RenderBlank());
-		// setSkyRenderer(new SpaceSkyRenderer());
+	public Vec3d getSkyColor(@Nonnull Entity cameraEntity, float partialTicks) {
+		if (getCloudRenderer() == null) {
+			setCloudRenderer(RenderBlank.getInstance());
+		}
+		if (getSkyRenderer() == null) {
+			setSkyRenderer(RenderSpaceSky.getInstance());
+		}
 		return new Vec3d(0.0D, 0.0D, 0.0D);
 	}
 	
+	@Nonnull
 	@Override
 	public Vec3d getFogColor(float par1, float par2) {
 		return new Vec3d(0.0D, 0.0D, 0.0D);
@@ -120,13 +130,14 @@ public class SpaceWorldProvider extends WorldProvider {
 		return 0; // re-spawn on Earth
 	}
 	
+	@Nonnull
 	@Override
 	public IChunkGenerator createChunkGenerator() {
 		return new SpaceChunkProvider(worldObj, 45);
 	}
 	
 	@Override
-	public boolean canBlockFreeze(BlockPos blockPos, boolean byWater) {
+	public boolean canBlockFreeze(@Nonnull BlockPos blockPos, boolean byWater) {
 		return false;
 	}
 	

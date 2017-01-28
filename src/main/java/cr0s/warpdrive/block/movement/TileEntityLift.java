@@ -72,7 +72,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				     && isPassableBlock(pos.getY() - 2);
 
 			IBlockState blockState = worldObj.getBlockState(pos);
-			if (getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
+			if (energy_getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isEnabled) {
 				mode = EnumLiftMode.INACTIVE;
 				if (blockState.getValue(BlockLift.MODE) != EnumLiftMode.INACTIVE) {
 					worldObj.setBlockState(pos, blockState.withProperty(BlockLift.MODE, EnumLiftMode.INACTIVE));
@@ -135,14 +135,14 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			for (Entity entity : list) {
 				if ( entity != null
 				  && entity instanceof EntityLivingBase
-				  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+				  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 					entity.setPositionAndUpdate(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
 					PacketHandler.sendBeamPacket(worldObj,
 							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
 							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							1F, 1F, 0F, 40, 0, 100);
 					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
-					consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+					energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 				}
 			}
 		} else if (mode == EnumLiftMode.DOWN) {
@@ -154,13 +154,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 				for (Entity entity : list) {
 					if ( entity != null
 					  && entity instanceof EntityLivingBase
-					  && consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 						entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
 								new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 								new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
 						worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
-						consumeEnergy(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 					}
 				}
 			}
@@ -199,12 +199,12 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.LIFT_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(EnumFacing from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
@@ -264,7 +264,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			
 		} else if (methodName.equals("active")) {
 			if (arguments.length == 1) {
-				computerEnabled = toBool(arguments);
+				computerEnabled = toBool(arguments[0]);
 			}
 			return new Object[] { !computerEnabled && isEnabled };
 		}

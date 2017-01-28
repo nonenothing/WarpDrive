@@ -2,6 +2,7 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.api.IItemBase;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
@@ -10,6 +11,7 @@ import net.minecraft.util.text.TextComponentString;
 import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,6 +25,9 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	public ItemBlockAbstractBase(Block block) {
 		super(block);
+		if (block instanceof BlockAbstractContainer) {
+			setHasSubtypes(((BlockAbstractContainer) block).hasSubBlocks);
+		}
 	}
 	
 	@Override
@@ -30,13 +35,33 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		return damage;
 	}
 	
-	public ITextComponent getStatus(final NBTTagCompound nbtTagCompound) {
-		TileEntity tileEntity = block.createTileEntity(Minecraft.getMinecraft().theWorld, block.getDefaultState());
+	@Nonnull
+	@Override
+	public String getUnlocalizedName(ItemStack itemStack) {
+		if ( itemStack == null 
+		  || !(block instanceof BlockAbstractContainer)
+		  || !((BlockAbstractContainer) block).hasSubBlocks ) {
+			return getUnlocalizedName();
+		}
+		return getUnlocalizedName() + itemStack.getItemDamage();
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack) {
+		if ( itemStack == null
+		  || !(block instanceof BlockAbstractContainer) ) {
+			return super.getRarity(itemStack);
+		}
+		return ((BlockAbstractContainer) block).getRarity(itemStack, super.getRarity(itemStack));
+	}
+	
+	public ITextComponent getStatus(final NBTTagCompound nbtTagCompound, final IBlockState blockState) {
+		TileEntity tileEntity = block.createTileEntity(Minecraft.getMinecraft().theWorld, blockState);
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			if (nbtTagCompound != null) {
 				tileEntity.readFromNBT(nbtTagCompound);
 			}
-			return ((TileEntityAbstractBase)tileEntity).getStatus();
+			return ((TileEntityAbstractBase) tileEntity).getStatus();
 			
 		} else {
 			return new TextComponentString("");
@@ -62,7 +87,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		if ((!tooltipName1.equals(tooltipName2)) && net.minecraft.client.resources.I18n.hasKey(tooltipName2)) {
 			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
-		
-		WarpDrive.addTooltip(list, getStatus(itemStack.getTagCompound()).getFormattedText());
+		IBlockState blockState = block.getStateFromMeta(itemStack.getMetadata());   // @TODO: integrate tooltips on tile entities
+		WarpDrive.addTooltip(list, getStatus(itemStack.getTagCompound(), blockState).getFormattedText());
 	}
 }

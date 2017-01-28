@@ -1,11 +1,13 @@
 {
-  "warp_4s"   : { "category": "master", "sounds": [{ "name": "warpdrive:warp_4s"   , "stream": false }] },
-  "warp_10s"  : { "category": "master", "sounds": [{ "name": "warpdrive:warp_10s"  , "stream": true  }] },
-  "warp_30s"  : { "category": "master", "sounds": [{ "name": "warpdrive:warp_30s"  , "stream": true  }] },
-  "hilaser"   : { "category": "master", "sounds": [{ "name": "warpdrive:hilaser"   , "stream": false }] },
-  "midlaser"  : { "category": "master", "sounds": [{ "name": "warpdrive:midlaser"  , "stream": false }] },
-  "lowlaser"  : { "category": "master", "sounds": [{ "name": "warpdrive:lowlaser"  , "stream": false }] },
-  "cloak"     : { "category": "master", "sounds": [{ "name": "warpdrive:cloak"     , "stream": false }] },
-  "decloak"   : { "category": "master", "sounds": [{ "name": "warpdrive:decloak"   , "stream": false }] },
-  "projecting": { "category": "master", "sounds": [{ "name": "warpdrive:projecting", "stream": false }] }
+  "warp_4s"           : { "category": "master", "sounds": [{ "name": "warpdrive:warp_4s"   , "stream": false }] },
+  "warp_10s"          : { "category": "master", "sounds": [{ "name": "warpdrive:warp_10s"  , "stream": true  }] },
+  "warp_30s"          : { "category": "master", "sounds": [{ "name": "warpdrive:warp_30s"  , "stream": true  }] },
+  "hilaser"           : { "category": "master", "sounds": [{ "name": "warpdrive:hilaser"   , "stream": false }] },
+  "midlaser"          : { "category": "master", "sounds": [{ "name": "warpdrive:midlaser"  , "stream": false }] },
+  "lowlaser"          : { "category": "master", "sounds": [{ "name": "warpdrive:lowlaser"  , "stream": false }] },
+  "cloak"             : { "category": "master", "sounds": [{ "name": "warpdrive:cloak"     , "stream": false }] },
+  "decloak"           : { "category": "master", "sounds": [{ "name": "warpdrive:decloak"   , "stream": false }] },
+  "projecting"        : { "category": "master", "sounds": [{ "name": "warpdrive:projecting", "stream": false }] },
+  "siren_raid"        : { "category": "master", "sounds": [{ "name": "siren_raid"          , "stream": true  }] },
+  "siren_industrial"  : { "category": "master", "sounds": [{ "name": "siren_industrial"    , "stream": true  }] }
 }

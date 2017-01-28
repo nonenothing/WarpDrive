@@ -16,7 +16,9 @@ public class SoundEvents {
 	public static final SoundEvent WARP_10_SECONDS;
 	public static final SoundEvent WARP_30_SECONDS;
     public static final SoundEvent DING;
-
+	public static final SoundEvent SIREN_RAID;
+	public static final SoundEvent SIREN_INDUSTRIAL;
+	
     static {
 		LASER_LOW = registerSound("lowlaser");
 		LASER_MEDIUM = registerSound("midlaser");
@@ -28,6 +30,8 @@ public class SoundEvents {
 		WARP_10_SECONDS = registerSound("warp_10s");
 		WARP_30_SECONDS = registerSound("warp_30s");
 		DING = registerSound("ding");
+	    SIREN_RAID = registerSound("siren_raid");
+	    SIREN_INDUSTRIAL = registerSound("siren_industrial");
 	}
 	
 	@SuppressWarnings({"unused", "EmptyMethod"})

@@ -3,12 +3,9 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumRadarMode;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -236,12 +233,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// searching methods
-
-	protected static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
-	public static Set<BlockPos> getConnectedBlocks(World world, BlockPos start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, BlockPos... ignore) {
+	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static Set<BlockPos> getConnectedBlocks(World world, final BlockPos start, final EnumFacing[] directions,final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
 		return getConnectedBlocks(world, Arrays.asList(start), directions, whitelist, maxRange, ignore);
 	}
-	protected static Set<BlockPos> getConnectedBlocks(World world, Collection<BlockPos> start, EnumFacing[] directions, HashSet<Block> whitelist, int maxRange, BlockPos... ignore) {
+	protected static Set<BlockPos> getConnectedBlocks(World world, final Collection<BlockPos> start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
 		Set<BlockPos> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
@@ -290,10 +287,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	protected static double toDouble(Object object) {
+		assert(!(object instanceof Object[]));
 		return Double.parseDouble(object.toString());
 	}
 	
 	protected static float toFloat(Object object) {
+		assert(!(object instanceof Object[]));
 		return Float.parseFloat(object.toString());
 	}
 	
@@ -301,6 +300,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (object == null) {
 			 return false;
 		}
+		assert(!(object instanceof Object[]));
 		if (object instanceof Boolean) {
 			 return ((Boolean) object);
 		}
@@ -308,15 +308,15 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes");
 	}
 	
-	protected static int clamp(final int min, final int max, final int value) {
+	public static int clamp(final int min, final int max, final int value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	
-	protected static float clamp(final float min, final float max, final float value) {
+	public static float clamp(final float min, final float max, final float value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	
-	protected static double clamp(final double min, final double max, final double value) {
+	public static double clamp(final double min, final double max, final double value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	
@@ -378,8 +378,26 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	// status
+	protected ITextComponent getUpgradeStatus() {
+		String strUpgrades = getUpgradesAsString();
+		if (strUpgrades.isEmpty()) {
+			return new TextComponentTranslation("warpdrive.upgrade.statusLine.none",
+				strUpgrades);
+		} else {
+			return new TextComponentTranslation("warpdrive.upgrade.statusLine.valid",
+				strUpgrades);
+		}
+	}
+	
 	public ITextComponent getStatus() {
-		return (worldObj != null ? new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName()) : new TextComponentString(""));
+		if (worldObj != null) {
+			Item item = Item.getItemFromBlock(getBlockType());
+			if (item != null) {
+				ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
+				return new TextComponentTranslation("warpdrive.guide.prefix", new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"));
+			}
+		}
+		return new TextComponentString("");
 	}
 	
 	// upgrade system

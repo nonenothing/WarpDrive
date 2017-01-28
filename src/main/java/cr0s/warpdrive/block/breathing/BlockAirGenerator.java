@@ -91,7 +91,7 @@ public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 				Item itemHeld = itemStackHeld.getItem();
 				if (itemHeld instanceof IAirCanister) {
 					IAirCanister airCanister = (IAirCanister) itemHeld;
-					if (airCanister.canContainAir(itemStackHeld) && airGenerator.consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, true)) {
+					if (airCanister.canContainAir(itemStackHeld) && airGenerator.energy_consume(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
 						ItemStack toAdd = airCanister.fullDrop(itemStackHeld);
 						if (toAdd != null) {
@@ -100,7 +100,7 @@ public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 								entityPlayer.worldObj.spawnEntityInWorld(ie);
 							}
 							((EntityPlayerMP)entityPlayer).sendContainerToPlayer(entityPlayer.inventoryContainer);
-							airGenerator.consumeEnergy(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, false);
+							airGenerator.energy_consume(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, false);
 						}
 					}
 				}

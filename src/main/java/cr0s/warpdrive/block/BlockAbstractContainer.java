@@ -18,6 +18,7 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -34,6 +35,8 @@ import javax.annotation.Nullable;
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock, IBlockBase {
+	protected boolean isRotating = false;
+	protected boolean hasSubBlocks = false; // @TODO: code review
 	
 	protected BlockAbstractContainer(final String registryName, final Material material) {
 		super(material);
@@ -98,6 +101,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	public void dropBlockAsItemWithChance(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState, float chance, int fortune) {
+		// @TODO: to be tested with ship core explosion on breaking
 		ItemStack itemStack = new ItemStack(this);
 		itemStack.setItemDamage(damageDropped(blockState));
 		TileEntity tileEntity = world.getTileEntity(blockPos);
@@ -124,6 +128,18 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 		return itemStack;
 	}
+	
+	// @TODO is it still needed?
+	/*
+	@Override
+	public boolean rotateBlock(World world, BlockPos blockPos, EnumFacing axis) {
+		if (isRotating) {
+			world.setBlockMetadataWithNotify(blockPos, axis.ordinal(), 3);
+			return true;
+		}
+		return false;
+	}
+	/**/
 	
 	// FIXME untested
 	/*
@@ -167,6 +183,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
+	@Override
 	@Optional.Method(modid = "DefenseTech")
 	public void onEMP(World world, int x, int y, int z, IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -181,9 +198,23 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityAbstractEnergy) {
 			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
-			if (tileEntityAbstractEnergy.getMaxEnergyStored() > 0) {
-				tileEntityAbstractEnergy.consumeEnergy(Math.round(tileEntityAbstractEnergy.getEnergyStored() * efficiency), false);
+			if (tileEntityAbstractEnergy.energy_getMaxStorage() > 0) {
+				tileEntityAbstractEnergy.energy_consume(Math.round(tileEntityAbstractEnergy.energy_getEnergyStored() * efficiency), false);
 			}
+		}
+	}
+	
+	public byte getTier(final ItemStack itemStack) {
+		return 1;
+	}
+	
+	EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+		switch (getTier(itemStack)) {
+			case 0:	return EnumRarity.EPIC;
+			case 1:	return EnumRarity.COMMON;
+			case 2:	return EnumRarity.UNCOMMON;
+			case 3:	return EnumRarity.RARE;
+			default: return rarity;
 		}
 	}
 }

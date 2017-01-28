@@ -32,11 +32,15 @@ item.warpdrive.component.motor.name=Motor
 item.warpdrive.component.bone_charcoal.name=Bone Charcoal
 item.warpdrive.component.activated_carbon.name=Activated Carbon
 item.warpdrive.component.laser_medium_empty.name=Laser Medium (empty)
-item.warpdrive.component.electromagnetic_projector.name=Electromagnetic Projector
 item.warpdrive.component.coil_crystal.name=Coil Crystal
+item.warpdrive.component.electromagnetic_projector.name=Electromagnetic Projector
+item.warpdrive.component.superconductor.name=Superconductor
 
 item.warpdrive.armor.AirCanisterFull.name=Air Canister
-item.warpdrive.armor.Helmet.name=Warp Helmet
+item.warpdrive.armor.helmet.name=Warp Helmet
+item.warpdrive.armor.chestplate.name=Warp Chestplate
+item.warpdrive.armor.leggings.name=Warp Leggings
+item.warpdrive.armor.boots.name=Warp Boots
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 Reactor Laser Focus
 
@@ -158,6 +162,37 @@ tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Laser Medium (Particle Booster)
 
+tile.warpdrive.atomic.accelerator_controller.name=Accelerator Controller
+tile.warpdrive.atomic.accelerator_controller.tooltip=Controls one or more particle accelerators.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.accelerator_control_point.name=Accelerator control point
+tile.warpdrive.atomic.accelerator_control_point.tooltip=Control accelerator nodes like collider, input and output.\nShall be placed exactly 1 block away from a void shell.\nStore results in any directly connected storage.
+tile.warpdrive.atomic.chiller1.name=Basic Chiller
+tile.warpdrive.atomic.chiller1.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.chiller2.name=Advanced Chiller
+tile.warpdrive.atomic.chiller2.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.chiller3.name=Superior Chiller
+tile.warpdrive.atomic.chiller3.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.electromagnet1.plain.name=Basic Plain Electromagnet
+tile.warpdrive.atomic.electromagnet1.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet1.glass.name=Basic Glass Electromagnet
+tile.warpdrive.atomic.electromagnet1.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.electromagnet2.plain.name=Advanced Plain Electromagnet
+tile.warpdrive.atomic.electromagnet2.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet2.glass.name=Advanced Glass Electromagnet
+tile.warpdrive.atomic.electromagnet2.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.electromagnet3.plain.name=Superior Plain Electromagnet
+tile.warpdrive.atomic.electromagnet3.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet3.glass.name=Superior Glass Electromagnet
+tile.warpdrive.atomic.electromagnet3.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.particles_collider.name=Particles Collider
+tile.warpdrive.atomic.particles_collider.tooltip=Deviates particles to collide against each others or a fixed target.\nRequires 12 blocks and an Accelerator control point to collect results.
+tile.warpdrive.atomic.particles_injector.name=Particles Injector
+tile.warpdrive.atomic.particles_injector.tooltip=Inject items or particles from a connected storage into a Basic Accelerator.
+tile.warpdrive.atomic.void_shell_plain.name=Plain Void Shell
+tile.warpdrive.atomic.void_shell_plain.tooltip=Provides 2 empty channels for particles to travel inside an accelerator setup.\nConnects only horizontally to other Void Shells.
+tile.warpdrive.atomic.void_shell_glass.name=Glass Void Shell
+tile.warpdrive.atomic.void_shell_glass.tooltip=Same as a Plain Void Shell, except you can see particles moving through it.
+
 tile.warpdrive.building.ShipScanner.name=Ship Scanner
 
 tile.warpdrive.collection.LaserTreeFarm.name=Laser Tree Farm
@@ -170,9 +205,23 @@ tile.warpdrive.detection.Monitor.name=Monitor
 tile.warpdrive.detection.Radar.name=Radar
 tile.warpdrive.detection.WarpIsolation.name=Warp-field Isolation Block
 
+tile.warpdrive.detection.Siren.tooltip=Triggered by redstone
+tile.warpdrive.detection.Siren0.name=Industrial Siren
+tile.warpdrive.detection.Siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
+tile.warpdrive.detection.Siren4.name=Basic Air Raid Siren
+tile.warpdrive.detection.Siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
+tile.warpdrive.detection.Siren5.name=Advanced Air Raid Siren
+tile.warpdrive.detection.Siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
+tile.warpdrive.detection.Siren6.name=Superior Air Raid Siren
+tile.warpdrive.detection.Siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
+
 tile.warpdrive.energy.EnanReactorCore.name=Enantiomorphic Reactor Core
 tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorphic Reactor Stabilization Laser
-tile.warpdrive.energy.EnergyBank.name=Anuic Energy Bank
+tile.warpdrive.energy.EnergyBank.0.name=Zero-Point Module
+tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subspace Capacitor
+tile.warpdrive.energy.EnergyBank.1.name=Basic Subspace Capacitor
+tile.warpdrive.energy.EnergyBank.2.name=Advanced Subspace Capacitor
+tile.warpdrive.energy.EnergyBank.3.name=Superior Subspace Capacitor
 tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reactor Laser Monitor
 
 tile.warpdrive.forcefield.block1.name=Basic Force Field Block
@@ -197,7 +246,9 @@ tile.warpdrive.forcefield.relay3.tooltip=Supports up to 1 force field upgrade sh
 
 tile.warpdrive.movement.Lift.name=Lift
 tile.warpdrive.movement.ShipController.name=Ship Controller
+tile.warpdrive.movement.ShipController.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core.
 tile.warpdrive.movement.ShipCore.name=Ship Core
+tile.warpdrive.movement.ShipCore.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
 tile.warpdrive.movement.Transporter.name=Transporter
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Camera
@@ -367,22 +418,17 @@ warpdrive.ship.playerAttached=You're now attached to ship %1$s.\nAttached player
 warpdrive.ship.playerDetached=You've been detached from ship %1$s.\nAttached players are %2$s
 warpdrive.ship.statusLine.cooling=%1$d s left of cooldown.
 warpdrive.ship.statusLine.isolation=%1$d active isolation blocks providing %2$2.1f%% absorption.
-warpdrive.energy.statusLine=Energy level is %1$s/%2$s EU.
+
+warpdrive.energy.statusLine=Energy level is %1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=%1$s side changed to energy Input mode!
 warpdrive.energy.side.changedToOutput=%1$s side changed to energy Output mode!
 warpdrive.energy.side.changedToDisabled=%1$s side changed to Disabled mode!
+
 warpdrive.beamFrequency.statusLine.valid=Beam frequency %1$d is valid.
 warpdrive.beamFrequency.statusLine.invalid=§cBeam frequency %1$d is invalid.
 warpdrive.beamFrequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set it.
 
 warpdrive.forcefield.guide.lowPower=We're running out of power captain, reduce our consumption or get that scottish engineer to boost our power!
-
-warpdrive.forcefield.shape.result.wrongSide=§cThere's no Electromagnetic projector on this side.
-warpdrive.forcefield.shape.result.noShapeToDismount=§cNo shape to dismount.
-warpdrive.forcefield.shape.result.notEnoughShapes.double=§cYou need at least 2 items to set the shape of a double sided projector.
-warpdrive.forcefield.shape.result.notEnoughShapes.single=§cYou need at least 1 item to set the shape of a single sided projector.
-warpdrive.forcefield.shape.result.dismounted=Shape dismounted successfully.
-warpdrive.forcefield.shape.result.mounted=Shape mounted successfully.
 
 warpdrive.forcefield.shape.statusLine.none=§cShape isn't defined.
 warpdrive.forcefield.shape.statusLine.double=Shape is a full %1$s
@@ -395,16 +441,6 @@ warpdrive.forcefield.shape.statusLine.plane=plane
 warpdrive.forcefield.shape.statusLine.tube=tube
 warpdrive.forcefield.shape.statusLine.tunnel=tunnel
 
-warpdrive.forcefield.upgrade.result.noUpgradeToDismount=§cNo upgrade to dismount.
-warpdrive.forcefield.upgrade.result.notEnoughUpgrades=§cYou need at least 1 item to upgrade this block.
-warpdrive.forcefield.upgrade.result.invalidProjectorUpgrade=§cThis upgrade is too big for a projector, use a relay instead.
-warpdrive.forcefield.upgrade.result.invalidRelayUpgrade=§cThis upgrade only applies to projectors.
-warpdrive.forcefield.upgrade.result.tooManyUpgrades=§cThere's already %1$s upgrades installed, use a relay to add more.
-warpdrive.forcefield.upgrade.result.dismounted=Upgrade dismounted successfully.
-warpdrive.forcefield.upgrade.result.mounted=Upgrade mounted successfully.
-
-warpdrive.forcefield.upgrade.statusLine.none=§7No upgrade installed.
-warpdrive.forcefield.upgrade.statusLine.valid=Upgraded with %1$s
 warpdrive.forcefield.upgrade.statusLine.attraction=attraction
 warpdrive.forcefield.upgrade.statusLine.breaking=block breaking
 warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
@@ -424,6 +460,26 @@ warpdrive.forcefield.upgrade.statusLine.stabilization=stabilization
 warpdrive.forcefield.upgrade.statusLine.thickness=thickness
 warpdrive.forcefield.upgrade.statusLine.translation=translation
 
+warpdrive.upgrade.result.noUpgradeToDismount=§cNo upgrade to dismount.
+warpdrive.upgrade.result.notEnoughUpgrades=§cYou need at least 1 item to upgrade this block.
+warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block.
+warpdrive.upgrade.result.invalidProjectorUpgrade=§cThis upgrade is too big for a projector, use a relay instead.
+warpdrive.upgrade.result.invalidRelayUpgrade=§cThis upgrade only applies to projectors.
+warpdrive.upgrade.result.validUpgrades=Valid upgrades for this block include: %1$s. @TODO not implemented yet
+warpdrive.upgrade.result.tooManyUpgrades=§cThere's already %1$d upgrades installed.
+warpdrive.upgrade.result.dismounted=Upgrade %1$s was dismounted successfully.
+warpdrive.upgrade.result.mounted=Upgrade %1$s was mounted successfully.
+
+warpdrive.upgrade.result.wrongShapeSide=§cThere's no Electromagnetic projector on this side.
+warpdrive.upgrade.result.noShapeToDismount=§cNo shape to dismount.
+warpdrive.upgrade.result.notEnoughShapes.double=§cYou need at least 2 items to set the shape of a double sided projector.
+warpdrive.upgrade.result.notEnoughShapes.single=§cYou need at least 1 item to set the shape of a single sided projector.
+warpdrive.upgrade.result.shapeDismounted=Shape dismounted successfully.
+warpdrive.upgrade.result.shapeMounted=Shape mounted successfully.
+
+warpdrive.upgrade.statusLine.none=§7No upgrade installed.
+warpdrive.upgrade.statusLine.valid=Upgraded with %1$s.
+
 warpdrive.videoChannel.statusLine.valid=Video channel %1$d is valid.
 warpdrive.videoChannel.statusLine.validCamera=Video channel %1$d is valid for camera at %2$d, %3$d, %4$d.
 warpdrive.videoChannel.statusLine.invalid=§cVideo channel %1$d is invalid.
@@ -437,6 +493,6 @@ warpdrive.IC2reactorLaserMonitor.noReactor=No reactor found!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) connected.
 warpdrive.transporter.status=From %1$.0f %2$.0f %3$.0f to %4$.0f %5$.0f %6$.0f
 
-warpdrive.tooltip.itemTag.breathingIC2=§bSpace breathing§r consuming IC2 Compressed air cells from your inventory.
+warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
 warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r.
 warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbs fall damage§r.

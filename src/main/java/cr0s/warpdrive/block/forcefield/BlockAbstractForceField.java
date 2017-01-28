@@ -4,6 +4,7 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemStack;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,6 +34,11 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 		return false;
 	}
 	
+	@Override
+	public byte getTier(final ItemStack itemStack) {
+		return tier;
+	}
+		
 	@Override
 	public void onEMP(World world, final BlockPos blockPos, final float efficiency) {
 		super.onEMP(world, blockPos, efficiency * (1.0F - 0.2F * (tier - 1)));

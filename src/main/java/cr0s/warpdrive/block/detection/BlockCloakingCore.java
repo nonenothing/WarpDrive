@@ -63,6 +63,11 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	}
 	
 	@Override
+	public byte getTier(final ItemStack itemStack) {
+		return 3;
+	}
+	
+	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;

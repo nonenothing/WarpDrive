@@ -27,10 +27,11 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import javax.annotation.Nonnull;
 
 public class BlockHullPlain extends Block implements IDamageReceiver {
-	private static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
-	private int tier;
 	
-	public BlockHullPlain(final String registryName, final int tier) {
+	private static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
+	final byte tier;
+	
+	public BlockHullPlain(final String registryName, final byte tier) {
 		super(Material.ROCK);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);

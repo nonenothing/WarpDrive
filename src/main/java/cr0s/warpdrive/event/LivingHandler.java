@@ -3,12 +3,17 @@ package cr0s.warpdrive.event;
 import java.util.HashMap;
 import java.util.UUID;
 
+import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IBreathingHelmet;
 import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.item.ItemEnergyWrapper;
+import net.minecraft.entity.Entity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,7 +25,6 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBreathingHelmet;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -37,6 +41,7 @@ public class LivingHandler {
 	private static final VectorI[] vAirOffsets = { new VectorI(0, 0, 0), new VectorI(0, 1, 0),
 		new VectorI(0, 1, 1), new VectorI(0, 1, -1), new VectorI(1, 1, 0), new VectorI(1, 1, 0),
 		new VectorI(0, 0, 1), new VectorI(0, 0, -1), new VectorI(1, 0, 0), new VectorI(1, 0, 0) };
+	private static final int AIR_ENERGY_FOR_ELECTROLYSE = 2000;
 	
 	public LivingHandler() {
 		entity_airBlock = new HashMap<>();
@@ -128,35 +133,34 @@ public class LivingHandler {
 					boolean hasHelmet = false;
 					ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 					if (helmetStack != null) {
-						Item helmet = helmetStack.getItem();
-						if (helmet instanceof IBreathingHelmet) {
-							IBreathingHelmet breathHelmet = (IBreathingHelmet) helmet;
-							int airTicks = breathHelmet.ticksPerCanDamage();
-							if (breathHelmet.canBreath(player)) {
+						Item itemHelmet = helmetStack.getItem();
+						if (itemHelmet instanceof IBreathingHelmet) {
+							IBreathingHelmet breathingHelmet = (IBreathingHelmet) itemHelmet;
+							int airTicks = breathingHelmet.ticksPerCanDamage();
+							if (breathingHelmet.canBreath(player)) {
 								hasHelmet = true;
 								if (air == null) {// new player in space => grace period
 									player_airTank.put(uuidPlayer, airTicks);
 								} else if (air <= 1) {
-									if (breathHelmet.removeAir(player)) {
+									if (breathingHelmet.removeAir(player) || consumeAirCanister(player)) {
 										player_airTank.put(uuidPlayer, airTicks);
 									} else {
-										player_airTank.put(uuidPlayer, AIR_DROWN_TICKS);
-										player.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
+										hasHelmet = false;
 									}
 								} else {
 									player_airTank.put(uuidPlayer, air - 1);
 								}
 							}
-						} else if (Dictionary.ITEMS_BREATHINGIC2.contains(helmet)) {
+						}
+						if (Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet)) {
 							hasHelmet = true;
 							if (air == null) {// new player in space => grace period
 								player_airTank.put(uuidPlayer, AIR_TANK_TICKS);
 							} else if (air <= 1) {
-								if (consumeCompressedAir(player.inventory.mainInventory, player)) {
+								if (consumeAirCanister(player)) {
 									player_airTank.put(uuidPlayer, AIR_TANK_TICKS);
 								} else {
-									player_airTank.put(uuidPlayer, AIR_DROWN_TICKS);
-									entity.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
+									hasHelmet = false;
 								}
 							} else {
 								player_airTank.put(uuidPlayer, air - 1);
@@ -213,26 +217,180 @@ public class LivingHandler {
 		}
 	}
 	
-	private static boolean consumeCompressedAir(ItemStack[] inventory, EntityPlayerMP entityPlayer) {
-		for (int j = 0; j < inventory.length; ++j) {
-			if (inventory[j] != null && inventory[j].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
-				inventory[j].stackSize--;
-				if (inventory[j].stackSize <= 0) {
-					inventory[j] = null;
+	static public boolean consumeAirCanister(Entity entity) {
+		if (WarpDriveConfig.LOGGING_BREATHING) {
+			WarpDrive.logger.info("Checking inventory for air reserves...");
+		}
+		if (!(entity instanceof EntityPlayerMP)) {
+			return false;
+		}
+		
+		EntityPlayerMP entityPlayer = (EntityPlayerMP) entity;
+		ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+		int slotAirCanisterFound = -1;
+		float fillingRatioAirCanisterFound = 0.0F;
+		
+		// find most consumed air canister with smallest stack
+		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
+			ItemStack itemStack = playerInventory[slotIndex];
+			if (itemStack != null && itemStack.getItem() instanceof IAirCanister) {
+				IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+				if (airCanister.containsAir(itemStack)) {
+					float fillingRatio = 1.0F - itemStack.getItemDamage() / (float)itemStack.getMaxDamage();
+					fillingRatio -= itemStack.stackSize / 1000;
+					if (fillingRatioAirCanisterFound <= 0.0F || fillingRatio < fillingRatioAirCanisterFound) {
+						slotAirCanisterFound = slotIndex;
+						fillingRatioAirCanisterFound = fillingRatio;
+					}
 				}
-				
-				if (WarpDriveConfig.IC2_emptyCell != null) {
-					ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
-					if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
+			}
+		}
+		// consume air on the selected Air canister
+		if (slotAirCanisterFound >= 0) {
+			ItemStack itemStack = playerInventory[slotAirCanisterFound];
+			if (itemStack != null && itemStack.getItem() instanceof IAirCanister) {
+				IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+				if (airCanister.containsAir(itemStack)) {
+					if (itemStack.stackSize > 1) {// unstack
+						itemStack.stackSize--;
+						ItemStack toAdd = itemStack.copy();
+						toAdd.stackSize = 1;
+						toAdd.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+						if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+							toAdd = airCanister.emptyDrop(itemStack);
+						}
+						if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
+							EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+							entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+						}
+						entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
+					} else {
+						itemStack.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+						if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+							playerInventory[slotAirCanisterFound] = airCanister.emptyDrop(itemStack);
+						}
+					}
+					return true;
+				}
+			}
+		}
+		
+		// (no air canister or all empty)
+		// check IC2 compressed air cells
+		if (WarpDriveConfig.IC2_compressedAir != null) {
+			for (int j = 0; j < playerInventory.length; ++j) {
+				if (playerInventory[j] != null && playerInventory[j].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
+					playerInventory[j].stackSize--;
+					if (playerInventory[j].stackSize <= 0) {
+						playerInventory[j] = null;
+					}
+					
+					if (WarpDriveConfig.IC2_emptyCell != null) {
+						ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
+						if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
+							World world = entityPlayer.worldObj;
+							EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
+							entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+						}
+						entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
+					}
+					return true;
+				}
+			}
+		}
+		
+		// all Air canisters empty
+		ItemStack itemStackChestplate = entityPlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+		if (itemStackChestplate != null) {
+			Item itemChestplate = itemStackChestplate.getItem();
+			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
+				return electrolyseIceToAir(entity);
+			}
+		}
+		return false;
+	}
+	
+	static private boolean electrolyseIceToAir(Entity entity) {
+		if (WarpDriveConfig.LOGGING_BREATHING) {
+			WarpDrive.logger.info("Checking inventory for ice electrolysing...");
+		}
+		if (!(entity instanceof EntityPlayerMP)) {
+			return false;
+		}
+		EntityPlayerMP entityPlayer = (EntityPlayerMP) entity;
+		ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+		int slotIceFound = -1;
+		int slotFirstEmptyAirCanisterFound = -1;
+		int slotSecondEmptyAirCanisterFound = -1;
+		int slotEnergyContainer = -1;
+		
+		// find most consumed air canister with smallest stack
+		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
+			ItemStack itemStack = playerInventory[slotIndex];
+			if (itemStack == null || itemStack.stackSize <= 0) {
+				// skip
+			} else if (itemStack.getItem() == Item.getItemFromBlock(Blocks.ICE)) {
+				slotIceFound = slotIndex;
+			} else if (itemStack.stackSize == 1 && itemStack.getItem() instanceof IAirCanister) {
+				IAirCanister airCanister = (IAirCanister) itemStack.getItem();
+				if (airCanister.canContainAir(itemStack) && !airCanister.containsAir(itemStack)) {
+					if (slotFirstEmptyAirCanisterFound < 0) {
+						slotFirstEmptyAirCanisterFound = slotIndex;
+					} else if (slotSecondEmptyAirCanisterFound < 0) {
+						slotSecondEmptyAirCanisterFound = slotIndex;
+						if (slotIceFound >= 0 && slotEnergyContainer >= 0) {
+							break;
+						}
+					}
+				}
+			} else if ( slotEnergyContainer < 0
+			         && ItemEnergyWrapper.isEnergyContainer(itemStack)
+			         && ItemEnergyWrapper.canOutput(itemStack)
+			         && ItemEnergyWrapper.getEnergyStored(itemStack) >= AIR_ENERGY_FOR_ELECTROLYSE ) {
+				slotEnergyContainer = slotIndex;
+			}
+		}
+		
+		if (slotEnergyContainer >= 0 && slotIceFound >= 0 && slotFirstEmptyAirCanisterFound >= 0) {
+			// consume energy
+			ItemStack itemStackEnergyContainer = playerInventory[slotEnergyContainer];
+			itemStackEnergyContainer = ItemEnergyWrapper.consume(itemStackEnergyContainer, AIR_ENERGY_FOR_ELECTROLYSE, false);
+			if (itemStackEnergyContainer != null) {
+				if (playerInventory[slotEnergyContainer].stackSize <= 1) {
+					playerInventory[slotEnergyContainer] = itemStackEnergyContainer;
+				} else {
+					playerInventory[slotEnergyContainer].stackSize--;
+					if (!entityPlayer.inventory.addItemStackToInventory(itemStackEnergyContainer)) {
 						World world = entityPlayer.worldObj;
-						EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
+						EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackEnergyContainer);
 						entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 					}
-					entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				}
+				
+				// consume ice
+				ItemStack itemStackIce = playerInventory[slotIceFound];
+				if (itemStackIce.stackSize > 1) {
+					itemStackIce.stackSize--;
+					playerInventory[slotIceFound] = itemStackIce; 
+				} else {
+					playerInventory[slotIceFound] = null;
+				}
+				
+				// fill air canister(s)
+				ItemStack itemStackAirCanister = playerInventory[slotFirstEmptyAirCanisterFound];
+				IAirCanister airCanister = (IAirCanister) itemStackAirCanister.getItem();
+				playerInventory[slotFirstEmptyAirCanisterFound] = airCanister.fullDrop(itemStackAirCanister);
+				
+				if (slotSecondEmptyAirCanisterFound >= 0) {
+					itemStackAirCanister = playerInventory[slotSecondEmptyAirCanisterFound];
+					airCanister = (IAirCanister) itemStackAirCanister.getItem();
+					playerInventory[slotSecondEmptyAirCanisterFound] = airCanister.fullDrop(itemStackAirCanister);
+				}
+				entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				return true;
 			}
 		}
+		
 		return false;
 	}
 	

@@ -31,9 +31,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public byte tier = 1; // cloaking field tier, 1 or 2
 	
 	// inner coils color map
-	final float[] innerCoilColor_r = { 1.00f, 1.00f, 1.00f, 1.00f, 0.75f, 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f }; 
-	final float[] innerCoilColor_g = { 0.00f, 0.25f, 0.75f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.50f, 0.25f, 0.00f, 0.00f }; 
-	final float[] innerCoilColor_b = { 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f, 1.00f, 1.00f, 1.00f, 0.75f }; 
+	private final float[] innerCoilColor_r = { 1.00f, 1.00f, 1.00f, 1.00f, 0.75f, 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f }; 
+	private final float[] innerCoilColor_g = { 0.00f, 0.25f, 0.75f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.50f, 0.25f, 0.00f, 0.00f }; 
+	private final float[] innerCoilColor_b = { 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f, 1.00f, 1.00f, 1.00f, 0.75f }; 
 	
 	// Spatial cloaking field parameters
 	private static final int innerCoilsDistance = 2; // Step length from core block to main coils
@@ -130,7 +130,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						if (WarpDriveConfig.LOGGING_CLOAKING) {
 							WarpDrive.logger.info(this + " Coil(s) lost, cloak field is collapsing...");
 						}
-						consumeAllEnergy();
+						energy_consume(energy_getEnergyStored());
 						disableCloakingField();				
 					} else {// enabled, cloaking and valid
 						if (hasEnoughPower) {// enabled, cloaking and able to
@@ -289,7 +289,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		}
 		
 		// WarpDrive.logger.info(this + " Consuming " + energyToConsume + " EU for " + blocksCount + " blocks");
-		return consumeEnergy(energyToConsume, false);
+		return energy_consume(energyToConsume, false);
 	}
 	
 	@Override
@@ -449,12 +449,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.CLOAKING_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(EnumFacing from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 }

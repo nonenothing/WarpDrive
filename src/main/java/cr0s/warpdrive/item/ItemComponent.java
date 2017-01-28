@@ -2,7 +2,9 @@ package cr0s.warpdrive.item;
 
 import java.util.List;
 
+import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.EnumComponentType;
+import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,6 +12,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -97,6 +101,12 @@ public class ItemComponent extends ItemAbstractBase implements IAirCanister {
 			return WarpDrive.itemAirCanisterFull.emptyDrop(itemStack);
 		}
 		return null;
+	}
+	
+	@Override
+	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess world, BlockPos blockPos, EntityPlayer player) {
+		Block block = world.getBlockState(blockPos).getBlock();
+		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 	
 	@Override

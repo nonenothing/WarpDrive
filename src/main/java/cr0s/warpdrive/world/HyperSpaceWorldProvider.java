@@ -1,5 +1,6 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.render.RenderSpaceSky;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -17,6 +18,8 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.RenderBlank;
 
+import javax.annotation.Nonnull;
+
 public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	public HyperSpaceWorldProvider() {
@@ -24,6 +27,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		hasNoSky = true;
 	}
 	
+	@Nonnull
 	@Override
 	public DimensionType getDimensionType() {
 		return WarpDrive.dimensionTypeHyperSpace;
@@ -36,8 +40,8 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public float getStarBrightness(float par1) {
-		return 0F;
+	public float getStarBrightness(float partialTicks) {
+		return 0.2F;
 	}
 	
 	@Override
@@ -49,10 +53,10 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	public int getAverageGroundLevel() {
 		return 1;
 	}
-
+	
 	@Override
 	public double getHorizon() {
-		return 1;
+		return -256;
 	}
 	
 	@Override
@@ -60,8 +64,9 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		super.resetRainAndThunder();
 	}
 	
+	@Nonnull
 	@Override
-	public Biome getBiomeForCoords(BlockPos blockPos) {
+	public Biome getBiomeForCoords(@Nonnull BlockPos blockPos) {
 		return WarpDrive.spaceBiome;
 	}
 	
@@ -71,7 +76,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public float calculateCelestialAngle(long par1, float par3) {
+	public float calculateCelestialAngle(long time, float partialTick) {
 		return 0.5F;
 	}
 	
@@ -97,13 +102,19 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		return blockPos.getY() != 0;
 	}
 	
+	@Nonnull
 	@Override
-	public Vec3d getSkyColor(Entity cameraEntity, float partialTicks) {
-		setCloudRenderer(new RenderBlank());
-		setSkyRenderer(new RenderBlank());
+	public Vec3d getSkyColor(@Nonnull Entity cameraEntity, float partialTicks) {
+		if (getCloudRenderer() == null) {
+			setCloudRenderer(RenderBlank.getInstance());
+		}
+		if (getSkyRenderer() == null) {
+			setSkyRenderer(RenderSpaceSky.getInstance());
+		}
 		return new Vec3d(1.0D, 0.0D, 0.0D);
 	}
 	
+	@Nonnull
 	@Override
 	public Vec3d getFogColor(float par1, float par2) {
 		return new Vec3d(0.1D, 0.0D, 0.0D);
@@ -120,16 +131,18 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		return WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
 	}
 	
+	@Nonnull
 	@Override
 	public IChunkGenerator createChunkGenerator() {
 		return new HyperSpaceChunkProvider(worldObj, 46);
 	}
 	
 	@Override
-	public boolean canBlockFreeze(BlockPos blockPos, boolean byWater) {
+	public boolean canBlockFreeze(@Nonnull BlockPos blockPos, boolean byWater) {
 		return false;
 	}
 	
+	@Nonnull
 	@Override
 	public BlockPos getRandomizedSpawnPoint() {
 		BlockPos blockPos = new BlockPos(worldObj.getSpawnPoint());

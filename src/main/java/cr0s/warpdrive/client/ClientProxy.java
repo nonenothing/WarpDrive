@@ -67,6 +67,19 @@ public class ClientProxy extends CommonProxy {
 			IModelInitialisation(WarpDrive.blockForceFieldRelays[index]);
 		}
 		
+		// IModelInitialisation(WarpDrive.blockAcceleratorController);
+		// IModelInitialisation(WarpDrive.blockAcceleratorControlPoint);
+		// IModelInitialisation(WarpDrive.blockParticlesCollider);
+		// IModelInitialisation(WarpDrive.blockParticlesInjector);
+		// IModelInitialisation(WarpDrive.blockVoidShellPlain);
+		// IModelInitialisation(WarpDrive.blockVoidShellGlass);
+		// for(byte tier = 1; tier <= 3; tier++) {
+		// 	int index = tier - 1;
+		// 	IModelInitialisation(WarpDrive.blockElectromagnetPlain[index]);
+		// 	IModelInitialisation(WarpDrive.blockElectromagnetGlass[index]);
+		// 	IModelInitialisation(WarpDrive.blockChillers[index]);
+		// }
+		
 		IModelInitialisation(WarpDrive.blockDecorative);
 		
 		for (int index = 0; index < 3; index++) {
@@ -78,20 +91,33 @@ public class ClientProxy extends CommonProxy {
 			}
 		}
 		
+		IModelInitialisation(WarpDrive.blockSiren);
+		
 		// items
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			IModelInitialisation(WarpDrive.itemIC2reactorLaserFocus);
 		}
+		
 		IModelInitialisation(WarpDrive.itemComponent);
 		IModelInitialisation(WarpDrive.itemCrystalToken);
+		
+		IModelInitialisation(WarpDrive.itemWarpArmor[0]);
+		IModelInitialisation(WarpDrive.itemWarpArmor[1]);
+		IModelInitialisation(WarpDrive.itemWarpArmor[2]);
+		IModelInitialisation(WarpDrive.itemWarpArmor[3]);
+		
+		IModelInitialisation(WarpDrive.itemAirCanisterFull);
+		
 		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
 			IModelInitialisation(WarpDrive.itemUpgrade);
 		}
+		
 		IModelInitialisation(WarpDrive.itemTuningRod);
+		
 		IModelInitialisation(WarpDrive.itemForceFieldShape);
 		IModelInitialisation(WarpDrive.itemForceFieldUpgrade);
-		IModelInitialisation(WarpDrive.itemHelmet);
-		IModelInitialisation(WarpDrive.itemAirCanisterFull);
+		
+		// IModelInitialisation(WarpDrive.itemElectromagneticCell);
 		
 		// entities
 		// RenderingRegistry.registerEntityRenderingHandler(EntityXXX.class, RenderXXX::new);

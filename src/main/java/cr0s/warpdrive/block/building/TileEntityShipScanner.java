@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.item.ItemCrystalToken;
@@ -15,20 +16,25 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
@@ -40,6 +46,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	private boolean isActive = false;
@@ -149,20 +156,35 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (deployDelayTicks > WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS) {
 				deployDelayTicks = 0;
 				
+				// refresh player object
+				EntityPlayerMP entityPlayerMP = FMLServerHandler.instance().getServer().getPlayerList().getPlayerByUsername(playerName);
+				
 				// deploy at most (jump speed / 4), at least (deploy speed), optimally in 10 seconds 
 				final int optimumSpeed = Math.round(blocksToDeployCount * WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS / (20 * 10.0F));
 				int blockToDeployPerTick = Math.max(WarpDriveConfig.SS_DEPLOY_BLOCKS_PER_INTERVAL,
 					Math.min(WarpDriveConfig.G_BLOCKS_PER_TICK / 4, optimumSpeed));
 				int blocksToDeployCurrentTick = Math.min(blockToDeployPerTick, blocksToDeployCount - currentDeployIndex);
 				int periodLaserEffect = Math.max(1, (blocksToDeployCurrentTick / 10));
-				// WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick + " blocksToDeployCurrentTick " + blocksToDeployCurrentTick + " currentDeployIndex " + currentDeployIndex);
+				if (WarpDrive.isDev && WarpDriveConfig.LOGGING_BUILDING) {
+					WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick + " blocksToDeployCurrentTick " + blocksToDeployCurrentTick + " currentDeployIndex " + currentDeployIndex);
+				}
 				
+				// deployment done?
 				if (blocksToDeployCurrentTick == 0) {
+					TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(targetX, targetY, targetZ));
+					if (tileEntity instanceof TileEntityShipCore) {
+						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
+						if (entityPlayerMP != null) {
+							WarpDrive.addChatMessage(entityPlayerMP, new TextComponentString("§6" + "Welcome aboard captain. Use the computer to get moving..."));
+						}
+					}
+					
 					isDeploying = false;
 					setActive(false); // disable scanner
 					if (WarpDriveConfig.LOGGING_BUILDING) {
 						WarpDrive.logger.info(this + " Deployment done");
 					}
+					cooldownPlayerDetection = SS_SEARCH_INTERVAL_TICKS * 3;
 					return;
 				}
 				
@@ -219,16 +241,13 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					}
 					
 					currentDeployIndex++;
-				}
-				
-				// deployment done, teleport owner inside
-				if (currentDeployIndex >= blocksToDeployCount) {
-					TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(targetX, targetY, targetZ));
-					if (tileEntity instanceof TileEntityShipCore) {
-						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
+					
+					// Warn owner if deployment done but wait next tick for teleportation 
+					if (currentDeployIndex >= blocksToDeployCount) {
+						if (entityPlayerMP != null) {
+							WarpDrive.addChatMessage(entityPlayerMP, new TextComponentString("Ship complete. Teleporting captain to the main deck"));
+						}
 					}
-					isDeploying = false;
-					setActive(false); // disable scanner
 				}
 			}
 		}
@@ -296,7 +315,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// Consume energy
 		int energyCost = getScanningEnergyCost(shipCore.shipMass);
-		if (!consumeEnergy(energyCost, false)) {
+		if (!energy_consume(energyCost, false)) {
 			reason.append(String.format("Insufficient energy (%d required)", energyCost));
 			return false;
 		}
@@ -384,7 +403,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 								// Empty energy storage
 								// IC2
 								if (tagTileEntity.hasKey("energy")) {
-									consumeEnergy((int)Math.round(tagTileEntity.getDouble("energy")), true);
+									energy_consume((int)Math.round(tagTileEntity.getDouble("energy")), true);
 									tagTileEntity.setDouble("energy", 0);
 								}
 								// Gregtech
@@ -393,7 +412,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 								}
 								// Immersive Engineering & Thermal Expansion
 								if (tagTileEntity.hasKey("Energy")) {
-									consumeEnergy(tagTileEntity.getInteger("Energy"), true);
+									energy_consume(tagTileEntity.getInteger("Energy"), true);
 									tagTileEntity.setInteger("Energy", 0);
 								}
 								if (tagTileEntity.hasKey("Owner")) {
@@ -614,7 +633,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			
 			// Consume energy
 			int energyCost = getDeploymentEnergyCost(blocksToDeployCount);
-			if (!consumeEnergy(energyCost, false)) {
+			if (!energy_consume(energyCost, false)) {
 				reason.append(String.format("Insufficient energy (%d required)", energyCost));
 				return 1;
 			}
@@ -743,7 +762,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			return new Object[] { false, 1, "Ship-Core not found" };
 		}
 		int energyCost = getScanningEnergyCost(shipCore.shipMass);
-		if (!consumeEnergy(energyCost, true)) {
+		if (!energy_consume(energyCost, true)) {
 			return new Object[] { false, 2, "Not enough energy! " + energyCost + " required." };
 		} else {
 			StringBuilder reason = new StringBuilder();
@@ -819,6 +838,10 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	private static final int SS_SEARCH_INTERVAL_TICKS = 20;
 	private int cooldownPlayerDetection = 5;
+	private static final int SS_SEARCH_WARMUP_INTERVALS = 5;
+	private UUID warmupPlayerId = null;
+	private int warmupPlayer = SS_SEARCH_WARMUP_INTERVALS;
+	private String warmupSchematicName = "";
 	private void checkPlayerToken() {
 		// cooldown to prevent player chat spam and server lag
 		cooldownPlayerDetection--;
@@ -842,13 +865,16 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 		}
 		if (entityPlayers.isEmpty()) {
+			warmupPlayerId = null;
 			return;
 		}
 		if (entityPlayers.size() > 1) {
 			for (EntityPlayer entityPlayer : entityPlayers) {
-				WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time."));
+				WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time.")
+				                                       .setStyle(new Style().setColor(TextFormatting.RED)));
 				cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			}
+			warmupPlayerId = null;
 			return;
 		}
 		EntityPlayer entityPlayer = entityPlayers.get(0);
@@ -869,6 +895,22 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
+		
+		// short warmup so payer can cancel eventually
+		if (entityPlayer.getUniqueID() != warmupPlayerId || !warmupSchematicName.equals(ItemCrystalToken.getSchematicName(itemStack))) {
+			warmupPlayerId = entityPlayer.getUniqueID();
+			warmupPlayer = SS_SEARCH_WARMUP_INTERVALS + 1;
+			warmupSchematicName = ItemCrystalToken.getSchematicName(itemStack);
+			WarpDrive.addChatMessage(entityPlayer, new TextComponentString(String.format("Token '%1$s' detected!", warmupSchematicName, SS_SEARCH_WARMUP_INTERVALS))
+													.setStyle(new Style().setColor(TextFormatting.GOLD)));
+		}
+		warmupPlayer--;
+		if (warmupPlayer > 0) {
+			WarpDrive.addChatMessage(entityPlayer, new TextComponentString(String.format("Stand by for ship materialization in %2$d...", warmupSchematicName, warmupPlayer)));
+			return;
+		}
+		// warmup done
+		warmupPlayerId = null;
 		playerName = entityPlayer.getName();
 		
 		// try deploying
@@ -877,9 +919,11 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()));
 		if (!isActive) {
 			// failed
+			WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.RED)));
 			cooldownPlayerDetection = 5 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
+		WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.GOLD)));
 		
 		// success => remove token
 		if (!entityPlayer.capabilities.isCreativeMode) {
@@ -895,12 +939,12 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	// IEnergySink methods implementation
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.SS_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(EnumFacing from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	

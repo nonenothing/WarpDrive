@@ -6,21 +6,56 @@ import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
 import cr0s.warpdrive.api.IBlockBase;
-import cr0s.warpdrive.block.*;
+import cr0s.warpdrive.block.BlockChunkLoader;
+import cr0s.warpdrive.block.BlockLaser;
+import cr0s.warpdrive.block.BlockLaserMedium;
+import cr0s.warpdrive.block.TileEntityAbstractChunkLoading;
+import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.BlockChiller;
+import cr0s.warpdrive.block.atomic.BlockElectromagnetGlass;
+import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
+import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
+import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
+import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
+import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
-import cr0s.warpdrive.block.decoration.*;
+import cr0s.warpdrive.block.decoration.BlockDecorative;
+import cr0s.warpdrive.block.decoration.BlockGas;
+import cr0s.warpdrive.block.decoration.BlockLamp_bubble;
+import cr0s.warpdrive.block.decoration.BlockLamp_flat;
+import cr0s.warpdrive.block.decoration.BlockLamp_long;
+import cr0s.warpdrive.block.detection.BlockCamera;
+import cr0s.warpdrive.block.detection.BlockCloakingCoil;
+import cr0s.warpdrive.block.detection.BlockCloakingCore;
+import cr0s.warpdrive.block.detection.BlockMonitor;
+import cr0s.warpdrive.block.detection.BlockRadar;
+import cr0s.warpdrive.block.detection.BlockSiren;
+import cr0s.warpdrive.block.detection.BlockWarpIsolation;
 import cr0s.warpdrive.block.energy.BlockEnanReactorCore;
 import cr0s.warpdrive.block.energy.BlockEnanReactorLaser;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.block.energy.BlockIC2reactorLaserMonitor;
-import cr0s.warpdrive.block.forcefield.*;
+import cr0s.warpdrive.block.forcefield.BlockForceField;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.block.movement.BlockShipController;
 import cr0s.warpdrive.block.movement.BlockShipCore;
-import cr0s.warpdrive.block.passive.*;
+import cr0s.warpdrive.block.passive.BlockHighlyAdvancedMachine;
+import cr0s.warpdrive.block.passive.BlockIridium;
+import cr0s.warpdrive.block.passive.BlockTransportBeacon;
 import cr0s.warpdrive.config.Recipes;
-import cr0s.warpdrive.item.*;
+import cr0s.warpdrive.item.ItemAirCanisterFull;
+import cr0s.warpdrive.item.ItemComponent;
+import cr0s.warpdrive.item.ItemCrystalToken;
+import cr0s.warpdrive.item.ItemElectromagneticCell;
+import cr0s.warpdrive.item.ItemForceFieldShape;
+import cr0s.warpdrive.item.ItemForceFieldUpgrade;
+import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
+import cr0s.warpdrive.item.ItemTuningFork;
+import cr0s.warpdrive.item.ItemUpgrade;
+import cr0s.warpdrive.item.ItemWarpArmor;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
@@ -29,6 +64,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
@@ -66,12 +102,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.block.building.BlockShipScanner;
 import cr0s.warpdrive.block.collection.BlockLaserTreeFarm;
 import cr0s.warpdrive.block.collection.BlockMiningLaser;
-import cr0s.warpdrive.block.detection.BlockCamera;
-import cr0s.warpdrive.block.detection.BlockCloakingCoil;
-import cr0s.warpdrive.block.detection.BlockCloakingCore;
-import cr0s.warpdrive.block.detection.BlockMonitor;
-import cr0s.warpdrive.block.detection.BlockRadar;
-import cr0s.warpdrive.block.detection.BlockWarpIsolation;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.block.movement.BlockLift;
@@ -102,8 +132,8 @@ import cr0s.warpdrive.world.SpaceWorldGenerator;
 
 import javax.annotation.Nullable;
 
-@Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2API;" + " after:CoFHCore;" + " after:ComputerCraft;"
-		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;" + " after:IC2;")
+@Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2;" + " after:CoFHCore;" + " after:ComputerCraft;"
+		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;")
 public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "warpdrive";
 	public static final String VERSION = "@version@";
@@ -145,11 +175,21 @@ public class WarpDrive implements LoadingCallback {
 	public static Block[] blockForceFields;
 	public static Block[] blockForceFieldProjectors;
 	public static Block[] blockForceFieldRelays;
+	public static Block blockAcceleratorController;
+	public static Block blockAcceleratorControlPoint;
+	public static Block blockParticlesCollider;
+	public static Block blockParticlesInjector;
+	public static Block blockVoidShellPlain;
+	public static Block blockVoidShellGlass;
+	public static Block[] blockElectromagnetPlain;
+	public static Block[] blockElectromagnetGlass;
+	public static Block[] blockChillers;
 	public static Block blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
 	public static Block[][] blockHulls_stairs;
 	public static Block[][] blockHulls_slab;
+	public static Block blockSiren;
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
@@ -158,9 +198,10 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemTuningFork itemTuningRod;
 	public static ItemForceFieldShape itemForceFieldShape;
 	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
+	public static ItemElectromagneticCell itemElectromagneticCell;
 	
 	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", "warp", 18, new int[] { 2, 6, 5, 2 }, 9, SoundEvents.ITEM_ARMOR_EQUIP_IRON, 0.0F);
-	public static ItemHelmet itemHelmet;
+	public static ItemArmor[] itemWarpArmor;
 	public static ItemAirCanisterFull itemAirCanisterFull;
 	
 	public static DamageAsphyxia damageAsphyxia;
@@ -275,13 +316,50 @@ public class WarpDrive implements LoadingCallback {
 		itemForceFieldShape = new ItemForceFieldShape("itemForceFieldShape");
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade("itemForceFieldUpgrade");
 		
+		/*
+		// ACCELERATOR CONTROLLER
+		blockAcceleratorController = new BlockAcceleratorController();
+		GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
+		GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
+		/**/
+		// ACCELERATOR CONTROL POINT 
+		blockAcceleratorControlPoint = new BlockAcceleratorControlPoint("blockAcceleratorControlPoint");
+		
+		// PARTICLES COLLIDER 
+		blockParticlesCollider = new BlockParticlesCollider("blockParticlesCollider");
+		
+		// PARTICLES INJECTOR 
+		blockParticlesInjector = new BlockParticlesInjector("blockParticlesInjector");
+		
+		// VOID SHELL PLAIN/GLASS 
+		blockVoidShellPlain = new BlockVoidShellPlain("blockVoidShellPlain");
+		blockVoidShellGlass = new BlockVoidShellGlass("blockVoidShellGlass");
+		
+		blockElectromagnetPlain = new Block[3];
+		blockElectromagnetGlass = new Block[3];
+		blockChillers = new Block[3];
+		for(byte tier = 1; tier <= 3; tier++) {
+			int index = tier - 1;
+			// plain electromagnets 
+			blockElectromagnetPlain[index] = new BlockElectromagnetPlain("blockElectromagnetPlain" + tier, tier);
+			
+			// glass electromagnets
+			blockElectromagnetGlass[index] = new BlockElectromagnetGlass("blockElectromagnetGlass" + tier, tier);
+			
+			// chiller
+			blockChillers[index] = new BlockChiller("blockChiller" + tier, tier);
+		}
+		
+		// decorative
+		blockDecorative = new BlockDecorative("blockDecorative");
+		
 		// hull blocks
 		blockHulls_plain = new Block[3];
 		blockHulls_glass = new Block[3];
 		blockHulls_stairs = new Block[3][16];
 		blockHulls_slab = new Block[3][16];
 		
-		for(int tier = 1; tier <= 3; tier++) {
+		for(byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			blockHulls_plain[index] = new BlockHullPlain("blockHull" + tier + "_plain", tier);
 			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_glass", tier);
@@ -290,19 +368,41 @@ public class WarpDrive implements LoadingCallback {
 			}
 		}
 		
-		// generic items
+		// sirens
+		blockSiren = new BlockSiren("blockSiren");
+		
+		// reactor laser focus
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+			itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus("itemIC2reactorLaserFocus");
+		}
+		
+		// component items
 		itemComponent = new ItemComponent("itemComponent");
 		itemCrystalToken = new ItemCrystalToken("itemCrystalToken");
-		itemHelmet = new ItemHelmet("itemHelmet", armorMaterial, EntityEquipmentSlot.HEAD);
+		
+		// warp armor
+		itemWarpArmor = new ItemArmor[4];
+		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[0], armorMaterial, 3, EntityEquipmentSlot.HEAD);
+		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[1], armorMaterial, 3, EntityEquipmentSlot.CHEST);
+		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[2], armorMaterial, 3, EntityEquipmentSlot.LEGS);
+		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[3], armorMaterial, 3, EntityEquipmentSlot.FEET);
+		
 		itemAirCanisterFull = new ItemAirCanisterFull("itemAirCanisterFull");
 		
 		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
 			itemUpgrade = new ItemUpgrade("itemUpgrade");
 		}
 		
-		// tool items
+        // tool items
 		itemTuningRod = new ItemTuningFork("itemTuningRod");
-				
+		
+		// force field upgrades
+		itemForceFieldShape = new ItemForceFieldShape("itemForceFieldShape");
+		itemForceFieldUpgrade = new ItemForceFieldUpgrade("itemForceFieldUpgrade");
+		
+		// electromagnetic cell
+		itemElectromagneticCell = new ItemElectromagneticCell("itemElectromagneticCell");
+		
 		// damage sources
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
@@ -466,7 +566,7 @@ public class WarpDrive implements LoadingCallback {
 			logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
 			return;
 		}
-		String[] lines = textComponent.getFormattedText().replace("§", "" + (char)167).replace("\\n", "\n").split("\n");
+		String[] lines = textComponent.getFormattedText().replace("§", "" + (char)167).replace("\\n", "\n").replaceAll("\u00A0", " ").split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new TextComponentString(line));
 		}
@@ -517,7 +617,8 @@ public class WarpDrive implements LoadingCallback {
 						mapping.remap(Item.getItemFromBlock(blockGas));
 						break;
 					case "WarpDrive:helmet":
-						mapping.remap(itemHelmet);
+					case "WarpDrive:itemHelmet":
+						mapping.remap(itemWarpArmor[0]);
 						break;
 					case "WarpDrive:iridiumBlock":
 						mapping.remap(Item.getItemFromBlock(blockIridium));
@@ -666,6 +767,9 @@ public class WarpDrive implements LoadingCallback {
 					case "WarpDrive:warpCore":
 						mapping.remap(blockShipCore);
 						break;
+					case "siren":
+						mapping.remap(blockSiren);
+						break;
 				}
 			}
 		}
@@ -700,7 +804,7 @@ public class WarpDrive implements LoadingCallback {
 						list.add(lineRemaining);
 						lineRemaining = "";
 					} else {// cut at last space
-						list.add(lineRemaining.substring(0, indexToCut));
+						list.add(lineRemaining.substring(0, indexToCut).replaceAll("\u00A0", " "));
 						
 						// compute remaining format
 						int index = formatNextLine.length();
@@ -716,7 +820,7 @@ public class WarpDrive implements LoadingCallback {
 						lineRemaining = formatNextLine + " " + lineRemaining.substring(indexToCut + 1);
 					}
 				} else {
-					list.add(lineRemaining);
+					list.add(lineRemaining.replaceAll("\u00A0", " "));
 					lineRemaining = "";
 				}
 			}
@@ -748,6 +852,11 @@ public class WarpDrive implements LoadingCallback {
 			fieldToReturn.setAccessible(true);
 		}
 		return fieldToReturn;
+	}
+	
+	public static String format(final long value) {
+		// alternate: BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_EVEN).toPlainString(),
+		return String.format("%,d", Math.round(value));
 	}
 	
 	/**

@@ -9,8 +9,10 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToSe
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -77,5 +79,14 @@ public class WorldHandler {
 		}
 		
 		AbstractSequencer.updateTick();
+	}
+	
+	@SubscribeEvent
+	public void onBlockUpdated(BlockEvent blockEvent) {
+		if (WarpDriveConfig.LOGGING_BREAK_PLACE && WarpDrive.isDev) {
+			WarpDrive.logger.info("onBlockUpdate args " + blockEvent.getState()
+			                      + " actual " + blockEvent.getWorld().getBlockState(blockEvent.getPos()));
+		}
+		WarpDrive.starMap.onBlockUpdated(blockEvent.getWorld(), blockEvent.getPos(), blockEvent.getState());
 	}
 }

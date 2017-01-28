@@ -115,9 +115,11 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_BREAK_PLACE = false;
 	public static boolean LOGGING_FORCEFIELD = false;
 	public static boolean LOGGING_FORCEFIELD_REGISTRY = false;
+	public static boolean LOGGING_ACCELERATOR = false;
 	
-	// Planets
+	// Starmap
 	public static Planet[] PLANETS = null;
+	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
 	
 	// Space generator
 	public static int SPACE_GENERATOR_Y_MIN_CENTER = 55;
@@ -143,7 +145,6 @@ public class WarpDriveConfig {
 	public static int SHIP_SHORTJUMP_WARMUP_SECONDS = 10;
 	public static int SHIP_LONGJUMP_WARMUP_SECONDS = 30;
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
-	public static int SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
 	public static int SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
 	public static int SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
 	public static String[] SHIP_VOLUME_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
@@ -165,7 +166,7 @@ public class WarpDriveConfig {
 	
 	// Ship Scanner
 	public static int SS_MAX_ENERGY_STORED = 500000000;
-	public static int SS_ENERGY_PER_BLOCK_SCAN = 100; // eU per block of ship volume (including air)
+	public static int SS_ENERGY_PER_BLOCK_SCAN = 100;
 	public static int SS_ENERGY_PER_BLOCK_DEPLOY = 5000;
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	public static int SS_SEARCH_INTERVAL_TICKS = 20;
@@ -279,7 +280,10 @@ public class WarpDriveConfig {
 	public static int ENAN_REACTOR_MAX_LASERS_PER_SECOND = 6;
 	
 	// Power store
-	public static int ENERGY_BANK_MAX_ENERGY_STORED = 1000000;
+	public static int[] ENERGY_BANK_MAX_ENERGY_STORED = { 800000, 4000000, 20000000 };
+	public static int[] ENERGY_BANK_IC2_TIER = { 2, 3, 4 };
+	public static int[] ENERGY_BANK_TRANSFER_PER_TICK = { 200, 1000, 5000 };
+	public static double[] ENERGY_BANK_EFFICIENCY_PER_UPGRADE = { 0.95D, 0.98D, 1.0D };
 	
 	// Laser lift
 	public static int LIFT_MAX_ENERGY_STORED = 900;
@@ -430,6 +434,7 @@ public class WarpDriveConfig {
 		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_FORCEFIELD = config.get("logging", "enable_forcefield_logs", LOGGING_FORCEFIELD, "Detailed forcefield logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_FORCEFIELD_REGISTRY = config.get("logging", "enable_forcefield_registry_logs", LOGGING_FORCEFIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
+		LOGGING_ACCELERATOR = config.get("logging", "enable_accelerator_logs", LOGGING_ACCELERATOR, "Detailed accelerator logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		
 		// Planets
 		{
@@ -464,6 +469,8 @@ public class WarpDriveConfig {
 			// FIXME: check planets aren't overlapping
 			// We're not checking invalid dimension id, so they can be pre-allocated (see MystCraft)
 		}
+		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
+		config.get("starmap", "registry_update_interval", STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		
 		// Ship
 		SHIP_MAX_ENERGY_STORED = clamp(0, Integer.MAX_VALUE,
@@ -509,8 +516,6 @@ public class WarpDriveConfig {
 		SHIP_SUMMON_MAX_RANGE = config.get("ship", "summon_max_range", SHIP_SUMMON_MAX_RANGE, "Maximum range from which players can be summoned (measured in blocks), set to -1 for unlimited range").getInt();
 		SHIP_SUMMON_ACROSS_DIMENSIONS = config.get("ship", "summon_across_dimensions", false, "Enable summoning players from another dimension").getBoolean(false);
 		
-		SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
-				config.get("ship", "core_registry_update_interval", SHIP_CORE_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
 				config.get("ship", "core_isolation_update_interval", SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = clamp(0, 300,
@@ -749,7 +754,29 @@ public class WarpDriveConfig {
 				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabilisation laser shots per seconds before loosing efficiency").getInt());
 		
 		// Energy bank
-		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored").getInt();
+		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored for each energy bank").getIntList();
+		assert(ENERGY_BANK_MAX_ENERGY_STORED.length == 3);
+		ENERGY_BANK_MAX_ENERGY_STORED[0] = clamp(                               0, ENERGY_BANK_MAX_ENERGY_STORED[1], ENERGY_BANK_MAX_ENERGY_STORED[0]);
+		ENERGY_BANK_MAX_ENERGY_STORED[1] = clamp(ENERGY_BANK_MAX_ENERGY_STORED[0], ENERGY_BANK_MAX_ENERGY_STORED[2], ENERGY_BANK_MAX_ENERGY_STORED[1]);
+		ENERGY_BANK_MAX_ENERGY_STORED[2] = clamp(ENERGY_BANK_MAX_ENERGY_STORED[1], Integer.MAX_VALUE               , ENERGY_BANK_MAX_ENERGY_STORED[2]);
+		
+		ENERGY_BANK_IC2_TIER = config.get("energy_bank", "ic2_tier", ENERGY_BANK_IC2_TIER, "IC2 energy tier for each energy bank (0 is BatBox, etc.)").getIntList();
+		assert(ENERGY_BANK_IC2_TIER.length == 3);
+		ENERGY_BANK_IC2_TIER[0] = clamp(                      0, ENERGY_BANK_IC2_TIER[1], ENERGY_BANK_IC2_TIER[0]);
+		ENERGY_BANK_IC2_TIER[1] = clamp(ENERGY_BANK_IC2_TIER[0], ENERGY_BANK_IC2_TIER[2], ENERGY_BANK_IC2_TIER[1]);
+		ENERGY_BANK_IC2_TIER[2] = clamp(ENERGY_BANK_IC2_TIER[1], Integer.MAX_VALUE      , ENERGY_BANK_IC2_TIER[2]);
+		
+		ENERGY_BANK_TRANSFER_PER_TICK = config.get("energy_bank", "transfer_per_tick", ENERGY_BANK_TRANSFER_PER_TICK, "Internal energy transferred per tick for each energy bank").getIntList();
+		assert(ENERGY_BANK_TRANSFER_PER_TICK.length == 3);
+		ENERGY_BANK_TRANSFER_PER_TICK[0] = clamp(                               0, ENERGY_BANK_TRANSFER_PER_TICK[1], ENERGY_BANK_TRANSFER_PER_TICK[0]);
+		ENERGY_BANK_TRANSFER_PER_TICK[1] = clamp(ENERGY_BANK_TRANSFER_PER_TICK[0], ENERGY_BANK_TRANSFER_PER_TICK[2], ENERGY_BANK_TRANSFER_PER_TICK[1]);
+		ENERGY_BANK_TRANSFER_PER_TICK[2] = clamp(ENERGY_BANK_TRANSFER_PER_TICK[1], Integer.MAX_VALUE               , ENERGY_BANK_TRANSFER_PER_TICK[2]);
+		
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE = config.get("energy_bank", "efficiency_per_upgrade", ENERGY_BANK_EFFICIENCY_PER_UPGRADE, "Energy transfer efficiency for each upgrade apply, first value is without upgrades (0.8 means 20% loss)").getDoubleList();
+		assert(ENERGY_BANK_EFFICIENCY_PER_UPGRADE.length >= 1);
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0] = Math.min(1.0D, clamp(                                 0.5D, ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0]));
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1] = Math.min(1.0D, clamp(ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1]));
+		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2] = Math.min(1.0D, clamp(ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1], Integer.MAX_VALUE                    , ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2]));
 		
 		// Lift
 		LIFT_MAX_ENERGY_STORED = clamp(1, Integer.MAX_VALUE,
@@ -848,6 +875,10 @@ public class WarpDriveConfig {
 		boolean isNaturaLoaded = Loader.isModLoaded("Natura");
 		if (isNaturaLoaded) {
 			CompatNatura.register();
+		}
+		boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
+		if (isPneumaticCraftLoaded) {
+			CompatPneumaticCraft.register();
 		}
 		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
 		if (isRedstonePasteLoaded) {

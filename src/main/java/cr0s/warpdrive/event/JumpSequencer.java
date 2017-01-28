@@ -403,6 +403,15 @@ public class JumpSequencer extends AbstractSequencer {
 			return;
 		}
 		
+		File file = new File(WarpDriveConfig.G_SCHEMALOCATION + "/auto");
+		if (!file.exists() || !file.isDirectory()) {
+			if (!file.mkdirs()) {
+				WarpDrive.logger.warn("Unable to create auto-backup folder, skipping...");
+				LocalProfiler.stop();
+				return;
+			}
+		}
+		
 		try {
 			// Generate unique file name
 			SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
@@ -1217,9 +1226,10 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if (blockStateSource != Blocks.AIR && WarpDrive.proxy.isBlockPlaceCanceled(null, ship.core,
-						targetWorld, blockPosTarget, blockStateSource)) {
-						result.add(x, y, z, blockPosTarget.getX(), blockPosTarget.getZ(), blockPosTarget.getZ(),
+					if ( blockStateSource != Blocks.AIR
+					  && WarpDrive.proxy.isBlockPlaceCanceled(null, ship.core,
+							targetWorld, blockPosTarget, blockStateSource)) {
+							result.add(x, y, z, blockPosTarget.getX(), blockPosTarget.getZ(), blockPosTarget.getZ(),
 							false, "Ship is entering a protected area");
 						return result;
 					}

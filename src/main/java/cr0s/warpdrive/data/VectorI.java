@@ -248,7 +248,7 @@ public class VectorI implements Cloneable {
 	
 	@Override
 	public String toString() {
-		return "VectorI [" + x + "," + y + "," + z + "]";
+		return "VectorI [" + x + " " + y + " " + z + "]";
 	}
 	
 	

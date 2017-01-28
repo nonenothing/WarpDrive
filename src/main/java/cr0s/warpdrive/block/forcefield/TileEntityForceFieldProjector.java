@@ -59,6 +59,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private Vector3 v3Min = new Vector3(-1.0D, -1.0D, -1.0D);
 	private Vector3 v3Max = new Vector3( 1.0D,  1.0D,  1.0D);
 	private Vector3 v3Translation = new Vector3( 0.0D,  0.0D,  0.0D);
+	private boolean legacy_isOn = false;
 	
 	// computed properties
 	private int cooldownTicks;
@@ -71,7 +72,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private boolean isPowered = true;
 	private ForceFieldSetup cache_forceFieldSetup;
 	private ForceFieldSetup legacy_forceFieldSetup;
-	private boolean legacy_isOn = true;     // we assume it's on so we don't consume startup energy on chunk loading
 	private double consumptionLeftOver = 0.0D;
 	public EnumFacing enumFacing = EnumFacing.UP;
 	public float rotation_deg = 0.0F;
@@ -100,8 +100,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		peripheralName = "warpdriveForceFieldProjector";
 		addMethods(new String[] {
+			"min",
+			"max",
 			"rotation",
-			"state"
+			"state",
+			"translation"
 		});
 		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
@@ -165,10 +168,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		} else {
 			energyRequired = (int)Math.round(                                    forceFieldSetup.scanEnergyCost * forceFieldSetup.scanSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F);
 		}
-		if (energyRequired > getMaxEnergyStored()) {
-			WarpDrive.logger.error("Force field projector requires " + energyRequired + " to get started but can only store " + getMaxEnergyStored());
+		if (energyRequired > energy_getMaxStorage()) {
+			WarpDrive.logger.error("Force field projector requires " + energyRequired + " to get started but can only store " + energy_getMaxStorage());
 		}
-		isPowered = getEnergyStored() >= energyRequired;
+		isPowered = energy_getEnergyStored() >= energyRequired;
 		
 		boolean isEnabledAndValid = isEnabled && isValid();
 		boolean isOn = isEnabledAndValid && cooldownTicks <= 0 && isPowered;
@@ -885,17 +888,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
-	private ITextComponent getUpgradeStatus() {
-		String strUpgrades = getUpgradesAsString();
-		if (strUpgrades.isEmpty()) {
-			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.none",
-				strUpgrades);
-		} else {
-			return new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine.valid",
-				strUpgrades);
-		}
-	}
-	
 	@Override
 	public ITextComponent getStatus() {
 		return super.getStatus()
@@ -924,6 +916,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		setShape(EnumForceFieldShape.get(tag.getByte("shape")));
 		
 		setTranslation(tag.getFloat("translationX"), tag.getFloat("translationY"), tag.getFloat("translationZ"));
+		
+		legacy_isOn = tag.getBoolean("isOn");
 	}
 	
 	@Override
@@ -959,6 +953,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			tag.setFloat("translationY", (float)v3Translation.y);
 			tag.setFloat("translationZ", (float)v3Translation.z);
 		}
+		
+		tag.setBoolean("isOn", legacy_isOn);
 		return tag;
 	}
 	
@@ -989,7 +985,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				int energyRequired = (int)Math.max(0, Math.round(cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost));
 				if (!legacy_forceFieldSetup.getCamouflageBlockState().equals(cache_forceFieldSetup.getCamouflageBlockState())
 				  || legacy_forceFieldSetup.beamFrequency != cache_forceFieldSetup.beamFrequency
-				  || !consumeEnergy(energyRequired, false)) {
+				  || !energy_consume(energyRequired, false)) {
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.info(this + " rebooting with new rendering...");
 					}
@@ -1014,18 +1010,18 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return maxEnergyStored;
 	}
 	
 	@Override
-	public boolean canInputEnergy(EnumFacing from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
 	public boolean consumeEnergy(final double amount_internal, boolean simulate) {
 		int intAmount = (int)Math.floor(amount_internal + consumptionLeftOver);
-		boolean bResult = super.consumeEnergy(intAmount, simulate); 
+		boolean bResult = super.energy_consume(intAmount, simulate); 
 		if (!simulate) {
 			consumptionLeftOver = amount_internal + consumptionLeftOver - intAmount;
 		}
@@ -1080,7 +1076,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// Common OC/CC methods
 	private Object[] state() {    // isConnected, isPowered, shape
-		int energy = getEnergyStored();
+		int energy = energy_getEnergyStored();
 		String status = getStatus().toString();
 		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
 	}

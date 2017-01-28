@@ -104,10 +104,10 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 				if (item != null) {
 					if (item.getItem() instanceof ItemIC2reactorLaserFocus) {
 						int heatInLaserFocus = item.getItemDamage();
-						int heatRemovable = (int) Math.floor(Math.min(getEnergyStored() / WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT, heatInLaserFocus));
+						int heatRemovable = (int) Math.floor(Math.min(energy_getEnergyStored() / WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT, heatInLaserFocus));
 						if (heatRemovable > 0) {
 							didCoolReactor = true;
-							if (consumeEnergy((int) Math.ceil(heatRemovable * WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT), false)) {
+							if (energy_consume((int) Math.ceil(heatRemovable * WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT), false)) {
 								item.setItemDamage(heatInLaserFocus - heatRemovable);
 							}
 						}
@@ -153,7 +153,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	
 	private void setMetadata() {
 		int metadata = (updateFlag ? 0 : 1) | (activeSides != 0 ? 2 : 0);
-		if (getEnergyStored() >= WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT) {
+		if (energy_getEnergyStored() >= WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT) {
 			metadata |= 8;
 		}
 		if (getBlockMetadata() != metadata) {
@@ -207,12 +207,12 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public int getMaxEnergyStored() {
+	public int energy_getMaxStorage() {
 		return WarpDriveConfig.IC2_REACTOR_MAX_ENERGY_STORED;
 	}
 	
 	@Override
-	public boolean canInputEnergy(EnumFacing from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 }

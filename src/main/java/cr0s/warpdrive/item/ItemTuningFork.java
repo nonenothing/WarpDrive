@@ -2,6 +2,8 @@ package cr0s.warpdrive.item;
 
 import java.util.List;
 
+import cr0s.warpdrive.block.energy.BlockEnergyBank;
+import net.minecraft.block.Block;
 import cr0s.warpdrive.data.SoundEvents;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -14,6 +16,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
@@ -111,6 +114,12 @@ public class ItemTuningFork extends ItemAbstractBase {
 					+ "\nand " + tileEntity));
 		}
 		return EnumActionResult.SUCCESS;
+	}
+	
+	@Override
+	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess world, BlockPos blockPos, EntityPlayer player) {
+		Block block = world.getBlockState(blockPos).getBlock();
+		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 	
 	@Override

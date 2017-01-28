@@ -12,15 +12,15 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
 public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
-	private final int tier;
+	
+	final byte tier;
 	private final IBlockState blockStateHull;
 	
-	public BlockHullStairs(final String registryName, final IBlockState blockStateHull, final int tier) {
+	public BlockHullStairs(final String registryName, final IBlockState blockStateHull, final byte tier) {
 		super(blockStateHull);
 		this.blockStateHull = blockStateHull;
 		this.tier = tier;

@@ -36,13 +36,13 @@ if #args > 0 then
     print("Usage: mine <layerOffset> <onlyOres> <silktouch>")
     print()
     print("Miner always mine below it, down to bedrock.")
-	print("Set layerOffset to define starting level.")
+    print("Set layerOffset to define starting level.")
     print("Power consumption will be much lower in space.")
     print("Mining only ores is faster but more expensive...")
     print("Mining laser can't go through forcefields.")
     print("Mined chests will drop their contents.")
     print()
-	noExit = false
+    noExit = false
   else
     layerOffset = tonumber( args[1] ) or 1
   end
@@ -74,7 +74,7 @@ if noExit then
       mininglaser.silktouch(silktouch)
       
       mininglaser.start()
-	end
+    end
   end
   os.sleep(1)
 end
@@ -89,7 +89,7 @@ end
 
 if noExit then
   repeat
-    isActive = false
+    areActive = false
     for key,mininglaser in pairs(mininglasers) do
       status, isActive, energy, currentLayer, mined, total = mininglaser.state()
       
@@ -100,12 +100,13 @@ if noExit then
       textOut(1, 7, "Mined " .. mined .. " out of " .. total .. " blocks at layer " .. currentLayer .. "   ", 0xFFFFFF, 0x000000)
       
       if isActive then
+        areActive = true
         os.sleep(1)
       else
         os.sleep(0.1)
       end
     end
-  until not isActive
+  until not areActive
 end
 
 textOut(1, 1, "", 0xFFFFFF, 0x000000)

@@ -19,9 +19,9 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import javax.annotation.Nonnull;
 
 public class BlockHullGlass extends BlockColored implements IDamageReceiver {
-	private final int tier;
+	final byte tier;
 	
-	public BlockHullGlass(final String registryName, final int tier) {
+	public BlockHullGlass(final String registryName, final byte tier) {
 		super(Material.GLASS);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
