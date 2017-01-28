@@ -1,5 +1,5 @@
-WarpDrive for 1.7
-=========
+WarpDrive for 1.10
+==================
 [![Build Status](https://travis-ci.org/LemADEC/WarpDrive.svg?branch=MC1.7)](https://travis-ci.org/LemADEC/WarpDrive)
 
 An update to the WarpDrive mod. Currently in progress.
