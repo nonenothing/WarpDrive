@@ -70,7 +70,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		// @TODO: color from force field frequency
 		return super.getMapColor(state);
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
