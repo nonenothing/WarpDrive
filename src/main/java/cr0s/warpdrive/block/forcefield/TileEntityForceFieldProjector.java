@@ -55,6 +55,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private Vector3 v3Min = new Vector3(-1.0D, -1.0D, -1.0D);
 	private Vector3 v3Max = new Vector3( 1.0D,  1.0D,  1.0D);
 	private Vector3 v3Translation = new Vector3( 0.0D,  0.0D,  0.0D);
+	private boolean legacy_isOn = false;
 	
 	// computed properties
 	private int cooldownTicks;
@@ -67,7 +68,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	protected boolean isPowered = true;
 	private ForceFieldSetup cache_forceFieldSetup;
 	private ForceFieldSetup legacy_forceFieldSetup;
-	private boolean legacy_isOn = true;     // we assume it's on so we don't consume startup energy on chunk loading
 	private double consumptionLeftOver = 0.0D;
 	
 	// carry over speed to next tick, useful for slow interactions
@@ -884,6 +884,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		setShape(EnumForceFieldShape.get(tag.getByte("shape")));
 		
 		setTranslation(tag.getFloat("translationX"), tag.getFloat("translationY"), tag.getFloat("translationZ"));
+		
+		legacy_isOn = tag.getBoolean("isOn");
 	}
 	
 	@Override
@@ -919,6 +921,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			tag.setFloat("translationY", (float)v3Translation.y);
 			tag.setFloat("translationZ", (float)v3Translation.z);
 		}
+		
+		tag.setBoolean("isOn", legacy_isOn);
 	}
 	
 	@Override
