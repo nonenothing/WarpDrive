@@ -1,80 +1,68 @@
 package cr0s.warpdrive.block.atomic;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 
 public class BlockChiller extends BlockAbstractAccelerator {
-	@SideOnly(Side.CLIENT)
-	private IIcon[] icons;
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
-	public BlockChiller(final byte tier) {
-		super(tier);
-		setBlockName("warpdrive.atomic.chiller" + tier);
-		setBlockTextureName("warpdrive:atomic/chiller" + tier);
+	public BlockChiller(final String registryName, final byte tier) {
+		super(registryName, tier);
+		setUnlocalizedName("warpdrive.atomic.chiller" + tier);
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int side, int metadata) {
-		return icons[metadata % 16];
-	}
-	
-	@Override
-	public int damageDropped(int metadata) {
+	public int damageDropped(IBlockState blockState) {
 		return 0;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Nullable
 	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons = new IIcon[2];
-		
-		icons[0] = iconRegister.registerIcon(getTextureName() + "-off");
-		icons[1] = iconRegister.registerIcon(getTextureName() + "-on");
-	}
-	
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-		return AxisAlignedBB.getBoundingBox(
-			x + BOUNDING_TOLERANCE, y + BOUNDING_TOLERANCE, z + BOUNDING_TOLERANCE,
-			x + 1 - BOUNDING_TOLERANCE, y + 1 - BOUNDING_TOLERANCE, z + 1 - BOUNDING_TOLERANCE);
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+		return new AxisAlignedBB(
+			blockPos.getX() + BOUNDING_TOLERANCE, blockPos.getY() + BOUNDING_TOLERANCE, blockPos.getZ() + BOUNDING_TOLERANCE,
+			blockPos.getX() + 1 - BOUNDING_TOLERANCE, blockPos.getY() + 1 - BOUNDING_TOLERANCE, blockPos.getZ() + 1 - BOUNDING_TOLERANCE);
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
-		super.onEntityCollidedWithBlock(world, x, y, z, entity);
-		onEntityEffect(world, x, y, z, entity);
+	public void onEntityCollidedWithBlock(World world, BlockPos blockPos, IBlockState blockState, Entity entity) {
+		super.onEntityCollidedWithBlock(world, blockPos, blockState, entity);
+		onEntityEffect(world, blockPos, entity);
 	}
 	
 	@Override
-	public void onEntityWalking(World world, int x, int y, int z, Entity entity) {
-		super.onEntityWalking(world, x, y, z, entity);
-		onEntityEffect(world, x, y, z, entity);
+	public void onEntityWalk(World world, BlockPos blockPos, Entity entity) {
+		super.onEntityWalk(world, blockPos, entity);
+		onEntityEffect(world, blockPos, entity);
 	}
 	
 	@Override
-	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer entityPlayer) {
-		super.onBlockClicked(world, x, y, z, entityPlayer);
-		onEntityEffect(world, x, y, z, entityPlayer);
+	public void onBlockClicked(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
+		super.onBlockClicked(world, blockPos, entityPlayer);
+		onEntityEffect(world, blockPos, entityPlayer);
 	}
 	
-	private void onEntityEffect(World world, final int x, final int y, final int z, Entity entity) {
+	private void onEntityEffect(World world, final BlockPos blockPos, Entity entity) {
 		if (entity.isDead || !(entity instanceof EntityLivingBase)) {
 			return;
 		}
-		if (world.getBlockMetadata(x, y, z) == 0) {
+		if (world.getBlockState(blockPos) == null) { // @TODO: add proper state handling == 0) {
 			return;
 		}
 		if (!entity.isImmuneToFire()) {
@@ -83,7 +71,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		entity.attackEntityFrom(WarpDrive.damageWarm, 1 + tier);
 		
 		Vector3 v3Entity = new Vector3(entity);
-		Vector3 v3Chiller = new Vector3(x + 0.5D, y + 0.5D, z + 0.5D);
+		Vector3 v3Chiller = new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D);
 		Vector3 v3Direction = new Vector3(entity).subtract(v3Chiller).normalize();
 		v3Chiller.translateFactor(v3Direction, 0.6D);
 		v3Entity.translateFactor(v3Direction, -0.6D);
@@ -97,51 +85,51 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(World world, int x, int y, int z, Random random) {
-		if (world.getBlockMetadata(x, y, z) == 0) {
+	public void randomDisplayTick(IBlockState blockState, World world, BlockPos blockPos, Random rand) {
+		if (world.getBlockState(blockPos) == null) { // @TODO: add proper state handling == 0) {
 			return;
 		}
 		
 		double dOffset = 0.0625D;
 		
 		for (int l = 0; l < 6; ++l) {
-			double dX = (double)((float)x + random.nextFloat());
-			double dY = (double)((float)y + random.nextFloat());
-			double dZ = (double)((float)z + random.nextFloat());
+			double dX = (double)((float)blockPos.getX() + rand.nextFloat());
+			double dY = (double)((float)blockPos.getY() + rand.nextFloat());
+			double dZ = (double)((float)blockPos.getZ() + rand.nextFloat());
 			boolean isValidSide = false;
 			
-			if (l == 0 && !world.getBlock(x, y + 1, z).isOpaqueCube()) {
-				dY = y + 1 + dOffset;
+			if (l == 0 && !world.getBlockState(blockPos.up()).isOpaqueCube()) {
+				dY = blockPos.getY() + 1.0D + dOffset;
 				isValidSide = true;
 			}
 			
-			if (l == 1 && !world.getBlock(x, y - 1, z).isOpaqueCube()) {
-				dY = y - dOffset;
+			if (l == 1 && !world.getBlockState(blockPos.down()).isOpaqueCube()) {
+				dY = blockPos.getY() - dOffset;
 				isValidSide = true;
 			}
 			
-			if (l == 2 && !world.getBlock(x, y, z + 1).isOpaqueCube()) {
-				dZ = z + 1 + dOffset;
+			if (l == 2 && !world.getBlockState(blockPos.south()).isOpaqueCube()) {
+				dZ = blockPos.getZ()+ 1.0D + dOffset;
 				isValidSide = true;
 			}
 			
-			if (l == 3 && !world.getBlock(x, y, z - 1).isOpaqueCube()) {
-				dZ = z - dOffset;
+			if (l == 3 && !world.getBlockState(blockPos.north()).isOpaqueCube()) {
+				dZ = blockPos.getZ() - dOffset;
 				isValidSide = true;
 			}
 			
-			if (l == 4 && !world.getBlock(x + 1, y, z).isOpaqueCube()) {
-				dX = x + 1 + dOffset;
+			if (l == 4 && !world.getBlockState(blockPos.east()).isOpaqueCube()) {
+				dX = blockPos.getX() + 1.0D + dOffset;
 				isValidSide = true;
 			}
 			
-			if (l == 5 && !world.getBlock(x - 1, y, z).isOpaqueCube()) {
-				dX = x - dOffset;
+			if (l == 5 && !world.getBlockState(blockPos.west()).isOpaqueCube()) {
+				dX = blockPos.getX() - dOffset;
 				isValidSide = true;
 			}
 			
 			if (isValidSide) {
-				world.spawnParticle("reddust", dX, dY, dZ, 0.0D, 0.0D, 0.0D);
+				world.spawnParticle(EnumParticleTypes.REDSTONE, dX, dY, dZ, 0.0D, 0.0D, 0.0D);
 			}
 		}
 	}

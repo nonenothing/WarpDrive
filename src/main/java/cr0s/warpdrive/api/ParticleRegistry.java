@@ -3,12 +3,12 @@ package cr0s.warpdrive.api;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
-import cpw.mods.fml.common.FMLLog;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.ModContainer;
-import cpw.mods.fml.common.eventhandler.Event;
 import net.minecraft.item.EnumRarity;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.ModContainer;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.util.Map;
 
@@ -16,10 +16,10 @@ public class ParticleRegistry {
 	
 	private static BiMap<String, Particle> particles = HashBiMap.create();
 	
-	public static final Particle ION = new Particle("ion") { }.setColor(0xE5FF54).setRarity(EnumRarity.common);
-	public static final Particle PROTON = new Particle("proton") { }.setColor(0xE5FF54).setRarity(EnumRarity.common);
-	public static final Particle ANTIMATTER = new Particle("antimatter") { }.setColor(0x1C3CAF).setRarity(EnumRarity.uncommon);
-	public static final Particle STRANGE_MATTER = new Particle("strange_matter") { }.setColor(0xE2414C).setRarity(EnumRarity.rare);
+	public static final Particle ION = new Particle("ion") { }.setColor(0xE5FF54).setRarity(EnumRarity.COMMON);
+	public static final Particle PROTON = new Particle("proton") { }.setColor(0xE5FF54).setRarity(EnumRarity.COMMON);
+	public static final Particle ANTIMATTER = new Particle("antimatter") { }.setColor(0x1C3CAF).setRarity(EnumRarity.UNCOMMON);
+	public static final Particle STRANGE_MATTER = new Particle("strange_matter") { }.setColor(0xE2414C).setRarity(EnumRarity.RARE);
 	// public static final Particle TACHYONS = new Particle("tachyons") { }.setColor(0xE5FF54).setRarity(EnumRarity.epic);
 	
 	static {

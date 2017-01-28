@@ -1,9 +1,9 @@
 package cr0s.warpdrive.api;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Locale;
 
@@ -15,7 +15,7 @@ public class Particle {
 	protected int color;
 	protected int colorIndex;
 	
-	protected EnumRarity enumRarity = EnumRarity.common;
+	protected EnumRarity enumRarity = EnumRarity.COMMON;
 	
 	public Particle(final String registryName) {
 		this.registryName = registryName.toLowerCase(Locale.ENGLISH);
@@ -49,13 +49,13 @@ public class Particle {
 	@SideOnly(Side.CLIENT)
 	public String getLocalizedName() {
 		String unlocalizedName = getUnlocalizedName();
-		return unlocalizedName == null ? "" : StatCollector.translateToLocal(unlocalizedName + ".name");
+		return unlocalizedName == null ? "" : new TextComponentTranslation(unlocalizedName + ".name").getFormattedText();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public String getLocalizedTooltip() {
 		String unlocalizedName = getUnlocalizedName();
-		return unlocalizedName == null ? "" : StatCollector.translateToLocal(unlocalizedName + ".tooltip");
+		return unlocalizedName == null ? "" : new TextComponentTranslation(unlocalizedName + ".tooltip").getFormattedText();
 	}
 	
 	public String getUnlocalizedName()

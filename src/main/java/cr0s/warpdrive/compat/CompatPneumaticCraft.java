@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 
 public class CompatPneumaticCraft implements IBlockTransformer {
 	
@@ -129,45 +129,45 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		// pressure chamber wall, pressure chamber window, pressure chamber interface
 		if (nbtTileEntity.hasKey("valveX")) {
 			WarpDrive.logger.info("hasKey valveX");
-			ChunkCoordinates target = transformation.apply(
+			BlockPos target = transformation.apply(
 				nbtTileEntity.getInteger("valveX"),
 				nbtTileEntity.getInteger("valveY"),
 				nbtTileEntity.getInteger("valveZ"));
-			nbtTileEntity.setInteger("valveX", target.posX);
-			nbtTileEntity.setInteger("valveY", target.posY);
-			nbtTileEntity.setInteger("valveZ", target.posZ);
+			nbtTileEntity.setInteger("valveX", target.getX());
+			nbtTileEntity.setInteger("valveY", target.getY());
+			nbtTileEntity.setInteger("valveZ", target.getZ());
 			// use default metadata rotation
 		}
 		
 		// pressure chamber valve
 		if (nbtTileEntity.hasKey("multiBlockX")) {
-			ChunkCoordinates sourceMin = new ChunkCoordinates(
+			BlockPos sourceMin = new BlockPos(
 				nbtTileEntity.getInteger("multiBlockX"),
 				nbtTileEntity.getInteger("multiBlockY"),
 				nbtTileEntity.getInteger("multiBlockZ"));
 			int multiBlockSize = nbtTileEntity.getInteger("multiBlockSize");
-			ChunkCoordinates sourceMax = new ChunkCoordinates(
-				sourceMin.posX + multiBlockSize - 1,
-				sourceMin.posY + multiBlockSize - 1,
-				sourceMin.posZ + multiBlockSize - 1);
-			ChunkCoordinates target1 = transformation.apply(sourceMin);
-			ChunkCoordinates target2 = transformation.apply(sourceMax);
-			nbtTileEntity.setInteger("multiBlockX", Math.min(target1.posX, target2.posX));
-			nbtTileEntity.setInteger("multiBlockY", Math.min(target1.posY, target2.posY));
-			nbtTileEntity.setInteger("multiBlockZ", Math.min(target1.posZ, target2.posZ));
+			BlockPos sourceMax = new BlockPos(
+				sourceMin.getX() + multiBlockSize - 1,
+				sourceMin.getY() + multiBlockSize - 1,
+				sourceMin.getZ() + multiBlockSize - 1);
+			BlockPos target1 = transformation.apply(sourceMin);
+			BlockPos target2 = transformation.apply(sourceMax);
+			nbtTileEntity.setInteger("multiBlockX", Math.min(target1.getX(), target2.getX()));
+			nbtTileEntity.setInteger("multiBlockY", Math.min(target1.getY(), target2.getY()));
+			nbtTileEntity.setInteger("multiBlockZ", Math.min(target1.getZ(), target2.getZ()));
 			
 			NBTTagList tagListOld = nbtTileEntity.getTagList("Valves", 10);
 			NBTTagList tagListNew = new NBTTagList();
 			for (int index = 0; index < tagListOld.tagCount(); index++) {
 				NBTTagCompound tagCompound = tagListOld.getCompoundTagAt(index);
 				if (tagCompound != null) {
-					ChunkCoordinates coordinates = transformation.apply(
+					BlockPos coordinates = transformation.apply(
 						tagCompound.getInteger("xCoord"),
 						tagCompound.getInteger("yCoord"),
 						tagCompound.getInteger("zCoord"));
-					tagCompound.setInteger("xCoord", coordinates.posX);
-					tagCompound.setInteger("yCoord", coordinates.posY);
-					tagCompound.setInteger("zCoord", coordinates.posZ);
+					tagCompound.setInteger("xCoord", coordinates.getX());
+					tagCompound.setInteger("yCoord", coordinates.getY());
+					tagCompound.setInteger("zCoord", coordinates.getZ());
 					tagListNew.appendTag(tagCompound);
 				}
 			}

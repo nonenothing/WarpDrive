@@ -8,14 +8,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.MathHelper;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.IRenderHandler;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
 
 public class RenderSpaceSky extends IRenderHandler {
 	private static RenderSpaceSky INSTANCE = null;
@@ -47,7 +48,8 @@ public class RenderSpaceSky extends IRenderHandler {
 		GL11.glPopMatrix();
 		
 		// pre-generate skyboxes
-		final Tessellator tessellator = Tessellator.instance;
+		final Tessellator tessellator = Tessellator.getInstance();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
 		
 		GL11.glNewList(callListUpperSkyBox, GL11.GL_COMPILE);
 		final int stepSize = 64;
@@ -55,11 +57,11 @@ public class RenderSpaceSky extends IRenderHandler {
 		float y = 16F;
 		for (int x = -stepSize * nbSteps; x <= stepSize * nbSteps; x += stepSize) {
 			for (int z = -stepSize * nbSteps; z <= stepSize * nbSteps; z += stepSize) {
-				tessellator.startDrawingQuads();
-				tessellator.addVertex(x, y, z);
-				tessellator.addVertex(x + stepSize, y, z);
-				tessellator.addVertex(x + stepSize, y, z + stepSize);
-				tessellator.addVertex(x, y, z + stepSize);
+				vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
+				vertexBuffer.pos(x           , y, z           ).endVertex();
+				vertexBuffer.pos(x + stepSize, y, z           ).endVertex();
+				vertexBuffer.pos(x + stepSize, y, z + stepSize).endVertex();
+				vertexBuffer.pos(x           , y, z + stepSize).endVertex();
 				tessellator.draw();
 			}
 		}
@@ -67,13 +69,13 @@ public class RenderSpaceSky extends IRenderHandler {
 		
 		GL11.glNewList(callListBottomSkyBox, GL11.GL_COMPILE);
 		y = -16F;
-		tessellator.startDrawingQuads();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
 		for (int x = -stepSize * nbSteps; x <= stepSize * nbSteps; x += stepSize) {
 			for (int z = -stepSize * nbSteps; z <= stepSize * nbSteps; z += stepSize) {
-				tessellator.addVertex(x + stepSize, y, z);
-				tessellator.addVertex(x, y, z);
-				tessellator.addVertex(x, y, z + stepSize);
-				tessellator.addVertex(x + stepSize, y, z + stepSize);
+				vertexBuffer.pos(x + stepSize, y, z           ).endVertex();
+				vertexBuffer.pos(x           , y, z           ).endVertex();
+				vertexBuffer.pos(x           , y, z + stepSize).endVertex();
+				vertexBuffer.pos(x + stepSize, y, z + stepSize).endVertex();
 			}
 		}
 		tessellator.draw();
@@ -82,16 +84,17 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	@Override
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
-		boolean isSpace = world.provider == null || world.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID;
+		boolean isSpace = world.provider == null || world.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID;
 		
-		final Tessellator tessellator = Tessellator.instance;
+		final Tessellator tessellator = Tessellator.getInstance();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
 		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glDepthMask(false);
 		
 		// draw upper skybox
 		/*
-		final Vec3 skyColor = getCustomSkyColor();
+		final Vec3d skyColor = getCustomSkyColor();
 		float skyColorRed   = (float) skyColor.xCoord * (1 - world.getStarBrightness(partialTicks) * 2);
 		float skyColorGreen = (float) skyColor.yCoord * (1 - world.getStarBrightness(partialTicks) * 2);
 		float skyColorBlue  = (float) skyColor.zCoord * (1 - world.getStarBrightness(partialTicks) * 2);
@@ -146,11 +149,11 @@ public class RenderSpaceSky extends IRenderHandler {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, isSpace ? 1.0F : 0.3F);
 			FMLClientHandler.instance().getClient().renderEngine.bindTexture(textureStar);
 			
-			tessellator.startDrawingQuads();
-			tessellator.addVertexWithUV(-starScale, starRange, -starScale, 0.0D, 0.0D);
-			tessellator.addVertexWithUV( starScale, starRange, -starScale, 1.0D, 0.0D);
-			tessellator.addVertexWithUV( starScale, starRange,  starScale, 1.0D, 1.0D);
-			tessellator.addVertexWithUV(-starScale, starRange,  starScale, 0.0D, 1.0D);
+			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vertexBuffer.pos(-starScale, starRange, -starScale).tex(0.0D, 0.0D).endVertex();
+			vertexBuffer.pos( starScale, starRange, -starScale).tex(1.0D, 0.0D).endVertex();
+			vertexBuffer.pos( starScale, starRange,  starScale).tex(1.0D, 1.0D).endVertex();
+			vertexBuffer.pos(-starScale, starRange,  starScale).tex(0.0D, 1.0D).endVertex();
 			tessellator.draw();
 			GL11.glPopMatrix();
 		}
@@ -161,7 +164,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			GL11.glPushMatrix();
 			final double planetScale = 10.0D;
 			final double planetRange = 140.0D;
-			final float planetRotation = (float) (world.getSpawnPoint().posZ - mc.thePlayer.posZ) * 0.1F;
+			final float planetRotation = (float) (world.getSpawnPoint().getZ() - mc.thePlayer.posZ) * 0.1F;
 			GL11.glScalef(0.6F, 0.6F, 0.6F);
 			GL11.glRotatef(planetRotation, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(190F, 1.0F, 0.0F, 0.0F);
@@ -170,11 +173,11 @@ public class RenderSpaceSky extends IRenderHandler {
 			FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanet);
 			
 			// world.getMoonPhase();
-			tessellator.startDrawingQuads();
-			tessellator.addVertexWithUV(-planetScale, planetRange, -planetScale, 0, 1);
-			tessellator.addVertexWithUV( planetScale, planetRange, -planetScale, 1, 1);
-			tessellator.addVertexWithUV( planetScale, planetRange,  planetScale, 1, 0);
-			tessellator.addVertexWithUV(-planetScale, planetRange,  planetScale, 0, 0);
+			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vertexBuffer.pos(-planetScale, planetRange, -planetScale).tex(0, 1).endVertex();
+			vertexBuffer.pos( planetScale, planetRange, -planetScale).tex(1, 1).endVertex();
+			vertexBuffer.pos( planetScale, planetRange,  planetScale).tex(1, 0).endVertex();
+			vertexBuffer.pos(-planetScale, planetRange,  planetScale).tex(0, 0).endVertex();
 			tessellator.draw();
 			GL11.glScalef(1.0F, 1.0F, 1.0F);
 			GL11.glPopMatrix();
@@ -182,12 +185,12 @@ public class RenderSpaceSky extends IRenderHandler {
 		/**/
 		
 		// Planets
-		Vec3 playerCoordinates = mc.thePlayer.getPosition(partialTicks);
+		Vec3d playerCoordinates = mc.thePlayer.getPositionEyes(partialTicks);
 		for(Planet planet : WarpDriveConfig.PLANETS) {
 			renderPlanet(mc, tessellator, planet, isSpace, playerCoordinates);
 		}
 		
-		// final double playerAltitude = mc.thePlayer.getPosition(partialTicks).yCoord - world.getHorizon();
+		// final double playerAltitude = mc.thePlayer.getPositionEyes(partialTicks).yCoord - world.getHorizon();
 		
 		// stratosphere box
 		/*
@@ -202,28 +205,28 @@ public class RenderSpaceSky extends IRenderHandler {
 			var10 = 1.0F;
 			var11 = -((float) (playerAltitude + 65.0D));
 			var12 = -var10;
-			tessellator.startDrawingQuads();
-			tessellator.setColorRGBA_I(0xFF800, 255);
-			tessellator.addVertex(-var10, var11,  var10);
-			tessellator.addVertex( var10, var11,  var10);
-			tessellator.addVertex( var10, var12,  var10);
-			tessellator.addVertex(-var10, var12,  var10);
-			tessellator.addVertex(-var10, var12, -var10);
-			tessellator.addVertex( var10, var12, -var10);
-			tessellator.addVertex( var10, var11, -var10);
-			tessellator.addVertex(-var10, var11, -var10);
-			tessellator.addVertex( var10, var12, -var10);
-			tessellator.addVertex( var10, var12,  var10);
-			tessellator.addVertex( var10, var11,  var10);
-			tessellator.addVertex( var10, var11, -var10);
-			tessellator.addVertex(-var10, var11, -var10);
-			tessellator.addVertex(-var10, var11,  var10);
-			tessellator.addVertex(-var10, var12,  var10);
-			tessellator.addVertex(-var10, var12, -var10);
-			tessellator.addVertex(-var10, var12, -var10);
-			tessellator.addVertex(-var10, var12,  var10);
-			tessellator.addVertex( var10, var12,  var10);
-			tessellator.addVertex( var10, var12, -var10);
+			GlStateManager.color(255, 128, 0, 255);
+			vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
+			vertexBuffer.pos(-var10, var11,  var10).endVertex();
+			vertexBuffer.pos( var10, var11,  var10).endVertex();
+			vertexBuffer.pos( var10, var12,  var10).endVertex();
+			vertexBuffer.pos(-var10, var12,  var10).endVertex();
+			vertexBuffer.pos(-var10, var12, -var10).endVertex();
+			vertexBuffer.pos( var10, var12, -var10).endVertex();
+			vertexBuffer.pos( var10, var11, -var10).endVertex();
+			vertexBuffer.pos(-var10, var11, -var10).endVertex();
+			vertexBuffer.pos( var10, var12, -var10).endVertex();
+			vertexBuffer.pos( var10, var12,  var10).endVertex();
+			vertexBuffer.pos( var10, var11,  var10).endVertex();
+			vertexBuffer.pos( var10, var11, -var10).endVertex();
+			vertexBuffer.pos(-var10, var11, -var10).endVertex();
+			vertexBuffer.pos(-var10, var11,  var10).endVertex();
+			vertexBuffer.pos(-var10, var12,  var10).endVertex();
+			vertexBuffer.pos(-var10, var12, -var10).endVertex();
+			vertexBuffer.pos(-var10, var12, -var10).endVertex();
+			vertexBuffer.pos(-var10, var12,  var10).endVertex();
+			vertexBuffer.pos( var10, var12,  var10).endVertex();
+			vertexBuffer.pos( var10, var12, -var10).endVertex();
 			tessellator.draw();
 		}
 		/**/
@@ -250,7 +253,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	static final double PLANET_FAR = 512.0D;
 	static final double PLANET_ORBIT = 128.0D;
-	private static void renderPlanet(Minecraft mc, Tessellator tessellator, final Planet planet, final boolean isSpace, final Vec3 playerCoordinates) {
+	private static void renderPlanet(Minecraft mc, Tessellator tessellator, final Planet planet, final boolean isSpace, final Vec3d playerCoordinates) {
 		final double planetX = planet.spaceCenterX - playerCoordinates.xCoord;
 		final double planetZ = planet.spaceCenterZ - playerCoordinates.zCoord;
 		final double distanceToBorder = planet.isValidFromSpace((int) mc.thePlayer.posX, (int) mc.thePlayer.posZ);
@@ -295,7 +298,8 @@ public class RenderSpaceSky extends IRenderHandler {
 		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, isSpace ? 1.0F : 0.2F);
 		FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanets[Math.abs(planet.dimensionId) % 3]);
-		tessellator.startDrawingQuads();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
 			final double offset1 = ((indexVertex     & 2) - 1) * renderSize;
 			final double offset2 = ((indexVertex + 1 & 2) - 1) * renderSize;
@@ -305,7 +309,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			final double valD = renderRange * sinV - valV * cosV;
 			final double x = valD * sinH - valH * cosH;
 			final double z = valH * sinH + valD * cosH;
-			tessellator.addVertexWithUV(x, y, z, (indexVertex & 2) / 2, (indexVertex + 1 & 2) / 2);
+			vertexBuffer.pos(x, y, z).tex((indexVertex & 2) / 2, (indexVertex + 1 & 2) / 2).endVertex();
 		}
 		tessellator.draw();
 		
@@ -315,8 +319,9 @@ public class RenderSpaceSky extends IRenderHandler {
 	private void renderStars() {
 		final Random rand = new Random(10842L);
 		final boolean hasMoreStars = rand.nextBoolean() || rand.nextBoolean();
-		final Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
+		final Tessellator tessellator = Tessellator.getInstance();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
 		
 		for (int indexStars = 0; indexStars < (hasMoreStars ? 20000 : 6000); indexStars++) {
 			double randomX = rand.nextDouble() * 2.0D - 1.0D;
@@ -363,7 +368,7 @@ public class RenderSpaceSky extends IRenderHandler {
 					final double valD = valZero * sinV - valV * cosV;
 					final double x1 = valD * sinH - valH * cosH;
 					final double z1 = valH * sinH + valD * cosH;
-					tessellator.addVertex(x0 + x1, y0 + y1, z0 + z1);
+					vertexBuffer.pos(x0 + x1, y0 + y1, z0 + z1).endVertex();
 				}
 			}
 		}
@@ -371,8 +376,8 @@ public class RenderSpaceSky extends IRenderHandler {
 		tessellator.draw();
 	}
 	
-	private static Vec3 getCustomSkyColor() {
-		return Vec3.createVectorHelper(0.26796875D, 0.1796875D, 0.0D);
+	private static Vec3d getCustomSkyColor() {
+		return new Vec3d(0.26796875D, 0.1796875D, 0.0D);
 	}
 	
 	public static float getSkyBrightness(float par1) {

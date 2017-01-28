@@ -3,12 +3,13 @@ package cr0s.warpdrive.block.detection;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import cr0s.warpdrive.data.EnumRadarMode;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -43,8 +44,8 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -58,7 +59,8 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 					if (WarpDriveConfig.LOGGING_RADAR) {
 						WarpDrive.logger.info(this + " Scan found " + results.size() + " results in " + scanningRadius + " radius...");
 					}
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 1 + 2);
+					
+					updateBlockState(null, BlockRadar.MODE, EnumRadarMode.ACTIVE);
 					scanning_ticks = 0;
 				}
 			}
@@ -73,8 +75,8 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		return super.writeToNBT(tag);
 	}
 	
 	private int calculateEnergyRequired(final int parRadius) {
@@ -186,9 +188,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		scanningRadius = radius;
 		scanningDuration_ticks = calculateScanDuration(radius);
 		scanning_ticks = 0;
-		if (getBlockMetadata() != 2) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 2, 1 + 2);
-		}
+		updateBlockState(null, BlockRadar.MODE, EnumRadarMode.SCANNING);
 		if (WarpDriveConfig.LOGGING_RADAR) {
 			WarpDrive.logger.info(this + "Starting scan over radius " + scanningRadius + " for " + energyRequired + " EU, results expected in " + scanningDuration_ticks + " ticks");
 		}
@@ -220,7 +220,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	public void attach(IComputerAccess computer) {
 		super.attach(computer);
 		if (getBlockMetadata() == 0) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 1 + 2);
+			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.ACTIVE);
 		}
 	}
 	
@@ -228,7 +228,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Optional.Method(modid = "ComputerCraft")
 	public void detach(IComputerAccess computer) {
 		super.detach(computer);
-		// worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);
+		if (connectedComputers.isEmpty()) {
+			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.INACTIVE);
+		}
 	}
 	
 	@Override
@@ -251,7 +253,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 
 			case "getResultsCount":
 				if (results != null) {
-					return new Integer[]{results.size()};
+					return new Integer[] { results.size() };
 				}
 				return new Integer[]{-1};
 
@@ -269,7 +271,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 }

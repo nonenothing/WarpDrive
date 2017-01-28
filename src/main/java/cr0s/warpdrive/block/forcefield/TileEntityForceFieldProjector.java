@@ -15,6 +15,7 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockStaticLiquid;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,16 +24,19 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -65,10 +69,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private int guideTicks;
 	private double damagesEnergyCost = 0.0D;
 	private final HashSet<UUID> setInteractedEntities = new HashSet<>();
-	protected boolean isPowered = true;
+	private boolean isPowered = true;
 	private ForceFieldSetup cache_forceFieldSetup;
 	private ForceFieldSetup legacy_forceFieldSetup;
 	private double consumptionLeftOver = 0.0D;
+	public EnumFacing enumFacing = EnumFacing.UP;
+	public float rotation_deg = 0.0F;
+	public float rotationSpeed_degPerTick = 2.0F;
 	
 	// carry over speed to next tick, useful for slow interactions
 	private float carryScanSpeed;
@@ -115,13 +122,18 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		setupTicks = worldObj.rand.nextInt(PROJECTOR_SETUP_TICKS);
 		updateTicks = worldObj.rand.nextInt(PROJECTOR_PROJECTION_UPDATE_TICKS);
 		guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
+		enumFacing = worldObj.getBlockState(pos).getValue(BlockProperties.FACING);
+		rotation_deg = worldObj.rand.nextFloat() * 360.0F;
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
+			rotationSpeed_degPerTick = 0.98F * rotationSpeed_degPerTick
+			                         + 0.02F * getState().getRotationSpeed_degPerTick();
+			rotation_deg += rotationSpeed_degPerTick;
 			return;
 		}
 		
@@ -170,6 +182,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					WarpDrive.logger.info(this + " starting up...");
 				}
 				legacy_isOn = true;
+				markDirty();
 			}
 			cooldownTicks = 0;
 			
@@ -201,7 +214,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			if (soundTicks <= 0) {
 				soundTicks = PROJECTOR_SOUND_UPDATE_TICKS;
 				if (!hasUpgrade(EnumForceFieldUpgrade.SILENCER)) {
-					worldObj.playSoundEffect(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, "warpdrive:projecting", 1.0F, 0.85F + 0.15F * worldObj.rand.nextFloat());
+					worldObj.playSound(null, pos, SoundEvents.PROJECTING, SoundCategory.BLOCKS, 1.0F, 0.85F + 0.15F * worldObj.rand.nextFloat());
 				}
 			}
 			
@@ -211,6 +224,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					WarpDrive.logger.info(this + " shutting down...");
 				}
 				legacy_isOn = false;
+				markDirty();
 				cooldownTicks = PROJECTOR_COOLDOWN_TICKS;
 				guideTicks = 0;
 			}
@@ -220,10 +234,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				if (guideTicks <= 0) {
 					guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 					
-					String msg = StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName())
-					           + StatCollector.translateToLocalFormatted("warpdrive.forcefield.guide.lowPower");
+					ITextComponent msg = new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName())
+					    .appendSibling(new TextComponentTranslation("warpdrive.forcefield.guide.lowPower"));
 					
-					AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 10, yCoord - 10, zCoord - 10, xCoord + 10, yCoord + 10, zCoord + 10);
+					AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
 					List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 					
 					for (Entity entity : list) {
@@ -231,7 +245,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 							continue;
 						}
 						
-						WarpDrive.addChatMessage((EntityPlayer) entity, msg);
+						WarpDrive.addChatMessage(entity, msg);
 					}
 				}
 			}
@@ -337,13 +351,14 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		carryPlaceSpeed = floatPlaceSpeed - countMaxPlaced;
 		
 		// evaluate force field block metadata
-		int metadataForceField = Math.min(15, (beamFrequency * 16) / IBeamFrequency.BEAM_FREQUENCY_MAX);
-		if (forceFieldSetup.getCamouflageBlock() != null) {
-			metadataForceField = forceFieldSetup.getCamouflageMetadata();
+		IBlockState blockStateForceField = WarpDrive.blockForceFields[tier - 1].getStateFromMeta(Math.min(15, (beamFrequency * 16) / IBeamFrequency.BEAM_FREQUENCY_MAX));
+		if (forceFieldSetup.getCamouflageBlockState() != null) {
+			blockStateForceField = WarpDrive.blockForceFields[tier - 1].getStateFromMeta(
+					forceFieldSetup.getCamouflageBlockState().getBlock().getMetaFromState(forceFieldSetup.getCamouflageBlockState()) );
 		}
 		
 		VectorI vector;
-		Block block;
+		IBlockState blockState;
 		boolean doProjectThisBlock;
 		
 		while ( countScanned < countMaxScanned
@@ -356,11 +371,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			vector = iteratorForcefield.next();
 			
-			if (!worldObj.blockExists(vector.x, vector.y, vector.z) || !worldObj.getChunkFromBlockCoords(vector.x, vector.z).isChunkLoaded) {
+			if (!worldObj.isBlockLoaded(vector.getBlockPos(), false) || !worldObj.getChunkFromBlockCoords(vector.getBlockPos()).isLoaded()) {
 				continue;
 			}
-			
-			block = vector.getBlock(worldObj);
+
+			blockState = vector.getBlockState(worldObj);
 			doProjectThisBlock = true;
 			
 			// skip if fusion upgrade is present and it's inside another projector area
@@ -374,30 +389,33 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			}
 			
 			// skip if block properties prevents it
-			if (doProjectThisBlock && (block != Blocks.tallgrass) && (block != Blocks.deadbush) && !Dictionary.BLOCKS_EXPANDABLE.contains(block)) {
+			if ( doProjectThisBlock
+			  && (blockState.getBlock() != Blocks.TALLGRASS)
+			  && (blockState.getBlock() != Blocks.DEADBUSH)
+			  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockState.getBlock()) ) {
 				// MFR laser is unbreakable and replaceable
 				// Liquid, vine and snow are replaceable
-				if (block instanceof BlockLiquid) {
-					Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+				if (blockState.getBlock() instanceof BlockLiquid) {
+					Fluid fluid = FluidRegistry.lookupFluidForBlock(blockState.getBlock());
 					doProjectThisBlock = fluid == null || forceFieldSetup.pumping_maxViscosity >= fluid.getViscosity();
 					
 				} else if (forceFieldSetup.breaking_maxHardness > 0) {
-					float blockHardness = block.getBlockHardness(worldObj, vector.x, vector.y, vector.z);
+					float blockHardness = blockState.getBlockHardness(worldObj, vector.getBlockPos());
 					// stops on unbreakable or too hard
-					if (blockHardness == -1.0F || blockHardness > forceFieldSetup.breaking_maxHardness || worldObj.isAirBlock(vector.x, vector.y, vector.z)) {
+					if (blockHardness == -1.0F || blockHardness > forceFieldSetup.breaking_maxHardness || worldObj.isAirBlock(vector.getBlockPos())) {
 						doProjectThisBlock = false;
 					}
 					
 				} else {// doesn't have disintegration, not a liquid
 					
 					// recover force field blocks
-					if (block instanceof BlockForceField) {
+					if (blockState.getBlock() instanceof BlockForceField) {
 						TileEntity tileEntity = vector.getTileEntity(worldObj);
 						if (!(tileEntity instanceof TileEntityForceField)) {
 							// missing a valid tile entity
 							// => force a new placement
-							worldObj.setBlockToAir(vector.x, vector.y, vector.z);
-							block = Blocks.air;
+							worldObj.setBlockToAir(vector.getBlockPos());
+							blockState = Blocks.AIR.getDefaultState();
 							
 						} else {
 							TileEntityForceField tileEntityForceField = ((TileEntityForceField)tileEntity);
@@ -406,48 +424,45 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 								// orphan force field, probably from an explosion
 								// => recover it
 								tileEntityForceField.setProjector(new VectorI(this));
-								tileEntityForceField.cache_blockCamouflage = forceFieldSetup.getCamouflageBlock();
-								tileEntityForceField.cache_metadataCamouflage = forceFieldSetup.getCamouflageMetadata();
-								worldObj.setBlockMetadataWithNotify(vector.x, vector.y, vector.z, tileEntityForceField.cache_metadataCamouflage, 2);
+								tileEntityForceField.cache_blockStateCamouflage = forceFieldSetup.getCamouflageBlockState();
+								worldObj.setBlockState(vector.getBlockPos(), tileEntityForceField.cache_blockStateCamouflage, 2);
 								
 							} else if (tileEntityForceFieldProjector == this) {// this is ours
-								if ( tileEntityForceField.cache_blockCamouflage != forceFieldSetup.getCamouflageBlock()
-								  || tileEntityForceField.cache_metadataCamouflage != forceFieldSetup.getCamouflageMetadata()
-								  || block != WarpDrive.blockForceFields[tier - 1]
-								  || vector.getBlockMetadata(worldObj) != metadataForceField ) {
+								if ( tileEntityForceField.cache_blockStateCamouflage.equals(forceFieldSetup.getCamouflageBlockState())
+								  || blockState.equals(blockStateForceField) ) {
 									// camouflage changed while chunk wasn't loaded or de-synchronisation
 									// force field downgraded during explosion
 									// => force a new placement
-									worldObj.setBlockToAir(vector.x, vector.y, vector.z);
-									block = Blocks.air;
+									worldObj.setBlockToAir(vector.getBlockPos());
+									blockState = Blocks.AIR.getDefaultState();
 								}
 							}
 						}
 					}
 					
-					doProjectThisBlock = block.isReplaceable(worldObj, vector.x, vector.y, vector.z) || (block == WarpDrive.blockForceFields[tier - 1]);
+					doProjectThisBlock = blockState.getBlock().isReplaceable(worldObj, vector.getBlockPos()) || (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]);
 				}
 			}
 			
 			// skip if area is protected
 			if (doProjectThisBlock) {
 				if (forceFieldSetup.breaking_maxHardness > 0) {
-					doProjectThisBlock = ! isBlockBreakCanceled(null, worldObj, vector.x, vector.y, vector.z);
-				} else if (!(block instanceof BlockForceField)) {
-					doProjectThisBlock = ! isBlockPlaceCanceled(null, worldObj, vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField);
+					doProjectThisBlock = ! isBlockBreakCanceled(null, worldObj, vector.getBlockPos());
+				} else if (!(blockState.getBlock() instanceof BlockForceField)) {
+					doProjectThisBlock = ! isBlockPlaceCanceled(null, worldObj, vector.getBlockPos(), blockStateForceField);
 				}
 			}
 			
 			if (doProjectThisBlock) {
-				if ((block != WarpDrive.blockForceFields[tier - 1]) && (!vector.equals(this))) {
+				if ((blockState.getBlock() != WarpDrive.blockForceFields[tier - 1]) && (!vector.equals(this))) {
 					boolean hasPlaced = false;
-					if (block instanceof BlockLiquid) {
+					if (blockState.getBlock() instanceof BlockLiquid) {
 						hasPlaced = true;
-						doPumping(forceFieldSetup, metadataForceField, vector, block);
+						doPumping(forceFieldSetup, blockStateForceField, vector, blockState);
 						
 					} else if (forceFieldSetup.breaking_maxHardness > 0) {
 						hasPlaced = true;
-						if (doBreaking(forceFieldSetup, vector, block)) {
+						if (doBreaking(forceFieldSetup, vector, blockState)) {
 							return;
 						}
 						
@@ -458,13 +473,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 						}
 						
 					} else if (forceFieldSetup.isInverted && (forceFieldSetup.temperatureLevel < 295.0F || forceFieldSetup.temperatureLevel > 305.0F)) {
-						doTerraforming(forceFieldSetup, vector, block);
+						doTerraforming(forceFieldSetup, vector, blockState);
 						
 					} else if (!forceFieldSetup.isInverted) {
 						hasPlaced = true;
-						worldObj.setBlock(vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField, 2);
+						worldObj.setBlockState(vector.getBlockPos(), blockStateForceField, 2);
 						
-						TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+						TileEntity tileEntity = worldObj.getTileEntity(vector.getBlockPos());
 						if (tileEntity instanceof TileEntityForceField) {
 							((TileEntityForceField) tileEntity).setProjector(new VectorI(this));
 						}
@@ -483,8 +498,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					consumeEnergy(forceFieldSetup.scanEnergyCost, false);
 					
 					// recover forcefield blocks from recalculation or chunk loading
-					if (block == WarpDrive.blockForceFields[tier - 1] && !vForceFields.contains(vector)) {
-						TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+					if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1] && !vForceFields.contains(vector)) {
+						TileEntity tileEntity = worldObj.getTileEntity(vector.getBlockPos());
 						if (tileEntity instanceof TileEntityForceField && (((TileEntityForceField) tileEntity).getProjector() == this)) {
 							vForceFields.add(vector);
 						}
@@ -496,10 +511,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				consumeEnergy(forceFieldSetup.scanEnergyCost, false);
 				
 				// remove our own force field block
-				if (block == WarpDrive.blockForceFields[tier - 1]) {
-					assert(block instanceof BlockForceField);
-					if (((BlockForceField) block).getProjector(worldObj, vector.x, vector.y, vector.z) == this) {
-						worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+				if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]) {
+					assert(blockState.getBlock() instanceof BlockForceField);
+					if (((BlockForceField) blockState.getBlock()).getProjector(worldObj, vector.getBlockPos()) == this) {
+						worldObj.setBlockToAir(vector.getBlockPos());
 						vForceFields.remove(vector);
 					}
 				}
@@ -507,17 +522,17 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
-	private void doPumping(final ForceFieldSetup forceFieldSetup, final int metadataForceField, final VectorI vector, final Block block) {
-		if (block instanceof BlockStaticLiquid) {// it's a source block
+	private void doPumping(final ForceFieldSetup forceFieldSetup, final IBlockState blockStateForceField, final VectorI vector, final IBlockState blockState) {
+		if (blockState.getBlock() instanceof BlockStaticLiquid) {// it's a source block
 			// TODO collect fluid
 		}
 		
 		if (forceFieldSetup.isInverted || forceFieldSetup.breaking_maxHardness > 0) {
-			worldObj.setBlock(vector.x, vector.y, vector.z, Blocks.air, 0, 2);
+			worldObj.setBlockState(vector.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
 		} else {
-			worldObj.setBlock(vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField, 2);
+			worldObj.setBlockState(vector.getBlockPos(), blockStateForceField, 2);
 			
-			TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+			TileEntity tileEntity = worldObj.getTileEntity(vector.getBlockPos());
 			if (tileEntity instanceof TileEntityForceField) {
 				((TileEntityForceField) tileEntity).setProjector(new VectorI(this));
 			}
@@ -545,7 +560,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					continue;
 				}
 				blockToPlace = Block.getBlockFromItem(itemStack.getItem());
-				if (blockToPlace == Blocks.air) {
+				if (blockToPlace == Blocks.AIR) {
 					slotIndex++;
 					continue;
 				}
@@ -558,7 +573,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " known as block " + blockToPlace + ":" + metadataToPlace);
 				}
 				
-				if (!blockToPlace.canPlaceBlockAt(worldObj, vector.x, vector.y, vector.z)) {
+				if (!blockToPlace.canPlaceBlockAt(worldObj, vector.getBlockPos())) {
 					slotIndex++;
 					continue;
 				}
@@ -586,7 +601,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		assert(found);
 		
 		// check area protection
-		if (isBlockPlaceCanceled(null, worldObj, vector.x, vector.y, vector.z, blockToPlace, metadataToPlace)) {
+		if (isBlockPlaceCanceled(null, worldObj, vector.getBlockPos(), blockToPlace.getStateFromMeta(metadataToPlace))) {
 			if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 				WarpDrive.logger.info(this + " Placing cancelled at (" + vector.x + " " + vector.y + " " + vector.z + ")");
 			}
@@ -603,19 +618,19 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
 		PacketHandler.sendBeamPacket(worldObj, new Vector3(this).translate(0.5D), new Vector3(vector.x, vector.y, vector.z).translate(0.5D),
 			0.2F, 0.7F, 0.4F, age, 0, 50);
-		// worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 4F, 1F);
+		// worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4.0F, 1.0F);
 		
 		// standard place sound effect
-		worldObj.playSoundEffect(vector.x + 0.5F, vector.y + 0.5F, vector.z + 0.5F,
-			blockToPlace.stepSound.func_150496_b(), (blockToPlace.stepSound.getVolume() + 1.0F) / 2.0F, blockToPlace.stepSound.getPitch() * 0.8F);
+		worldObj.playSound(null, vector.getBlockPos(), blockToPlace.getSoundType().getPlaceSound(), SoundCategory.BLOCKS,
+				(blockToPlace.getSoundType().getVolume() + 1.0F) / 2.0F, blockToPlace.getSoundType().getPitch() * 0.8F);
 		
-		worldObj.setBlock(vector.x, vector.y, vector.z, blockToPlace, metadataToPlace, 3);
+		worldObj.setBlockState(vector.getBlockPos(), blockToPlace.getStateFromMeta(metadataToPlace), 3);
 		return false;
 	}
 	
-	private void doTerraforming(final ForceFieldSetup forceFieldSetup, final VectorI vector, final Block block) {
+	private void doTerraforming(final ForceFieldSetup forceFieldSetup, final VectorI vector, final IBlockState blockState) {
 		assert(vector != null);
-		assert(block != null);
+		assert(blockState != null);
 		if (forceFieldSetup.temperatureLevel > 300.0F) {
 			
 		} else {
@@ -626,12 +641,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		// TODO obsidian < lava
 	}
 	
-	private boolean doBreaking(final ForceFieldSetup forceFieldSetup, final VectorI vector, final Block block) {
+	private boolean doBreaking(final ForceFieldSetup forceFieldSetup, final VectorI vector, final IBlockState blockState) {
 		List<ItemStack> itemStacks;
-		int metadata = 0;
 		try {
-			metadata = worldObj.getBlockMetadata(vector.x, vector.y, vector.z);
-			itemStacks = block.getDrops(worldObj, vector.x, vector.y, vector.z, metadata, 0);
+			itemStacks = blockState.getBlock().getDrops(worldObj, vector.getBlockPos(), blockState, 0);
 		} catch (Exception exception) {// protect in case the mined block is corrupted
 			exception.printStackTrace();
 			itemStacks = null;
@@ -654,8 +667,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		PacketHandler.sendBeamPacket(worldObj, new Vector3(vector.x, vector.y, vector.z).translate(0.5D), new Vector3(this).translate(0.5D),
 			0.7F, 0.4F, 0.2F, age, 0, 50);
 		// standard harvest block effect
-		worldObj.playAuxSFXAtEntity(null, 2001, vector.x, vector.y, vector.z, Block.getIdFromBlock(block) + (metadata << 12));
-		worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+		worldObj.playEvent(2001, vector.getBlockPos(), Block.getStateId(blockState));
+		worldObj.setBlockToAir(vector.getBlockPos());
 		return false;
 	}
 	
@@ -664,22 +677,25 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return;
 		}
 		
-		legacy_isOn = false;
+		if (legacy_isOn) {
+			legacy_isOn = false;
+			markDirty();
+		}
 		if (!vForceFields.isEmpty()) {
 			for (Iterator<VectorI> iterator = vForceFields.iterator(); iterator.hasNext();) {
 				VectorI vector = iterator.next();
 				if (!isChunkLoading) {
-					if (!(worldObj.blockExists(vector.x, vector.y, vector.z))) {// chunk is not loaded, skip it
+					if (!(worldObj.isBlockLoaded(vector.getBlockPos(), false))) {// chunk is not loaded, skip it
 						continue;
 					}
-					if (!worldObj.getChunkFromBlockCoords(vector.x, vector.z).isChunkLoaded) {// chunk is unloading, skip it
+					if (!worldObj.getChunkFromBlockCoords(vector.getBlockPos()).isLoaded()) {// chunk is unloading, skip it
 						continue;
 					}
 				}
-				Block block = vector.getBlock(worldObj);
+				IBlockState blockState = vector.getBlockState(worldObj);
 				
-				if (block == WarpDrive.blockForceFields[tier - 1]) {
-					worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+				if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]) {
+					worldObj.setBlockToAir(vector.getBlockPos());
 				}
 				iterator.remove();
 			}
@@ -687,12 +703,12 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		if (isCalculated() && isChunkLoading) {
 			for (VectorI vector : calculated_forceField) {
-				Block block = vector.getBlock(worldObj);
+				IBlockState blockState = vector.getBlockState(worldObj);
 				
-				if (block == WarpDrive.blockForceFields[tier - 1]) {
-					TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+				if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]) {
+					TileEntity tileEntity = worldObj.getTileEntity(vector.getBlockPos());
 					if (tileEntity instanceof TileEntityForceField && (((TileEntityForceField) tileEntity).getProjector() == this)) {
-						worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+						worldObj.setBlockToAir(vector.getBlockPos());
 					}
 				}
 			}
@@ -735,7 +751,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public float getRotationYaw() {
 		int metadata = getBlockMetadata();
 		float totalYaw;
-		switch (ForgeDirection.getOrientation(metadata & 7)) {
+		switch (EnumFacing.getFront(metadata & 7)) {
 		case DOWN : totalYaw =   0.0F; break;
 		case UP   : totalYaw =   0.0F; break;
 		case NORTH: totalYaw =  90.0F; break;
@@ -753,7 +769,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public float getRotationPitch() {
 		int metadata = getBlockMetadata();
 		float totalPitch;
-		switch (ForgeDirection.getOrientation(metadata & 7)) {
+		switch (EnumFacing.getFront(metadata & 7)) {
 		case DOWN : totalPitch =  180.0F; break;
 		case UP   : totalPitch =    0.0F; break;
 		case NORTH: totalPitch =  -90.0F; break;
@@ -807,6 +823,22 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
+	public EnumForceFieldState getState() {
+		EnumForceFieldState forceFieldState = EnumForceFieldState.NOT_CONNECTED;
+		if (isConnected && isValid()) {
+			if (isPowered) {
+				if (isOn()) {
+					forceFieldState = EnumForceFieldState.CONNECTED_POWERED;
+				} else {
+					forceFieldState = EnumForceFieldState.CONNECTED_OFFLINE;
+				}
+			} else {
+				forceFieldState = EnumForceFieldState.CONNECTED_NOT_POWERED;
+			}
+		}
+		return forceFieldState;
+	}
+	
 	public Vector3 getTranslation() {
 		if (hasUpgrade(EnumForceFieldUpgrade.TRANSLATION)) {
 			return v3Translation;
@@ -841,26 +873,26 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return false;
 	}
 	
-	private String getShapeStatus() {
+	private ITextComponent getShapeStatus() {
 		EnumForceFieldShape enumForceFieldShape = getShape();
-		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.unlocalizedName);
+		ITextComponent displayName = new TextComponentTranslation("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.getName());
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.none", 
-				strDisplayName);
+			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.none", 
+				displayName);
 		} else if (isDoubleSided) {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.double",
-				strDisplayName);
+			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.double",
+				displayName);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.single", 
-				strDisplayName);
+			return new TextComponentTranslation("warpdrive.forcefield.shape.statusLine.single", 
+				displayName);
 		}
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-			+ "\n" + getShapeStatus()
-			+ "\n" + getUpgradeStatus();
+			.appendSibling(new TextComponentString("\n")).appendSibling(getShapeStatus())
+			.appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
 	}
 	
 	@Override
@@ -889,8 +921,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setBoolean("isDoubleSided", isDoubleSided);
 		
 		if (v3Min.x != -1.0D || v3Min.y != -1.0D || v3Min.z != -1.0D) {
@@ -923,33 +955,35 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 		
 		tag.setBoolean("isOn", legacy_isOn);
+		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		writeToNBT(tagCompound);
+	public NBTTagCompound getUpdateTag() {
+		NBTTagCompound tagCompound = super.getUpdateTag();
 		tagCompound.setBoolean("isPowered", isPowered);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		tagCompound.setBoolean("isOn", legacy_isOn);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
-		readFromNBT(tagCompound);
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		super.onDataPacket(networkManager, packet);
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		isPowered = tagCompound.getBoolean("isPowered");
+		legacy_isOn = tagCompound.getBoolean("isOn");
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {
 		if (cache_forceFieldSetup == null) {
-			cache_forceFieldSetup = new ForceFieldSetup(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, tier, beamFrequency);
+			cache_forceFieldSetup = new ForceFieldSetup(worldObj.provider.getDimension(), pos, tier, beamFrequency);
 			setupTicks = Math.max(setupTicks, 10);
 			
 			// reset field in case of major changes
 			if (legacy_forceFieldSetup != null) {
 				int energyRequired = (int)Math.max(0, Math.round(cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost));
-				if ( legacy_forceFieldSetup.getCamouflageBlock() != cache_forceFieldSetup.getCamouflageBlock()
-				  || legacy_forceFieldSetup.getCamouflageMetadata() != cache_forceFieldSetup.getCamouflageMetadata()
+				if (!legacy_forceFieldSetup.getCamouflageBlockState().equals(cache_forceFieldSetup.getCamouflageBlockState())
 				  || legacy_forceFieldSetup.beamFrequency != cache_forceFieldSetup.beamFrequency
 				  || !energy_consume(energyRequired, false)) {
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
@@ -963,7 +997,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				         || !legacy_forceFieldSetup.vMin.equals(cache_forceFieldSetup.vMin)
 				         || !legacy_forceFieldSetup.vMax.equals(cache_forceFieldSetup.vMax)
 				         || !legacy_forceFieldSetup.vTranslation.equals(cache_forceFieldSetup.vTranslation)
-					     || (legacy_forceFieldSetup.breaking_maxHardness <= 0 && cache_forceFieldSetup.breaking_maxHardness > 0) ) {
+						 || (legacy_forceFieldSetup.breaking_maxHardness <= 0 && cache_forceFieldSetup.breaking_maxHardness > 0) ) {
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.info(this + " rebooting with new shape...");
 					}
@@ -981,7 +1015,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
@@ -996,13 +1030,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// OpenComputer callback methods
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
 	public Object[] state(Context context, Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
 	public Object[] min(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setMin((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1015,7 +1049,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
 	public Object[] max(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setMax((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1028,7 +1062,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
 	public Object[] rotation(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setRotation((float)arguments.checkDouble(0), rotationPitch, rotationRoll);
@@ -1043,12 +1077,12 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	// Common OC/CC methods
 	private Object[] state() {    // isConnected, isPowered, shape
 		int energy = energy_getEnergyStored();
-		String status = getStatus();
+		String status = getStatus().toString();
 		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
 	public Object[] translation(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setTranslation((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1062,7 +1096,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@cpw.mods.fml.common.Optional.Method(modid = "ComputerCraft")
+	@net.minecraftforge.fml.common.Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		

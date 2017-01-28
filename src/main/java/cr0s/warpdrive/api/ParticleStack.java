@@ -1,8 +1,8 @@
 package cr0s.warpdrive.api;
 
-import cpw.mods.fml.common.FMLLog;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.common.FMLLog;
 
 import javax.annotation.Nonnull;
 
@@ -24,7 +24,7 @@ public class ParticleStack {
 		this(particle, amount);
 		
 		if (nbt != null) {
-			tag = (NBTTagCompound) nbt.copy();
+			tag = nbt.copy();
 		}
 	}
 	

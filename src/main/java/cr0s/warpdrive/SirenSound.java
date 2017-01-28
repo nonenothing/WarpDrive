@@ -4,9 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 
 public class SirenSound extends MovingSound {
-    ResourceLocation resource;
     float range;
     float x, y, z;
 
@@ -19,16 +20,15 @@ public class SirenSound extends MovingSound {
        2. Produces a sound which decreases in volume the farther you get away from it.
        3. Doesn't keep playing for you once you're half the world away.
        4. Doesn't completely spazz out the instant you try to actually use it.*/
-    public SirenSound(ResourceLocation resource, float range, float x, float y, float z) {
-        super(resource);
-
-        this.resource = resource;
+    public SirenSound(SoundEvent soundEvent, float range, float x, float y, float z) {
+        super(soundEvent, SoundCategory.AMBIENT);
+        
         this.range = range;
-
+        
         this.x = x;
         this.y = y;
         this.z = z;
-
+        
         this.xPosF = x;
         this.yPosF = y;
         this.zPosF = z;

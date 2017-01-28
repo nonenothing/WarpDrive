@@ -1,7 +1,6 @@
 package cr0s.warpdrive.item;
 
 import cofh.api.energy.IEnergyContainerItem;
-import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -11,6 +10,7 @@ import ic2.api.item.IElectricItemManager;
 import ic2.api.item.ISpecialElectricItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Optional;
 
 public class ItemEnergyWrapper {
 	

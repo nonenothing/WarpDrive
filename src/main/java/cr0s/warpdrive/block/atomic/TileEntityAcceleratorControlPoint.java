@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.atomic;
 
-import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
@@ -14,9 +13,12 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.Optional;
+
+import javax.annotation.Nonnull;
 
 public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfaced implements IVideoChannel {
 	
@@ -30,7 +32,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	public TileEntityAcceleratorControlPoint() {
 		super();
-				
+		
 		peripheralName = "warpdriveAcceleratorControlPoint";
 		addMethods(new String[] {
 			"enable",
@@ -45,8 +47,8 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -55,7 +57,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		packetSendTicks--;
 		if (packetSendTicks <= 0) {
 			packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-			PacketHandler.sendVideoChannelPacket(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, videoChannel);
+			PacketHandler.sendVideoChannelPacket(worldObj.provider.getDimension(), pos, videoChannel);
 		}
 	}
 	
@@ -83,63 +85,65 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		}
 	}
 	
-	private String getVideoChannelStatus() {
+	private ITextComponent getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalidOrNotLoaded", videoChannel);
+				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalidOrNotLoaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.valid", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.validCamera",
 				videoChannel,
-				camera.position.chunkPosX,
-				camera.position.chunkPosY,
-				camera.position.chunkPosZ);
+				camera.position.getX(),
+				camera.position.getY(),
+				camera.position.getZ());
 			}
 		}
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-		       + getVideoChannelStatus();
+		       .appendSibling(getVideoChannelStatus());
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		isEnabled = tag.getBoolean("isEnabled");
-		videoChannel = tag.getInteger("frequency") + tag.getInteger("videoChannel");
+		videoChannel = tag.getInteger("videoChannel");
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setBoolean("isEnabled", isEnabled);
 		tag.setInteger("videoChannel", videoChannel);
+		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
 	// OpenComputer callback methods
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] enable(Context context, Arguments arguments) throws Exception {
 		return enable(argumentsOCtoCC(arguments));
 	}
@@ -154,7 +158,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] state(Context context, Arguments arguments) {
 		return state();
 	}
@@ -174,13 +178,13 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	private Object[] state() {    // isConnected, isPowered, shape
-		String status = getStatus();
+		String status = getStatus().getFormattedText();
 		return new Object[] { status, isEnabled, videoChannel };
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@cpw.mods.fml.common.Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		

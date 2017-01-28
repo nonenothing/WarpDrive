@@ -6,7 +6,8 @@ import java.util.UUID;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 
 public class StarMapRegistryItem extends GlobalPosition {
 	public final EnumStarMapEntryType type;
@@ -91,8 +92,8 @@ public class StarMapRegistryItem extends GlobalPosition {
 	public StarMapRegistryItem(IStarMapRegistryTileEntity tileEntity) {
 		this(
 			EnumStarMapEntryType.getByName(tileEntity.getStarMapType()), tileEntity.getUUID(),
-			((TileEntity) tileEntity).getWorldObj().provider.dimensionId,
-			((TileEntity) tileEntity).xCoord, ((TileEntity) tileEntity).yCoord, ((TileEntity) tileEntity).zCoord,
+			((TileEntity) tileEntity).getWorld().provider.getDimension(),
+			((TileEntity) tileEntity).getPos().getX(), ((TileEntity) tileEntity).getPos().getY(), ((TileEntity) tileEntity).getPos().getZ(),
 			tileEntity.getStarMapArea(),
 			tileEntity.getMass(), tileEntity.getIsolationRate(),
 			tileEntity.getStarMapName());
@@ -101,10 +102,10 @@ public class StarMapRegistryItem extends GlobalPosition {
 	public boolean sameIdOrCoordinates(final IStarMapRegistryTileEntity tileEntity) {
 		assert(tileEntity instanceof TileEntity);
 		return uuid == tileEntity.getUUID()
-			|| dimensionId == ((TileEntity) tileEntity).getWorldObj().provider.dimensionId
-			&& x == ((TileEntity) tileEntity).xCoord
-			&& y == ((TileEntity) tileEntity).yCoord
-			&& z == ((TileEntity) tileEntity).zCoord;
+			|| dimensionId == ((TileEntity) tileEntity).getWorld().provider.getDimension()
+			&& x == ((TileEntity) tileEntity).getPos().getX()
+			&& y == ((TileEntity) tileEntity).getPos().getY()
+			&& z == ((TileEntity) tileEntity).getPos().getZ();
 	}
 	
 	public void update(final IStarMapRegistryTileEntity tileEntity) {
@@ -128,14 +129,16 @@ public class StarMapRegistryItem extends GlobalPosition {
 	
 	public boolean isSameTileEntity(final IStarMapRegistryTileEntity tileEntity) {
 		assert(tileEntity instanceof TileEntity);
-		return dimensionId == ((TileEntity) tileEntity).getWorldObj().provider.dimensionId
-		  && x == ((TileEntity) tileEntity).xCoord
-		  && y == ((TileEntity) tileEntity).yCoord
-		  && z == ((TileEntity) tileEntity).zCoord;
+		return dimensionId == ((TileEntity) tileEntity).getWorld().provider.getDimension()
+		  && x == ((TileEntity) tileEntity).getPos().getX()
+		  && y == ((TileEntity) tileEntity).getPos().getY()
+		  && z == ((TileEntity) tileEntity).getPos().getZ();
 	}
 	
-	public boolean contains(final int x, final int y, final int z) {
-		return minX <= x && x <= maxX && minY <= y && y <= maxY && minZ <= z && z <= maxZ;
+	public boolean contains(final BlockPos blockPos) {
+		return    minX <= blockPos.getX() && blockPos.getX() <= maxX
+		       && minY <= blockPos.getY() && blockPos.getY() <= maxY
+		       && minZ <= blockPos.getZ() && blockPos.getZ() <= maxZ;
 	}
 	
 	@Override

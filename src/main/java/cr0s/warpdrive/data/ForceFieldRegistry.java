@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldRelay;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
 
@@ -52,7 +53,7 @@ public class ForceFieldRegistry {
 				}
 				
 				// confirm frequency and split by groups
-				TileEntity tileEntity = world.getTileEntity(globalPosition.x, globalPosition.y, globalPosition.z);
+				TileEntity tileEntity = world.getTileEntity(new BlockPos(globalPosition.x, globalPosition.y, globalPosition.z));
 				if ((tileEntity instanceof IBeamFrequency) && ((IBeamFrequency)tileEntity).getBeamFrequency() == beamFrequency) {
 					if (tileEntity instanceof TileEntityForceFieldRelay) {
 						// add relays in range as start point
@@ -79,7 +80,7 @@ public class ForceFieldRegistry {
 		// no relays in range => just add that one block
 		if (setToIterate.isEmpty()) {
 			Set<TileEntity> setResult = new HashSet<>();
-			setResult.add(worldSource.getTileEntity(x, y, z));
+			setResult.add(worldSource.getTileEntity(new BlockPos(x, y, z)));
 			return setResult;
 		}
 		
@@ -92,9 +93,9 @@ public class ForceFieldRegistry {
 				setRelaysInRange.add(tileEntityCurrent);
 				for (TileEntity tileEntityEntry : setRelays) {
 					if (!setRelaysInRange.contains(tileEntityEntry) && !setToIterate.contains(tileEntityEntry) && !setToIterateNext.contains(tileEntityEntry)) {
-						range2 = (tileEntityCurrent.xCoord - tileEntityEntry.xCoord) * (tileEntityCurrent.xCoord - tileEntityEntry.xCoord)
-						       + (tileEntityCurrent.yCoord - tileEntityEntry.yCoord) * (tileEntityCurrent.yCoord - tileEntityEntry.yCoord)
-						       + (tileEntityCurrent.zCoord - tileEntityEntry.zCoord) * (tileEntityCurrent.zCoord - tileEntityEntry.zCoord);
+						range2 = (tileEntityCurrent.getPos().getX() - tileEntityEntry.getPos().getX()) * (tileEntityCurrent.getPos().getX() - tileEntityEntry.getPos().getX())
+						       + (tileEntityCurrent.getPos().getY() - tileEntityEntry.getPos().getY()) * (tileEntityCurrent.getPos().getY() - tileEntityEntry.getPos().getY())
+						       + (tileEntityCurrent.getPos().getZ() - tileEntityEntry.getPos().getZ()) * (tileEntityCurrent.getPos().getZ() - tileEntityEntry.getPos().getZ());
 						if (range2 <= maxRange2) {
 							setToIterateNext.add(tileEntityEntry);
 						}
@@ -109,9 +110,9 @@ public class ForceFieldRegistry {
 		for (TileEntity tileEntityRelayInRange : setRelaysInRange) {
 			for (TileEntity tileEntityEntry : setNonRelays) {
 				if (!setEntries.contains(tileEntityEntry)) {
-					range2 = (tileEntityRelayInRange.xCoord - tileEntityEntry.xCoord) * (tileEntityRelayInRange.xCoord - tileEntityEntry.xCoord)
-					       + (tileEntityRelayInRange.yCoord - tileEntityEntry.yCoord) * (tileEntityRelayInRange.yCoord - tileEntityEntry.yCoord)
-					       + (tileEntityRelayInRange.zCoord - tileEntityEntry.zCoord) * (tileEntityRelayInRange.zCoord - tileEntityEntry.zCoord);
+					range2 = (tileEntityRelayInRange.getPos().getX() - tileEntityEntry.getPos().getX()) * (tileEntityRelayInRange.getPos().getX() - tileEntityEntry.getPos().getX())
+					       + (tileEntityRelayInRange.getPos().getY() - tileEntityEntry.getPos().getY()) * (tileEntityRelayInRange.getPos().getY() - tileEntityEntry.getPos().getY())
+					       + (tileEntityRelayInRange.getPos().getZ() - tileEntityEntry.getPos().getZ()) * (tileEntityRelayInRange.getPos().getZ() - tileEntityEntry.getPos().getZ());
 					if (range2 <= maxRange2) {
 						setEntries.add(tileEntityEntry);
 					}

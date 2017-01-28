@@ -1,47 +1,32 @@
 package cr0s.warpdrive.block.atomic;
 
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLiving.SpawnPlacementType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 
-public class BlockAbstractAccelerator extends Block {
+import javax.annotation.Nonnull;
+
+public class BlockAbstractAccelerator extends BlockAbstractBase {
 	public final byte tier;
 	
-	public BlockAbstractAccelerator(final byte tier) {
-		super(Material.iron);
+	BlockAbstractAccelerator(final String registryName, final byte tier) {
+		super(registryName, Material.IRON);
 		this.tier = tier;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1] / 5);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] / 6 * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}
 	
 	@Override
-	public boolean isOpaqueCube() {
-		return true;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
+	public int damageDropped(IBlockState blockState) {
 		return 0;
 	}
 	
 	@Override
-	public boolean renderAsNormalBlock() {
-		return true;
-	}
-	
-	@Override
-	public int damageDropped(int metadata) {
-		return 0;
-	}
-	
-	@Override
-	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
+	public boolean canCreatureSpawn(@Nonnull IBlockState blockState, @Nonnull IBlockAccess world, @Nonnull BlockPos blockPos, SpawnPlacementType type) {
 		return false;
 	}
 }

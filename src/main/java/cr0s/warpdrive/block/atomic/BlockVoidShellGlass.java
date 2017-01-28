@@ -1,32 +1,30 @@
 package cr0s.warpdrive.block.atomic;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
 
 public class BlockVoidShellGlass extends BlockVoidShellPlain {
 	
-	public BlockVoidShellGlass() {
-		super();
-		setBlockName("warpdrive.atomic.void_shell_glass");
-		setBlockTextureName("warpdrive:atomic/void_shell_glass");
+	public BlockVoidShellGlass(final String registryName) {
+		super(registryName);
+		setUnlocalizedName("warpdrive.atomic.void_shell_glass");
 	}
 	
+	@SuppressWarnings("deprecation")
+	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean isOpaqueCube() {
-		return false;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
-		return 1;
-	}
-	
-	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		if (world.isAirBlock(x, y, z)) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess world, @Nonnull BlockPos blockPos, EnumFacing side) {
+		if (world.isAirBlock(blockPos)) {
 			return true;
 		}
-		Block sideBlock = world.getBlock(x, y, z);
+		Block sideBlock = world.getBlockState(blockPos).getBlock();
 		return !(sideBlock instanceof BlockElectromagnetGlass);
 	}
 }

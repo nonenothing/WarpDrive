@@ -2,29 +2,37 @@ package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import javax.annotation.Nonnull;
 
 public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator implements ITileEntityProvider {
 		
-	public BlockAcceleratorControlPoint() {
-		super((byte) 1);
-		setBlockName("warpdrive.atomic.accelerator_control_point");
-		setBlockTextureName("warpdrive:atomic/accelerator_control_point");
+	public BlockAcceleratorControlPoint(final String registryName) {
+		super(registryName, (byte) 1);
+		setUnlocalizedName("warpdrive.atomic.accelerator_control_point");
+		GameRegistry.registerTileEntity(TileEntityAcceleratorControlPoint.class, WarpDrive.MODID + ":blockAcceleratorControlPoint");
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (entityPlayer.getHeldItem(EnumHand.MAIN_HAND) == null) {
+			TileEntity tileEntity = world.getTileEntity(blockPos);
 			
 			if (tileEntity instanceof TileEntityAcceleratorControlPoint) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint)tileEntity).getStatus());
+				WarpDrive.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint) tileEntity).getStatus());
 				return true;
 			}
 		}
@@ -32,8 +40,9 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 		return false;
 	}
 	
+	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(World world, int p_149915_2_) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityAcceleratorControlPoint();
 	}
 }

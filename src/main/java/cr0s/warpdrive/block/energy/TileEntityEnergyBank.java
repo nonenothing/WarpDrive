@@ -3,12 +3,14 @@ package cr0s.warpdrive.block.energy;
 import cr0s.warpdrive.data.EnumComponentType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraftforge.common.util.ForgeDirection;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+
+import javax.annotation.Nonnull;
 
 public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
@@ -95,12 +97,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return modeSide[from.ordinal()] == MODE_INPUT;
 	}
 	
 	@Override
-	public boolean energy_canOutput(ForgeDirection to) {
+	public boolean energy_canOutput(EnumFacing to) {
 		return modeSide[to.ordinal()] == MODE_OUTPUT;
 	}
 	
@@ -119,17 +121,17 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-		       + "\n" + getUpgradeStatus();
+		       .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
 	}
 	
 	// Forge overrides
-	@Override
-	public void writeToNBT(NBTTagCompound nbtTagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
 		super.writeToNBT(nbtTagCompound);
 		nbtTagCompound.setByte("tier", tier);
 		nbtTagCompound.setByteArray("modeSide", modeSide);
+		return nbtTagCompound;
 	}
 	
 	@Override
@@ -137,7 +139,7 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		super.readFromNBT(nbtTagCompound);
 		tier = nbtTagCompound.getByte("tier");
 		modeSide = nbtTagCompound.getByteArray("modeSide");
-		if (modeSide == null || modeSide.length != 6) {
+		if (modeSide.length != 6) {
 			modeSide = MODE_DEFAULT_SIDES.clone();
 		}
 	}
@@ -147,27 +149,28 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
 		return nbtTagCompound;
 	}
-	
+
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+		worldObj.markBlockRangeForRenderUpdate(pos, pos);
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d) %8d",
-		getClass().getSimpleName(),
-		worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-		xCoord, yCoord, zCoord,
-		energy_getEnergyStored());
+			getClass().getSimpleName(),
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			pos.getX(), pos.getY(), pos.getZ(),
+			energy_getEnergyStored());
 	}
 }

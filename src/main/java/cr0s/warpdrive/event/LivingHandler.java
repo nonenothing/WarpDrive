@@ -1,36 +1,38 @@
 package cr0s.warpdrive.event;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.api.IBreathingHelmet;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.item.ItemEnergyWrapper;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
 public class LivingHandler {
-	private final HashMap<Integer, Integer> entity_airBlock;
-	private final HashMap<String, Integer> player_airTank;
-	private final HashMap<String, Integer> player_cloakTicks;
+	private HashMap<Integer, Integer> entity_airBlock;
+	private HashMap<UUID, Integer> player_airTank;
+	private HashMap<UUID, Integer> player_cloakTicks;
 	
 	private static final int CLOAK_CHECK_TIMEOUT_TICKS = 100;
 	private static final int AIR_BLOCK_TICKS = 20;
@@ -49,11 +51,11 @@ public class LivingHandler {
 	
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event) {
-		if (event.entityLiving == null || event.entityLiving.worldObj.isRemote) {
+		if (event.getEntityLiving() == null || event.getEntityLiving().worldObj.isRemote) {
 			return;
 		}
 		
-		EntityLivingBase entity = event.entityLiving;
+		EntityLivingBase entity = event.getEntityLiving();
 		int x = MathHelper.floor_double(entity.posX);
 		int y = MathHelper.floor_double(entity.posY);
 		int z = MathHelper.floor_double(entity.posZ);
@@ -80,20 +82,20 @@ public class LivingHandler {
 		}
 		
 		// skip dead or invulnerable entities
-		if (entity.isDead || entity.isEntityInvulnerable()) {
+		if (entity.isDead || entity.isEntityInvulnerable(WarpDrive.damageAsphyxia)) {
 			return;
 		}
 		
 		// If entity is in vacuum, check and start consuming air cells
-		if ( entity.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID
-		  || entity.worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if ( entity.worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID
+		  || entity.worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
 			// find an air block
 			VectorI vAirBlock = null;	
-			Block block;
+			IBlockState blockState = null;
 			for (VectorI vOffset : vAirOffsets) {
 				VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
-				block = entity.worldObj.getBlock(vPosition.x, vPosition.y, vPosition.z);
-				if (block.isAssociatedBlock(WarpDrive.blockAir)) {
+				blockState = entity.worldObj.getBlockState(vPosition.getBlockPos());
+				if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
 					vAirBlock = vPosition;
 					break;
 				}
@@ -108,13 +110,14 @@ public class LivingHandler {
 				} else if (air <= 1) {// time elapsed => consume air block
 					entity_airBlock.put(entity.getEntityId(), AIR_BLOCK_TICKS);
 					
-					int metadata = entity.worldObj.getBlockMetadata(vAirBlock.x, vAirBlock.y, vAirBlock.z);
+					int metadata = blockState.getBlock().getMetaFromState(blockState);
 					if (metadata > 0 && metadata < 15) {
-						entity.worldObj.setBlockMetadataWithNotify(vAirBlock.x, vAirBlock.y, vAirBlock.z, metadata - 1, 2);
+						entity.worldObj.setBlockState(vAirBlock.getBlockPos(), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
 					}
 				} else {
 					entity_airBlock.put(entity.getEntityId(), air - 1);
 				}
+				
 			} else {// In space without air blocks
 				// Damage entity if in vacuum without protection
 				if (entity instanceof EntityPlayerMP) {
@@ -124,11 +127,11 @@ public class LivingHandler {
 						return;
 					}
 					EntityPlayerMP player = (EntityPlayerMP) entity;
-					String playerName = player.getCommandSenderName();
-					air = player_airTank.get(playerName);
+					UUID uuidPlayer = player.getUniqueID();
+					air = player_airTank.get(uuidPlayer);
 					
 					boolean hasHelmet = false;
-					ItemStack helmetStack = player.getCurrentArmor(3);
+					ItemStack helmetStack = player.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 					if (helmetStack != null) {
 						Item itemHelmet = helmetStack.getItem();
 						if (itemHelmet instanceof IBreathingHelmet) {
@@ -137,48 +140,48 @@ public class LivingHandler {
 							if (breathingHelmet.canBreath(player)) {
 								hasHelmet = true;
 								if (air == null) {// new player in space => grace period
-									player_airTank.put(playerName, airTicks);
+									player_airTank.put(uuidPlayer, airTicks);
 								} else if (air <= 1) {
 									if (breathingHelmet.removeAir(player) || consumeAirCanister(player)) {
-										player_airTank.put(playerName, airTicks);
+										player_airTank.put(uuidPlayer, airTicks);
 									} else {
 										hasHelmet = false;
 									}
 								} else {
-									player_airTank.put(playerName, air - 1);
+									player_airTank.put(uuidPlayer, air - 1);
 								}
 							}
 						}
 						if (Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet)) {
 							hasHelmet = true;
 							if (air == null) {// new player in space => grace period
-								player_airTank.put(playerName, AIR_TANK_TICKS);
+								player_airTank.put(uuidPlayer, AIR_TANK_TICKS);
 							} else if (air <= 1) {
 								if (consumeAirCanister(player)) {
-									player_airTank.put(playerName, AIR_TANK_TICKS);
+									player_airTank.put(uuidPlayer, AIR_TANK_TICKS);
 								} else {
 									hasHelmet = false;
 								}
 							} else {
-								player_airTank.put(playerName, air - 1);
+								player_airTank.put(uuidPlayer, air - 1);
 							}
 						}
 					}
 					
 					if (!hasHelmet) {
 						if (air == null) {// new player in space => grace period
-							player_airTank.put(playerName, AIR_TANK_TICKS);
+							player_airTank.put(uuidPlayer, AIR_TANK_TICKS);
 						} else if (air <= 1) {
-							player_airTank.put(playerName, AIR_DROWN_TICKS);
+							player_airTank.put(uuidPlayer, AIR_DROWN_TICKS);
 							entity.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
 						} else {
-							player_airTank.put(playerName, air - 1);
+							player_airTank.put(uuidPlayer, air - 1);
 						}
 					}
 					
 					// If player falling down, teleport on earth
 					if (entity.posY < -10.0D) {
-						player.mcServer.getConfigurationManager().transferPlayerToDimension(player, 0,
+						player.mcServer.getPlayerList().transferPlayerToDimension(player, 0,
 								new SpaceTeleporter(DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID), 0, x, 250, z));
 						player.setFire(30);
 						player.setPositionAndUpdate(entity.posX, 250.0D, entity.posZ);
@@ -195,19 +198,19 @@ public class LivingHandler {
 	private void updatePlayerCloakState(EntityLivingBase entity) {
 		try {
 			EntityPlayerMP player = (EntityPlayerMP) entity;
-			Integer cloakTicks = player_cloakTicks.get(player.getCommandSenderName());
+			Integer cloakTicks = player_cloakTicks.get(player.getUniqueID());
 			
 			if (cloakTicks == null) {
-				player_cloakTicks.put(player.getCommandSenderName(), 0);
+				player_cloakTicks.put(player.getUniqueID(), 0);
 				return;
 			}
 			
 			if (cloakTicks >= CLOAK_CHECK_TIMEOUT_TICKS) {
-				player_cloakTicks.put(player.getCommandSenderName(), 0);
+				player_cloakTicks.put(player.getUniqueID(), 0);
 				
 				WarpDrive.cloaks.updatePlayer(player);
 			} else {
-				player_cloakTicks.put(player.getCommandSenderName(), cloakTicks + 1);
+				player_cloakTicks.put(player.getUniqueID(), cloakTicks + 1);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -297,7 +300,7 @@ public class LivingHandler {
 		}
 		
 		// all Air canisters empty
-		ItemStack itemStackChestplate = entityPlayer.getCurrentArmor(2);
+		ItemStack itemStackChestplate = entityPlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 		if (itemStackChestplate != null) {
 			Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
@@ -326,7 +329,7 @@ public class LivingHandler {
 			ItemStack itemStack = playerInventory[slotIndex];
 			if (itemStack == null || itemStack.stackSize <= 0) {
 				// skip
-			} else if (itemStack.getItem() == Item.getItemFromBlock(Blocks.ice)) {
+			} else if (itemStack.getItem() == Item.getItemFromBlock(Blocks.ICE)) {
 				slotIceFound = slotIndex;
 			} else if (itemStack.stackSize == 1 && itemStack.getItem() instanceof IAirCanister) {
 				IAirCanister airCanister = (IAirCanister) itemStack.getItem();
@@ -393,16 +396,15 @@ public class LivingHandler {
 	
 	@SubscribeEvent
 	public void onLivingFall(LivingFallEvent event) {
-		EntityLivingBase entity = event.entityLiving;
-		float distance = event.distance;
+		EntityLivingBase entityLivingBase = event.getEntityLiving();
+		float distance = event.getDistance();
 		
-		if (entity instanceof EntityPlayer) {
-			EntityPlayer player = (EntityPlayer) entity;
+		if (entityLivingBase instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer) entityLivingBase;
 			int check = MathHelper.ceiling_float_int(distance - 3.0F);
 			
 			if (check > 0) {
-				for (int i = 0; i < 4; i++) {
-					ItemStack armor = player.getCurrentArmor(i);
+				for (ItemStack armor : player.getArmorInventoryList()) {
 					if (armor != null) {
 						if (Dictionary.ITEMS_NOFALLDAMAGE.contains(armor.getItem())) {
 							event.setCanceled(true); // Don't damage player

@@ -1,50 +1,55 @@
 package cr0s.warpdrive.block.hull;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockColored;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemDye;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemBlockHull extends ItemBlock {
+import javax.annotation.Nonnull;
+
+public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	public ItemBlockHull(Block block) {
-		super(block);	// sets field_150939_a to block
+		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.hull");
 	}
 	
+	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int p_77617_1_) {
-		return field_150939_a.getIcon(2, BlockColored.func_150031_c(p_77617_1_));
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		int damage = itemStack.getItemDamage();
+		if (damage < 0 || damage > 15) {
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
+		}
+		ResourceLocation resourceLocation = getRegistryName();
+		String variant = String.format("color=%s", EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getName());
+		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	
+	@Nonnull
 	@Override
-	public int getMetadata(int damage) {
-		return damage;
-	}
-	
-	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
-		if (itemstack == null || field_150939_a instanceof BlockHullStairs) {
+	public String getUnlocalizedName(ItemStack itemStack) {
+		if (itemStack == null || block instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}
-		return getUnlocalizedName() + ItemDye.field_150923_a[BlockColored.func_150031_c(itemstack.getItemDamage())];
+		return getUnlocalizedName() + EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName();
 	}
 	
 	private byte getTier() {
-		if (field_150939_a instanceof BlockHullGlass) {
-			return ((BlockHullGlass)field_150939_a).tier;
-		} else if (field_150939_a instanceof BlockHullPlain) {
-			return ((BlockHullPlain)field_150939_a).tier;
-		} else if (field_150939_a instanceof BlockHullStairs) {
-			return ((BlockHullStairs)field_150939_a).tier;
+		if (block instanceof BlockHullGlass) {
+			return ((BlockHullGlass) block).tier;
+		} else if (block instanceof BlockHullPlain) {
+			return ((BlockHullPlain) block).tier;
+		} else if (block instanceof BlockHullStairs) {
+			return ((BlockHullStairs) block).tier;
 		}
 		return 1;
 	}
@@ -52,11 +57,11 @@ public class ItemBlockHull extends ItemBlock {
 	@Override
 	public EnumRarity getRarity(final ItemStack itemStack) {
 		switch (getTier()) {
-			case 0:	return EnumRarity.epic;
-			case 1:	return EnumRarity.common;
-			case 2:	return EnumRarity.uncommon;
-			case 3:	return EnumRarity.rare;
-			default: return EnumRarity.common;
+			case 0:	return EnumRarity.EPIC;
+			case 1:	return EnumRarity.COMMON;
+			case 2:	return EnumRarity.UNCOMMON;
+			case 3:	return EnumRarity.RARE;
+			default: return EnumRarity.COMMON;
 		}
 	}
 }

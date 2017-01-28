@@ -3,28 +3,32 @@ package cr0s.warpdrive.world;
 import cr0s.warpdrive.render.RenderSpaceSky;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.WorldChunkManagerHell;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.render.RenderBlank;
+
+import javax.annotation.Nonnull;
 
 public class SpaceWorldProvider extends WorldProvider {
 	
 	public SpaceWorldProvider() {
-		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
+		biomeProvider = new BiomeProviderSingle(WarpDrive.spaceBiome);
 		hasNoSky = false;
 	}
 	
+	@Nonnull
 	@Override
-	public String getDimensionName() {
-		return "Space";
+	public DimensionType getDimensionType() {
+		return WarpDrive.dimensionTypeSpace;
 	}
 	
 	@Override
@@ -58,8 +62,9 @@ public class SpaceWorldProvider extends WorldProvider {
 		super.resetRainAndThunder();
 	}
 	
+	@Nonnull
 	@Override
-	public BiomeGenBase getBiomeGenForCoords(int x, int z) {
+	public Biome getBiomeForCoords(@Nonnull BlockPos blockPos) {
 		return WarpDrive.spaceBiome;
 	}
 	
@@ -86,7 +91,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public String getSaveFolder() {
-		return (dimensionId == 0 ? null : "WarpDriveSpace" + dimensionId);
+		return (getDimensionType().getId() == 0 ? null : "WarpDriveSpace" + getDimensionType().getId());
 	}
 	
 	/*
@@ -97,51 +102,49 @@ public class SpaceWorldProvider extends WorldProvider {
 	}
 	/**/
 	
+	@Nonnull
 	@Override
-	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
+	public Vec3d getSkyColor(@Nonnull Entity cameraEntity, float partialTicks) {
 		if (getCloudRenderer() == null) {
 			setCloudRenderer(RenderBlank.getInstance());
 		}
 		if (getSkyRenderer() == null) {
 			setSkyRenderer(RenderSpaceSky.getInstance());
 		}
-		return Vec3.createVectorHelper(0.0D, 0.0D, 0.0D);
+		return new Vec3d(0.0D, 0.0D, 0.0D);
 	}
 	
+	@Nonnull
 	@Override
-	public Vec3 getFogColor(float par1, float par2) {
-		return Vec3.createVectorHelper(0.0D, 0.0D, 0.0D);
+	public Vec3d getFogColor(float par1, float par2) {
+		return new Vec3d(0.0D, 0.0D, 0.0D);
 	}
 	
 	@Override
 	public boolean isSkyColored() {
 		return false;
 	}
-	
-	@Override
-	public ChunkCoordinates getEntrancePortalLocation() {
-		return null;
-	}
-	
+		
 	@Override
 	public int getRespawnDimension(EntityPlayerMP player) {
 		return 0; // re-spawn on Earth
 	}
 	
+	@Nonnull
 	@Override
-	public IChunkProvider createChunkGenerator() {
-		return new SpaceGenerator(worldObj, 45);
+	public IChunkGenerator createChunkGenerator() {
+		return new SpaceChunkProvider(worldObj, 45);
 	}
 	
 	@Override
-	public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
+	public boolean canBlockFreeze(@Nonnull BlockPos blockPos, boolean byWater) {
 		return false;
 	}
 	
 	/*
 	@Override
-	public ChunkCoordinates getRandomizedSpawnPoint() {
-		ChunkCoordinates var5 = new ChunkCoordinates(worldObj.getSpawnPoint());
+	public BlockPos getRandomizedSpawnPoint() {
+		BlockPos var5 = new BlockPos(worldObj.getSpawnPoint());
 		
 		//boolean isAdventure = worldObj.getWorldInfo().getGameType() == EnumGameType.ADVENTURE;
 		int spawnFuzz = 1000;
@@ -173,11 +176,6 @@ public class SpaceWorldProvider extends WorldProvider {
 		return var5;
 	}
 	/**/
-	
-	@Override
-	public boolean getWorldHasVoidParticles() {
-		return false;
-	}
 	
 	@Override
 	public boolean isDaytime() {

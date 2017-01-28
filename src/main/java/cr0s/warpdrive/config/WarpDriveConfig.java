@@ -11,13 +11,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.minecraft.util.ResourceLocation;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.compat.*;
@@ -304,7 +305,7 @@ public class WarpDriveConfig {
 	
 	public static Block getModBlock(final String mod, final String id) {
 		try {
-			return GameRegistry.findBlock(mod, id);
+			return Block.REGISTRY.getObject(new ResourceLocation(mod, id));
 		} catch (Exception exception) {
 			WarpDrive.logger.info("Failed to get mod block for " + mod + ":" + id);
 			exception.printStackTrace();
@@ -314,12 +315,18 @@ public class WarpDriveConfig {
 	
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
 		try {
-			ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
-			if (meta != -1) {
-				item.setItemDamage(meta);
+			Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
+			if (item == null) {
+				WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
+				return null;
 			}
-			return item;
+			ItemStack itemStack = new ItemStack(item);
+			if (meta != -1) {
+				itemStack.setItemDamage(meta);
+			}
+			return itemStack;
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
 		}
 		return null;
@@ -336,6 +343,25 @@ public class WarpDriveConfig {
 		
 		// read configuration file
 		loadWarpDriveConfig(new File(configDirectory, WarpDrive.MODID + ".cfg"));
+		
+		// read mod dependencies
+		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
+		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
+		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
+		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
+		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
+		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
+		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
+		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
+		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
+		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
+		isGregTech5Loaded = false;
+		if (Loader.isModLoaded("gregtech")) {
+			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+		}
+		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
+		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 	}
 	
 	public static void loadWarpDriveConfig(File file) {
@@ -414,7 +440,11 @@ public class WarpDriveConfig {
 		{
 			config.addCustomCategoryComment("planets",
 					  "Planets are other dimensions connected through the Space dimension. Default is overworld with 100k radius.\n"
-					+ "Each planet orbit is square shaped and defined as a list of 7 integers (all measured in blocks).");
+					+ "Each planet orbit is square shaped and defined as a list of 7 integers (all measured in blocks):\n" 
+					+ "dimensionId = dimension ID (0, 1, -1 or something like -13)\n"
+					+ "dimensionCenterX, dimensionCenterZ = center of the transfer area inside the dimension itself\n"
+					+ "radiusX, radiusZ = world borders of the dimension\n"
+					+ "spaceCenterX, spaceCenterZ = coordinates of the transfer area in Space dimension\n");
 			
 			ConfigCategory categoryPlanets = config.getCategory("planets");
 			String[] planetsName = categoryPlanets.getValues().keySet().toArray(new String[0]);
@@ -781,55 +811,35 @@ public class WarpDriveConfig {
 	public static void onFMLInitialization() {
 		CompatWarpDrive.register();
 		
-		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
 		if (isForgeMultipartLoaded) {
 			isForgeMultipartLoaded = CompatForgeMultipart.register();
 		}
-		
-		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
 		if (isIndustrialCraft2Loaded) {
 			loadIC2();
 			CompatIndustrialCraft2.register();
 		}
-		
-		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
 		if (isComputerCraftLoaded) {
 			loadCC();
 			CompatComputerCraft.register();
 		}
-		
-		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
-		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
-		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		if (isThermalExpansionLoaded) {
 			CompatThermalExpansion.register();
 		}
-		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		if (isAppliedEnergistics2Loaded) {
 			CompatAppliedEnergistics2.register();
 		}
-		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
 		if (isOpenComputersLoaded) {
 			CompatOpenComputers.register();
 		}
-		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
 		if (isArsMagica2Loaded) {
 			CompatArsMagica2.register();
 		}
-		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
 		if (isImmersiveEngineeringLoaded) {
 			CompatImmersiveEngineering.register();
 		}
-		isGregTech5Loaded = false;
-		if (Loader.isModLoaded("gregtech")) {
-			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
-		}
-		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
 		if (isEnderIOLoaded) {
 			CompatEnderIO.register();
 		}
-		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 		if (isAdvancedRepulsionSystemLoaded) {
 			CompatAdvancedRepulsionSystems.register();
 		}
