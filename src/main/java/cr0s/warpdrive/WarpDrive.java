@@ -159,7 +159,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockVoidShellGlass;
 	public static Block[] blockElectromagnetPlain;
 	public static Block[] blockElectromagnetGlass;
-	public static Block[] blockChiller;
+	public static Block[] blockChillers;
 	public static BlockDecorative blockDecorative;
 	public static Block[] blockHulls_plain;
 	public static Block[] blockHulls_glass;
@@ -174,6 +174,7 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemTuningFork itemTuningRod;
 	public static ItemForceFieldShape itemForceFieldShape;
 	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
+	public static ItemElectromagneticCell itemElectromagneticCell;
 	
 	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
 	public static ItemArmor[] itemWarpArmor;
@@ -452,7 +453,7 @@ public class WarpDrive implements LoadingCallback {
 		
 		blockElectromagnetPlain = new Block[3];
 		blockElectromagnetGlass = new Block[3];
-		blockChiller = new Block[3];
+		blockChillers = new Block[3];
 		for(byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			// ELECTROMAGNETS PLAIN 
@@ -464,8 +465,8 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerBlock(blockElectromagnetGlass[index], ItemBlockAbstractBase.class, "blockElectromagnetGlass" + tier);
 			
 			// CHILLER
-			blockChiller[index] = new BlockChiller(tier);
-			GameRegistry.registerBlock(blockChiller[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
+			blockChillers[index] = new BlockChiller(tier);
+			GameRegistry.registerBlock(blockChillers[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
 		}
 		
 		// DECORATIVE
@@ -530,10 +531,14 @@ public class WarpDrive implements LoadingCallback {
 		// FORCE FIELD UPGRADES
 		itemForceFieldShape = new ItemForceFieldShape();
 		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-
+		
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
 		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
-
+		
+		// ELECTROMAGNETIC CELL
+		itemElectromagneticCell = new ItemElectromagneticCell();
+		GameRegistry.registerItem(itemElectromagneticCell, "itemElectromagneticCell");
+		
 		// DAMAGE SOURCES
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
