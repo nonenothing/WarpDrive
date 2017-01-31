@@ -7,6 +7,7 @@ import cr0s.warpdrive.config.*;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.network.PacketHandler;
+import cpw.mods.fml.common.Optional;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -99,6 +100,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			"state",
 			"translation"
 		});
+		CC_scripts = Arrays.asList("enable", "disable");
 		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
@@ -996,13 +998,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// OpenComputer callback methods
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] state(Context context, Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] min(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setMin((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1015,7 +1017,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] max(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setMax((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1028,7 +1030,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] rotation(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setRotation((float)arguments.checkDouble(0), rotationPitch, rotationRoll);
@@ -1048,7 +1050,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] translation(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setTranslation((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1062,7 +1064,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@cpw.mods.fml.common.Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
