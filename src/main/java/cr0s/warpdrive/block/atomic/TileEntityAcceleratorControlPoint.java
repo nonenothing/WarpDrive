@@ -139,7 +139,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	// OpenComputer callback methods
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] enable(Context context, Arguments arguments) throws Exception {
 		return enable(argumentsOCtoCC(arguments));
 	}
@@ -154,7 +154,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Callback
-	@cpw.mods.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] state(Context context, Arguments arguments) {
 		return state();
 	}
@@ -180,7 +180,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@cpw.mods.fml.common.Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
