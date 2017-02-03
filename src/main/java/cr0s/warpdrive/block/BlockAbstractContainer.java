@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block;
 
 import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import defense.api.IEMPBlock;
 import defense.api.IExplosion;
@@ -23,7 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
-public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock {
+public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
 	protected boolean isRotating = false;
 	protected boolean hasSubBlocks = false;
 	
@@ -198,7 +199,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return 1;
 	}
 	
-	EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+	@Override
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		switch (getTier(itemStack)) {
 			case 0:	return EnumRarity.epic;
 			case 1:	return EnumRarity.common;

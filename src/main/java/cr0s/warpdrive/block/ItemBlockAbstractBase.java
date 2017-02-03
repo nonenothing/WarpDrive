@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockBase;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
@@ -48,10 +49,10 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	@Override
 	public EnumRarity getRarity(ItemStack itemStack) {
 		if ( itemStack == null
-		  || !(field_150939_a instanceof BlockAbstractContainer) ) {
+		  || !(field_150939_a instanceof IBlockBase) ) {
 			return super.getRarity(itemStack);
 		}
-		return ((BlockAbstractContainer)field_150939_a).getRarity(itemStack, super.getRarity(itemStack));
+		return ((IBlockBase) field_150939_a).getRarity(itemStack, super.getRarity(itemStack));
 	}
 	
 	private String getStatus(final NBTTagCompound nbtTagCompound, final int metadata) {

@@ -1,14 +1,16 @@
 package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 
-public class BlockAbstractAccelerator extends Block {
+public class BlockAbstractAccelerator extends Block implements IBlockBase {
 	public final byte tier;
 	
 	public BlockAbstractAccelerator(final byte tier) {
@@ -38,6 +40,21 @@ public class BlockAbstractAccelerator extends Block {
 	@Override
 	public int damageDropped(int metadata) {
 		return 0;
+	}
+	
+	public byte getTier(final ItemStack itemStack) {
+		return tier;
+	}
+	
+	@Override
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+		switch (getTier(itemStack)) {
+		case 0:	return EnumRarity.epic;
+		case 1:	return EnumRarity.common;
+		case 2:	return EnumRarity.uncommon;
+		case 3:	return EnumRarity.rare;
+		default: return rarity;
+		}
 	}
 	
 	@Override
