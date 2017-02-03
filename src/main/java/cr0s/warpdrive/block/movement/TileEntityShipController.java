@@ -50,8 +50,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	private String beaconFrequency = "";
 	
-	boolean ready = false;                // Ready to operate (valid assembly)
-	
 	private final int updateInterval_ticks = 20 * WarpDriveConfig.SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS;
 	private int updateTicks = updateInterval_ticks;
 	private int bootTicks = 20;
@@ -569,13 +567,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInSpace(Context context, Arguments arguments) {
-		return new Boolean[] { worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID };
+		return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj) };
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInHyperspace(Context context, Arguments arguments) {
-		return new Boolean[] { worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID };
+		return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj) };
 	}
 	
 	@Callback
@@ -823,7 +821,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 					return null;
 				}
 
-				return new Object[]{core.xCoord, core.yCoord, core.zCoord};
+				return new Object[] { core.xCoord, core.yCoord, core.zCoord };
 
 			case "energy":
 				if (core == null) {
@@ -847,7 +845,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 
 			case "getOrientation":
 				if (core != null) {
-					return new Object[]{core.dx, 0, core.dz};
+					return new Object[] { core.dx, 0, core.dz };
 				}
 				return null;
 
@@ -855,17 +853,17 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				return shipName(arguments);
 
 			case "isInSpace":
-				return new Boolean[]{worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID};
+				return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj) };
 
 			case "isInHyperspace":
-				return new Boolean[]{worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID};
+				return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj) };
 
 			case "targetJumpgate":
 				return targetJumpgate(arguments);
 
 			case "isAttached": // isAttached
 				if (core != null) {
-					return new Object[]{core.controller != null};
+					return new Object[] { core.controller != null };
 				}
 				break;
 			case "movement":

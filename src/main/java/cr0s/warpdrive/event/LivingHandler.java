@@ -85,8 +85,7 @@ public class LivingHandler {
 		}
 		
 		// If entity is in vacuum, check and start consuming air cells
-		if ( entity.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID
-		  || entity.worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (!WarpDrive.starMap.hasAtmosphere(entity.worldObj)) {
 			// find an air block
 			VectorI vAirBlock = null;	
 			Block block;

@@ -8,7 +8,6 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.world.JumpgateGenerator;
@@ -64,7 +63,7 @@ public class CommandGenerate extends CommandBase {
 		String structure = params[0];
 		
 		// Reject command, if player is not in space
-		if (world.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && (!"ship".equals(structure))) {
+		if (!WarpDrive.starMap.isInSpace(world) && (!"ship".equals(structure))) {
 			WarpDrive.addChatMessage(commandSender, "* generate: this structure is only allowed in space!");
 			return;
 		}

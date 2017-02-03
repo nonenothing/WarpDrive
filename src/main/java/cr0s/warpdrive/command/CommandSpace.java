@@ -82,7 +82,7 @@ public class CommandSpace extends CommandBase {
 		for (EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
 			// toggle between overworld and space if no dimension was provided
 			if (targetDimensionId == Integer.MAX_VALUE) {
-				if (entityPlayerMP.worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+				if (WarpDrive.starMap.isInSpace(entityPlayerMP.worldObj)) {
 					targetDimensionId = 0;
 				} else {
 					targetDimensionId = WarpDriveConfig.G_SPACE_DIMENSION_ID;

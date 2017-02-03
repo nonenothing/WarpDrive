@@ -22,7 +22,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		try {
-			if (world.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+			if (!WarpDrive.starMap.isInSpace(world)) {
 				return;
 			}
 			int x = (chunkX * 16) + (5 - random.nextInt(10));

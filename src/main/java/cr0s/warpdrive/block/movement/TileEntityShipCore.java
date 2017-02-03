@@ -32,7 +32,6 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Jumpgate;
-import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -878,6 +877,22 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			
 			if (currentMode != EnumShipCoreMode.HYPERSPACE) {
 				VectorI movement = controller.getMovement();
+				VectorI shipSize = new VectorI(controller.getFront() + 1 + controller.getBack(),
+				                               controller.getUp()    + 1 + controller.getDown(),
+				                               controller.getRight() + 1 + controller.getLeft());
+				int maxDistance = WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE;
+				if (WarpDrive.starMap.isInHyperspace(worldObj)) {
+					maxDistance *= 100;
+				}
+				if (Math.abs(movement.x) - shipSize.x > maxDistance) {
+					movement.x = (int) Math.signum(movement.x) * (shipSize.x + maxDistance);
+				}
+				if (Math.abs(movement.y) - shipSize.y > maxDistance) {
+					movement.y = (int) Math.signum(movement.y) * (shipSize.y + maxDistance);
+				}
+				if (Math.abs(movement.z) - shipSize.z > maxDistance) {
+					movement.z = (int) Math.signum(movement.z) * (shipSize.z + maxDistance);
+				}
 				moveX = dx * movement.x - dz * movement.z;
 				moveY = movement.y;
 				moveZ = dz * movement.x + dx * movement.z;
@@ -903,13 +918,14 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	private void teleportPlayersToSpace() {
-		if (worldObj.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+		if (!WarpDrive.starMap.isInSpace(worldObj)) {
 			AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 2, yCoord - 1, zCoord - 2, xCoord + 2, yCoord + 4, zCoord + 2);
 			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 			
-			WorldServer spaceWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+			final int dimensionIdSpace = WarpDriveConfig.G_SPACE_DIMENSION_ID;
+			WorldServer spaceWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
 			if (spaceWorld == null) {
-				String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting teleportation.";
+				String msg = "Unable to load Space dimension " + dimensionIdSpace + ", aborting teleportation.";
 				messageToAllPlayersOnShip(msg);
 				return;
 			}
@@ -936,8 +952,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				
 				if (entity instanceof EntityPlayerMP) {
 					((EntityPlayerMP) entity).mcServer.getConfigurationManager().transferPlayerToDimension(((EntityPlayerMP) entity),
-							WarpDriveConfig.G_SPACE_DIMENSION_ID,
-							new SpaceTeleporter(DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID), 0, x, 256, z));
+							dimensionIdSpace,
+							new SpaceTeleporter(DimensionManager.getWorld(dimensionIdSpace), 0, x, 256, z));
 					
 					if (spaceWorld.isAirBlock(x, newY, z)) {
 						spaceWorld.setBlock(x, newY, z, Blocks.stone, 0, 2);

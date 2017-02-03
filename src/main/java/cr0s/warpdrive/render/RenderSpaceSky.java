@@ -2,6 +2,7 @@ package cr0s.warpdrive.render;
 
 import java.util.Random;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Planet;
 import net.minecraft.client.Minecraft;
@@ -82,7 +83,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	@Override
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
-		boolean isSpace = world.provider == null || world.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID;
+		boolean isSpace = world.provider == null || WarpDrive.starMap.isInSpace(world);
 		
 		final Tessellator tessellator = Tessellator.instance;
 		

@@ -430,13 +430,11 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		if (distance <= 0) {
 			return 1.0D;
 		}
-		boolean isInSpace = (worldObj.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID);
-		boolean isInHyperSpace = (worldObj.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
 		double attenuation;
-		if (isInSpace || isInHyperSpace) {
-			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK;
-		} else {
+		if (WarpDrive.starMap.hasAtmosphere(worldObj)) {
 			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK;
+		} else {
+			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK;
 		}
 		double transmittance = Math.exp(- attenuation * distance);
 		if (WarpDriveConfig.LOGGING_WEAPON) {

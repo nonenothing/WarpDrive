@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -52,10 +53,10 @@ public class GlobalPosition {
 	}
 	
 	public VectorI getSpaceCoordinates() {
-		if (dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+		if (WarpDrive.starMap.isInSpace(dimensionId)) {
 			return new VectorI(x, y + 256, z);
 		}
-		if (dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (WarpDrive.starMap.isInHyperspace(dimensionId)) {
 			return new VectorI(x, y + 512, z);
 		}
 		for (Planet planet : WarpDriveConfig.PLANETS) {

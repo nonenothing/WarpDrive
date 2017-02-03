@@ -90,6 +90,9 @@ public class StarMapRegistry {
 	
 	public void onBlockUpdated(World world, final int x, final int y, final int z, final Block block, final int metadata) {
 		CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.dimensionId);
+		if (setStarMapRegistryItems == null) {
+			return;
+		}
 		for (StarMapRegistryItem registryItem : setStarMapRegistryItems) {
 			if (registryItem.contains(x, y, z)) {
 				TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
@@ -97,7 +100,7 @@ public class StarMapRegistry {
 					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(x, y, z), block, metadata);
 				}
 			}
-		}		
+		}
 	}
 	
 	public ArrayList<StarMapRegistryItem> radarScan(TileEntity tileEntity, final int radius) {
@@ -122,6 +125,34 @@ public class StarMapRegistry {
 		}
 		
 		return res;
+	}
+	
+	public boolean isInSpace(final int dimensionId) {
+		return dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID;
+	}
+	
+	public boolean isInHyperspace(final int dimensionId) {
+		return dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
+	}
+	
+	public boolean isInSpace(final World world) {
+		return isInSpace(world.provider.dimensionId);
+	}
+	
+	public boolean isInHyperspace(final World world) {
+		return isInHyperspace(world.provider.dimensionId);
+	}
+	
+	public boolean hasAtmosphere(final World world) {
+		return !isInSpace(world) && !isInHyperspace(world);
+	}
+	
+	public boolean isPlanet(final World world) {
+		return !isInSpace(world) && !isInHyperspace(world);
+	}
+	
+	public boolean isLowGravity(final World world) {
+		return isInSpace(world) || isInHyperspace(world);
 	}
 	
 	public void printRegistry(final String trigger) {

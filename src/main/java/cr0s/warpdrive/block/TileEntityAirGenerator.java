@@ -2,7 +2,6 @@ package cr0s.warpdrive.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.WarpDrive;
@@ -40,13 +39,13 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (worldObj.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID && worldObj.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (WarpDrive.starMap.hasAtmosphere(worldObj)) {
 			if (getBlockMetadata() != 0) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
 			}
 			return;
 		}
-
+		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.AIRGEN_AIR_GENERATION_TICKS) {
 			if (isEnabled && energy_consume(WarpDriveConfig.AIRGEN_ENERGY_PER_NEWAIRBLOCK, true)) {

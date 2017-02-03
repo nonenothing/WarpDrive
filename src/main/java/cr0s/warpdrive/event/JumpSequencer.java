@@ -482,8 +482,8 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		StringBuilder reason = new StringBuilder();
 		
-		boolean isInSpace = (sourceWorld.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID);
-		boolean isInHyperSpace = (sourceWorld.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+		boolean isInSpace = WarpDrive.starMap.isInSpace(sourceWorld);
+		boolean isInHyperSpace = WarpDrive.starMap.isInHyperspace(sourceWorld);
 		
 		boolean toSpace = (moveY > 0) && (ship.maxY + moveY > 255) && (!isInSpace) && (!isInHyperSpace);
 		boolean fromSpace = (moveY < 0) && (ship.minY + moveY < 0) && isInSpace;
@@ -491,19 +491,21 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (isHyperspaceJump) {
 			if (isInHyperSpace) {
-				targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+				final int dimensionIdSpace = WarpDriveConfig.G_SPACE_DIMENSION_ID;
+				targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
 				if (targetWorld == null) {
 					LocalProfiler.stop();
-					String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting jump.";
+					String msg = "Unable to load Space dimension " + dimensionIdSpace + ", aborting jump.";
 					ship.messageToAllPlayersOnShip(msg);
 					disable(msg);
 					return;
 				}
 			} else if (isInSpace) {
-				targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+				final int dimensionIdHyperspace = WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
+				targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdHyperspace);
 				if (targetWorld == null) {
 					LocalProfiler.stop();
-					String msg = "Unable to load Hyperspace dimension " + WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID + ", aborting jump.";
+					String msg = "Unable to load Hyperspace dimension " + dimensionIdHyperspace + ", aborting jump.";
 					ship.messageToAllPlayersOnShip(msg);
 					disable(msg);
 					return;
@@ -530,10 +532,11 @@ public class JumpSequencer extends AbstractSequencer {
 						planetValid = true;
 						moveX = planet.spaceCenterX - planet.dimensionCenterX;
 						moveZ = planet.spaceCenterZ - planet.dimensionCenterZ;
-						targetWorld = MinecraftServer.getServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
+						final int dimensionIdSpace = WarpDriveConfig.G_SPACE_DIMENSION_ID;
+						targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
 						if (targetWorld == null) {
 							LocalProfiler.stop();
-							String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting jump.";
+							String msg = "Unable to load Space dimension " + dimensionIdSpace + ", aborting jump.";
 							ship.messageToAllPlayersOnShip(msg);
 							disable(msg);
 							return;
@@ -612,9 +615,8 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		// Check mass constrains
-		if ( ((!isInSpace) && (!isInHyperSpace))
-		  || ( (targetWorld.provider.dimensionId != WarpDriveConfig.G_SPACE_DIMENSION_ID)
-			&& (targetWorld.provider.dimensionId != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID)) ) {
+		if ( WarpDrive.starMap.isPlanet(sourceWorld)
+		  || WarpDrive.starMap.isPlanet(targetWorld) ) {
 			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE) {
 				String msg = "Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)";
 				ship.messageToAllPlayersOnShip(msg);

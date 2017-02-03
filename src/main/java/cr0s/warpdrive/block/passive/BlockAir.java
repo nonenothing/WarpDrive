@@ -133,10 +133,10 @@ public class BlockAir extends Block {
 		}
 		
 		int concentration = world.getBlockMetadata(x, y, z);
-		boolean isInSpaceWorld = world.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID || world.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
+		boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world);
 		
 		// Remove air block to vacuum block
-		if (concentration <= 0 || !isInSpaceWorld) {
+		if (concentration <= 0 || hasAtmosphere) {
 			world.setBlock(x, y, z, Blocks.air, 0, 3); // replace our air block to vacuum block
 		} else {
 			// Try to spread the air
@@ -392,11 +392,11 @@ public class BlockAir extends Block {
 	}
 	
 	@Override
-	public void onBlockAdded(World par1World, int par2, int par3, int par4) {
-		if (par1World.provider.dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID || par1World.provider.dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
-			par1World.scheduleBlockUpdate(par2, par3, par4, this, tickRate(par1World));
+	public void onBlockAdded(World world, int x, int y, int z) {
+		if (!WarpDrive.starMap.hasAtmosphere(world)) {
+			world.scheduleBlockUpdate(x, y, z, this, tickRate(world));
 		} else {
-			par1World.setBlockToAir(par2, par3, par4);
+			world.setBlockToAir(x, y, z);
 		}
 	}
 }
