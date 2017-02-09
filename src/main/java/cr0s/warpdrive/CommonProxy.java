@@ -3,6 +3,7 @@ package cr0s.warpdrive;
 import com.mojang.authlib.GameProfile;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.entity.EntityParticleBunch;
 import cr0s.warpdrive.render.EntityCamera;
 import cr0s.warpdrive.world.EntitySphereGen;
 import cr0s.warpdrive.world.EntityStarCore;
@@ -21,13 +22,18 @@ import net.minecraftforge.event.world.BlockEvent;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
-public class CommonProxy {
+public abstract class CommonProxy {
 	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
 	
 	void registerEntities() {
-		EntityRegistry.registerModEntity(EntitySphereGen.class, "EntitySphereGenerator", WarpDriveConfig.G_ENTITY_SPHERE_GENERATOR_ID, WarpDrive.instance, 200, 1, false);
-		EntityRegistry.registerModEntity(EntityStarCore.class , "EntityStarCore"       , WarpDriveConfig.G_ENTITY_STAR_CORE_ID       , WarpDrive.instance, 300, 1, false);
-		EntityRegistry.registerModEntity(EntityCamera.class   , "EntityCamera"         , WarpDriveConfig.G_ENTITY_CAMERA_ID          , WarpDrive.instance, 300, 1, false);
+		EntityRegistry.registerModEntity(EntitySphereGen.class    , "EntitySphereGenerator", WarpDriveConfig.G_ENTITY_SPHERE_GENERATOR_ID, WarpDrive.instance, 200, 1, false);
+		EntityRegistry.registerModEntity(EntityStarCore.class     , "EntityStarCore"       , WarpDriveConfig.G_ENTITY_STAR_CORE_ID       , WarpDrive.instance, 300, 1, false);
+		EntityRegistry.registerModEntity(EntityCamera.class       , "EntityCamera"         , WarpDriveConfig.G_ENTITY_CAMERA_ID          , WarpDrive.instance, 300, 1, false);
+		EntityRegistry.registerModEntity(EntityParticleBunch.class, "EntityParticleBunch"  , WarpDriveConfig.G_ENTITY_PARTICLE_BUNCH_ID  , WarpDrive.instance, 300, 1, false);
+	}
+	
+	public void registerRendering() {
+		// client side only
 	}
 	
 	private EntityPlayer getFakePlayer(EntityPlayer entityPlayer, WorldServer world, int x, int y, int z) {

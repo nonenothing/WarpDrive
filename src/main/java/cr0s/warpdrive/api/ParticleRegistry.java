@@ -16,11 +16,11 @@ public class ParticleRegistry {
 	
 	private static BiMap<String, Particle> particles = HashBiMap.create();
 	
-	public static final Particle ION = new Particle("ion") { }.setColor(0xE5FF54).setRarity(EnumRarity.common);
-	public static final Particle PROTON = new Particle("proton") { }.setColor(0xE5FF54).setRarity(EnumRarity.common);
-	public static final Particle ANTIMATTER = new Particle("antimatter") { }.setColor(0x1C3CAF).setRarity(EnumRarity.uncommon);
-	public static final Particle STRANGE_MATTER = new Particle("strange_matter") { }.setColor(0xE2414C).setRarity(EnumRarity.rare);
-	// public static final Particle TACHYONS = new Particle("tachyons") { }.setColor(0xE5FF54).setRarity(EnumRarity.epic);
+	public static final Particle ION = new Particle("ion") { }.setColor(0xE5FF54).setRarity(EnumRarity.common).setColorIndex(0);
+	public static final Particle PROTON = new Particle("proton") { }.setColor(0xE5FF54).setRarity(EnumRarity.common).setColorIndex(1);
+	public static final Particle ANTIMATTER = new Particle("antimatter") { }.setColor(0x1C3CAF).setRarity(EnumRarity.uncommon).setColorIndex(2);
+	public static final Particle STRANGE_MATTER = new Particle("strange_matter") { }.setColor(0xE2414C).setRarity(EnumRarity.rare).setColorIndex(3);
+	// public static final Particle TACHYONS = new Particle("tachyons") { }.setColor(0xE5FF54).setRarity(EnumRarity.epic).setColorIndex(4);
 	
 	static {
 		registerParticle(ION);

@@ -78,6 +78,7 @@ public class WarpDriveConfig {
 	public static int G_ENTITY_SPHERE_GENERATOR_ID = 241;
 	public static int G_ENTITY_STAR_CORE_ID = 242;
 	public static int G_ENTITY_CAMERA_ID = 243;
+	public static int G_ENTITY_PARTICLE_BUNCH_ID = 244;
 	
 	public static final int LUA_SCRIPTS_NONE = 0;
 	public static final int LUA_SCRIPTS_TEMPLATES = 1;
@@ -362,6 +363,8 @@ public class WarpDriveConfig {
 				config.get("general", "entity_star_core_id", G_ENTITY_STAR_CORE_ID, "Entity star core ID").getInt());
 		G_ENTITY_CAMERA_ID = clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
 				config.get("general", "entity_camera_id", G_ENTITY_CAMERA_ID, "Entity camera ID").getInt());
+		G_ENTITY_PARTICLE_BUNCH_ID = clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
+			config.get("general", "entity_particle_bunch_id", G_ENTITY_PARTICLE_BUNCH_ID, "Entity particle bunch ID").getInt());
 		
 		G_LUA_SCRIPTS = clamp(0, 2,
 				config.get("general", "lua_scripts", G_LUA_SCRIPTS,
