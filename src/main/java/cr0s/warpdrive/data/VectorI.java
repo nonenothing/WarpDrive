@@ -93,6 +93,27 @@ public class VectorI implements Cloneable {
 		return world.getBlock(x, y, z);
 	}
 	
+	public boolean isChunkLoaded(IBlockAccess world) {
+		return isChunkLoaded(world, x, z);
+	}
+	
+	static public boolean isChunkLoaded(IBlockAccess world, final int x, final int z) {
+		if (world instanceof WorldServer) {
+			if (((WorldServer)world).getChunkProvider() instanceof ChunkProviderServer) {
+				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer)world).getChunkProvider();
+				try {
+					Chunk chunk = (Chunk) chunkProviderServer.loadedChunkHashMap.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
+					return chunk != null && chunk.isChunkLoaded;
+				} catch (NoSuchFieldError exception) {
+					return chunkProviderServer.chunkExists(x >> 4, z >> 4);
+				}
+			} else {
+				return ((WorldServer)world).getChunkProvider().chunkExists(x >> 4, z >> 4);
+			}
+		}
+		return true;
+	}
+	
 	public Block getBlock_noChunkLoading(IBlockAccess world, ForgeDirection side) {
 		return getBlock_noChunkLoading(world, x + side.offsetX, y + side.offsetY, z + side.offsetZ);
 	}
@@ -106,23 +127,9 @@ public class VectorI implements Cloneable {
 		if (world == null) {
 			return null;
 		}
-		if (world instanceof WorldServer) {
-			boolean isLoaded;
-			if (((WorldServer)world).getChunkProvider() instanceof ChunkProviderServer) {
-				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer)world).getChunkProvider();
-				try {
-					Chunk chunk = (Chunk) chunkProviderServer.loadedChunkHashMap.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
-					isLoaded = chunk != null && chunk.isChunkLoaded;
-				} catch (NoSuchFieldError exception) {
-					isLoaded = chunkProviderServer.chunkExists(x >> 4, z >> 4);
-				}
-			} else {
-				isLoaded = ((WorldServer)world).getChunkProvider().chunkExists(x >> 4, z >> 4);
-			}
-			// skip unloaded chunks
-			if (!isLoaded) {
-				return null;
-			}
+		// skip unloaded chunks
+		if (!isChunkLoaded(world, x, z)) {
+			return null;
 		}
 		return world.getBlock(x, y, z);
 	}
@@ -260,19 +267,23 @@ public class VectorI implements Cloneable {
 	}
 	
 	
-	public static VectorI readFromNBT(NBTTagCompound nbtCompound) {
+	public static VectorI createFromNBT(NBTTagCompound nbtTagCompound) {
 		VectorI vector = new VectorI();
-		vector.x = nbtCompound.getInteger("x");
-		vector.y = nbtCompound.getInteger("y");
-		vector.z = nbtCompound.getInteger("z");
+		vector.readFromNBT(nbtTagCompound);
 		return vector;
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtCompound) {
-		nbtCompound.setInteger("x", x);
-		nbtCompound.setInteger("y", y);
-		nbtCompound.setInteger("z", z);
-		return nbtCompound;
+	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+		x = nbtTagCompound.getInteger("x");
+		y = nbtTagCompound.getInteger("y");
+		z = nbtTagCompound.getInteger("z");
+	}
+	
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound.setInteger("x", x);
+		nbtTagCompound.setInteger("y", y);
+		nbtTagCompound.setInteger("z", z);
+		return nbtTagCompound;
 	}
 	
 	// Square roots are evil, avoid them at all cost

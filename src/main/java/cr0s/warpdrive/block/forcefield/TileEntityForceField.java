@@ -35,7 +35,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (tag.hasKey("projector")) {
-			vProjector = VectorI.readFromNBT(tag.getCompoundTag("projector"));
+			vProjector = VectorI.createFromNBT(tag.getCompoundTag("projector"));
 			cache_beamFrequency = tag.getInteger("beamFrequency");
 			if (tag.hasKey("projector")) {
 				try {
