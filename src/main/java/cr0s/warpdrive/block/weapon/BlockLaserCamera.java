@@ -43,25 +43,21 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 		return new TileEntityLaserCamera();
 	}
 	
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
+	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+	
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
 	}
 	
-	/**
-	 * Returns the ID of the items to drop on destruction.
-	 */
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);
 	}
 	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
 		if (entityPlayer.getHeldItem() == null) {

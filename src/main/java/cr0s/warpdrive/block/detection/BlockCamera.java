@@ -40,6 +40,11 @@ public class BlockCamera extends BlockAbstractContainer {
 	}
 	
 	@Override
+	public boolean isOpaqueCube() {
+		return false;
+	}
+	
+	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
 	}
