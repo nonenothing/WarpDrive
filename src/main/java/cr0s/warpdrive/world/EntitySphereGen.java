@@ -227,6 +227,15 @@ public final class EntitySphereGen extends Entity {
 	
 	@Override
 	protected void entityInit() {
+		noClip = true;
+	}
+	
+	// override to skip the block bounding override on client side
+	@Override
+	public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
+		//	super.setPositionAndRotation2(x, y, z, yaw, pitch, p_70056_9_);
+		this.setPosition(x, y, z);
+		this.setRotation(yaw, pitch);
 	}
 	
 	@Override
