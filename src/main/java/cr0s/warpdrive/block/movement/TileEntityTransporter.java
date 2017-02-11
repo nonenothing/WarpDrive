@@ -14,7 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.DamageTeleportation;
+import cr0s.warpdrive.damage.DamageTeleportation;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -37,9 +37,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	private final static Vector3 centreOnMe = new Vector3(0.5D, 1.0D, 0.5D);
 	private Vector3 sourceVec = new Vector3();
 	private Vector3 destVec = new Vector3();
-
-	private DamageTeleportation damageTeleportation = new DamageTeleportation();
-
+	
 	public TileEntityTransporter() {
 		super();
 		
@@ -339,7 +337,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 		}
 	}
 
-	private void inflictNegativeEffect(Entity ent, double lockStrength) {
+	private void inflictNegativeEffect(Entity entity, double lockStrength) {
 		double value = Math.random() + lockStrength;
 
 		if (WarpDriveConfig.LOGGING_TRANSPORTER) {
@@ -347,15 +345,15 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 		}
 		
 		if (value < 0.1) {
-			ent.attackEntityFrom(damageTeleportation, 1000);
+			entity.attackEntityFrom(WarpDrive.damageTeleportation, 1000);
 		}
 
 		if (value < 0.2) {
-			ent.attackEntityFrom(damageTeleportation, 10);
+			entity.attackEntityFrom(WarpDrive.damageTeleportation, 10);
 		}
 
 		if (value < 0.5) {
-			ent.attackEntityFrom(damageTeleportation, 1);
+			entity.attackEntityFrom(WarpDrive.damageTeleportation, 1);
 		}
 	}
 

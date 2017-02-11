@@ -108,8 +108,9 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 					direction.y + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 					direction.z + noiseLevel * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
 			switch (type) {
-			case "explode":
 			default:
+				WarpDrive.logger.error(String.format("Invalid particle type '%s' at %s", type, origin.toString()));
+			case "explode":
 				effect = new EntityExplodeFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
 			
@@ -130,6 +131,10 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			
 			case "snowshovel":
 				effect = new EntitySnowShovelFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
+			
+			case "mobSpell":
+				effect = new EntitySpellParticleFX(worldObj, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
 			} 
 			if (baseRed >= 0.0F && baseGreen >= 0.0F && baseBlue >= 0.0F) {

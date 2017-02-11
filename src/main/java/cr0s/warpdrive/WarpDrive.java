@@ -10,6 +10,7 @@ import cr0s.warpdrive.block.atomic.*;
 import cr0s.warpdrive.block.detection.*;
 import cr0s.warpdrive.block.forcefield.*;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
+import cr0s.warpdrive.damage.*;
 import cr0s.warpdrive.item.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
@@ -182,6 +183,7 @@ public class WarpDrive implements LoadingCallback {
 	
 	public static DamageAsphyxia damageAsphyxia;
 	public static DamageCold damageCold;
+	public static DamageIrradiation damageIrradiation;
 	public static DamageLaser damageLaser;
 	public static DamageShock damageShock;
 	public static DamageTeleportation damageTeleportation;
@@ -542,12 +544,14 @@ public class WarpDrive implements LoadingCallback {
 		// DAMAGE SOURCES
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
+		damageIrradiation = new DamageIrradiation();
 		damageLaser = new DamageLaser();
 		damageShock = new DamageShock();
 		damageTeleportation = new DamageTeleportation();
 		damageWarm = new DamageWarm();
 		
 		proxy.registerEntities();
+		proxy.registerRendering();
 		
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, instance);
 		
