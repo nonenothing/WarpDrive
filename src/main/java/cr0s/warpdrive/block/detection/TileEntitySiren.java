@@ -2,7 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.SirenSound;
+import cr0s.warpdrive.client.SirenSound;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import net.minecraft.client.Minecraft;
