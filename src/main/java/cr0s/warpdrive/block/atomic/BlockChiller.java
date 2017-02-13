@@ -16,25 +16,16 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class BlockChiller extends BlockAbstractAccelerator {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
+	
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
 	public BlockChiller(final byte tier) {
 		super(tier);
 		setBlockName("warpdrive.atomic.chiller" + tier);
 		setBlockTextureName("warpdrive:atomic/chiller" + tier);
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIcon(int side, int metadata) {
-		return icons[metadata % 16];
-	}
-	
-	@Override
-	public int damageDropped(int metadata) {
-		return 0;
 	}
 	
 	@Override
@@ -46,6 +37,18 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		icons[1] = iconRegister.registerIcon(getTextureName() + "-on");
 	}
 	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIcon getIcon(int side, int metadata) {
+		return icons[metadata % 2];
+	}
+	
+	@Override
+	public int damageDropped(int metadata) {
+		return 0;
+	}
+	
+	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		return AxisAlignedBB.getBoundingBox(
 			x + BOUNDING_TOLERANCE, y + BOUNDING_TOLERANCE, z + BOUNDING_TOLERANCE,
@@ -90,7 +93,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		
 		// visual effect
 		v3Direction.scale(0.20D);
-		PacketHandler.sendSpawnParticlePacket(world, "snowshovel", v3Entity, v3Direction,
+		PacketHandler.sendSpawnParticlePacket(world, "snowshovel", (byte) 5, v3Entity, v3Direction,
 			0.90F + 0.10F * world.rand.nextFloat(), 0.35F + 0.25F * world.rand.nextFloat(), 0.30F + 0.15F * world.rand.nextFloat(),
 			0.0F, 0.0F, 0.0F, 32);
 	}

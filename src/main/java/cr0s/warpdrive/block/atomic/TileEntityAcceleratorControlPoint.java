@@ -26,11 +26,13 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	// computed properties
 	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
+	private static final int UPDATE_INTERVAL_TICKS = 20;
 	private int packetSendTicks = 10;
+	private int updateTicks;
 	
 	public TileEntityAcceleratorControlPoint() {
 		super();
-				
+		
 		peripheralName = "warpdriveAcceleratorControlPoint";
 		addMethods(new String[] {
 			"enable",
@@ -50,6 +52,12 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		
 		if (worldObj.isRemote) {
 			return;
+		}
+		
+		updateTicks--;
+		if (updateTicks <= 0) {
+			updateTicks = UPDATE_INTERVAL_TICKS;
+			updateMetadata((videoChannel == -1) ? 0 : 1);
 		}
 		
 		packetSendTicks--;
@@ -75,7 +83,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		if (videoChannel != parVideoChannel) {
 			videoChannel = parVideoChannel;
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info(this + " Monitor video channel set to " + videoChannel);
+				WarpDrive.logger.info(this + " Accelerator control point video channel set to " + videoChannel);
 			}
 			// force update through main thread since CC runs on server as 'client'
 			packetSendTicks = 0;
