@@ -274,7 +274,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			v3Direction.scale(0.20D);
 			PacketHandler.sendBeamPacket(world, v3Projector, v3Entity,
 				0.25F, 0.38F, 0.75F, 10, 0, 50);
-			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", v3Entity, v3Direction,
+			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", (byte) 5, v3Entity, v3Direction,
 				0.20F + 0.10F * world.rand.nextFloat(), 0.25F + 0.25F * world.rand.nextFloat(), 0.60F + 0.30F * world.rand.nextFloat(),
 				0.0F, 0.0F, 0.0F, 32);
 			return 10;
@@ -292,7 +292,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			v3Direction.scale(0.20D);
 			PacketHandler.sendBeamPacket(world, v3Projector, v3Entity,
 				0.95F, 0.52F, 0.38F, 10, 0, 50);
-			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", v3Entity, v3Direction,
+			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", (byte) 5, v3Entity, v3Direction,
 				0.90F + 0.10F * world.rand.nextFloat(), 0.35F + 0.25F * world.rand.nextFloat(), 0.30F + 0.15F * world.rand.nextFloat(),
 				0.0F, 0.0F, 0.0F, 32);
 			/*
@@ -313,7 +313,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			v3Direction.scale(0.15D);
 			PacketHandler.sendBeamPacket(world, v3Projector, v3Entity,
 				0.35F, 0.57F, 0.87F, 10, 0, 50);
-			PacketHandler.sendSpawnParticlePacket(world, "fireworksSpark", v3Entity, v3Direction,
+			PacketHandler.sendSpawnParticlePacket(world, "fireworksSpark", (byte) 5, v3Entity, v3Direction,
 				0.20F + 0.30F * world.rand.nextFloat(), 0.50F + 0.15F * world.rand.nextFloat(), 0.75F + 0.25F * world.rand.nextFloat(),
 				0.10F + 0.20F * world.rand.nextFloat(), 0.10F + 0.30F * world.rand.nextFloat(), 0.20F + 0.10F * world.rand.nextFloat(),
 				32);

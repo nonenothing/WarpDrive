@@ -91,20 +91,23 @@ public class PacketHandler {
 	}
 	
 	// Forced particle effect sent to client side
-	public static void sendSpawnParticlePacket(World worldObj, final String type, final Vector3 origin, final Vector3 direction,
+	public static void sendSpawnParticlePacket(World worldObj, final String type, final byte quantity,
+	                                           final Vector3 origin, final Vector3 direction,
 	                                           final float baseRed, final float baseGreen, final float baseBlue,
-	                                           final float fadeRed, final float fadeGreen, final float fadeBlue, final int radius) {
+	                                           final float fadeRed, final float fadeGreen, final float fadeBlue,
+	                                           final int radius) {
 		assert(!worldObj.isRemote);
 		
-		MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(type, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue);
+		MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(
+			type, quantity, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue);
 		
 		// small beam are sent relative to beam center
 		simpleNetworkManager.sendToAllAround(messageSpawnParticle, new TargetPoint(
 				worldObj.provider.dimensionId, origin.x, origin.y, origin.z, radius));
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
-			WarpDrive.logger.info("Sent particle effect '" + type + "' from " + origin + " toward " + direction
-				+ " as RGB " + baseRed + " " + baseGreen + " " + baseBlue + " fading to " + fadeRed + " " + fadeGreen + " " + fadeBlue);
+			WarpDrive.logger.info(String.format("Sent particle effect '%s' x %d from %s toward %s as RGB %.2f %.2f %.2f fading to %.2f %.2f %.2f",
+				type, quantity, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue));
 		}
 	}
 	
