@@ -1,12 +1,12 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector {
 	private boolean isFirstTick = true;
@@ -293,12 +294,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// area protection
-	protected boolean isBlockBreakCanceled(EntityPlayer entityPlayer, World world, int eventX, int eventY, int eventZ) {
-		return WarpDrive.proxy.isBlockBreakCanceled(entityPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ);
+	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, World world, final int eventX, final int eventY, final int eventZ) {
+		return CommonProxy.isBlockBreakCanceled(uuidPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ);
 	}
 	
-	protected boolean isBlockPlaceCanceled(EntityPlayer entityPlayer, World world, int eventX, int eventY, int eventZ, Block block, int metadata) {
-		return WarpDrive.proxy.isBlockPlaceCanceled(entityPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ, block, metadata);
+	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, World world, final int eventX, final int eventY, final int eventZ, final Block block, final int metadata) {
+		return CommonProxy.isBlockPlaceCanceled(uuidPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ, block, metadata);
 	}
 	
 	// saved properties
