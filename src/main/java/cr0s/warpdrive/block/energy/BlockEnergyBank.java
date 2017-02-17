@@ -91,7 +91,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 	
 	@Override
 	public IIcon getIcon(int side, int metadata) {
-		return icons[metadata * 3 + (side == 1 ? 1 : 2)];
+		return icons[(metadata * 3 + (side == 1 ? 1 : 2)) % icons.length];
 	}
 	
 	@Override
