@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import net.minecraft.init.Blocks;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -310,7 +311,7 @@ public class WarpDriveConfig {
 			WarpDrive.logger.info("Failed to get mod block for " + mod + ":" + id);
 			exception.printStackTrace();
 		}
-		return null;
+		return Blocks.fire;
 	}
 	
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
@@ -323,7 +324,7 @@ public class WarpDriveConfig {
 		} catch (Exception exception) {
 			WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
 		}
-		return null;
+		return new ItemStack(Blocks.fire);
 	}
 	
 	public static void onFMLpreInitialization(final String stringConfigDirectory) {
@@ -376,7 +377,7 @@ public class WarpDriveConfig {
 		
 		// Recipes
 		RECIPES_ENABLE_DYNAMIC = config.get("recipes", "enable_dynamic", RECIPES_ENABLE_DYNAMIC,
-				"Mixed recipes dynamically integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
+				"Mixed recipes dynamically integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2 experimental, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
 		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
 		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCraft2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
 		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
