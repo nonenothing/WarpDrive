@@ -1,6 +1,6 @@
 package cr0s.warpdrive.data;
 
-import java.util.LinkedList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -25,11 +25,9 @@ import cr0s.warpdrive.network.PacketHandler;
 
 public class CloakManager {
 	
-	private static LinkedList<CloakedArea> cloaks;
+	private static CopyOnWriteArraySet<CloakedArea> cloaks = new CopyOnWriteArraySet<>();
 	
-	public CloakManager() {
-		cloaks = new LinkedList<>();
-	}
+	public CloakManager() { }
 	
 	public boolean isCloaked(int dimensionID, int x, int y, int z) {
 		for (CloakedArea area : cloaks) {
@@ -89,22 +87,16 @@ public class CloakManager {
 		CloakedArea newArea = new CloakedArea(world, dimensionId, coreX, coreY, coreZ, tier, minX, minY, minZ, maxX, maxY, maxZ);
 		
 		// find existing one
-		int index = -1;
-		for (int i = 0; i < cloaks.size(); i++) {
-			CloakedArea area = cloaks.get(i);
+		for (CloakedArea area : cloaks) {
 			if ( area.dimensionId == world.provider.dimensionId
 			  && area.coreX == coreX
 			  && area.coreY == coreY
 			  && area.coreZ == coreZ ) {
-				index = i;
+				cloaks.remove(area);
 				break;
 			}
 		}
-		if (index != -1) {
-			cloaks.set(index, newArea);
-		} else {
-			cloaks.add(newArea);
-		}
+		cloaks.add(newArea);
 		if (world.isRemote) {
 			newArea.clientCloak();
 		}
@@ -112,9 +104,7 @@ public class CloakManager {
 	}
 	
 	public void removeCloakedArea(final int dimensionId, final int coreX, final int coreY, final int coreZ) {
-		int index = -1;
-		for (int i = 0; i < cloaks.size(); i++) {
-			CloakedArea area = cloaks.get(i);
+		for (CloakedArea area : cloaks) {
 			if ( area.dimensionId == dimensionId
 			  && area.coreX == coreX
 			  && area.coreY == coreY
@@ -124,13 +114,9 @@ public class CloakManager {
 				} else {
 					area.sendCloakPacketToPlayersEx(true); // send info about collapsing cloaking field
 				}
-				index = i;
+				cloaks.remove(area);
 				break;
 			}
-		}
-		
-		if (index != -1) {
-			cloaks.remove(index);
 		}
 	}
 	
