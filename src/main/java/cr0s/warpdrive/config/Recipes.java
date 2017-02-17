@@ -595,8 +595,8 @@ public class Recipes {
 			
 			ItemStack iridiumAlloy = WarpDriveConfig.getModItemStack("IC2", "itemPartIridium", -1);
 			GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine), "iii", "imi", "iii",
-			'i', iridiumAlloy,
-			'm', itemStackMachineCasingMV);
+				'i', iridiumAlloy,
+				'm', itemStackMachineCasingMV);
 			
 		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
 			itemStackMachineCasingLV = WarpDriveConfig.getModItemStack("ThermalExpansion", "Frame", 0);
@@ -617,9 +617,9 @@ public class Recipes {
 			itemStackMachineCasingEV = new ItemStack(Blocks.beacon);
 			
 			GameRegistry.addRecipe(new ItemStack(WarpDrive.blockHighlyAdvancedMachine, 4), "pep", "ede", "pep",
-			'e', Items.emerald,
-			'p', Items.ender_eye,
-			'd', Blocks.diamond_block);
+				'e', Items.emerald,
+				'p', Items.ender_eye,
+				'd', Blocks.diamond_block);
 		}
 		
 		ItemStack[] itemStackMachineCasings = { itemStackMachineCasingLV, itemStackMachineCasingMV, itemStackMachineCasingHV, itemStackMachineCasingEV };
