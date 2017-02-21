@@ -1513,12 +1513,12 @@ public class Recipes {
 		                                          'd', Items.diamond));
 		
 		// Chillers
-		Object water = Blocks.snow;
+		Object snowOrIce = Blocks.snow;
 		if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
-			water = Blocks.ice;
+			snowOrIce = Blocks.ice;
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[0]), "wgw", "sms", "bMb",
-		                                          'w', water,
+		                                          'w', snowOrIce,
 		                                          'g', Items.ghast_tear,
 		                                          's', ingotIronOrSteel,
 		                                          'm', itemStackMotorLV,
