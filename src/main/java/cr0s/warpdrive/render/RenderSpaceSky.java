@@ -113,6 +113,9 @@ public class RenderSpaceSky extends IRenderHandler {
 		// GL11.glDisable(GL11.GL_FOG);
 		/**/
 		
+		// compute global alpha
+		final float alphaBase = 1.0F - world.getRainStrength(partialTicks);
+		
 		// draw star systems
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -123,9 +126,9 @@ public class RenderSpaceSky extends IRenderHandler {
 		}
 		if (starBrightness > 0.0F) {
 			if (isSpace) {
-				GL11.glColor4f(1.0F, 1.0F, 0.9F, starBrightness);
+				GL11.glColor4f(1.0F, 1.0F, 0.9F, alphaBase * starBrightness);
 			} else {
-				GL11.glColor4f(0.5F, 0.6F, 0.4F, starBrightness);
+				GL11.glColor4f(0.5F, 0.6F, 0.4F, alphaBase * starBrightness);
 			}
 			GL11.glCallList(callListStars);
 		}
@@ -185,7 +188,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		// Planets
 		Vec3 playerCoordinates = mc.thePlayer.getPosition(partialTicks);
 		for(Planet planet : WarpDriveConfig.PLANETS) {
-			renderPlanet(mc, tessellator, planet, isSpace, playerCoordinates);
+			renderPlanet(tessellator, planet, isSpace, playerCoordinates);
 		}
 		
 		// final double playerAltitude = mc.thePlayer.getPosition(partialTicks).yCoord - world.getHorizon();
@@ -249,17 +252,29 @@ public class RenderSpaceSky extends IRenderHandler {
 		GL11.glDepthMask(true);
 	}
 	
-	static final double PLANET_FAR = 512.0D;
+	static final double PLANET_FAR = 1786.0D;
+	static final double PLANET_APPROACHING = 512.0D;
 	static final double PLANET_ORBIT = 128.0D;
-	private static void renderPlanet(Minecraft mc, Tessellator tessellator, final Planet planet, final boolean isSpace, final Vec3 playerCoordinates) {
-		final double planetX = planet.spaceCenterX - playerCoordinates.xCoord;
-		final double planetZ = planet.spaceCenterZ - playerCoordinates.zCoord;
-		final double distanceToBorder = planet.isValidFromSpace((int) mc.thePlayer.posX, (int) mc.thePlayer.posZ);
+	private static void renderPlanet(Tessellator tessellator, final Planet planet, final boolean isSpace, final Vec3 vec3Player) {
+		final double planetX = planet.spaceCenterX - vec3Player.xCoord;
+		final double planetZ = planet.spaceCenterZ - vec3Player.zCoord;
+		final double distanceToBorder = planet.isValidFromSpace((int) vec3Player.xCoord, (int) vec3Player.zCoord);
 		final double distanceToCenter = Math.sqrt(planetX * planetX + planetZ * planetZ);
 		
-		final double transitionFar         = (Math.max(PLANET_FAR, Math.min(WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS, distanceToBorder)) - PLANET_FAR) / (WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS - PLANET_FAR);
-		final double transitionApproaching = (Math.max(PLANET_ORBIT, Math.min(PLANET_FAR, distanceToBorder)) - PLANET_ORBIT) / (PLANET_FAR - PLANET_ORBIT);
+		// transition values
+		// distance              far   approaching  orbit
+		// world border         1.000     1.000     1.000
+		// PLANET_FAR           1.000     1.000     1.000
+		// PLANET_APPROACHING   0.000     1.000     1.000
+		// PLANET_ORBIT         0.000     0.000     1.000
+		// in orbit             0.000     0.000     0.000
+		final double transitionFar         = (Math.max(PLANET_APPROACHING, Math.min(PLANET_FAR, distanceToBorder)) - PLANET_APPROACHING) / (PLANET_FAR - PLANET_APPROACHING);
+		final double transitionApproaching = (Math.max(PLANET_ORBIT, Math.min(PLANET_APPROACHING, distanceToBorder)) - PLANET_ORBIT) / (PLANET_APPROACHING - PLANET_ORBIT);
 		final double transitionOrbit       = Math.max(0.0D, Math.min(PLANET_ORBIT, distanceToBorder)) / PLANET_ORBIT;
+		
+		// relative position above planet
+		final double offsetX = (1.0 - transitionOrbit) * (planet.borderSizeX - planetX) / planet.borderSizeX;
+		final double offsetZ = (1.0 - transitionOrbit) * (planet.borderSizeZ - planetZ) / planet.borderSizeZ;
 		
 		// simulating a non-planar universe...
 		final double planetY_far = (planet.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 4.0D;
@@ -272,8 +287,8 @@ public class RenderSpaceSky extends IRenderHandler {
 		// render size is 10 at approaching range
 		// render size is 90 at orbit range
 		// render size is min(1000, planet border) at orbit range
-		final double renderSize = Math.min(1000.0D, Math.max(planet.borderSizeX, planet.borderSizeZ)) * (1.0D - transitionOrbit)
-								+ 90.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
+		final double renderSize = 100.0D / 1000.0D * Math.min(1000.0D, Math.max(planet.borderSizeX, planet.borderSizeZ)) * (1.0D - transitionOrbit)
+								+ 50.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
 								+ 5.0D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
 								+ 1.0D * transitionFar;
 		
@@ -283,7 +298,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		@SuppressWarnings("SuspiciousNameCombination")
 		final double angleV_far = Math.atan2(Math.sqrt(planetX * planetX + planetZ * planetZ), planetY);
 		final double angleV = Math.PI * (1.0D - transitionOrbit) + angleV_far * transitionOrbit;
-		final double angleS = 0.15D * planet.dimensionId; // + (world.getTotalWorldTime() + partialTicks) * Math.PI / 6000.0D;
+		final double angleS = 0.15D * planet.dimensionId * transitionApproaching; // + (world.getTotalWorldTime() + partialTicks) * Math.PI / 6000.0D;
 		
 		// pre-computations
 		final double sinH = Math.sin(angleH);
@@ -306,7 +321,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			final double valD = renderRange * sinV - valV * cosV;
 			final double x = valD * sinH - valH * cosH;
 			final double z = valH * sinH + valD * cosH;
-			tessellator.addVertexWithUV(x, y, z, (indexVertex & 2) / 2, (indexVertex + 1 & 2) / 2);
+			tessellator.addVertexWithUV(100 * (1 - offsetX) + x, y, 100 * (1 - offsetZ) + z, (indexVertex & 2) / 2, (indexVertex + 1 & 2) / 2);
 		}
 		tessellator.draw();
 		
