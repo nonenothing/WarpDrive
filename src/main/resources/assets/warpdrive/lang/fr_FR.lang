@@ -3,6 +3,8 @@ death.attack.warpdrive.asphyxia=%1$s est mort asphyxié
 death.attack.warpdrive.asphyxia.player=%1$s est mort asphyxié grace à %2$s
 death.attack.warpdrive.cold=%1$s est mort de froid
 death.attack.warpdrive.cold.player=%1$s est mort congelé par %2$s 
+death.attack.warpdrive.irradiation=%1$s est mort irradié
+death.attack.warpdrive.irradiation.player=%1$s a reçu une dose létale d'irration par %2$s 
 death.attack.warpdrive.laser=%1$s est d'avoir croisé le faisceau
 death.attack.warpdrive.laser.player=%1$s a été laserifié par %2$s
 death.attack.warpdrive.shock=%1$s est mort electrocuté
@@ -41,6 +43,10 @@ item.warpdrive.armor.helmet.name=Casque warp
 item.warpdrive.armor.chestplate.name=Plastron warp
 item.warpdrive.armor.leggings.name=Jambières warp
 item.warpdrive.armor.boots.name=Bottes warp
+
+item.warpdrive.atomic.electromagnetic_cell.name=Cage électromagnétique
+item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Utilise un collisionneur de particules pour me remplir!
+item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Contient %1$s Å³ de %2$s
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=Focus laser pour réacteur IC2
 
@@ -120,29 +126,32 @@ item.warpdrive.tool.crystalToken4.name=Crystal jeton #4
 item.warpdrive.tool.crystalToken5.name=Crystal jeton #5
 
 
-item.warpdrive.tool.TuningFork.name=Diapason
-item.warpdrive.tool.TuningFork.white.name=Diapason blanc
-item.warpdrive.tool.TuningFork.orange.name=Diapason orange
-item.warpdrive.tool.TuningFork.magenta.name=Diapason magenta
-item.warpdrive.tool.TuningFork.lightBlue.name=Diapason bleu clair
-item.warpdrive.tool.TuningFork.yellow.name=Diapason jaune
-item.warpdrive.tool.TuningFork.lime.name=Diapason citron vert
-item.warpdrive.tool.TuningFork.pink.name=Diapason rose
-item.warpdrive.tool.TuningFork.gray.name=Diapason gris
-item.warpdrive.tool.TuningFork.silver.name=Diapason argent
-item.warpdrive.tool.TuningFork.cyan.name=Diapason cyan
-item.warpdrive.tool.TuningFork.purple.name=Diapason violet
-item.warpdrive.tool.TuningFork.blue.name=Diapason bleu
-item.warpdrive.tool.TuningFork.brown.name=Diapason marron
-item.warpdrive.tool.TuningFork.green.name=Diapason vert
-item.warpdrive.tool.TuningFork.red.name=Diapason rouge
-item.warpdrive.tool.TuningFork.black.name=Diapason noir
+item.warpdrive.tool.tuning_driver.video_channel.name=Ajusteur de canal vidéo
+item.warpdrive.tool.tuning_driver.beam_frequency.name=Ajusteur de fréquence de faisceau
+item.warpdrive.tool.tuning_driver.control_channel.name=Ajusteur de canal de contrôle
 
-item.warpdrive.tool.TuningFork.tooltip.videoChannel=Canal vidéo ajusté à %1$d
-item.warpdrive.tool.TuningFork.tooltip.beamFrequency=Fréquence de faisceau ajustée à %1$d
-item.warpdrive.tool.TuningFork.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour ajuster les cristaux alternatifs
-item.warpdrive.tool.TuningFork.use.setVideoChannel=%1$s est désormais accordé au Canal vidéo %2$d
-item.warpdrive.tool.TuningFork.use.setBeamFrequency=%1$s est désormais accordé à la Fréquence de faisceau %2$d
+item.warpdrive.tool.tuning_driver.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour changer de mode
+
+
+item.warpdrive.tool.tuning_fork.name=Diapason
+item.warpdrive.tool.tuning_fork.white.name=Diapason blanc
+item.warpdrive.tool.tuning_fork.orange.name=Diapason orange
+item.warpdrive.tool.tuning_fork.magenta.name=Diapason magenta
+item.warpdrive.tool.tuning_fork.lightBlue.name=Diapason bleu clair
+item.warpdrive.tool.tuning_fork.yellow.name=Diapason jaune
+item.warpdrive.tool.tuning_fork.lime.name=Diapason citron vert
+item.warpdrive.tool.tuning_fork.pink.name=Diapason rose
+item.warpdrive.tool.tuning_fork.gray.name=Diapason gris
+item.warpdrive.tool.tuning_fork.silver.name=Diapason argent
+item.warpdrive.tool.tuning_fork.cyan.name=Diapason cyan
+item.warpdrive.tool.tuning_fork.purple.name=Diapason violet
+item.warpdrive.tool.tuning_fork.blue.name=Diapason bleu
+item.warpdrive.tool.tuning_fork.brown.name=Diapason marron
+item.warpdrive.tool.tuning_fork.green.name=Diapason vert
+item.warpdrive.tool.tuning_fork.red.name=Diapason rouge
+item.warpdrive.tool.tuning_fork.black.name=Diapason noir
+
+item.warpdrive.tool.tuning_fork.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour ajuster les cristaux alternatifs
 
 
 tile.warpdrive.passive.Air.name=Bloc d'air
@@ -421,9 +430,24 @@ warpdrive.energy.side.changedToInput=Le coté %1$s est en mode Réception d'éne
 warpdrive.energy.side.changedToOutput=Le coté %1$s est en mode Emission d'énergie!
 warpdrive.energy.side.changedToDisabled=Le coté %1$s side est en mode Inactif!
 
-warpdrive.beamFrequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
-warpdrive.beamFrequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
-warpdrive.beamFrequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
+warpdrive.accelerator.guide.lowPower_noStorage=La capacité de stockage d'énergie est insuffisante; Nous avons besoin d'au moins %1$d pour continuer mais ne pouvons stocker que %2$d
+warpdrive.accelerator.guide.lowPower_accelerating=Nous sommes à court d'énergie Capitaine, les bunches de particules s'échappent, préparez-vous à une irradiation de masse! 
+warpdrive.accelerator.guide.lowPower_noParticles=Il nous faut plus d'énergie pour démarrer l'accélérateur!
+warpdrive.accelerator.guide.noChiller=Cet accélérateur n'a aucun refroidisseur!
+
+warpdrive.beam_frequency.tooltip=Fréquence de faisceau ajustée à %1$d
+warpdrive.beam_frequency.get=Beam frequency %2$d has been retrieved from %1$s 
+warpdrive.beam_frequency.set=%1$s est désormais accordé à la Fréquence de faisceau %2$d
+warpdrive.beam_frequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
+warpdrive.beam_frequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
+warpdrive.beam_frequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
+
+warpdrive.control_channel.tooltip=Canal de contrôle ajusté à %1$d
+warpdrive.control_channel.get=Le canal de contrôle %2$d a été récupéré de %1$s 
+warpdrive.control_channel.set=%1$s est désormais accordé au Canal de contrôle %2$d
+warpdrive.control_channel.statusLine.valid=Le canal de contrôle %1$d est valide.
+warpdrive.control_channel.statusLine.invalid=§cLe canal de contrôle %1$d est invalide.
+warpdrive.control_channel.statusLine.undefined=§7Le canal de contrôle est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
 
 warpdrive.forcefield.guide.lowPower=Nous sommes à court d'énergie Capitaine, réduissez la consommation ou appelez l'ingénieur écossais pour booster notre production!
 
@@ -457,6 +481,15 @@ warpdrive.forcefield.upgrade.statusLine.stabilization=stabilisation
 warpdrive.forcefield.upgrade.statusLine.thickness=épaisseur
 warpdrive.forcefield.upgrade.statusLine.translation=translation
 
+warpdrive.particle.ion.name=ion
+warpdrive.particle.ion.tooltip=Produit par collision d'un bunch de particules dans un accélérateur élémentaire
+warpdrive.particle.proton.name=proton
+warpdrive.particle.proton.tooltip=Produit par collision d'un bunch de particules dans un accélérateur avancé
+warpdrive.particle.antimatter.name=antimatière
+warpdrive.particle.antimatter.tooltip=Produit par collision d'un bunch de particules dans un accélérateur supérieur
+warpdrive.particle.strange_matter.name=matière étrange
+warpdrive.particle.strange_matter.tooltip=Produit par collision frontale de 2 bunches de particules dans un accélérateur supérieur
+
 warpdrive.upgrade.result.noUpgradeToDismount=§cAucune amélioration à démonter.
 warpdrive.upgrade.result.notEnoughUpgrades=§cIl faut au moins 1 object pour améliorer ce bloc.
 warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block.
@@ -474,14 +507,18 @@ warpdrive.upgrade.result.notEnoughShapes.single=§cIl faut au moins 1 object pou
 warpdrive.upgrade.result.shapeDismounted=Forme démontée correctement.
 warpdrive.upgrade.result.shapeMounted=Forme montée correctement.
 
-warpdrive.forcefield.upgrade.statusLine.none=§7Pas d'augmentation installée.
-warpdrive.forcefield.upgrade.statusLine.valid=Augmenté avec %1$s.
+warpdrive.upgrade.statusLine.none=§7Pas d'augmentation installée.
+warpdrive.upgrade.statusLine.valid=Augmenté avec %1$s.
 
-warpdrive.videoChannel.statusLine.valid=Le canal vidéo %1$d est valide.
-warpdrive.videoChannel.statusLine.validCamera=Le canal vidéo %1$d est valide pour la caméra à %2$d %3$d %4$d.
-warpdrive.videoChannel.statusLine.invalid=§cLe canal vidéo %1$d est invalide.
-warpdrive.videoChannel.statusLine.invalidOrNotLoaded=§cLe canal vidéo %1$d est invalide ou la caméra est trop loin!
-warpdrive.videoChannel.statusLine.undefined=§7Le canal vidéo est non défini.\n§bUtilises un Diapason§r pour ajuster la fréquence de faisceau.
+warpdrive.video_channel.tooltip=Canal vidéo ajusté à %1$d
+warpdrive.video_channel.get=Le canal vidéo %2$d a été recupéré depuis %1$s
+warpdrive.video_channel.set=%1$s est désormais accordé au Canal vidéo %2$d
+warpdrive.video_channel.statusLine.valid=Le canal vidéo %1$d est valide.
+warpdrive.video_channel.statusLine.validCamera=Le canal vidéo %1$d est valide pour la caméra à %2$d %3$d %4$d.
+warpdrive.video_channel.statusLine.invalid=§cLe canal vidéo %1$d est invalide.
+warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cLe canal vidéo %1$d est invalide ou la caméra est trop loin!
+warpdrive.video_channel.statusLine.undefined=§7Le canal vidéo est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
+
 warpdrive.cloakingCore.invalidAssembly=§cL'assemblage est invalide!
 warpdrive.cloakingCore.disabled=Le champ d'invisibilité est désactivé
 warpdrive.cloakingCore.lowPower=§cLe champ d'invisibilité est en panne. Il nous faut plus d'énergie, Capitaine!
