@@ -1574,23 +1574,23 @@ public class Recipes {
 		                                          'm', WarpDrive.blockElectromagnetPlain[0]));
 		
 		// Advanced electromagnets
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetPlain[1], 6), "mpm", "pip", "mpm",
-		                                          'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 500),
+		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetPlain[1], 6), "mpm", "pip", "mpm",
+		                                          'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
 		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 		                                          'm', WarpDrive.blockElectromagnetPlain[0]));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetGlass[1], 6), "mpm", "pip", "mpm",
-		                                          'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 500),
+		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetGlass[1], 6), "mpm", "pip", "mpm",
+		                                          'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
 		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 		                                          'm', WarpDrive.blockElectromagnetGlass[0]));
 		
 		// Superior electromagnets
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mtm", "sps", "mMm",
+		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mtm", "sps", "mMm",
 		                                          't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 		                                          's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
 		                                          'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
 		                                          'M', itemStackMotorHV,
 		                                          'm', WarpDrive.blockElectromagnetPlain[1]));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mtm", "sps", "mMm",
+		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mtm", "sps", "mMm",
 		                                          't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 		                                          's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
 		                                          'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),

@@ -7,9 +7,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import javax.annotation.Nonnull;
 
 public class ParticleStack {
-	public final Particle particle;
-	public int amount;
-	public NBTTagCompound tag;
+	private final Particle particle;
+	private int amount;
+	private NBTTagCompound tag;
 	
 	public ParticleStack(@Nonnull final Particle particle, final int amount) {
 		if (!ParticleRegistry.isParticleRegistered(particle)) {
@@ -64,6 +64,14 @@ public class ParticleStack {
 	
 	public final Particle getParticle() {
 		return particle;
+	}
+	
+	public final int getAmount() {
+		return amount;
+	}
+	
+	public final void fill(final int amountAdded) {
+		amount += amountAdded;
 	}
 	
 	public String getLocalizedName() {

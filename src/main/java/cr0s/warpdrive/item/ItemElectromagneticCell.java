@@ -10,6 +10,7 @@ import cr0s.warpdrive.api.ParticleStack;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,6 +20,8 @@ import net.minecraft.util.StatCollector;
 import java.util.List;
 
 public class ItemElectromagneticCell extends Item implements IParticleContainerItem {
+	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
+	private static final int FAKE_DAMAGE = 1000;
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons = new IIcon[31];
@@ -29,9 +32,11 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.atomic.electromagnetic_cell");
+		setHasSubtypes(true);
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister) {
 		icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
 		icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");
@@ -67,8 +72,13 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int damage) {
-		return icons[damage % icons.length];
+		if (damage > FAKE_DAMAGE) {
+			return icons[(damage - FAKE_DAMAGE) % icons.length];
+		} else {
+			return icons[damage % icons.length];
+		}
 	}
 	
 	public static ItemStack getItemStackNoCache(final Particle particle, final int amount) {
@@ -86,14 +96,63 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
-		for(int metadata = 0; metadata < icons.length; metadata++) {
-			list.add(new ItemStack(item, 1, metadata));
-		}
-		list.add(getItemStackNoCache(ParticleRegistry.ION, 100));
-		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 100));
-		list.add(getItemStackNoCache(ParticleRegistry.ANTIMATTER, 100));
-		list.add(getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 100));
+		list.add(getItemStackNoCache(ParticleRegistry.ION, 1000));
+		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
+		list.add(getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000));
+		list.add(getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000));
 		// list.add(getItemStackNoCache(ParticleRegistry.TACHYONS, 100));
+	}
+	
+	@Override
+	public boolean hasContainerItem(ItemStack stack) {
+		return true;
+	}
+	
+	@Override
+	public boolean doesContainerItemLeaveCraftingGrid(ItemStack itemStack) {
+		return false;
+	}
+	
+	@Override
+	public Item getContainerItem() {
+		return Item.getItemFromBlock(Blocks.fire);
+	}
+	
+	@Override
+	public ItemStack getContainerItem(ItemStack itemStackFilled) {
+		ParticleStack particleStack = getParticle(itemStackFilled);
+		if (particleStack != null) {
+			final int amount = particleStack.getAmount() - getAmountToConsume(itemStackFilled);
+			if (amount <= 0) {
+				return getItemStackNoCache(null, 0);
+			}
+			return getItemStackNoCache(particleStack.getParticle(), amount);
+		}
+		return new ItemStack(Blocks.fire);
+	}
+	
+	@Override
+	public void setAmountToConsume(ItemStack itemStack, int amountToConsume) {
+		ParticleStack particleStack = getParticle(itemStack);
+		if (particleStack == null || particleStack.getParticle() == null) {
+			return;
+		}
+		NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+		tagCompound.setInteger(AMOUNT_TO_CONSUME_TAG, amountToConsume);
+	}
+	
+	private int getAmountToConsume(ItemStack itemStack) {
+		if (itemStack.hasTagCompound()) {
+			return itemStack.getTagCompound().getInteger(AMOUNT_TO_CONSUME_TAG);
+		}
+		return 0;
+	}
+	
+	@Override
+	public ItemStack getFakeVariant(ItemStack itemStack) {
+		ItemStack itemStackFake = itemStack.copy();
+		itemStackFake.setItemDamage(FAKE_DAMAGE + itemStack.getItemDamage());
+		return itemStackFake;
 	}
 	
 	private static int getDamageLevel(ItemStack itemStack, final ParticleStack particleStack) {
@@ -106,7 +165,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
 		final int type = particleStack.getParticle().getColorIndex() % 5;
-		final double ratio = particleStack.amount / (double) itemElectromagneticCell.getCapacity(itemStack);
+		final double ratio = particleStack.getAmount() / (double) itemElectromagneticCell.getCapacity(itemStack);
 		final int offset = (ratio < 0.2) ? 0 : (ratio < 0.4) ? 1 : (ratio < 0.6) ? 2 : (ratio < 0.8) ? 3 : (ratio < 1.0) ? 4 : 5;
 		return (1 + type * 6 + offset);
 	}
@@ -137,12 +196,12 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		ParticleStack particleStack = getParticle(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			particleStack = new ParticleStack(resource.getParticle(), 0);
-		} else if (!particleStack.containsParticle(resource) || particleStack.amount >= getCapacity(itemStack)) {
+		} else if (!particleStack.containsParticle(resource) || particleStack.getAmount() >= getCapacity(itemStack)) {
 			return 0;
 		}
-		int consumable = Math.min(resource.amount, getCapacity(itemStack) - particleStack.amount);
+		int consumable = Math.min(resource.getAmount(), getCapacity(itemStack) - particleStack.getAmount());
 		if (!doFill) {
-			particleStack.amount += consumable;
+			particleStack.fill(consumable);
 			
 			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
 			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
@@ -153,7 +212,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	
 	@Override
 	public ParticleStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-		return null;
+		return null;    // @TODO not implemented
 	}
 	
 	@Override
@@ -175,7 +234,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 			final Particle particle = particleStack.getParticle();
 			
 			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.filled",
-				particleStack.amount, particle.getLocalizedName());
+				particleStack.getAmount(), particle.getLocalizedName());
 			WarpDrive.addTooltip(list, tooltip);
 			
 			String particleTooltip = particle.getLocalizedTooltip();
