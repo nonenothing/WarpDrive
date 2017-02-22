@@ -173,6 +173,7 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemCrystalToken itemCrystalToken;
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningRod;
+	public static ItemTuningDriver itemTuningDriver;
 	public static ItemForceFieldShape itemForceFieldShape;
 	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
 	public static ItemElectromagneticCell itemElectromagneticCell;
@@ -529,7 +530,10 @@ public class WarpDrive implements LoadingCallback {
 		// TOOL ITEMS
 		itemTuningRod = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
-		
+		/*
+		itemTuningDriver = new ItemTuningDriver();
+		GameRegistry.registerItem(itemTuningDriver, "itemTuningDriver");
+		/**/
 		// FORCE FIELD UPGRADES
 		itemForceFieldShape = new ItemForceFieldShape();
 		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
@@ -915,7 +919,7 @@ public class WarpDrive implements LoadingCallback {
 				}
 				if (indexToCut < length) {
 					indexToCut = lineRemaining.substring(0, indexToCut).lastIndexOf(' ');
-					if (indexToCut == -1) {// no space available, show the whole line 'as is'
+					if (indexToCut == -1 || indexToCut == 0) {// no space available, show the whole line 'as is'
 						list.add(lineRemaining);
 						lineRemaining = "";
 					} else {// cut at last space
