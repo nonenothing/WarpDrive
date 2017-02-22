@@ -82,18 +82,18 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	
 	private String getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.valid", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.validCamera",
 						videoChannel,
 						camera.position.chunkPosX,
 						camera.position.chunkPosY,
@@ -129,7 +129,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		videoChannel = tag.getInteger("frequency") + tag.getInteger("videoChannel");
+		videoChannel = tag.getInteger("frequency") + tag.getInteger(VIDEO_CHANNEL_TAG);
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 			WarpDrive.logger.info(this + " readFromNBT");
 		}
@@ -138,7 +138,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		tag.setInteger("videoChannel", videoChannel);
+		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 			WarpDrive.logger.info(this + " writeToNBT");
 		}

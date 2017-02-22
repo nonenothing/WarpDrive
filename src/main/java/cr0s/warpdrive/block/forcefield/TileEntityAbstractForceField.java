@@ -101,11 +101,11 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	String getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid", beamFrequency);
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid", beamFrequency);
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
 		}
 	}
 	
@@ -119,7 +119,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		tier = tag.getByte("tier");
-		setBeamFrequency(tag.getInteger("beamFrequency"));
+		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
 		isEnabled = tag.getBoolean("isEnabled");
 	}
 	
@@ -127,7 +127,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		tag.setByte("tier", tier);
-		tag.setInteger("beamFrequency", beamFrequency);
+		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 		tag.setBoolean("isEnabled", isEnabled);
 	}
 	

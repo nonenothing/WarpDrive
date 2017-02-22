@@ -47,7 +47,7 @@ public class ItemCrystalToken extends Item {
 	@Override
 	public void registerIcons(IIconRegister par1IconRegister) {
 		for(int damage = 0; damage < COUNT; damage++) {
-			icons[damage] = par1IconRegister.registerIcon("warpdrive:tool/crystalToken" + damage);
+			icons[damage] = par1IconRegister.registerIcon("warpdrive:tool/crystal_token-" + damage);
 		}
 	}
 	

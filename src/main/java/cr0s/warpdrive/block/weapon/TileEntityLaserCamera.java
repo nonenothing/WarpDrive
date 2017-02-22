@@ -82,18 +82,18 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	private String getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.valid", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.validCamera",
 						videoChannel,
 						camera.position.chunkPosX,
 						camera.position.chunkPosY,
@@ -115,20 +115,20 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		setVideoChannel(tag.getInteger("cameraFrequency") + tag.getInteger("videoChannel"));
+		setVideoChannel(tag.getInteger("cameraFrequency") + tag.getInteger(VIDEO_CHANNEL_TAG));
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		tag.setInteger("videoChannel", videoChannel);
+		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 	}
 	
 	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		// (beam frequency is server side only)
-		tagCompound.setInteger("videoChannel", videoChannel);
+		tagCompound.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
 	}
 	
@@ -136,7 +136,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		// (beam frequency is server side only)
-		setVideoChannel(tagCompound.getInteger("videoChannel"));
+		setVideoChannel(tagCompound.getInteger(VIDEO_CHANNEL_TAG));
 	}
 	
 	@Override

@@ -2,10 +2,10 @@ package cr0s.warpdrive.block.energy;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.item.ItemComponent;
-import cr0s.warpdrive.item.ItemTuningFork;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -121,7 +121,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		ItemStack itemStackHeld = entityPlayer.getHeldItem();
 		EnumFacing facing = EnumFacing.getFront(side);
 		
-		if (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemTuningFork) {
+		if (itemStackHeld != null && itemStackHeld.getItem() instanceof IWarpTool) {
 			if (entityPlayer.isSneaking()) {
 				tileEntityEnergyBank.setMode(facing, (byte)((tileEntityEnergyBank.getMode(facing) + 2) % 3));
 			} else {

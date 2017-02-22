@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import cr0s.warpdrive.api.IVideoChannel;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
@@ -521,11 +522,11 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	
 	protected String getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.invalid", beamFrequency );
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency );
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beamFrequency.statusLine.valid", beamFrequency );
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency );
 		}
 	}
 	
@@ -552,14 +553,14 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		setBeamFrequency(tag.getInteger("beamFrequency"));
-		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger("videoChannel");
+		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
+		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		tag.setInteger("beamFrequency", beamFrequency);
+		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 	}
 	
 	@Override

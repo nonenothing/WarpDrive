@@ -66,17 +66,17 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	
 	private String getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.invalidOrNotLoaded", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalidOrNotLoaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.valid", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.videoChannel.statusLine.validCamera",
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.validCamera",
 						videoChannel,
 						camera.position.chunkPosX,
 						camera.position.chunkPosY,
@@ -94,13 +94,13 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		videoChannel = tag.getInteger("frequency") + tag.getInteger("videoChannel");
+		videoChannel = tag.getInteger("frequency") + tag.getInteger(VIDEO_CHANNEL_TAG);
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		tag.setInteger("videoChannel", videoChannel);
+		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 	}
 	
 	@Override

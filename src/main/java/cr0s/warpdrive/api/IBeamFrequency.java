@@ -4,7 +4,9 @@ import cr0s.warpdrive.data.Vector3;
 
 public interface IBeamFrequency {
 	int BEAM_FREQUENCY_SCANNING = 1420;
+	int BEAM_FREQUENCY_MIN = 0;
 	int BEAM_FREQUENCY_MAX = 65000;
+	String BEAM_FREQUENCY_TAG = "beamFrequency";
 	
 	// get beam frequency, return -1 if invalid 
 	int getBeamFrequency();
@@ -14,7 +16,7 @@ public interface IBeamFrequency {
 	
 	static Vector3 getBeamColor(final int beamFrequency) {
 		float r, g, b;
-		if (beamFrequency <= 0) { // invalid frequency
+		if (beamFrequency <= BEAM_FREQUENCY_MIN) { // invalid frequency
 			r = 1.0F;
 			g = 0.0F;
 			b = 0.0F;
