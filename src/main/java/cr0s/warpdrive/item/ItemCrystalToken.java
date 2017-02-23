@@ -1,6 +1,10 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,8 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
-
-import java.util.List;
 
 public class ItemCrystalToken extends Item {	
 	private final IIcon[] icons;
@@ -90,12 +92,12 @@ public class ItemCrystalToken extends Item {
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (StatCollector.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1, getSchematicName(itemStack)));
+			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1, getSchematicName(itemStack)));
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2, getSchematicName(itemStack)));
+			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2, getSchematicName(itemStack)));
 		}
 	}
 }

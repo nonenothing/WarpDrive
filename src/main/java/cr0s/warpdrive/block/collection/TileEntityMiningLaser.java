@@ -1,17 +1,6 @@
 package cr0s.warpdrive.block.collection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.FluidRegistry;
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -20,6 +9,20 @@ import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private final boolean canSilktouch = (WarpDriveConfig.MINING_LASER_SILKTOUCH_DEUTERIUM_L <= 0 || FluidRegistry.isFluidRegistered("deuterium"));
@@ -84,7 +87,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		boolean isOnEarth = isOnPlanet();
+		boolean isOnPlanet = WarpDrive.starMap.isPlanet(worldObj);
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {
@@ -99,7 +102,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		} else if (currentState == STATE_SCANNING) {
 			if (delayTicks == WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS - 1) {
 				// check power level
-				enoughPower = consumeEnergyFromLaserMediums(isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, true);
+				enoughPower = consumeEnergyFromLaserMediums(isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, true);
 				if (!enoughPower) {
 					updateMetadata(BlockMiningLaser.ICON_SCANNING_LOW_POWER);
 					delayTicks = WarpDriveConfig.MINING_LASER_WARMUP_DELAY_TICKS;
@@ -128,7 +131,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 				
 				// consume power
-				enoughPower = consumeEnergyFromLaserMediums(isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, false);
+				enoughPower = consumeEnergyFromLaserMediums(isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, false);
 				if (!enoughPower) {
 					updateMetadata(BlockMiningLaser.ICON_SCANNING_LOW_POWER);
 					delayTicks = WarpDriveConfig.MINING_LASER_WARMUP_DELAY_TICKS;
@@ -182,7 +185,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 				
 				// consume power
-				int requiredPower = isOnEarth ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_BLOCK : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_BLOCK;
+				int requiredPower = isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_BLOCK : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_BLOCK;
 				if (!mineAllBlocks) {
 					requiredPower *= WarpDriveConfig.MINING_LASER_ORESONLY_ENERGY_FACTOR;
 				}
@@ -442,7 +445,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private Object[] onlyOres(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				mineAllBlocks = ! toBool(arguments[0]);
+				mineAllBlocks = ! Commons.toBool(arguments[0]);
 				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " onlyOres set to " + !mineAllBlocks);
@@ -457,7 +460,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private Object[] offset(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				layerOffset = Math.min(256, Math.abs(toInt(arguments[0])));
+				layerOffset = Math.min(256, Math.abs(Commons.toInt(arguments[0])));
 				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " offset set to " + layerOffset);
@@ -472,7 +475,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private Object[] silktouch(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				enableSilktouch = toBool(arguments[0]);
+				enableSilktouch = Commons.toBool(arguments[0]);
 				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " silktouch set to " + enableSilktouch);

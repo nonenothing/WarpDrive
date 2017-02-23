@@ -1,16 +1,18 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.EnumPermissionNode;
+import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.render.RenderBlockForceField;
+
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
@@ -31,10 +33,10 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.List;
-import java.util.Random;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockForceField extends BlockAbstractForceField implements IDamageReceiver {
 	@SideOnly(Side.CLIENT)

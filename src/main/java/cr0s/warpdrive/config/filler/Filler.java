@@ -1,12 +1,12 @@
 package cr0s.warpdrive.config.filler;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.IXmlRepresentable;
+import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.data.JumpBlock;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.IXmlRepresentable;
-import cr0s.warpdrive.data.JumpBlock;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;

@@ -1,11 +1,49 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.block.detection.BlockMonitor;
+import cr0s.warpdrive.compat.CompatForgeMultipart;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.config.filler.Filler;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockButton;
+import net.minecraft.block.BlockChest;
+import net.minecraft.block.BlockCocoa;
+import net.minecraft.block.BlockDispenser;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockEndPortalFrame;
+import net.minecraft.block.BlockEnderChest;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockFurnace;
+import net.minecraft.block.BlockHopper;
+import net.minecraft.block.BlockHugeMushroom;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockLever;
+import net.minecraft.block.BlockLog;
+import net.minecraft.block.BlockPistonBase;
+import net.minecraft.block.BlockPistonExtension;
+import net.minecraft.block.BlockPistonMoving;
+import net.minecraft.block.BlockPortal;
+import net.minecraft.block.BlockPumpkin;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSkull;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockTorch;
+import net.minecraft.block.BlockTrapDoor;
+import net.minecraft.block.BlockTripWireHook;
+import net.minecraft.block.BlockVine;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,13 +52,6 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.block.detection.BlockMonitor;
-import cr0s.warpdrive.compat.CompatForgeMultipart;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.filler.Filler;
 
 public class JumpBlock {
 	public Block block;

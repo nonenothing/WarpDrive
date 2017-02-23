@@ -1,18 +1,19 @@
 package cr0s.warpdrive.block;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import net.minecraft.tileentity.TileEntity;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 // Abstract class to manage laser mediums
 public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfaced {

@@ -1,8 +1,14 @@
 package cr0s.warpdrive.config;
 
-import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.api.IParticleContainerItem;
 import cr0s.warpdrive.api.ParticleStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -10,14 +16,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.world.World;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 // Adds support for IParticleContainerItem ingredients
 // Loosely inspired from vanilla ShapedOreRecipe

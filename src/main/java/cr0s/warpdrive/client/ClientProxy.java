@@ -1,9 +1,10 @@
 package cr0s.warpdrive.client;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.entity.EntityParticleBunch;
 import cr0s.warpdrive.render.RenderEntityParticleBunch;
+
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
 	

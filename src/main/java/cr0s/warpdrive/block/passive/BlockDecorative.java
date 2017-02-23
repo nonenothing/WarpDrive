@@ -1,8 +1,10 @@
 package cr0s.warpdrive.block.passive;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.EnumDecorativeType;
+
 import java.util.List;
 
-import cr0s.warpdrive.data.EnumDecorativeType;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -10,7 +12,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import cr0s.warpdrive.WarpDrive;
 
 public class BlockDecorative extends Block {
 	private static IIcon[] icons;

@@ -1,12 +1,6 @@
 package cr0s.warpdrive.block.energy;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.Optional;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -14,6 +8,15 @@ import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	Vector3 myVec;
@@ -175,7 +178,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 
 			case "stabilize":
 				if (arguments.length >= 1) {
-					stabilize(toInt(arguments[0]));
+					stabilize(Commons.toInt(arguments[0]));
 				}
 				break;
 

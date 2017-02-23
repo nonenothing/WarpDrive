@@ -1,11 +1,16 @@
 package cr0s.warpdrive.event;
 
-import java.util.HashMap;
-
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.api.IBreathingHelmet;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.item.ItemEnergyWrapper;
+import cr0s.warpdrive.world.SpaceTeleporter;
+
+import java.util.HashMap;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,14 +23,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.world.SpaceTeleporter;
 
 public class LivingHandler {
 	private final HashMap<Integer, Integer> entity_airBlock;

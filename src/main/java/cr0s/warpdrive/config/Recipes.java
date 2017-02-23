@@ -1,23 +1,29 @@
 package cr0s.warpdrive.config;
 
-import java.util.ArrayList;
-
-import cpw.mods.fml.common.registry.GameRegistry;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.block.detection.BlockSiren;
 import cr0s.warpdrive.block.passive.BlockDecorative;
-import cr0s.warpdrive.data.*;
+import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.data.EnumDecorativeType;
+import cr0s.warpdrive.data.EnumForceFieldShape;
+import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import cr0s.warpdrive.data.UpgradeType;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemElectromagneticCell;
 import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemTuningDriver;
 import cr0s.warpdrive.item.ItemUpgrade;
+
+import java.util.ArrayList;
+
 import net.minecraft.block.BlockColored;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;

@@ -1,10 +1,11 @@
 package cr0s.warpdrive.render;
 
-import java.util.Random;
-
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Planet;
+
+import java.util.Random;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
@@ -12,11 +13,11 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
-import net.minecraftforge.client.IRenderHandler;
 
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
+import net.minecraftforge.client.IRenderHandler;
 
 public class RenderSpaceSky extends IRenderHandler {
 	private static RenderSpaceSky INSTANCE = null;

@@ -1,5 +1,9 @@
 package cr0s.warpdrive.block.passive;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.render.RenderBlockStandard;
+
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -11,9 +15,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.render.RenderBlockStandard;
 
 public class BlockAir extends Block {
 	private final boolean TRANSPARENT_AIR = true;

@@ -1,9 +1,10 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.WarpDrive;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import cr0s.warpdrive.WarpDrive;
 
 public class ItemWarpArmor extends ItemArmor {
 	public static final String[] suffixes = { "helmet", "chestplate", "leggings", "boots" };

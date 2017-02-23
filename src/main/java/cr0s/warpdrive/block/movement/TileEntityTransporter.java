@@ -1,27 +1,29 @@
 package cr0s.warpdrive.block.movement;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import cr0s.warpdrive.item.ItemUpgrade;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import cpw.mods.fml.common.Optional;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.damage.DamageTeleportation;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.UpgradeType;
 import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.item.ItemUpgrade;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	private double scanRange = 2;
@@ -208,9 +210,9 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 		try {
 			if (arguments.length >= 3) {
 				unlock();
-				vec.x = toDouble(arguments[0]);
-				vec.y = toDouble(arguments[1]);
-				vec.z = toDouble(arguments[2]);
+				vec.x = Commons.toDouble(arguments[0]);
+				vec.y = Commons.toDouble(arguments[1]);
+				vec.z = Commons.toDouble(arguments[2]);
 			} else if (arguments.length == 1) {
 				unlock();
 				if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
@@ -277,7 +279,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	private double powerBoost(Object[] arguments) {
 		try {
 			if (arguments.length >= 1) {
-				powerBoost = clamp(1, WarpDriveConfig.TRANSPORTER_MAX_BOOST_MUL, toDouble(arguments[0]));
+				powerBoost = Commons.clamp(1, WarpDriveConfig.TRANSPORTER_MAX_BOOST_MUL, Commons.toDouble(arguments[0]));
 			}
 		} catch (NumberFormatException e) {
 			powerBoost = 1;
@@ -398,7 +400,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	private double beaconScan(Vector3 s, Vector3 d) {
 		s = absoluteVector(s);
 		d = absoluteVector(d);
-		return beaconScan(toInt(s.x), toInt(s.y), toInt(s.z)) + beaconScan(toInt(d.x), toInt(d.y), toInt(d.z));
+		return beaconScan(Commons.toInt(s.x), Commons.toInt(s.y), Commons.toInt(s.z)) + beaconScan(Commons.toInt(d.x), Commons.toInt(d.y), Commons.toInt(d.z));
 	}
 
 	private Vector3 absoluteVector(Vector3 a) {
@@ -419,7 +421,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 
 	private static double calculatePower(Vector3 s, Vector3 d) {
 		double dist = s.distanceTo(d);
-		return clamp(0, 1, Math.pow(Math.E, -dist / 300));
+		return Commons.clamp(0, 1, Math.pow(Math.E, -dist / 300));
 	}
 
 	private static double min(double... ds) {
@@ -433,7 +435,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 		if (isLocked) {
 			int rangeUgrades = getUpgradeCount(ItemUpgrade.getItemStack(UpgradeType.Range));
 			double upgradeBoost = Math.pow(1.2, rangeUgrades);
-			return clamp(0, 1, baseLockStrength * lockStrengthMul * Math.pow(2, powerBoost - 1) * upgradeBoost * (1 + beaconEffect));
+			return Commons.clamp(0, 1, baseLockStrength * lockStrengthMul * Math.pow(2, powerBoost - 1) * upgradeBoost * (1 + beaconEffect));
 		}
 		return -1;
 	}

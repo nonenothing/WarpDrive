@@ -1,5 +1,9 @@
 package cr0s.warpdrive.block.weapon;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -10,8 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 
 public class BlockWeaponController extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -65,9 +67,9 @@ public class BlockWeaponController extends BlockAbstractContainer {
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityWeaponController) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
 			} else {
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 						getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
 				WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 			}

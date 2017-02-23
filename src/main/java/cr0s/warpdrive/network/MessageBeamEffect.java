@@ -1,19 +1,20 @@
 package cr0s.warpdrive.network;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.render.EntityFXBeam;
+import io.netty.buffer.ByteBuf;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
-import io.netty.buffer.ByteBuf;
+
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.render.EntityFXBeam;
-
 
 public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamEffect, IMessage> {
 	

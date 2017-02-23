@@ -1,10 +1,5 @@
 package cr0s.warpdrive.world;
 
-import java.util.Random;
-
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
-import cpw.mods.fml.common.IWorldGenerator;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -14,9 +9,13 @@ import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureManager;
 
-/**
- * @author Cr0s
- */
+import java.util.Random;
+
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunkProvider;
+
+import cpw.mods.fml.common.IWorldGenerator;
+
 public class SpaceWorldGenerator implements IWorldGenerator {
 
 	@Override
@@ -202,7 +201,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	 **/
 	@Deprecated
 	public static void generateSphereDirect(
-			OrbInstance orbInstance, World world, int xCoord, int yCoord, int zCoord) {
+	                                       OrbInstance orbInstance, World world, int xCoord, int yCoord, int zCoord) {
 		double radiusC = orbInstance.getTotalThickness() + 0.5D; // Radius from center of block
 		double radiusSq = radiusC * radiusC; // Optimization to avoid square roots...
 		// sphere

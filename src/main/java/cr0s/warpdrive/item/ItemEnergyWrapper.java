@@ -1,16 +1,18 @@
 package cr0s.warpdrive.item;
 
 import cofh.api.energy.IEnergyContainerItem;
-import cpw.mods.fml.common.Optional;
-import cr0s.warpdrive.block.TileEntityAbstractBase;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.item.IElectricItemManager;
 import ic2.api.item.ISpecialElectricItem;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
+import cpw.mods.fml.common.Optional;
 
 public class ItemEnergyWrapper {
 	
@@ -57,13 +59,13 @@ public class ItemEnergyWrapper {
 	public static int getEnergyStored(ItemStack itemStack) {
 		// IndustrialCraft2
 		if (WarpDriveConfig.isIndustrialCraft2Loaded && IC2_isContainer(itemStack)) {
-			double amount_EU = TileEntityAbstractBase.clamp(0, IC2_getMaxEnergyStorage(itemStack), IC2_getEnergyStored(itemStack));
+			double amount_EU = Commons.clamp(0, IC2_getMaxEnergyStorage(itemStack), IC2_getEnergyStored(itemStack));
 			return TileEntityAbstractEnergy.convertEUtoInternal_floor(amount_EU);
 		}
 		
 		// Thermal Expansion
 		if (WarpDriveConfig.isCoFHCoreLoaded && CoFH_isContainer(itemStack)) {
-			int amount_RF = TileEntityAbstractBase.clamp(0, CoFH_getMaxEnergyStorage(itemStack), CoFH_getEnergyStored(itemStack));
+			int amount_RF = Commons.clamp(0, CoFH_getMaxEnergyStorage(itemStack), CoFH_getEnergyStored(itemStack));
 			return TileEntityAbstractEnergy.convertRFtoInternal_floor(amount_RF);
 		}
 		return 0;

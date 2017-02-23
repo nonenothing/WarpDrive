@@ -1,12 +1,14 @@
 package cr0s.warpdrive.block.detection;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.client.SirenSound;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
+import cr0s.warpdrive.client.SirenSound;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntitySiren extends TileEntityAbstractBase {
 	public enum SirenState {

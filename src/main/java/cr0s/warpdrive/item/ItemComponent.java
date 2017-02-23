@@ -1,9 +1,13 @@
 package cr0s.warpdrive.item;
 
-import java.util.List;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.EnumComponentType;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -12,8 +16,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
 import net.minecraft.world.World;
 
 public class ItemComponent extends Item implements IAirCanister {	
@@ -122,6 +124,6 @@ public class ItemComponent extends Item implements IAirCanister {
 			break;
 		}
 		
-		WarpDrive.addTooltip(list, tooltip);
+		Commons.addTooltip(list, tooltip);
 	}
 }

@@ -1,14 +1,16 @@
 package cr0s.warpdrive.block.atomic;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.Commons;
+
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator implements ITileEntityProvider {
 	
@@ -46,7 +48,7 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			
 			if (tileEntity instanceof TileEntityAcceleratorControlPoint) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint)tileEntity).getStatus());
 				return true;
 			}
 		}

@@ -1,10 +1,13 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.item.ItemComponent;
+
 import java.util.ArrayList;
 import java.util.Random;
 
-import cr0s.warpdrive.data.EnumComponentType;
-import cr0s.warpdrive.item.ItemComponent;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityTNTPrimed;
@@ -14,8 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 
 public class BlockShipCore extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -132,7 +133,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipCore) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipCore)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityShipCore)tileEntity).getStatus());
 				return true;
 			}
 		}

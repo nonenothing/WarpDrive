@@ -1,9 +1,6 @@
 package cr0s.warpdrive.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -11,6 +8,12 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	private int cooldownTicks = 0;
@@ -126,7 +129,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
 	public Object[] enable(Object[] arguments) {
 		if (arguments.length == 1) {
-			isEnabled = toBool(arguments[0]);
+			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[] { isEnabled };
 	}

@@ -1,17 +1,18 @@
 package cr0s.warpdrive.config.structures;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
-import net.minecraft.world.World;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.filler.Filler;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.data.VectorI;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.world.World;
 
 public class MetaOrbInstance extends OrbInstance {
 	private static final int CORE_MAX_TRIES = 10;

@@ -1,5 +1,9 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,9 +16,6 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	

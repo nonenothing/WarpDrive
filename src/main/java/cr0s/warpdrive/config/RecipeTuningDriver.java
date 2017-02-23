@@ -1,16 +1,19 @@
 package cr0s.warpdrive.config;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+
 import cr0s.warpdrive.item.ItemTuningDriver;
+
+import java.util.ArrayList;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+
+import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-
-import java.util.ArrayList;
 
 // Used to change tuning driver values
 public class RecipeTuningDriver implements IRecipe {

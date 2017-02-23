@@ -1,10 +1,15 @@
 package cr0s.warpdrive.item;
 
-import java.util.List;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IControlChannel;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,9 +22,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.api.IVideoChannel;
 
 public class ItemTuningFork extends Item implements IWarpTool {
 	private IIcon icons[];
@@ -110,27 +112,27 @@ public class ItemTuningFork extends Item implements IWarpTool {
 		}
 		if (hasVideoChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
 			((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.set",
+			Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.set",
 					tileEntity.getBlockType().getLocalizedName(),
 					getVideoChannel(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
 			
 		} else if (hasControlChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
 			((IControlChannel)tileEntity).setControlChannel(getControlChannel(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.set",
+			Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.set",
 				tileEntity.getBlockType().getLocalizedName(),
 				getControlChannel(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
 			
 		} else if (hasBeamFrequency) {
 			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.set",
+			Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.set",
 					tileEntity.getBlockType().getLocalizedName(),
 					getBeamFrequency(itemStack)));
 			world.playSoundAtEntity(entityPlayer, "WarpDrive:ding", 0.1F, 1F);
 			
 		} else {
-			WarpDrive.addChatMessage(entityPlayer, "Error: invalid state, please contact the mod authors"
+			Commons.addChatMessage(entityPlayer, "Error: invalid state, please contact the mod authors"
 					+ "\nof " + itemStack
 					+ "\nand " + tileEntity);
 		}
@@ -154,6 +156,6 @@ public class ItemTuningFork extends Item implements IWarpTool {
 		
 		tooltip += "\n\n" + StatCollector.translateToLocal("item.warpdrive.tool.tuning_fork.tooltip.usage");
 		
-		WarpDrive.addTooltip(list, tooltip);
+		Commons.addTooltip(list, tooltip);
 	}
 }

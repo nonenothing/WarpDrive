@@ -1,5 +1,9 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -12,9 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class BlockAirGenerator extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -91,7 +92,7 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 			TileEntityAirGenerator airGenerator = (TileEntityAirGenerator)tileEntity;
 			ItemStack heldItemStack = entityPlayer.getHeldItem();
 			if (heldItemStack == null) {
-				WarpDrive.addChatMessage(entityPlayer, airGenerator.getStatus());
+				Commons.addChatMessage(entityPlayer, airGenerator.getStatus());
 				return true;
 			} else {
 				Item heldItem = heldItemStack.getItem();

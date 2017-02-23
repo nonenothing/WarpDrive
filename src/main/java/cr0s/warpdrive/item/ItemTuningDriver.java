@@ -1,10 +1,16 @@
 package cr0s.warpdrive.item;
 
-import java.util.List;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IControlChannel;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,9 +25,6 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.api.IVideoChannel;
 
 public class ItemTuningDriver extends Item implements IWarpTool {
 	public static final int MODE_VIDEO_CHANNEL = 0;
@@ -181,21 +184,21 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 			switch (itemStack.getItemDamage()) {
 			case MODE_VIDEO_CHANNEL:
 				setVideoChannel(itemStack, world.rand.nextInt(IVideoChannel.VIDEO_CHANNEL_MAX));
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.get",
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.get",
 					entityPlayer.getCommandSenderName(),
 					getVideoChannel(itemStack)));
 				return itemStack;
 			
 			case MODE_BEAM_FREQUENCY:
 				setBeamFrequency(itemStack, world.rand.nextInt(IBeamFrequency.BEAM_FREQUENCY_MAX));
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.get",
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.get",
 					entityPlayer.getCommandSenderName(),
 					getBeamFrequency(itemStack)));
 				return itemStack;
 			
 			case MODE_CONTROL_CHANNEL:
 				setControlChannel(itemStack, world.rand.nextInt(IControlChannel.CONTROL_CHANNEL_MAX));
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.get",
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.get",
 					entityPlayer.getCommandSenderName(),
 					getControlChannel(itemStack)));
 				return itemStack;
@@ -245,12 +248,12 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 			if (tileEntity instanceof IVideoChannel) {
 				if (entityPlayer.isSneaking()) {
 					setVideoChannel(itemStack, ((IVideoChannel) tileEntity).getVideoChannel());
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.get",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.get",
 							tileEntity.getBlockType().getLocalizedName(),
 							getVideoChannel(itemStack)));
 				} else {
 					((IVideoChannel) tileEntity).setVideoChannel(getVideoChannel(itemStack));
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.set",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.set",
 							tileEntity.getBlockType().getLocalizedName(),
 							getVideoChannel(itemStack)));
 				}
@@ -262,12 +265,12 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 			if (tileEntity instanceof IBeamFrequency) {
 				if (entityPlayer.isSneaking()) {
 					setBeamFrequency(itemStack, ((IBeamFrequency) tileEntity).getBeamFrequency());
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.get",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.get",
 							tileEntity.getBlockType().getLocalizedName(),
 							getBeamFrequency(itemStack)));
 				} else {
 					((IBeamFrequency) tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.set",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.set",
 							tileEntity.getBlockType().getLocalizedName(),
 							getBeamFrequency(itemStack)));
 				}
@@ -279,12 +282,12 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 			if (tileEntity instanceof IControlChannel) {
 				if (entityPlayer.isSneaking()) {
 					setControlChannel(itemStack, ((IControlChannel) tileEntity).getControlChannel());
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.get",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.get",
 							tileEntity.getBlockType().getLocalizedName(),
 							getControlChannel(itemStack)));
 				} else {
 					((IControlChannel) tileEntity).setControlChannel(getControlChannel(itemStack));
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.set",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.set",
 							tileEntity.getBlockType().getLocalizedName(),
 							getControlChannel(itemStack)));
 				}
@@ -325,6 +328,6 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 		
 		tooltip += "\n" + StatCollector.translateToLocal("item.warpdrive.tool.tuning_driver.tooltip.usage");
 		
-		WarpDrive.addTooltip(list, tooltip);
+		Commons.addTooltip(list, tooltip);
 	}
 }

@@ -1,5 +1,7 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.WarpDrive;
+
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -9,7 +11,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
+
 
 public final class EntityStarCore extends Entity {
 	public int xCoord;

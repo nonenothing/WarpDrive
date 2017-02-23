@@ -1,12 +1,13 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class CompatJABBA implements IBlockTransformer {
 	

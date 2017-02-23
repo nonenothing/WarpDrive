@@ -1,12 +1,15 @@
 package cr0s.warpdrive.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IParticleContainerItem;
 import cr0s.warpdrive.api.Particle;
 import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.api.ParticleStack;
+
+import java.util.List;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,7 +20,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemElectromagneticCell extends Item implements IParticleContainerItem {
 	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
@@ -216,18 +220,18 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		String tooltip;
 		if (particleStack == null || particleStack.getParticle() == null) {
 			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty");
-			WarpDrive.addTooltip(list, tooltip);
+			Commons.addTooltip(list, tooltip);
 			
 		} else {
 			final Particle particle = particleStack.getParticle();
 			
 			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.filled",
 				particleStack.getAmount(), particle.getLocalizedName());
-			WarpDrive.addTooltip(list, tooltip);
+			Commons.addTooltip(list, tooltip);
 			
 			String particleTooltip = particle.getLocalizedTooltip();
 			if (!particleTooltip.isEmpty()) {
-				WarpDrive.addTooltip(list, particleTooltip);
+				Commons.addTooltip(list, particleTooltip);
 			}
 		}
 	}

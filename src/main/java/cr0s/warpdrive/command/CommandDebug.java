@@ -1,19 +1,18 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
-/*
- *   /wdebug <dimension> <coordinates> <blockId> <Metadata> <actions>
- */
+import cpw.mods.fml.common.FMLCommonHandler;
+import net.minecraftforge.common.DimensionManager;
 
 public class CommandDebug extends CommandBase
 {
@@ -85,7 +84,7 @@ public class CommandDebug extends CommandBase
 			catch (Exception exception)
 			{
 				exception.printStackTrace();
-				WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+				Commons.addChatMessage(player, getCommandUsage(icommandsender));
 				return;
 			}
 
@@ -156,7 +155,7 @@ public class CommandDebug extends CommandBase
 		}
 		else
 		{
-			WarpDrive.addChatMessage(player, getCommandUsage(icommandsender));
+			Commons.addChatMessage(player, getCommandUsage(icommandsender));
 		}
 	}
 

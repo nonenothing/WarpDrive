@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package cr0s.warpdrive.world;
+
 
 import java.util.Random;
 
@@ -10,10 +7,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
-/**
- *
- * @author user
- */
 public class WorldGenStation extends WorldGenerator {
 	private final boolean corrupted;
 

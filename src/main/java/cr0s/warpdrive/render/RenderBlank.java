@@ -2,9 +2,10 @@ package cr0s.warpdrive.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraftforge.client.IRenderHandler;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.client.IRenderHandler;
 
 public class RenderBlank extends IRenderHandler {
     private static RenderBlank INSTANCE = null;

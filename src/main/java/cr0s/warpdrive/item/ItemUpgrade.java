@@ -1,5 +1,8 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.UpgradeType;
+
 import java.util.List;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -8,8 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.UpgradeType;
 
 public class ItemUpgrade extends Item {
 	private static ItemStack[] isCache = new ItemStack[UpgradeType.values().length];

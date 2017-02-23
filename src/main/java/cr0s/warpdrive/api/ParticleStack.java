@@ -1,10 +1,11 @@
 package cr0s.warpdrive.api;
 
-import cpw.mods.fml.common.FMLLog;
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-import javax.annotation.Nonnull;
+import cpw.mods.fml.common.FMLLog;
 
 public class ParticleStack {
 	private final Particle particle;

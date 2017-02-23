@@ -1,13 +1,13 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.WarpDrive;
+
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-
-import cr0s.warpdrive.WarpDrive;
 
 public class CommandInvisible extends CommandBase {
 	@Override

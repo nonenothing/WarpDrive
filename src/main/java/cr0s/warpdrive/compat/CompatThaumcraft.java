@@ -1,13 +1,15 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraftforge.common.util.Constants;
 
 public class CompatThaumcraft implements IBlockTransformer {

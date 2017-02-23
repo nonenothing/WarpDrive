@@ -1,5 +1,9 @@
 package cr0s.warpdrive.world;
 
+
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.util.Random;
 
 import net.minecraft.entity.monster.EntityZombie;
@@ -10,9 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
-
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class WorldGenSmallShip extends WorldGenerator {
 	private final boolean corrupted;

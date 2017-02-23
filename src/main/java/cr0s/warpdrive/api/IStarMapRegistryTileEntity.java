@@ -1,10 +1,11 @@
 package cr0s.warpdrive.api;
 
 import cr0s.warpdrive.data.VectorI;
-import net.minecraft.block.Block;
-import net.minecraft.util.AxisAlignedBB;
 
 import java.util.UUID;
+
+import net.minecraft.block.Block;
+import net.minecraft.util.AxisAlignedBB;
 
 public interface IStarMapRegistryTileEntity {
 	

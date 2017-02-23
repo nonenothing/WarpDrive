@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,8 +13,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
-import net.minecraftforge.common.util.ForgeDirection;
 
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Generic 3D vector for efficient block manipulation.

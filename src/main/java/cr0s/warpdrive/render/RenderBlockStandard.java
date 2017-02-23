@@ -3,6 +3,7 @@ package cr0s.warpdrive.render;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.world.IBlockAccess;
+
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 // wrapper to native classes to renderId is non-zero so we don't render faces when player camera is inside the block

@@ -1,12 +1,16 @@
 package cr0s.warpdrive;
 
-import com.mojang.authlib.GameProfile;
-import cpw.mods.fml.common.registry.EntityRegistry;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.entity.EntityParticleBunch;
 import cr0s.warpdrive.render.EntityCamera;
 import cr0s.warpdrive.world.EntitySphereGen;
 import cr0s.warpdrive.world.EntityStarCore;
+
+import java.lang.ref.WeakReference;
+import java.util.UUID;
+import java.util.WeakHashMap;
+
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,16 +19,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldSettings;
+
+import cpw.mods.fml.common.registry.EntityRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.world.BlockEvent;
 
-import java.lang.ref.WeakReference;
-import java.util.UUID;
-import java.util.WeakHashMap;
 
-public abstract class CommonProxy {
+public class CommonProxy {
 	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
 	
 	void registerEntities() {

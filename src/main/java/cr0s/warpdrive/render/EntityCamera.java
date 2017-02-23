@@ -1,5 +1,8 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.network.PacketHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
@@ -9,12 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.network.PacketHandler;
 
 public final class EntityCamera extends EntityLivingBase {
 	// entity coordinates (x, y, z) are dynamically changed by player

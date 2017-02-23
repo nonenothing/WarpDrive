@@ -1,7 +1,8 @@
 package cr0s.warpdrive.data;
 
-import net.minecraft.util.AxisAlignedBB;
 import cr0s.warpdrive.world.JumpgateGenerator;
+
+import net.minecraft.util.AxisAlignedBB;
 
 public class Jumpgate {
 	public String name;

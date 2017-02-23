@@ -1,6 +1,6 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -12,12 +12,15 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.util.StatCollector;
+
+import cpw.mods.fml.common.Optional;
 
 public class TileEntityAbstractForceField extends TileEntityAbstractEnergy implements IBeamFrequency {
 	// persistent properties
@@ -166,7 +169,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		if (arguments.length == 1) {
 			boolean enable;
 			try {
-				enable = toBool(arguments[0]);
+				enable = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
 				throw new Exception("Function expects a boolean value");
 			}
@@ -188,7 +191,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				
 				case "beamFrequency":
 					if (arguments.length == 1) {
-						setBeamFrequency(toInt(arguments[0]));
+						setBeamFrequency(Commons.toInt(arguments[0]));
 					}
 					return new Integer[]{ beamFrequency };
 			}

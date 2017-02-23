@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,7 +9,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
 
 public class BlockLaserMedium extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -67,7 +68,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityLaserMedium) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaserMedium) tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLaserMedium) tileEntity).getStatus());
 				return true;
 			}
 		}

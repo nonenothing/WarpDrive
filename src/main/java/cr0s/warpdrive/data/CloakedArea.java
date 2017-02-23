@@ -1,11 +1,13 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.network.PacketHandler;
+import cr0s.warpdrive.render.EntityFXBeam;
+
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
@@ -19,12 +21,11 @@ import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.network.PacketHandler;
-import cr0s.warpdrive.render.EntityFXBeam;
 
-@SuppressWarnings("Convert2Diamond")
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class CloakedArea {
 	public int dimensionId = -666;
 	public int coreX, coreY, coreZ;

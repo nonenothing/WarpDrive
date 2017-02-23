@@ -1,13 +1,15 @@
 package cr0s.warpdrive.item;
 
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorComponent;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cr0s.warpdrive.WarpDrive;
+
+import cpw.mods.fml.common.Optional;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "ic2.api.reactor.IReactorComponent", modid = "IC2")

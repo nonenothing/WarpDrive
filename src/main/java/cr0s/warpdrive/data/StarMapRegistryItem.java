@@ -1,10 +1,11 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+
 import java.util.HashMap;
 import java.util.UUID;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 

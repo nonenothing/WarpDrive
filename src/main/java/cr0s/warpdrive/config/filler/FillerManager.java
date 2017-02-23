@@ -1,5 +1,15 @@
 package cr0s.warpdrive.config.filler;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.config.RandomCollection;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.config.XmlPreprocessor;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -7,17 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.RandomCollection;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.XmlPreprocessor;
 
 public class FillerManager {
 	// all fillerSets

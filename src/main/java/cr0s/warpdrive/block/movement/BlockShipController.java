@@ -1,5 +1,8 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -10,10 +13,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 
 public class BlockShipController extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -106,9 +108,9 @@ public class BlockShipController extends BlockAbstractContainer {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipController) {
 				if (entityPlayer.isSneaking()) {
-					WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).getStatus());
+					Commons.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).getStatus());
 				} else {
-					WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).attachPlayer(entityPlayer));
+					Commons.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).attachPlayer(entityPlayer));
 				}
 				return true;
 			}

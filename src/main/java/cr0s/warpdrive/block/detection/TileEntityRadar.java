@@ -1,14 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -16,6 +8,17 @@ import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import net.minecraft.nbt.NBTTagCompound;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityRadar extends TileEntityAbstractEnergy {
 	private ArrayList<StarMapRegistryItem> results;
@@ -137,11 +140,11 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		if (arguments.length == 1 && getBlockMetadata() != 2) {
 			int newRadius;
 			try {
-				newRadius = toInt(arguments[0]);
+				newRadius = Commons.toInt(arguments[0]);
 			} catch(Exception exception) {
 				return new Integer[] { radius };
 			}
-			radius = clamp(0, 10000, newRadius);
+			radius = Commons.clamp(0, 10000, newRadius);
 		}
 		return new Integer[] { radius };
 	}
@@ -149,7 +152,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	private Object[] getEnergyRequired(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				return new Object[] { calculateEnergyRequired(toInt(arguments[0])) };
+				return new Object[] { calculateEnergyRequired(Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {
 			return new Integer[] { -1 };
@@ -160,7 +163,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	private Object[] getScanDuration(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				return new Object[] { 0.050D * calculateScanDuration(toInt(arguments[0])) };
+				return new Object[] { 0.050D * calculateScanDuration(Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {
 			return new Integer[] { -1 };
@@ -199,7 +202,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		if (arguments.length == 1 && (results != null)) {
 			int index;
 			try {
-				index = toInt(arguments[0]);
+				index = Commons.toInt(arguments[0]);
 			} catch(Exception exception) {
 				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}

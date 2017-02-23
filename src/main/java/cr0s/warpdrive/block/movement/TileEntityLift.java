@@ -1,23 +1,26 @@
 package cr0s.warpdrive.block.movement;
 
-import java.util.List;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import java.util.List;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityLift extends TileEntityAbstractEnergy {
 	private static final int MODE_REDSTONE = -1;
@@ -169,13 +172,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (tag.hasKey("mode")) {
-			mode = clamp(-1, 2, tag.getByte("mode"));
+			mode = Commons.clamp(-1, 2, tag.getByte("mode"));
 		}
 		if (tag.hasKey("computerEnabled")) {
 			computerEnabled = tag.getBoolean("computerEnabled");
 		}
 		if (tag.hasKey("computerMode")) {
-			computerMode = clamp(-1, 2, tag.getByte("computerMode"));
+			computerMode = Commons.clamp(-1, 2, tag.getByte("computerMode"));
 		}
 	}
 	
@@ -254,7 +257,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			
 		} else if (methodName.equals("active")) {
 			if (arguments.length == 1) {
-				computerEnabled = toBool(arguments[0]);
+				computerEnabled = Commons.toBool(arguments[0]);
 			}
 			return new Object[] { !computerEnabled && isEnabled };
 		}

@@ -1,10 +1,32 @@
 package cr0s.warpdrive.event;
 
+import cr0s.warpdrive.LocalProfiler;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.JumpBlock;
+import cr0s.warpdrive.data.JumpShip;
+import cr0s.warpdrive.data.MovingEntity;
+import cr0s.warpdrive.data.Planet;
+import cr0s.warpdrive.data.Transformation;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.world.SpaceTeleporter;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -22,24 +44,10 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.JumpBlock;
-import cr0s.warpdrive.data.JumpShip;
-import cr0s.warpdrive.data.MovingEntity;
-import cr0s.warpdrive.data.Planet;
-import cr0s.warpdrive.data.Transformation;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.data.VectorI;
-import cr0s.warpdrive.world.SpaceTeleporter;
 
 public class JumpSequencer extends AbstractSequencer {
 	// Jump vector
@@ -86,8 +94,8 @@ public class JumpSequencer extends AbstractSequencer {
 	private int ticks = 0;
 	
 	public JumpSequencer(TileEntityShipCore shipCore, boolean isHyperspaceJump,
-			final int moveX, final int moveY, final int moveZ, final byte rotationSteps,
-			boolean isCoordJump, int destX, int destY, int destZ) {
+	                     final int moveX, final int moveY, final int moveZ, final byte rotationSteps,
+	                     boolean isCoordJump, int destX, int destY, int destZ) {
 		this.sourceWorld = shipCore.getWorldObj();
 		this.ship = new JumpShip();
 		this.ship.worldObj = sourceWorld;

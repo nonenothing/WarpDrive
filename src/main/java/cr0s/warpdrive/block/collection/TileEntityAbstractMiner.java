@@ -1,5 +1,11 @@
 package cr0s.warpdrive.block.collection;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractLaser;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,22 +14,18 @@ import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractLaser;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.data.VectorI;
 
 public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	// machine type
-	protected ForgeDirection	laserOutputSide = ForgeDirection.NORTH;
+	protected ForgeDirection laserOutputSide = ForgeDirection.NORTH;
 	
 	// machine state
-	protected boolean			enableSilktouch = false;
+	protected boolean		 enableSilktouch = false;
 	
 	// pre-computation
-	protected Vector3				laserOutput = null;
+	protected Vector3        laserOutput = null;
 	
 	public TileEntityAbstractMiner() {
 		super();

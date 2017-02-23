@@ -1,9 +1,13 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
 import cr0s.warpdrive.data.EnumForceFieldShape;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -13,8 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
-
-import java.util.*;
 
 public class ItemForceFieldShape extends Item {	
 	private final IIcon[] icons;
@@ -90,16 +92,16 @@ public class ItemForceFieldShape extends Item {
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (StatCollector.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
+			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
+			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
 		}
 		
-		WarpDrive.addTooltip(list, "\n");
+		Commons.addTooltip(list, "\n");
 		
-		WarpDrive.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.shape.tooltip.usage"));
+		Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.shape.tooltip.usage"));
 	}
 }

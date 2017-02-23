@@ -1,12 +1,11 @@
 package cr0s.warpdrive.config.structures;
 
+import cr0s.warpdrive.config.InvalidXmlException;
+import org.w3c.dom.Element;
+
 import java.util.Random;
 
 import net.minecraft.world.World;
-
-import org.w3c.dom.Element;
-
-import cr0s.warpdrive.config.InvalidXmlException;
 
 public class StructureReference extends AbstractStructure {
 	

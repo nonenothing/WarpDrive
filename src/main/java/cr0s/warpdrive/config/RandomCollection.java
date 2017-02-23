@@ -1,14 +1,13 @@
 package cr0s.warpdrive.config;
 
+import cr0s.warpdrive.WarpDrive;
+import org.w3c.dom.Element;
+
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Random;
 import java.util.TreeMap;
-
-import org.w3c.dom.Element;
-
-import cr0s.warpdrive.WarpDrive;
 
 /**
  * Collection of elements with ratios and weights. Helps to select element with controlled odds.

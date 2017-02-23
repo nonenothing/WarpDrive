@@ -1,12 +1,13 @@
 package cr0s.warpdrive.block.forcefield;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.data.EnumForceFieldShape;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
+
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -20,9 +21,10 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.List;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@SideOnly(Side.CLIENT)
@@ -78,6 +80,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	}
 	
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
 		for (int i = 0; i < 2; ++i) {
 			list.add(new ItemStack(item, 1, i));
@@ -132,7 +135,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 				if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
 					// no more upgrades to dismount
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noUpgradeToDismount"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noUpgradeToDismount"));
 					return true;
 				}
 				
@@ -146,7 +149,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 				tileEntityForceFieldProjector.dismountUpgrade(enumForceFieldUpgrade);
 				// upgrade dismounted
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.dismounted", enumForceFieldUpgrade.name()));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.dismounted", enumForceFieldUpgrade.name()));
 				return false;
 				
 			} else {// default to dismount shape
@@ -162,21 +165,21 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 						
 						tileEntityForceFieldProjector.setShape(EnumForceFieldShape.NONE);
 						// shape dismounted
-						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shapeDismounted"));
+						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shapeDismounted"));
 					} else {
 						// wrong side
-						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrongShapeSide"));
+						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrongShapeSide"));
 						return true;
 					}
 				} else {
 					// no shape to dismount
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noShapeToDismount"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noShapeToDismount"));
 					return true;
 				}
 			}
 			
 		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status
-			WarpDrive.addChatMessage(entityPlayer, tileEntityForceFieldProjector.getStatus());
+			Commons.addChatMessage(entityPlayer, tileEntityForceFieldProjector.getStatus());
 			return true;
 			
 		} else if (itemStackHeld.getItem() instanceof ItemForceFieldShape) {// no sneaking and shape in hand => mounting a shape
@@ -185,7 +188,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 					// validate quantity
 					if (itemStackHeld.stackSize < (tileEntityForceFieldProjector.isDoubleSided ? 2 : 1)) {
 						// not enough shape items
-						WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted(
+						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted(
 							tileEntityForceFieldProjector.isDoubleSided ?
 								"warpdrive.upgrade.result.notEnoughShapes.double" : "warpdrive.upgrade.result.notEnoughShapes.single"));
 						return true;
@@ -206,11 +209,11 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				// mount the new shape item(s)
 				tileEntityForceFieldProjector.setShape(EnumForceFieldShape.get(itemStackHeld.getItemDamage()));
 				// shape mounted
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shapeMounted"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shapeMounted"));
 				
 			} else {
 				// wrong side
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrongShapeSide"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrongShapeSide"));
 				return true;
 			}
 			
@@ -218,12 +221,12 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// validate type
 			if (tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade) <= 0) {
 				// invalid upgrade type
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.invalidProjectorUpgrade"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.invalidProjectorUpgrade"));
 				return true;
 			}
 			if (!tileEntityForceFieldProjector.canUpgrade(enumForceFieldUpgrade)) {
 				// too many upgrades
-				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.tooManyUpgrades",
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.tooManyUpgrades",
 					tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade)));
 				return true;
 			}
@@ -232,7 +235,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				// validate quantity
 				if (itemStackHeld.stackSize < 1) {
 					// not enough upgrade items
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.notEnoughUpgrades"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.notEnoughUpgrades"));
 					return true;
 				}
 				
@@ -243,7 +246,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// mount the new upgrade item
 			tileEntityForceFieldProjector.mountUpgrade(enumForceFieldUpgrade);
 			// upgrade mounted
-			WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.mounted", enumForceFieldUpgrade));
+			Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.mounted", enumForceFieldUpgrade));
 		}
 		
 		return false;

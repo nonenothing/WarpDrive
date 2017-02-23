@@ -1,10 +1,11 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.network.PacketHandler;
+
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,17 +13,16 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.network.PacketHandler;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Cloak manager stores cloaking devices covered areas
  *
  * @author Cr0s
- *
  */
-
 public class CloakManager {
 	
 	private static CopyOnWriteArraySet<CloakedArea> cloaks = new CopyOnWriteArraySet<>();

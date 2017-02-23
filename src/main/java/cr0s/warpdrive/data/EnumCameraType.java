@@ -1,9 +1,9 @@
 package cr0s.warpdrive.data;
 
-import java.util.HashMap;
-
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.detection.TileEntityCamera;
+
+import java.util.HashMap;
 
 public enum EnumCameraType {
 	SIMPLE_CAMERA    (TileEntityCamera.class),
@@ -22,7 +22,7 @@ public enum EnumCameraType {
 		}
 	}
 	
-	private EnumCameraType(Class<?> clazz) {
+	EnumCameraType(Class<?> clazz) {
 		this.clazz = clazz;
 	}
 	

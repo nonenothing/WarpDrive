@@ -1,12 +1,19 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.LocalProfiler;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -14,13 +21,8 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.ChunkProviderServer;
+
 import net.minecraftforge.common.DimensionManager;
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 
 /**
  * Registry of all known ships, jumpgates, etc. in the world

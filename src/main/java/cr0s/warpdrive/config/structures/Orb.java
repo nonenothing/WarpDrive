@@ -1,17 +1,16 @@
 package cr0s.warpdrive.config.structures;
 
-import java.util.Random;
-
-import net.minecraft.world.World;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.filler.FillerSet;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import java.util.Random;
+
+import net.minecraft.world.World;
 
 public class Orb extends AbstractStructure {
 	

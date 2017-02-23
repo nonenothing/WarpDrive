@@ -1,9 +1,9 @@
 package cr0s.warpdrive.core;
 
-import java.util.Arrays;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import java.util.Arrays;
 
 import cpw.mods.fml.common.DummyModContainer;
 import cpw.mods.fml.common.LoadController;

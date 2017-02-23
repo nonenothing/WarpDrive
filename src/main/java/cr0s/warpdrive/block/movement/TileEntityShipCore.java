@@ -1,10 +1,20 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Jumpgate;
+import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.event.JumpSequencer;
+import cr0s.warpdrive.world.SpaceTeleporter;
+
 import java.util.List;
 import java.util.UUID;
 
-import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,20 +35,10 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldServer;
+
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Jumpgate;
-import cr0s.warpdrive.data.VectorI;
-import cr0s.warpdrive.event.JumpSequencer;
-import cr0s.warpdrive.world.SpaceTeleporter;
 
-/**
- * @author Cr0s
- */
 public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
 	public int dx, dz;
@@ -355,7 +355,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				continue;
 			}
 			
-			WarpDrive.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + msg);
+			Commons.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + msg);
 		}
 	}
 	
@@ -448,7 +448,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
 		StringBuilder reason = new StringBuilder();
 		if (!validateShipSpatialParameters(reason)) {
-			WarpDrive.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString());
+			Commons.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString());
 			return;
 		}
 		
@@ -482,7 +482,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
 			messageToAllPlayersOnShip("§c" + String.format("%1$s is too far away to be summoned (max. is %2$d m)", entityPlayer.getDisplayName(), WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
-			WarpDrive.addChatMessage(entityPlayer, "§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
+			Commons.addChatMessage(entityPlayer, "§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
 			return;
 		}
 		
@@ -605,7 +605,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		updateShipMassAndVolume();
-		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && isOnPlanet()) {
+		if ( !isUnlimited
+		  && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE
+		  && WarpDrive.starMap.isPlanet(worldObj) ) {
 			reason.append("Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
 			return false;
 		}

@@ -1,5 +1,11 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
+import cr0s.warpdrive.network.PacketHandler;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorChamber;
 
@@ -14,14 +20,9 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
+
 import cpw.mods.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
-import cr0s.warpdrive.network.PacketHandler;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	private int ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;

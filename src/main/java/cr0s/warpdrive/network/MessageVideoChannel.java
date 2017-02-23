@@ -1,18 +1,19 @@
 package cr0s.warpdrive.network;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import io.netty.buffer.ByteBuf;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import io.netty.buffer.ByteBuf;
+
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IVideoChannel;
-import cr0s.warpdrive.config.WarpDriveConfig;
-
 
 public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVideoChannel, IMessage> {
 	private int x;

@@ -1,6 +1,10 @@
 package cr0s.warpdrive.block.hull;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockGlass;
@@ -8,10 +12,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IDamageReceiver;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 	final byte tier;

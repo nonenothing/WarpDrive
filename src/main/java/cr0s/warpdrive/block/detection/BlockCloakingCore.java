@@ -1,5 +1,8 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -13,8 +16,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 
 public class BlockCloakingCore extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -82,12 +83,12 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		if (tileEntity instanceof TileEntityCloakingCore) {
 			TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore)tileEntity;
 			if (entityPlayer.getHeldItem() == null) {
-				WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus());
+				Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 				// + " isInvalid? " + te.isInvalid() + " Valid? " + te.isValid + " Cloaking? " + te.isCloaking + " Enabled? " + te.isEnabled
 				return true;
 			} else if (entityPlayer.getHeldItem().getItem() == Item.getItemFromBlock(Blocks.redstone_torch)) {
 				cloakingCore.isEnabled = !cloakingCore.isEnabled;
-				WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus());
+				Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 				return true;
 			// } else if (xxx) {// TODO if player has advanced tool
 				// WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus() + "\n" + cloakingCore.getEnergyStatus());

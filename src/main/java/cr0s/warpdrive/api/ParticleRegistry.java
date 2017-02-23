@@ -3,14 +3,16 @@ package cr0s.warpdrive.api;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
+import net.minecraft.item.EnumRarity;
+
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 import cpw.mods.fml.common.eventhandler.Event;
-import net.minecraft.item.EnumRarity;
 import net.minecraftforge.common.MinecraftForge;
-
-import java.util.Map;
 
 public class ParticleRegistry {
 	

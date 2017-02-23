@@ -1,20 +1,23 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.DimensionManager;
-
-import java.util.*;
-import java.util.Map.Entry;
-
-/*
- *   /wentity <radius> <filter> <kill?>
- */
 
 public class CommandEntity extends CommandBase {
 	private static final List<String> entitiesNoRemoval = Arrays.asList(
@@ -45,7 +48,7 @@ public class CommandEntity extends CommandBase {
 	@Override
 	public void processCommand(ICommandSender icommandsender, String[] params) {
 		if (params.length > 3) {
-			WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
+			Commons.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 			return;
 		}
 		
@@ -72,7 +75,7 @@ public class CommandEntity extends CommandBase {
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
+			Commons.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 			return;
 		}
 
@@ -86,14 +89,14 @@ public class CommandEntity extends CommandBase {
 			} else if (radius <= 0) {
 				world = DimensionManager.getWorld(0);
 			} else {
-				WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
+				Commons.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 				return;
 			}
 			entities = new ArrayList<>();
 			entities.addAll(world.loadedEntityList);
 		} else {
 			if (!(icommandsender instanceof EntityPlayerMP)) {
-				WarpDrive.addChatMessage(icommandsender, getCommandUsage(icommandsender));
+				Commons.addChatMessage(icommandsender, getCommandUsage(icommandsender));
 				return;
 			}
 			EntityPlayerMP entityPlayer = (EntityPlayerMP) icommandsender;
@@ -127,7 +130,7 @@ public class CommandEntity extends CommandBase {
 						counts.put(name, counts.get(name) + 1);
 					}
 					if (!filter.isEmpty()) {
-						WarpDrive.addChatMessage(icommandsender, "§cFound " + object);
+						Commons.addChatMessage(icommandsender, "§cFound " + object);
 					}
 					// remove entity
 					if (kill && !((Entity) object).invulnerable) {
@@ -144,14 +147,14 @@ public class CommandEntity extends CommandBase {
 			}
 		}
 		if (count == 0) {
-			WarpDrive.addChatMessage(icommandsender, "§cNo matching entities found within " + radius + " blocks");
+			Commons.addChatMessage(icommandsender, "§cNo matching entities found within " + radius + " blocks");
 			return;
 		}
 		
-		WarpDrive.addChatMessage(icommandsender, "§6" + count + " matching entities within " + radius + " blocks:");
+		Commons.addChatMessage(icommandsender, "§6" + count + " matching entities within " + radius + " blocks:");
 		if (counts.size() < 10) {
 			for (Entry<String, Integer> entry : counts.entrySet()) {
-				WarpDrive.addChatMessage(icommandsender, "§f" + entry.getValue() + "§8x§d" + entry.getKey());
+				Commons.addChatMessage(icommandsender, "§f" + entry.getValue() + "§8x§d" + entry.getKey());
 			}
 		} else {
 			String message = "";
@@ -161,7 +164,7 @@ public class CommandEntity extends CommandBase {
 				}
 				message += "§f" + entry.getValue() + "§8x§d" + entry.getKey();
 			}
-			WarpDrive.addChatMessage(icommandsender, message);
+			Commons.addChatMessage(icommandsender, message);
 		}
 	}
 }

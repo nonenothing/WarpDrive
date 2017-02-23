@@ -1,10 +1,12 @@
 package cr0s.warpdrive.block;
 
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
+import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import defense.api.IEMPBlock;
 import defense.api.IExplosion;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -17,8 +19,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockUpdateDetector;
+
+import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 @Optional.InterfaceList({

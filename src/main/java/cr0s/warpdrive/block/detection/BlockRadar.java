@@ -1,5 +1,8 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -11,8 +14,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 
 public class BlockRadar extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
@@ -105,7 +106,7 @@ public class BlockRadar extends BlockAbstractContainer {
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityRadar) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityRadar)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityRadar)tileEntity).getStatus());
 				return true;
 			}
 		}

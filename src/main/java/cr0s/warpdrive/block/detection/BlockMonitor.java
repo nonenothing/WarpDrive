@@ -1,5 +1,11 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.CameraRegistryItem;
+import cr0s.warpdrive.render.ClientCameraHandler;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,11 +14,6 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.data.CameraRegistryItem;
-import cr0s.warpdrive.render.ClientCameraHandler;
 
 public class BlockMonitor extends BlockAbstractContainer {
 	private IIcon iconFront;
@@ -55,10 +56,10 @@ public class BlockMonitor extends BlockAbstractContainer {
 				int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
 				CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
-					WarpDrive.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
+					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
 					return true;
 				} else {
-					WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.monitor.viewingCamera",
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.monitor.viewingCamera",
 							videoChannel,
 							camera.position.chunkPosX,
 							camera.position.chunkPosY,

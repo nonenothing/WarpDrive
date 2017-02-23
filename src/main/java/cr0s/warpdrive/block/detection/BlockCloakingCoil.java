@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.WarpDrive;
+
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -7,8 +9,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
+
 import net.minecraftforge.common.util.ForgeDirection;
-import cr0s.warpdrive.WarpDrive;
 
 public class BlockCloakingCoil extends Block {
 	private IIcon[] iconBuffer;

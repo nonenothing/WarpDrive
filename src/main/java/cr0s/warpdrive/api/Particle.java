@@ -1,13 +1,14 @@
 package cr0s.warpdrive.api;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.util.StatCollector;
+import cr0s.warpdrive.Commons;
 
 import java.util.Locale;
 
-import static cr0s.warpdrive.config.WarpDriveConfig.clamp;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.util.StatCollector;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class Particle {
 	protected final String registryName;
@@ -27,17 +28,17 @@ public class Particle {
 	}
 	
 	public Particle setColorIndex(final int colorIndex) {
-		this.colorIndex = clamp(0, 4, colorIndex);
+		this.colorIndex = Commons.clamp(0, 4, colorIndex);
 		return this;
 	}
 	
 	public Particle setColor(final int colorIndex) {
-		this.color = clamp(0x000000, 0xFFFFFF, color);
+		this.color = Commons.clamp(0x000000, 0xFFFFFF, color);
 		return this;
 	}
 	
 	public Particle setColor(final int red, final int green, final int blue) {
-		this.color = (clamp(0, 255, red) << 16) + (clamp(0, 255,  green) << 8) + clamp(0, 255, blue);
+		this.color = (Commons.clamp(0, 255, red) << 16) + (Commons.clamp(0, 255,  green) << 8) + Commons.clamp(0, 255, blue);
 		return this;
 	}
 	

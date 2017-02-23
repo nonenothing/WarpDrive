@@ -1,16 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
-import java.util.Arrays;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
-import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -19,6 +9,19 @@ import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import java.util.Arrays;
+
+import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.StatCollector;
+
+import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public boolean isEnabled = false;
@@ -420,7 +423,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		switch (methodName) {
 			case "tier":
 				if (arguments.length == 1) {
-					if (toInt(arguments[0]) == 2) {
+					if (Commons.toInt(arguments[0]) == 2) {
 						tier = 2;
 					} else {
 						tier = 1;
@@ -434,7 +437,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 
 			case "enable":
 				if (arguments.length == 1) {
-					isEnabled = toBool(arguments[0]);
+					isEnabled = Commons.toBool(arguments[0]);
 					markDirty();
 				}
 				return new Object[] { isEnabled };

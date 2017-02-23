@@ -1,5 +1,12 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.world.SpaceTeleporter;
+
+import java.util.List;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerSelector;
@@ -8,11 +15,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.world.SpaceTeleporter;
-
-import java.util.List;
 
 public class CommandSpace extends CommandBase {
 	@Override
@@ -45,7 +47,7 @@ public class CommandSpace extends CommandBase {
 			// nop
 		} else if (params.length == 1) {
 			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
-				WarpDrive.addChatMessage(sender, getCommandUsage(sender));
+				Commons.addChatMessage(sender, getCommandUsage(sender));
 				return;
 			}
 			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(sender, params[0]);
@@ -54,7 +56,7 @@ public class CommandSpace extends CommandBase {
 			} else if (sender instanceof EntityPlayer) {
 				targetDimensionId = getDimensionId(params[0]);
 			} else {
-				WarpDrive.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				Commons.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
 				return;
 			}
 			
@@ -63,19 +65,19 @@ public class CommandSpace extends CommandBase {
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
-				WarpDrive.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				Commons.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
 				return;
 			}
 			targetDimensionId = getDimensionId(params[1]);
 			
 		} else {
-			WarpDrive.addChatMessage(sender, "/space: too many arguments " + params.length);
+			Commons.addChatMessage(sender, "/space: too many arguments " + params.length);
 			return;
 		}
 		
 		// check player
 		if (entityPlayerMPs == null || entityPlayerMPs.length <= 0) {
-			WarpDrive.addChatMessage(sender, "/space: undefined player");
+			Commons.addChatMessage(sender, "/space: undefined player");
 			return;
 		}
 		
@@ -92,16 +94,16 @@ public class CommandSpace extends CommandBase {
 			// get target world
 			WorldServer targetWorld = server.worldServerForDimension(targetDimensionId);
 			if (targetWorld == null) {
-				WarpDrive.addChatMessage(sender, "/space: undefined dimension '" + targetDimensionId + "'");
+				Commons.addChatMessage(sender, "/space: undefined dimension '" + targetDimensionId + "'");
 				return;
 			}
 			
 			// inform player
 			String message = "Teleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
-			WarpDrive.addChatMessage(sender, message);
+			Commons.addChatMessage(sender, message);
 			WarpDrive.logger.info(message);
 			if (sender != entityPlayerMP) {
-				WarpDrive.addChatMessage(entityPlayerMP, sender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
+				Commons.addChatMessage(entityPlayerMP, sender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
 			}
 			
 			// find a good spot

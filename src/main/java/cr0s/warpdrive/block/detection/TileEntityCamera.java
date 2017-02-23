@@ -1,15 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.ChunkPosition;
-import cpw.mods.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
@@ -19,6 +10,18 @@ import cr0s.warpdrive.data.EnumCameraType;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.util.StatCollector;
+import net.minecraft.world.ChunkPosition;
+
+import cpw.mods.fml.common.Optional;
 
 public class TileEntityCamera extends TileEntityAbstractInterfaced implements IVideoChannel {
 	private int videoChannel = -1;
@@ -175,7 +178,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		
 		if (methodName.equals("videoChannel")) {
 			if (arguments.length == 1) {
-				setVideoChannel(toInt(arguments[0]));
+				setVideoChannel(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { videoChannel };
 		}

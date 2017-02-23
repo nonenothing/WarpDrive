@@ -1,12 +1,13 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.data.EnumComponentType;
+
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
-import cr0s.warpdrive.data.EnumComponentType;
 
 public class ItemAirCanisterFull extends Item implements IAirCanister {
 	

@@ -1,16 +1,17 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.LocalProfiler;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.structures.Orb.OrbShell;
+import cr0s.warpdrive.config.structures.OrbInstance;
+import cr0s.warpdrive.data.JumpBlock;
+
 import java.util.ArrayList;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.structures.Orb.OrbShell;
-import cr0s.warpdrive.config.structures.OrbInstance;
-import cr0s.warpdrive.data.JumpBlock;
 
 /*
  2014-06-07 21:41:45 [Infos] [STDOUT] Generating star (class 0) at -579 257 1162

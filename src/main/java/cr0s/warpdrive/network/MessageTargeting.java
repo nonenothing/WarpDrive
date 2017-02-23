@@ -1,15 +1,16 @@
 package cr0s.warpdrive.network;
 
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import io.netty.buffer.ByteBuf;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import io.netty.buffer.ByteBuf;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.common.network.simpleimpl.IMessage;
+import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class MessageTargeting implements IMessage, IMessageHandler<MessageTargeting, IMessage> {
 	private int x;

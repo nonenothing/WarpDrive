@@ -1,25 +1,28 @@
 package cr0s.warpdrive.block;
 
+import cofh.api.energy.IEnergyHandler;
+import cofh.api.energy.IEnergyReceiver;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import ic2.api.energy.event.EnergyTileLoadEvent;
 import ic2.api.energy.event.EnergyTileUnloadEvent;
 import ic2.api.energy.tile.IEnergySink;
 import ic2.api.energy.tile.IEnergySource;
-import cofh.api.energy.IEnergyHandler;
-import cofh.api.energy.IEnergyReceiver;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.StatCollector;
+
+import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
-import cpw.mods.fml.common.Optional;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore"),
@@ -81,7 +84,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	public int energy_getEnergyStored() {
-		return clamp(0, energy_getMaxStorage(), energyStored_internal);
+		return Commons.clamp(0, energy_getMaxStorage(), energyStored_internal);
 	}
 	
 	// Methods to override
@@ -150,8 +153,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			return "";
 		}
 		return StatCollector.translateToLocalFormatted("warpdrive.energy.statusLine",
-			WarpDrive.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
-			WarpDrive.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
+			Commons.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
+			Commons.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
 	}
 	
 	@Override

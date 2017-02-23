@@ -1,15 +1,15 @@
 package cr0s.warpdrive.block;
 
+import com.google.common.collect.ImmutableSet;
+import cr0s.warpdrive.WarpDrive;
+
 import java.util.ArrayList;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
+
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
-
-import com.google.common.collect.ImmutableSet;
-
-import cr0s.warpdrive.WarpDrive;
 
 public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractEnergy
 {

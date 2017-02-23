@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
