@@ -10,6 +10,8 @@ import cr0s.warpdrive.block.atomic.*;
 import cr0s.warpdrive.block.detection.*;
 import cr0s.warpdrive.block.forcefield.*;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
+import cr0s.warpdrive.config.RecipeParticleShapedOre;
+import cr0s.warpdrive.config.RecipeTuningDriver;
 import cr0s.warpdrive.damage.*;
 import cr0s.warpdrive.item.*;
 import net.minecraft.block.Block;
@@ -36,6 +38,7 @@ import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 
+import net.minecraftforge.oredict.RecipeSorter;
 import org.apache.logging.log4j.Logger;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -172,7 +175,7 @@ public class WarpDrive implements LoadingCallback {
 	public static ItemComponent itemComponent;
 	public static ItemCrystalToken itemCrystalToken;
 	public static ItemUpgrade itemUpgrade;
-	public static ItemTuningFork itemTuningRod;
+	public static ItemTuningFork itemTuningFork;
 	public static ItemTuningDriver itemTuningDriver;
 	public static ItemForceFieldShape itemForceFieldShape;
 	public static ItemForceFieldUpgrade itemForceFieldUpgrade;
@@ -221,6 +224,9 @@ public class WarpDrive implements LoadingCallback {
 		logger = event.getModLog();
 		
 		WarpDriveConfig.onFMLpreInitialization(event.getModConfigurationDirectory().getAbsolutePath());
+		
+		RecipeSorter.register("warpdrive:particleShaped", RecipeParticleShapedOre.class, RecipeSorter.Category.SHAPED, "before:minecraft:shaped");
+		RecipeSorter.register("warpdrive:tuningDriver", RecipeTuningDriver.class, RecipeSorter.Category.SHAPELESS, "before:minecraft:shapeless");
 		
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera(Minecraft.getMinecraft()));
@@ -528,12 +534,12 @@ public class WarpDrive implements LoadingCallback {
 		}
 		
 		// TOOL ITEMS
-		itemTuningRod = new ItemTuningFork();
-		GameRegistry.registerItem(itemTuningRod, "itemTuningRod");
-		/*
+		itemTuningFork = new ItemTuningFork();
+		GameRegistry.registerItem(itemTuningFork, "itemTuningFork");
+		
 		itemTuningDriver = new ItemTuningDriver();
 		GameRegistry.registerItem(itemTuningDriver, "itemTuningDriver");
-		/**/
+		
 		// FORCE FIELD UPGRADES
 		itemForceFieldShape = new ItemForceFieldShape();
 		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
@@ -802,7 +808,11 @@ public class WarpDrive implements LoadingCallback {
 					case "WarpDrive:warpCore":
 						mapping.remap(Item.getItemFromBlock(blockShipCore));
 						break;
+					case "WarpDrive:itemTuningRod":
+						mapping.remap(itemTuningFork);
+						break;
 				}
+				
 			} else if (mapping.type == GameRegistry.Type.BLOCK) {
 				switch (mapping.name) {
 					case "WarpDrive:airBlock":

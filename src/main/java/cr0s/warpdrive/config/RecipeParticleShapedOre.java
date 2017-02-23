@@ -112,18 +112,8 @@ public class RecipeParticleShapedOre implements IRecipe {
 			itemStackIngredients[indexSlot++] = mapInputs.get(chr);
 		}
 		
-		// add vanilla Shaped recipe for NEI support with an impossible tag so our handler still pass through
-		Object[] recipeDummy = recipe.clone();
-		for (int indexDummy = 0; indexDummy < recipeDummy.length; indexDummy++) {
-			Object objectDummy = recipeDummy[indexDummy];
-			if (objectDummy instanceof ItemStack && ((ItemStack) objectDummy).hasTagCompound()) {
-				ItemStack itemStackDummy = ((ItemStack) objectDummy).copy();
-				if (itemStackDummy.getItem() instanceof IParticleContainerItem) {
-					recipeDummy[indexDummy] = ((IParticleContainerItem) itemStackDummy.getItem()).getFakeVariant(itemStackDummy);
-				}
-			}
-		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(result, recipeDummy));
+		// add lower priority vanilla Shaped recipe for NEI support
+		GameRegistry.addRecipe(new ShapedOreRecipe(result, recipe));
 	}
 	
 	// add ore dictionary support to an existing (vanilla) recipe

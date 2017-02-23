@@ -14,16 +14,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IVideoChannel;
 
 public class ItemTuningDriver extends Item implements IWarpTool {
-	static final int MODE_VIDEO_CHANNEL = 0;
-	static final int MODE_BEAM_FREQUENCY = 1;
-	static final int MODE_CONTROL_CHANNEL = 2;
+	public static final int MODE_VIDEO_CHANNEL = 0;
+	public static final int MODE_BEAM_FREQUENCY = 1;
+	public static final int MODE_CONTROL_CHANNEL = 2;
 	
 	private IIcon icons[];
 	
@@ -145,29 +148,56 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 		return itemStack;
 	}
 	
+	public static ItemStack setValue(ItemStack itemStack, final int dye) {
+		switch (itemStack.getItemDamage()) {
+		case MODE_VIDEO_CHANNEL  : return setVideoChannel(itemStack, dye);
+		case MODE_BEAM_FREQUENCY : return setBeamFrequency(itemStack, dye);
+		case MODE_CONTROL_CHANNEL: return setControlChannel(itemStack, dye);
+		default                  : return itemStack;
+		}
+	}
+	
+	// server side version of EntityLivingBase.rayTrace
+	private static final double BLOCK_REACH_DISTANCE = 5.0D;    // this is a client side hardcoded value, applicable to creative players
+	private static MovingObjectPosition getInteractingBlock(World world, EntityPlayer entityPlayer, final double distance) {
+		Vec3 vec3Position = Vec3.createVectorHelper(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
+		Vec3 vec3Look = entityPlayer.getLook(1.0F);
+		Vec3 vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
+		return world.func_147447_a(vec3Position, vec3Target, false, false, true);
+	}
+	
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer) {
 		if (world.isRemote || !(itemStack.getItem() instanceof ItemTuningDriver)) {
 			return itemStack;
 		}
-		if (entityPlayer.isSneaking()) {
+		// check if a block is in players reach 
+		MovingObjectPosition movingObjectPosition = getInteractingBlock(world, entityPlayer, BLOCK_REACH_DISTANCE);
+		if (movingObjectPosition.typeOfHit != MovingObjectType.MISS) {
+			return itemStack;
+		}
+		
+		if (entityPlayer.isSneaking() && entityPlayer.capabilities.isCreativeMode) {
 			switch (itemStack.getItemDamage()) {
 			case MODE_VIDEO_CHANNEL:
 				setVideoChannel(itemStack, world.rand.nextInt(IVideoChannel.VIDEO_CHANNEL_MAX));
 				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.video_channel.get",
-						getVideoChannel(itemStack)));
+					entityPlayer.getCommandSenderName(),
+					getVideoChannel(itemStack)));
 				return itemStack;
 			
 			case MODE_BEAM_FREQUENCY:
 				setBeamFrequency(itemStack, world.rand.nextInt(IBeamFrequency.BEAM_FREQUENCY_MAX));
 				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.get",
-						getBeamFrequency(itemStack)));
+					entityPlayer.getCommandSenderName(),
+					getBeamFrequency(itemStack)));
 				return itemStack;
 			
 			case MODE_CONTROL_CHANNEL:
 				setControlChannel(itemStack, world.rand.nextInt(IControlChannel.CONTROL_CHANNEL_MAX));
 				WarpDrive.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.control_channel.get",
-						getControlChannel(itemStack)));
+					entityPlayer.getCommandSenderName(),
+					getControlChannel(itemStack)));
 				return itemStack;
 			
 			default:
@@ -180,7 +210,7 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 				itemStack.setItemDamage(MODE_BEAM_FREQUENCY);
 				entityPlayer.setCurrentItemOrArmor(0, itemStack);
 				break;
-				
+			
 			case MODE_BEAM_FREQUENCY:
 				itemStack.setItemDamage(MODE_CONTROL_CHANNEL);
 				entityPlayer.setCurrentItemOrArmor(0, itemStack);

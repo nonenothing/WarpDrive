@@ -21,7 +21,6 @@ import java.util.List;
 
 public class ItemElectromagneticCell extends Item implements IParticleContainerItem {
 	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
-	private static final int FAKE_DAMAGE = 1000;
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons = new IIcon[31];
@@ -74,11 +73,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIcon getIconFromDamage(int damage) {
-		if (damage > FAKE_DAMAGE) {
-			return icons[(damage - FAKE_DAMAGE) % icons.length];
-		} else {
-			return icons[damage % icons.length];
-		}
+		return icons[damage % icons.length];
 	}
 	
 	public static ItemStack getItemStackNoCache(final Particle particle, final int amount) {
@@ -146,13 +141,6 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 			return itemStack.getTagCompound().getInteger(AMOUNT_TO_CONSUME_TAG);
 		}
 		return 0;
-	}
-	
-	@Override
-	public ItemStack getFakeVariant(ItemStack itemStack) {
-		ItemStack itemStackFake = itemStack.copy();
-		itemStackFake.setItemDamage(FAKE_DAMAGE + itemStack.getItemDamage());
-		return itemStackFake;
 	}
 	
 	private static int getDamageLevel(ItemStack itemStack, final ParticleStack particleStack) {

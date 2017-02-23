@@ -130,7 +130,7 @@ item.warpdrive.tool.tuning_driver.video_channel.name=Ajusteur de canal vidéo
 item.warpdrive.tool.tuning_driver.beam_frequency.name=Ajusteur de fréquence de faisceau
 item.warpdrive.tool.tuning_driver.control_channel.name=Ajusteur de canal de contrôle
 
-item.warpdrive.tool.tuning_driver.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour changer de mode
+item.warpdrive.tool.tuning_driver.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour récupérer sa valeur\n§bCliques droit en l'air§r pour lire pour changer de mode
 
 
 item.warpdrive.tool.tuning_fork.name=Diapason

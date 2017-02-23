@@ -130,7 +130,7 @@ item.warpdrive.tool.tuning_driver.video_channel.name=Video Channel Tuning Driver
 item.warpdrive.tool.tuning_driver.beam_frequency.name=Beam Frequency Tuning Driver
 item.warpdrive.tool.tuning_driver.control_channel.name=Control Channel Tuning Driver
 
-item.warpdrive.tool.tuning_driver.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to change mode
+item.warpdrive.tool.tuning_driver.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to retrieve its value\n§bRight click air§7 to change mode
 
 
 item.warpdrive.tool.tuning_fork.name=Камертон

@@ -14,8 +14,4 @@ public interface IParticleContainerItem {
 	
 	// called during recipe match to set amount to consume in next call to getContainerItem
 	void setAmountToConsume(ItemStack container, int amount);
-	
-	// called during recipe creation to display 'fake' items in NEI, so our handler takes priority
-	// NBT changes aren't supported by default, so you need to change item or damage.
-	ItemStack getFakeVariant(ItemStack container);
 }

@@ -12,6 +12,7 @@ import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemElectromagneticCell;
 import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
+import cr0s.warpdrive.item.ItemTuningDriver;
 import cr0s.warpdrive.item.ItemUpgrade;
 import net.minecraft.block.BlockColored;
 import net.minecraft.init.Blocks;
@@ -25,7 +26,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
  * Hold the different recipe sets
  */
 public class Recipes {
-	private static final String[] oreDyes = {
+	public static final String[] oreDyes = {
 		"dyeBlack",
 		"dyeRed",
 		"dyeGreen",
@@ -1415,25 +1416,40 @@ public class Recipes {
 				'w', Blocks.wool,
 				'r', rubberOrLeather));
 		
-		// Tuning rod ore dictionary
+		// Tuning fork ore dictionary
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
-			OreDictionary.registerOre("itemTuningRod", new ItemStack(WarpDrive.itemTuningRod, 1, dyeColor));
+			OreDictionary.registerOre("itemTuningFork", new ItemStack(WarpDrive.itemTuningFork, 1, dyeColor));
 		}
 		
-		// Tuning rod variations
+		// Tuning fork variations
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
 			
-			// crafting tuning rod
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemTuningRod, 1, dyeColor), false, "  q", "iX ", " i ",
-					'q', Items.quartz, // "gemQuartz", // Items.quartz,
-					'i', Items.iron_ingot, // "ingotIron",
+			// crafting tuning fork
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemTuningFork, 1, dyeColor), false, "  q", "iX ", " i ",
+					'q', "gemQuartz",
+					'i', "ingotIron",
 					'X', oreDyes[dyeColor] ));
 			
 			// changing colors
-			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.itemTuningRod, 1, dyeColor),
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.itemTuningFork, 1, dyeColor),
 					oreDyes[dyeColor],
-					"itemTuningRod"));
+					"itemTuningFork"));
 		}
+		
+		// Tuning driver crafting
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_VIDEO_CHANNEL), false, "  q", "pm ", "d  ",
+				'q', "gemQuartz",
+				'p', Blocks.heavy_weighted_pressure_plate,
+				'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL),
+				'm', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL) ));
+		
+		// Tuning driver configuration
+		GameRegistry.addRecipe(new RecipeTuningDriver(new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_VIDEO_CHANNEL),
+				new ItemStack(Items.redstone), 7));
+		GameRegistry.addRecipe(new RecipeTuningDriver(new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_BEAM_FREQUENCY),
+				new ItemStack(Items.redstone), 4));
+		GameRegistry.addRecipe(new RecipeTuningDriver(new ItemStack(WarpDrive.itemTuningDriver, 1, ItemTuningDriver.MODE_CONTROL_CHANNEL),
+				new ItemStack(Items.redstone), 7));
 		
 		// HULL blocks and variations
 		initDynamicHull();
