@@ -119,7 +119,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	
 	@Override
 	public ItemStack getContainerItem(ItemStack itemStackFilled) {
-		ParticleStack particleStack = getParticle(itemStackFilled);
+		ParticleStack particleStack = getParticleStack(itemStackFilled);
 		if (particleStack != null) {
 			final int amount = particleStack.getAmount() - getAmountToConsume(itemStackFilled);
 			if (amount <= 0) {
@@ -132,7 +132,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	
 	@Override
 	public void setAmountToConsume(ItemStack itemStack, int amountToConsume) {
-		ParticleStack particleStack = getParticle(itemStack);
+		ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			return;
 		}
@@ -167,7 +167,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	}
 	
 	@Override
-	public ParticleStack getParticle(ItemStack itemStack) {
+	public ParticleStack getParticleStack(final ItemStack itemStack) {
 		if (itemStack.getItem() != this || !itemStack.hasTagCompound()) {
 			return null;
 		}
@@ -179,32 +179,59 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	}
 	
 	@Override
-	public int getCapacity(ItemStack container) {
+	public int getCapacity(final ItemStack container) {
 		return 1000;
 	}
 	
 	@Override
-	public int fill(ItemStack itemStack, ParticleStack resource, boolean doFill) {
-		ParticleStack particleStack = getParticle(itemStack);
-		if (particleStack == null || particleStack.getParticle() == null) {
-			particleStack = new ParticleStack(resource.getParticle(), 0);
-		} else if (!particleStack.containsParticle(resource) || particleStack.getAmount() >= getCapacity(itemStack)) {
-			return 0;
-		}
-		int consumable = Math.min(resource.getAmount(), getCapacity(itemStack) - particleStack.getAmount());
-		if (!doFill) {
-			particleStack.fill(consumable);
-			
-			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
-			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
-			updateDamageLevel(itemStack, particleStack);
-		}
-		return consumable;
+	public boolean isEmpty(final ItemStack itemStack) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		return particleStack == null || particleStack.isEmpty();
 	}
 	
 	@Override
-	public ParticleStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-		return null;    // @TODO not implemented
+	public int fill(ItemStack itemStack, final ParticleStack resource, final boolean doFill) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		if (particleStack == null || particleStack.getParticle() == null) {
+			particleStack = new ParticleStack(resource.getParticle(), 0);
+		} else if (!particleStack.isParticleEqual(resource) || particleStack.getAmount() >= getCapacity(itemStack)) {
+			return 0;
+		}
+		int transfer = Math.min(resource.getAmount(), getCapacity(itemStack) - particleStack.getAmount());
+		if (doFill) {
+			particleStack.fill(transfer);
+			
+			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			if (!itemStack.hasTagCompound()) {
+				itemStack.setTagCompound(tagCompound);
+			}
+			updateDamageLevel(itemStack, particleStack);
+		}
+		return transfer;
+	}
+	
+	@Override
+	public ParticleStack drain(ItemStack itemStack, final ParticleStack resource, final boolean doDrain) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		if (particleStack == null || particleStack.getParticle() == null) {
+			return null;
+		}
+		if (!particleStack.isParticleEqual(resource) || particleStack.getAmount() <= 0) {
+			return null;
+		}
+		int transfer = Math.min(resource.getAmount(), particleStack.getAmount());
+		if (doDrain) {
+			particleStack.fill(-transfer);
+			
+			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			if (!itemStack.hasTagCompound()) {
+				itemStack.setTagCompound(tagCompound);
+			}
+			updateDamageLevel(itemStack, particleStack);
+		}
+		return resource.copy(transfer);
 	}
 	
 	@Override
@@ -216,7 +243,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 			return;
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
-		final ParticleStack particleStack = itemElectromagneticCell.getParticle(itemStack);
+		final ParticleStack particleStack = itemElectromagneticCell.getParticleStack(itemStack);
 		String tooltip;
 		if (particleStack == null || particleStack.getParticle() == null) {
 			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty");

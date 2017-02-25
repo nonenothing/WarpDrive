@@ -202,10 +202,10 @@ public class RecipeParticleShapedOre implements IRecipe {
 					  && itemStackSlot.getItem() instanceof IParticleContainerItem
 					  && ((ItemStack) target).getItem() instanceof IParticleContainerItem) {
 						IParticleContainerItem particleContainerItemSlot = (IParticleContainerItem) itemStackSlot.getItem();
-						ParticleStack particleStackSlot = particleContainerItemSlot.getParticle(itemStackSlot);
+						ParticleStack particleStackSlot = particleContainerItemSlot.getParticleStack(itemStackSlot);
 						
 						IParticleContainerItem particleContainerItemTarget = (IParticleContainerItem) ((ItemStack) target).getItem();
-						ParticleStack particleStackTarget = particleContainerItemTarget.getParticle((ItemStack) target);
+						ParticleStack particleStackTarget = particleContainerItemTarget.getParticleStack((ItemStack) target);
 						
 						// reject different particles or insufficient quantity
 						if (!particleStackSlot.containsParticle(particleStackTarget)) {

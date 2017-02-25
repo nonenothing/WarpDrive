@@ -67,6 +67,8 @@ public class ParticleStack {
 		return particle;
 	}
 	
+	public boolean isEmpty() { return particle == null || amount <= 0; }
+	
 	public final int getAmount() {
 		return amount;
 	}
@@ -83,8 +85,11 @@ public class ParticleStack {
 		return this.getParticle().getUnlocalizedName();
 	}
 	
-	public ParticleStack copy()
-	{
+	public ParticleStack copy() {
+		return new ParticleStack(getParticle(), amount, tag);
+	}
+	
+	public ParticleStack copy(final int amount) {
 		return new ParticleStack(getParticle(), amount, tag);
 	}
 	
@@ -114,7 +119,7 @@ public class ParticleStack {
 		}
 		
 		if (other.getItem() instanceof IParticleContainerItem) {
-			return isParticleEqual(((IParticleContainerItem) other.getItem()).getParticle(other));
+			return isParticleEqual(((IParticleContainerItem) other.getItem()).getParticleStack(other));
 		}
 		
 		return false;

@@ -3,6 +3,7 @@ package cr0s.warpdrive.entity;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -28,7 +29,7 @@ public class EntityParticleBunch extends Entity {
 		}
 	}
 	
-	public EntityParticleBunch(World world, int x, int y, int z) {
+	public EntityParticleBunch(World world, final double x, final double y, final double z) {
 		super(world);
 		this.posX = x + 0.5D;
 		this.posY = y + 0.5D;
@@ -112,6 +113,23 @@ public class EntityParticleBunch extends Entity {
 		if (vectorTurningPoint != null) {
 			nbtTagCompound.setTag("turningPoint", vectorTurningPoint.writeToNBT(new NBTTagCompound()));
 		}
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound p_70109_1_) {
+		super.writeToNBT(p_70109_1_);
+	}
+	
+	// prevent saving entity to chunk
+	@Override
+	public boolean writeMountToNBT(NBTTagCompound p_98035_1_) {
+		return false;
+	}
+	
+	// prevent saving entity to chunk
+	@Override
+	public boolean writeToNBTOptional(NBTTagCompound p_70039_1_) {
+		return false;
 	}
 	
 	@Override
