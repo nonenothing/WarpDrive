@@ -1,7 +1,7 @@
 package cr0s.warpdrive;
 
-
 import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.data.StarMapRegistry;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -24,9 +24,10 @@ public class GravityManager {
 	
 	public static double getGravityForEntity(Entity entity) {
 		
-		if (WarpDrive.starMap.isLowGravity(entity.worldObj)) {
+		final double gravity = StarMapRegistry.getGravity(entity);
+		if (gravity < 1.0D) {
 			// Is entity in hyper-space?
-			boolean inHyperspace = WarpDrive.starMap.isInHyperspace(entity.worldObj);
+			boolean inHyperspace = gravity > 0.4D;
 			
 			if (isEntityInGraviField(entity)) {
 				if (inHyperspace) {
@@ -62,7 +63,8 @@ public class GravityManager {
 	}
 	
 	public static double getItemGravity(EntityItem entity) {
-		if (WarpDrive.starMap.isLowGravity(entity.worldObj)) {
+		final double gravity = StarMapRegistry.getGravity(entity);
+		if (gravity < 1.0D) {
 			if (isEntityInGraviField(entity)) {
 				return SPACE_FIELD_ITEM_GRAVITY;
 			} else {
@@ -74,7 +76,8 @@ public class GravityManager {
 	}
 	
 	public static double getItemGravity2(EntityItem entity) {
-		if (WarpDrive.starMap.isLowGravity(entity.worldObj)) {
+		final double gravity = StarMapRegistry.getGravity(entity);
+		if (gravity < 1.0D) {
 			if (isEntityInGraviField(entity)) {
 				return SPACE_FIELD_ITEM_GRAVITY2;
 			} else {

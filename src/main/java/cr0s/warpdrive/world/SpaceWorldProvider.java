@@ -1,7 +1,7 @@
 package cr0s.warpdrive.world;
 
-
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.render.RenderBlank;
 import cr0s.warpdrive.render.RenderSpaceSky;
 
@@ -128,7 +128,11 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public int getRespawnDimension(EntityPlayerMP player) {
-		return 0; // re-spawn on Earth
+		if (player == null || player.worldObj == null) {
+			WarpDrive.logger.error("Invalid player passed to getRespawnDimension: " + player);
+			return 0;
+		}
+		return StarMapRegistry.getSpaceDimensionId(player.worldObj, (int) player.posX, (int) player.posZ);
 	}
 	
 	@Override

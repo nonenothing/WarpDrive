@@ -87,7 +87,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		boolean isOnPlanet = WarpDrive.starMap.isPlanet(worldObj);
+		boolean isOnPlanet = WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord);
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {

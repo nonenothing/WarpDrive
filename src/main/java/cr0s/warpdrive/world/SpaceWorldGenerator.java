@@ -8,6 +8,8 @@ import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.StarMapRegistry;
 
 import java.util.Random;
 
@@ -21,28 +23,42 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		try {
-			if (!WarpDrive.starMap.isInSpace(world)) {
+			final int x = (chunkX * 16) + (5 - random.nextInt(10));
+			final int z = (chunkZ * 16) + (5 - random.nextInt(10));
+			CelestialObject celestialObject = StarMapRegistry.getCelestialObject(world, x, z);
+			if (celestialObject == null) {
+				// as observed on 1.7.10: during world transition, the generator from the previous world is still called
 				return;
 			}
-			int x = (chunkX * 16) + (5 - random.nextInt(10));
-			int z = (chunkZ * 16) + (5 - random.nextInt(10));
-			if (WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS > 0 && (Math.abs(x) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS || Math.abs(z) > WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS)) {
+			if ( celestialObject.borderRadiusX > 0
+			  && ( Math.abs(x - celestialObject.dimensionCenterX) > celestialObject.borderRadiusX
+			    || Math.abs(z - celestialObject.dimensionCenterZ) > celestialObject.borderRadiusZ ) ) {
 				return;
 			}
-			int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER + random.nextInt(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_CENTER - WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER);
-			// Moon setup
-			if (random.nextInt(800) == 1) {
+			int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER
+			      + random.nextInt(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_CENTER - WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER);
+			
+			String group = celestialObject.getRandomGeneration(random);
+			if (group == null) {
+				return;
+			}
+			switch (group) {
+			case "moon":
 				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_MOONS, null);
 				moon.generate(world, world.rand, x, y, z);
+				break;
 				
-			// Simple asteroids
-			} else if (random.nextInt(150) == 1) {
-				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
-				moon.generate(world, world.rand, x, y, z);
+			case "asteroid":
+				AbstractStructure asteroid = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+				asteroid.generate(world, world.rand, x, y, z);
+				break;
 				
-			// Random asteroid of block
-			} else if (random.nextInt(600) == 1) {// Asteroid field
+			case "asteroidField":
 				generateAsteroidField(world, x, y, z);
+				break;
+				
+			default:
+				break;
 			}
 
 		} catch (Exception exception) {

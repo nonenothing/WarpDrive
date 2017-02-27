@@ -11,6 +11,7 @@ import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetGlass;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
@@ -19,6 +20,7 @@ import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.building.BlockShipScanner;
 import cr0s.warpdrive.block.building.TileEntityShipScanner;
@@ -95,6 +97,7 @@ import cr0s.warpdrive.damage.DamageShock;
 import cr0s.warpdrive.damage.DamageTeleportation;
 import cr0s.warpdrive.damage.DamageWarm;
 import cr0s.warpdrive.data.CamerasRegistry;
+import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CloakManager;
 import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
@@ -624,10 +627,22 @@ public class WarpDrive implements LoadingCallback {
 		spaceBiome = (new BiomeSpace(WarpDriveConfig.G_SPACE_BIOME_ID)).setColor(0).setDisableRain().setBiomeName("Space");
 		BiomeDictionary.registerBiomeType(spaceBiome, BiomeDictionary.Type.DEAD, BiomeDictionary.Type.WASTELAND);
 		DimensionManager.registerProviderType(WarpDriveConfig.G_SPACE_PROVIDER_ID, SpaceWorldProvider.class, true);
-		DimensionManager.registerDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID, WarpDriveConfig.G_SPACE_PROVIDER_ID);
 		
 		DimensionManager.registerProviderType(WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
-		DimensionManager.registerDimension(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID, WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID);
+		
+		// only create dimensions if we own them
+		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+			if (celestialObject.isWarpDrive) {
+				if (celestialObject.isSpace()) {
+					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_SPACE_PROVIDER_ID);
+				} else if (celestialObject.isHyperspace()) {
+					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID);
+				} else {
+					WarpDrive.logger.error(String.format("Only space and hyperspace dimensions can be provided by WarpDrive. Dimension %d is not what of those.",
+						celestialObject.dimensionId));
+				}
+			}
+		}
 		
 		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			creativeTabWarpDrive.setBackgroundImageName("items.png");
@@ -636,8 +651,12 @@ public class WarpDrive implements LoadingCallback {
 	
 	@EventHandler
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
-		DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID);
-		DimensionManager.getWorld(WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
+		// load all owned dimensions at boot
+		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+			if (celestialObject.isWarpDrive) {
+				DimensionManager.getWorld(celestialObject.dimensionId);
+			}
+		}
 		
 		WarpDriveConfig.onFMLPostInitialization();
 		

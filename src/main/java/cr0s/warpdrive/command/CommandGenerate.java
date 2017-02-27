@@ -60,7 +60,7 @@ public class CommandGenerate extends CommandBase {
 		String structure = params[0];
 		
 		// Reject command, if player is not in space
-		if (!WarpDrive.starMap.isInSpace(world) && (!"ship".equals(structure))) {
+		if (!WarpDrive.starMap.isInSpace(world, x, z) && (!"ship".equals(structure))) {
 			Commons.addChatMessage(commandSender, "* generate: this structure is only allowed in space!");
 			return;
 		}

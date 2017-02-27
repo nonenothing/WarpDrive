@@ -112,7 +112,7 @@ public class BlockGas extends Block {
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
 		// Gas blocks are only allowed in space
-		if (WarpDrive.starMap.hasAtmosphere(world)) {
+		if (WarpDrive.starMap.hasAtmosphere(world, x, z)) {
 			world.setBlockToAir(x, y, z);
 		}
 	}

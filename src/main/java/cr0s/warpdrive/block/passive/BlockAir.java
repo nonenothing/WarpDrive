@@ -134,7 +134,7 @@ public class BlockAir extends Block {
 		}
 		
 		int concentration = world.getBlockMetadata(x, y, z);
-		boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world);
+		boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, x, z);
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || hasAtmosphere) {
@@ -394,7 +394,7 @@ public class BlockAir extends Block {
 	
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
-		if (!WarpDrive.starMap.hasAtmosphere(world)) {
+		if (!WarpDrive.starMap.hasAtmosphere(world, x, z)) {
 			world.scheduleBlockUpdate(x, y, z, this, tickRate(world));
 		} else {
 			world.setBlockToAir(x, y, z);

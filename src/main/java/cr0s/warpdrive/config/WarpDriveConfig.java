@@ -32,7 +32,7 @@ import cr0s.warpdrive.compat.CompatWarpDrive;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.config.structures.StructureReference;
-import cr0s.warpdrive.data.Planet;
+import cr0s.warpdrive.data.CelestialObject;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -99,10 +99,7 @@ public class WarpDriveConfig {
 	// General
 	public static int G_SPACE_BIOME_ID = 95;
 	public static int G_SPACE_PROVIDER_ID = 14;
-	public static int G_SPACE_DIMENSION_ID = -2;
 	public static int G_HYPERSPACE_PROVIDER_ID = 15;
-	public static int G_HYPERSPACE_DIMENSION_ID = -3;
-	public static int G_SPACE_WORLDBORDER_BLOCKS = 100000;
 	public static int G_ENTITY_SPHERE_GENERATOR_ID = 241;
 	public static int G_ENTITY_STAR_CORE_ID = 242;
 	public static int G_ENTITY_CAMERA_ID = 243;
@@ -146,7 +143,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_ACCELERATOR = false;
 	
 	// Starmap
-	public static Planet[] PLANETS = null;
+	public static CelestialObject[] celestialObjects = null;
 	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
 	
 	// Space generator
@@ -378,14 +375,8 @@ public class WarpDriveConfig {
 				config.get("general", "space_biome_id", G_SPACE_BIOME_ID, "Space biome ID").getInt());
 		G_SPACE_PROVIDER_ID = Commons.clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
 				config.get("general", "space_provider_id", G_SPACE_PROVIDER_ID, "Space dimension provider ID").getInt());
-		G_SPACE_DIMENSION_ID = Commons.clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
-				config.get("general", "space_dimension_id", G_SPACE_DIMENSION_ID, "Space dimension world ID").getInt());
 		G_HYPERSPACE_PROVIDER_ID = Commons.clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
 				config.get("general", "hyperspace_provider_id", G_HYPERSPACE_PROVIDER_ID, "Hyperspace dimension provider ID").getInt());
-		G_HYPERSPACE_DIMENSION_ID = Commons.clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
-				config.get("general", "hyperspace_dimension_id", G_HYPERSPACE_DIMENSION_ID, "Hyperspace dimension world ID").getInt());
-		G_SPACE_WORLDBORDER_BLOCKS = Commons.clamp(0, 3000000,
-				config.get("general", "space_worldborder_blocks", G_SPACE_WORLDBORDER_BLOCKS, "World border applied to hyperspace & space, set to 0 to disable it").getInt());
 		
 		G_ENTITY_SPHERE_GENERATOR_ID = Commons.clamp(Integer.MIN_VALUE, Integer.MAX_VALUE,
 				config.get("general", "entity_sphere_generator_id", G_ENTITY_SPHERE_GENERATOR_ID, "Entity sphere generator ID").getInt());
@@ -443,30 +434,80 @@ public class WarpDriveConfig {
 		LOGGING_FORCEFIELD_REGISTRY = config.get("logging", "enable_forcefield_registry_logs", LOGGING_FORCEFIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
 		LOGGING_ACCELERATOR = config.get("logging", "enable_accelerator_logs", LOGGING_ACCELERATOR, "Detailed accelerator logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		
-		// Planets
+		// Celestial objects
 		{
-			config.addCustomCategoryComment("planets",
-					  "Planets are other dimensions connected through the Space dimension. Default is overworld with 100k radius.\n"
-					+ "Each planet orbit is square shaped and defined as a list of 7 integers (all measured in blocks).");
-			
-			ConfigCategory categoryPlanets = config.getCategory("planets");
-			String[] planetsName = categoryPlanets.getValues().keySet().toArray(new String[0]);
-			if (planetsName.length == 0) {
-				planetsName = new String[] { "overworld" };
+			config.addCustomCategoryComment("celestial_objects",
+					  "Celestial objects are generally planets. They can also be a solar system (space) or the all mighty hyperspace.\n"
+					+ "Each celestial object is defined with a list of 14 integers in the following exact order:\n"
+					+ "- dimensionId : this is the id of the dimension. 0 is the Overworld, -1 is the Nether, 1 is the End."
+					+ "- dimensionCenterX, dimensionCenterZ: those are the center coordinate of that dimension world border.\n"
+					+ "  This is measured in blocks. For convenience, it's usually 0, 0\n"
+					+ "- radiusX, radiusZ: this is the world border radius, measured in blocks. The total size is twice that.\n"
+					+ "  This is also the size of the orbit area in space, so don't go too big\n"
+					+ "- parentDimensionId: this is the id of the parent dimension. For planets, this is the space dimension id.\n"
+					+ "- parentCenterX, parentCenterZ: this is the center coordinates in the parent dimension. For a planet, it needs to be different than 0, 0.\n"
+					+ "- isWarpDrive: this is a boolean flag defining if WarpDrive provides this dimension or not.\n"
+					+ "  Currently only Space and Hyperspace can be provided: use other mods to generate planet world.\n"
+					+ "  Set this to 0 to use another mod Space dimension.\n"
+					+ "- moonRatio: this is the chance for a moon to generate in a chunk.\n"
+					+ "- asteroidRatio: this is the chance for a lone asteroid to generate in a chunk.\n"
+					+ "- asteroidFieldRatio: this is the chance for an asteroid field to generate in a chunk.\n"
+					+ "  All 3 ratios work the same way: 100000 is 100% chance, 0 will disable it. Those only works in WarpDrive dimensions, they're ignored otherwise.\n"
+					+ "- gravity: this is the gravity simulation type. 0 is vanilla, 1 is space, 2 is hyperspace.\n"
+					+ "- isBreathable: this is a boolean flag defining if ambient atmosphere is breathable.\n"
+					+ "Hyperspace is a dimension which is its own parent. In other words, hyperspace.dimensionId = hyperspace.parentDimensionId. There can be only one.\n"
+					+ "A Space is a dimension with Hyperspace as its parent.\n"
+					+ "In theory, multiple planets can exists in the same minecraft world.");
+			final String commentDimension = "dimensionId, dimensionCenterX, dimensionCenterZ, radiusX, radiusZ,\n"
+					+ "parentDimensionId, parentCenterX, parentCenterZ, isWarpDrive,\n"
+					+ "moonRatio, asteroidRatio, asteroidFieldRatio, gravity, isBreathable";
+			ConfigCategory categoryDimensions = config.getCategory("celestial_objects");
+			String[] nameDimensions = categoryDimensions.getValues().keySet().toArray(new String[0]);
+			if (nameDimensions.length == 0) {
+				nameDimensions = new String[] { "overworld", "nether", "end", "space", "hyperspace" };
+				int[][] defaultDimensions =  {
+				//    id  x  z radiusX radiusZ  id parentX parentZ  W moon ast  astF  g air
+					{  0, 0, 0,  10000,  10000, -2,      0,      0, 0,   0,   0,   0, 0, 1 },
+					{ -1, 0, 0,   2500,   2500, -2,  30000, -50000, 0,   0,   0,   0, 0, 1 },
+					{  1, 0, 0,   1000,   1000, -2, -80000,  60000, 0,   0,   0,   0, 0, 1 },
+					{ -2, 0, 0, 100000, 100000, -3,      0,      0, 1, 125, 666, 166, 1, 0 },
+					{ -3, 0, 0, 100000, 100000, -3,      0,      0, 1,   0,   0,   0, 2, 0 }
+				};
+				for (int index = 0; index < nameDimensions.length; index++) {
+					config.get("celestial_objects", nameDimensions[index], defaultDimensions[index], commentDimension).getIntList();
+				}
 			}
 			
-			int[] defaultPlanet = { 0, 0, 0, 100000, 100000, 0, 0 }; // 30000000 is Minecraft limit for SetBlock
-			PLANETS = new Planet[planetsName.length];
+			int[] intDefaultDimension = { 0, 0, 0, 10000, 10000, -2, 0, 0, 0, 0, 0, 0, 0, 1 }; // 30000000 is Minecraft limit for SetBlock
+			celestialObjects = new CelestialObject[nameDimensions.length];
 			int index = 0;
-			for (String name : planetsName) {
-				int[] planetInts = config.get("planets", name, defaultPlanet, "dimensionId, dimensionCenterX, dimensionCenterZ, radiusX, radiusZ, spaceCenterX, spaceCenterZ").getIntList();
-				if (planetInts.length != 7) {
-					WarpDrive.logger.warn("Invalid planet definition '" + name + "' (exactly 7 integers are expected), using default instead");
-					planetInts = defaultPlanet.clone();
+			for (String name : nameDimensions) {
+				int[] intDimension = config.get("celestial_objects", name, intDefaultDimension, commentDimension).getIntList();
+				if (intDimension.length != 14) {
+					WarpDrive.logger.warn("Invalid dimension definition '" + name + "' (exactly 8 integers are expected), using default instead");
+					intDimension = intDefaultDimension.clone();
 				}
-				Planet planet = new Planet(planetInts[0], planetInts[1], planetInts[2], planetInts[3], planetInts[4], planetInts[5], planetInts[6]);
-				WarpDrive.logger.info("Adding '" + name + "' as " + planet);
-				PLANETS[index] = planet;
+				CelestialObject celestialObject = new CelestialObject(intDimension[0], intDimension[1], intDimension[2], intDimension[3], intDimension[4],
+				                          intDimension[5], intDimension[6], intDimension[7]);
+				celestialObject.setSelfProvider(intDimension[8] != 0);
+				celestialObject.addGenerationRatio(intDimension[ 9] / 100000.0D, "moon");
+				celestialObject.addGenerationRatio(intDimension[10] / 100000.0D, "asteroid");
+				celestialObject.addGenerationRatio(intDimension[11] / 100000.0D, "asteroidField");
+				switch(intDimension[12]) {
+				case 0:
+				default:
+					celestialObject.setGravity(1.0D);
+					break;
+				case 1:
+					celestialObject.setGravity(0.3D);
+					break;
+				case 2:
+					celestialObject.setGravity(0.45D);
+					break;
+				}
+				celestialObject.setBreathable(intDimension[13] != 0);
+				WarpDrive.logger.info("Adding '" + name + "' as " + celestialObject);
+				celestialObjects[index] = celestialObject;
 				index++;
 			}
 			// FIXME: check planets aren't overlapping
@@ -927,9 +968,10 @@ public class WarpDriveConfig {
 	
 	public static void onFMLPostInitialization() {
 		// unpack default XML files if none are defined
-		File[] files = configDirectory.listFiles((file_notUsed, name) -> {
-			return name.endsWith(".xml");
-		});
+		File[] files = configDirectory.listFiles((file_notUsed, name) -> name.endsWith(".xml"));
+		if (files == null) {
+			throw new RuntimeException("Critical error accessing configuration directory, searching for *.xml files: " + configDirectory);
+		}
 		if (files.length == 0) {
 			for (String defaultXMLfilename : defaultXMLfilenames) {
 				unpackResourceToFolder(defaultXMLfilename, "config", configDirectory);

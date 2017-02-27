@@ -566,13 +566,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInSpace(Context context, Arguments arguments) {
-		return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj) };
+		return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj, xCoord, zCoord) };
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInHyperspace(Context context, Arguments arguments) {
-		return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj) };
+		return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj, xCoord, zCoord) };
 	}
 	
 	@Callback
@@ -792,82 +792,81 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		switch (methodName) {
 			case "dim_positive": // dim_positive (front, right, up)
 				return dim_positive(arguments);
-
+			
 			case "dim_negative": // dim_negative (back, left, down)
 				return dim_negative(arguments);
-
+			
 			case "mode": // mode (mode)
 				return mode(arguments);
-
+			
 			case "distance": // distance (distance)
 				return distance(arguments);
-
+			
 			case "direction": // direction (direction)
 				return direction(arguments);
-
+			
 			case "getAttachedPlayers":
 				return getAttachedPlayers();
-
+			
 			case "summon":
 				return summon(arguments);
-
+			
 			case "summon_all":
 				setSummonAllFlag(true);
-
 				break;
+			
 			case "position":
 				if (core == null) {
 					return null;
 				}
-
 				return new Object[] { core.xCoord, core.yCoord, core.zCoord };
-
+			
 			case "energy":
 				if (core == null) {
 					return null;
 				}
-
 				return core.energy();
-
+			
 			case "getEnergyRequired": // getEnergyRequired(distance)
 				return getEnergyRequired(arguments);
-
+			
 			case "jump":
 				doJump();
-
 				break;
+			
 			case "getShipSize":
 				return getShipSize();
-
+			
 			case "beaconFrequency":
 				return beaconFrequency(arguments);
-
+			
 			case "getOrientation":
 				if (core != null) {
 					return new Object[] { core.dx, 0, core.dz };
 				}
 				return null;
-
+			
 			case "coreFrequency":
 				return shipName(arguments);
-
+			
 			case "isInSpace":
-				return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj) };
-
+				return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj, xCoord, zCoord) };
+			
 			case "isInHyperspace":
-				return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj) };
-
+				return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj, xCoord, zCoord) };
+			
 			case "targetJumpgate":
 				return targetJumpgate(arguments);
-
-			case "isAttached": // isAttached
+			
+			case "isAttached":
 				if (core != null) {
 					return new Object[] { core.controller != null };
 				}
 				break;
+			
 			case "movement":
 				return movement(arguments);
-
+			
 			case "rotationSteps":
 				return rotationSteps(arguments);
 			

@@ -42,7 +42,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (WarpDrive.starMap.hasAtmosphere(worldObj)) {
+		if (WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord)) {
 			if (getBlockMetadata() != 0) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
 			}

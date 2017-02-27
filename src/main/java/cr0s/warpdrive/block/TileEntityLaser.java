@@ -435,7 +435,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return 1.0D;
 		}
 		double attenuation;
-		if (WarpDrive.starMap.hasAtmosphere(worldObj)) {
+		if (WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord)) {
 			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK;
 		} else {
 			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK;
