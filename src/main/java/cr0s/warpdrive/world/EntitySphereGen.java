@@ -2,6 +2,7 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.data.JumpBlock;
@@ -195,8 +196,8 @@ public final class EntitySphereGen extends Entity {
 				}
 			}
 		}
-		if (blocks != null) {
-			WarpDrive.logger.info("[EntitySphereGen] Saved " + blocks.size() + " blocks (estimated to " + pregenSize + ")");
+		if (blocks != null && blocks.size() > pregenSize) {
+			WarpDrive.logger.warn("[EntitySphereGen] Saved " + blocks.size() + " blocks (estimated to " + pregenSize + ")");
 		}
 		LocalProfiler.stop();
 	}
