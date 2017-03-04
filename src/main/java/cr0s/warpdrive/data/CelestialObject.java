@@ -197,13 +197,16 @@ public class CelestialObject implements Cloneable {
 	 * @return square distance to transition borders, 0 if we're in orbit of the object
 	 */
 	public double getSquareDistanceInParent(final int dimensionId, final double x, final double z) {
+		// are in another dimension?
 		if (dimensionId != parentDimensionId) {
 			return Double.POSITIVE_INFINITY;
 		}
+		// are we in orbit?
 		if ( (Math.abs(x - parentCenterX) <= borderRadiusX)
 		  && (Math.abs(z - parentCenterZ) <= borderRadiusZ) ) {
 			return 0.0D;
 		}
+		// do the maths
 		final double dx = Math.max(0.0D, Math.abs(x - parentCenterX) - borderRadiusX);
 		final double dz = Math.max(0.0D, Math.abs(z - parentCenterZ) - borderRadiusZ);
 		return dx * dx + dz * dz;
