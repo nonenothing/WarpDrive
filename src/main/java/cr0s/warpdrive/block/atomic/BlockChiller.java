@@ -103,10 +103,35 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void randomDisplayTick(World world, int x, int y, int z, Random random) {
-		if (world.getBlockMetadata(x, y, z) == 0) {
+		final int metadata = world.getBlockMetadata(x, y, z);
+		if (metadata == 0) {
 			return;
 		}
 		
+		// sound effect
+		int countNearby = 17
+		                - (world.getBlock(x - 1, y, z) == this ? 1 : 0)
+		                - (world.getBlock(x + 1, y, z) == this ? 1 : 0)
+		                - (world.getBlock(x, y, z - 1) == this ? 1 : 0)
+		                - (world.getBlock(x, y, z + 1) == this ? 1 : 0)
+		                - (world.getBlock(x - 2, y, z) == this ? 1 : 0)
+		                - (world.getBlock(x + 2, y, z) == this ? 1 : 0)
+		                - (world.getBlock(x, y, z - 2) == this ? 1 : 0)
+		                - (world.getBlock(x, y, z + 2) == this ? 1 : 0)
+		                - (world.getBlock(x - 1, y + 2, z) == this ? 1 : 0)
+		                - (world.getBlock(x + 1, y + 2, z) == this ? 1 : 0)
+		                - (world.getBlock(x, y + 2, z - 1) == this ? 1 : 0)
+		                - (world.getBlock(x, y + 2, z + 1) == this ? 1 : 0)
+		                - (world.getBlock(x - 1, y - 2, z) == this ? 1 : 0)
+		                - (world.getBlock(x + 1, y - 2, z) == this ? 1 : 0)
+		                - (world.getBlock(x, y - 2, z - 1) == this ? 1 : 0)
+		                - (world.getBlock(x, y - 2, z + 1) == this ? 1 : 0);
+		if (world.rand.nextInt(17) < countNearby) {
+			world.playSound(x + 0.5D, y + 0.5D, z + 0.5D,
+				"warpdrive:chiller", metadata == 1 ? 0.5F : 0.1F, 1.0F, true);
+		}
+		
+		// particle effect, loosely based on redstone ore
 		double dOffset = 0.0625D;
 		
 		for (int l = 0; l < 6; ++l) {

@@ -1,5 +1,6 @@
 package cr0s.warpdrive.entity;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -13,6 +14,11 @@ import net.minecraft.world.World;
  */
 public class EntityParticleBunch extends Entity {
 	
+	private static final int ACCELERATION_SOUND_UPDATE_TICKS = 10;
+	
+	private static final double[] ACCELERATOR_COLLISION_ENERGY_TO_PITCH_X = { 0.0D, 10000.0D };
+	private static final double[] ACCELERATOR_COLLISION_ENERGY_TO_PITCH_Y = { 0.25D,    2.0D };
+	
 	// persistent properties
 	public double energy = 0.0D;
 	public Vector3 vectorNextPosition = new Vector3(0.0D, 0.0D, 0.0D);
@@ -21,6 +27,7 @@ public class EntityParticleBunch extends Entity {
 	// computed properties
 	private int lastUpdateTicks = 0;
 	private static final int UPDATE_TICKS_TIMEOUT = 20;
+	private int soundTicks;
 	
 	public EntityParticleBunch(World world) {
 		super(world);
@@ -71,6 +78,15 @@ public class EntityParticleBunch extends Entity {
 		if (lastUpdateTicks > UPDATE_TICKS_TIMEOUT) {
 			setDead();
 		}
+		
+		// apply sound effects
+		soundTicks--;
+		if (soundTicks < 0) {
+			final float pitch = (float) Commons.interpolate(ACCELERATOR_COLLISION_ENERGY_TO_PITCH_X, ACCELERATOR_COLLISION_ENERGY_TO_PITCH_Y, energy);
+			
+			soundTicks = (int) Math.floor(ACCELERATION_SOUND_UPDATE_TICKS * pitch);
+			worldObj.playSoundEffect(posX, posY, posZ, "warpdrive:accelerating", 1.0F, pitch);
+		}
 	}
 	
 	@Override
@@ -80,6 +96,7 @@ public class EntityParticleBunch extends Entity {
 		setSize(2.0F, 2.0F);
 		yOffset = 2.0F;
 		noClip = true;
+		soundTicks = 0;
 	}
 	
 	@Override
