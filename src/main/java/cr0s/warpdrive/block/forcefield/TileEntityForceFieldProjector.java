@@ -213,7 +213,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			}
 			
 			soundTicks--;
-			if (soundTicks <= 0) {
+			if (soundTicks < 0) {
 				soundTicks = PROJECTOR_SOUND_UPDATE_TICKS;
 				if (!hasUpgrade(EnumForceFieldUpgrade.SILENCER)) {
 					worldObj.playSoundEffect(xCoord + 0.5D, yCoord + 0.5D, zCoord + 0.5D, "warpdrive:projecting", 1.0F, 0.85F + 0.15F * worldObj.rand.nextFloat());

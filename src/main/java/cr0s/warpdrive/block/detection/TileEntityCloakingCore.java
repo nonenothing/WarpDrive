@@ -24,6 +24,9 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
+	
+	private static final int CLOAKING_CORE_SOUND_UPDATE_TICKS = 40;
+	
 	public boolean isEnabled = false;
 	public byte tier = 1; // cloaking field tier, 1 or 2
 	
@@ -71,9 +74,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		}
 		
 		// Reset sound timer
-		soundTicks++;
-		if (soundTicks >= 40) {
-			soundTicks = 0;
+		soundTicks--;
+		if (soundTicks < 0) {
+			soundTicks = CLOAKING_CORE_SOUND_UPDATE_TICKS;
 			soundPlayed = false;
 		}
 		
