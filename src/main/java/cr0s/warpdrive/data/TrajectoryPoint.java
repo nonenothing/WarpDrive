@@ -137,9 +137,9 @@ public class TrajectoryPoint extends VectorI {
 		                                               blockForward, blockUp, blockDown, blockLeft, blockRight,
 		                                               tier);
 		typeNew = turnEvaluator.typeNew;
-		boolean isShellValid = turnEvaluator.isShellValid;
-		boolean isTurning = turnEvaluator.isTurning;
-		boolean isForward = turnEvaluator.isForward;
+		final boolean isShellValid = turnEvaluator.isShellValid;
+		final boolean isTurning = turnEvaluator.isTurning;
+		final boolean isForward = turnEvaluator.isForward;
 		directionForward = turnEvaluator.directionForward;
 		directionBackward = turnEvaluator.directionBackward;
 		
@@ -644,6 +644,9 @@ public class TrajectoryPoint extends VectorI {
 					    || isRightTurn && (blockBackwardRight instanceof BlockVoidShellPlain || blockForwardRight instanceof BlockVoidShellPlain) ) ) {
 						  typeNew |= ERROR_MISSING_TURNING_MAGNET;
 					}
+				} else {
+					// it's turning with all magnets, we can use full acceleration
+					typeNew |= MASK_MAGNETS_BOTH;
 				}
 			}
 			// compute forward vector
