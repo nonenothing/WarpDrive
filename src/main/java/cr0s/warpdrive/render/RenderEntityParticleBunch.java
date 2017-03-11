@@ -1,5 +1,6 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.entity.EntityParticleBunch;
 import org.lwjgl.opengl.GL11;
 
@@ -16,6 +17,17 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderEntityParticleBunch extends RenderEntity {
+	
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_SIZE_X          = { 0.00,   0.8,   1.0,   8.0,  10.0,  80.0, 100.0 };
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_SIZE_Y          = { 0.01, 0.015, 0.020, 0.040, 0.045, 0.065, 0.070 };
+	
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_RED_INSIDE_Y    = { 0.40,  0.60,  0.70,  0.80,  0.60,  0.20,  0.20 };
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_GREEN_INSIDE_Y  = { 0.40,  0.50,  0.40,  0.20,  0.20,  0.30,  0.40 };
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_BLUE_INSIDE_Y   = { 0.20,  0.20,  0.50,  0.60,  0.60,  0.70,  0.80 };
+	
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_RED_OUTSIDE_Y   = { 0.70,  0.90,  0.80,  0.90,  0.80,  0.65,  0.45 };
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_GREEN_OUTSIDE_Y = { 0.80,  1.00,  0.90,  0.80,  0.60,  0.75,  1.00 };
+	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_BLUE_OUTSIDE_Y  = { 0.20,  0.30,  0.50,  0.60,  0.60,  0.80,  0.90 };
 	
 	@Override
 	public void doRender(Entity entity, double x, double y, double z, float rotation, float partialTick) {
@@ -46,12 +58,18 @@ public class RenderEntityParticleBunch extends RenderEntity {
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 		
 		// compute parameters
-		final float energy = (float) entityParticleBunch.energy;
-		final float size = Math.min(Math.max(energy / 50000F, 0.01F), 0.07F);
+		final double energy = entityParticleBunch.getEnergy();
+		final float size = (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_SIZE_Y, energy);
 		final int rayCount_base = 45; 
         
         renderStar(entityParticleBunch.ticksExisted + partialTick, entityParticleBunch.getEntityId(), rayCount_base,
-            1.0F, 0.2F, 0.5F, 0.5F, 1.0F, 0.2F, size, size, size);
+	        (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_RED_INSIDE_Y, energy),
+	        (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_GREEN_INSIDE_Y, energy),
+	        (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_BLUE_INSIDE_Y, energy),
+	        (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_RED_OUTSIDE_Y, energy),
+	        (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_GREEN_OUTSIDE_Y, energy),
+	        (float) Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_SIZE_X, PARTICLE_BUNCH_ENERGY_TO_BLUE_OUTSIDE_Y, energy),
+            size, size, size);
         
         // restore
 		GL11.glPopMatrix();
@@ -110,8 +128,8 @@ public class RenderEntityParticleBunch extends RenderEntity {
 			GL11.glRotatef(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(random.nextFloat() * 360.0F + cycleRotation * 90F, 0.0F, 0.0F, 1.0F);
 			tessellator.startDrawing(6);
-			float rayLength = random.nextFloat() * 20.0F + 5.0F + boost * 10.0F;
-			float rayWidth  = random.nextFloat() *  2.0F + 1.0F + boost *  2.0F;
+			float rayLength = random.nextFloat() * 15.0F + 5.0F + boost *  5.0F;
+			float rayWidth  = random.nextFloat() *  2.0F + 1.0F + boost *  1.0F;
 			tessellator.setColorRGBA_F(redIn, greenIn, blueIn, (int) (255F * (1.0F - boost)));
 			tessellator.addVertex(0.0D              , 0.0D, 0.0D);
 			tessellator.setColorRGBA_F(redOut, greenOut, blueOut, 0);

@@ -9,6 +9,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /*
  * Created by LemADEC on 02/02/2017.
  */
@@ -16,11 +19,12 @@ public class EntityParticleBunch extends Entity {
 	
 	private static final int ACCELERATION_SOUND_UPDATE_TICKS = 10;
 	
-	private static final double[] ACCELERATOR_COLLISION_ENERGY_TO_PITCH_X = { 0.0D, 10000.0D };
-	private static final double[] ACCELERATOR_COLLISION_ENERGY_TO_PITCH_Y = { 0.25D,    2.0D };
+	private static final double[] PARTICLE_BUNCH_ENERGY_TO_X       = { 0.1D, 1.0D, 10.0D, 100.0D };
+	private static final double[] PARTICLE_BUNCH_ENERGY_TO_SOUND_Y = { 0.0D, 1.0D,  2.0D,   3.0D };
+	private static final String[] PARTICLE_BUNCH_SOUNDS = { "warpdrive:accelerating_low", "warpdrive:accelerating_medium", "warpdrive:accelerating_high" };
 	
 	// persistent properties
-	public double energy = 0.0D;
+	private static final int DATA_WATCHER_ENERGY = 2;   // 0 and 1 already taken on all vanilla entities, max is 31
 	public Vector3 vectorNextPosition = new Vector3(0.0D, 0.0D, 0.0D);
 	public Vector3 vectorTurningPoint = null;
 	
@@ -48,6 +52,7 @@ public class EntityParticleBunch extends Entity {
 	}
 	
 	// override to skip the block bounding override on client side
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
 	//	super.setPositionAndRotation2(x, y, z, yaw, pitch, p_70056_9_);
@@ -62,10 +67,18 @@ public class EntityParticleBunch extends Entity {
 	
 	public void onRefreshFromSimulation(final double newEnergy, Vector3 vectorNewPosition, Vector3 vectorNewTurningPoint) {
 		setPosition(vectorNextPosition.x, vectorNextPosition.y, vectorNextPosition.z);
-		energy = newEnergy;
+		setEnergy((float) newEnergy);
 		vectorNextPosition = vectorNewPosition;
 		vectorTurningPoint = vectorNewTurningPoint;
 		lastUpdateTicks = 0;
+	}
+	
+	public float getEnergy() {
+		return this.dataWatcher.getWatchableObjectFloat(DATA_WATCHER_ENERGY);
+	}
+	
+	public void setEnergy(final float energy) {
+		this.dataWatcher.updateObject(DATA_WATCHER_ENERGY, energy);
 	}
 	
 	@Override
@@ -82,16 +95,20 @@ public class EntityParticleBunch extends Entity {
 		// apply sound effects
 		soundTicks--;
 		if (soundTicks < 0) {
-			final float pitch = (float) Commons.interpolate(ACCELERATOR_COLLISION_ENERGY_TO_PITCH_X, ACCELERATOR_COLLISION_ENERGY_TO_PITCH_Y, energy);
+			final double factor = Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_X, PARTICLE_BUNCH_ENERGY_TO_SOUND_Y, getEnergy());
+			final int indexSound = (int) Math.floor(factor);
+			final String sound = PARTICLE_BUNCH_SOUNDS[ Commons.clamp(0, PARTICLE_BUNCH_SOUNDS.length, indexSound) ];
+			final float pitch = 0.6F + 0.4F * (float) (factor - indexSound);
 			
 			soundTicks = (int) Math.floor(ACCELERATION_SOUND_UPDATE_TICKS * pitch);
-			worldObj.playSoundEffect(posX, posY, posZ, "warpdrive:accelerating", 1.0F, pitch);
+			worldObj.playSoundEffect(posX, posY, posZ, sound, 1.0F, pitch);
 		}
 	}
 	
 	@Override
 	protected void entityInit() {
-		// no data watcher
+		dataWatcher.addObject(DATA_WATCHER_ENERGY, 0.0F);
+		
 		// entity size is used by vanilla to define render distance, so we force to a high value and adjust in render itself
 		setSize(2.0F, 2.0F);
 		yOffset = 2.0F;
@@ -116,7 +133,7 @@ public class EntityParticleBunch extends Entity {
 	
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound nbtTagCompound) {
-		energy = nbtTagCompound.getInteger("energy");
+		// energy = nbtTagCompound.getInteger("energy");
 		vectorNextPosition = Vector3.createFromNBT(nbtTagCompound.getCompoundTag("nextPosition"));
 		if (nbtTagCompound.hasKey("turningPoint")) {
 			vectorTurningPoint = Vector3.createFromNBT(nbtTagCompound.getCompoundTag("turningPoint"));
@@ -125,7 +142,7 @@ public class EntityParticleBunch extends Entity {
 	
 	@Override
 	protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound.setDouble("energy", energy);
+		// nbtTagCompound.setDouble("energy", energy);
 		nbtTagCompound.setTag("nextPosition", vectorNextPosition.writeToNBT(new NBTTagCompound()));
 		if (vectorTurningPoint != null) {
 			nbtTagCompound.setTag("turningPoint", vectorTurningPoint.writeToNBT(new NBTTagCompound()));

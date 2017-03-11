@@ -128,50 +128,52 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		                - (world.getBlock(x, y - 2, z + 1) == this ? 1 : 0);
 		if (world.rand.nextInt(17) < countNearby) {
 			world.playSound(x + 0.5D, y + 0.5D, z + 0.5D,
-				"warpdrive:chiller", metadata == 1 ? 0.5F : 0.1F, 1.0F, true);
+				"warpdrive:chiller", metadata == 1 ? 1.0F : 0.15F, 1.0F, true);
 		}
 		
 		// particle effect, loosely based on redstone ore
-		double dOffset = 0.0625D;
-		
-		for (int l = 0; l < 6; ++l) {
-			double dX = (double)((float)x + random.nextFloat());
-			double dY = (double)((float)y + random.nextFloat());
-			double dZ = (double)((float)z + random.nextFloat());
-			boolean isValidSide = false;
+		if (world.rand.nextInt(8) != 1) {
+			double dOffset = 0.0625D;
 			
-			if (l == 0 && !world.getBlock(x, y + 1, z).isOpaqueCube()) {
-				dY = y + 1 + dOffset;
-				isValidSide = true;
-			}
-			
-			if (l == 1 && !world.getBlock(x, y - 1, z).isOpaqueCube()) {
-				dY = y - dOffset;
-				isValidSide = true;
-			}
-			
-			if (l == 2 && !world.getBlock(x, y, z + 1).isOpaqueCube()) {
-				dZ = z + 1 + dOffset;
-				isValidSide = true;
-			}
-			
-			if (l == 3 && !world.getBlock(x, y, z - 1).isOpaqueCube()) {
-				dZ = z - dOffset;
-				isValidSide = true;
-			}
-			
-			if (l == 4 && !world.getBlock(x + 1, y, z).isOpaqueCube()) {
-				dX = x + 1 + dOffset;
-				isValidSide = true;
-			}
-			
-			if (l == 5 && !world.getBlock(x - 1, y, z).isOpaqueCube()) {
-				dX = x - dOffset;
-				isValidSide = true;
-			}
-			
-			if (isValidSide) {
-				world.spawnParticle("reddust", dX, dY, dZ, 0.0D, 0.0D, 0.0D);
+			for (int l = 0; l < 6; ++l) {
+				double dX = (double)((float)x + random.nextFloat());
+				double dY = (double)((float)y + random.nextFloat());
+				double dZ = (double)((float)z + random.nextFloat());
+				boolean isValidSide = false;
+				
+				if (l == 0 && !world.getBlock(x, y + 1, z).isOpaqueCube()) {
+					dY = y + 1 + dOffset;
+					isValidSide = true;
+				}
+				
+				if (l == 1 && !world.getBlock(x, y - 1, z).isOpaqueCube()) {
+					dY = y - dOffset;
+					isValidSide = true;
+				}
+				
+				if (l == 2 && !world.getBlock(x, y, z + 1).isOpaqueCube()) {
+					dZ = z + 1 + dOffset;
+					isValidSide = true;
+				}
+				
+				if (l == 3 && !world.getBlock(x, y, z - 1).isOpaqueCube()) {
+					dZ = z - dOffset;
+					isValidSide = true;
+				}
+				
+				if (l == 4 && !world.getBlock(x + 1, y, z).isOpaqueCube()) {
+					dX = x + 1 + dOffset;
+					isValidSide = true;
+				}
+				
+				if (l == 5 && !world.getBlock(x - 1, y, z).isOpaqueCube()) {
+					dX = x - dOffset;
+					isValidSide = true;
+				}
+				
+				if (isValidSide) {
+					world.spawnParticle("reddust", dX, dY, dZ, 0.0D, 0.0D, 0.0D);
+				}
 			}
 		}
 	}
