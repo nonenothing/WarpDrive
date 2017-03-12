@@ -1,13 +1,15 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.WarpDrive;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
-import cr0s.warpdrive.WarpDrive;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import javax.annotation.Nonnull;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemWarpArmor extends ItemArmor {
 	public static final String[] suffixes = { "helmet", "chestplate", "leggings", "boots" };

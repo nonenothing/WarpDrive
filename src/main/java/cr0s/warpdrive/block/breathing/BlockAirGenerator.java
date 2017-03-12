@@ -1,10 +1,18 @@
 package cr0s.warpdrive.block.breathing;
 
-import java.util.Random;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -19,13 +27,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 	
@@ -85,7 +88,7 @@ public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 		if (tileEntity instanceof TileEntityAirGenerator) {
 			TileEntityAirGenerator airGenerator = (TileEntityAirGenerator)tileEntity;
 			if (itemStackHeld == null) {
-				WarpDrive.addChatMessage(entityPlayer, airGenerator.getStatus());
+				Commons.addChatMessage(entityPlayer, airGenerator.getStatus());
 				return true;
 			} else {
 				Item itemHeld = itemStackHeld.getItem();

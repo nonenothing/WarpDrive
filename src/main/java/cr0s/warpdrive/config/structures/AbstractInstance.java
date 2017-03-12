@@ -1,6 +1,3 @@
-/**
- *
- */
 package cr0s.warpdrive.config.structures;
 
 import java.util.HashMap;

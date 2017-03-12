@@ -1,28 +1,31 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.LocalProfiler;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
+
 import net.minecraftforge.common.DimensionManager;
 
 /**
@@ -93,6 +96,9 @@ public class StarMapRegistry {
 	
 	public void onBlockUpdated(World world, final BlockPos blockPos, final IBlockState blockState) {
 		CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.getDimension());
+		if (setStarMapRegistryItems == null) {
+			return;
+		}
 		for (StarMapRegistryItem registryItem : setStarMapRegistryItems) {
 			if (registryItem.contains(blockPos)) {
 				TileEntity tileEntity = world.getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
@@ -100,11 +106,129 @@ public class StarMapRegistry {
 					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(blockPos), blockState);
 				}
 			}
-		}		
+		}
+	}
+	
+	public static CelestialObject getCelestialObject(World world, final int x, final int z) {
+		return getCelestialObject(world.provider.getDimension(), x, z);
+	}
+	
+	public static CelestialObject getCelestialObject(final int dimensionId, final int x, final int z) {
+		double distanceClosest = Double.POSITIVE_INFINITY;
+		CelestialObject celestialObjectClosest = null;
+		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+			if (dimensionId == celestialObject.dimensionId) {
+				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
+				if (distanceSquared <= 0) {
+					return celestialObject;
+				} else if (distanceClosest > distanceSquared) {
+					distanceClosest = distanceSquared;
+					celestialObjectClosest = celestialObject;
+				}
+			}
+		}
+		return celestialObjectClosest;
+	}
+	
+	public static double getGravity(final Entity entity) {
+		final CelestialObject celestialObject = getCelestialObject(entity.worldObj, (int) entity.posX, (int) entity.posZ);
+		return celestialObject == null ? 1.0D : celestialObject.gravity;
+	}
+	
+	public static CelestialObject getClosestParentCelestialObject(final int dimensionId, final int x, final int z) {
+		double closestPlanetDistance = Double.POSITIVE_INFINITY;
+		CelestialObject celestialObjectClosest = null;
+		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
+			if (distanceSquared <= 0) {
+				return celestialObject;
+			} else if (closestPlanetDistance > distanceSquared) {
+				closestPlanetDistance = distanceSquared;
+				celestialObjectClosest = celestialObject;
+			}
+		}
+		return celestialObjectClosest;
+	}
+	
+	public static CelestialObject getClosestChildCelestialObject(final int dimensionId, final int x, final int z) {
+		double closestPlanetDistance = Double.POSITIVE_INFINITY;
+		CelestialObject celestialObjectClosest = null;
+		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+			final double distanceSquared = celestialObject.getSquareDistanceInParent(dimensionId, x, z);
+			if (distanceSquared <= 0.0D) {
+				return celestialObject;
+			} else if (closestPlanetDistance > distanceSquared) {
+				closestPlanetDistance = distanceSquared;
+				celestialObjectClosest = celestialObject;
+			}
+		}
+		return celestialObjectClosest;
+	}
+	
+	public static int getSpaceDimensionId(World world, final int x, final int z) {
+		CelestialObject celestialObject = getCelestialObject(world, x, z);
+		// already in space?
+		if (celestialObject.isSpace()) {
+			return celestialObject.dimensionId;
+		}
+		// coming from hyperspace?
+		if (celestialObject.isHyperspace()) {
+			celestialObject = getClosestChildCelestialObject(world.provider.getDimension(), x, z);
+			return celestialObject == null ? 0 : celestialObject.dimensionId;
+		}
+		// coming from a planet?
+		celestialObject = getClosestParentCelestialObject(world.provider.getDimension(), x, z);
+		return celestialObject == null ? 0 : (celestialObject.isSpace() ? celestialObject.dimensionId : celestialObject.parentDimensionId);
+	}
+	
+	public static int getHyperspaceDimensionId(World world, final int x, final int z) {
+		CelestialObject celestialObject = getCelestialObject(world, x, z);
+		// already in hyperspace?
+		if (celestialObject.isHyperspace()) {
+			return celestialObject.dimensionId;
+		}
+		// coming from space?
+		if (celestialObject.isSpace()) {
+			return celestialObject.parentDimensionId;
+		}
+		// coming from a planet?
+		celestialObject = getClosestParentCelestialObject(world.provider.getDimension(), x, z);
+		if (celestialObject != null && !celestialObject.isHyperspace()) {
+			celestialObject = getClosestParentCelestialObject(world.provider.getDimension(), x, z);
+		}
+		return celestialObject == null ? 0 : celestialObject.parentDimensionId;
+	}
+	
+	public static int getDimensionId(final String stringDimension, Entity entity) {
+		switch (stringDimension.toLowerCase()) {
+		case "world":
+		case "overworld":
+		case "0":
+			return 0;
+		case "nether":
+		case "thenether":
+		case "-1":
+			return -1;
+		case "s":
+		case "space":
+			return getSpaceDimensionId(entity.worldObj, (int) entity.posX, (int) entity.posZ);
+		case "h":
+		case "hyper":
+		case "hyperspace":
+			return getHyperspaceDimensionId(entity.worldObj, (int) entity.posX, (int) entity.posZ);
+		default:
+			try {
+				return Integer.parseInt(stringDimension);
+			} catch(Exception exception) {
+				// exception.printStackTrace();
+				WarpDrive.logger.info("Invalid dimension '" + stringDimension + "', expecting integer or overworld/nether/end/theend/space/hyper/hyperspace");
+			}
+		}
+		return 0;
 	}
 	
 	public ArrayList<StarMapRegistryItem> radarScan(TileEntity tileEntity, final int radius) {
-		ArrayList<StarMapRegistryItem> res = new ArrayList<>(registry.size());
+		ArrayList<StarMapRegistryItem> starMapRegistryItems = new ArrayList<>(registry.size());
 		cleanup();
 		
 		// printRegistry();
@@ -119,12 +243,33 @@ public class StarMapRegistry {
 				if (distance2 <= radius2
 				    && (entry.isolationRate == 0.0D || tileEntity.getWorld().rand.nextDouble() >= entry.isolationRate)
 				    && (entry.getSpaceCoordinates() != null)) {
-					res.add(entry);
+					starMapRegistryItems.add(entry);
 				}
 			}
 		}
 		
-		return res;
+		return starMapRegistryItems;
+	}
+	
+	public boolean isInSpace(final World world, final int x, final int z) {
+		CelestialObject celestialObject = getCelestialObject(world.provider.getDimension(), x, z);
+		return celestialObject != null && celestialObject.isSpace();
+	}
+	
+	public boolean isInHyperspace(final World world, final int x, final int z) {
+		CelestialObject celestialObject = getCelestialObject(world.provider.getDimension(), x, z);
+		return celestialObject != null && celestialObject.isHyperspace();
+	}
+	
+	public boolean hasAtmosphere(final World world, final int x, final int z) {
+		CelestialObject celestialObject = getCelestialObject(world, x, z);
+		return celestialObject == null || celestialObject.hasAtmosphere();
+	}
+	
+	public boolean isPlanet(final World world, final int x, final int z) {
+		CelestialObject celestialObject = getCelestialObject(world, x, z);
+		return celestialObject == null
+		       || (!celestialObject.isSpace() && !celestialObject.isHyperspace());
 	}
 	
 	public void printRegistry(final String trigger) {

@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.building;
 
 import java.util.Random;
 
+import cr0s.warpdrive.Commons;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -46,7 +48,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 		if (itemStackHeld == null) {
 			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityShipScanner) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipScanner)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityShipScanner)tileEntity).getStatus());
 				return true;
 			}
 		}

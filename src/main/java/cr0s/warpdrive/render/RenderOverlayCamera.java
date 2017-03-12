@@ -1,18 +1,18 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumCameraType;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-
-import org.lwjgl.opengl.GL11;
-
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumCameraType;
 
 public class RenderOverlayCamera {
 	private Minecraft mc;

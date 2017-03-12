@@ -1,30 +1,29 @@
 package cr0s.warpdrive.data;
 
-import java.util.LinkedList;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.network.PacketHandler;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import net.minecraft.block.Block;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.network.PacketHandler;
 
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CloakManager {
 	
-	private static LinkedList<CloakedArea> cloaks;
+	private static CopyOnWriteArraySet<CloakedArea> cloaks = new CopyOnWriteArraySet<>();
 	
-	public CloakManager() {
-		cloaks = new LinkedList<>();
-	}
+	public CloakManager() { }
 	
 	public boolean isCloaked(final int dimensionID, final BlockPos blockPos) {
 		for (CloakedArea area : cloaks) {
@@ -86,20 +85,14 @@ public class CloakManager {
 		CloakedArea newArea = new CloakedArea(world, dimensionId, blockPosCore, tier, minX, minY, minZ, maxX, maxY, maxZ);
 		
 		// find existing one
-		int index = -1;
-		for (int i = 0; i < cloaks.size(); i++) {
-			CloakedArea area = cloaks.get(i);
-			if ( area.dimensionId == world.provider.getDimension()
+		for (CloakedArea area : cloaks) {
+			if ( area.dimensionId == world.provider.getDimension() 
 			  && area.blockPosCore.equals(blockPosCore) ) {
-				index = i;
+				cloaks.remove(area);
 				break;
 			}
 		}
-		if (index != -1) {
-			cloaks.set(index, newArea);
-		} else {
-			cloaks.add(newArea);
-		}
+		cloaks.add(newArea);
 		if (world.isRemote) {
 			newArea.clientCloak();
 		}
@@ -107,9 +100,7 @@ public class CloakManager {
 	}
 	
 	public void removeCloakedArea(final int dimensionId, final BlockPos blockPos) {
-		int index = -1;
-		for (int i = 0; i < cloaks.size(); i++) {
-			CloakedArea area = cloaks.get(i);
+		for (CloakedArea area : cloaks) {
 			if ( area.dimensionId == dimensionId
 			  && area.blockPosCore.equals(blockPos) ) {
 				if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
@@ -117,13 +108,9 @@ public class CloakManager {
 				} else {
 					area.sendCloakPacketToPlayersEx(true); // send info about collapsing cloaking field
 				}
-				index = i;
+				cloaks.remove(area);
 				break;
 			}
-		}
-		
-		if (index != -1) {
-			cloaks.remove(index);
 		}
 	}
 	

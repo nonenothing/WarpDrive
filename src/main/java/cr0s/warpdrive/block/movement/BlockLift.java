@@ -1,5 +1,12 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumLiftMode;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 
 import cr0s.warpdrive.data.EnumLiftMode;
@@ -14,12 +21,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockLift extends BlockAbstractContainer {
 	public static final PropertyEnum<EnumLiftMode> MODE = PropertyEnum.create("mode", EnumLiftMode.class);
@@ -71,7 +74,7 @@ public class BlockLift extends BlockAbstractContainer {
 		if (itemStackHeld == null) {
 			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLift) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLift)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLift) tileEntity).getStatus());
 				return true;
 			}
 		}

@@ -1,11 +1,12 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.api.ITransformation;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import cr0s.warpdrive.api.ITransformation;
 
 public class Transformation implements ITransformation {
 	private final VectorI sourceCore;

@@ -1,16 +1,18 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-
-import javax.annotation.Nonnull;
 
 public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
@@ -48,7 +50,7 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	private double getEfficiency() {
-		int upgradeCount = clamp(0, getUpgradeMaxCount(EnumComponentType.SUPERCONDUCTOR), getUpgradeCount(EnumComponentType.SUPERCONDUCTOR));
+		int upgradeCount = Commons.clamp(0, getUpgradeMaxCount(EnumComponentType.SUPERCONDUCTOR), getUpgradeCount(EnumComponentType.SUPERCONDUCTOR));
 		return WarpDriveConfig.ENERGY_BANK_EFFICIENCY_PER_UPGRADE[upgradeCount];
 	}
 	

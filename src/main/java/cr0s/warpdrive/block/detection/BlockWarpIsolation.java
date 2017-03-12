@@ -1,10 +1,12 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.block.BlockAbstractBase;
+
 import java.util.Random;
 
-import cr0s.warpdrive.block.BlockAbstractBase;
 import net.minecraft.block.material.Material;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
 
 public class BlockWarpIsolation extends BlockAbstractBase {
 	
@@ -17,5 +19,10 @@ public class BlockWarpIsolation extends BlockAbstractBase {
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.UNCOMMON;
 	}
 }

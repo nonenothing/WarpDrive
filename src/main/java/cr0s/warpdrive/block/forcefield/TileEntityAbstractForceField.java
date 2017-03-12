@@ -1,9 +1,6 @@
 package cr0s.warpdrive.block.forcefield;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -15,10 +12,15 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -108,11 +110,11 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 
 	private ITextComponent getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.invalid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
 		} else {
-			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.valid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
 		}
 	}
 	
@@ -128,7 +130,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		tier = tag.getByte("tier");
-		setBeamFrequency(tag.getInteger("beamFrequency"));
+		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
 		isEnabled = !tag.hasKey("isEnabled") || tag.getBoolean("isEnabled"); 
 	}
 	
@@ -136,7 +138,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag = super.writeToNBT(tag);
 		tag.setByte("tier", tier);
-		tag.setInteger("beamFrequency", beamFrequency);
+		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 		tag.setBoolean("isEnabled", isEnabled);
 		return tag;
 	}
@@ -177,7 +179,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		if (arguments.length == 1) {
 			boolean enable;
 			try {
-				enable = toBool(arguments[0]);
+				enable = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
 				throw new Exception("Function expects a boolean value");
 			}
@@ -199,7 +201,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				
 				case "beamFrequency":
 					if (arguments.length == 1) {
-						setBeamFrequency(toInt(arguments[0]));
+						setBeamFrequency(Commons.toInt(arguments[0]));
 					}
 					return new Integer[]{ beamFrequency };
 			}

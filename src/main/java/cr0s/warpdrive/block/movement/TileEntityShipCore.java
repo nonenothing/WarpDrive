@@ -1,25 +1,34 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Jumpgate;
+import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.event.JumpSequencer;
+import cr0s.warpdrive.world.SpaceTeleporter;
+
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.UUID;
 
-import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
-import cr0s.warpdrive.data.SoundEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -29,19 +38,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
-import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Jumpgate;
-import cr0s.warpdrive.data.VectorI;
-import cr0s.warpdrive.event.JumpSequencer;
-import cr0s.warpdrive.world.SpaceTeleporter;
 
-import javax.annotation.Nonnull;
+import net.minecraftforge.common.DimensionManager;
 
 public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
@@ -59,7 +57,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		IDLE(0),
 		BASIC_JUMP(1),		// 0-128
 		LONG_JUMP(2),		// 0-12800
-		TELEPORT(3),
+		// TELEPORT(3),
 		BEACON_JUMP(4),		// Jump ship by beacon
 		HYPERSPACE(5),		// Jump to/from Hyperspace
 		GATE_JUMP(6);		// Jump via jumpgate
@@ -80,7 +78,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	private boolean isCooldownReported = false;
 	protected int randomWarmupAddition = 0;
 	
-	private int chestTeleportUpdateTicks = 0;
 	private final int registryUpdateInterval_ticks = 20 * WarpDriveConfig.STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS;
 	private int registryUpdateTicks = 0;
 	private int bootTicks = 20;
@@ -213,22 +210,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		switch (currentMode) {
-		case TELEPORT:
-			if (worldObj.isBlockIndirectlyGettingPowered(pos) > 0) {
-				if (isChestSummonMode()) {
-					chestTeleportUpdateTicks++;
-					if (chestTeleportUpdateTicks >= 20) {
-						summonPlayersByChestCode();
-						chestTeleportUpdateTicks = 0;
-					}
-				} else {
-					teleportPlayersToSpace();
-				}
-			} else {
-				chestTeleportUpdateTicks = 0;
-			}
-			break;
-			
 		case BASIC_JUMP:
 		case LONG_JUMP:
 		case BEACON_JUMP:
@@ -363,7 +344,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				continue;
 			}
 			
-			WarpDrive.addChatMessage((EntityPlayer) object, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ").appendSibling(textComponent));
+			Commons.addChatMessage((EntityPlayer) object, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ").appendSibling(textComponent));
 		}
 	}
 	
@@ -457,7 +438,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		@SuppressWarnings("ConstantConditions") EntityPlayerMP entityPlayerMP = worldObj.getMinecraftServer().getPlayerList().getPlayerByUsername(playerName);
 		StringBuilder reason = new StringBuilder();
 		if (!validateShipSpatialParameters(reason)) {
-			WarpDrive.addChatMessage(entityPlayerMP, new TextComponentTranslation("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString()));
+			Commons.addChatMessage(entityPlayerMP, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString()));
 			return;
 		}
 		
@@ -491,7 +472,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
 			messageToAllPlayersOnShip("§c" + String.format("%1$s is too far away to be summoned (max. is %2$d m)", entityPlayer.getDisplayName(), WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentString("§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE)));
+			Commons.addChatMessage(entityPlayer, new TextComponentString("§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE)));
 			return;
 		}
 		
@@ -595,7 +576,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		if ( (shipBack + shipFront) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE
 		  || (shipLeft + shipRight) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE
 		  || (shipDown + shipUp) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE) {
-			reason.append("Ship is too big (max is " + WarpDriveConfig.SHIP_MAX_SIDE_SIZE + " per side)");
+			reason.append(String.format("Ship is too big (max is %d per side)",
+				WarpDriveConfig.SHIP_MAX_SIDE_SIZE));
 			return false;
 		}
 		
@@ -614,8 +596,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		updateShipMassAndVolume();
-		if (!isUnlimited && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE && isOnPlanet()) {
-			reason.append("Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
+		if ( !isUnlimited
+		  && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE
+		  && WarpDrive.starMap.isPlanet(worldObj, pos.getX(), pos.getZ()) ) {
+			reason.append(String.format("Ship is too big for a planet (max is %d blocks)",
+				WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE));
 			return false;
 		}
 		
@@ -717,10 +702,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		if (percent > 80F) {
 			return true;
 		} else if (percent <= 0.001) {
-			reason.append("Ship is not inside a jumpgate. Jump rejected. Nearest jumpgate is " + jumpgate.toNiceString());
+			reason.append(String.format("Ship is not inside a jumpgate. Jump rejected. Nearest jumpgate is %s",
+				jumpgate.toNiceString()));
 			return false;
 		} else {
-			reason.append("Ship is only " + percent + "% inside a jumpgate. Sorry, we'll loose too much crew as is, jump rejected.");
+			reason.append(String.format("Ship is only %.1f%% inside a jumpgate. Sorry, we'll loose too much crew as is, jump rejected.",
+				percent));
 			return false;
 		}
 	}
@@ -884,6 +871,22 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			
 			if (currentMode != EnumShipCoreMode.HYPERSPACE) {
 				VectorI movement = controller.getMovement();
+				VectorI shipSize = new VectorI(controller.getFront() + 1 + controller.getBack(),
+				                               controller.getUp()    + 1 + controller.getDown(),
+				                               controller.getRight() + 1 + controller.getLeft());
+				int maxDistance = WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE;
+				if (WarpDrive.starMap.isInHyperspace(worldObj, pos.getX(), pos.getZ())) {
+					maxDistance *= 100;
+				}
+				if (Math.abs(movement.x) - shipSize.x > maxDistance) {
+					movement.x = (int) Math.signum(movement.x) * (shipSize.x + maxDistance);
+				}
+				if (Math.abs(movement.y) - shipSize.y > maxDistance) {
+					movement.y = (int) Math.signum(movement.y) * (shipSize.y + maxDistance);
+				}
+				if (Math.abs(movement.z) - shipSize.z > maxDistance) {
+					movement.z = (int) Math.signum(movement.z) * (shipSize.z + maxDistance);
+				}
 				moveX = dx * movement.x - dz * movement.z;
 				moveY = movement.y;
 				moveZ = dz * movement.x + dx * movement.z;
@@ -909,119 +912,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 	}
 	
-	private void teleportPlayersToSpace() {
-		if (worldObj.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
-			AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 2, pos.getY() - 1, pos.getZ() - 2, pos.getX() + 2, pos.getY() + 4, pos.getZ() + 2);
-			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-
-			@SuppressWarnings("ConstantConditions") WorldServer spaceWorld = worldObj.getMinecraftServer().worldServerForDimension(WarpDriveConfig.G_SPACE_DIMENSION_ID);
-			if (spaceWorld == null) {
-				String msg = "Unable to load Space dimension " + WarpDriveConfig.G_SPACE_DIMENSION_ID + ", aborting teleportation.";
-				messageToAllPlayersOnShip(msg);
-				return;
-			}
-			for (Object o : list) {
-				if (!energy_consume(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
-					return;
-				}
-				
-				Entity entity = (Entity) o;
-				int x = MathHelper.floor_double(entity.posX);
-				int z = MathHelper.floor_double(entity.posZ);
-				// int y = MathHelper.floor_double(entity.posY);
-				int newY;
-				
-				for (newY = 254; newY > 0; newY--) {
-					if (spaceWorld.getBlockState(new BlockPos(x, newY, z)).getBlock().isAssociatedBlock(Blocks.WOOL)) {
-						break;
-					}
-				}
-				
-				if (newY <= 0) {
-					newY = 254;
-				}
-				
-				if (entity instanceof EntityPlayerMP) {
-					((EntityPlayerMP) entity).mcServer.getPlayerList().transferPlayerToDimension(((EntityPlayerMP) entity),
-							WarpDriveConfig.G_SPACE_DIMENSION_ID,
-							new SpaceTeleporter(DimensionManager.getWorld(WarpDriveConfig.G_SPACE_DIMENSION_ID), 0, x, 256, z));
-					
-					if (spaceWorld.isAirBlock(new BlockPos(x, newY, z))) {
-						spaceWorld.setBlockState(new BlockPos(x    , newY, z    ), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x + 1, newY, z    ), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x - 1, newY, z    ), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x    , newY, z + 1), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x    , newY, z - 1), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x + 1, newY, z + 1), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x - 1, newY, z - 1), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x + 1, newY, z - 1), Blocks.STONE.getDefaultState(), 2);
-						spaceWorld.setBlockState(new BlockPos(x - 1, newY, z + 1), Blocks.STONE.getDefaultState(), 2);
-					}
-					
-					entity.setPositionAndUpdate(x + 0.5D, newY + 2.0D, z + 0.5D);
-					((EntityPlayerMP) entity).sendPlayerAbilities();
-				}
-			}
-		}
-	}
-	
-	private void summonPlayersByChestCode() {
-		TileEntity tileEntity = worldObj.getTileEntity(pos.offset(EnumFacing.UP));
-		if (!(tileEntity instanceof TileEntityChest)) {
-			return;
-		}
-		
-		TileEntityChest chest = (TileEntityChest) tileEntity;
-
-		//noinspection ConstantConditions
-		for (EntityPlayerMP entityPlayerMP : worldObj.getMinecraftServer().getPlayerList().getPlayerList()) {
-			
-			if (checkPlayerInventory(chest, entityPlayerMP)) {
-				WarpDrive.logger.info(this + " Summoning " + entityPlayerMP.getName());
-				summonPlayer(entityPlayerMP, pos.add(0, 2, 0));
-			}
-		}
-	}
-	
-	private static boolean checkPlayerInventory(TileEntityChest chest, EntityPlayerMP player) {
-		final int MIN_KEY_LENGTH = 5;
-		int keyLength = 0;
-		
-		for (int index = 0; index < chest.getSizeInventory(); index++) {
-			ItemStack chestItem = chest.getStackInSlot(index);
-			ItemStack playerItem = player.inventory.getStackInSlot(9 + index);
-			
-			if (chestItem == null) {
-				continue;
-			}
-			
-			if (playerItem == null || chestItem != playerItem
-			  || chestItem.getItemDamage() != playerItem.getItemDamage()
-			  || chestItem.stackSize != playerItem.stackSize) {
-				return false;
-			}
-			
-			keyLength++;
-		}
-		
-		if (keyLength < MIN_KEY_LENGTH) {
-			WarpDrive.logger.info("[ChestCode] Key is too short: " + keyLength + " < " + MIN_KEY_LENGTH);
-			return false;
-		}
-		
-		return true;
-	}
-	
-	private Boolean isChestSummonMode() {
-		TileEntity tileEntity = worldObj.getTileEntity(pos.offset(EnumFacing.UP));
-		
-		if (tileEntity != null) {
-			return (tileEntity instanceof TileEntityChest);
-		}
-		
-		return false;
-	}
-	
 	private static boolean isOutsideBB(AxisAlignedBB axisalignedbb, int x, int y, int z) {
 		return axisalignedbb.minX > x || axisalignedbb.maxX < x
 		    || axisalignedbb.minY > y || axisalignedbb.maxY < y
@@ -1038,9 +928,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	public static int calculateRequiredEnergy(EnumShipCoreMode enumShipCoreMode, int shipVolume, int jumpDistance) {
 		switch (enumShipCoreMode) {
-		case TELEPORT:
-			return WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY;
-			
 		case BASIC_JUMP:
 			return (WarpDriveConfig.SHIP_NORMALJUMP_ENERGY_PER_BLOCK * shipVolume) + (WarpDriveConfig.SHIP_NORMALJUMP_ENERGY_PER_DISTANCE * jumpDistance);
 			

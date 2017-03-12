@@ -1,15 +1,15 @@
 package cr0s.warpdrive.api;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.FMLLog;
 
-import javax.annotation.Nonnull;
-
 public class ParticleStack {
-	public final Particle particle;
-	public int amount;
-	public NBTTagCompound tag;
+	private final Particle particle;
+	private int amount;
+	private NBTTagCompound tag;
 	
 	public ParticleStack(@Nonnull final Particle particle, final int amount) {
 		if (!ParticleRegistry.isParticleRegistered(particle)) {
@@ -66,6 +66,16 @@ public class ParticleStack {
 		return particle;
 	}
 	
+	public boolean isEmpty() { return particle == null || amount <= 0; }
+	
+	public final int getAmount() {
+		return amount;
+	}
+	
+	public final void fill(final int amountAdded) {
+		amount += amountAdded;
+	}
+	
 	public String getLocalizedName() {
 		return this.getParticle().getLocalizedName();
 	}
@@ -74,8 +84,11 @@ public class ParticleStack {
 		return this.getParticle().getUnlocalizedName();
 	}
 	
-	public ParticleStack copy()
-	{
+	public ParticleStack copy() {
+		return new ParticleStack(getParticle(), amount, tag);
+	}
+	
+	public ParticleStack copy(final int amount) {
 		return new ParticleStack(getParticle(), amount, tag);
 	}
 	
@@ -105,7 +118,7 @@ public class ParticleStack {
 		}
 		
 		if (other.getItem() instanceof IParticleContainerItem) {
-			return isParticleEqual(((IParticleContainerItem) other.getItem()).getParticle(other));
+			return isParticleEqual(((IParticleContainerItem) other.getItem()).getParticleStack(other));
 		}
 		
 		return false;

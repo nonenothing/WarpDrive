@@ -1,9 +1,10 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	private int ticks = 0;

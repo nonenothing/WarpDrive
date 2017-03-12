@@ -1,10 +1,17 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StarMapRegistry;
+
 import mcp.MethodsReturnNonnullByDefault;
+
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
@@ -13,12 +20,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-
-/*
- *   /wdebug <dimension> <coordinates> <blockId> <Metadata> <actions>
- */
 
 @MethodsReturnNonnullByDefault
 public class CommandDebug extends CommandBase {
@@ -52,45 +53,17 @@ public class CommandDebug extends CommandBase {
 			int dim, x, y, z, metadata;
 			int block;
 			String actions;
-			try
-			{
-				String par = args[0].toLowerCase();
-				switch (par) {
-					case "world":
-					case "overworld":
-					case "0":
-						dim = 0;
-						break;
-					case "nether":
-					case "thenether":
-					case "-1":
-						dim = -1;
-						break;
-					case "s":
-					case "space":
-						dim = WarpDriveConfig.G_SPACE_DIMENSION_ID;
-						break;
-					case "h":
-					case "hyper":
-					case "hyperspace":
-						dim = WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
-						break;
-					default:
-						dim = Integer.parseInt(par);
-						break;
-				}
-
+			try {
+				dim = StarMapRegistry.getDimensionId(args[0], (EntityPlayer) commandSender);
 				x = Integer.parseInt(args[1]);
 				y = Integer.parseInt(args[2]);
 				z = Integer.parseInt(args[3]);
 				block = Integer.parseInt(args[4]);
 				metadata = Integer.parseInt(args[5]);
 				actions = args[6];
-			}
-			catch (Exception exception)
-			{
+			} catch (Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.addChatMessage(player, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(player, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
 
@@ -162,7 +135,7 @@ public class CommandDebug extends CommandBase {
 		}
 		else
 		{
-			WarpDrive.addChatMessage(player,  new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(player,  new TextComponentString(getCommandUsage(commandSender)));
 		}
 	}
 

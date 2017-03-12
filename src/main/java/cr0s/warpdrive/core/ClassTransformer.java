@@ -1,8 +1,5 @@
 package cr0s.warpdrive.core;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -16,6 +13,9 @@ import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class ClassTransformer implements net.minecraft.launchwrapper.IClassTransformer {
 	private HashMap<String, String> nodeMap = new HashMap<>();

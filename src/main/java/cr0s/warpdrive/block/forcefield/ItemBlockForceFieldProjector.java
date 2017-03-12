@@ -1,16 +1,16 @@
 package cr0s.warpdrive.block.forcefield;
 
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
-import cr0s.warpdrive.data.EnumForceFieldShape;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
 
 public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	

@@ -1,18 +1,21 @@
 package cr0s.warpdrive.block.breathing;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.util.math.BlockPos;
+
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
@@ -43,7 +46,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (worldObj.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID && worldObj.provider.getDimension() != WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (WarpDrive.starMap.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
 			IBlockState blockState = worldObj.getBlockState(pos);
 			if (blockState.getValue(BlockProperties.ACTIVE)) {
 				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
@@ -63,12 +66,13 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 				}
 			}
-			releaseAir(pos.add(1, 0, 0));
-			releaseAir(pos.add(-1, 0, 0));
-			releaseAir(pos.add(0, 1, 0));
-			releaseAir(pos.add(0, -1, 0));
-			releaseAir(pos.add(0, 0, 1));
-			releaseAir(pos.add(0, 0, -1));
+			releaseAir(pos.north());
+			releaseAir(pos.south());
+			releaseAir(pos.east());
+			releaseAir(pos.west());
+			releaseAir(pos.up());
+			releaseAir(pos.down());
+			
 			
 			cooldownTicks = 0;
 		}
@@ -132,7 +136,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
 	public Object[] enable(Object[] arguments) {
 		if (arguments.length == 1) {
-			isEnabled = toBool(arguments[0]);
+			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[]{isEnabled};
 	}

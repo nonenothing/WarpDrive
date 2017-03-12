@@ -2,6 +2,8 @@ package cr0s.warpdrive;
 
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StarMapRegistry;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,23 +25,20 @@ public class GravityManager {
 	private static final double SPACE_VOID_GRAVITY_RAW_SNEAK = 0.005D; // 0.001 = no mvt
 	
 	public static double getGravityForEntity(Entity entity) {
-		// Is entity in space or hyper-space?
-		boolean inSpace = entity.worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID;
-		boolean inHyperspace = entity.worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
 		
-		if (inSpace || inHyperspace) {
-			boolean insideGravField = isEntityInGraviField(entity);
+		final double gravity = StarMapRegistry.getGravity(entity);
+		if (gravity < 1.0D) {
+			// Is entity in hyper-space?
+			boolean inHyperspace = gravity > 0.4D;
 			
-			if (insideGravField) {
-				if (inSpace) {
-					return SPACE_FIELD_ENTITY_GRAVITY;
-				} else {
+			if (isEntityInGraviField(entity)) {
+				if (inHyperspace) {
 					return HYPERSPACE_FIELD_ENTITY_GRAVITY;
+				} else {
+					return SPACE_FIELD_ENTITY_GRAVITY;
 				}
 			} else {
-				double jitter = (entity.worldObj.rand.nextDouble() - 0.5D) * 2.0D * HYPERSPACE_VOID_ENTITY_JITTER;
-				if (inSpace)
-					jitter = 0.0D;
+				double jitter = inHyperspace ? (entity.worldObj.rand.nextDouble() - 0.5D) * 2.0D * HYPERSPACE_VOID_ENTITY_JITTER : 0.0D;
 				if (entity instanceof EntityPlayer) {
 					EntityPlayer player = (EntityPlayer) entity;
 					
@@ -65,8 +64,8 @@ public class GravityManager {
 	}
 	
 	public static double getItemGravity(EntityItem entity) {
-		if ( entity.worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID
-		  || entity.worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		final double gravity = StarMapRegistry.getGravity(entity);
+		if (gravity < 1.0D) {
 			if (isEntityInGraviField(entity)) {
 				return SPACE_FIELD_ITEM_GRAVITY;
 			} else {
@@ -78,8 +77,8 @@ public class GravityManager {
 	}
 	
 	public static double getItemGravity2(EntityItem entity) {
-		if ( entity.worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID
-		  || entity.worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		final double gravity = StarMapRegistry.getGravity(entity);
+		if (gravity < 1.0D) {
 			if (isEntityInGraviField(entity)) {
 				return SPACE_FIELD_ITEM_GRAVITY2;
 			} else {

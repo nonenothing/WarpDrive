@@ -2,7 +2,6 @@ package cr0s.warpdrive.data;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -70,15 +69,6 @@ public class Vector3 implements Cloneable {
 		x = direction.getFrontOffsetX();
 		y = direction.getFrontOffsetY();
 		z = direction.getFrontOffsetZ();
-	}
-	
-	/**
-	 * Loads a Vector3 from an NBT compound.
-	 */
-	public Vector3(NBTTagCompound nbt) {
-		x = nbt.getDouble("x");
-		y = nbt.getDouble("y");
-		z = nbt.getDouble("z");
 	}
 	
 	/**
@@ -505,25 +495,24 @@ public class Vector3 implements Cloneable {
 		return Math.acos(vec1.clone().dotProduct(vec2));
 	}
 	
-	/**
-	 * Loads a Vector3 from an NBT compound.
-	 */
-	@Deprecated
-	public static Vector3 readFromNBT(NBTTagCompound nbt) {
-		return new Vector3(nbt);
+	
+	public static Vector3 createFromNBT(NBTTagCompound nbtTagCompound) {
+		Vector3 vector = new Vector3();
+		vector.readFromNBT(nbtTagCompound);
+		return vector;
 	}
 	
-	/**
-	 * Saves this Vector3 to disk
-	 *
-	 * @param nbt
-	 *            - The NBT compound object to save the data in
-	 */
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setDouble("x", x);
-		nbt.setDouble("y", y);
-		nbt.setDouble("z", z);
-		return nbt;
+	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+		x = nbtTagCompound.getDouble("x");
+		y = nbtTagCompound.getDouble("y");
+		z = nbtTagCompound.getDouble("z");
+	}
+	
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound.setDouble("x", x);
+		nbtTagCompound.setDouble("y", y);
+		nbtTagCompound.setDouble("z", z);
+		return nbtTagCompound;
 	}
 	
 	public static Vector3 UP() {

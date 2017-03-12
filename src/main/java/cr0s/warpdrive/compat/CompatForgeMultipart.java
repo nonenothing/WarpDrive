@@ -1,5 +1,10 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.lang.reflect.Method;
 
 import net.minecraft.block.Block;
@@ -8,10 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraftforge.common.util.Constants;
 
 public class CompatForgeMultipart implements IBlockTransformer {

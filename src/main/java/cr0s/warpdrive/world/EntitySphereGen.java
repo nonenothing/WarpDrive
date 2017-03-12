@@ -1,5 +1,11 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.LocalProfiler;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.structures.Orb.OrbShell;
+import cr0s.warpdrive.config.structures.OrbInstance;
+import cr0s.warpdrive.data.JumpBlock;
+
 import java.util.ArrayList;
 
 import net.minecraft.block.state.IBlockState;
@@ -8,11 +14,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.structures.Orb.OrbShell;
-import cr0s.warpdrive.config.structures.OrbInstance;
-import cr0s.warpdrive.data.JumpBlock;
 
 /*
  2014-06-07 21:41:45 [Infos] [STDOUT] Generating star (class 0) at -579 257 1162
@@ -198,8 +199,8 @@ public final class EntitySphereGen extends Entity {
 				}
 			}
 		}
-		if (blocks != null) {
-			WarpDrive.logger.info("[EntitySphereGen] Saved " + blocks.size() + " blocks (estimated to " + pregenSize + ")");
+		if (blocks != null && blocks.size() > pregenSize) {
+			WarpDrive.logger.warn("[EntitySphereGen] Saved " + blocks.size() + " blocks (estimated to " + pregenSize + ")");
 		}
 		LocalProfiler.stop();
 	}
@@ -231,6 +232,15 @@ public final class EntitySphereGen extends Entity {
 	
 	@Override
 	protected void entityInit() {
+		noClip = true;
+	}
+	
+	// override to skip the block bounding override on client side
+	@Override
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
+		this.setPosition(x, y, z);
+		this.setRotation(yaw, pitch);
 	}
 	
 	@Override

@@ -1,12 +1,12 @@
 package cr0s.warpdrive.data;
 
-import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
+
 import net.minecraftforge.common.DimensionManager;
 
 public class GlobalPosition {
@@ -65,24 +65,19 @@ public class GlobalPosition {
 	}
 	
 	public VectorI getSpaceCoordinates() {
-		if (dimensionId == WarpDriveConfig.G_SPACE_DIMENSION_ID) {
-			return new VectorI(x, y + 256, z);
+		CelestialObject celestialObject = StarMapRegistry.getCelestialObject(dimensionId, x, z);
+		if (celestialObject == null) {
+			// not a registered area
+			return null;
 		}
-		if (dimensionId == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (celestialObject.isHyperspace()) {
 			return new VectorI(x, y + 512, z);
 		}
-		for (Planet planet : WarpDriveConfig.PLANETS) {
-			if (planet.dimensionId == dimensionId) {
-				if ( (Math.abs(x - planet.dimensionCenterX) <= planet.borderSizeX)
-					&& (Math.abs(z - planet.dimensionCenterZ) <= planet.borderSizeZ)) {
-					return new VectorI(
-						x - planet.dimensionCenterX + planet.spaceCenterX,
-						y,
-						z - planet.dimensionCenterZ + planet.spaceCenterZ);
-				}
-			}
+		if (celestialObject.isSpace()) {
+			return new VectorI(x, y + 256, z);
 		}
-		return null;
+		VectorI vEntry = celestialObject.getEntryOffset();
+		return new VectorI(x - vEntry.x, y, z - vEntry.z);
 	}
 	
 	public boolean equals(final TileEntity tileEntity) {

@@ -4,9 +4,20 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
 import cr0s.warpdrive.network.PacketHandler;
+
+import javax.annotation.Nonnull;
+
+import java.util.HashMap;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.EntityBoat;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.entity.item.EntityFireworkRocket;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityMinecart;
+import net.minecraft.entity.item.EntityTNTPrimed;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -16,9 +27,6 @@ import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import java.util.HashMap;
 
 public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpgrade, IForceFieldUpgradeEffector {
 	//            Upgrade         - Compatibility -  ----- Value -----  -- Scan speed --  -- Place speed --  --------- Energy costs ---------  comment
@@ -277,7 +285,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 			v3Direction.scale(0.20D);
 			PacketHandler.sendBeamPacket(world, v3Projector, v3Entity,
 				0.25F, 0.38F, 0.75F, 10, 0, 50);
-			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", v3Entity, v3Direction,
+			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", (byte) 5, v3Entity, v3Direction,
 				0.20F + 0.10F * world.rand.nextFloat(), 0.25F + 0.25F * world.rand.nextFloat(), 0.60F + 0.30F * world.rand.nextFloat(),
 				0.0F, 0.0F, 0.0F, 32);
 			return 10;
@@ -295,7 +303,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 			v3Direction.scale(0.20D);
 			PacketHandler.sendBeamPacket(world, v3Projector, v3Entity,
 				0.95F, 0.52F, 0.38F, 10, 0, 50);
-			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", v3Entity, v3Direction,
+			PacketHandler.sendSpawnParticlePacket(world, "snowshovel", (byte) 5, v3Entity, v3Direction,
 				0.90F + 0.10F * world.rand.nextFloat(), 0.35F + 0.25F * world.rand.nextFloat(), 0.30F + 0.15F * world.rand.nextFloat(),
 				0.0F, 0.0F, 0.0F, 32);
 			/*
@@ -316,7 +324,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 			v3Direction.scale(0.15D);
 			PacketHandler.sendBeamPacket(world, v3Projector, v3Entity,
 				0.35F, 0.57F, 0.87F, 10, 0, 50);
-			PacketHandler.sendSpawnParticlePacket(world, "fireworksSpark", v3Entity, v3Direction,
+			PacketHandler.sendSpawnParticlePacket(world, "fireworksSpark", (byte) 5, v3Entity, v3Direction,
 				0.20F + 0.30F * world.rand.nextFloat(), 0.50F + 0.15F * world.rand.nextFloat(), 0.75F + 0.25F * world.rand.nextFloat(),
 				0.10F + 0.20F * world.rand.nextFloat(), 0.10F + 0.30F * world.rand.nextFloat(), 0.20F + 0.10F * world.rand.nextFloat(),
 				32);

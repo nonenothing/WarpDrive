@@ -1,7 +1,7 @@
 local component = require("component")
 local term = require("term")
 
-if not component.isAvailable("cloakingdevicecore") then
+if not component.isAvailable("warpdriveCloakingCore") then
   print("No cloaking core detected")
 else
   local cloakingcore = component.warpdriveCloakingCore

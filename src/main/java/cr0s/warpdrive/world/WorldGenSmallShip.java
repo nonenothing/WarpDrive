@@ -1,5 +1,9 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 import net.minecraft.entity.monster.EntityZombie;
@@ -12,9 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
-
 public class WorldGenSmallShip extends WorldGenerator {
 	private final boolean corrupted;
 	
@@ -23,7 +24,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 	}
 	
 	@Override
-	public boolean generate(World world, Random rand, BlockPos blockPos) {
+	public boolean generate(@Nonnull World world, @Nonnull Random rand, @Nonnull BlockPos blockPos) {
 		WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
 		int x = blockPos.getX() - 5;
 		int y = blockPos.getY() - 4;

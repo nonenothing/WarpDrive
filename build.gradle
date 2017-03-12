@@ -90,7 +90,11 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+<<<<<<< HEAD
 	compileOnly "blusunrize:ImmersiveEngineering:0.10-+:deobf"
+=======
+    compileOnly "blusunrize:ImmersiveEngineering:0.10-+:deobf"
+>>>>>>> MC1.7-2017-03-12
 //  compileOnly "mezz.jei:jei_1.10.2:3.13.+"
 //  compileOnly "mcp.mobius.waila:Waila:1.7.0-B3_1.9.4"
 //  compileOnly "slimeknights.mantle:Mantle:1.10.2-1.+"
@@ -105,11 +109,15 @@ processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-	
-	// skip source assets
+    
+    // skip source assets
     exclude '**/*.pdn'
     exclude '**/*.psd'
+<<<<<<< HEAD
 	
+=======
+    
+>>>>>>> MC1.7-2017-03-12
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
@@ -126,7 +134,11 @@ processResources {
 
 jar {
     manifest {
+<<<<<<< HEAD
 		attributes FMLAT: "warpdrive_at.cfg"
+=======
+        attributes FMLAT: "warpdrive_at.cfg"
+>>>>>>> MC1.7-2017-03-12
         attributes FMLCorePlugin: "cr0s.warpdrive.core.FMLLoadingPlugin"
         attributes FMLCorePluginContainsFMLMod: "true"
     }

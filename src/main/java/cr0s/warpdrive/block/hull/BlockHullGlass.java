@@ -1,6 +1,12 @@
 package cr0s.warpdrive.block.hull;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockGlass;
 import net.minecraft.block.SoundType;
@@ -8,15 +14,10 @@ import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IDamageReceiver;
-import cr0s.warpdrive.config.WarpDriveConfig;
-
-import javax.annotation.Nonnull;
 
 public class BlockHullGlass extends BlockColored implements IDamageReceiver {
 	final byte tier;

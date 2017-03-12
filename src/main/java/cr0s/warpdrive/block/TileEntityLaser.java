@@ -1,14 +1,28 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.block.weapon.BlockLaserCamera;
+import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.network.PacketHandler;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import cr0s.warpdrive.data.SoundEvents;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -16,23 +30,17 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.*;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.api.IDamageReceiver;
-import cr0s.warpdrive.block.weapon.BlockLaserCamera;
-import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.network.PacketHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFrequency {
 	
@@ -145,7 +153,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	private void emitBeam(int beamEnergy) {
 		int energy = beamEnergy;
 		
-		int beamLengthBlocks = clamp(0, WarpDriveConfig.LASER_CANNON_RANGE_MAX, energy / 200);
+		int beamLengthBlocks = Commons.clamp(0, WarpDriveConfig.LASER_CANNON_RANGE_MAX, energy / 200);
 		
 		if (energy == 0 || beamFrequency > 65000 || beamFrequency <= 0) {
 			if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -269,7 +277,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					// apply effects
 					mopEntity.entityHit.setFire(WarpDriveConfig.LASER_CANNON_ENTITY_HIT_SET_ON_FIRE_SECONDS);
 					if (entity != null) {
-						float damage = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_ENTITY_HIT_MAX_DAMAGE,
+						float damage = (float) Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_ENTITY_HIT_MAX_DAMAGE,
 								WarpDriveConfig.LASER_CANNON_ENTITY_HIT_BASE_DAMAGE + energy / WarpDriveConfig.LASER_CANNON_ENTITY_HIT_ENERGY_PER_DAMAGE);
 						entity.attackEntityFrom(DamageSource.inFire, damage);
 					} else {
@@ -277,7 +285,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					}
 					
 					if (energy > WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_THRESHOLD) {
-						float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH,
+						float strength = (float) Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_MAX_STRENGTH,
 							  WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_ENTITY_HIT_EXPLOSION_ENERGY_PER_STRENGTH); 
 						worldObj.newExplosion(null, mopEntity.entityHit.posX, mopEntity.entityHit.posY, mopEntity.entityHit.posZ, strength, true, true);
 					}
@@ -342,7 +350,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			
 			// explode on unbreakable blocks
 			if (hardness < 0.0F) {
-				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
+				float strength = (float) Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
 					WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("Explosion triggered with strength " + strength);
@@ -353,9 +361,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			}
 			
 			// Compute parameters
-			int energyCost = clamp(WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_MIN, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_MAX,
+			int energyCost = Commons.clamp(WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_MIN, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_MAX,
 					Math.round(hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS));
-			double absorptionChance = clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX,
+			double absorptionChance = Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX,
 					hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS);
 			
 			do {
@@ -393,7 +401,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				-0.2D * vDirection.x + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 				-0.2D * vDirection.y + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()),
 				-0.2D * vDirection.z + 0.05 * (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()));
-			PacketHandler.sendSpawnParticlePacket(worldObj, "explode", origin, direction, r, g, b, r, g, b, 96);
+			PacketHandler.sendSpawnParticlePacket(worldObj, "explode", (byte) 5, origin, direction, r, g, b, r, g, b, 96);
 			
 			// apply custom damages
 			if (blockState.getBlock() instanceof IDamageReceiver) {
@@ -408,7 +416,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			}
 			
 			if (hardness >= WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_HARDNESS_THRESHOLD) {
-				float strength = (float)clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
+				float strength = (float) Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH,
 						WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_BASE_STRENGTH + energy / WarpDriveConfig.LASER_CANNON_BLOCK_HIT_EXPLOSION_ENERGY_PER_STRENGTH); 
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("Explosion triggered with strength " + strength);
@@ -428,13 +436,11 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		if (distance <= 0) {
 			return 1.0D;
 		}
-		boolean isInSpace = (worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID);
-		boolean isInHyperSpace = (worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID);
 		double attenuation;
-		if (isInSpace || isInHyperSpace) {
-			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK;
-		} else {
+		if (WarpDrive.starMap.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
 			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_AIR_BLOCK;
+		} else {
+			attenuation = WarpDriveConfig.LASER_CANNON_ENERGY_ATTENUATION_PER_VOID_BLOCK;
 		}
 		double transmittance = Math.exp(- attenuation * distance);
 		if (WarpDriveConfig.LOGGING_WEAPON) {
@@ -520,11 +526,11 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	
 	protected ITextComponent getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.invalid", beamFrequency );
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency );
 		} else {
-			return new TextComponentTranslation("warpdrive.beamFrequency.statusLine.valid", beamFrequency );
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency );
 		}
 	}
 	
@@ -551,14 +557,14 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		setBeamFrequency(tag.getInteger("beamFrequency"));
-		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger("videoChannel");
+		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
+		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag = super.writeToNBT(tag);
-		tag.setInteger("beamFrequency", beamFrequency);
+		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 		return tag;
 	}
 	
@@ -598,13 +604,13 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		try {
 			float newYaw, newPitch;
 			if (arguments.length == 2) {
-				newYaw = toFloat(arguments[0]);
-				newPitch = toFloat(arguments[1]);
+				newYaw = Commons.toFloat(arguments[0]);
+				newPitch = Commons.toFloat(arguments[1]);
 				initiateBeamEmission(newYaw, newPitch);
 			} else if (arguments.length == 3) {
-				float deltaX = -toFloat(arguments[0]);
-				float deltaY = -toFloat(arguments[1]);
-				float deltaZ = toFloat(arguments[2]);
+				float deltaX = -Commons.toFloat(arguments[0]);
+				float deltaY = -Commons.toFloat(arguments[1]);
+				float deltaZ = Commons.toFloat(arguments[2]);
 				double horizontalDistance = MathHelper.sqrt_double(deltaX * deltaX + deltaZ * deltaZ);
 				//noinspection SuspiciousNameCombination
 				newYaw = (float) (Math.atan2(deltaX, deltaZ) * 180.0D / Math.PI);
@@ -654,7 +660,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 
 			case "beamFrequency":
 				if (arguments.length == 1) {
-					setBeamFrequency(toInt(arguments[0]));
+					setBeamFrequency(Commons.toInt(arguments[0]));
 				}
 				return new Integer[]{ beamFrequency };
 

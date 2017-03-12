@@ -3,6 +3,8 @@ death.attack.warpdrive.asphyxia=%1$s died from asphyxia
 death.attack.warpdrive.asphyxia.player=%1$s was killed by %2$s using asphyxia
 death.attack.warpdrive.cold=%1$s died from cold
 death.attack.warpdrive.cold.player=%1$s was frozen to death by %2$s 
+death.attack.warpdrive.irradiation=%1$s died from irradiation
+death.attack.warpdrive.irradiation.player=%1$s received a lethal radiation from %2$s 
 death.attack.warpdrive.laser=%1$s died from crossing the beam
 death.attack.warpdrive.laser.player=%1$s was laserified by %2$s
 death.attack.warpdrive.shock=%1$s was electrocuted
@@ -41,6 +43,10 @@ item.warpdrive.armor.helmet.name=Warp Helmet
 item.warpdrive.armor.chestplate.name=Warp Chestplate
 item.warpdrive.armor.leggings.name=Warp Leggings
 item.warpdrive.armor.boots.name=Warp Boots
+
+item.warpdrive.atomic.electromagnetic_cell.name=Electromagnetic cell
+item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Use a particle collider to fill me!
+item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Contains %1$s Å³ of %2$s
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 Reactor Laser Focus
 
@@ -120,29 +126,32 @@ item.warpdrive.tool.crystalToken4.name=Crystal token #4
 item.warpdrive.tool.crystalToken5.name=Crystal token #5
 
 
-item.warpdrive.tool.TuningFork.name=Tuning Fork
-item.warpdrive.tool.TuningFork.white.name=White Tuning Fork
-item.warpdrive.tool.TuningFork.orange.name=Orange Tuning Fork
-item.warpdrive.tool.TuningFork.magenta.name=Magenta Tuning Fork
-item.warpdrive.tool.TuningFork.lightBlue.name=Light Blue Tuning Fork
-item.warpdrive.tool.TuningFork.yellow.name=Yellow Tuning Fork
-item.warpdrive.tool.TuningFork.lime.name=Lime Tuning Fork
-item.warpdrive.tool.TuningFork.pink.name=Pink Tuning Fork
-item.warpdrive.tool.TuningFork.gray.name=Gray Tuning Fork
-item.warpdrive.tool.TuningFork.silver.name=Silver Tuning Fork
-item.warpdrive.tool.TuningFork.cyan.name=Cyan Tuning Fork
-item.warpdrive.tool.TuningFork.purple.name=Purple Tuning Fork
-item.warpdrive.tool.TuningFork.blue.name=Blue Tuning Fork
-item.warpdrive.tool.TuningFork.brown.name=Brown Tuning Fork
-item.warpdrive.tool.TuningFork.green.name=Green Tuning Fork
-item.warpdrive.tool.TuningFork.red.name=Red Tuning Fork
-item.warpdrive.tool.TuningFork.black.name=Black Tuning Fork
+item.warpdrive.tool.tuning_driver.video_channel.name=Video Channel Tuning Driver
+item.warpdrive.tool.tuning_driver.beam_frequency.name=Beam Frequency Tuning Driver
+item.warpdrive.tool.tuning_driver.control_channel.name=Control Channel Tuning Driver
 
-item.warpdrive.tool.TuningFork.tooltip.videoChannel=Video channel is set to %1$d
-item.warpdrive.tool.TuningFork.tooltip.beamFrequency=Beam frequency is set to %1$d
-item.warpdrive.tool.TuningFork.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
-item.warpdrive.tool.TuningFork.use.setVideoChannel=%1$s is now tuned to Video channel %2$d
-item.warpdrive.tool.TuningFork.use.setBeamFrequency=%1$s is now aligned with Beam frequency %2$d
+item.warpdrive.tool.tuning_driver.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to retrieve its value\n§bRight click air§7 to change mode
+
+
+item.warpdrive.tool.tuning_fork.name=Tuning Fork
+item.warpdrive.tool.tuning_fork.white.name=White Tuning Fork
+item.warpdrive.tool.tuning_fork.orange.name=Orange Tuning Fork
+item.warpdrive.tool.tuning_fork.magenta.name=Magenta Tuning Fork
+item.warpdrive.tool.tuning_fork.lightBlue.name=Light Blue Tuning Fork
+item.warpdrive.tool.tuning_fork.yellow.name=Yellow Tuning Fork
+item.warpdrive.tool.tuning_fork.lime.name=Lime Tuning Fork
+item.warpdrive.tool.tuning_fork.pink.name=Pink Tuning Fork
+item.warpdrive.tool.tuning_fork.gray.name=Gray Tuning Fork
+item.warpdrive.tool.tuning_fork.silver.name=Silver Tuning Fork
+item.warpdrive.tool.tuning_fork.cyan.name=Cyan Tuning Fork
+item.warpdrive.tool.tuning_fork.purple.name=Purple Tuning Fork
+item.warpdrive.tool.tuning_fork.blue.name=Blue Tuning Fork
+item.warpdrive.tool.tuning_fork.brown.name=Brown Tuning Fork
+item.warpdrive.tool.tuning_fork.green.name=Green Tuning Fork
+item.warpdrive.tool.tuning_fork.red.name=Red Tuning Fork
+item.warpdrive.tool.tuning_fork.black.name=Black Tuning Fork
+
+item.warpdrive.tool.tuning_fork.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
 
 
 tile.warpdrive.passive.Air.name=Air Block
@@ -424,9 +433,24 @@ warpdrive.energy.side.changedToInput=%1$s side changed to energy Input mode!
 warpdrive.energy.side.changedToOutput=%1$s side changed to energy Output mode!
 warpdrive.energy.side.changedToDisabled=%1$s side changed to Disabled mode!
 
-warpdrive.beamFrequency.statusLine.valid=Beam frequency %1$d is valid.
-warpdrive.beamFrequency.statusLine.invalid=§cBeam frequency %1$d is invalid.
-warpdrive.beamFrequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set it.
+warpdrive.accelerator.guide.lowPower_noStorage=Energy storage is too low; we need at least %1$d to continue operation but can only store %2$d
+warpdrive.accelerator.guide.lowPower_accelerating=We're running out of power chief, particles are on the loose, prepare for massive irradiation!
+warpdrive.accelerator.guide.lowPower_noParticles=We need more power to start the accelerator!
+warpdrive.accelerator.guide.noChiller=No chiller could be found for this accelerator!
+
+warpdrive.beam_frequency.tooltip=Beam frequency is set to %1$d
+warpdrive.beam_frequency.get=Beam frequency %2$d has been retrieved from %1$s 
+warpdrive.beam_frequency.set=%1$s is now aligned with Beam frequency %2$d
+warpdrive.beam_frequency.statusLine.valid=Beam frequency %1$d is valid.
+warpdrive.beam_frequency.statusLine.invalid=§cBeam frequency %1$d is invalid.
+warpdrive.beam_frequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set it.
+
+warpdrive.control_channel.tooltip=Control channel is set to %1$d
+warpdrive.control_channel.get=Control channel %2$d has been retrieved from %1$s 
+warpdrive.control_channel.set=%1$s is now tuned with Control channel %2$d
+warpdrive.control_channel.statusLine.valid=Control channel %1$d is valid.
+warpdrive.control_channel.statusLine.invalid=§cControl channel %1$d is invalid.
+warpdrive.control_channel.statusLine.undefined=§7Undefined Control channel.\n§bUse a Tuning fork§r to set it.
 
 warpdrive.forcefield.guide.lowPower=We're running out of power captain, reduce our consumption or get that scottish engineer to boost our power!
 
@@ -460,6 +484,15 @@ warpdrive.forcefield.upgrade.statusLine.stabilization=stabilization
 warpdrive.forcefield.upgrade.statusLine.thickness=thickness
 warpdrive.forcefield.upgrade.statusLine.translation=translation
 
+warpdrive.particle.ion.name=ion
+warpdrive.particle.ion.tooltip=Produced by colliding a particle bunch in a basic accelerator
+warpdrive.particle.proton.name=proton
+warpdrive.particle.proton.tooltip=Produced by colliding a particle bunch in an advanced accelerator
+warpdrive.particle.antimatter.name=antimatter
+warpdrive.particle.antimatter.tooltip=Produced by colliding a particle bunch in a superior accelerator
+warpdrive.particle.strange_matter.name=strange matter
+warpdrive.particle.strange_matter.tooltip=Produced by colliding 2 particle bunches in a superior accelerator
+
 warpdrive.upgrade.result.noUpgradeToDismount=§cNo upgrade to dismount.
 warpdrive.upgrade.result.notEnoughUpgrades=§cYou need at least 1 item to upgrade this block.
 warpdrive.upgrade.result.invalidUpgrade=§cThis is not a valid item to upgrade this block.
@@ -480,11 +513,15 @@ warpdrive.upgrade.result.shapeMounted=Shape mounted successfully.
 warpdrive.upgrade.statusLine.none=§7No upgrade installed.
 warpdrive.upgrade.statusLine.valid=Upgraded with %1$s.
 
-warpdrive.videoChannel.statusLine.valid=Video channel %1$d is valid.
-warpdrive.videoChannel.statusLine.validCamera=Video channel %1$d is valid for camera at %2$d, %3$d, %4$d.
-warpdrive.videoChannel.statusLine.invalid=§cVideo channel %1$d is invalid.
-warpdrive.videoChannel.statusLine.invalidOrNotLoaded=§cVideo channel %1$d is invalid or camera is too far away!
-warpdrive.videoChannel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
+warpdrive.video_channel.tooltip=Video channel is set to %1$d
+warpdrive.video_channel.get=Video channel %2$d has been retrieved from %1$s
+warpdrive.video_channel.set=%1$s is now tuned to Video channel %2$d
+warpdrive.video_channel.statusLine.valid=Video channel %1$d is valid.
+warpdrive.video_channel.statusLine.validCamera=Video channel %1$d is valid for camera at %2$d, %3$d, %4$d.
+warpdrive.video_channel.statusLine.invalid=§cVideo channel %1$d is invalid.
+warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideo channel %1$d is invalid or camera is too far away!
+warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
+
 warpdrive.cloakingCore.invalidAssembly=§cInvalid assembly!
 warpdrive.cloakingCore.disabled=Cloak is disabled
 warpdrive.cloakingCore.lowPower=§cCloak is down, we need more power Captain!

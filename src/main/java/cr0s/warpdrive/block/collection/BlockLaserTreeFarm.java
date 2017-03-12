@@ -1,8 +1,16 @@
 package cr0s.warpdrive.block.collection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import java.util.Random;
 
 import cr0s.warpdrive.data.EnumLaserTreeFarmMode;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -14,12 +22,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	public static final PropertyEnum<EnumLaserTreeFarmMode> MODE = PropertyEnum.create("mode", EnumLaserTreeFarmMode.class);
@@ -71,7 +75,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		if (itemStackHeld == null) {
 			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLaserTreeFarm) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm)tileEntity).getStatus());
 				return true;
 			}
 		}

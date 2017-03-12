@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.decoration;
 import java.util.List;
 import java.util.Random;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.EnumGasColor;
 import net.minecraft.block.material.EnumPushReaction;
@@ -11,6 +12,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -25,6 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockGas extends BlockAbstractBase {
+	
 	public static final PropertyEnum<EnumGasColor> COLOR = PropertyEnum.create("color", EnumGasColor.class);
 	
 	public BlockGas(final String registryName) {
@@ -52,6 +55,11 @@ public class BlockGas extends BlockAbstractBase {
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(COLOR).ordinal();
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 	
 	@Nullable
@@ -153,7 +161,7 @@ public class BlockGas extends BlockAbstractBase {
 	@Override
 	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
 		// Gas blocks allow only in space
-		if (world.provider.getDimension() != WarpDriveConfig.G_SPACE_DIMENSION_ID) {
+		if (WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.setBlockToAir(blockPos);
 		}
 	}

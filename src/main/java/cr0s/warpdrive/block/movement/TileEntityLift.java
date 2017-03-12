@@ -1,28 +1,32 @@
 package cr0s.warpdrive.block.movement;
 
-import java.util.List;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumLiftMode;
 import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.network.PacketHandler;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import java.util.List;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.network.PacketHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
+
 
 public class TileEntityLift extends TileEntityAbstractEnergy {
 	
@@ -171,14 +175,14 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (tag.hasKey("mode")) {
-			mode = EnumLiftMode.get(clamp(-1, 2, tag.getByte("mode")));
+			mode = EnumLiftMode.get(Commons.clamp(-1, 2, tag.getByte("mode")));
 		}
 		if (tag.hasKey("computerEnabled")) {
 			computerEnabled = tag.getBoolean("computerEnabled");
 		}
 		if (tag.hasKey("computerMode")) {
 			byte byteValue = tag.getByte("computerMode");
-			computerMode = EnumLiftMode.get(clamp(0, 3, byteValue == -1 ? 3 : byteValue));
+			computerMode = EnumLiftMode.get(Commons.clamp(0, 3, byteValue == -1 ? 3 : byteValue));
 		}
 	}
 	
@@ -264,7 +268,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			
 		} else if (methodName.equals("active")) {
 			if (arguments.length == 1) {
-				computerEnabled = toBool(arguments[0]);
+				computerEnabled = Commons.toBool(arguments[0]);
 			}
 			return new Object[] { !computerEnabled && isEnabled };
 		}

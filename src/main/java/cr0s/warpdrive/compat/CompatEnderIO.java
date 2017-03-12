@@ -1,5 +1,9 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,9 +15,6 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.Constants;
 

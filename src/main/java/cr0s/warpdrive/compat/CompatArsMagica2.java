@@ -1,5 +1,12 @@
 package cr0s.warpdrive.compat;
 
+import am2.api.power.IPowerNode;
+import am2.power.PowerNodeRegistry;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -8,14 +15,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.Constants;
-import am2.api.power.IPowerNode;
-import am2.power.PowerNodeRegistry;
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class CompatArsMagica2 implements IBlockTransformer {
 	

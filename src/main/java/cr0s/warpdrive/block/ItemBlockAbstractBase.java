@@ -1,25 +1,31 @@
 package cr0s.warpdrive.block;
 
-import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IItemBase;
+import cr0s.warpdrive.client.ClientProxy;
+import mcp.MethodsReturnNonnullByDefault;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
+
+import java.util.List;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import cr0s.warpdrive.WarpDrive;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
@@ -46,13 +52,13 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		return getUnlocalizedName() + itemStack.getItemDamage();
 	}
 	
+	@Nonnull
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack) {
-		if ( itemStack == null
-		  || !(block instanceof BlockAbstractContainer) ) {
+	public EnumRarity getRarity(@Nonnull ItemStack itemStack) {
+		if ( !(block instanceof IBlockBase) ) {
 			return super.getRarity(itemStack);
 		}
-		return ((BlockAbstractContainer) block).getRarity(itemStack, super.getRarity(itemStack));
+		return ((IBlockBase) block).getRarity(itemStack, super.getRarity(itemStack));
 	}
 	
 	public ITextComponent getStatus(final NBTTagCompound nbtTagCompound, final IBlockState blockState) {
@@ -80,14 +86,15 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.hasKey(tooltipName1)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && net.minecraft.client.resources.I18n.hasKey(tooltipName2)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
+		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
+		
 		IBlockState blockState = block.getStateFromMeta(itemStack.getMetadata());   // @TODO: integrate tooltips on tile entities
-		WarpDrive.addTooltip(list, getStatus(itemStack.getTagCompound(), blockState).getFormattedText());
+		Commons.addTooltip(list, getStatus(itemStack.getTagCompound(), blockState).getFormattedText());
 	}
 }

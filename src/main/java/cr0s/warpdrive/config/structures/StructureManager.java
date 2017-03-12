@@ -1,23 +1,21 @@
 package cr0s.warpdrive.config.structures;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Random;
-
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.config.RandomCollection;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.config.XmlPreprocessor;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.RandomCollection;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.XmlPreprocessor;
-
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Random;
 
 public class StructureManager {
 	public static final String GROUP_STARS = "star";
@@ -64,7 +62,7 @@ public class StructureManager {
 		WarpDrive.logger.info("Loading structure data files done");
 	}
 	
-	private static void loadXmlStructureFile(File file) throws InvalidXmlException, SAXException, IOException  {
+	private static void loadXmlStructureFile(File file) throws InvalidXmlException, SAXException, IOException {
 		WarpDrive.logger.info("Loading structure data file " + file.getName());
 		Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
 		

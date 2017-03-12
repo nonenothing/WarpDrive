@@ -1,28 +1,32 @@
 package cr0s.warpdrive.command;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
+
 import mcp.MethodsReturnNonnullByDefault;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+
 import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.Map.Entry;
-
-/*
- *   /wentity <radius> <filter> <kill?>
- */
 
 @MethodsReturnNonnullByDefault
 public class CommandEntity extends CommandBase {
@@ -55,7 +59,7 @@ public class CommandEntity extends CommandBase {
 	@Override
 	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
 		if (args.length > 3) {
-			WarpDrive.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
 		}
 		
@@ -82,7 +86,7 @@ public class CommandEntity extends CommandBase {
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			WarpDrive.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
 		}
 
@@ -96,14 +100,14 @@ public class CommandEntity extends CommandBase {
 			} else if (radius <= 0) {
 				world = DimensionManager.getWorld(0);
 			} else {
-				WarpDrive.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
 			entities = new ArrayList<>();
 			entities.addAll(world.loadedEntityList);
 		} else {
 			if (!(commandSender instanceof EntityPlayerMP)) {
-				WarpDrive.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
 			EntityPlayerMP entityPlayer = (EntityPlayerMP) commandSender;
@@ -139,7 +143,7 @@ public class CommandEntity extends CommandBase {
 					if (!filter.isEmpty()) {
 						ITextComponent textComponent = new TextComponentString("Found " + object);
 						textComponent.getStyle().setColor(TextFormatting.RED);
-						WarpDrive.addChatMessage(commandSender, textComponent);
+						Commons.addChatMessage(commandSender, textComponent);
 					}
 					// remove entity
 					if (kill && !((Entity) object).isEntityInvulnerable(WarpDrive.damageAsphyxia)) {
@@ -158,18 +162,18 @@ public class CommandEntity extends CommandBase {
 		if (count == 0) {
 			ITextComponent textComponent = new TextComponentString("No matching entities found within " + radius + " blocks");
 			textComponent.getStyle().setColor(TextFormatting.RED);
-			WarpDrive.addChatMessage(commandSender, textComponent);
+			Commons.addChatMessage(commandSender, textComponent);
 			return;
 		}
-
+		
 		ITextComponent textComponent = new TextComponentString(count + " matching entities within " + radius + " blocks:");
 		textComponent.getStyle().setColor(TextFormatting.GOLD);
-		WarpDrive.addChatMessage(commandSender, textComponent);
+			Commons.addChatMessage(commandSender, textComponent);
 		if (counts.size() < 10) {
 			for (Entry<String, Integer> entry : counts.entrySet()) {
 				textComponent = new TextComponentString(entry.getValue().toString() + "§8x§d" + entry.getKey());
 				textComponent.getStyle().setColor(TextFormatting.WHITE);
-				WarpDrive.addChatMessage(commandSender, textComponent);
+				Commons.addChatMessage(commandSender, textComponent);
 			}
 		} else {
 			String message = "";
@@ -179,7 +183,7 @@ public class CommandEntity extends CommandBase {
 				}
 				message += "§f" + entry.getValue() + "§8x§d" + entry.getKey();
 			}
-			WarpDrive.addChatMessage(commandSender, new TextComponentString(message));
+			Commons.addChatMessage(commandSender, new TextComponentString(message));
 		}
 	}
 }

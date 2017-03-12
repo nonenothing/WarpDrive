@@ -1,15 +1,16 @@
 package cr0s.warpdrive.config.structures;
 
-import java.util.Random;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.world.EntitySphereGen;
 import cr0s.warpdrive.world.EntityStarCore;
 import cr0s.warpdrive.world.WorldGenSmallShip;
+
+import java.util.Random;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class OrbInstance extends AbstractInstance {
 	protected OrbShell[] orbShells;

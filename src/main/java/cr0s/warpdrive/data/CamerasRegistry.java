@@ -1,13 +1,14 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 public class CamerasRegistry {
 	private LinkedList<CameraRegistryItem> registry;

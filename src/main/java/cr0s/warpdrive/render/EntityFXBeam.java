@@ -1,5 +1,7 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.data.Vector3;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
@@ -15,7 +17,6 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import cr0s.warpdrive.data.Vector3;
 
 @SideOnly(Side.CLIENT)
 public class EntityFXBeam extends Particle

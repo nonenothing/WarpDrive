@@ -1,5 +1,7 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.WarpDrive;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -10,7 +12,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import cr0s.warpdrive.WarpDrive;
 import net.minecraft.util.math.BlockPos;
 
 public final class JumpgatesRegistry {

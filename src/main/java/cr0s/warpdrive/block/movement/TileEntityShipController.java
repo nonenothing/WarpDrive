@@ -1,11 +1,20 @@
 package cr0s.warpdrive.block.movement;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.VectorI;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -14,18 +23,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
-import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.VectorI;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
-/**
- * Protocol block tile entity
- * @author Cr0s
- */
 public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	// Variables
 	private int distance = 0;
@@ -51,8 +49,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	public String playersString = "";
 	
 	private String beaconFrequency = "";
-	
-	boolean ready = false;                // Ready to operate (valid assembly)
 	
 	private final int updateInterval_ticks = 20 * WarpDriveConfig.SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS;
 	private int updateTicks = updateInterval_ticks;
@@ -572,13 +568,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInSpace(Context context, Arguments arguments) {
-		return new Boolean[] { worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID };
+		return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj, pos.getX(), pos.getZ()) };
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isInHyperspace(Context context, Arguments arguments) {
-		return new Boolean[] { worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID };
+		return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj, pos.getX(), pos.getZ()) };
 	}
 	
 	@Callback
@@ -600,9 +596,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		try {
 			if (arguments.length == 3) {
 				int argInt0, argInt1, argInt2;
-				argInt0 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[0])));
-				argInt1 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[1])));
-				argInt2 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[2])));
+				argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
+				argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
+				argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " Positive dimensions set to front " + argInt0 + ", right " + argInt1 + ", up " + argInt2);
 				}
@@ -621,9 +617,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		try {
 			if (arguments.length == 3) {
 				int argInt0, argInt1, argInt2;
-				argInt0 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[0])));
-				argInt1 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[1])));
-				argInt2 = clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(toInt(arguments[2])));
+				argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
+				argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
+				argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " Negative dimensions set to back " + argInt0 + ", left " + argInt1 + ", down " + argInt2);
 				}
@@ -641,7 +637,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] mode(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				setMode(toInt(arguments[0]));
+				setMode(Commons.toInt(arguments[0]));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { mode.getCode() };
@@ -653,7 +649,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] distance(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				setDistance(toInt(arguments[0]));
+				setDistance(Commons.toInt(arguments[0]));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { getDistance() };
@@ -665,7 +661,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] direction(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				setDirection(toInt(arguments[0]));
+				setDirection(Commons.toInt(arguments[0]));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { getDirection() };
@@ -677,7 +673,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] movement(Object[] arguments) {
 		try {
 			if (arguments.length == 3) {
-				setMovement(toInt(arguments[0]), toInt(arguments[1]), toInt(arguments[2]));
+				setMovement(Commons.toInt(arguments[0]), Commons.toInt(arguments[1]), Commons.toInt(arguments[2]));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { moveFront, moveUp, moveRight };
@@ -689,7 +685,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] rotationSteps(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				setRotationSteps((byte)toInt(arguments[0]));
+				setRotationSteps((byte) Commons.toInt(arguments[0]));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { (int) rotationSteps };
@@ -717,7 +713,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		}
 		int playerIndex;
 		try {
-			playerIndex = toInt(arguments[0]);
+			playerIndex = Commons.toInt(arguments[0]);
 		} catch (Exception exception) {
 			return new Object[] { false };
 		}
@@ -732,7 +728,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	private Object[] getEnergyRequired(Object[] arguments) {
 		try {
 			if (arguments.length == 1 && core != null) {
-				return new Object[] { TileEntityShipCore.calculateRequiredEnergy(getMode(), core.shipMass, toInt(arguments[0])) };
+				return new Object[] { TileEntityShipCore.calculateRequiredEnergy(getMode(), core.shipMass, Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {
 			return new Integer[] { -1 };
@@ -798,82 +794,82 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		switch (methodName) {
 			case "dim_positive": // dim_positive (front, right, up)
 				return dim_positive(arguments);
-
+			
 			case "dim_negative": // dim_negative (back, left, down)
 				return dim_negative(arguments);
-
+			
 			case "mode": // mode (mode)
 				return mode(arguments);
-
+			
 			case "distance": // distance (distance)
 				return distance(arguments);
-
+			
 			case "direction": // direction (direction)
 				return direction(arguments);
-
+			
 			case "getAttachedPlayers":
 				return getAttachedPlayers();
-
+			
 			case "summon":
 				return summon(arguments);
-
+			
 			case "summon_all":
 				setSummonAllFlag(true);
-
 				break;
+			
 			case "position":
 				if (core == null) {
 					return null;
 				}
-
+				
 				return new Object[] { core.getPos().getX(), core.getPos().getY(), core.getPos().getZ() };
-
+			
 			case "energy":
 				if (core == null) {
 					return null;
 				}
-
 				return core.energy();
-
+			
 			case "getEnergyRequired": // getEnergyRequired(distance)
 				return getEnergyRequired(arguments);
-
+			
 			case "jump":
 				doJump();
-
 				break;
+			
 			case "getShipSize":
 				return getShipSize();
-
+			
 			case "beaconFrequency":
 				return beaconFrequency(arguments);
-
+			
 			case "getOrientation":
 				if (core != null) {
-					return new Object[]{core.dx, 0, core.dz};
+					return new Object[] { core.dx, 0, core.dz };
 				}
 				return null;
-
+			
 			case "coreFrequency":
 				return shipName(arguments);
-
+			
 			case "isInSpace":
-				return new Boolean[]{worldObj.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID};
-
+				return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj, pos.getX(), pos.getZ()) };
+			
 			case "isInHyperspace":
-				return new Boolean[]{worldObj.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID};
-
+				return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj, pos.getX(), pos.getZ()) };
+			
 			case "targetJumpgate":
 				return targetJumpgate(arguments);
-
-			case "isAttached": // isAttached
+			
+			case "isAttached":
 				if (core != null) {
-					return new Object[]{core.controller != null};
+					return new Object[] { core.controller != null };
 				}
 				break;
+			
 			case "movement":
 				return movement(arguments);
-
+			
 			case "rotationSteps":
 				return rotationSteps(arguments);
 			

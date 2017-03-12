@@ -1,8 +1,15 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
+import cr0s.warpdrive.network.PacketHandler;
 import ic2.api.reactor.IReactor;
 import ic2.api.reactor.IReactorChamber;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,14 +23,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
-import cr0s.warpdrive.network.PacketHandler;
-
-import javax.annotation.Nonnull;
 
 public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 	private int ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;

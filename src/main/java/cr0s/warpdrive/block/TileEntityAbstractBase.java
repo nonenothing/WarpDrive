@@ -1,9 +1,21 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.CommonProxy;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -15,8 +27,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -26,15 +36,6 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector, ITickable {
 	private boolean isFirstTick = true;
@@ -53,10 +54,6 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	@Override
 	public void updatedNeighbours() {
-	}
-	
-	protected boolean isOnPlanet() {
-		return worldObj.provider.getDimension() == 0;
 	}
 	
 	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, IProperty<T> property, V value) {
@@ -97,48 +94,14 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	// Inventory management methods
-	
-	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
-		ItemStack ret = itemStack.copy();
-		ret.stackSize = newSize;
-		return ret;
-	}
-	
-	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
-		Collection<IInventory> result = new ArrayList<>(6);
-		
-		for(EnumFacing side : EnumFacing.VALUES) {
-			TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
-				tileEntityConnection.getPos().offset(side));
-			if (tileEntity != null && (tileEntity instanceof IInventory)) {
-				result.add((IInventory) tileEntity);
-				
-				if (tileEntity instanceof TileEntityChest) {
-					TileEntityChest tileEntityChest = (TileEntityChest) tileEntity;
-					tileEntityChest.checkForAdjacentChests();
-					if (tileEntityChest.adjacentChestXNeg != null) {
-						result.add(tileEntityChest.adjacentChestXNeg);
-					} else if (tileEntityChest.adjacentChestXPos != null) {
-						result.add(tileEntityChest.adjacentChestXPos);
-					} else if (tileEntityChest.adjacentChestZNeg != null) {
-						result.add(tileEntityChest.adjacentChestZNeg);
-					} else if (tileEntityChest.adjacentChestZPos != null) {
-						result.add(tileEntityChest.adjacentChestZPos);
-					}
-				}
-			}
-		}
-		return result;
-	}
-	
 	protected boolean addToConnectedInventories(final ItemStack itemStack) {
 		List<ItemStack> itemStacks = new ArrayList<>(1);
 		itemStacks.add(itemStack);
-		return addToInventories(itemStacks, getConnectedInventories(this));
+		return addToInventories(itemStacks, Commons.getConnectedInventories(this));
 	}
 	
 	protected boolean addToConnectedInventories(final List<ItemStack> itemStacks) {
-		return addToInventories(itemStacks, getConnectedInventories(this));
+		return addToInventories(itemStacks, Commons.getConnectedInventories(this));
 	}
 	
 	protected boolean addToInventories(final List<ItemStack> itemStacks, final Collection<IInventory> inventories) {
@@ -167,7 +130,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					int transfer;
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, itemStackLeft.getMaxStackSize());
-						ItemStack itemStackDrop = copyWithSize(itemStackLeft, transfer);
+						ItemStack itemStackDrop = Commons.copyWithSize(itemStackLeft, transfer);
 						EntityItem entityItem = new EntityItem(worldObj, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, itemStackDrop);
 						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
@@ -218,7 +181,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				}
 				
 				transfer = Math.min(qtyLeft, itemStackSource.getMaxStackSize());
-				ItemStack dest = copyWithSize(itemStackSource, transfer);
+				ItemStack dest = Commons.copyWithSize(itemStackSource, transfer);
 				inventory.setInventorySlotContents(i, dest);
 				qtyLeft -= transfer;
 				
@@ -232,102 +195,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	
-	// searching methods
-	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
-	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
-	public static Set<BlockPos> getConnectedBlocks(World world, final BlockPos start, final EnumFacing[] directions,final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
-		return getConnectedBlocks(world, Arrays.asList(start), directions, whitelist, maxRange, ignore);
-	}
-	protected static Set<BlockPos> getConnectedBlocks(World world, final Collection<BlockPos> start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
-		Set<BlockPos> toIgnore = new HashSet<>();
-		if (ignore != null) {
-			toIgnore.addAll(Arrays.asList(ignore));
-		}
-		
-		Set<BlockPos> toIterate = new HashSet<>();
-		toIterate.addAll(start);
-		
-		Set<BlockPos> toIterateNext;
-		
-		Set<BlockPos> iterated = new HashSet<>();
-		
-		int range = 0;
-		while(!toIterate.isEmpty() && range < maxRange) {
-			toIterateNext = new HashSet<>();
-			for (BlockPos current : toIterate) {
-				if (whitelist.contains(new VectorI(current).getBlockState_noChunkLoading(world).getBlock())) {
-					iterated.add(current);
-				}
-				
-				for(EnumFacing direction : directions) {
-					BlockPos next = current.offset(direction);
-					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
-						if (whitelist.contains(new VectorI(next).getBlockState_noChunkLoading(world).getBlock())) {
-							toIterateNext.add(next);
-						}
-					}
-				}
-			}
-			toIterate = toIterateNext;
-			range++;
-		}
-		
-		return iterated;
-	}
-	
-	
-	// data manipulation methods
-	
-	protected static int toInt(double d) {
-		return (int) Math.round(d);
-	}
-	
-	protected static int toInt(Object object) {
-		return toInt(toDouble(object));
-	}
-	
-	protected static double toDouble(Object object) {
-		assert(!(object instanceof Object[]));
-		return Double.parseDouble(object.toString());
-	}
-	
-	protected static float toFloat(Object object) {
-		assert(!(object instanceof Object[]));
-		return Float.parseFloat(object.toString());
-	}
-	
-	protected static boolean toBool(Object object) {
-		if (object == null) {
-			 return false;
-		}
-		assert(!(object instanceof Object[]));
-		if (object instanceof Boolean) {
-			 return ((Boolean) object);
-		}
-		String string = object.toString();
-		return string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes");
-	}
-	
-	public static int clamp(final int min, final int max, final int value) {
-		return Math.min(max, Math.max(value, min));
-	}
-	
-	public static float clamp(final float min, final float max, final float value) {
-		return Math.min(max, Math.max(value, min));
-	}
-	
-	public static double clamp(final double min, final double max, final double value) {
-		return Math.min(max, Math.max(value, min));
-	}
-	
-	
 	// area protection
-	protected boolean isBlockBreakCanceled(EntityPlayer entityPlayer, World world, BlockPos blockPosEvent) {
-		return WarpDrive.proxy.isBlockBreakCanceled(entityPlayer, pos, world, blockPosEvent);
+	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, World world, BlockPos blockPosEvent) {
+		return CommonProxy.isBlockBreakCanceled(uuidPlayer, pos, world, blockPosEvent);
 	}
 	
-	protected boolean isBlockPlaceCanceled(EntityPlayer entityPlayer, World world, BlockPos blockPosEvent, IBlockState blockState) {
-		return WarpDrive.proxy.isBlockPlaceCanceled(entityPlayer, pos, world, blockPosEvent, blockState);
+	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, World world, BlockPos blockPosEvent, IBlockState blockState) {
+		return CommonProxy.isBlockPlaceCanceled(uuidPlayer, pos, world, blockPosEvent, blockState);
 	}
 	
 	// saved properties

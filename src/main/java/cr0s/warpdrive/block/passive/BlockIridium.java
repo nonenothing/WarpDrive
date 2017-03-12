@@ -1,9 +1,13 @@
 package cr0s.warpdrive.block.passive;
 
+import cr0s.warpdrive.block.BlockAbstractBase;
+
+import javax.annotation.Nonnull;
 import java.util.Random;
 
-import cr0s.warpdrive.block.BlockAbstractBase;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
 
 public class BlockIridium extends BlockAbstractBase {
 	public BlockIridium(final String registryName) {
@@ -16,5 +20,11 @@ public class BlockIridium extends BlockAbstractBase {
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
+	}
+	
+	@Nonnull
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.RARE;
 	}
 }

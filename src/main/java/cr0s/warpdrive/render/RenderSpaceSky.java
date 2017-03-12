@@ -1,9 +1,12 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObject;
+
+import java.awt.Color;
 import java.util.Random;
 
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Planet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
@@ -29,9 +32,11 @@ public class RenderSpaceSky extends IRenderHandler {
 	}
 	
 	private static final ResourceLocation[] texturePlanets = {
-		new ResourceLocation("warpdrive:textures/celestial/planet_green.png"),
-		new ResourceLocation("warpdrive:textures/celestial/planet_yellow.png"),
-		new ResourceLocation("warpdrive:textures/celestial/planet_red.png")
+		new ResourceLocation("warpdrive:textures/celestial/planet_icy.png"),
+		new ResourceLocation("warpdrive:textures/celestial/planet_magma.png"),
+		new ResourceLocation("warpdrive:textures/celestial/planet_metallic.png"),
+		new ResourceLocation("warpdrive:textures/celestial/planet_oceanic.png"),
+		new ResourceLocation("warpdrive:textures/celestial/planet_temperate.png")
 		};
 	private static final ResourceLocation textureStar = new ResourceLocation("warpdrive:textures/celestial/star_yellow.png");
 	
@@ -84,7 +89,9 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	@Override
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
-		boolean isSpace = world.provider == null || world.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID;
+		final Vec3d playerCoordinates = mc.thePlayer.getPositionEyes(partialTicks);
+		final boolean isSpace = world.provider == null
+		                     || WarpDrive.starMap.isInSpace(world, (int) playerCoordinates.xCoord, (int) playerCoordinates.zCoord);
 		
 		final Tessellator tessellator = Tessellator.getInstance();
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
@@ -115,6 +122,9 @@ public class RenderSpaceSky extends IRenderHandler {
 		// GL11.glDisable(GL11.GL_FOG);
 		/**/
 		
+		// compute global alpha
+		final float alphaBase = 1.0F - world.getRainStrength(partialTicks);
+		
 		// draw star systems
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -125,9 +135,9 @@ public class RenderSpaceSky extends IRenderHandler {
 		}
 		if (starBrightness > 0.0F) {
 			if (isSpace) {
-				GL11.glColor4f(1.0F, 1.0F, 0.9F, starBrightness);
+				GL11.glColor4f(1.0F, 1.0F, 0.9F, alphaBase * starBrightness);
 			} else {
-				GL11.glColor4f(0.5F, 0.6F, 0.4F, starBrightness);
+				GL11.glColor4f(0.5F, 0.6F, 0.4F, alphaBase * starBrightness);
 			}
 			GL11.glCallList(callListStars);
 		}
@@ -158,7 +168,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			GL11.glPopMatrix();
 		}
 		
-		// Planet
+		// CelestialObject
 		/*
 		{
 			GL11.glPushMatrix();
@@ -185,9 +195,8 @@ public class RenderSpaceSky extends IRenderHandler {
 		/**/
 		
 		// Planets
-		Vec3d playerCoordinates = mc.thePlayer.getPositionEyes(partialTicks);
-		for(Planet planet : WarpDriveConfig.PLANETS) {
-			renderPlanet(mc, tessellator, planet, isSpace, playerCoordinates);
+		for(CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+			renderCelestialObject(tessellator, celestialObject, isSpace, mc.thePlayer.getEntityWorld().provider.getDimension(), playerCoordinates);
 		}
 		
 		// final double playerAltitude = mc.thePlayer.getPositionEyes(partialTicks).yCoord - world.getHorizon();
@@ -251,41 +260,64 @@ public class RenderSpaceSky extends IRenderHandler {
 		GL11.glDepthMask(true);
 	}
 	
-	static final double PLANET_FAR = 512.0D;
+	static final double PLANET_FAR = 1786.0D;
+	static final double PLANET_APPROACHING = 512.0D;
 	static final double PLANET_ORBIT = 128.0D;
-	private static void renderPlanet(Minecraft mc, Tessellator tessellator, final Planet planet, final boolean isSpace, final Vec3d playerCoordinates) {
-		final double planetX = planet.spaceCenterX - playerCoordinates.xCoord;
-		final double planetZ = planet.spaceCenterZ - playerCoordinates.zCoord;
-		final double distanceToBorder = planet.isValidFromSpace((int) mc.thePlayer.posX, (int) mc.thePlayer.posZ);
-		final double distanceToCenter = Math.sqrt(planetX * planetX + planetZ * planetZ);
+	private static void renderCelestialObject(Tessellator tessellator, final CelestialObject celestialObject, final boolean isSpace, final int dimensionId, final Vec3d vec3Player) {
+		// @TODO compute relative coordinates for rendering on celestialObject
+		if (dimensionId != celestialObject.parentDimensionId) {
+			return;
+		}
 		
-		final double transitionFar         = (Math.max(PLANET_FAR, Math.min(WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS, distanceToBorder)) - PLANET_FAR) / (WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS - PLANET_FAR);
-		final double transitionApproaching = (Math.max(PLANET_ORBIT, Math.min(PLANET_FAR, distanceToBorder)) - PLANET_ORBIT) / (PLANET_FAR - PLANET_ORBIT);
+		final double distanceToCenterX = celestialObject.parentCenterX - vec3Player.xCoord;
+		final double distanceToCenterZ = celestialObject.parentCenterZ - vec3Player.zCoord;
+		final double distanceToBorder = Math.sqrt(Math.max(0, celestialObject.getSquareDistanceInParent(dimensionId, vec3Player.xCoord, vec3Player.zCoord)));
+		final double distanceToCenter = Math.sqrt(distanceToCenterX * distanceToCenterX + distanceToCenterZ * distanceToCenterZ);
+		
+		// transition values
+		// distance              far   approaching  orbit
+		// world border         1.000     1.000     1.000
+		// PLANET_FAR           1.000     1.000     1.000
+		// PLANET_APPROACHING   0.000     1.000     1.000
+		// PLANET_ORBIT         0.000     0.000     1.000
+		// in orbit             0.000     0.000     0.000
+		final double transitionFar         = (Math.max(PLANET_APPROACHING, Math.min(PLANET_FAR, distanceToBorder)) - PLANET_APPROACHING) / (PLANET_FAR - PLANET_APPROACHING);
+		final double transitionApproaching = (Math.max(PLANET_ORBIT, Math.min(PLANET_APPROACHING, distanceToBorder)) - PLANET_ORBIT) / (PLANET_APPROACHING - PLANET_ORBIT);
 		final double transitionOrbit       = Math.max(0.0D, Math.min(PLANET_ORBIT, distanceToBorder)) / PLANET_ORBIT;
 		
+		// relative position above celestialObject
+		final double offsetX = (1.0 - transitionOrbit) * (distanceToCenterX / celestialObject.borderRadiusX);
+		final double offsetZ = (1.0 - transitionOrbit) * (distanceToCenterZ / celestialObject.borderRadiusZ);
+		
 		// simulating a non-planar universe...
-		final double planetY_far = (planet.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 4.0D;
+		final double planetY_far = (celestialObject.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 4.0D;
 		final double planetY = planetY_far * transitionApproaching;
 		
 		// render range is only used for Z-ordering
-		final double renderRange = 180.0D + 10.0D * (distanceToCenter / WarpDriveConfig.G_SPACE_WORLDBORDER_BLOCKS);
+		final double renderRange = 180.0D + 10.0D * (distanceToCenter / Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ));
 		
 		// render size is 1 at space border range
 		// render size is 10 at approaching range
 		// render size is 90 at orbit range
-		// render size is min(1000, planet border) at orbit range
-		final double renderSize = Math.min(1000.0D, Math.max(planet.borderSizeX, planet.borderSizeZ)) * (1.0D - transitionOrbit)
-								+ 90.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
+		// render size is min(1000, celestialObject border) at orbit range
+		final double renderSize = 100.0D / 1000.0D * Math.min(1000.0D, Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ)) * (1.0D - transitionOrbit)
+								+ 50.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
 								+ 5.0D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
 								+ 1.0D * transitionFar;
 		
 		// angles
 		@SuppressWarnings("SuspiciousNameCombination")
-		final double angleH = Math.atan2(planetX, planetZ);
+		final double angleH = Math.atan2(distanceToCenterX, distanceToCenterZ);
 		@SuppressWarnings("SuspiciousNameCombination")
-		final double angleV_far = Math.atan2(Math.sqrt(planetX * planetX + planetZ * planetZ), planetY);
+		final double angleV_far = Math.atan2(Math.sqrt(distanceToCenterX * distanceToCenterX + distanceToCenterZ * distanceToCenterZ), planetY);
 		final double angleV = Math.PI * (1.0D - transitionOrbit) + angleV_far * transitionOrbit;
-		final double angleS = 0.15D * planet.dimensionId; // + (world.getTotalWorldTime() + partialTicks) * Math.PI / 6000.0D;
+		final double angleS = 0.15D * celestialObject.dimensionId * transitionApproaching // + (world.getTotalWorldTime() + partialTicks) * Math.PI / 6000.0D;
+							+ angleH * (1.0D - transitionApproaching);
+		
+		if (celestialObject.dimensionId == 1 && (Minecraft.getSystemTime() / 10) % 100 == 0) {
+			WarpDrive.logger.info(String.format("transition Far %.2f Approaching %.2f Orbit %.2f distanceToCenter %.3f %.3f offset %.3f %.3f angle H %.3f V_far %.3f V %.3f S %.3f",
+				transitionFar, transitionApproaching, transitionOrbit, distanceToCenterX, distanceToCenterZ, offsetX, offsetZ, angleH, angleV_far, angleV, angleS));
+		}
 		
 		// pre-computations
 		final double sinH = Math.sin(angleH);
@@ -297,7 +329,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		
 		GL11.glPushMatrix();
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, isSpace ? 1.0F : 0.2F);
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanets[Math.abs(planet.dimensionId) % 3]);
+		FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanets[Math.abs(celestialObject.dimensionId) % texturePlanets.length]);
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
 		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
@@ -307,8 +339,8 @@ public class RenderSpaceSky extends IRenderHandler {
 			final double valH = offset2 * cosS + offset1 * sinS;
 			final double y = valV * sinV + renderRange * cosV;
 			final double valD = renderRange * sinV - valV * cosV;
-			final double x = valD * sinH - valH * cosH;
-			final double z = valH * sinH + valD * cosH;
+			final double x = valD * sinH - valH * cosH + renderSize * offsetX;
+			final double z = valH * sinH + valD * cosH + renderSize * offsetZ;
 			vertexBuffer.pos(x, y, z).tex((indexVertex & 2) / 2, (indexVertex + 1 & 2) / 2).endVertex();
 		}
 		tessellator.draw();
@@ -321,59 +353,121 @@ public class RenderSpaceSky extends IRenderHandler {
 		final boolean hasMoreStars = rand.nextBoolean() || rand.nextBoolean();
 		final Tessellator tessellator = Tessellator.getInstance();
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
 		
-		for (int indexStars = 0; indexStars < (hasMoreStars ? 20000 : 6000); indexStars++) {
-			double randomX = rand.nextDouble() * 2.0D - 1.0D;
-			double randomY = rand.nextDouble() * 2.0D - 1.0D;
-			double randomZ = rand.nextDouble() * 2.0D - 1.0D;
-			final double lambda = 1.2D;
-			final double renderSize = 0.10F + 0.03F * Math.log(1.0D - rand.nextDouble()) / (-lambda); // random.nextFloat() * 0.5F;
-			double randomLength = randomX * randomX + randomY * randomY + randomZ * randomZ;
+		final double renderRangeMax = 200.0D;
+		for (int indexStars = 0; indexStars < (hasMoreStars ? 20000 : 2000); indexStars++) {
+			double randomX;
+			double randomY;
+			double randomZ;
+			double randomLength;
+			do {
+				randomX = rand.nextDouble() * 2.0D - 1.0D;
+				randomY = rand.nextDouble() * 2.0D - 1.0D;
+				randomZ = rand.nextDouble() * 2.0D - 1.0D;
+				randomLength = randomX * randomX + randomY * randomY + randomZ * randomZ;
+			} while (randomLength >= 1.0D || randomLength <= 0.90D);
 			
-			if (randomLength < 1.0D && randomLength > 0.01D) {
-				// forcing Z-order
-				randomLength = 1.0D / Math.sqrt(randomLength);
-				randomX *= randomLength;
-				randomY *= randomLength;
-				randomZ *= randomLength;
-				
-				// scaling
-				final double x0 = randomX * 100.0D;
-				final double y0 = randomY * 100.0D;
-				final double z0 = randomZ * 100.0D;
-				
-				// angles
-				@SuppressWarnings("SuspiciousNameCombination")
-				final double angleH = Math.atan2(randomX, randomZ);
-				@SuppressWarnings("SuspiciousNameCombination")
-				final double angleV = Math.atan2(Math.sqrt(randomX * randomX + randomZ * randomZ), randomY);
-				final double angleS = rand.nextDouble() * Math.PI * 2.0D;
-				
-				// pre-computations
-				final double sinH = Math.sin(angleH);
-				final double cosH = Math.cos(angleH);
-				final double sinV = Math.sin(angleV);
-				final double cosV = Math.cos(angleV);
-				final double sinS = Math.sin(angleS);
-				final double cosS = Math.cos(angleS);
-				
-				for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
-					final double valZero = 0.0D;
-					final double offset1 = ((indexVertex     & 2) - 1) * renderSize;
-					final double offset2 = ((indexVertex + 1 & 2) - 1) * renderSize;
-					final double valV = offset1 * cosS - offset2 * sinS;
-					final double valH = offset2 * cosS + offset1 * sinS;
-					final double y1 = valV * sinV + valZero * cosV;
-					final double valD = valZero * sinV - valV * cosV;
-					final double x1 = valD * sinH - valH * cosH;
-					final double z1 = valH * sinH + valD * cosH;
-					vertexBuffer.pos(x0 + x1, y0 + y1, z0 + z1).endVertex();
-				}
+			final double renderSize = 0.4F + 0.05F * Math.log(1.1D - rand.nextDouble());
+			
+			// forcing Z-order
+			randomLength = 1.0D / Math.sqrt(randomLength);
+			randomX *= randomLength;
+			randomY *= randomLength;
+			randomZ *= randomLength;
+			
+			// scaling
+			final double x0 = randomX * renderRangeMax;
+			final double y0 = randomY * renderRangeMax;
+			final double z0 = randomZ * renderRangeMax;
+			
+			// angles
+			@SuppressWarnings("SuspiciousNameCombination")
+			final double angleH = Math.atan2(randomX, randomZ);
+			@SuppressWarnings("SuspiciousNameCombination")
+			final double angleV = Math.atan2(Math.sqrt(randomX * randomX + randomZ * randomZ), randomY);
+			final double angleS = rand.nextDouble() * Math.PI * 2.0D;
+			
+			// colorization
+			final int rgb = getStarColorRGB(rand);
+			GL11.glColor4f(((rgb >> 16) & 0xFF) / 255.0F, ((rgb >> 8) & 0xFF) / 255.0F, (rgb & 0xFF) / 255.0F, 1.0F /* isSpace ? 1.0F : 0.2F /**/);
+			
+			// pre-computations
+			final double sinH = Math.sin(angleH);
+			final double cosH = Math.cos(angleH);
+			final double sinV = Math.sin(angleV);
+			final double cosV = Math.cos(angleV);
+			final double sinS = Math.sin(angleS);
+			final double cosS = Math.cos(angleS);
+			
+			vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
+			for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
+				final double valZero = 0.0D;
+				final double offset1 = ((indexVertex     & 2) - 1) * renderSize;
+				final double offset2 = ((indexVertex + 1 & 2) - 1) * renderSize;
+				final double valV = offset1 * cosS - offset2 * sinS;
+				final double valH = offset2 * cosS + offset1 * sinS;
+				final double y1 = valV * sinV + valZero * cosV;
+				final double valD = valZero * sinV - valV * cosV;
+				final double x1 = valD * sinH - valH * cosH;
+				final double z1 = valH * sinH + valD * cosH;
+				vertexBuffer.pos(x0 + x1, y0 + y1, z0 + z1).endVertex();
 			}
+			tessellator.draw();
 		}
 		
-		tessellator.draw();
+	}
+	
+	// colorization loosely inspired from Hertzsprung-Russell diagram
+	// (we're using it for non-star objects too, so yeah...)
+	private static int getStarColorRGB(Random rand) {
+		final double colorType = rand.nextDouble();
+		float hue;
+		float saturation;
+		float brightness = 1.0F - 0.8F * rand.nextFloat();  // distance effect
+		
+		if (colorType <= 0.08D) {// 8% light blue (young star)
+			hue = 0.48F + 0.08F * rand.nextFloat();
+			saturation = 0.18F + 0.22F * rand.nextFloat();
+			
+		} else if (colorType <= 0.24D) {// 22% pure white (early age)
+			hue = 0.126F + 0.040F * rand.nextFloat();
+			saturation = 0.00F + 0.15F * rand.nextFloat();
+			brightness *= 0.95F;
+			
+		} else if (colorType <= 0.45D) {// 21% yellow white
+			hue = 0.126F + 0.040F * rand.nextFloat();
+			saturation = 0.15F + 0.15F * rand.nextFloat();
+			brightness *= 0.90F;
+			
+		} else if (colorType <= 0.67D) {// 22% yellow
+			hue = 0.126F + 0.040F * rand.nextFloat();
+			saturation = 0.80F + 0.15F * rand.nextFloat();
+			if (rand.nextInt(3) == 1) {// yellow giant
+				brightness *= 0.90F;
+			} else {
+				brightness *= 0.85F;
+			}
+			
+		} else if (colorType <= 0.92D) {// 25% orange
+			hue = 0.055F + 0.055F * rand.nextFloat();
+			saturation = 0.85F + 0.15F * rand.nextFloat();
+			if (rand.nextInt(3) == 1) {// (orange giant)
+				brightness *= 0.90F;
+			} else {
+				brightness *= 0.80F;
+			}
+			
+		} else {// red (mostly giants)
+			hue = 0.95F + 0.05F * rand.nextFloat();
+			if (rand.nextInt(3) == 1) {// (red giant)
+				saturation = 0.80F + 0.20F * rand.nextFloat();
+				brightness *= 0.95F;
+			} else {
+				saturation = 0.70F + 0.20F * rand.nextFloat();
+				brightness *= 0.65F;
+			}
+		}
+		return Color.HSBtoRGB(hue, saturation, brightness);
 	}
 	
 	private static Vec3d getCustomSkyColor() {

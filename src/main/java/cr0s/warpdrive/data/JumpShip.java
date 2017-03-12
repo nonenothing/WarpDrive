@@ -1,5 +1,12 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -18,11 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockTransformer;
-import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
+
 import net.minecraftforge.common.util.Constants;
 
 public class JumpShip {
@@ -51,7 +54,7 @@ public class JumpShip {
 			WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent);
 			for (MovingEntity movingEntity : entitiesOnShip) {
 				if (movingEntity.entity instanceof EntityPlayer) {
-					WarpDrive.addChatMessage(movingEntity.entity, new TextComponentString("["
+					Commons.addChatMessage(movingEntity.entity, new TextComponentString("["
 						+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "WarpCore") + "] ")
 						.appendSibling(textComponent));
 				}

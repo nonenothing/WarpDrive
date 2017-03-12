@@ -3,7 +3,6 @@ package cr0s.warpdrive.api;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
 
-import java.util.Collection;
 import java.util.Map;
 
 public interface IForceFieldShape {

@@ -1,17 +1,19 @@
 package cr0s.warpdrive.config.structures;
 
-import java.util.Random;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.IXmlRepresentable;
+import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.config.WarpDriveConfig;
 
 import net.minecraft.util.math.BlockPos;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.IXmlRepresentable;
+import java.util.Random;
+
 import net.minecraft.block.Block;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MetaOrb extends Orb {

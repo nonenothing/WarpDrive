@@ -9,6 +9,7 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -47,6 +48,11 @@ public class BlockDecorative extends BlockAbstractBase {
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(TYPE).ordinal();
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 	
 	@Nullable

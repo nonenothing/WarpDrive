@@ -1,25 +1,26 @@
 package cr0s.warpdrive.item;
 
-import java.util.List;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.EnumComponentType;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
 
 public class ItemComponent extends ItemAbstractBase implements IAirCanister {	
 	private static ItemStack[] itemStackCache;
@@ -122,6 +123,6 @@ public class ItemComponent extends ItemAbstractBase implements IAirCanister {
 			break;
 		}
 		
-		WarpDrive.addTooltip(list, tooltip);
+		Commons.addTooltip(list, tooltip);
 	}
 }

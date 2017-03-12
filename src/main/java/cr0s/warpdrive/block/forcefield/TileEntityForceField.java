@@ -1,21 +1,21 @@
 package cr0s.warpdrive.block.forcefield;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import javax.annotation.Nonnull;
 
 public class TileEntityForceField extends TileEntityAbstractBase {
 	private VectorI vProjector;
@@ -33,8 +33,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if (tag.hasKey("projector")) {
-			vProjector = VectorI.readFromNBT(tag.getCompoundTag("projector"));
-			cache_beamFrequency = tag.getInteger("beamFrequency");
+			vProjector = VectorI.createFromNBT(tag.getCompoundTag("projector"));
+			cache_beamFrequency = tag.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
 			if (tag.hasKey("projector")) {
 				try {
 					cache_blockStateCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock")).getStateFromMeta(tag.getByte("camouflageMeta"));
@@ -67,7 +67,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		tagCompound = super.writeToNBT(tagCompound);
 		if (vProjector != null) {
 			tagCompound.setTag("projector", vProjector.writeToNBT(new NBTTagCompound()));
-			tagCompound.setInteger("beamFrequency", cache_beamFrequency);
+			tagCompound.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, cache_beamFrequency);
 			if (cache_blockStateCamouflage != null) {
 				tagCompound.setString("camouflageBlock", cache_blockStateCamouflage.getBlock().getRegistryName().toString());
 				tagCompound.setByte("camouflageMeta", (byte)cache_blockStateCamouflage.getBlock().getMetaFromState(cache_blockStateCamouflage));

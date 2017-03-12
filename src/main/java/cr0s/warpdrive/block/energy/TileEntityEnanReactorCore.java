@@ -1,10 +1,17 @@
 package cr0s.warpdrive.block.energy;
 
-import java.util.Arrays;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import java.util.Arrays;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,11 +19,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	private int containedEnergy = 0;
@@ -313,7 +315,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		if (arguments.length == 1) {
 			boolean activate;
 			try {
-				activate = toBool(arguments[0]);
+				activate = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
 				throw new Exception("Function expects a boolean value");
 			}
@@ -343,7 +345,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		boolean doRelease;
 		if (arguments.length > 0) {
 			try {
-				doRelease = toBool(arguments[0]);
+				doRelease = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
 				throw new Exception("Function expects a boolean value");
 			}
@@ -364,7 +366,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	private Object[] releaseRate(Object[] arguments) throws Exception {
 		int rate;
 		try {
-			rate = toInt(arguments[0]);
+			rate = Commons.toInt(arguments[0]);
 		} catch (Exception exception) {
 			throw new Exception("Function expects an integer value");
 		}
@@ -390,7 +392,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	private Object[] releaseAbove(Object[] arguments) throws Exception {
 		int above;
 		try {
-			above = toInt(arguments[0]);
+			above = Commons.toInt(arguments[0]);
 		} catch (Exception exception) {
 			throw new Exception("Function expects an integer value");
 		}

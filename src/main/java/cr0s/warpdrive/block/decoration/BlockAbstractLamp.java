@@ -10,7 +10,9 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -65,6 +67,11 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 	
 	@SideOnly(Side.CLIENT)

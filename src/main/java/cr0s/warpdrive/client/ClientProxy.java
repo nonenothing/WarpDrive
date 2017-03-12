@@ -6,6 +6,12 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.api.IItemBase;
 import cr0s.warpdrive.render.MyCustomModelLoader;
+
+import javax.annotation.Nonnull;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.EnumDyeColor;
@@ -14,10 +20,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClientProxy extends CommonProxy {
 	
@@ -112,7 +114,8 @@ public class ClientProxy extends CommonProxy {
 			IModelInitialisation(WarpDrive.itemUpgrade);
 		}
 		
-		IModelInitialisation(WarpDrive.itemTuningRod);
+		IModelInitialisation(WarpDrive.itemTuningFork);
+		IModelInitialisation(WarpDrive.itemTuningDriver);
 		
 		IModelInitialisation(WarpDrive.itemForceFieldShape);
 		IModelInitialisation(WarpDrive.itemForceFieldUpgrade);
@@ -121,6 +124,7 @@ public class ClientProxy extends CommonProxy {
 		
 		// entities
 		// RenderingRegistry.registerEntityRenderingHandler(EntityXXX.class, RenderXXX::new);
+		// RenderingRegistry.registerEntityRenderingHandler(EntityParticleBunch.class, new RenderEntityParticleBunch());
 		
 		// MinecraftForge.EVENT_BUS.register(new WarpDriveKeyBindings());
 		// MinecraftForge.EVENT_BUS.register(new RenderGameOverlay();

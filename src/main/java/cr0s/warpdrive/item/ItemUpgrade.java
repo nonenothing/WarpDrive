@@ -1,15 +1,15 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.UpgradeType;
+
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.data.UpgradeType;
-
-import javax.annotation.Nonnull;
 
 public class ItemUpgrade extends ItemAbstractBase {
 	private static ItemStack[] isCache = new ItemStack[UpgradeType.values().length];

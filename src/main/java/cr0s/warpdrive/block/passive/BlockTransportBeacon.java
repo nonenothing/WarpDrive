@@ -1,16 +1,14 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.client.ClientProxy;
+
 import net.minecraft.block.BlockTorch;
-import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 

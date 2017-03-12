@@ -1,15 +1,6 @@
 package cr0s.warpdrive.block.weapon;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityLaser;
@@ -19,6 +10,20 @@ import cr0s.warpdrive.data.EnumCameraType;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -84,18 +89,18 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	private ITextComponent getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.video_channel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.valid", videoChannel);
 			} else {
-				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.validCamera",
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.validCamera",
 						videoChannel,
 						camera.position.getX(),
 						camera.position.getY(),
@@ -117,13 +122,13 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		setVideoChannel(tag.getInteger("cameraFrequency") + tag.getInteger("videoChannel"));
+		setVideoChannel(tag.getInteger("cameraFrequency") + tag.getInteger(VIDEO_CHANNEL_TAG));
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag = super.writeToNBT(tag);
-		tag.setInteger("videoChannel", videoChannel);
+		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 		return tag;
 	}
 	
@@ -132,7 +137,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		// (beam frequency is server side only)
-		tagCompound.setInteger("videoChannel", videoChannel);
+		tagCompound.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 		return tagCompound;
 	}
 	
@@ -140,7 +145,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
 		NBTTagCompound tagCompound = packet.getNbtCompound();
 		// (beam frequency is server side only)
-		setVideoChannel(tagCompound.getInteger("videoChannel"));
+		setVideoChannel(tagCompound.getInteger(VIDEO_CHANNEL_TAG));
 	}
 	
 	@Override
@@ -173,7 +178,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		
 		if (methodName.equals("videoChannel")) {
 			if (arguments.length == 1) {
-				setVideoChannel(toInt(arguments[0]));
+				setVideoChannel(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { videoChannel };
 		}

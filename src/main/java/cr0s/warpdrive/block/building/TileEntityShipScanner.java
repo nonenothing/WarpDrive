@@ -1,5 +1,24 @@
 package cr0s.warpdrive.block.building;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.JumpBlock;
+import cr0s.warpdrive.data.JumpShip;
+import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Transformation;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.item.ItemCrystalToken;
+import cr0s.warpdrive.network.PacketHandler;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,11 +28,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import cr0s.warpdrive.data.*;
-import cr0s.warpdrive.item.ItemCrystalToken;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -27,6 +41,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -35,17 +50,9 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+
 import net.minecraftforge.common.util.Constants;
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.network.PacketHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class TileEntityShipScanner extends TileEntityAbstractEnergy {
@@ -175,7 +182,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					if (tileEntity instanceof TileEntityShipCore) {
 						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
 						if (entityPlayerMP != null) {
-							WarpDrive.addChatMessage(entityPlayerMP, new TextComponentString("§6" + "Welcome aboard captain. Use the computer to get moving..."));
+							Commons.addChatMessage(entityPlayerMP, new TextComponentString("§6" + "Welcome aboard captain. Use the computer to get moving..."));
 						}
 					}
 					
@@ -245,7 +252,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					// Warn owner if deployment done but wait next tick for teleportation 
 					if (currentDeployIndex >= blocksToDeployCount) {
 						if (entityPlayerMP != null) {
-							WarpDrive.addChatMessage(entityPlayerMP, new TextComponentString("Ship complete. Teleporting captain to the main deck"));
+							Commons.addChatMessage(entityPlayerMP, new TextComponentString("Ship complete. Teleporting captain to the main deck"));
 						}
 					}
 				}
@@ -786,10 +793,10 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	private Object[] deploy(Object[] arguments) {
 		if (arguments.length == 5) {
 			String fileName = (String) arguments[0];
-			int x = toInt(arguments[1]);
-			int y = toInt(arguments[2]);
-			int z = toInt(arguments[3]);
-			byte rotationSteps = (byte) toInt(arguments[4]);
+			int x = Commons.toInt(arguments[1]);
+			int y = Commons.toInt(arguments[2]);
+			int z = Commons.toInt(arguments[3]);
+			byte rotationSteps = (byte) Commons.toInt(arguments[4]);
 			
 			if (!new File(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic").exists()) {
 				return new Object[] { 0, "Specified schematic file was not found!" };
@@ -870,7 +877,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		}
 		if (entityPlayers.size() > 1) {
 			for (EntityPlayer entityPlayer : entityPlayers) {
-				WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time.")
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time.")
 				                                       .setStyle(new Style().setColor(TextFormatting.RED)));
 				cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			}
@@ -891,7 +898,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 		}
 		if (itemStack == null || slotIndex >= entityPlayer.inventory.getSizeInventory()) {
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("Please come back once you've a Crystal token."));
+			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("Please come back once you've a Crystal token."));
 			cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
@@ -901,12 +908,12 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			warmupPlayerId = entityPlayer.getUniqueID();
 			warmupPlayer = SS_SEARCH_WARMUP_INTERVALS + 1;
 			warmupSchematicName = ItemCrystalToken.getSchematicName(itemStack);
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentString(String.format("Token '%1$s' detected!", warmupSchematicName, SS_SEARCH_WARMUP_INTERVALS))
+			Commons.addChatMessage(entityPlayer, new TextComponentString(String.format("Token '%1$s' detected!", warmupSchematicName, SS_SEARCH_WARMUP_INTERVALS))
 													.setStyle(new Style().setColor(TextFormatting.GOLD)));
 		}
 		warmupPlayer--;
 		if (warmupPlayer > 0) {
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentString(String.format("Stand by for ship materialization in %2$d...", warmupSchematicName, warmupPlayer)));
+			Commons.addChatMessage(entityPlayer, new TextComponentString(String.format("Stand by for ship materialization in %2$d...", warmupSchematicName, warmupPlayer)));
 			return;
 		}
 		// warmup done
@@ -916,14 +923,13 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		// try deploying
 		StringBuilder reason = new StringBuilder();
 		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - pos.getX(), targetY - pos.getY(), targetZ - pos.getZ(), rotationSteps, true, reason);
-		WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()));
 		if (!isActive) {
 			// failed
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.RED)));
+			Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.RED)));
 			cooldownPlayerDetection = 5 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
-		WarpDrive.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.GOLD)));
+		Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.GOLD)));
 		
 		// success => remove token
 		if (!entityPlayer.capabilities.isCreativeMode) {

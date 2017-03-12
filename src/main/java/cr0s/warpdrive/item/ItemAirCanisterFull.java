@@ -1,9 +1,10 @@
 package cr0s.warpdrive.item;
 
-import net.minecraft.item.ItemStack;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirCanister;
 import cr0s.warpdrive.data.EnumComponentType;
+
+import net.minecraft.item.ItemStack;
 
 public class ItemAirCanisterFull extends ItemAbstractBase implements IAirCanister {
 	

@@ -1,19 +1,18 @@
 package cr0s.warpdrive.config.filler;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.IXmlRepresentable;
+import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.config.RandomCollection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.RandomCollection;
-import cr0s.warpdrive.config.IXmlRepresentable;
 
 /**
  * Represents a set of fillers.

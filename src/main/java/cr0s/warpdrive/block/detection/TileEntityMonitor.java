@@ -1,14 +1,6 @@
 package cr0s.warpdrive.block.detection;
 
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.Optional;
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
@@ -17,8 +9,19 @@ import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
 
 import javax.annotation.Nonnull;
+
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityMonitor extends TileEntityAbstractInterfaced implements IVideoChannel {
 	private int videoChannel = -1;
@@ -68,17 +71,17 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	
 	private ITextComponent getVideoChannelStatus() {
 		if (videoChannel == -1) {
-			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.video_channel.statusLine.undefined");
 		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalid", videoChannel);
+			return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
 		} else {
 			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.invalidOrNotLoaded", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalidOrNotLoaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.valid", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.valid", videoChannel);
 			} else {
-				return new TextComponentTranslation("warpdrive.videoChannel.statusLine.validCamera",
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.validCamera",
 						videoChannel,
 						camera.position.getX(),
 						camera.position.getY(),
@@ -96,13 +99,13 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		videoChannel = tag.getInteger("frequency") + tag.getInteger("videoChannel");
+		videoChannel = tag.getInteger("frequency") + tag.getInteger(VIDEO_CHANNEL_TAG);
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag = super.writeToNBT(tag);
-		tag.setInteger("videoChannel", videoChannel);
+		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 		return tag;
 	}
 	
@@ -138,7 +141,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		
 		if (methodName.equals("videoChannel")) {
 			if (arguments.length == 1) {
-				setVideoChannel(toInt(arguments[0]));
+				setVideoChannel(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { videoChannel };
 		}

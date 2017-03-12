@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block.breathing;
 
+import cr0s.warpdrive.WarpDrive;
+
 import java.util.Random;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
@@ -8,13 +10,14 @@ import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -104,10 +107,10 @@ public class BlockAir extends BlockAbstractBase {
 		}
 		
 		int concentration = blockState.getBlock().getMetaFromState(blockState);
-		boolean isInSpaceWorld = world.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID || world.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID;
+		boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ());
 		
 		// Remove air block to vacuum block
-		if (concentration <= 0 || !isInSpaceWorld) {
+		if (concentration <= 0 || hasAtmosphere) {
 			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3); // replace our air block to vacuum block
 		} else {
 			// Try to spread the air
@@ -359,11 +362,16 @@ public class BlockAir extends BlockAbstractBase {
 	
 	@Override
 	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
-		if (world.provider.getDimension() == WarpDriveConfig.G_SPACE_DIMENSION_ID || world.provider.getDimension() == WarpDriveConfig.G_HYPERSPACE_DIMENSION_ID) {
+		if (!WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.scheduleBlockUpdate(blockPos, this, tickRate(world), 0);
 		} else {
 			world.setBlockToAir(blockPos);
 		}
 		super.onBlockAdded(world, blockPos, blockState);
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 }

@@ -1,9 +1,9 @@
 package cr0s.warpdrive.core;
 
-import java.util.Arrays;
-
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import java.util.Arrays;
 
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.LoadController;

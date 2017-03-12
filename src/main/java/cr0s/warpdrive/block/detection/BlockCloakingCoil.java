@@ -1,18 +1,21 @@
 package cr0s.warpdrive.block.detection;
 
-import java.util.Random;
-
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.BlockProperties;
+
+import javax.annotation.Nonnull;
+
+import java.util.Random;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
 
 public class BlockCloakingCoil extends BlockAbstractBase {
 	
@@ -44,6 +47,8 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.getFront(metadata & 7 - 1) : EnumFacing.UP);
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Nonnull
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		if (!blockState.getValue(BlockProperties.ACTIVE)) {
@@ -67,7 +72,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 }

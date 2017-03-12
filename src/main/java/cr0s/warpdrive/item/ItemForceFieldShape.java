@@ -1,10 +1,14 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumForceFieldShape;
+
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -23,6 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 
 public class ItemForceFieldShape extends ItemAbstractBase {	
+	
 	private static ItemStack[] itemStackCache;
 	
 	public ItemForceFieldShape(final String registryName) {
@@ -91,16 +96,16 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
 		
-		WarpDrive.addTooltip(list, "\n");
+		Commons.addTooltip(list, "\n");
 		
-		WarpDrive.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.shape.tooltip.usage").getFormattedText());
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.shape.tooltip.usage").getFormattedText());
 	}
 }

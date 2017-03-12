@@ -1,7 +1,13 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
+import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import defense.api.IEMPBlock;
+import defense.api.IExplosion;
+
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
@@ -10,9 +16,6 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import defense.api.IEMPBlock;
-import defense.api.IExplosion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -23,8 +26,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockUpdateDetector;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -34,7 +35,7 @@ import javax.annotation.Nullable;
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
-public abstract class BlockAbstractContainer extends BlockContainer implements IEMPBlock, IBlockBase {
+public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
 	protected boolean isRotating = false;
 	protected boolean hasSubBlocks = false; // @TODO: code review
 	
@@ -208,7 +209,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return 1;
 	}
 	
-	EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+	@Override
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		switch (getTier(itemStack)) {
 			case 0:	return EnumRarity.EPIC;
 			case 1:	return EnumRarity.COMMON;

@@ -1,8 +1,16 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import java.util.Random;
 
 import cr0s.warpdrive.data.BlockProperties;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -15,12 +23,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockCloakingCore extends BlockAbstractContainer {
 	
@@ -75,14 +79,14 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityCloakingCore) {
-			TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore)tileEntity;
+			TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore) tileEntity;
 			if (itemStackHeld == null) {
-				WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus());
+				Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 				// + " isInvalid? " + te.isInvalid() + " Valid? " + te.isValid + " Cloaking? " + te.isCloaking + " Enabled? " + te.isEnabled
 				return true;
 			} else if (itemStackHeld.getItem() == Item.getItemFromBlock(Blocks.REDSTONE_TORCH)) {
 				cloakingCore.isEnabled = !cloakingCore.isEnabled;
-				WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus());
+				Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 				return true;
 			// } else if (xxx) {// TODO if player has advanced tool
 				// WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus() + "\n" + cloakingCore.getEnergyStatus());
@@ -98,8 +102,8 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityCloakingCore) {
-			((TileEntityCloakingCore)tileEntity).isEnabled = false;
-			((TileEntityCloakingCore)tileEntity).disableCloakingField();
+			((TileEntityCloakingCore) tileEntity).isEnabled = false;
+			((TileEntityCloakingCore) tileEntity).disableCloakingField();
 		}
 		
 		super.breakBlock(world, blockPos, blockState);

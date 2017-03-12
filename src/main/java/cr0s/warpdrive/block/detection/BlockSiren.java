@@ -2,13 +2,14 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import javax.annotation.Nonnull;
 
 public class BlockSiren extends BlockAbstractContainer {
 	

@@ -1,11 +1,10 @@
 package cr0s.warpdrive.block.weapon;
 
+import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+
 import java.util.Arrays;
 
 import net.minecraft.nbt.NBTTagCompound;
-import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 
 public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	

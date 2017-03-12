@@ -1,5 +1,8 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.network.PacketHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
@@ -12,12 +15,11 @@ import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.network.PacketHandler;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -46,8 +48,6 @@ public final class EntityCamera extends EntityLivingBase {
 	
 	public EntityCamera(World world, final int x, final int y, final int z, EntityPlayer player) {
 		super(world);
-		setInvisible(true);
-		// yOffset = 1.9F; // set viewpoint inside camera (requires a 3D model of the camera)
 		posX = x;
 		posY = y;
 		posZ = z;
@@ -55,7 +55,27 @@ public final class EntityCamera extends EntityLivingBase {
 		cameraY = y;
 		cameraZ = z;
 		this.player = player;
+	}
+		
+	@Override
+	protected void entityInit() {
+		super.entityInit();
+		setInvisible(true);
+		// set viewpoint inside camera
 		noClip = true;
+	}
+	
+	// set viewpoint inside camera
+	public float getEyeHeight() {
+		return 1.62F;
+	}
+	
+	// override to skip the block bounding override on client side
+	@Override
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
+		this.setPosition(x, y, z);
+		this.setRotation(yaw, pitch);
 	}
 	
 	private void closeCamera() {

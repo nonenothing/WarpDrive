@@ -1,6 +1,8 @@
 package cr0s.warpdrive.block.atomic;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,11 +17,15 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import javax.annotation.Nonnull;
 
 public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator implements ITileEntityProvider {
-		
+	
 	public BlockAcceleratorControlPoint(final String registryName) {
 		super(registryName, (byte) 1);
 		setUnlocalizedName("warpdrive.atomic.accelerator_control_point");
 		GameRegistry.registerTileEntity(TileEntityAcceleratorControlPoint.class, WarpDrive.MODID + ":blockAcceleratorControlPoint");
+	}
+	
+	BlockAcceleratorControlPoint(final String registryName, final byte tier) {
+		super(registryName, tier);
 	}
 	
 	@Override
@@ -32,7 +38,7 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 			TileEntity tileEntity = world.getTileEntity(blockPos);
 			
 			if (tileEntity instanceof TileEntityAcceleratorControlPoint) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint) tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint) tileEntity).getStatus());
 				return true;
 			}
 		}

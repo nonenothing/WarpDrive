@@ -1,11 +1,17 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.item.ItemComponent;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import cr0s.warpdrive.data.EnumComponentType;
-import cr0s.warpdrive.item.ItemComponent;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.block.state.IBlockState;
@@ -17,13 +23,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockShipCore extends BlockAbstractContainer {
 	
@@ -97,7 +99,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 		if (itemStackHeld == null) {
 			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityShipCore) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityShipCore)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityShipCore)tileEntity).getStatus());
 				return true;
 			}
 		}

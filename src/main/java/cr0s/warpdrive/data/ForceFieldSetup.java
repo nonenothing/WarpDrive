@@ -1,13 +1,24 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldShape;
+import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
-import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,16 +29,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public class ForceFieldSetup extends GlobalPosition {
 	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 100;
@@ -200,7 +201,7 @@ public class ForceFieldSetup extends GlobalPosition {
 					
 					// container identification
 					if (upgradeEffector == EnumForceFieldUpgrade.ITEM_PORT) {
-						inventories.addAll(TileEntityAbstractBase.getConnectedInventories(tileEntity));
+						inventories.addAll(Commons.getConnectedInventories(tileEntity));
 					}
 				}
 			}

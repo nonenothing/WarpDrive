@@ -18,8 +18,15 @@ public class SoundEvents {
     public static final SoundEvent DING;
 	public static final SoundEvent SIREN_RAID;
 	public static final SoundEvent SIREN_INDUSTRIAL;
+	public static final SoundEvent ACCELERATING_LOW;
+	public static final SoundEvent ACCELERATING_MEDIUM;
+	public static final SoundEvent ACCELERATING_HIGH;
+	public static final SoundEvent CHILLER;
+	public static final SoundEvent COLLISION_LOW;
+	public static final SoundEvent COLLISION_MEDIUM;
+	public static final SoundEvent COLLISION_HIGH;
 	
-    static {
+	static {
 		LASER_LOW = registerSound("lowlaser");
 		LASER_MEDIUM = registerSound("midlaser");
 		LASER_HIGH = registerSound("hilaser");
@@ -32,6 +39,13 @@ public class SoundEvents {
 		DING = registerSound("ding");
 	    SIREN_RAID = registerSound("siren_raid");
 	    SIREN_INDUSTRIAL = registerSound("siren_industrial");
+		ACCELERATING_LOW = registerSound("accelerating_low");
+		ACCELERATING_MEDIUM = registerSound("accelerating_medium");
+		ACCELERATING_HIGH = registerSound("accelerating_high");
+		CHILLER = registerSound("chiller");
+		COLLISION_LOW = registerSound("collision_low");
+		COLLISION_MEDIUM = registerSound("collision_medium");
+		COLLISION_HIGH = registerSound("collision_high");
 	}
 	
 	@SuppressWarnings({"unused", "EmptyMethod"})

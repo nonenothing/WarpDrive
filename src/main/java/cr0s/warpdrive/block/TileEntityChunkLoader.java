@@ -1,15 +1,17 @@
 package cr0s.warpdrive.block;
 
-
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.UpgradeType;
 import cr0s.warpdrive.item.ItemUpgrade;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
+
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
@@ -90,12 +92,12 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 			Chunk aChunk = worldObj.getChunkFromBlockCoords(pos);
 			myChunk = aChunk.getChunkCoordIntPair();
 		}
-		negDX = - clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDX);
-		posDX =   clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDX);
-		negDZ = - clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDZ);
-		posDZ =   clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDZ);
-		minChunk = new ChunkPos(myChunk.chunkXPos + negDX, myChunk.chunkZPos + negDZ);
-		maxChunk = new ChunkPos(myChunk.chunkXPos + posDX, myChunk.chunkZPos + posDZ);
+		negDX = - Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDX);
+		posDX =   Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDX);
+		negDZ = - Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDZ);
+		posDZ =   Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDZ);
+		minChunk = new ChunkPos(myChunk.chunkXPos + negDX,myChunk.chunkZPos + negDZ);
+		maxChunk = new ChunkPos(myChunk.chunkXPos + posDX,myChunk.chunkZPos + posDZ);
 		area = (posDX - negDX + 1) * (posDZ - negDZ + 1);
 		refreshLoading(true);
 	}
@@ -133,7 +135,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		switch (methodName) {
 			case "radius":
 				if (arguments.length == 1) {
-					int dist = toInt(arguments[0]);
+					int dist = Commons.toInt(arguments[0]);
 					negDX = dist;
 					negDZ = dist;
 					posDX = dist;
@@ -144,16 +146,16 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 				return new Object[]{false};
 			case "bounds":
 				if (arguments.length == 4) {
-					negDX = toInt(arguments[0]);
-					posDX = toInt(arguments[1]);
-					negDZ = toInt(arguments[2]);
-					posDZ = toInt(arguments[3]);
+					negDX = Commons.toInt(arguments[0]);
+					posDX = Commons.toInt(arguments[1]);
+					negDZ = Commons.toInt(arguments[2]);
+					posDZ = Commons.toInt(arguments[3]);
 					changedDistance();
 				}
 				return new Object[]{negDX, posDX, negDZ, posDZ};
 			case "active":
 				if (arguments.length == 1)
-					shouldLoad = toBool(arguments[0]);
+					shouldLoad = Commons.toBool(arguments[0]);
 				return new Object[]{shouldChunkLoad()};
 			case "upgrades":
 				return new Object[] { getUpgradesAsString() };

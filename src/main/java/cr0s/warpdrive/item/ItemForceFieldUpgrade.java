@@ -1,10 +1,15 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -19,10 +24,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
 public class ItemForceFieldUpgrade extends ItemAbstractBase {
+	
 	private static ItemStack[] itemStackCache;
 	
 	public ItemForceFieldUpgrade(final String registryName) {
@@ -91,23 +94,23 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.canTranslate(tooltipName1)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
 		
-		WarpDrive.addTooltip(list, "\n");
+		Commons.addTooltip(list, "\n");
 		
 		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
 		if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.projector").getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.projector").getFormattedText());
 		}
 		if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.relay").getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.relay").getFormattedText());
 		}
-		WarpDrive.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount").getFormattedText());
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount").getFormattedText());
 	}
 }

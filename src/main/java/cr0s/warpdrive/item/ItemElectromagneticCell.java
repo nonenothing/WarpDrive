@@ -1,28 +1,69 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IParticleContainerItem;
 import cr0s.warpdrive.api.Particle;
 import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.api.ParticleStack;
+
+import java.util.List;
+import javax.annotation.Nonnull;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 
-import javax.annotation.Nonnull;
-import java.util.List;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemElectromagneticCell extends ItemAbstractBase implements IParticleContainerItem {
+	
+	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
 	
 	public ItemElectromagneticCell(final String registryName) {
 		super(registryName);
 		setMaxDamage(0);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.atomic.electromagnetic_cell");
+		setHasSubtypes(true);
 	}
+	
+	// @TODO MC1.10 rendering
+	//	icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
+	//	icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");
+	//	icons[ 2] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-40");
+	//	icons[ 3] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-60");
+	//	icons[ 4] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-80");
+	//	icons[ 5] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-100");
+	//	icons[ 6] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-full");
+	//	icons[ 7] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-20");
+	//	icons[ 8] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-40");
+	//	icons[ 9] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-60");
+	//	icons[10] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-80");
+	//	icons[11] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-100");
+	//	icons[12] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-full");
+	//	icons[13] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-20");
+	//	icons[14] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-40");
+	//	icons[15] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-60");
+	//	icons[16] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-80");
+	//	icons[17] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-100");
+	//	icons[18] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-full");
+	//	icons[19] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-20");
+	//	icons[20] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-40");
+	//	icons[21] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-60");
+	//	icons[22] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-80");
+	//	icons[23] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-100");
+	//	icons[24] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-full");
+	//	icons[25] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-20");
+	//	icons[26] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-40");
+	//	icons[27] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-60");
+	//	icons[28] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-80");
+	//	icons[29] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-100");
+	//	icons[30] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-full");
 	
 	public static ItemStack getItemStackNoCache(final Particle particle, final int amount) {
 		ItemStack itemStack = new ItemStack(WarpDrive.itemElectromagneticCell, 1, 0);
@@ -39,16 +80,54 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	@Override
 	public void getSubItems(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
-		if (WarpDrive.isDev) {
-			for (int metadata = 0; metadata < 32; metadata++) {
-				list.add(new ItemStack(item, 1, metadata));
-			}
-		}
-		list.add(getItemStackNoCache(ParticleRegistry.ION, 100));
-		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 100));
-		list.add(getItemStackNoCache(ParticleRegistry.ANTIMATTER, 100));
-		list.add(getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 100));
+		list.add(getItemStackNoCache(null, 0));
+		list.add(getItemStackNoCache(ParticleRegistry.ION, 1000));
+		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
+		list.add(getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000));
+		list.add(getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000));
 		// list.add(getItemStackNoCache(ParticleRegistry.TACHYONS, 100));
+	}
+	
+	@Override
+	public boolean hasContainerItem(ItemStack stack) {
+		return true;
+	}
+	
+	@Nonnull
+	@Override
+	public Item getContainerItem() {
+		return Item.getItemFromBlock(Blocks.FIRE);
+	}
+	
+	@Nonnull
+	@Override
+	public ItemStack getContainerItem(@Nonnull ItemStack itemStackFilled) {
+		ParticleStack particleStack = getParticleStack(itemStackFilled);
+		if (particleStack != null) {
+			final int amount = particleStack.getAmount() - getAmountToConsume(itemStackFilled);
+			if (amount <= 0) {
+				return getItemStackNoCache(null, 0);
+			}
+			return getItemStackNoCache(particleStack.getParticle(), amount);
+		}
+		return new ItemStack(Blocks.FIRE);
+	}
+	
+	@Override
+	public void setAmountToConsume(ItemStack itemStack, int amountToConsume) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		if (particleStack == null || particleStack.getParticle() == null) {
+			return;
+		}
+		NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+		tagCompound.setInteger(AMOUNT_TO_CONSUME_TAG, amountToConsume);
+	}
+	
+	private int getAmountToConsume(ItemStack itemStack) {
+		if (itemStack.hasTagCompound()) {
+			return itemStack.getTagCompound().getInteger(AMOUNT_TO_CONSUME_TAG);
+		}
+		return 0;
 	}
 	
 	private static int getDamageLevel(ItemStack itemStack, final ParticleStack particleStack) {
@@ -61,7 +140,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
 		final int type = particleStack.getParticle().getColorIndex() % 5;
-		final double ratio = particleStack.amount / (double) itemElectromagneticCell.getCapacity(itemStack);
+		final double ratio = particleStack.getAmount() / (double) itemElectromagneticCell.getCapacity(itemStack);
 		final int offset = (ratio < 0.2) ? 0 : (ratio < 0.4) ? 1 : (ratio < 0.6) ? 2 : (ratio < 0.8) ? 3 : (ratio < 1.0) ? 4 : 5;
 		return (1 + type * 6 + offset);
 	}
@@ -71,7 +150,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public ParticleStack getParticle(ItemStack itemStack) {
+	public ParticleStack getParticleStack(final ItemStack itemStack) {
 		if (itemStack.getItem() != this || !itemStack.hasTagCompound()) {
 			return null;
 		}
@@ -83,32 +162,59 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public int getCapacity(ItemStack container) {
+	public int getCapacity(final ItemStack container) {
 		return 1000;
 	}
 	
 	@Override
-	public int fill(ItemStack itemStack, ParticleStack resource, boolean doFill) {
-		ParticleStack particleStack = getParticle(itemStack);
-		if (particleStack == null || particleStack.getParticle() == null) {
-			particleStack = new ParticleStack(resource.getParticle(), 0);
-		} else if (!particleStack.containsParticle(resource) || particleStack.amount >= getCapacity(itemStack)) {
-			return 0;
-		}
-		int consumable = Math.min(resource.amount, getCapacity(itemStack) - particleStack.amount);
-		if (!doFill) {
-			particleStack.amount += consumable;
-			
-			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
-			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
-			updateDamageLevel(itemStack, particleStack);
-		}
-		return consumable;
+	public boolean isEmpty(final ItemStack itemStack) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		return particleStack == null || particleStack.isEmpty();
 	}
 	
 	@Override
-	public ParticleStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-		return null;
+	public int fill(ItemStack itemStack, final ParticleStack resource, final boolean doFill) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		if (particleStack == null || particleStack.getParticle() == null) {
+			particleStack = new ParticleStack(resource.getParticle(), 0);
+		} else if (!particleStack.isParticleEqual(resource) || particleStack.getAmount() >= getCapacity(itemStack)) {
+			return 0;
+		}
+		int transfer = Math.min(resource.getAmount(), getCapacity(itemStack) - particleStack.getAmount());
+		if (doFill) {
+			particleStack.fill(transfer);
+			
+			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			if (!itemStack.hasTagCompound()) {
+				itemStack.setTagCompound(tagCompound);
+			}
+			updateDamageLevel(itemStack, particleStack);
+		}
+		return transfer;
+	}
+	
+	@Override
+	public ParticleStack drain(ItemStack itemStack, final ParticleStack resource, final boolean doDrain) {
+		ParticleStack particleStack = getParticleStack(itemStack);
+		if (particleStack == null || particleStack.getParticle() == null) {
+			return null;
+		}
+		if (!particleStack.isParticleEqual(resource) || particleStack.getAmount() <= 0) {
+			return null;
+		}
+		int transfer = Math.min(resource.getAmount(), particleStack.getAmount());
+		if (doDrain) {
+			particleStack.fill(-transfer);
+			
+			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
+			if (!itemStack.hasTagCompound()) {
+				itemStack.setTagCompound(tagCompound);
+			}
+			updateDamageLevel(itemStack, particleStack);
+		}
+		return resource.copy(transfer);
 	}
 	
 	@Override
@@ -120,22 +226,22 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			return;
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
-		final ParticleStack particleStack = itemElectromagneticCell.getParticle(itemStack);
+		final ParticleStack particleStack = itemElectromagneticCell.getParticleStack(itemStack);
 		String tooltip;
 		if (particleStack == null || particleStack.getParticle() == null) {
 			tooltip = new TextComponentTranslation("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty").getFormattedText();
-			WarpDrive.addTooltip(list, tooltip);
+			Commons.addTooltip(list, tooltip);
 			
 		} else {
 			final Particle particle = particleStack.getParticle();
 			
 			tooltip = new TextComponentTranslation("item.warpdrive.atomic.electromagnetic_cell.tooltip.filled",
-				particleStack.amount, particle.getLocalizedName()).getFormattedText();
-			WarpDrive.addTooltip(list, tooltip);
+				particleStack.getAmount(), particle.getLocalizedName()).getFormattedText();
+			Commons.addTooltip(list, tooltip);
 			
 			String particleTooltip = particle.getLocalizedTooltip();
 			if (!particleTooltip.isEmpty()) {
-				WarpDrive.addTooltip(list, particleTooltip);
+				Commons.addTooltip(list, particleTooltip);
 			}
 		}
 	}

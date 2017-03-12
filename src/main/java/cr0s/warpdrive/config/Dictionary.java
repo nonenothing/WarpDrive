@@ -1,24 +1,25 @@
 package cr0s.warpdrive.config;
 
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
+import cr0s.warpdrive.block.hull.BlockHullGlass;
+import cr0s.warpdrive.block.hull.BlockHullPlain;
+import cr0s.warpdrive.block.hull.BlockHullStairs;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
-import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
-import cr0s.warpdrive.block.hull.BlockHullStairs;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.registry.GameData;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.hull.BlockHullGlass;
-import cr0s.warpdrive.block.hull.BlockHullPlain;
-import cr0s.warpdrive.block.hull.BlockHullStairs;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class Dictionary {

@@ -1,47 +1,46 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IControlChannel;
+import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.api.IWarpTool;
+import cr0s.warpdrive.block.energy.BlockEnergyBank;
+import cr0s.warpdrive.data.SoundEvents;
+
+import javax.annotation.Nonnull;
+
 import java.util.List;
 
-import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import net.minecraft.block.Block;
-import cr0s.warpdrive.data.SoundEvents;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBeamFrequency;
-import cr0s.warpdrive.api.IVideoChannel;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nonnull;
-
-public class ItemTuningFork extends ItemAbstractBase {
+public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
 	public ItemTuningFork(final String registryName) {
 		super(registryName);
 		setMaxDamage(0);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.tool.TuningFork");
+		setUnlocalizedName("warpdrive.tool.tuning_fork");
 		setFull3D();
 		setHasSubtypes(true);
-	}
-	
-	@Override
-	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
-		for(int dyeColor = 0; dyeColor < 16; dyeColor++) {
-			subItems.add(new ItemStack(item, 1, dyeColor));
-		}
 	}
 	
 	@Nonnull
@@ -80,6 +79,13 @@ public class ItemTuningFork extends ItemAbstractBase {
 		return ((itemStack.getItemDamage() % 16) + 1) * 10;
 	}
 	
+	public static int getControlChannel(ItemStack itemStack) {
+		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
+			return -1;
+		}
+		return ((itemStack.getItemDamage() % 16) + 2);
+	}
+	
 	@Nonnull
 	@Override
 	public EnumActionResult onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, BlockPos blockPos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -93,23 +99,33 @@ public class ItemTuningFork extends ItemAbstractBase {
 		
 		boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
 		boolean hasBeamFrequency = tileEntity instanceof IBeamFrequency;
-		if (!hasVideoChannel && !hasBeamFrequency) {
+		boolean hasControlChannel = tileEntity instanceof IControlChannel;
+		if (!hasVideoChannel && !hasBeamFrequency && !hasControlChannel) {
 			return EnumActionResult.FAIL;
 		}
 		if (hasVideoChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
 			((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("item.warpdrive.tool.TuningFork.use.setVideoChannel",
+			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.video_channel.set",
 					tileEntity.getBlockType().getLocalizedName(),
 					getVideoChannel(itemStack)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
+			
+		} else if (hasControlChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
+			((IControlChannel)tileEntity).setControlChannel(getControlChannel(itemStack));
+			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.control_channel.set",
+				tileEntity.getBlockType().getLocalizedName(),
+				getControlChannel(itemStack)));
+			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
+			
 		} else if (hasBeamFrequency) {
 			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("item.warpdrive.tool.TuningFork.use.setBeamFrequency",
+			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.beam_frequency.set",
 					tileEntity.getBlockType().getLocalizedName(),
 					getBeamFrequency(itemStack)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
+			
 		} else {
-			WarpDrive.addChatMessage(entityPlayer, new TextComponentString("Error: invalid state, please contact the mod authors"
+			Commons.addChatMessage(entityPlayer, new TextComponentString("Error: invalid state, please contact the mod authors"
 					+ "\nof " + itemStack
 					+ "\nand " + tileEntity));
 		}
@@ -127,11 +143,12 @@ public class ItemTuningFork extends ItemAbstractBase {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
-		tooltip += new TextComponentTranslation("item.warpdrive.tool.TuningFork.tooltip.videoChannel", getVideoChannel(itemStack));
-		tooltip += "\n" + new TextComponentTranslation("item.warpdrive.tool.TuningFork.tooltip.beamFrequency", getBeamFrequency(itemStack));
+		tooltip += new TextComponentTranslation("warpdrive.video_channel.tooltip", getVideoChannel(itemStack));
+		tooltip += "\n" + new TextComponentTranslation("warpdrive.beam_frequency.tooltip", getBeamFrequency(itemStack));
+		tooltip += "\n" + new TextComponentTranslation("warpdrive.control_channel.tooltip", getControlChannel(itemStack));
 		
-		tooltip += "\n\n" + new TextComponentTranslation("item.warpdrive.tool.TuningFork.tooltip.usage").getFormattedText();
+		tooltip += "\n\n" + new TextComponentTranslation("item.warpdrive.tool.tuning_fork.tooltip.usage");
 		
-		WarpDrive.addTooltip(list, tooltip);
+		Commons.addTooltip(list, tooltip);
 	}
 }

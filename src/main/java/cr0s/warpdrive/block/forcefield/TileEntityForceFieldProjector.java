@@ -1,17 +1,36 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IForceFieldShape;
-import cr0s.warpdrive.config.*;
 import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.data.*;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumForceFieldShape;
+import cr0s.warpdrive.data.EnumForceFieldState;
+import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import cr0s.warpdrive.data.ForceFieldSetup;
+import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockStaticLiquid;
@@ -26,19 +45,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
-
-import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityForceFieldProjector extends TileEntityAbstractForceField {
 	private static final int PROJECTOR_MAX_ENERGY_STORED = 30000;
@@ -106,6 +123,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			"state",
 			"translation"
 		});
+		CC_scripts = Arrays.asList("enable", "disable");
 		
 		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
@@ -211,7 +229,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			}
 			
 			soundTicks--;
-			if (soundTicks <= 0) {
+			if (soundTicks < 0) {
 				soundTicks = PROJECTOR_SOUND_UPDATE_TICKS;
 				if (!hasUpgrade(EnumForceFieldUpgrade.SILENCER)) {
 					worldObj.playSound(null, pos, SoundEvents.PROJECTING, SoundCategory.BLOCKS, 1.0F, 0.85F + 0.15F * worldObj.rand.nextFloat());
@@ -245,7 +263,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 							continue;
 						}
 						
-						WarpDrive.addChatMessage(entity, msg);
+						Commons.addChatMessage(entity, msg);
 					}
 				}
 			}
@@ -737,7 +755,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void setMin(final float x, final float y, final float z) {
-		v3Min = new Vector3(clamp(-1.0D, 0.0D, x), clamp(-1.0D, 0.0D, y), clamp(-1.0D, 0.0D, z));
+		v3Min = new Vector3(Commons.clamp(-1.0D, 0.0D, x), Commons.clamp(-1.0D, 0.0D, y), Commons.clamp(-1.0D, 0.0D, z));
 	}
 	
 	public Vector3 getMax() {
@@ -745,7 +763,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void setMax(final float x, final float y, final float z) {
-		v3Max = new Vector3(clamp(0.0D, 1.0D, x), clamp(0.0D, 1.0D, y), clamp(0.0D, 1.0D, z));
+		v3Max = new Vector3(Commons.clamp(0.0D, 1.0D, x), Commons.clamp(0.0D, 1.0D, y), Commons.clamp(0.0D, 1.0D, z));
 	}
 	
 	public float getRotationYaw() {
@@ -796,8 +814,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		float oldYaw = this.rotationYaw;
 		float oldPitch = this.rotationPitch;
 		float oldRoll = this.rotationRoll;
-		this.rotationYaw = clamp( -45.0F, +45.0F, rotationYaw);
-		this.rotationPitch = clamp( -45.0F, +45.0F, rotationPitch);
+		this.rotationYaw = Commons.clamp( -45.0F, +45.0F, rotationYaw);
+		this.rotationPitch = Commons.clamp( -45.0F, +45.0F, rotationPitch);
 		this.rotationRoll = (rotationRoll + 720.0F) % 360.0F - 180.0F;
 		if (oldYaw != this.rotationYaw || oldPitch != this.rotationPitch || oldRoll != this.rotationRoll) {
 			isDirty.set(true);
@@ -848,7 +866,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void setTranslation(final float x, final float y, final float z) {
-		v3Translation = new Vector3(clamp(-1.0D, 1.0D, x), clamp(-1.0D, 1.0D, y), clamp(-1.0D, 1.0D, z));
+		v3Translation = new Vector3(Commons.clamp(-1.0D, 1.0D, x), Commons.clamp(-1.0D, 1.0D, y), Commons.clamp(-1.0D, 1.0D, z));
 	}
 	
 	@Override
@@ -1030,13 +1048,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// OpenComputer callback methods
 	@Callback
-	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] state(Context context, Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
-	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] min(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setMin((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1049,7 +1067,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] max(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setMax((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1062,7 +1080,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] rotation(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setRotation((float)arguments.checkDouble(0), rotationPitch, rotationRoll);
@@ -1082,7 +1100,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Callback
-	@net.minecraftforge.fml.common.Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] translation(Context context, Arguments arguments) {
 		if (arguments.count() == 1) {
 			setTranslation((float)arguments.checkDouble(0), (float)arguments.checkDouble(0), (float)arguments.checkDouble(0));
@@ -1096,38 +1114,38 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@net.minecraftforge.fml.common.Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
 		String methodName = getMethodName(method);
 		
 		switch (methodName) {
 		case "min":
 			if (arguments.length == 1) {
-				setMin(toFloat(arguments[0]), toFloat(arguments[0]), toFloat(arguments[0]));
+				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
-				setMin(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[0]));
+				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 3) {
-				setMin(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[2]));
+				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
 			}
 			return new Double[] { v3Min.x, v3Min.y, v3Min.z };
 		
 		case "max":
 			if (arguments.length == 1) {
-				setMax(toFloat(arguments[0]), toFloat(arguments[0]), toFloat(arguments[0]));
+				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
-				setMax(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[0]));
+				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 3) {
-				setMax(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[2]));
+				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
 			}
 			return new Double[] { v3Max.x, v3Max.y, v3Max.z };
 		
 		case "rotation":
 			if (arguments.length == 1) {
-				setRotation(toFloat(arguments[0]), rotationPitch, rotationRoll);
+				setRotation(Commons.toFloat(arguments[0]), rotationPitch, rotationRoll);
 			} else if (arguments.length == 2) {
-				setRotation(toFloat(arguments[0]), toFloat(arguments[1]), rotationRoll);
+				setRotation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), rotationRoll);
 			} else if (arguments.length == 3) {
-				setRotation(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[2]));
+				setRotation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
 			}
 			return new Float[] { rotationYaw, rotationPitch, rotationRoll };
 		
@@ -1136,11 +1154,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		case "translation":
 			if (arguments.length == 1) {
-				setTranslation(toFloat(arguments[0]), toFloat(arguments[0]), toFloat(arguments[0]));
+				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
-				setTranslation(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[0]));
+				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 3) {
-				setTranslation(toFloat(arguments[0]), toFloat(arguments[1]), toFloat(arguments[2]));
+				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[2]));
 			}
 			return new Double[] { v3Translation.x, v3Translation.y, v3Translation.z };
 		}

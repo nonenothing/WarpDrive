@@ -1,6 +1,11 @@
 package cr0s.warpdrive.item;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+
+import javax.annotation.Nonnull;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,10 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 
-import javax.annotation.Nonnull;
-import java.util.List;
-
-public class ItemCrystalToken extends ItemAbstractBase {	
+public class ItemCrystalToken extends ItemAbstractBase {
+	
 	private static ItemStack[] itemStackCache;
 	private static final int COUNT = 6; 
 	
@@ -73,12 +76,12 @@ public class ItemCrystalToken extends ItemAbstractBase {
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.hasKey(tooltipName1)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName1, getSchematicName(itemStack)).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1, getSchematicName(itemStack)).getFormattedText());
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
-			WarpDrive.addTooltip(list, new TextComponentTranslation(tooltipName2, getSchematicName(itemStack)).getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2, getSchematicName(itemStack)).getFormattedText());
 		}
 	}
 }

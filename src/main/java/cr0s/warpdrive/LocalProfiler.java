@@ -1,8 +1,8 @@
 package cr0s.warpdrive;
 
-import java.util.Stack;
-
 import cr0s.warpdrive.config.WarpDriveConfig;
+
+import java.util.Stack;
 
 public class LocalProfiler {
 	private static class StackElement {

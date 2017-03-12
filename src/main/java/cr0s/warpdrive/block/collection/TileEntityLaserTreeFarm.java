@@ -1,35 +1,38 @@
 package cr0s.warpdrive.block.collection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumLaserTreeFarmMode;
+import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.network.PacketHandler;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import cr0s.warpdrive.data.EnumLaserTreeFarmMode;
-import cr0s.warpdrive.data.SoundEvents;
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.Optional;
-import net.minecraft.block.Block;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+
 import net.minecraftforge.common.IPlantable;
-import net.minecraft.util.EnumFacing;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.network.PacketHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private boolean breakLeaves = false;
@@ -337,7 +340,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				BlockPos blockPosPlant = soil.add(0, 1, 0);
 				IBlockState blockStateSoil = worldObj.getBlockState(soil);
 				soilIndex++;
-				Collection<IInventory> inventories = getConnectedInventories(this);
+				Collection<IInventory> inventories = Commons.getConnectedInventories(this);
 				if (inventories == null || inventories.isEmpty()) {
 					currentState = STATE_WARMUP;
 					delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
@@ -526,7 +529,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			if (breakLeaves) {
 				whitelist.addAll(Dictionary.BLOCKS_LEAVES);
 			}
-			logPositions = getConnectedBlocks(worldObj, logPositions, UP_DIRECTIONS, whitelist, WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
+			logPositions = Commons.getConnectedBlocks(worldObj, logPositions, Commons.UP_DIRECTIONS, whitelist, WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
@@ -552,12 +555,12 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		if (radiusX == 0) {
 			radiusX = 1;
 		}
-		radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusX);
+		radiusX = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusX);
 		radiusZ = tag.getInteger("radiusZ");
 		if (radiusZ == 0) {
 			radiusZ = 1;
 		}
-		radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusZ);
+		radiusZ = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusZ);
 		
 		breakLeaves     = tag.getBoolean("breakLeaves");
 		tapTrees        = tag.getBoolean("tapTrees");
@@ -640,12 +643,12 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private Object[] radius(Object[] arguments) {
 		try {
 			if (arguments.length == 1) {
-				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
+				radiusX = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, Commons.toInt(arguments[0]));
 				radiusZ = radiusX;
 				markDirty();
 			} else if (arguments.length == 2) {
-				radiusX = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[0]));
-				radiusZ = clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, toInt(arguments[1]));
+				radiusX = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, Commons.toInt(arguments[0]));
+				radiusZ = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, Commons.toInt(arguments[1]));
 				markDirty();
 			}
 		} catch(NumberFormatException exception) {
@@ -658,7 +661,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private Object[] breakLeaves(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				breakLeaves = toBool(arguments[0]);
+				breakLeaves = Commons.toBool(arguments[0]);
 				markDirty();
 			} catch (Exception exception) {
 				return new Object[] { breakLeaves };
@@ -670,7 +673,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private Object[] silktouch(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				enableSilktouch = toBool(arguments[0]);
+				enableSilktouch = Commons.toBool(arguments[0]);
 				markDirty();
 			} catch (Exception exception) {
 				return new Object[] { enableSilktouch };
@@ -682,7 +685,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	private Object[] tapTrees(Object[] arguments) {
 		if (arguments.length == 1) {
 			try {
-				tapTrees = toBool(arguments[0]);
+				tapTrees = Commons.toBool(arguments[0]);
 				markDirty();
 			} catch (Exception exception) {
 				return new Object[] { tapTrees };

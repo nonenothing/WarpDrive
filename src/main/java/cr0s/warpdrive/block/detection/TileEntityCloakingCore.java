@@ -1,32 +1,38 @@
 package cr0s.warpdrive.block.detection;
 
-import java.util.Arrays;
-
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.CloakedArea;
 import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.network.PacketHandler;
+import dan200.computercraft.api.lua.ILuaContext;
+import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import java.util.Arrays;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.EnumFacing;
+
 import net.minecraftforge.fml.common.Optional;
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CloakedArea;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.network.PacketHandler;
-import dan200.computercraft.api.lua.ILuaContext;
-import dan200.computercraft.api.peripheral.IComputerAccess;
 
 public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
+	
+	private static final int CLOAKING_CORE_SOUND_UPDATE_TICKS = 40;
+	
 	public boolean isEnabled = false;
 	public byte tier = 1; // cloaking field tier, 1 or 2
 	
@@ -74,9 +80,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		}
 		
 		// Reset sound timer
-		soundTicks++;
-		if (soundTicks >= 40) {
-			soundTicks = 0;
+		soundTicks--;
+		if (soundTicks < 0) {
+			soundTicks = CLOAKING_CORE_SOUND_UPDATE_TICKS;
 			soundPlayed = false;
 		}
 		
@@ -425,7 +431,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		switch (methodName) {
 			case "tier":
 				if (arguments.length == 1) {
-					if (toInt(arguments[0]) == 2) {
+					if (Commons.toInt(arguments[0]) == 2) {
 						tier = 2;
 					} else {
 						tier = 1;
@@ -439,7 +445,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 
 			case "enable":
 				if (arguments.length == 1) {
-					isEnabled = toBool(arguments[0]);
+					isEnabled = Commons.toBool(arguments[0]);
 					markDirty();
 				}
 				return new Object[] { isEnabled };

@@ -4,14 +4,36 @@ public class RenderBlockForceField {
 	
 }
 /* @TODO MC1.10
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
+
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.TileEntityForceField;
 import cr0s.warpdrive.config.Dictionary;
-import net.minecraft.block.*;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockAnvil;
+import net.minecraft.block.BlockBeacon;
+import net.minecraft.block.BlockBrewingStand;
+import net.minecraft.block.BlockCauldron;
+import net.minecraft.block.BlockCocoa;
+import net.minecraft.block.BlockDragonEgg;
+import net.minecraft.block.BlockEndPortalFrame;
+import net.minecraft.block.BlockFence;
+import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockFire;
+import net.minecraft.block.BlockFlowerPot;
+import net.minecraft.block.BlockHopper;
+import net.minecraft.block.BlockPane;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRedstoneComparator;
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.BlockRedstoneRepeater;
+import net.minecraft.block.BlockStairs;
+import net.minecraft.block.BlockWall;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
+
+import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 // wrapper to native classes to renderId is non-zero so we don't render faces when player camera is inside the block
 public class RenderBlockForceField implements ISimpleBlockRenderingHandler {

@@ -1,5 +1,7 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.WarpDrive;
+
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -9,7 +11,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import cr0s.warpdrive.WarpDrive;
 
 public final class EntityStarCore extends Entity {
 	public int xCoord;
@@ -133,6 +134,15 @@ public final class EntityStarCore extends Entity {
 	
 	@Override
 	protected void entityInit() {
+		noClip = true;
+	}
+	
+	// override to skip the block bounding override on client side
+	@Override
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
+		this.setPosition(x, y, z);
+		this.setRotation(yaw, pitch);
 	}
 	
 	@Override

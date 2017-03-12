@@ -1,6 +1,9 @@
 package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -9,8 +12,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
 
 public class ItemBlockHull extends ItemBlockAbstractBase {
 	
@@ -54,8 +55,9 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 		return 1;
 	}
 	
+	@Nonnull
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack) {
+	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
 		switch (getTier()) {
 			case 0:	return EnumRarity.EPIC;
 			case 1:	return EnumRarity.COMMON;

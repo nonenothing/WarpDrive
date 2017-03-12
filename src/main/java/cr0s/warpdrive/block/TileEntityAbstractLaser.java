@@ -1,18 +1,19 @@
 package cr0s.warpdrive.block;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import net.minecraftforge.fml.common.Optional;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Callback;
+import li.cil.oc.api.machine.Context;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.fml.common.Optional;
 
 // Abstract class to manage laser mediums
 public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfaced {
@@ -172,6 +173,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	protected Object[] laserMediumCount() {
 		return new Object[] { laserMediumCount };
 	}
+	
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")

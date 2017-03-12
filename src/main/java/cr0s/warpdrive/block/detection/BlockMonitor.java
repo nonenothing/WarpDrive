@@ -1,6 +1,14 @@
 package cr0s.warpdrive.block.detection;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
+import cr0s.warpdrive.data.CameraRegistryItem;
+import cr0s.warpdrive.render.ClientCameraHandler;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,14 +20,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.data.CameraRegistryItem;
-import cr0s.warpdrive.render.ClientCameraHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BlockMonitor extends BlockAbstractRotatingContainer {
 	
@@ -49,10 +50,10 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 				int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
 				CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
-					WarpDrive.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
+					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
 					return true;
 				} else {
-					WarpDrive.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.monitor.viewingCamera",
+					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.monitor.viewingCamera",
 							videoChannel,
 							camera.position.getX(),
 							camera.position.getY(),

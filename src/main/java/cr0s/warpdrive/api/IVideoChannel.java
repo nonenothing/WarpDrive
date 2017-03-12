@@ -1,9 +1,13 @@
 package cr0s.warpdrive.api;
 
 public interface IVideoChannel {
-	// get video channel, return -1 if invalid 
-	public abstract int getVideoChannel();
+	int VIDEO_CHANNEL_MIN = 0;
+	int VIDEO_CHANNEL_MAX = 999999999;
+	String VIDEO_CHANNEL_TAG = "videoChannel";
 	
-	// sets video channel
-	public abstract void setVideoChannel(int videoChannel);
+	// get video channel, return -1 if invalid 
+	int getVideoChannel();
+	
+	// set video channel
+	void setVideoChannel(final int videoChannel);
 }

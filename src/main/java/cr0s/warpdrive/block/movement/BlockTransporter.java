@@ -1,7 +1,9 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -63,7 +65,7 @@ public class BlockTransporter extends BlockAbstractContainer {
 		if (itemStackHeld == null) {
 			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityTransporter) {
-				WarpDrive.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
 				return true;
 			}
 		}
