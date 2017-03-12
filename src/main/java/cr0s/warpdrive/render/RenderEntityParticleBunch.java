@@ -7,13 +7,17 @@ import org.lwjgl.opengl.GL11;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderEntity;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderEntityParticleBunch extends RenderEntity {
@@ -28,6 +32,10 @@ public class RenderEntityParticleBunch extends RenderEntity {
 	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_RED_OUTSIDE_Y   = { 0.70,  0.90,  0.80,  0.90,  0.80,  0.65,  0.45 };
 	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_GREEN_OUTSIDE_Y = { 0.80,  1.00,  0.90,  0.80,  0.60,  0.75,  1.00 };
 	public static final double[]  PARTICLE_BUNCH_ENERGY_TO_BLUE_OUTSIDE_Y  = { 0.20,  0.30,  0.50,  0.60,  0.60,  0.80,  0.90 };
+	
+	public RenderEntityParticleBunch(RenderManager renderManagerIn) {
+		super(renderManagerIn);
+	}
 	
 	@Override
 	public void doRender(Entity entity, double x, double y, double z, float rotation, float partialTick) {
@@ -107,7 +115,8 @@ public class RenderEntityParticleBunch extends RenderEntity {
 		final int rayCount = rayCount_base + random.nextInt(10);
 		
 		// drawing preparation
-		Tessellator tessellator = Tessellator.instance;
+		Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer vertexBuffer =tessellator.getBuffer();
 		RenderHelper.disableStandardItemLighting();
 		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -127,16 +136,14 @@ public class RenderEntityParticleBunch extends RenderEntity {
 			GL11.glRotatef(random.nextFloat() * 360.0F, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(random.nextFloat() * 360.0F, 0.0F, 1.0F, 0.0F);
 			GL11.glRotatef(random.nextFloat() * 360.0F + cycleRotation * 90F, 0.0F, 0.0F, 1.0F);
-			tessellator.startDrawing(6);
+			vertexBuffer.begin(6, DefaultVertexFormats.POSITION_COLOR);
 			float rayLength = random.nextFloat() * 15.0F + 5.0F + boost *  5.0F;
 			float rayWidth  = random.nextFloat() *  2.0F + 1.0F + boost *  1.0F;
-			tessellator.setColorRGBA_F(redIn, greenIn, blueIn, (int) (255F * (1.0F - boost)));
-			tessellator.addVertex(0.0D              , 0.0D, 0.0D);
-			tessellator.setColorRGBA_F(redOut, greenOut, blueOut, 0);
-			tessellator.addVertex(-0.866D * rayWidth, rayLength, -0.5D * rayWidth);
-			tessellator.addVertex( 0.866D * rayWidth, rayLength, -0.5D * rayWidth);
-			tessellator.addVertex( 0.000D           , rayLength,  1.0D * rayWidth);
-			tessellator.addVertex(-0.866D * rayWidth, rayLength, -0.5D * rayWidth);
+			vertexBuffer.pos( 0.0D             ,      0.0D,  0.0D           ).color(redIn, greenIn, blueIn, (int) (255F * (1.0F - boost))).endVertex();
+			vertexBuffer.pos(-0.866D * rayWidth, rayLength, -0.5D * rayWidth).color(redOut, greenOut, blueOut, 0).endVertex();
+			vertexBuffer.pos( 0.866D * rayWidth, rayLength, -0.5D * rayWidth).color(redOut, greenOut, blueOut, 0).endVertex();
+			vertexBuffer.pos( 0.000D           , rayLength,  1.0D * rayWidth).color(redOut, greenOut, blueOut, 0).endVertex();
+			vertexBuffer.pos(-0.866D * rayWidth, rayLength, -0.5D * rayWidth).color(redOut, greenOut, blueOut, 0).endVertex();
 			tessellator.draw();
 		}
 		

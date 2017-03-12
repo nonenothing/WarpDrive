@@ -8,9 +8,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -26,14 +28,14 @@ import java.util.Set;
  */
 public class Commons {
 	
-	public static void addChatMessage(final ICommandSender sender, final String message) {
+	public static void addChatMessage(final ICommandSender sender, final ITextComponent textComponent) {
 		if (sender == null) {
-			WarpDrive.logger.error("Unable to send message to NULL sender: " + message);
+			WarpDrive.logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
 			return;
 		}
-		String[] lines = message.replace("§", "" + (char)167).replace("\\n", "\n").replaceAll("\u00A0", " ").split("\n");
+		String[] lines = textComponent.getFormattedText().replace("§", "" + (char)167).replace("\\n", "\n").replaceAll("\u00A0", " ").split("\n");
 		for (String line : lines) {
-			sender.addChatMessage(new ChatComponentText(line));
+			sender.addChatMessage(new TextComponentString(line));
 		}
 		
 		// logger.info(message);
@@ -132,9 +134,9 @@ public class Commons {
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
 		Collection<IInventory> result = new ArrayList<>(6);
 		
-		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
-				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
+		for(EnumFacing side : EnumFacing.VALUES) {
+			TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
+			tileEntityConnection.getPos().offset(side));
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
 				result.add((IInventory) tileEntity);
 				
@@ -153,44 +155,44 @@ public class Commons {
 				}
 			}
 		}
+		
 		return result;
 	}
 	
 	
 	// searching methods
 	
-	public static final ForgeDirection[] UP_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
-	public static final ForgeDirection[] HORIZONTAL_DIRECTIONS = { ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
-	
-	public static Set<VectorI> getConnectedBlocks(World world, final VectorI start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
+	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static Set<BlockPos> getConnectedBlocks(World world, final BlockPos start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
 	}
 	
-	public static Set<VectorI> getConnectedBlocks(World world, final Collection<VectorI> start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
-		Set<VectorI> toIgnore = new HashSet<>();
+	public static Set<BlockPos> getConnectedBlocks(World world, final Collection<BlockPos> start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
+		Set<BlockPos> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
 		
-		Set<VectorI> toIterate = new HashSet<>();
+		Set<BlockPos> toIterate = new HashSet<>();
 		toIterate.addAll(start);
 		
-		Set<VectorI> toIterateNext;
+		Set<BlockPos> toIterateNext;
 		
-		Set<VectorI> iterated = new HashSet<>();
+		Set<BlockPos> iterated = new HashSet<>();
 		
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
 			toIterateNext = new HashSet<>();
-			for (VectorI current : toIterate) {
-				if (whitelist.contains(current.getBlock_noChunkLoading(world))) {
+			for (BlockPos current : toIterate) {
+				if (whitelist.contains(new VectorI(current).getBlockState_noChunkLoading(world).getBlock())) {
 					iterated.add(current);
 				}
 				
-				for(ForgeDirection direction : directions) {
-					VectorI next = current.clone(direction);
+				for(EnumFacing direction : directions) {
+					BlockPos next = current.offset(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
-						if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
+						if (whitelist.contains(new VectorI(next).getBlockState_noChunkLoading(world).getBlock())) {
 							toIterateNext.add(next);
 						}
 					}
@@ -202,7 +204,6 @@ public class Commons {
 		
 		return iterated;
 	}
-	
 	
 	// data manipulation methods
 	

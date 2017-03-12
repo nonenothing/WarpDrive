@@ -3,14 +3,14 @@ package cr0s.warpdrive.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.MovingSound;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SirenSound extends MovingSound {
-    ResourceLocation resource;
     float range;
     float x, y, z;
     
@@ -23,10 +23,9 @@ public class SirenSound extends MovingSound {
        2. Produces a sound which decreases in volume the farther you get away from it.
        3. Doesn't keep playing for you once you're half the world away.
        4. Doesn't completely spazz out the instant you try to actually use it.*/
-    public SirenSound(ResourceLocation resource, float range, float x, float y, float z) {
-        super(resource);
+    public SirenSound(SoundEvent soundEvent, float range, float x, float y, float z) {
+        super(soundEvent, SoundCategory.AMBIENT);
         
-        this.resource = resource;
         this.range = range;
         
         this.x = x;

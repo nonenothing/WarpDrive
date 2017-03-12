@@ -8,22 +8,23 @@ import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
+	
 	private boolean canLoad = false;
 	private boolean shouldLoad = false;
-
+	
 	private boolean initialised = false;
-	private ChunkCoordIntPair myChunk;
-
+	private ChunkPos myChunk;
+	
 	int negDX, posDX, negDZ, posDZ;
 	int area = 1;
-
+	
 	public TileEntityChunkLoader() {
 		super();
 		IC2_sinkTier = 2;
@@ -50,7 +51,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
@@ -61,17 +62,17 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	@Override
-	public void updateEntity()
+	public void update()
 	{
-		super.updateEntity();
-
+		super.update();
+		
 		if(!initialised)
 		{
 			initialised = true;
-			myChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair();
+			myChunk = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
 			changedDistance();
 		}
-
+		
 		if(shouldLoad)
 		{
 			canLoad = energy_consume(area * WarpDriveConfig.CL_RF_PER_CHUNKTICK, false);
@@ -88,19 +89,15 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 			return;
 		}
 		if (myChunk == null) {
-			Chunk aChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
-			if (aChunk != null) {
-				myChunk = aChunk.getChunkCoordIntPair();
-			} else {
-				return;
-			}
+			Chunk aChunk = worldObj.getChunkFromBlockCoords(pos);
+			myChunk = aChunk.getChunkCoordIntPair();
 		}
 		negDX = - Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDX);
 		posDX =   Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDX);
 		negDZ = - Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, negDZ);
 		posDZ =   Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, posDZ);
-		minChunk = new ChunkCoordIntPair(myChunk.chunkXPos+negDX,myChunk.chunkZPos+negDZ);
-		maxChunk = new ChunkCoordIntPair(myChunk.chunkXPos+posDX,myChunk.chunkZPos+posDZ);
+		minChunk = new ChunkPos(myChunk.chunkXPos + negDX,myChunk.chunkZPos + negDZ);
+		maxChunk = new ChunkPos(myChunk.chunkXPos + posDX,myChunk.chunkZPos + posDZ);
 		area = (posDX - negDX + 1) * (posDZ - negDZ + 1);
 		refreshLoading(true);
 	}
@@ -118,13 +115,13 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt)
-	{
-		super.writeToNBT(nbt);
-		nbt.setInteger("negDX", negDX);
-		nbt.setInteger("negDZ", negDZ);
-		nbt.setInteger("posDX", posDX);
-		nbt.setInteger("posDZ", posDZ);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
+		tag.setInteger("negDX", negDX);
+		tag.setInteger("negDZ", negDZ);
+		tag.setInteger("posDX", posDX);
+		tag.setInteger("posDZ", posDZ);
+		return tag;
 	}
 
 	// OpenComputer callback methods

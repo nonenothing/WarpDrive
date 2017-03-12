@@ -9,26 +9,28 @@ import cr0s.warpdrive.data.EnumComponentType;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemComponent extends Item implements IAirCanister {	
-	private IIcon[] icons;
+import javax.annotation.Nonnull;
+
+public class ItemComponent extends ItemAbstractBase implements IAirCanister {	
 	private static ItemStack[] itemStackCache;
 	
-	public ItemComponent() {
-		super();
+	public ItemComponent(final String registryName) {
+		super(registryName);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.crafting.component");
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setUnlocalizedName("warpdrive.component");
 		
-		icons = new IIcon[EnumComponentType.length];
 		itemStackCache = new ItemStack[EnumComponentType.length];
 	}
 	
@@ -47,35 +49,33 @@ public class ItemComponent extends Item implements IAirCanister {
 		return new ItemStack(WarpDrive.itemComponent, amount, enumComponentType.ordinal());
 	}
 	
-	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
-		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
-			icons[enumComponentType.ordinal()] = par1IconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
-		}
-	}
-	
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
-			return "item.warpdrive.crafting." + EnumComponentType.get(damage).unlocalizedName;
+			return "item.warpdrive.component." + EnumComponentType.get(damage).getUnlocalizedName();
 		}
 		return getUnlocalizedName();
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
-		if (damage >= 0 && damage < EnumComponentType.length) {
-			return icons[damage];
+	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
+		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
+			subItems.add(new ItemStack(item, 1, enumComponentType.ordinal()));
 		}
-		return icons[0];
 	}
 	
+	@Nonnull
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
-		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
-			list.add(new ItemStack(item, 1, enumComponentType.ordinal()));
+	@SideOnly(Side.CLIENT)
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		int damage = itemStack.getItemDamage();
+		ResourceLocation resourceLocation = getRegistryName();
+		if (damage >= 0 && damage < EnumComponentType.length) {
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumComponentType.get(damage).getUnlocalizedName());
 		}
+		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
 	
 	// For empty air canister
@@ -106,19 +106,19 @@ public class ItemComponent extends Item implements IAirCanister {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
-		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, player);
+	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess world, BlockPos blockPos, EntityPlayer player) {
+		Block block = world.getBlockState(blockPos).getBlock();
+		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
 		switch (EnumComponentType.get(itemStack.getItemDamage())) {
 		case AIR_CANISTER:
-			tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.crafting.AirCanisterEmpty.tooltip");
+			tooltip += new TextComponentTranslation("item.warpdrive.component.airCanisterEmpty.tooltip").getFormattedText();
 			break;
 		default:
 			break;

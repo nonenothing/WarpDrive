@@ -9,6 +9,7 @@ import org.w3c.dom.Element;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
@@ -68,8 +69,8 @@ public class Filler implements IXmlRepresentable {
 		throw new InvalidXmlException("Not implemented");
 	}
 
-	public void setBlock(World world, int x, int y, int z) {
-		JumpBlock.setBlockNoLight(world, x, y, z, block, metadata, 2);
+	public void setBlock(World world, final BlockPos blockPos) {
+		JumpBlock.setBlockNoLight(world, blockPos, block.getStateFromMeta(metadata), 2);
 		// world.setBlock(x, y, z, block, metadata, 2);
 		// TODO set NBT data
 	}

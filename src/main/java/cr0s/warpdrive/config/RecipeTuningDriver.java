@@ -4,6 +4,7 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.item.ItemTuningDriver;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.InventoryCrafting;
@@ -11,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -21,7 +22,7 @@ public class RecipeTuningDriver implements IRecipe {
 	private ItemStack itemStackTool;
 	private ItemStack itemStackConsumable;
 	private int countDyesExpected;
-	private ItemStack itemStackResult = new ItemStack(Blocks.fire);
+	private ItemStack itemStackResult = new ItemStack(Blocks.FIRE);
 	
 	public RecipeTuningDriver(final ItemStack itemStackTool, final ItemStack itemStackConsumable, final int countDyes) {
 		this.itemStackTool = itemStackTool.copy();
@@ -55,6 +56,11 @@ public class RecipeTuningDriver implements IRecipe {
 		return itemStackResult;
 	}
 	
+	@Override
+	public ItemStack[] getRemainingItems(InventoryCrafting inventoryCrafting) {
+		return new ItemStack[0];    // @TODO MC1.10
+	}
+	
 	// check if a recipe matches current crafting inventory
 	@Override
 	public boolean matches(InventoryCrafting inventoryCrafting, World world) {
@@ -86,7 +92,7 @@ public class RecipeTuningDriver implements IRecipe {
 				// find a matching dye from ore dictionary
 				boolean matched = false;
 				for (int indexDye = 0; indexDye < Recipes.oreDyes.length; indexDye++) {
-					ArrayList<ItemStack> itemStackDyes = OreDictionary.getOres(Recipes.oreDyes[indexDye]);
+					List<ItemStack> itemStackDyes = OreDictionary.getOres(Recipes.oreDyes[indexDye]);
 					for (ItemStack itemStackDye : itemStackDyes) {
 						if (OreDictionary.itemMatches(itemStackSlot, itemStackDye, true)) {
 							// match found, update dye combination

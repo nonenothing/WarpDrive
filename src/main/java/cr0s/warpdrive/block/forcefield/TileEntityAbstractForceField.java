@@ -16,11 +16,13 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.Optional;
 
-import cpw.mods.fml.common.Optional;
+import javax.annotation.Nonnull;
 
 public class TileEntityAbstractForceField extends TileEntityAbstractEnergy implements IBeamFrequency {
 	// persistent properties
@@ -47,7 +49,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		if (block instanceof BlockAbstractForceField) {
 			tier = ((BlockAbstractForceField) block).tier;
 		} else {
-			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + xCoord + " " + yCoord + " " + zCoord);
+			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 		}
 		if (beamFrequency >= 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX) {
 			ForceFieldRegistry.updateInRegistry(this);
@@ -55,15 +57,19 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
 		}
 		
 		// Frequency is not set
+		boolean legacy_isConnected = isConnected; 
 		isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
+		if (legacy_isConnected != isConnected) {
+			markDirty();
+		}
 	}
 	
 	@Override
@@ -101,21 +107,23 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 			ForceFieldRegistry.updateInRegistry(this);
 		}
 	}
-	
-	String getBeamFrequencyStatus() {
+
+	private ITextComponent getBeamFrequencyStatus() {
 		if (beamFrequency == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
 		} else if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
 		}
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
+		ITextComponent energyStatus = getEnergyStatus();
 		return super.getStatus()
-			+ "\n" + getBeamFrequencyStatus();
+	        .appendSibling(energyStatus.toString().isEmpty() ? new TextComponentString("") : new TextComponentString("\n").appendSibling(energyStatus))
+			.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
 	}
 	
 	@Override
@@ -123,28 +131,30 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		super.readFromNBT(tag);
 		tier = tag.getByte("tier");
 		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
-		isEnabled = tag.getBoolean("isEnabled");
+		isEnabled = !tag.hasKey("isEnabled") || tag.getBoolean("isEnabled"); 
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setByte("tier", tier);
 		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 		tag.setBoolean("isEnabled", isEnabled);
+		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		tagCompound.setBoolean("isConnected", isConnected);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 		isConnected = tagCompound.getBoolean("isConnected");
 	}
@@ -205,6 +215,6 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Override
 	public String toString() {
 		return String.format("%s Beam \'%d\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			beamFrequency, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+			beamFrequency, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ());
 	}
 }

@@ -3,121 +3,125 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
+import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import defense.api.IEMPBlock;
 import defense.api.IExplosion;
 
+import net.minecraft.block.SoundType;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 @Optional.InterfaceList({
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
 	protected boolean isRotating = false;
-	protected boolean hasSubBlocks = false;
+	protected boolean hasSubBlocks = false; // @TODO: code review
 	
-	protected BlockAbstractContainer(Material material) {
+	protected BlockAbstractContainer(final String registryName, final Material material) {
 		super(material);
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
+		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setRegistryName(registryName);
+		WarpDrive.register(this);
+		
+		setDefaultState(blockState.getBaseState());
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockAbstractBase(this);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		Item item = Item.getItemFromBlock(this);
+		ClientProxy.modelInitialisation(item);
+	}
+	
+	@Nonnull
+	@Override
+	public EnumBlockRenderType getRenderType(IBlockState state) {
+		return EnumBlockRenderType.MODEL;
 	}
 	
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		super.onBlockAdded(world, x, y, z);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+		super.onBlockAdded(world, pos, state);
+		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
 		}
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
-		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
-		if (isRotating) {
-			if (entityLiving != null) {
-				int metadata;
-				if (entityLiving.rotationPitch > 65) {
-					metadata = 1;
-				} else if (entityLiving.rotationPitch < -65) {
-					metadata = 0;
-				} else {
-					int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
-					switch (direction) {
-						case 0:
-							metadata = 2;
-							break;
-						case 1:
-							metadata = 5;
-							break;
-						case 2:
-							metadata = 3;
-							break;
-						case 3:
-							metadata = 4;
-							break;
-						default:
-							metadata = 2;
-							break;
-					}
-				}
-				world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
-			}
-		}
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, pos, state, entityLiving, itemStack);
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbtTagCompound = (NBTTagCompound)itemStack.getTagCompound().copy();
-			nbtTagCompound.setInteger("x", x);
-			nbtTagCompound.setInteger("y", y);
-			nbtTagCompound.setInteger("z", z);
+		TileEntity tileEntity = world.getTileEntity(pos);
+		if (tileEntity != null && itemStack.getTagCompound() != null) {
+			NBTTagCompound nbtTagCompound = itemStack.getTagCompound().copy();
+			nbtTagCompound.setInteger("x", pos.getX());
+			nbtTagCompound.setInteger("y", pos.getY());
+			nbtTagCompound.setInteger("z", pos.getZ());
 			tileEntity.readFromNBT(nbtTagCompound);
-			world.markBlockForUpdate(x, y, z);
+			IBlockState blockState = world.getBlockState(pos);
+			world.notifyBlockUpdate(pos, blockState, blockState, 3);
 		}
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-		return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
+	public boolean removedByPlayer(@Nonnull IBlockState blockState, World world, @Nonnull BlockPos blockPos, @Nonnull EntityPlayer player, boolean willHarvest) {
+		return willHarvest || super.removedByPlayer(blockState, world, blockPos, player, false);
 	}
 	
 	@Override
-	protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack itemStack) {
-		if (itemStack.getItem() == Item.getItemFromBlock(this)) {
-			itemStack.setItemDamage(getDamageValue(world, x, y, z));
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity == null) {
-				WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
-			} else if (tileEntity instanceof TileEntityAbstractBase) {
-				NBTTagCompound nbtTagCompound = new NBTTagCompound();
-				((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
-				itemStack.setTagCompound(nbtTagCompound);
-			}
+	public void dropBlockAsItemWithChance(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState, float chance, int fortune) {
+		// @TODO: to be tested with ship core explosion on breaking
+		ItemStack itemStack = new ItemStack(this);
+		itemStack.setItemDamage(damageDropped(blockState));
+		TileEntity tileEntity = world.getTileEntity(blockPos);
+		if (tileEntity == null) {
+			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+		} else if (tileEntity instanceof TileEntityAbstractBase) {
+			NBTTagCompound nbtTagCompound = new NBTTagCompound();
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
+			itemStack.setTagCompound(nbtTagCompound);
 		}
-		world.setBlockToAir(x, y, z);
-		super.dropBlockAsItem(world, x, y, z, itemStack);
+		world.setBlockToAir(blockPos);
+		super.dropBlockAsItemWithChance(world, blockPos, blockState, chance, fortune);
 	}
 	
+	@Nonnull
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
-		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
+		ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		NBTTagCompound nbtTagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
@@ -126,19 +130,22 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return itemStack;
 	}
 	
+	// @TODO is it still needed?
+	/*
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(World world, BlockPos blockPos, EnumFacing axis) {
 		if (isRotating) {
-			world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
+			world.setBlockMetadataWithNotify(blockPos, axis.ordinal(), 3);
 			return true;
 		}
 		return false;
 	}
+	/**/
 	
 	// FIXME untested
 	/*
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
@@ -167,10 +174,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	/**/
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
-		super.onNeighborBlockChange(world, x, y, z, block);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void neighborChanged(IBlockState blockState, World world, BlockPos blockPos, Block block) {
+		super.neighborChanged(blockState, world, blockPos, block);
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
 		}
@@ -184,11 +192,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 		// EMP tower = 3k Energy, 60 radius
 		// EMP explosive = 3k Energy, 50 radius
-		onEMP(world, x, y, z, explosiveEMP.getRadius() / 100.0F);
+		onEMP(world, new BlockPos(x, y, z), explosiveEMP.getRadius() / 100.0F);
 	}
 	
-	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void onEMP(World world, final BlockPos blockPos, final float efficiency) {
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityAbstractEnergy) {
 			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
 			if (tileEntityAbstractEnergy.energy_getMaxStorage() > 0) {
@@ -204,10 +212,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Override
 	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		switch (getTier(itemStack)) {
-			case 0:	return EnumRarity.epic;
-			case 1:	return EnumRarity.common;
-			case 2:	return EnumRarity.uncommon;
-			case 3:	return EnumRarity.rare;
+			case 0:	return EnumRarity.EPIC;
+			case 1:	return EnumRarity.COMMON;
+			case 2:	return EnumRarity.UNCOMMON;
+			case 3:	return EnumRarity.RARE;
 			default: return rarity;
 		}
 	}
