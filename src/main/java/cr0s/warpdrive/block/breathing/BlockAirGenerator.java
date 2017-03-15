@@ -1,7 +1,8 @@
-package cr0s.warpdrive.block;
+package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.Random;
@@ -16,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockAirGenerator extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;

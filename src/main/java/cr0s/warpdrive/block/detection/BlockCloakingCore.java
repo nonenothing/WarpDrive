@@ -52,9 +52,6 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		return new TileEntityCloakingCore();
 	}
 	
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
@@ -65,9 +62,6 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		return 3;
 	}
 	
-	/**
-	 * Returns the item to drop on destruction.
-	 */
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);

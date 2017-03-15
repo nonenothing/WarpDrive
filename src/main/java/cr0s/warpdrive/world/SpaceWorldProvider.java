@@ -137,7 +137,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public IChunkProvider createChunkGenerator() {
-		return new SpaceGenerator(worldObj, 45);
+		return new SpaceChunkProvider(worldObj, 45);
 	}
 	
 	@Override

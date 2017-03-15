@@ -14,12 +14,10 @@ import net.minecraft.world.World;
 
 public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
 	protected final byte tier;
-	private final Block blockHull;
 	private final int metaHull;
 	
 	public BlockHullStairs(final Block blockHull, final int metaHull, final byte tier) {
 		super(blockHull, metaHull);
-		this.blockHull = blockHull;
 		this.metaHull = metaHull;
 		this.tier = tier;
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);

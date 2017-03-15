@@ -4,6 +4,7 @@ import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -211,7 +212,7 @@ public class Commons {
 	}
 	
 	public static int toInt(Object object) {
-		return Commons.toInt(toDouble(object));
+		return toInt(toDouble(object));
 	}
 	
 	public static double toDouble(Object object) {
@@ -274,5 +275,37 @@ public class Commons {
 	
 	private static double interpolate(final double xMin, final double yMin, final double xMax, final double yMax, final double x) {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
+	}
+	
+	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
+		if (entityLiving != null) {
+			int metadata;
+			if (entityLiving.rotationPitch > 65) {
+				metadata = 1;
+			} else if (entityLiving.rotationPitch < -65) {
+				metadata = 0;
+			} else {
+				int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+				switch (direction) {
+					case 0:
+						metadata = 2;
+						break;
+					case 1:
+						metadata = 5;
+						break;
+					case 2:
+						metadata = 3;
+						break;
+					case 3:
+						metadata = 4;
+						break;
+					default:
+						metadata = 2;
+						break;
+				}
+			}
+			return metadata;
+		}
+		return 0;
 	}
 }

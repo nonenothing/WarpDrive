@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
@@ -27,6 +28,7 @@ import net.minecraftforge.common.util.ForgeDirection;
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
+	
 	protected boolean isRotating = false;
 	protected boolean hasSubBlocks = false;
 	
@@ -51,32 +53,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		if (isRotating) {
-			if (entityLiving != null) {
-				int metadata;
-				if (entityLiving.rotationPitch > 65) {
-					metadata = 1;
-				} else if (entityLiving.rotationPitch < -65) {
-					metadata = 0;
-				} else {
-					int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
-					switch (direction) {
-						case 0:
-							metadata = 2;
-							break;
-						case 1:
-							metadata = 5;
-							break;
-						case 2:
-							metadata = 3;
-							break;
-						case 3:
-							metadata = 4;
-							break;
-						default:
-							metadata = 2;
-							break;
-					}
-				}
+			final int metadata = Commons.getFacingFromEntity(entityLiving);
+			if (metadata >= 0 && metadata <= 15) {
 				world.setBlockMetadataWithNotify(x, y, z, metadata, 3);
 			}
 		}
@@ -197,6 +175,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
+	@Override
 	public byte getTier(final ItemStack itemStack) {
 		return 1;
 	}

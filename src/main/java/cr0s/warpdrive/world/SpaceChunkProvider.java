@@ -1,6 +1,5 @@
 package cr0s.warpdrive.world;
 
-
 import cr0s.warpdrive.WarpDrive;
 
 import java.util.List;
@@ -15,12 +14,12 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderGenerate;
 
-public class SpaceGenerator extends ChunkProviderGenerate {
+public class SpaceChunkProvider extends ChunkProviderGenerate {
 	private World worldObj;
 	private Random rand;
 	private BiomeGenBase[] biomesForGeneration = new BiomeGenBase[1];
 	
-	public SpaceGenerator(World worldObj, long par2) {
+	public SpaceChunkProvider(World worldObj, long par2) {
 		super(worldObj, par2, false);
 		rand = new Random(par2);
 		this.worldObj = worldObj;

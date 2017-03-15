@@ -141,6 +141,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return null;
 	}
 	
+	@Override
 	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
@@ -148,6 +149,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 	}
 	
+	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
@@ -168,6 +170,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			x + 1 - BOUNDING_TOLERANCE, y + 1 - BOUNDING_TOLERANCE, z + 1 - BOUNDING_TOLERANCE);
 	}
 	
+	@Override
 	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
 		if (world.isRemote) {
 			return;

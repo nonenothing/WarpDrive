@@ -1,4 +1,4 @@
-package cr0s.warpdrive.block.passive;
+package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;

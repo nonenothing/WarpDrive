@@ -137,7 +137,7 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public IChunkProvider createChunkGenerator() {
-		return new HyperSpaceGenerator(worldObj, 46);
+		return new HyperSpaceChunkProvider(worldObj, 46);
 	}
 	
 	@Override

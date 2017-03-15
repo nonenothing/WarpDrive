@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public abstract class BlockAbstractForceField extends BlockAbstractContainer {
+	
 	protected byte tier;
 	
 	BlockAbstractForceField(final byte tier, final Material material) {
@@ -31,7 +32,7 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
-		
+	
 	@Override
 	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
 		super.onEMP(world, x, y, z, efficiency * (1.0F - 0.2F * (tier - 1)));
