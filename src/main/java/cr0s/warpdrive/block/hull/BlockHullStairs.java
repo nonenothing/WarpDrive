@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -8,11 +9,13 @@ import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.BlockStairs;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemDye;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
-public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
+public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageReceiver {
 	protected final byte tier;
 	private final int metaHull;
 	
@@ -27,6 +30,22 @@ public class BlockHullStairs extends BlockStairs implements IDamageReceiver {
 	@Override
 	public int getMobilityFlag() {
 		return 2;
+	}
+	
+	@Override
+	public byte getTier(ItemStack itemStack) {
+		return tier;
+	}
+	
+	@Override
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+		switch (getTier(itemStack)) {
+		case 0:	return EnumRarity.epic;
+		case 1:	return EnumRarity.common;
+		case 2:	return EnumRarity.uncommon;
+		case 3:	return EnumRarity.rare;
+		default: return rarity;
+		}
 	}
 	
 	@Override

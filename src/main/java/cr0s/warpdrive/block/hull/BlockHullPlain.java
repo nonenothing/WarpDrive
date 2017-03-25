@@ -1,13 +1,15 @@
 package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.Vector3;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -22,20 +24,22 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockHullPlain extends Block implements IDamageReceiver {
+public class BlockHullPlain extends BlockAbstractBase implements IBlockBase, IDamageReceiver {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
-	final byte tier;
 	
-	public BlockHullPlain(final byte tier) {
+	final byte tier;
+	final EnumHullPlainType enumHullPlainType;
+	
+	public BlockHullPlain(final byte tier, final EnumHullPlainType enumHullPlainType) {
 		super(Material.rock);
 		this.tier = tier;
+		this.enumHullPlainType = enumHullPlainType;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.hull" + tier + ".plain.");
-		setBlockTextureName("warpdrive:hull/plain");
+		setBlockTextureName("warpdrive:hull/" + enumHullPlainType.getName());
 	}
 	
 	@Override
@@ -72,7 +76,7 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {
-			icons[i] = iconRegister.registerIcon(getTextureName() + "_" + getDyeColorName(i));
+			icons[i] = iconRegister.registerIcon(getTextureName() + "-" + getDyeColorName(i));
 		}
 	}
 	
@@ -81,6 +85,10 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 		return MapColor.getMapColorForBlockColored(metadata);
 	}
 	
+	@Override
+	public byte getTier(ItemStack itemStack) {
+		return tier;
+	}
 	
 	@Override
 	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
@@ -97,7 +105,7 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 			world.setBlockToAir(x, y, z);
 		} else {
 			int metadata = world.getBlockMetadata(x, y, z);
-			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2], metadata, 2);
+			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2][enumHullPlainType.ordinal()], metadata, 2);
 		}
 		return 0;
 	}

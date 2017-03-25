@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block.hull;
 
+import cr0s.warpdrive.api.IBlockBase;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.item.EnumRarity;
@@ -39,20 +41,16 @@ public class ItemBlockHull extends ItemBlock {
 		return getUnlocalizedName() + ItemDye.field_150923_a[BlockColored.func_150031_c(itemstack.getItemDamage())];
 	}
 	
-	private byte getTier() {
-		if (field_150939_a instanceof BlockHullGlass) {
-			return ((BlockHullGlass)field_150939_a).tier;
-		} else if (field_150939_a instanceof BlockHullPlain) {
-			return ((BlockHullPlain)field_150939_a).tier;
-		} else if (field_150939_a instanceof BlockHullStairs) {
-			return ((BlockHullStairs)field_150939_a).tier;
+	private byte getTier(final ItemStack itemStack) {
+		if (field_150939_a instanceof IBlockBase) {
+			return ((IBlockBase)field_150939_a).getTier(itemStack);
 		}
 		return 1;
 	}
 	
 	@Override
 	public EnumRarity getRarity(final ItemStack itemStack) {
-		switch (getTier()) {
+		switch (getTier(itemStack)) {
 			case 0:	return EnumRarity.epic;
 			case 1:	return EnumRarity.common;
 			case 2:	return EnumRarity.uncommon;

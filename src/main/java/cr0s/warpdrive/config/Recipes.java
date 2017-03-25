@@ -1625,9 +1625,10 @@ public class Recipes {
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			for (int woolColor = 0; woolColor < 16; woolColor++) {
-				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
+				OreDictionary.registerOre("blockHull" + tier + "_tiled", new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor));
 			}
 		}
 		
@@ -1640,29 +1641,29 @@ public class Recipes {
 		// Tier 1 = 5 stone + 4 aluminium ingots gives 3
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("IC2", "blockAlloy", -1);
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', Blocks.obsidian,
 					'c', reinforcedStone ));
 		} else if (OreDictionary.doesOreNameExist("ingotSteel") && !OreDictionary.getOres("ingotSteel").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotSteel",
 					'c', "stone" ));
 		} else {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotIron",
 					'c', "stone" ));
 		}
 		if (OreDictionary.doesOreNameExist("ingotBronze") && !OreDictionary.getOres("ingotBronze").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 5, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 5, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotBronze",
 					'c', "stone" ));
 		}
 		if (OreDictionary.doesOreNameExist("ingotAluminium") && !OreDictionary.getOres("ingotAluminium").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 3, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 3, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotAluminium",
 					'c', "stone" ));
 		} else if (OreDictionary.doesOreNameExist("ingotAluminum") && !OreDictionary.getOres("ingotAluminum").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 3, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 3, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotAluminum",
 					'c', "stone" ));
 		}
@@ -1673,35 +1674,35 @@ public class Recipes {
 		for (int woolColor = 0; woolColor < 16; woolColor++) {
 			if (WarpDriveConfig.isGregTech5Loaded) {
 				ItemStack tungstensteelReinforcedBlock = WarpDriveConfig.getModItemStack("gregtech", "gt.blockreinforced", 3);
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', tungstensteelReinforcedBlock ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "Xb ", "bcb", " b ",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "Xb ", "bcb", " b ",
 						'b', "blockHull1_plain",
 						'c', tungstensteelReinforcedBlock,
 						'X', oreDyes[woolColor] ));
 			} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 				ItemStack carbonPlate = WarpDriveConfig.getModItemStack("IC2", "itemPartCarbonPlate", -1);
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', carbonPlate ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
 						'c', carbonPlate,
 						'X', oreDyes[woolColor] ));
 			} else if (OreDictionary.doesOreNameExist("ingotDarkSteel") && !OreDictionary.getOres("ingotDarkSteel").isEmpty()) {// EnderIO
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', "ingotDarkSteel" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
 						'c', "ingotDarkSteel",
 						'X', oreDyes[woolColor] ));
 			} else {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', Blocks.obsidian ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
 						'c', Blocks.obsidian,
 						'X', oreDyes[woolColor] ));
@@ -1713,34 +1714,34 @@ public class Recipes {
 		// Tier 3 = 4 Tier 2 + 4 diamond gives 4
 		for (int woolColor = 0; woolColor < 16; woolColor++) {
 			if (OreDictionary.doesOreNameExist("plateNaquadah") && !OreDictionary.getOres("plateNaquadah").isEmpty()) {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, " b ", "bcb", " b ",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', "plateNaquadah" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "Xb ", "bcb", " b ",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "Xb ", "bcb", " b ",
 						'b', "blockHull2_plain",
 						'c', "plateNaquadah",
 						'X', oreDyes[woolColor] ));
 			} else if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', "plateAlloyIridium" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "plateAlloyIridium",
 						'X', oreDyes[woolColor] ));
 			} else if (OreDictionary.doesOreNameExist("itemPulsatingCrystal") && !OreDictionary.getOres("itemPulsatingCrystal").isEmpty()) {// EnderIO
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', "itemPulsatingCrystal" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "itemPulsatingCrystal",
 						'X', oreDyes[woolColor] ));
 			} else {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, BlockColored.func_150031_c(woolColor)),
 						'c', "gemDiamond" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, BlockColored.func_150031_c(woolColor)), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "gemDiamond",
 						'X', oreDyes[woolColor] ));
@@ -1755,22 +1756,60 @@ public class Recipes {
 				// crafting glass
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 4, woolColor), false, "gpg", "pFp", "gpg",
 						'g', "blockGlass",
-						'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, woolColor),
+						'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, woolColor),
 						'F', "dustGlowstone" ));
 				
 				// crafting stairs
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 4), false, "p  ", "pp ", "ppp",
-				        'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, woolColor) ));
+				        'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, woolColor) ));
 				
-				// uncrafting
-				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 6, woolColor),
+				// uncrafting stairs
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 6, woolColor),
                         WarpDrive.blockHulls_stairs[index][woolColor],
                         WarpDrive.blockHulls_stairs[index][woolColor],
                         WarpDrive.blockHulls_stairs[index][woolColor],
                         WarpDrive.blockHulls_stairs[index][woolColor] ));
 				
+				// smelting tiled
+				GameRegistry.addSmelting(
+						new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
+						new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor),
+						0);
+				
+				// uncrafting tiled
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				
+				// crafting slab
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 0), false, "bbb",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 2), false, "b", "b", "b",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 6), false, "bbb",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 8), false, "b", "b", "b",
+				        'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				
+				// uncrafting slab
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor), false, "s", "s",
+						's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor), false, "ss",
+				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor), false, "s", "s",
+				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor), false, "ss",
+				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 0),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 12)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 6),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 13)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 8),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 14)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 8),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 15)));
+				
 				// changing colors
-				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 1, BlockColored.func_150031_c(woolColor)),
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, BlockColored.func_150031_c(woolColor)),
 						oreDyes[woolColor],
 						"blockHull" + tier + "_plain"));
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 1, BlockColored.func_150031_c(woolColor)),
@@ -1779,7 +1818,7 @@ public class Recipes {
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][BlockColored.func_150031_c(woolColor)], 1),
 						oreDyes[woolColor],
 						"blockHull" + tier + "_stairs"));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_plain",
 						'X', oreDyes[woolColor] ));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 8, BlockColored.func_150031_c(woolColor)), false, "###", "#X#", "###",

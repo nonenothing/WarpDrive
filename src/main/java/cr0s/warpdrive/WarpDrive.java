@@ -1,12 +1,12 @@
 package cr0s.warpdrive;
 
-import cr0s.warpdrive.block.BlockAirGenerator;
+import cr0s.warpdrive.block.breathing.BlockAirGenerator;
 import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
 import cr0s.warpdrive.block.BlockLaserMedium;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.block.TileEntityAbstractChunkLoading;
-import cr0s.warpdrive.block.TileEntityAirGenerator;
+import cr0s.warpdrive.block.breathing.TileEntityAirGenerator;
 import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
@@ -58,8 +58,10 @@ import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldRelay;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.block.hull.BlockHullPlain;
+import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.block.hull.ItemBlockHull;
+import cr0s.warpdrive.block.hull.ItemBlockHullSlab;
 import cr0s.warpdrive.block.movement.BlockLift;
 import cr0s.warpdrive.block.movement.BlockShipController;
 import cr0s.warpdrive.block.movement.BlockShipCore;
@@ -68,7 +70,7 @@ import cr0s.warpdrive.block.movement.TileEntityLift;
 import cr0s.warpdrive.block.movement.TileEntityShipController;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.block.movement.TileEntityTransporter;
-import cr0s.warpdrive.block.passive.BlockAir;
+import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.block.passive.BlockGas;
 import cr0s.warpdrive.block.passive.BlockHighlyAdvancedMachine;
@@ -99,6 +101,7 @@ import cr0s.warpdrive.damage.DamageWarm;
 import cr0s.warpdrive.data.CamerasRegistry;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CloakManager;
+import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.event.ClientHandler;
@@ -219,7 +222,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block[] blockElectromagnetGlass;
 	public static Block[] blockChillers;
 	public static BlockDecorative blockDecorative;
-	public static Block[] blockHulls_plain;
+	public static Block[][] blockHulls_plain;
 	public static Block[] blockHulls_glass;
 	public static Block[][] blockHulls_stairs;
 	public static Block[][] blockHulls_slab;
@@ -537,20 +540,24 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
 		
 		// HULL BLOCKS
-		blockHulls_plain = new Block[3];
+		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
 		blockHulls_stairs = new Block[3][16];
 		blockHulls_slab = new Block[3][16];
 		
 		for(byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
-			blockHulls_plain[index] = new BlockHullPlain(tier);
+			for (EnumHullPlainType enumHullPlainType : EnumHullPlainType.values()) {
+				blockHulls_plain[index][enumHullPlainType.ordinal()] = new BlockHullPlain(tier, enumHullPlainType);
+				GameRegistry.registerBlock(blockHulls_plain[index][enumHullPlainType.ordinal()], ItemBlockHull.class, "blockHull" + tier + "_" + enumHullPlainType.getName());
+			}
 			blockHulls_glass[index] = new BlockHullGlass(tier);
-			GameRegistry.registerBlock(blockHulls_plain[index], ItemBlockHull.class, "blockHull" + tier + "_plain");
 			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
 			for (int woolColor = 0; woolColor <= 15; woolColor++) {
-				blockHulls_stairs[index][woolColor] = new BlockHullStairs(blockHulls_plain[index], woolColor, tier);
+				blockHulls_stairs[index][woolColor] = new BlockHullStairs(blockHulls_plain[index][0], woolColor, tier);
 				GameRegistry.registerBlock(blockHulls_stairs[index][woolColor], ItemBlockHull.class, "blockHull" + tier + "_stairs_" + ItemDye.field_150923_a[BlockColored.func_150031_c(woolColor)]);
+				blockHulls_slab[index][woolColor] = new BlockHullSlab(woolColor, tier);
+				GameRegistry.registerBlock(blockHulls_slab[index][woolColor], ItemBlockHullSlab.class, "blockHull" + tier + "_slab_" + ItemDye.field_150923_a[BlockColored.func_150031_c(woolColor)]);
 			}
 		}
 		
