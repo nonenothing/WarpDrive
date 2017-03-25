@@ -296,6 +296,23 @@ tile.warpdrive.hull1.glass.green.name=Vitre de coque élémentaire verte
 tile.warpdrive.hull1.glass.red.name=Vitre de coque élémentaire rouge
 tile.warpdrive.hull1.glass.black.name=Vitre de coque élémentaire noire
 
+tile.warpdrive.hull1.slab.white.name=Dalle de coque élémentaire blanche
+tile.warpdrive.hull1.slab.orange.name=Dalle de coque élémentaire orange
+tile.warpdrive.hull1.slab.magenta.name=Dalle de coque élémentaire magenta
+tile.warpdrive.hull1.slab.lightBlue.name=Dalle de coque élémentaire bleu claire
+tile.warpdrive.hull1.slab.yellow.name=Dalle de coque élémentaire jaune
+tile.warpdrive.hull1.slab.lime.name=Dalle de coque élémentaire citron vert
+tile.warpdrive.hull1.slab.pink.name=Dalle de coque élémentaire rose
+tile.warpdrive.hull1.slab.gray.name=Dalle de coque élémentaire grise
+tile.warpdrive.hull1.slab.silver.name=Dalle de coque élémentaire argentée
+tile.warpdrive.hull1.slab.cyan.name=Dalle de coque élémentaire cyan
+tile.warpdrive.hull1.slab.purple.name=Dalle de coque élémentaire violette
+tile.warpdrive.hull1.slab.blue.name=Dalle de coque élémentaire bleue
+tile.warpdrive.hull1.slab.brown.name=Dalle de coque élémentaire marron
+tile.warpdrive.hull1.slab.green.name=Dalle de coque élémentaire verte
+tile.warpdrive.hull1.slab.red.name=Dalle de coque élémentaire rouge
+tile.warpdrive.hull1.slab.black.name=Dalle de coque élémentaire noire
+
 tile.warpdrive.hull1.stairs.white.name=Escalier de coque élémentaire blanche
 tile.warpdrive.hull1.stairs.orange.name=Escalier de coque élémentaire orange
 tile.warpdrive.hull1.stairs.magenta.name=Escalier de coque élémentaire magenta
@@ -312,6 +329,7 @@ tile.warpdrive.hull1.stairs.brown.name=Escalier de coque élémentaire marron
 tile.warpdrive.hull1.stairs.green.name=Escalier de coque élémentaire verte
 tile.warpdrive.hull1.stairs.red.name=Escalier de coque élémentaire rouge
 tile.warpdrive.hull1.stairs.black.name=Escalier de coque élémentaire noire
+
 
 tile.warpdrive.hull2.plain.white.name=Coque avancée blanche
 tile.warpdrive.hull2.plain.orange.name=Coque avancée orange
@@ -347,6 +365,23 @@ tile.warpdrive.hull2.glass.green.name=Vitre de coque avancée verte
 tile.warpdrive.hull2.glass.red.name=Vitre de coque avancée rouge
 tile.warpdrive.hull2.glass.black.name=Vitre de coque avancée noire
 
+tile.warpdrive.hull2.slab.white.name=Dalle de coque avancée blanche
+tile.warpdrive.hull2.slab.orange.name=Dalle de coque avancée orange
+tile.warpdrive.hull2.slab.magenta.name=Dalle de coque avancée magenta
+tile.warpdrive.hull2.slab.lightBlue.name=Dalle de coque avancée bleu claire
+tile.warpdrive.hull2.slab.yellow.name=Dalle de coque avancée jaune
+tile.warpdrive.hull2.slab.lime.name=Dalle de coque avancée citron vert
+tile.warpdrive.hull2.slab.pink.name=Dalle de coque avancée rose
+tile.warpdrive.hull2.slab.gray.name=Dalle de coque avancée grise
+tile.warpdrive.hull2.slab.silver.name=Dalle de coque avancée argentée
+tile.warpdrive.hull2.slab.cyan.name=Dalle de coque avancée cyan
+tile.warpdrive.hull2.slab.purple.name=Dalle de coque avancée violette
+tile.warpdrive.hull2.slab.blue.name=Dalle de coque avancée bleue
+tile.warpdrive.hull2.slab.brown.name=Dalle de coque avancée marron
+tile.warpdrive.hull2.slab.green.name=Dalle de coque avancée verte
+tile.warpdrive.hull2.slab.red.name=Dalle de coque avancée rouge
+tile.warpdrive.hull2.slab.black.name=Dalle de coque avancée noire
+
 tile.warpdrive.hull2.stairs.white.name=Escalier de coque avancée blanche
 tile.warpdrive.hull2.stairs.orange.name=Escalier de coque avancée orange
 tile.warpdrive.hull2.stairs.magenta.name=Escalier de coque avancée magenta
@@ -363,6 +398,7 @@ tile.warpdrive.hull2.stairs.brown.name=Escalier de coque avancée marron
 tile.warpdrive.hull2.stairs.green.name=Escalier de coque avancée verte
 tile.warpdrive.hull2.stairs.red.name=Escalier de coque avancée rouge
 tile.warpdrive.hull2.stairs.black.name=Escalier de coque avancée noire
+
 
 tile.warpdrive.hull3.plain.white.name=Coque supérieure blanche
 tile.warpdrive.hull3.plain.orange.name=Coque supérieure orange
@@ -397,6 +433,23 @@ tile.warpdrive.hull3.glass.brown.name=Vitre de coque supérieure marron
 tile.warpdrive.hull3.glass.green.name=Vitre de coque supérieure verte
 tile.warpdrive.hull3.glass.red.name=Vitre de coque supérieure rouge
 tile.warpdrive.hull3.glass.black.name=Vitre de coque supérieure noire
+
+tile.warpdrive.hull3.slab.white.name=Dalle de coque supérieure blanche
+tile.warpdrive.hull3.slab.orange.name=Dalle de coque supérieure orange
+tile.warpdrive.hull3.slab.magenta.name=Dalle de coque supérieure magenta
+tile.warpdrive.hull3.slab.lightBlue.name=Dalle de coque supérieure bleu claire
+tile.warpdrive.hull3.slab.yellow.name=Dalle de coque supérieure jaune
+tile.warpdrive.hull3.slab.lime.name=Dalle de coque supérieure citron vert
+tile.warpdrive.hull3.slab.pink.name=Dalle de coque supérieure rose
+tile.warpdrive.hull3.slab.gray.name=Dalle de coque supérieure grise
+tile.warpdrive.hull3.slab.silver.name=Dalle de coque supérieure argentée
+tile.warpdrive.hull3.slab.cyan.name=Dalle de coque supérieure cyan
+tile.warpdrive.hull3.slab.purple.name=Dalle de coque supérieure violette
+tile.warpdrive.hull3.slab.blue.name=Dalle de coque supérieure bleue
+tile.warpdrive.hull3.slab.brown.name=Dalle de coque supérieure marron
+tile.warpdrive.hull3.slab.green.name=Dalle de coque supérieure verte
+tile.warpdrive.hull3.slab.red.name=Dalle de coque supérieure rouge
+tile.warpdrive.hull3.slab.black.name=Dalle de coque supérieure noire
 
 tile.warpdrive.hull3.stairs.white.name=Escalier de coque supérieure blanche
 tile.warpdrive.hull3.stairs.orange.name=Escalier de coque supérieure orange

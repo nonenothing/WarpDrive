@@ -296,6 +296,23 @@ tile.warpdrive.hull1.glass.green.name=Grüner Standard Glasrumpf
 tile.warpdrive.hull1.glass.red.name=Roter Standard Glasrumpf
 tile.warpdrive.hull1.glass.black.name=Schwarzer Standard Glasrumpf
 
+tile.warpdrive.hull1.stairs.white.name=Weiße Standard Stufe
+tile.warpdrive.hull1.stairs.orange.name=Orange Standard Stufe
+tile.warpdrive.hull1.stairs.magenta.name=Magenta Standard Stufe
+tile.warpdrive.hull1.stairs.lightBlue.name=Hellblaue Standard Stufe
+tile.warpdrive.hull1.stairs.yellow.name=Gelbe Standard Stufe
+tile.warpdrive.hull1.stairs.lime.name=Hellgrüne Standard Stufe
+tile.warpdrive.hull1.stairs.pink.name=Rosa Standard Stufe
+tile.warpdrive.hull1.stairs.gray.name=Graue Standard Stufe
+tile.warpdrive.hull1.stairs.silver.name=Silberne Standard Stufe
+tile.warpdrive.hull1.stairs.cyan.name=Cyan Standard Stufe
+tile.warpdrive.hull1.stairs.purple.name=Lila Standard Stufe
+tile.warpdrive.hull1.stairs.blue.name=Blaue Standard Stufe
+tile.warpdrive.hull1.stairs.brown.name=Braune Standard Stufe
+tile.warpdrive.hull1.stairs.green.name=Grüne Standard Stufe
+tile.warpdrive.hull1.stairs.red.name=Rote Standard Stufe
+tile.warpdrive.hull1.stairs.black.name=Schwarze Standard Stufe
+
 tile.warpdrive.hull1.stairs.white.name=Weiße Standard Treppe
 tile.warpdrive.hull1.stairs.orange.name=Orange Standard Treppe
 tile.warpdrive.hull1.stairs.magenta.name=Magenta Standard Treppe
@@ -312,6 +329,7 @@ tile.warpdrive.hull1.stairs.brown.name=Braune Standard Treppe
 tile.warpdrive.hull1.stairs.green.name=Grüne Standard Treppe
 tile.warpdrive.hull1.stairs.red.name=Rote Standard Treppe
 tile.warpdrive.hull1.stairs.black.name=Schwarze Standard Treppe
+
 
 tile.warpdrive.hull2.plain.white.name=Weißer weiterentwickelter Rumpf
 tile.warpdrive.hull2.plain.orange.name=Oranger weiterentwickelter Rumpf
@@ -347,6 +365,23 @@ tile.warpdrive.hull2.glass.green.name=Grüner weiterentwickelter Glasrumpf
 tile.warpdrive.hull2.glass.red.name=Roter weiterentwickelter Glasrumpf
 tile.warpdrive.hull2.glass.black.name=Schwarzer weiterentwickelter Glasrumpf
 
+tile.warpdrive.hull2.stairs.white.name=Weiße weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.orange.name=Orange weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.magenta.name=Magenta weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.lightBlue.name=Hellblaue weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.yellow.name=Gelbe weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.lime.name=Hellgrüne weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.pink.name=Rosa weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.gray.name=Graue weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.silver.name=Silberne weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.cyan.name=Cyan weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.purple.name=Lila weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.blue.name=Blaue weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.brown.name=Braune weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.green.name=Grüne weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.red.name=Rote weiterentwickelte Stufe
+tile.warpdrive.hull2.stairs.black.name=Schwarze weiterentwickelte Stufe
+
 tile.warpdrive.hull2.stairs.white.name=Weiße weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.orange.name=Orange weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.magenta.name=Magenta weiterentwickelte Treppe
@@ -363,6 +398,7 @@ tile.warpdrive.hull2.stairs.brown.name=Braune weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.green.name=Grüne weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.red.name=Rote weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.black.name=Schwarze weiterentwickelte Treppe
+
 
 tile.warpdrive.hull3.plain.white.name=Weißer überlegener Rumpf
 tile.warpdrive.hull3.plain.orange.name=Oranger überlegener Rumpf
@@ -397,6 +433,23 @@ tile.warpdrive.hull3.glass.brown.name=Brauner überlegener Glasrumpf
 tile.warpdrive.hull3.glass.green.name=Grüner überlegener Glasrumpf
 tile.warpdrive.hull3.glass.red.name=Roter überlegener Glasrumpf
 tile.warpdrive.hull3.glass.black.name=Schwarzer überlegener Glasrumpf
+
+tile.warpdrive.hull3.stairs.white.name=Weiße überlegene Stufe
+tile.warpdrive.hull3.stairs.orange.name=Orange überlegene Stufe
+tile.warpdrive.hull3.stairs.magenta.name=Magenta überlegene Stufe
+tile.warpdrive.hull3.stairs.lightBlue.name=Hellblaue überlegene Stufe
+tile.warpdrive.hull3.stairs.yellow.name=Gelbe überlegene Stufe
+tile.warpdrive.hull3.stairs.lime.name=Hellgrüne überlegene Stufe
+tile.warpdrive.hull3.stairs.pink.name=Rosa überlegene Stufe
+tile.warpdrive.hull3.stairs.gray.name=Graue überlegene Stufe
+tile.warpdrive.hull3.stairs.silver.name=Silberne überlegene Stufe
+tile.warpdrive.hull3.stairs.cyan.name=Cyan überlegene Stufe
+tile.warpdrive.hull3.stairs.purple.name=Lila überlegene Stufe
+tile.warpdrive.hull3.stairs.blue.name=Blaue überlegene Stufe
+tile.warpdrive.hull3.stairs.brown.name=Braune überlegene Stufe
+tile.warpdrive.hull3.stairs.green.name=Grüne überlegene Stufe
+tile.warpdrive.hull3.stairs.red.name=Rote überlegene Stufe
+tile.warpdrive.hull3.stairs.black.name=Schwarze überlegene Stufe
 
 tile.warpdrive.hull3.stairs.white.name=Weiße überlegene Treppe
 tile.warpdrive.hull3.stairs.orange.name=Orange überlegene Treppe
