@@ -1,6 +1,5 @@
 package cr0s.warpdrive.item;
 
-
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IParticleContainerItem;
@@ -24,10 +23,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemElectromagneticCell extends Item implements IParticleContainerItem {
+	
 	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
 	
 	@SideOnly(Side.CLIENT)
-	private IIcon[] icons = new IIcon[31];
+	private IIcon[] icons;
 	
 	public ItemElectromagneticCell() {
 		super();
@@ -41,6 +41,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister iconRegister) {
+		icons = new IIcon[31];
 		icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
 		icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");
 		icons[ 2] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-40");
@@ -95,11 +96,12 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+		list.add(getItemStackNoCache(null, 0));
 		list.add(getItemStackNoCache(ParticleRegistry.ION, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000));
-		// list.add(getItemStackNoCache(ParticleRegistry.TACHYONS, 100));
+		// list.add(getItemStackNoCache(ParticleRegistry.TACHYONS, 1000));
 	}
 	
 	@Override

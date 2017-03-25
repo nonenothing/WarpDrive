@@ -328,6 +328,7 @@ public class WarpDriveConfig {
 	public static HashMap<String, IBlockTransformer> blockTransformers = null;
 	
 	// Particles accelerator
+	public static boolean ACCELERATOR_ENABLE = false;
 	public static int ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
 	public static Block getModBlock(final String mod, final String id) {
