@@ -31,8 +31,6 @@ import cr0s.warpdrive.compat.CompatThermalExpansion;
 import cr0s.warpdrive.compat.CompatWarpDrive;
 import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
-import cr0s.warpdrive.config.structures.StructureReference;
-import cr0s.warpdrive.data.CelestialObject;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -56,19 +54,25 @@ import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 
 public class WarpDriveConfig {
 	private static final boolean unused = false; // TODO
 	
+	private static String stringConfigDirectory;
 	private static File configDirectory;
 	private static DocumentBuilder xmlDocumentBuilder;
-	private static final String[] defaultXMLfilenames = {
-			// fillers
-			"filler-default.xml", "filler-netherores.xml", "filler-undergroundbiomes.xml",
-			// structures
-			"structures-default.xml", "structures-netherores.xml",
+	private static final String[] defaultXML_fillers = {
+			"filler-default.xml",
+			"filler-netherores.xml",
+			"filler-undergroundbiomes.xml",
+	};
+	private static final String[] defaultXML_structures = {
+			"structures-default.xml",
+			"structures-netherores.xml",
+	};
+	private static final String[] defaultXML_celestialObjects = {
+			"celestialObjects-default.xml"
 	};
 	
 	/*
@@ -133,7 +137,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_LUA = false;
 	public static boolean LOGGING_RADAR = false;
 	public static boolean LOGGING_BREATHING = false;
-	public static boolean LOGGING_WORLDGEN = false;
+	public static boolean LOGGING_WORLD_GENERATION = false;
 	public static boolean LOGGING_PROFILING = true;
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
@@ -141,17 +145,18 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_FORCEFIELD = false;
 	public static boolean LOGGING_FORCEFIELD_REGISTRY = false;
 	public static boolean LOGGING_ACCELERATOR = false;
+	public static boolean LOGGING_XML_PREPROCESSOR = false;
+	public static boolean LOGGING_RENDERING = false;
 	
 	// Starmap
-	public static CelestialObject[] celestialObjects = null;
 	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
+	public static boolean STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS = false;
 	
 	// Space generator
 	public static int SPACE_GENERATOR_Y_MIN_CENTER = 55;
 	public static int SPACE_GENERATOR_Y_MAX_CENTER = 128;
 	public static int SPACE_GENERATOR_Y_MIN_BORDER = 5;
 	public static int SPACE_GENERATOR_Y_MAX_BORDER = 200;
-	public static RandomCollection<StructureReference> SPACE_GENERATOR_STRUCTURES_CHANCES = null;
 	
 	// Ship
 	public static int SHIP_MAX_ENERGY_STORED = 100000000;
@@ -354,7 +359,15 @@ public class WarpDriveConfig {
 		return new ItemStack(Blocks.fire);
 	}
 	
+	public static void reload() {
+		CelestialObjectManager.clearForReload();
+		onFMLpreInitialization(stringConfigDirectory);
+		onFMLPostInitialization();
+	}
+	
 	public static void onFMLpreInitialization(final String stringConfigDirectory) {
+		WarpDriveConfig.stringConfigDirectory = stringConfigDirectory;
+		
 		// create mod folder
 		configDirectory = new File(stringConfigDirectory, WarpDrive.MODID);
 		//noinspection ResultOfMethodCallIgnored
@@ -363,8 +376,17 @@ public class WarpDriveConfig {
 			throw new RuntimeException("Unable to create config directory " + configDirectory);
 		}
 		
+		// unpack default XML files if none are defined
+		unpackResourcesToFolder("filler", ".xml", defaultXML_fillers, "config", configDirectory);
+		unpackResourcesToFolder("structures", ".xml", defaultXML_structures, "config", configDirectory);
+		unpackResourcesToFolder("celestialObjects", ".xml", defaultXML_celestialObjects, "config", configDirectory);
+		
+		// always unpack the XML Schema
+		unpackResourceToFolder("WarpDrive.xsd", "config", configDirectory);
+		
 		// read configuration file
 		loadWarpDriveConfig(new File(configDirectory, WarpDrive.MODID + ".cfg"));
+		CelestialObjectManager.load(configDirectory);
 	}
 	
 	public static void loadWarpDriveConfig(File file) {
@@ -426,7 +448,7 @@ public class WarpDriveConfig {
 		LOGGING_LUA = config.get("logging", "enable_LUA_logs", LOGGING_LUA, "Detailed LUA logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_RADAR = config.get("logging", "enable_radar_logs", LOGGING_RADAR, "Detailed radar logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_WORLDGEN = config.get("logging", "enable_worldgen_logs", LOGGING_WORLDGEN, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_WORLD_GENERATION = config.get("logging", "enable_world_generation_logs", LOGGING_WORLD_GENERATION, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
@@ -434,88 +456,14 @@ public class WarpDriveConfig {
 		LOGGING_FORCEFIELD = config.get("logging", "enable_forcefield_logs", LOGGING_FORCEFIELD, "Detailed forcefield logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_FORCEFIELD_REGISTRY = config.get("logging", "enable_forcefield_registry_logs", LOGGING_FORCEFIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
 		LOGGING_ACCELERATOR = config.get("logging", "enable_accelerator_logs", LOGGING_ACCELERATOR, "Detailed accelerator logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_XML_PREPROCESSOR = config.get("logging", "enable_XML_preprocessor_logs", LOGGING_XML_PREPROCESSOR, "Save XML preprocessor results as output*.xml file, enable it to debug your XML configuration files").getBoolean(false);
+		LOGGING_RENDERING = config.get("logging", "enable_rendering_logs", LOGGING_RENDERING, "Detailed rendering logs to help debug the mod.").getBoolean(false);
 		
-		// Celestial objects
-		{
-			config.addCustomCategoryComment("celestial_objects",
-					  "Celestial objects are generally planets. They can also be a solar system (space) or the all mighty hyperspace.\n"
-					+ "Each celestial object is defined with a list of 14 integers in the following exact order:\n"
-					+ "- dimensionId : this is the id of the dimension. 0 is the Overworld, -1 is the Nether, 1 is the End."
-					+ "- dimensionCenterX, dimensionCenterZ: those are the center coordinate of that dimension world border.\n"
-					+ "  This is measured in blocks. For convenience, it's usually 0, 0\n"
-					+ "- radiusX, radiusZ: this is the world border radius, measured in blocks. The total size is twice that.\n"
-					+ "  This is also the size of the orbit area in space, so don't go too big\n"
-					+ "- parentDimensionId: this is the id of the parent dimension. For planets, this is the space dimension id.\n"
-					+ "- parentCenterX, parentCenterZ: this is the center coordinates in the parent dimension. For a planet, it needs to be different than 0, 0.\n"
-					+ "- isWarpDrive: this is a boolean flag defining if WarpDrive provides this dimension or not.\n"
-					+ "  Currently only Space and Hyperspace can be provided: use other mods to generate planet world.\n"
-					+ "  Set this to 0 to use another mod Space dimension.\n"
-					+ "- moonRatio: this is the chance for a moon to generate in a chunk.\n"
-					+ "- asteroidRatio: this is the chance for a lone asteroid to generate in a chunk.\n"
-					+ "- asteroidFieldRatio: this is the chance for an asteroid field to generate in a chunk.\n"
-					+ "  All 3 ratios work the same way: 100000 is 100% chance, 0 will disable it. Those only works in WarpDrive dimensions, they're ignored otherwise.\n"
-					+ "- gravity: this is the gravity simulation type. 0 is vanilla, 1 is space, 2 is hyperspace.\n"
-					+ "- isBreathable: this is a boolean flag defining if ambient atmosphere is breathable.\n"
-					+ "Hyperspace is a dimension which is its own parent. In other words, hyperspace.dimensionId = hyperspace.parentDimensionId. There can be only one.\n"
-					+ "A Space is a dimension with Hyperspace as its parent.\n"
-					+ "In theory, multiple planets can exists in the same minecraft world.");
-			final String commentDimension = "dimensionId, dimensionCenterX, dimensionCenterZ, radiusX, radiusZ,\n"
-					+ "parentDimensionId, parentCenterX, parentCenterZ, isWarpDrive,\n"
-					+ "moonRatio, asteroidRatio, asteroidFieldRatio, gravity, isBreathable";
-			ConfigCategory categoryDimensions = config.getCategory("celestial_objects");
-			String[] nameDimensions = categoryDimensions.getValues().keySet().toArray(new String[0]);
-			if (nameDimensions.length == 0) {
-				nameDimensions = new String[] { "overworld", "nether", "end", "space", "hyperspace" };
-				int[][] defaultDimensions =  {
-				//    id  x  z radiusX radiusZ  id parentX parentZ  W moon ast  astF  g air
-					{  0, 0, 0,  10000,  10000, -2,      0,      0, 0,   0,   0,   0, 0, 1 },
-					{ -1, 0, 0,   2500,   2500, -2,  30000, -50000, 0,   0,   0,   0, 0, 1 },
-					{  1, 0, 0,   1000,   1000, -2, -80000,  60000, 0,   0,   0,   0, 0, 1 },
-					{ -2, 0, 0, 100000, 100000, -3,      0,      0, 1, 125, 666, 166, 1, 0 },
-					{ -3, 0, 0, 100000, 100000, -3,      0,      0, 1,   0,   0,   0, 2, 0 }
-				};
-				for (int index = 0; index < nameDimensions.length; index++) {
-					config.get("celestial_objects", nameDimensions[index], defaultDimensions[index], commentDimension).getIntList();
-				}
-			}
-			
-			int[] intDefaultDimension = { 0, 0, 0, 10000, 10000, -2, 0, 0, 0, 0, 0, 0, 0, 1 }; // 30000000 is Minecraft limit for SetBlock
-			celestialObjects = new CelestialObject[nameDimensions.length];
-			int index = 0;
-			for (String name : nameDimensions) {
-				int[] intDimension = config.get("celestial_objects", name, intDefaultDimension, commentDimension).getIntList();
-				if (intDimension.length != 14) {
-					WarpDrive.logger.warn("Invalid dimension definition '" + name + "' (exactly 8 integers are expected), using default instead");
-					intDimension = intDefaultDimension.clone();
-				}
-				CelestialObject celestialObject = new CelestialObject(intDimension[0], intDimension[1], intDimension[2], intDimension[3], intDimension[4],
-				                          intDimension[5], intDimension[6], intDimension[7]);
-				celestialObject.setSelfProvider(intDimension[8] != 0);
-				celestialObject.addGenerationRatio(intDimension[ 9] / 100000.0D, "moon");
-				celestialObject.addGenerationRatio(intDimension[10] / 100000.0D, "asteroid");
-				celestialObject.addGenerationRatio(intDimension[11] / 100000.0D, "asteroidField");
-				switch(intDimension[12]) {
-				case 0:
-				default:
-					celestialObject.setGravity(1.0D);
-					break;
-				case 1:
-					celestialObject.setGravity(0.3D);
-					break;
-				case 2:
-					celestialObject.setGravity(0.45D);
-					break;
-				}
-				celestialObject.setBreathable(intDimension[13] != 0);
-				WarpDrive.logger.info("Adding '" + name + "' as " + celestialObject);
-				celestialObjects[index] = celestialObject;
-				index++;
-			}
-			// FIXME: check planets aren't overlapping
-			// We're not checking invalid dimension id, so they can be pre-allocated (see MystCraft)
-		}
+		// Starmap registry
 		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
-		config.get("starmap", "registry_update_interval", STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
+			config.get("starmap", "registry_update_interval", STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
+		STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS = 
+			config.get("starmap", "allow_overlapping_celestial_objects", STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS, "Enable to bypass the check at boot. Use at your own risk!").getBoolean();
 		
 		// Ship
 		SHIP_MAX_ENERGY_STORED = Commons.clamp(0, Integer.MAX_VALUE,
@@ -968,20 +916,6 @@ public class WarpDriveConfig {
 	}
 	
 	public static void onFMLPostInitialization() {
-		// unpack default XML files if none are defined
-		File[] files = configDirectory.listFiles((file_notUsed, name) -> name.endsWith(".xml"));
-		if (files == null) {
-			throw new RuntimeException("Critical error accessing configuration directory, searching for *.xml files: " + configDirectory);
-		}
-		if (files.length == 0) {
-			for (String defaultXMLfilename : defaultXMLfilenames) {
-				unpackResourceToFolder(defaultXMLfilename, "config", configDirectory);
-			}
-		}
-		
-		// always unpack the XML Schema
-		unpackResourceToFolder("WarpDrive.xsd", "config", configDirectory);
-		
 		// load XML files
 		FillerManager.load(configDirectory);
 		StructureManager.load(configDirectory);
@@ -1056,14 +990,29 @@ public class WarpDriveConfig {
 	}
 	
 	/**
-	 * Copy a default configuration file from the mod's resources to the specified configuration folder
+	 * Check if a category of configuration files are missing, unpack default ones from the mod's resources to the specified target folder
+	 * Target folder should be already created
 	 **/
-	private static void unpackResourceToFolder(final String filename, final String sourceResourcePath, File targetFolder) {
-		// targetFolder is already created by caller
+	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, File folderTarget) {
+		File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
+		if (files == null) {
+			throw new RuntimeException(String.format("Critical error accessing configuration directory, searching for %s*%s files: %s", prefix, suffix, configDirectory));
+		}
+		if (files.length == 0) {
+			for (String filename : filenames) {
+				unpackResourceToFolder(filename, resourcePathSource, folderTarget);
+			}
+		}
+	}
+	
+	/**
+	 * Copy a default configuration file from the mod's resources to the specified configuration folder
+	 * Target folder should be already created
+	 **/
+	private static void unpackResourceToFolder(final String filename, final String resourcePathSource, File folderTarget) {
+		String resourceName = resourcePathSource + "/" + filename;
 		
-		String resourceName = sourceResourcePath + "/" + filename;
-		
-		File destination = new File(targetFolder, filename);
+		File destination = new File(folderTarget, filename);
 		
 		try {
 			InputStream inputStream = WarpDrive.class.getClassLoader().getResourceAsStream(resourceName);

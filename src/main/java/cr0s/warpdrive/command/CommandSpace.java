@@ -90,11 +90,22 @@ public class CommandSpace extends CommandBase {
 			int newZ = MathHelper.floor_double(entityPlayerMP.posZ);
 			if (targetDimensionId == Integer.MAX_VALUE) {
 				CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+				if (celestialObject == null) {
+					Commons.addChatMessage(sender, 
+						String.format("/space: player %s is in unknown dimension %d. Try specifying an explicit target dimension instead.",
+							    entityPlayerMP.getCommandSenderName(), entityPlayerMP.worldObj.provider.dimensionId));
+					return;
+				}
 				if (celestialObject.isSpace() || celestialObject.isHyperspace()) {
 					// in space or hyperspace => move to closest child
 					celestialObject = StarMapRegistry.getClosestChildCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 					if (celestialObject == null) {
 						targetDimensionId = 0;
+					} else if (celestialObject.isVirtual) {
+						Commons.addChatMessage(sender,
+						String.format("/space: player %s closest celestial object is virtual (%s). Try specifying an explicit target dimension instead.",
+							entityPlayerMP.getCommandSenderName(), celestialObject.getFullName()));
+						return;
 					} else {
 						targetDimensionId = celestialObject.dimensionId;
 						VectorI vEntry = celestialObject.getEntryOffset();

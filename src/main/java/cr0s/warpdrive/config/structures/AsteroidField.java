@@ -7,17 +7,15 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 
-public class StructureReference extends AbstractStructure {
+public class AsteroidField extends AbstractStructure {
 	
-	public StructureReference(final String group, final String name) {
+	public AsteroidField(String group, String name) {
 		super(group, name);
 	}
 	
 	@Override
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
-		super.loadFromXmlElement(element);
-		
-		return true;
+		return false;
 	}
 	
 	@Override
@@ -27,6 +25,6 @@ public class StructureReference extends AbstractStructure {
 	
 	@Override
 	public AbstractStructureInstance instantiate(Random random) {
-		return StructureManager.getStructure(random, group, name).instantiate(random);
+		return new AsteroidFieldInstance(this, random);
 	}
 }

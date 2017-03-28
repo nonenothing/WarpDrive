@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -247,6 +248,24 @@ public class Commons {
 	
 	public static double clamp(final double min, final double max, final double value) {
 		return Math.min(max, Math.max(value, min));
+	}
+	
+	// clamping while keeping the sign
+	public static float clampMantisse(final float min, final float max, final float value) {
+		return Math.min(max, Math.max(Math.abs(value), min)) * Math.signum(value == 0.0F ? 1.0F : value);
+	}
+	
+	// clamping while keeping the sign
+	public static double clampMantisse(final double min, final double max, final double value) {
+		return Math.min(max, Math.max(Math.abs(value), min)) * Math.signum(value == 0.0D ? 1.0D : value);
+	}
+	
+	public static int randomRange(Random random, final int min, final int max) {
+		return min + ((max - min > 0) ? random.nextInt(max - min + 1) : 0);
+	}
+	
+	public static double randomRange(Random random, final double min, final double max) {
+		return min + ((max - min > 0) ? random.nextDouble() * (max - min) : 0);
 	}
 	
 	

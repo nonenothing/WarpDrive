@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
+import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 
@@ -113,7 +114,7 @@ public class StarMapRegistry {
 	public static CelestialObject getCelestialObject(final int dimensionId, final int x, final int z) {
 		double distanceClosest = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			if (dimensionId == celestialObject.dimensionId) {
 				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
 				if (distanceSquared <= 0) {
@@ -135,7 +136,7 @@ public class StarMapRegistry {
 	public static CelestialObject getClosestParentCelestialObject(final int dimensionId, final int x, final int z) {
 		double closestPlanetDistance = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
 			if (distanceSquared <= 0) {
 				return celestialObject;
@@ -150,7 +151,7 @@ public class StarMapRegistry {
 	public static CelestialObject getClosestChildCelestialObject(final int dimensionId, final int x, final int z) {
 		double closestPlanetDistance = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			final double distanceSquared = celestialObject.getSquareDistanceInParent(dimensionId, x, z);
 			if (distanceSquared <= 0.0D) {
 				return celestialObject;

@@ -2,111 +2,56 @@ package cr0s.warpdrive.config.filler;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.RandomCollection;
+import cr0s.warpdrive.config.XmlRandomCollection;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.XmlPreprocessor;
-import org.w3c.dom.Document;
+import cr0s.warpdrive.config.XmlFileManager;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Random;
 
-public class FillerManager {
-	// all fillerSets
-	private static HashMap<String, RandomCollection<FillerSet>> fillerSetsByGroup;
+public class FillerManager extends XmlFileManager {
 	
-	@SuppressWarnings("MismatchedReadAndWriteOfArray") // we've no required filler groups
-	private static final String[] REQUIRED_GROUPS = { };
+	private static FillerManager INSTANCE = new FillerManager();
+	
+	// all fillerSets
+	private static HashMap<String, XmlRandomCollection<FillerSet>> fillerSetsByGroup;
 	
 	public static void load(File dir) {
-		// (directory is created by caller, so it can copy default files if any)
-		
-		if (!dir.isDirectory()) {
-			throw new IllegalArgumentException("File path " + dir.getName() + " must be a directory!");
-		}
-		
-		File[] files = dir.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File file_notUsed, String name) {
-				return name.startsWith("filler") && name.endsWith(".xml");
-			}
-		});
-		
 		fillerSetsByGroup = new HashMap<>();
-		for(File file : files) {
-			try {
-				loadXmlFillerFile(file);
-			} catch (Exception exception) {
-				WarpDrive.logger.error("Error loading filler data file " + file.getName() + ": " + exception.getMessage());
-				exception.printStackTrace();
-			}
-		}
-		
-		for (String group : REQUIRED_GROUPS) {
-			if (!fillerSetsByGroup.containsKey(group)) {
-				WarpDrive.logger.error("Error: no fillerSet defined for mandatory group " + group);
-			}
-		}
+		INSTANCE.load(dir, "filler", "fillerSet");
 		
 		propagateFillerSets();
-		
-		WarpDrive.logger.info("Loading filler data files done");
 	}
 	
-	@SuppressWarnings("Convert2Diamond")
-	private static void loadXmlFillerFile(File file) throws InvalidXmlException, SAXException, IOException {
-		WarpDrive.logger.info("Loading filler data file " + file.getName());
-		Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
-		
-		// pre-process the file
-		String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
-		if (!result.isEmpty()) {
-			WarpDrive.logger.info("Skipping filler data file " + file.getName() + " due to " + result);
-			return;
+	@Override
+	protected void parseRootElement(final String location, Element elementFillerSet) throws InvalidXmlException, SAXException, IOException {
+		String group = elementFillerSet.getAttribute("group");
+		if (group.isEmpty()) {
+			throw new InvalidXmlException("FillerSet " + location + " is missing a group attribute!");
 		}
 		
-		XmlPreprocessor.doModReqSanitation(document);
-		XmlPreprocessor.doLogicPreprocessing(document);
-		
-		// only add FillerSets
-		NodeList nodeListFillerSet = document.getElementsByTagName("fillerSet");
-		for (int fillerSetIndex = 0; fillerSetIndex < nodeListFillerSet.getLength(); fillerSetIndex++) {
-			
-			Element elementFillerSet = (Element) nodeListFillerSet.item(fillerSetIndex);
-			
-			String group = elementFillerSet.getAttribute("group");
-			if (group.isEmpty()) {
-				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodeListFillerSet.getLength() + " is missing a group attribute!");
-			}
-			
-			String name = elementFillerSet.getAttribute("name");
-			if (name.isEmpty()) {
-				throw new InvalidXmlException("FillerSet " + (fillerSetIndex + 1) + "/" + nodeListFillerSet.getLength() + " is missing a name attribute!");
-			}
-			
-			if (WarpDriveConfig.LOGGING_WORLDGEN) {
-				WarpDrive.logger.info("- found FillerSet " + group + ":" + name);
-			}
-			
-			RandomCollection<FillerSet> randomCollection = fillerSetsByGroup.get(group);
-			if (randomCollection == null) {
-				randomCollection = new RandomCollection<>();
-				fillerSetsByGroup.put(group, randomCollection);
-			}
-			
-			FillerSet fillerSet = randomCollection.getNamedEntry(name);
-			if (fillerSet == null) {
-				fillerSet = new FillerSet(group, name);
-			}
-			randomCollection.loadFromXML(fillerSet, elementFillerSet);
+		String name = elementFillerSet.getAttribute("name");
+		if (name.isEmpty()) {
+			throw new InvalidXmlException("FillerSet " + location + " is missing a name attribute!");
 		}
+		
+		if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
+			WarpDrive.logger.info("- found FillerSet " + group + ":" + name);
+		}
+		
+		XmlRandomCollection<FillerSet> xmlRandomCollection = fillerSetsByGroup.computeIfAbsent(group, k -> new XmlRandomCollection<>());
+		
+		FillerSet fillerSet = xmlRandomCollection.getNamedEntry(name);
+		if (fillerSet == null) {
+			fillerSet = new FillerSet(group, name);
+		}
+		xmlRandomCollection.loadFromXML(fillerSet, elementFillerSet);
 	}
 	
 	@SuppressWarnings("Convert2Diamond")
@@ -114,13 +59,9 @@ public class FillerManager {
 		HashMap<FillerSet, ArrayList<String>> fillerSetsDependencies = new HashMap<>();
 		
 		// scan for static import dependencies
-		for (RandomCollection<FillerSet> fillerSets : fillerSetsByGroup.values()) {
+		for (XmlRandomCollection<FillerSet> fillerSets : fillerSetsByGroup.values()) {
 			for (FillerSet fillerSet : fillerSets.elements()) {
-				ArrayList<String> dependencies = fillerSetsDependencies.get(fillerSet);
-				if (dependencies == null) {
-					dependencies = new ArrayList<>();
-					fillerSetsDependencies.put(fillerSet, dependencies);
-				}
+				ArrayList<String> dependencies = fillerSetsDependencies.computeIfAbsent(fillerSet, k -> new ArrayList<>());
 				dependencies.addAll(fillerSet.getImportGroupNames());
 			}
 		}
@@ -143,7 +84,7 @@ public class FillerManager {
 						
 					} else {
 						try {
-							if (WarpDriveConfig.LOGGING_WORLDGEN) {
+							if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 								WarpDrive.logger.info("Importing FillerSet " + fillerSet.getFullName() + " in " + entry.getKey().getFullName());
 							}
 							entry.getKey().loadFrom(fillerSet);
@@ -178,7 +119,7 @@ public class FillerManager {
 	}
 	
 	public static FillerSet getRandomFillerSetFromGroup(Random random, final String groupName) {
-		RandomCollection<FillerSet> group = fillerSetsByGroup.get(groupName);
+		XmlRandomCollection<FillerSet> group = fillerSetsByGroup.get(groupName);
 		if (group == null) {
 			return null;
 		}
@@ -191,7 +132,7 @@ public class FillerManager {
 			WarpDrive.logger.error("Invalid FillerSet '" + groupAndName + "'. Expecting '{group}:{name}'");
 			return null;
 		}
-		RandomCollection<FillerSet> group = fillerSetsByGroup.get(parts[0]);
+		XmlRandomCollection<FillerSet> group = fillerSetsByGroup.get(parts[0]);
 		if (group == null) {
 			return null;
 		}

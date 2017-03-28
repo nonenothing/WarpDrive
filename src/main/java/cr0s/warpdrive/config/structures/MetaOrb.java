@@ -4,10 +4,10 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import org.w3c.dom.Document;
+import cr0s.warpdrive.config.XmlFileManager;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -24,13 +24,13 @@ public class MetaOrb extends Orb {
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
 		super.loadFromXmlElement(element);
 		
-		NodeList nodeListMetaShells = element.getElementsByTagName("metaShell");
-		if (nodeListMetaShells.getLength() > 1) {
+		List<Element> listMetaShells = XmlFileManager.getChildrenElementByTagName(element, "metaShell");
+		if (listMetaShells.size() > 1) {
 			throw new InvalidXmlException("Too many metaShell defined in structure " + getFullName() + ". Maximum is 1.");
 		}
-		if (nodeListMetaShells.getLength() == 1) {
+		if (listMetaShells.size() == 1) {
 			metaShell = new MetaShell(getFullName());
-			metaShell.loadFromXmlElement((Element) nodeListMetaShells.item(0));
+			metaShell.loadFromXmlElement(listMetaShells.get(0));
 		}
 		
 		return true;
@@ -42,7 +42,7 @@ public class MetaOrb extends Orb {
 	}
 	
 	@Override
-	public AbstractInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(Random random) {
 		return new MetaOrbInstance(this, random);
 	}
 	
@@ -66,7 +66,7 @@ public class MetaOrb extends Orb {
 		
 		@Override
 		public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
-			if (WarpDriveConfig.LOGGING_WORLDGEN) {
+			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 				WarpDrive.logger.info("  + found metashell");
 			}
 			
@@ -151,15 +151,6 @@ public class MetaOrb extends Orb {
 			}
 			
 			return true;
-		}
-		
-		/**
-		 * @deprecated Not implemented
-		 **/
-		@Deprecated
-		@Override
-		public void saveToXmlElement(Element element, Document document) throws InvalidXmlException {
-			throw new InvalidXmlException("Not implemented");
 		}
 	}
 }

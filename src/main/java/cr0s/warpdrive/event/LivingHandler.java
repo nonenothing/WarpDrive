@@ -165,11 +165,20 @@ public class LivingHandler {
 					
 					if (entity instanceof EntityPlayerMP) {
 						EntityPlayerMP player = (EntityPlayerMP) entity;
+						
+						// add tolerance to fall distance
+						player.fallDistance = -5.0F;
+						
+						// transfer player to new dimension
 						player.mcServer.getConfigurationManager().transferPlayerToDimension(player, celestialObjectChild.dimensionId,
 							new SpaceTeleporter(worldTarget, 0, x, yTarget, z));
-						if (celestialObjectChild.hasAtmosphere()) {
+						
+						// add fire if we're entering an atmosphere
+						if (!celestialObject.hasAtmosphere() && celestialObjectChild.hasAtmosphere()) {
 							player.setFire(30);
 						}
+						
+						// close player transfer 
 						player.setPositionAndUpdate(entity.posX, yTarget, entity.posZ);
 						player.sendPlayerAbilities();
 					}

@@ -1,6 +1,5 @@
 package cr0s.warpdrive.config;
 
-
 import cr0s.warpdrive.WarpDrive;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
@@ -19,12 +18,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import cpw.mods.fml.common.Loader;
 
 public class XmlPreprocessor {
-	static final boolean enableOutput = false;
-	static int outputCount = 1;
+	
+	static AtomicInteger outputCount = new AtomicInteger(1);
 	
 	/**
 	 * Check the given element for a mod attribute and return a string of all the ones that are not loaded, separated by commas
@@ -111,7 +111,7 @@ public class XmlPreprocessor {
 			
 			// copy children with replaced variable
 			for(String variableValue : inOptions) {
-				if (WarpDriveConfig.LOGGING_WORLDGEN) {
+				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
 				}
 				NodeList allChildren = root.getChildNodes();
@@ -141,7 +141,7 @@ public class XmlPreprocessor {
 			
 			// copy children with replaced variable
 			for (int variableValue = intFrom; variableValue <= intTo; variableValue++) {
-				if (WarpDriveConfig.LOGGING_WORLDGEN) {
+				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
 				}
 				NodeList allChildren = root.getChildNodes();
@@ -155,14 +155,14 @@ public class XmlPreprocessor {
 		//Remove the old node
 		root.getParentNode().removeChild(root);
 		
-		if (enableOutput) {
+		if (WarpDriveConfig.LOGGING_XML_PREPROCESSOR) {
 			try {
 				Transformer transformer = TransformerFactory.newInstance().newTransformer();
 				Result output = new StreamResult(new File("output" + outputCount + ".xml"));
 				Source input = new DOMSource(root.getOwnerDocument());
 				
 				transformer.transform(input, output);
-				outputCount++;
+				outputCount.incrementAndGet();
 			} catch (Exception exception) {
 				exception.printStackTrace();
 			}

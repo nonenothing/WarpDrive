@@ -84,7 +84,9 @@ import cr0s.warpdrive.command.CommandEntity;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandInvisible;
 import cr0s.warpdrive.command.CommandJumpgates;
+import cr0s.warpdrive.command.CommandReload;
 import cr0s.warpdrive.command.CommandSpace;
+import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.RecipeParticleShapedOre;
 import cr0s.warpdrive.config.RecipeTuningDriver;
 import cr0s.warpdrive.config.Recipes;
@@ -641,8 +643,8 @@ public class WarpDrive implements LoadingCallback {
 		DimensionManager.registerProviderType(WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
 		
 		// only create dimensions if we own them
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
-			if (celestialObject.isWarpDrive) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+			if (!celestialObject.isVirtual && celestialObject.isProvidedByWarpDrive) {
 				if (celestialObject.isSpace()) {
 					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_SPACE_PROVIDER_ID);
 				} else if (celestialObject.isHyperspace()) {
@@ -662,8 +664,8 @@ public class WarpDrive implements LoadingCallback {
 	@EventHandler
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
 		// load all owned dimensions at boot
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
-			if (celestialObject.isWarpDrive) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+			if (celestialObject.isProvidedByWarpDrive) {
 				DimensionManager.getWorld(celestialObject.dimensionId);
 			}
 		}
@@ -713,6 +715,7 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandDebug());
 		event.registerServerCommand(new CommandEntity());
+		event.registerServerCommand(new CommandReload());
 	}
 	
 	private Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {

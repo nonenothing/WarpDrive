@@ -4,7 +4,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.data.JumpBlock;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import net.minecraft.block.Block;
@@ -57,15 +56,6 @@ public class Filler implements IXmlRepresentable {
 		name = blockName + "@" + metadata + "{" + tag + "}";
 		
 		return true;
-	}
-	
-	/**
-	 * @deprecated Not implemented
-	 **/
-	@Deprecated
-	@Override
-	public void saveToXmlElement(Element element, Document document) throws InvalidXmlException {
-		throw new InvalidXmlException("Not implemented");
 	}
 
 	public void setBlock(World world, int x, int y, int z) {
