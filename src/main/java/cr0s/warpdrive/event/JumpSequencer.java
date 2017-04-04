@@ -988,9 +988,7 @@ public class JumpSequencer extends AbstractSequencer {
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Jump done in " + ((System.currentTimeMillis() - msCounter) / 1000F) + " seconds and " + ticks + " ticks");
 		}
-		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Removing TE duplicates: tileEntities in target world after jump, before cleanup: " + targetWorld.loadedTileEntityList.size());
-		}
+		final int countBefore = targetWorld.loadedTileEntityList.size();
 		
 		try {
 			targetWorld.loadedTileEntityList = removeDuplicates(targetWorld.loadedTileEntityList);
@@ -1004,8 +1002,10 @@ public class JumpSequencer extends AbstractSequencer {
 		doCollisionDamage(true);
 		
 		disable("Jump done");
-		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Removing TE duplicates: tileEntities in target world after jump, after cleanup: " + targetWorld.loadedTileEntityList.size());
+		final int countAfter = targetWorld.loadedTileEntityList.size();
+		if (WarpDriveConfig.LOGGING_JUMP && countBefore != countAfter) {
+			WarpDrive.logger.info(String.format("Removing TE duplicates: tileEntities in target world after jump, cleanup %d -> %d",
+			                      countBefore, countAfter));
 		}
 		LocalProfiler.stop();
 	}
@@ -1297,8 +1297,8 @@ public class JumpSequencer extends AbstractSequencer {
 			@Override
 			public int compare(TileEntity o1, TileEntity o2) {
 				if (o1.xCoord == o2.xCoord && o1.yCoord == o2.yCoord && o1.zCoord == o2.zCoord) {
-					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-						WarpDrive.logger.info("Removed duplicated TE: " + o1 + " vs " + o2);
+					if (WarpDriveConfig.LOGGING_JUMP) {
+						WarpDrive.logger.warn("Removed duplicated TE: " + o1 + " vs " + o2);
 					}
 					return 0;
 				} else {
