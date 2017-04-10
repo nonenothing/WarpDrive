@@ -163,6 +163,7 @@ public class Commons {
 	
 	public static final ForgeDirection[] UP_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
 	public static final ForgeDirection[] HORIZONTAL_DIRECTIONS = { ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
+	public static final ForgeDirection[] VERTICAL_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.DOWN };
 	
 	public static Set<VectorI> getConnectedBlocks(World world, final VectorI start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
@@ -239,6 +240,10 @@ public class Commons {
 	}
 	
 	public static int clamp(final int min, final int max, final int value) {
+		return Math.min(max, Math.max(value, min));
+	}
+	
+	public static long clamp(final long min, final long max, final long value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	

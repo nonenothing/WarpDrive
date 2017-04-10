@@ -480,7 +480,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 				WarpDrive.logger.info("PotentialOutput Rated " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) remainingRate " + remainingRate + " RF/t capacity " + capacity);
 			}
 		}
-		return convertRFtoInternal_floor(result);
+		return (int) convertRFtoInternal_floor(result);
 	}
 	
 	@Override
@@ -489,8 +489,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	protected void energy_outputDone(int energyOutput_internal) {
-		int energyOutput_RF = convertRFtoInternal_ceil(energyOutput_internal);
+	protected void energy_outputDone(final long energyOutput_internal) {
+		final long energyOutput_RF = convertInternalToRF_ceil(energyOutput_internal);
 		containedEnergy -= energyOutput_RF;
 		if (containedEnergy < 0) {
 			containedEnergy = 0;
@@ -504,12 +504,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public int energy_getEnergyStored() {
-		return convertRFtoInternal_floor(containedEnergy);
+		return (int) Commons.clamp(0L, energy_getMaxStorage(), convertRFtoInternal_floor(containedEnergy));
 	}
 	
 	@Override
 	public int energy_getMaxStorage() {
-		return convertRFtoInternal_floor(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
+		return (int) convertRFtoInternal_floor(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
 	}
 	
 	// Forge overrides

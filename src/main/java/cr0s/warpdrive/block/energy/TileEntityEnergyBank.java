@@ -39,8 +39,8 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	@Override
 	protected void onFirstUpdateTick() {
 		if (tier == 0) {
-			IC2_sinkTier = Integer.MAX_VALUE;
-			IC2_sourceTier = Integer.MAX_VALUE;
+			IC2_sinkTier = IC2_sinkTier_max;
+			IC2_sourceTier = IC2_sourceTier_max;
 		} else {
 			IC2_sinkTier = WarpDriveConfig.ENERGY_BANK_IC2_TIER[tier - 1];
 			IC2_sourceTier = WarpDriveConfig.ENERGY_BANK_IC2_TIER[tier - 1];
@@ -65,7 +65,7 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	@Override
 	public int energy_getPotentialOutput() {
 		if (tier == 0) {
-			return Integer.MAX_VALUE;
+			return Integer.MAX_VALUE / 2;
 		} else {
 			return (int) Math.round(Math.min(energy_getEnergyStored() * getEfficiency(), WarpDriveConfig.ENERGY_BANK_TRANSFER_PER_TICK[tier - 1]));
 		}
@@ -81,8 +81,11 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_consume(final int amount_internal, final boolean simulate) {
-		int amountWithLoss = (int) Math.round(amount_internal / getEfficiency());
+	public boolean energy_consume(final long amount_internal, final boolean simulate) {
+		if (tier == 0) {
+			return true;
+		}
+		final int amountWithLoss = (int) Math.round(amount_internal / getEfficiency());
 		if (energy_getEnergyStored() >= amountWithLoss) {
 			if (!simulate) {
 				super.energy_consume(amountWithLoss);
@@ -92,8 +95,11 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		return false;
 	}
 	@Override
-	public void energy_consume(final int amount_internal) {
-		int amountWithLoss = (int) Math.round(amount_internal > 0 ? amount_internal / getEfficiency() : amount_internal * getEfficiency());
+	public void energy_consume(final long amount_internal) {
+		if (tier == 0) {
+			return;
+		}
+		final int amountWithLoss = (int) Math.round(amount_internal > 0 ? amount_internal / getEfficiency() : amount_internal * getEfficiency());
 		super.energy_consume(amountWithLoss);
 	}
 	
