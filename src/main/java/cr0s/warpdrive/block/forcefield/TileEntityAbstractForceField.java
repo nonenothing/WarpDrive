@@ -23,6 +23,7 @@ import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.Optional;
 
 public class TileEntityAbstractForceField extends TileEntityAbstractEnergy implements IBeamFrequency {
+	
 	// persistent properties
 	protected byte tier = -1;
 	protected int beamFrequency = -1;
