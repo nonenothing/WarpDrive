@@ -154,7 +154,7 @@ item.warpdrive.tool.tuning_fork.black.name=Black Tuning Fork
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
 
 
-tile.warpdrive.passive.Air.name=Air Block
+tile.warpdrive.passive.air.name=Air Block
 tile.warpdrive.passive.Energized.name=Energized Block
 tile.warpdrive.passive.Gas.name=Gas Block
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
@@ -163,7 +163,10 @@ tile.warpdrive.passive.Network.name=Network Block
 tile.warpdrive.passive.Plain.name=Plain Block
 tile.warpdrive.passive.TransportBeacon.name=Transport Beacon
 
-tile.warpdrive.machines.AirGenerator.name=Air Generator
+tile.warpdrive.machines.air_generator.name=Air Generator
+tile.warpdrive.machines.air_generator1.name=Basic Air Generator
+tile.warpdrive.machines.air_generator2.name=Advanced Air Generator
+tile.warpdrive.machines.air_generator3.name=Superior Air Generator
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Laser Medium (Particle Booster)

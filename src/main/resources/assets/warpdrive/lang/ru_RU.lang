@@ -154,7 +154,7 @@ item.warpdrive.tool.tuning_fork.black.name=Черный камертон
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bИспользуйте на блоке§7, чтобы настроить его кристаллы\n§bПрисядьте§7, чтобы настроить вторичные кристаллы
 
 
-tile.warpdrive.passive.Air.name=Воздух
+tile.warpdrive.passive.air.name=Воздух
 tile.warpdrive.passive.Energized.name=Энергизированный блок
 tile.warpdrive.passive.Gas.name=Газ
 tile.warpdrive.passive.IridiumBlock.name=Блок иридия
@@ -163,6 +163,10 @@ tile.warpdrive.passive.Network.name=Сетевой блок
 tile.warpdrive.passive.Plain.name=Простой блок
 tile.warpdrive.passive.TransportBeacon.name=Маяк для транспортера
 
+tile.warpdrive.machines.air_generator.name=Air Generator
+tile.warpdrive.machines.air_generator1.name=Basic Air Generator
+tile.warpdrive.machines.air_generator2.name=Advanced Air Generator
+tile.warpdrive.machines.air_generator3.name=Superior Air Generator
 tile.warpdrive.machines.AirGenerator.name=Генератор воздуха
 tile.warpdrive.machines.ChunkLoader.name=Загрузчик чанков
 tile.warpdrive.machines.Laser.name=Лазер

@@ -154,7 +154,7 @@ item.warpdrive.tool.tuning_fork.black.name=Schwarze Stimmgabel
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRecktsklicke einen Block§7 um seine Kristalle einzustellen\n§bSschleiche§7 um alternative Kristalle einzustellen
 
 
-tile.warpdrive.passive.Air.name=Luft Block
+tile.warpdrive.passive.air.name=Luft Block
 tile.warpdrive.passive.Energized.name=Energiegeladener Block
 tile.warpdrive.passive.Gas.name=Gas Block
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
@@ -163,7 +163,10 @@ tile.warpdrive.passive.Network.name=Netzwerk Block
 tile.warpdrive.passive.Plain.name=Ebenen Block
 tile.warpdrive.passive.TransportBeacon.name=Transport Leuchtfeuer
 
-tile.warpdrive.machines.AirGenerator.name=Luftgenerator
+tile.warpdrive.machines.air_generator.name=Luftgenerator
+tile.warpdrive.machines.air_generator1.name=Standard Luftgenerator
+tile.warpdrive.machines.air_generator2.name=Weiterentwickeltes Luftgenerator
+tile.warpdrive.machines.air_generator3.name=Überlegenes Luftgenerator
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Medium Laser (Partikel Beschleuniger)

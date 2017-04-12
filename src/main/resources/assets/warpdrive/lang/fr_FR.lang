@@ -154,7 +154,7 @@ item.warpdrive.tool.tuning_fork.black.name=Diapason noir
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour ajuster les cristaux alternatifs
 
 
-tile.warpdrive.passive.Air.name=Bloc d'air
+tile.warpdrive.passive.air.name=Bloc d'air
 tile.warpdrive.passive.Energized.name=Block energisé
 tile.warpdrive.passive.Gas.name=Bloc de gaz
 tile.warpdrive.passive.IridiumBlock.name=Bloc d'iridium
@@ -163,7 +163,10 @@ tile.warpdrive.passive.Network.name=Bloc de réseau
 tile.warpdrive.passive.Plain.name=Bloc ordinaire
 tile.warpdrive.passive.TransportBeacon.name=Balise de transport
 
-tile.warpdrive.machines.AirGenerator.name=Générateur d'air
+tile.warpdrive.machines.air_generator.name=Générateur d'air
+tile.warpdrive.machines.air_generator1.name=Générateur d'air élémentaire
+tile.warpdrive.machines.air_generator2.name=Générateur d'air avancé
+tile.warpdrive.machines.air_generator3.name=Générateur d'air supérieur
 tile.warpdrive.machines.ChunkLoader.name=Chargeur de chunk
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Milieu amplificateur
