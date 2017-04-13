@@ -13,6 +13,10 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import java.lang.Thread.State;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,5 +335,25 @@ public class Commons {
 			return metadata;
 		}
 		return 0;
+	}
+	
+	// loosely inspired by crunchify
+	public static void dumpAllThreads() {
+		final StringBuilder stringBuilder = new StringBuilder();
+		final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+		final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 100);
+		for (ThreadInfo threadInfo : threadInfos) {
+			stringBuilder.append('"');
+			stringBuilder.append(threadInfo.getThreadName());
+			stringBuilder.append("\"\n\tjava.lang.Thread.State: ");
+			stringBuilder.append(threadInfo.getThreadState());
+			final StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();
+			for (final StackTraceElement stackTraceElement : stackTraceElements) {
+				stringBuilder.append("\n\t\tat ");
+				stringBuilder.append(stackTraceElement);
+			}
+			stringBuilder.append("\n\n");
+		}
+		WarpDrive.logger.error(stringBuilder.toString());
 	}
 }
