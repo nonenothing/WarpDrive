@@ -57,6 +57,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.config.Configuration;
 
 public class WarpDriveConfig {
+	
 	private static final boolean unused = false; // TODO
 	
 	private static String stringConfigDirectory;
@@ -147,6 +148,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_ACCELERATOR = false;
 	public static boolean LOGGING_XML_PREPROCESSOR = false;
 	public static boolean LOGGING_RENDERING = false;
+	public static boolean LOGGING_CHUNK_HANDLER = false;
 	
 	// Starmap
 	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
@@ -287,11 +289,16 @@ public class WarpDriveConfig {
 	public static int CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS = 3;
 	
 	// Air generator
-	public static int AIRGEN_ENERGY_PER_CANISTER = 200;
-	public static int AIRGEN_ENERGY_PER_NEWAIRBLOCK = 12;
-	public static int AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK = 4;
-	public static int AIRGEN_MAX_ENERGY_STORED = 1400;
-	public static int AIRGEN_AIR_GENERATION_TICKS = 40;
+	public static int BREATHING_ENERGY_PER_CANISTER = 200;
+	public static int[] BREATHING_ENERGY_PER_NEW_AIR_BLOCK = { 12, 180, 2610 };
+	public static int[] BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK = { 4, 60, 870 };
+	public static int[] BREATHING_MAX_ENERGY_STORED = { 1400, 21000, 304500 };  // almost 6 mn of autonomy
+	public static int BREATHING_AIR_GENERATION_TICKS = 40;
+	public static int[] BREATHING_AIR_GENERATION_RANGE_BLOCKS = { 16, 48, 144 };
+	public static int BREATHING_REPRESSURIZATION_SPEED_BLOCKS = 512;
+	public static int BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
+	public final static boolean BREATHING_AIR_BLOCK_DEBUG = false;
+	public static boolean BREATHING_AIR_AT_ENTITY_DEBUG = false;
 	
 	// IC2 Reactor monitor
 	public static int IC2_REACTOR_MAX_ENERGY_STORED = 1000000;
@@ -458,6 +465,7 @@ public class WarpDriveConfig {
 		LOGGING_ACCELERATOR = config.get("logging", "enable_accelerator_logs", LOGGING_ACCELERATOR, "Detailed accelerator logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_XML_PREPROCESSOR = config.get("logging", "enable_XML_preprocessor_logs", LOGGING_XML_PREPROCESSOR, "Save XML preprocessor results as output*.xml file, enable it to debug your XML configuration files").getBoolean(false);
 		LOGGING_RENDERING = config.get("logging", "enable_rendering_logs", LOGGING_RENDERING, "Detailed rendering logs to help debug the mod.").getBoolean(false);
+		LOGGING_CHUNK_HANDLER = config.get("logging", "enable_chunk_handler_logs", LOGGING_CHUNK_HANDLER, "Detailed chunk data logs to help debug the mod.").getBoolean(false);
 		
 		// Starmap registry
 		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
@@ -710,16 +718,41 @@ public class WarpDriveConfig {
 				config.get("cloaking", "field_refresh_interval_seconds", CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS, "Update speed of cloak simulation").getInt());
 		
 		// Air generator
-		AIRGEN_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
-				config.get("air_generator", "max_energy_stored", AIRGEN_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		AIRGEN_ENERGY_PER_CANISTER = Commons.clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_canister", AIRGEN_ENERGY_PER_CANISTER, "Energy cost per air canister refilled").getInt());
-		AIRGEN_ENERGY_PER_NEWAIRBLOCK = Commons.clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_new_air_block", AIRGEN_ENERGY_PER_NEWAIRBLOCK, "Energy cost to start air distribution per open side per interval").getInt());
-		AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK = Commons.clamp(1, AIRGEN_MAX_ENERGY_STORED,
-				config.get("air_generator", "energy_per_existing_air_block", AIRGEN_ENERGY_PER_EXISTINGAIRBLOCK, "Energy cost to sustain air distribution per open side per interval").getInt());
-		AIRGEN_AIR_GENERATION_TICKS = Commons.clamp(1, 300,
-				config.get("air_generator", "air_generation_interval_ticks", AIRGEN_AIR_GENERATION_TICKS, "Update speed of air generation").getInt());
+		BREATHING_MAX_ENERGY_STORED = config.get("breathing", "max_energy_stored", BREATHING_MAX_ENERGY_STORED, "Maximum energy stored").getIntList();
+		assert(BREATHING_MAX_ENERGY_STORED.length == 3);
+		BREATHING_MAX_ENERGY_STORED[0] = Commons.clamp(1                        , BREATHING_MAX_ENERGY_STORED[1], BREATHING_MAX_ENERGY_STORED[0]);
+		BREATHING_MAX_ENERGY_STORED[1] = Commons.clamp(BREATHING_MAX_ENERGY_STORED[0], BREATHING_MAX_ENERGY_STORED[2], BREATHING_MAX_ENERGY_STORED[1]);
+		BREATHING_MAX_ENERGY_STORED[2] = Commons.clamp(BREATHING_MAX_ENERGY_STORED[1], Integer.MAX_VALUE             , BREATHING_MAX_ENERGY_STORED[2]);
+		
+		BREATHING_ENERGY_PER_CANISTER = Commons.clamp(1, BREATHING_MAX_ENERGY_STORED[0],
+		                                              config.get("breathing", "energy_per_canister", BREATHING_ENERGY_PER_CANISTER, "Energy cost per air canister refilled").getInt());
+		
+		BREATHING_ENERGY_PER_NEW_AIR_BLOCK = config.get("breathing", "energy_per_new_air_block", BREATHING_ENERGY_PER_NEW_AIR_BLOCK, "Energy cost to start air distribution per open side per interval").getIntList();
+		assert(BREATHING_ENERGY_PER_NEW_AIR_BLOCK.length == 3);
+		BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] = Commons.clamp(1                               , BREATHING_MAX_ENERGY_STORED[0], BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0]);
+		BREATHING_ENERGY_PER_NEW_AIR_BLOCK[1] = Commons.clamp(BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], BREATHING_MAX_ENERGY_STORED[1], BREATHING_ENERGY_PER_NEW_AIR_BLOCK[1]);
+		BREATHING_ENERGY_PER_NEW_AIR_BLOCK[2] = Commons.clamp(BREATHING_ENERGY_PER_NEW_AIR_BLOCK[1], BREATHING_MAX_ENERGY_STORED[2], BREATHING_ENERGY_PER_NEW_AIR_BLOCK[2]);
+		
+		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK = config.get("breathing", "energy_per_existing_air_block", BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK, "Energy cost to sustain air distribution per open side per interval").getIntList();
+		assert(BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK.length == 3);
+		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0] = Commons.clamp(1                                    , BREATHING_MAX_ENERGY_STORED[0], BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0]);
+		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[1] = Commons.clamp(BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0], BREATHING_MAX_ENERGY_STORED[1], BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[1]);
+		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[2] = Commons.clamp(BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[1], BREATHING_MAX_ENERGY_STORED[2], BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[2]);
+		
+		BREATHING_AIR_GENERATION_TICKS = Commons.clamp(1, 300,
+		                                               config.get("breathing", "air_generation_interval_ticks", BREATHING_AIR_GENERATION_TICKS, "Update speed of air generation").getInt());
+		
+		BREATHING_AIR_GENERATION_RANGE_BLOCKS = config.get("breathing", "air_generation_range_blocks", BREATHING_AIR_GENERATION_RANGE_BLOCKS, "Maximum range of an air generator for each tier, measured in block").getIntList();
+		assert(BREATHING_AIR_GENERATION_RANGE_BLOCKS.length == 3);
+		BREATHING_AIR_GENERATION_RANGE_BLOCKS[0] = Commons.clamp(8                                  , BREATHING_AIR_GENERATION_RANGE_BLOCKS[1], BREATHING_AIR_GENERATION_RANGE_BLOCKS[0]);
+		BREATHING_AIR_GENERATION_RANGE_BLOCKS[1] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[0], BREATHING_AIR_GENERATION_RANGE_BLOCKS[2], BREATHING_AIR_GENERATION_RANGE_BLOCKS[1]);
+		BREATHING_AIR_GENERATION_RANGE_BLOCKS[2] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[1], 256                                , BREATHING_AIR_GENERATION_RANGE_BLOCKS[2]);
+		
+		BREATHING_REPRESSURIZATION_SPEED_BLOCKS = Commons.clamp(120, 4000,
+				config.get("breathing", "repressurization_speed_blocks", BREATHING_REPRESSURIZATION_SPEED_BLOCKS, "Maximum number of blocks to update when a volume has been re-sealed.\nHigher may cause TPS lag spikes, Lower will exponentially increase the repressurization time").getInt());
+		BREATHING_AIR_SIMULATION_DELAY_TICKS = Commons.clamp(1, 90,
+				config.get("breathing", "simulation_delay_ticks", BREATHING_AIR_SIMULATION_DELAY_TICKS, "Minimum delay between consecutive air propagation updates of the same block.").getInt());
+		BREATHING_AIR_AT_ENTITY_DEBUG = config.get("breathing", "enable_air_at_entity_debug", BREATHING_AIR_AT_ENTITY_DEBUG, "Spam creative players with air status around them, use at your own risk.").getBoolean(false);
 		
 		// IC2 Reactor monitor
 		IC2_REACTOR_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,

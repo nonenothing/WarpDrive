@@ -4,6 +4,8 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StateAir;
+import cr0s.warpdrive.event.ChunkHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -16,18 +18,35 @@ import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
-	private int cooldownTicks = 0;
-	private boolean isEnabled = true;
-	private static final int START_CONCENTRATION_VALUE = 15;
+public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	
-	public TileEntityAirGenerator() {
+	// persistent properties
+	protected byte tier = -1;
+	private boolean isEnabled = true;
+	
+	// computed properties
+	private int maxEnergyStored = 0;
+	private int cooldownTicks = 0;
+	
+	public TileEntityAirGeneratorTiered() {
 		super();
 		
 		peripheralName = "warpdriveAirGenerator";
 		addMethods(new String[] {
 				"enable"
 		});
+	}
+	
+	@Override
+	protected void onFirstUpdateTick() {
+		super.onFirstUpdateTick();
+		Block block = getBlockType();
+		if (block instanceof BlockAirGeneratorTiered) {
+			tier = ((BlockAirGeneratorTiered) block).tier;
+			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[tier - 1];
+		} else {
+			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + xCoord + " " + yCoord + " " + zCoord);
+		}
 	}
 	
 	@Override
@@ -43,56 +62,56 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
+		final int metadata = getBlockMetadata();
 		if (WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord)) {
-			if (getBlockMetadata() != 0) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
+			if ((metadata & 8) != 0) {
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata & 7, 2); // set disabled texture
 			}
 			return;
 		}
 		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS) {
-			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], true)) {
-				if (getBlockMetadata() != 1) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 2); // set enabled texture
+			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1], true)) {
+				if ((metadata & 8) == 0) {
+					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata | 8, 2); // set enabled texture
 				}
 			} else {
-				if (getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
+				if ((metadata & 8) != 0) {
+					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata & 7, 2); // set disabled texture
 				}
 			}
-			releaseAir(1, 0, 0);
-			releaseAir(-1, 0, 0);
-			releaseAir(0, 1, 0);
-			releaseAir(0, -1, 0);
-			releaseAir(0, 0, 1);
-			releaseAir(0, 0, -1);
+			ForgeDirection direction = ForgeDirection.getOrientation(metadata & 7);
+			releaseAir(direction);
 			
 			cooldownTicks = 0;
 		}
 	}
 	
-	private void releaseAir(int xOffset, int yOffset, int zOffset) {
-		Block block = worldObj.getBlock(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset);
-		if (block.isAir(worldObj, xCoord + xOffset, yCoord + yOffset, zCoord + zOffset)) {// can be air
-			int energy_cost = (!block.isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0];
+	private void releaseAir(final ForgeDirection direction) {
+		final int x = xCoord + direction.offsetX;
+		final int y = yCoord + direction.offsetY;
+		final int z = zCoord + direction.offsetZ;
+		
+		StateAir stateAir = ChunkHandler.getStateAir(worldObj, x, y, z);
+		stateAir.updateBlockCache(worldObj);
+		if (stateAir.isAir()) {// can be air
+			final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);
+			final int energy_cost = !stateAir.isAirSource() ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[tier - 1];
 			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
-				if (worldObj.setBlock(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, WarpDrive.blockAir, START_CONCENTRATION_VALUE, 2)) {
+				if (stateAir.setAirSource(worldObj, direction, range)) {
 					// (needs to renew air or was not maxed out)
-					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], false);
+					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1], false);
 				} else {
-					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0], false);
+					// (just maintaining)
+					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[tier - 1], false);
 				}
+				
 			} else {// low energy => remove air block
-				if (block.isAssociatedBlock(WarpDrive.blockAir)) {
-					int metadata = worldObj.getBlockMetadata(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset);
-					if (metadata > 4) {
-						worldObj.setBlockMetadataWithNotify(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, metadata - 4, 2);
-					} else if (metadata > 1) {
-						worldObj.setBlockMetadataWithNotify(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, 1, 2);
-					} else {
-						// worldObj.setBlockMetadataWithNotify(xCoord + xOffset, yCoord + yOffset,  zCoord + zOffset, 0, 0, 2);
-					}
+				if (stateAir.concentration > 4) {
+					stateAir.setConcentration(worldObj, (byte) (stateAir.concentration - 4));
+				} else if (stateAir.concentration > 1) {
+					stateAir.setConcentration(worldObj, (byte) 1);
 				}
 			}
 		}
@@ -112,7 +131,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
 	@Override
 	public int energy_getMaxStorage() {
-		return WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[0];
+		return maxEnergyStored;
 	}
 	
 	@Override

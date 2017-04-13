@@ -1,6 +1,8 @@
 package cr0s.warpdrive.data;
 
 
+import cr0s.warpdrive.event.ChunkHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -100,8 +102,10 @@ public class VectorI implements Cloneable {
 	
 	static public boolean isChunkLoaded(IBlockAccess world, final int x, final int z) {
 		if (world instanceof WorldServer) {
-			if (((WorldServer)world).getChunkProvider() instanceof ChunkProviderServer) {
-				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer)world).getChunkProvider();
+			return ChunkHandler.isLoaded((WorldServer) world, x, 64, z);
+			/*
+			if (((WorldServer) world).getChunkProvider() instanceof ChunkProviderServer) {
+				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer) world).getChunkProvider();
 				try {
 					Chunk chunk = (Chunk) chunkProviderServer.loadedChunkHashMap.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 					return chunk != null && chunk.isChunkLoaded;
@@ -109,8 +113,9 @@ public class VectorI implements Cloneable {
 					return chunkProviderServer.chunkExists(x >> 4, z >> 4);
 				}
 			} else {
-				return ((WorldServer)world).getChunkProvider().chunkExists(x >> 4, z >> 4);
+				return ((WorldServer) world).getChunkProvider().chunkExists(x >> 4, z >> 4);
 			}
+			/**/
 		}
 		return true;
 	}

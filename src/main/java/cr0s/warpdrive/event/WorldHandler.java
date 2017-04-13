@@ -91,5 +91,6 @@ public class WorldHandler {
 			                      + "@" + blockEvent.world.getBlockMetadata(blockEvent.x, blockEvent.y, blockEvent.z));
 		}
 		WarpDrive.starMap.onBlockUpdated(blockEvent.world, blockEvent.x, blockEvent.y, blockEvent.z, blockEvent.block, blockEvent.blockMetadata);
+		ChunkHandler.onBlockUpdated(blockEvent.world, blockEvent.x, blockEvent.y, blockEvent.z);
 	}
 }

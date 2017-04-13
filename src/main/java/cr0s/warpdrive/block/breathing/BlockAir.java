@@ -2,139 +2,37 @@ package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.render.RenderBlockStandard;
 
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockAir extends Block {
-	private final boolean TRANSPARENT_AIR = true;
-	private final boolean AIR_DEBUG = false;
-	private final int AIR_BLOCK_TICKS = 40;
-	private IIcon[] iconBuffer;
+public class BlockAir extends BlockAbstractAir {
+	
+	private final static int AIR_BLOCK_TICKS = 40;
 	
 	public BlockAir() {
-		super(Material.fire);
-		setHardness(0.0F);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.passive.Air");
+		super();
 	}
 	
 	@Override
-	public boolean isOpaqueCube() {
-		return false;
-	}
-	
-	@Override
-	public boolean isAir(IBlockAccess var1, int var2, int var3, int var4) {
-		return true;
-	}
-	
-	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
-		return null;
-	}
-	
-	@Override
-	public boolean isReplaceable(IBlockAccess var1, int var2, int var3, int var4) {
-		return true;
-	}
-	
-	@Override
-	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
-		return true;
-	}
-	
-	@Override
-	public boolean canCollideCheck(int var1, boolean var2) {
-		return false;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
-		return TRANSPARENT_AIR ? 1 : 0;
-	}
-	
-	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		if (AIR_DEBUG) {
-			iconBuffer = new IIcon[16];
-			iconBuffer[ 0] = par1IconRegister.registerIcon("warpdrive:passive/airBlock0");
-			iconBuffer[ 1] = par1IconRegister.registerIcon("warpdrive:passive/airBlock1");
-			iconBuffer[ 2] = par1IconRegister.registerIcon("warpdrive:passive/airBlock2");
-			iconBuffer[ 3] = par1IconRegister.registerIcon("warpdrive:passive/airBlock3");
-			iconBuffer[ 4] = par1IconRegister.registerIcon("warpdrive:passive/airBlock4");
-			iconBuffer[ 5] = par1IconRegister.registerIcon("warpdrive:passive/airBlock5");
-			iconBuffer[ 6] = par1IconRegister.registerIcon("warpdrive:passive/airBlock6");
-			iconBuffer[ 7] = par1IconRegister.registerIcon("warpdrive:passive/airBlock7");
-			iconBuffer[ 8] = par1IconRegister.registerIcon("warpdrive:passive/airBlock8");
-			iconBuffer[ 9] = par1IconRegister.registerIcon("warpdrive:passive/airBlock9");
-			iconBuffer[10] = par1IconRegister.registerIcon("warpdrive:passive/airBlock10");
-			iconBuffer[11] = par1IconRegister.registerIcon("warpdrive:passive/airBlock11");
-			iconBuffer[12] = par1IconRegister.registerIcon("warpdrive:passive/airBlock12");
-			iconBuffer[13] = par1IconRegister.registerIcon("warpdrive:passive/airBlock13");
-			iconBuffer[14] = par1IconRegister.registerIcon("warpdrive:passive/airBlock14");
-			iconBuffer[15] = par1IconRegister.registerIcon("warpdrive:passive/airBlock15");
-		} else {
-			blockIcon = par1IconRegister.registerIcon("warpdrive:passive/airBlock");
-		}
-	}
-	
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (AIR_DEBUG) {
-			return iconBuffer[metadata];
-		} else {
-			return blockIcon;
-		}
-	}
-	
-	@Override
-	public int getMobilityFlag() {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(int var1, Random var2, int var3) {
-		return null;
-	}
-
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 0;
-	}
-	
-	/**
-	 * How many world ticks before ticking
-	 */
-	@Override
-	public int tickRate(World par1World) {
+	public int tickRate(World world) {
 		return AIR_BLOCK_TICKS;
 	}
 	
-	/**
-	 * Ticks the block if it's been scheduled
-	 */
+	// profiling as of WWM9 spawn with 1.3.30
+	// 2.74% updateTick including 1.37% scheduleBlockUpdate (50%) + 1.23% spreadAirBlock (45%)
+	// 1.23% spreadAirBlock including 0.36% getAirBlock + 0.33% getBlock + 0.13% getBlockMetadata
 	@Override
-	public void updateTick(World world, int x, int y, int z, Random par5Random) {
+	public void updateTick(World world, int x, int y, int z, Random random) {
 		if (world.isRemote) {
 			return;
 		}
 		
-		int concentration = world.getBlockMetadata(x, y, z);
-		boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, x, z);
+		final int concentration = world.getBlockMetadata(x, y, z);
+		final boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, x, z);
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || hasAtmosphere) {
@@ -146,25 +44,6 @@ public class BlockAir extends Block {
 		world.scheduleBlockUpdate(x, y, z, this, 30 + 2 * concentration);
 	}
 	
-	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		if (AIR_DEBUG) {
-			return side == 0 || side == 1;
-		}
-		
-		Block sideBlock = world.getBlock(x, y, z);
-		if (sideBlock == this) {
-			return false;
-		}
-		
-		return world.isAirBlock(x, y, z);
-	}
-	
-	@Override
-	public int getRenderType() {
-		return RenderBlockStandard.renderId;
-	}
-	
 	private void spreadAirBlock(World world, int x, int y, int z, int concentration) {
 		int air_count = 1;
 		int empty_count = 0;
@@ -172,7 +51,7 @@ public class BlockAir extends Block {
 		int max_concentration = concentration + 1;
 		int min_concentration = concentration + 1;
 		
-		// Check air in adjacent blocks
+		// check air in adjacent blocks
 		Block xp_block = world.getBlock(x + 1, y, z);
 		boolean xp_isAir = world.isAirBlock(x + 1, y, z);
 		int xp_concentration = (xp_block != this) ? -1 : world.getBlockMetadata(x + 1, y, z);
@@ -267,7 +146,8 @@ public class BlockAir extends Block {
 		// compute new concentration, buffing closed space
 		int mid_concentration;
 		int new_concentration;
-		boolean isGrowth = (max_concentration > 8 && (max_concentration - min_concentration < 9)) || (max_concentration > 5 && (max_concentration - min_concentration < 4));
+		final boolean isGrowth = (max_concentration > 8 && (max_concentration - min_concentration < 9))
+		                      || (max_concentration > 5 && (max_concentration - min_concentration < 4));
 		if (isGrowth) {
 			mid_concentration = Math.round(sum_concentration / (float)air_count) - 1;
 			new_concentration = sum_concentration - mid_concentration * (air_count - 1);
@@ -385,11 +265,6 @@ public class BlockAir extends Block {
 				world.setBlock(x, y, z - 1, this, mid_concentration, 2);
 			}
 		}
-	}
-	
-	@Override
-	public boolean isCollidable() {
-		return false;
 	}
 	
 	@Override

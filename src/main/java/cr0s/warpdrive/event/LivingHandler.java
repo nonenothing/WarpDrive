@@ -8,6 +8,7 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.item.ItemEnergyWrapper;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -133,6 +134,11 @@ public class LivingHandler {
 		}
 		if (entity instanceof EntityPlayerMP) {
 			updatePlayerCloakState(entity);
+			
+			if ( WarpDriveConfig.BREATHING_AIR_AT_ENTITY_DEBUG
+			  && entity.worldObj.getWorldTime() % 20 == 0) {
+				StateAir.dumpAroundEntity((EntityPlayer) entity);
+			}
 			
 			// skip players in creative
 			if (((EntityPlayerMP) entity).capabilities.isCreativeMode) {
