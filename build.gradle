@@ -97,3 +97,11 @@ idea {
         inheritOutputDirs = true
     }
 }
+
+runClient {
+    jvmArgs "-Xmx1024m", "-Xms1024m"
+}
+
+runServer {
+    jvmArgs "-Xmx1024m", "-Xms1024m"
+}
