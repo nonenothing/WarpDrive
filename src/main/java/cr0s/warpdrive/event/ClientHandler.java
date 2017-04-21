@@ -7,6 +7,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.util.StatCollector;
 
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -58,6 +59,16 @@ public class ClientHandler {
 					// no operation
 				}
 				Commons.addTooltip(event.toolTip, "Explosion resistance is " + block.getExplosionResistance(null));
+				
+			} else {
+				try {
+					String uniqueName = Item.itemRegistry.getNameForObject(event.itemStack.getItem());
+					if (uniqueName != null) {
+						Commons.addTooltip(event.toolTip, "" + uniqueName + "");
+					}
+				} catch(Exception exception) {
+					// no operation
+				}
 			}
 		}
 	}
