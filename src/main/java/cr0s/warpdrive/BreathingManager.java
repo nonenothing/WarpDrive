@@ -8,19 +8,21 @@ import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.item.ItemEnergyWrapper;
+
+import java.util.HashMap;
+import java.util.UUID;
+
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-
-import java.util.HashMap;
-import java.util.UUID;
 
 public class BreathingManager {
 	
@@ -41,8 +43,8 @@ public class BreathingManager {
 	
 	public static boolean hasAirBlock(EntityLivingBase entityLivingBase, final int x, final int y, final int z) {
 		Block block;
-		for (VectorI vOffset : vAirOffsets) {
-			VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
+		for (final VectorI vOffset : vAirOffsets) {
+			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
 			block = entityLivingBase.worldObj.getBlock(vPosition.x, vPosition.y, vPosition.z);
 			if (block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
 				return true;
@@ -53,7 +55,7 @@ public class BreathingManager {
 	
 	public static void onLivingUpdateEvent(EntityLivingBase entityLivingBase, final int x, final int y, final int z) {
 		// skip living entities who don't need air
-		String idEntity = EntityList.getEntityString(entityLivingBase);
+		final String idEntity = EntityList.getEntityString(entityLivingBase);
 		if (Dictionary.ENTITIES_LIVING_WITHOUT_AIR.contains(idEntity)) {
 			return;
 		}
@@ -62,8 +64,8 @@ public class BreathingManager {
 		UUID uuidEntity = entityLivingBase.getUniqueID();
 		VectorI vAirBlock = null;
 		Block block = null;
-		for (VectorI vOffset : vAirOffsets) {
-			VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
+		for (final VectorI vOffset : vAirOffsets) {
+			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
 			block = entityLivingBase.worldObj.getBlock(vPosition.x, vPosition.y, vPosition.z);
 			if (block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
 				vAirBlock = vPosition;
@@ -189,9 +191,9 @@ public class BreathingManager {
 		
 		// find most consumed air canister with smallest stack
 		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
-			ItemStack itemStack = playerInventory[slotIndex];
+			final ItemStack itemStack = playerInventory[slotIndex];
 			if (itemStack != null && itemStack.getItem() instanceof IAirContainerItem) {
-				IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
+				final IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
 				final int airAvailable = airContainerItem.getCurrentAirStorage(itemStack);
 				if (airAvailable > 0) {
 					float fillingRatio = airAvailable / (float) airContainerItem.getMaxAirStorage(itemStack);
@@ -207,7 +209,7 @@ public class BreathingManager {
 		if (slotAirCanisterFound >= 0) {
 			ItemStack itemStack = playerInventory[slotAirCanisterFound];
 			if (itemStack != null && itemStack.getItem() instanceof IAirContainerItem) {
-				IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
+				final IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
 				final int airAvailable = airContainerItem.getCurrentAirStorage(itemStack);
 				if (airAvailable > 0) {
 					if (itemStack.stackSize > 1) {// unstack
@@ -234,15 +236,15 @@ public class BreathingManager {
 		// (no air canister or all empty)
 		// check IC2 compressed air cells
 		if (WarpDriveConfig.IC2_compressedAir != null) {
-			for (int j = 0; j < playerInventory.length; ++j) {
-				if (playerInventory[j] != null && playerInventory[j].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
-					playerInventory[j].stackSize--;
-					if (playerInventory[j].stackSize <= 0) {
-						playerInventory[j] = null;
+			for (int slotIndex = 0; slotIndex < playerInventory.length; ++slotIndex) {
+				if (playerInventory[slotIndex] != null && playerInventory[slotIndex].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
+					playerInventory[slotIndex].stackSize--;
+					if (playerInventory[slotIndex].stackSize <= 0) {
+						playerInventory[slotIndex] = null;
 					}
 					
 					if (WarpDriveConfig.IC2_emptyCell != null) {
-						ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
+						final ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
 						if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
 							World world = entityPlayer.worldObj;
 							EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
@@ -256,9 +258,9 @@ public class BreathingManager {
 		}
 		
 		// all Air canisters empty
-		ItemStack itemStackChestplate = entityPlayer.getCurrentArmor(2);
+		final ItemStack itemStackChestplate = entityPlayer.getCurrentArmor(2);
 		if (itemStackChestplate != null) {
-			Item itemChestplate = itemStackChestplate.getItem();
+			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
 				return electrolyseIceToAir(entity);
 			}
@@ -281,11 +283,12 @@ public class BreathingManager {
 		int slotEnergyContainer = -1;
 		
 		// find 1 ice, 1 energy and 2 empty air containers
+		final Item itemIce = Item.getItemFromBlock(Blocks.ice);
 		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
 			final ItemStack itemStack = playerInventory[slotIndex];
 			if (itemStack == null || itemStack.stackSize <= 0) {
 				// skip
-			} else if (itemStack.getItem() == Item.getItemFromBlock(Blocks.ice)) {
+			} else if (itemStack.getItem() == itemIce) {
 				slotIceFound = slotIndex;
 			} else if (itemStack.stackSize == 1 && itemStack.getItem() instanceof IAirContainerItem) {
 				IAirContainerItem airCanister = (IAirContainerItem) itemStack.getItem();
