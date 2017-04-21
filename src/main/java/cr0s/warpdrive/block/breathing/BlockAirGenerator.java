@@ -1,7 +1,7 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -66,17 +66,11 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 		return new TileEntityAirGenerator();
 	}
 	
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
 	}
 	
-	/**
-	 * Returns the ID of the items to drop on destruction.
-	 */
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);
@@ -97,11 +91,11 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 				return true;
 			} else {
 				Item heldItem = heldItemStack.getItem();
-				if (heldItem != null && (heldItem instanceof IAirCanister)) {
-					IAirCanister airCanister = (IAirCanister) heldItem;
+				if (heldItem != null && (heldItem instanceof IAirContainerItem)) {
+					IAirContainerItem airCanister = (IAirContainerItem) heldItem;
 					if (airCanister.canContainAir(heldItemStack) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						ItemStack toAdd = airCanister.fullDrop(heldItemStack);
+						ItemStack toAdd = airCanister.getFullAirContainer(heldItemStack);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
 								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);

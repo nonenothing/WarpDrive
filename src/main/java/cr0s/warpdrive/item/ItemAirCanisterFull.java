@@ -1,7 +1,7 @@
 package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.data.EnumComponentType;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -9,7 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
-public class ItemAirCanisterFull extends Item implements IAirCanister {
+public class ItemAirCanisterFull extends Item implements IAirContainerItem {
 	
 	private IIcon icon;
 	
@@ -33,24 +33,56 @@ public class ItemAirCanisterFull extends Item implements IAirCanister {
 	
 	@Override
 	public boolean canContainAir(ItemStack itemStack) {
-		if (itemStack != null && itemStack.getItem() instanceof ItemAirCanisterFull) {
-			return itemStack.getItemDamage() > 0;
+		if ( itemStack == null
+		  || itemStack.getItem() != this ) {
+			return false;
 		}
-		return false;
+		return itemStack.getItemDamage() > 0;
 	}
 	
 	@Override
-	public boolean containsAir(ItemStack itemStack) {
-		return true;
+	public int getMaxAirStorage(ItemStack itemStack) {
+		if ( itemStack == null
+		  || itemStack.getItem() != this ) {
+			return 0;
+		}
+		return itemStack.getMaxDamage();
 	}
 	
 	@Override
-	public ItemStack emptyDrop(ItemStack itemStack) {
+	public int getCurrentAirStorage(ItemStack itemStack) {
+		if ( itemStack == null
+		  || itemStack.getItem() != this ) {
+			return 0;
+		}
+		return getMaxDamage() - itemStack.getItemDamage();
+	}
+	
+	@Override
+	public ItemStack consumeAir(ItemStack itemStack) {
+		if ( itemStack == null
+		  || itemStack.getItem() != this ) {
+			return itemStack;
+		}
+		itemStack.setItemDamage(itemStack.getItemDamage() + 1); // bypass unbreaking enchantment
+		if (itemStack.getItemDamage() >= itemStack.getMaxDamage()) {
+			return getEmptyAirContainer(itemStack);
+		}
+		return itemStack;
+	}
+	
+	@Override
+	public int airTicksPerConsumption(ItemStack itemStack) {
+		return 300;
+	}
+	
+	@Override
+	public ItemStack getEmptyAirContainer(ItemStack itemStack) {
 		return ItemComponent.getItemStackNoCache(EnumComponentType.AIR_CANISTER, 1);
 	}
 	
 	@Override
-	public ItemStack fullDrop(ItemStack itemStack) {
+	public ItemStack getFullAirContainer(ItemStack itemStack) {
 		return new ItemStack(WarpDrive.itemAirCanisterFull, 1);
 	}
 }

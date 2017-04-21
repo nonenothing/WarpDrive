@@ -2,7 +2,7 @@ package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.EnumComponentType;
 
@@ -18,7 +18,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-public class ItemComponent extends Item implements IAirCanister {	
+public class ItemComponent extends Item implements IAirContainerItem {	
 	private IIcon[] icons;
 	private static ItemStack[] itemStackCache;
 	
@@ -78,32 +78,50 @@ public class ItemComponent extends Item implements IAirCanister {
 		}
 	}
 	
-	// For empty air canister
+	// IAirContainerItem overrides for empty air canister
 	@Override
 	public boolean canContainAir(ItemStack itemStack) {
 		return (itemStack.getItem() instanceof ItemComponent && itemStack.getItemDamage() == EnumComponentType.AIR_CANISTER.ordinal());
 	}
 	
 	@Override
-	public boolean containsAir(ItemStack itemStack) {
-		return false;
+	public int getMaxAirStorage(ItemStack itemStack) {
+		return 0;
 	}
 	
 	@Override
-	public ItemStack fullDrop(ItemStack itemStack) {
+	public int getCurrentAirStorage(ItemStack itemStack) {
+		return 0;
+	}
+	
+	@Override
+	public ItemStack consumeAir(ItemStack itemStack) {
+		WarpDrive.logger.error(this + " consumeAir() with itemStack " + itemStack);
+		throw new RuntimeException("Invalid call to consumeAir() on non or empty container");
+	}
+	
+	@Override
+	public int airTicksPerConsumption(ItemStack itemStack) {
+		return 0;
+	}
+	
+	@Override
+	public ItemStack getFullAirContainer(ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
-			return WarpDrive.itemAirCanisterFull.fullDrop(itemStack);
+			return WarpDrive.itemAirCanisterFull.getFullAirContainer(itemStack);
 		}
 		return null;
 	}
 	
 	@Override
-	public ItemStack emptyDrop(ItemStack itemStack) {
+	public ItemStack getEmptyAirContainer(ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
-			return WarpDrive.itemAirCanisterFull.emptyDrop(itemStack);
+			return WarpDrive.itemAirCanisterFull.getEmptyAirContainer(itemStack);
 		}
 		return null;
 	}
+	
+	
 	
 	@Override
 	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {

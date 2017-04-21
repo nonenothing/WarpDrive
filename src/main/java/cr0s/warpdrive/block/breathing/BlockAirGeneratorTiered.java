@@ -1,17 +1,14 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -24,7 +21,6 @@ import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
@@ -41,8 +37,6 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		super(Material.iron);
 		this.tier = tier;
 		isRotating = true;
-		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
-		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 		setBlockName("warpdrive.machines.air_generator" + tier);
 	}
 	
@@ -112,11 +106,11 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 				return true;
 			} else {
 				Item heldItem = heldItemStack.getItem();
-				if (heldItem != null && (heldItem instanceof IAirCanister)) {
-					IAirCanister airCanister = (IAirCanister) heldItem;
+				if (heldItem != null && (heldItem instanceof IAirContainerItem)) {
+					IAirContainerItem airCanister = (IAirContainerItem) heldItem;
 					if (airCanister.canContainAir(heldItemStack) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						ItemStack toAdd = airCanister.fullDrop(heldItemStack);
+						ItemStack toAdd = airCanister.getFullAirContainer(heldItemStack);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
 								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);

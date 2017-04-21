@@ -49,6 +49,7 @@ public class Dictionary {
 	public static HashSet<String> ENTITIES_NOMASS = null;
 	public static HashSet<String> ENTITIES_LEFTBEHIND = null;
 	public static HashSet<String> ENTITIES_NONLIVINGTARGET = null;
+	public static HashSet<String> ENTITIES_LIVING_WITHOUT_AIR = null;
 	
 	// Items dictionary
 	public static HashSet<Item> ITEMS_FLYINSPACE = null;
@@ -205,7 +206,8 @@ public class Dictionary {
 					+ "In case of conflicts, the latest tag overwrite the previous ones.\n" + "- Anchor: ship can't move with this entity aboard (default: none).\n"
 					+ "- NoMass: this entity doesn't count when calculating ship volume/mass (default: Galacticraft air bubble).\n"
 					+ "- LeftBehind: this entity won't move with your ship (default: Galacticraft air bubble).\n"
-					+ "- NonLivingTarget: this non-living entity can be targeted/removed by weapons (default: ItemFrame, Painting).");
+					+ "- NonLivingTarget: this non-living entity can be targeted/removed by weapons (default: ItemFrame, Painting).\n"
+					+ "- LivingWithoutAir: this living entity doesn't need air to live (default: vanilla zombies and skeletons.");
 			
 			ConfigCategory categoryEntityTags = config.getCategory("entity_tags");
 			String[] taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
@@ -222,6 +224,7 @@ public class Dictionary {
 				config.get("entity_tags", "MinecartHopper"               , "NoMass NonLivingTarget").getString();
 				config.get("entity_tags", "MinecartSpawner"              , "NoMass NonLivingTarget").getString();
 				config.get("entity_tags", "EnderCrystal"                 , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "Arrow"                        , "NoMass NonLivingTarget").getString();
 				
 				config.get("entity_tags", "IC2.BoatCarbon"               , "NoMass NonLivingTarget").getString();
 				config.get("entity_tags", "IC2.BoatRubber"               , "NoMass NonLivingTarget").getString();
@@ -230,6 +233,11 @@ public class Dictionary {
 				config.get("entity_tags", "IC2.Itnt"                     , "NoMass NonLivingTarget").getString();
 				config.get("entity_tags", "IC2.StickyDynamite"           , "NoMass NonLivingTarget").getString();
 				config.get("entity_tags", "IC2.Dynamite"                 , "NoMass NonLivingTarget").getString();
+				
+				config.get("entity_tags", "Creeper"                      , "LivingWithoutAir").getString();
+				config.get("entity_tags", "Skeleton"                     , "LivingWithoutAir").getString();
+				config.get("entity_tags", "Zombie"                       , "LivingWithoutAir").getString();
+				
 				taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedEntities = new HashMap<>(taggedEntitiesName.length);
@@ -269,7 +277,6 @@ public class Dictionary {
 				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
-				config.get("item_tags", "WarpDrive:itemWarpArmor_helmet", "BreathingHelmet").getString();
 				
 				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();
@@ -372,6 +379,7 @@ public class Dictionary {
 		ENTITIES_NOMASS = new HashSet<>(taggedEntities.size());
 		ENTITIES_LEFTBEHIND = new HashSet<>(taggedEntities.size());
 		ENTITIES_NONLIVINGTARGET = new HashSet<>(taggedEntities.size());
+		ENTITIES_LIVING_WITHOUT_AIR = new HashSet<>(taggedEntities.size());
 		for (Entry<String, String> taggedEntity : taggedEntities.entrySet()) {
 			String entityId = taggedEntity.getKey();
 			/* we can't detect missing entities, since some of them are 'hacked' in
@@ -386,6 +394,7 @@ public class Dictionary {
 				case "NoMass"          : ENTITIES_NOMASS.add(entityId); break;
 				case "LeftBehind"      : ENTITIES_LEFTBEHIND.add(entityId); break;
 				case "NonLivingTarget" : ENTITIES_NONLIVINGTARGET.add(entityId); break;
+				case "LivingWithoutAir": ENTITIES_LIVING_WITHOUT_AIR.add(entityId); break;
 				default:
 					WarpDrive.logger.error("Unsupported tag '" + tag + "' for entity " + entityId);
 					break;
@@ -442,6 +451,7 @@ public class Dictionary {
 		WarpDrive.logger.info("- " + ENTITIES_NOMASS.size() + " with NoMass tag: " + getHashMessage(ENTITIES_NOMASS));
 		WarpDrive.logger.info("- " + ENTITIES_LEFTBEHIND.size() + " with LeftBehind tag: " + getHashMessage(ENTITIES_LEFTBEHIND));
 		WarpDrive.logger.info("- " + ENTITIES_NONLIVINGTARGET.size() + " with NonLivingTarget tag: " + getHashMessage(ENTITIES_NONLIVINGTARGET));
+		WarpDrive.logger.info("- " + ENTITIES_LIVING_WITHOUT_AIR.size() + " with LivingWithoutAir tag: " + getHashMessage(ENTITIES_LIVING_WITHOUT_AIR));
 		
 		// translate tagged items
 		WarpDrive.logger.info("Active items dictionary:");
