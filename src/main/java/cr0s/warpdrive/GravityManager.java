@@ -101,7 +101,7 @@ public class GravityManager {
 		}
 		
 		if (gravity == CelestialObject.GRAVITY_NORMAL) {
-			return OVERWORLD_ITEM_GRAVITY;
+			return OVERWORLD_ITEM_GRAVITY2;
 		}
 		
 		if (gravity == CelestialObject.GRAVITY_LEGACY_SPACE || gravity == CelestialObject.GRAVITY_LEGACY_HYPERSPACE) {
