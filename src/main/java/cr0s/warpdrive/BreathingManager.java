@@ -235,8 +235,8 @@ public class BreathingManager {
 			}
 		}
 		
-		// all Air canisters empty
-		final ItemStack itemStackChestplate = entityPlayer.getCurrentArmor(2);
+		// all air containers are empty
+		final ItemStack itemStackChestplate = entityLivingBase.getEquipmentInSlot(3);
 		if (itemStackChestplate != null) {
 			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
@@ -367,7 +367,7 @@ public class BreathingManager {
 				slotIceFound = slotIndex;
 			} else if (itemStack.stackSize == 1 && itemStack.getItem() instanceof IAirContainerItem) {
 				IAirContainerItem airCanister = (IAirContainerItem) itemStack.getItem();
-				if (airCanister.canContainAir(itemStack) && airCanister.getCurrentAirStorage(itemStack) > 0) {
+				if (airCanister.canContainAir(itemStack) && airCanister.getCurrentAirStorage(itemStack) >= 0) {
 					if (slotFirstEmptyAirCanisterFound < 0) {
 						slotFirstEmptyAirCanisterFound = slotIndex;
 					} else if (slotSecondEmptyAirCanisterFound < 0) {
