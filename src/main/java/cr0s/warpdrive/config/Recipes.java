@@ -22,6 +22,8 @@ import net.minecraft.block.BlockColored;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
@@ -1624,6 +1626,36 @@ public class Recipes {
 			        'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
 			        'M', itemStackMotorHV,
 			        'm', WarpDrive.blockElectromagnetGlass[1]));
+			
+			// Defense tech
+			if (WarpDriveConfig.isDefenseTechLoaded) {
+				// antimatter
+				removeRecipe(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21), "aaa", "ana", "aaa",
+				        'a', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000),
+				        'n', WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 15)));
+				
+				// red matter
+				removeRecipe(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 22));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 22), "sss", "sas", "sss",
+						's', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000),
+						'a', WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21)));
+			}
+			
+			// ICBM classic
+			if (WarpDriveConfig.isICBMClassicLoaded) {
+				// antimatter
+				removeRecipe(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 22));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 22), "aaa", "ana", "aaa",
+				        'a', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000),
+				        'n', WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 15)));
+				
+				// red matter
+				removeRecipe(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 23));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 23), "sss", "sas", "sss",
+						's', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000),
+						'a', WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 22)));
+			}
 		}
 	}
 	
@@ -1835,6 +1867,28 @@ public class Recipes {
 						'#', "blockHull" + tier + "_stairs",
 						'X', oreDyes[woolColor] ));
 			}
+		}
+	}
+	
+	private static void removeRecipe(final ItemStack itemStackOutputOfRecipeToRemove) {
+		IRecipe recipeToRemove = null;
+		for (final Object object : CraftingManager.getInstance().getRecipeList()) {
+			if (object instanceof IRecipe) {
+				final IRecipe recipe = (IRecipe) object;
+				final ItemStack itemStackRecipeOutput = recipe.getRecipeOutput();
+				if (itemStackRecipeOutput != null && itemStackRecipeOutput.isItemEqual(itemStackOutputOfRecipeToRemove)) {
+					recipeToRemove = recipe;
+					break;
+				}
+			} else {
+				WarpDrive.logger.error(String.format("Invalid recipe %s", object));
+			}
+		}
+		if (recipeToRemove == null) {
+			WarpDrive.logger.error(String.format("Unable to find any recipe to remove with output %s", itemStackOutputOfRecipeToRemove));
+		} else {
+			WarpDrive.logger.info(String.format("Removing recipe %s with output %s", recipeToRemove, itemStackOutputOfRecipeToRemove));
+			CraftingManager.getInstance().getRecipeList().remove(recipeToRemove);
 		}
 	}
 }

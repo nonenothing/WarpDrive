@@ -82,7 +82,9 @@ public class WarpDriveConfig {
 	public static boolean isForgeMultipartLoaded = false;
 	public static boolean isAdvancedSolarPanelLoaded = false;
 	public static boolean isAppliedEnergistics2Loaded = false;
+	public static boolean isDefenseTechLoaded = false;
 	public static boolean isICBMLoaded = false;
+	public static boolean isICBMClassicLoaded = false;
 	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isComputerCraftLoaded = false;
 	public static boolean isOpenComputersLoaded = false;
@@ -837,6 +839,9 @@ public class WarpDriveConfig {
 		if (isForgeMultipartLoaded) {
 			isForgeMultipartLoaded = CompatForgeMultipart.register();
 		}
+		
+		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
+		isICBMClassicLoaded = Loader.isModLoaded("icbmclassic");
 		
 		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
 		if (isIndustrialCraft2Loaded) {

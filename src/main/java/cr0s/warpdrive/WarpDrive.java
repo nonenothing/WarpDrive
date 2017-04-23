@@ -179,7 +179,7 @@ import net.minecraftforge.oredict.RecipeSorter;
 
 
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2;" + " after:CoFHCore;" + " after:ComputerCraft;"
-		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;")
+		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;" + " after:DefenseTech;" + " after:icbmclassic;")
 public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
