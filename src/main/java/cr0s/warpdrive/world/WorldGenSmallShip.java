@@ -1,6 +1,5 @@
 package cr0s.warpdrive.world;
 
-
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -16,14 +15,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class WorldGenSmallShip extends WorldGenerator {
+	
 	private final boolean corrupted;
 	
-	public WorldGenSmallShip(boolean corrupted) {
+	public WorldGenSmallShip(final boolean corrupted) {
 		this.corrupted = corrupted;
 	}
 	
 	@Override
-	public boolean generate(World world, Random rand, int centerX, int centerY, int centerZ) {
+	public boolean generate(final World world, final Random rand, final int centerX, final int centerY, final int centerZ) {
 		WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
 		int i = centerX - 5, j = centerY - 4, k = centerZ - 6;
 		genStructure.setHullPlain(world, i + 0, j + 1, k + 4);
@@ -510,30 +510,31 @@ public class WorldGenSmallShip extends WorldGenerator {
 		return true;
 	}
 	
-	public static void spawnNPC(World world, int i, int j, int k) {
-		int numMobs = 2 + world.rand.nextInt(10);
+	public static void spawnNPC(final World world, final int x, final int y, final int z) {
+		final int countMobs = 2 + world.rand.nextInt(10);
 		
 		if (world.rand.nextBoolean()) {// Villagers
-			for (int idx = 0; idx < numMobs; idx++) {
-				EntityVillager entityvillager = new EntityVillager(world, 0);
-				entityvillager.setLocationAndAngles(i + 0.5D, j, k + 0.5D, 0.0F, 0.0F);
-				world.spawnEntityInWorld(entityvillager);
+			for (int idx = 0; idx < countMobs; idx++) {
+				EntityVillager entityVillager = new EntityVillager(world, 0);
+				entityVillager.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
+				entityVillager.setCurrentItemOrArmor(4, new ItemStack(WarpDrive.itemWarpArmor[0], 1, 1));
+				world.spawnEntityInWorld(entityVillager);
 			}
 		} else {// Zombies
-			for (int idx = 0; idx < numMobs; idx++) {
-				EntityZombie entityzombie = new EntityZombie(world);
-				entityzombie.setLocationAndAngles(i + 0.5D, j, k + 0.5D, 0.0F, 0.0F);
-				world.spawnEntityInWorld(entityzombie);
+			for (int idx = 0; idx < countMobs; idx++) {
+				EntityZombie entityZombie = new EntityZombie(world);
+				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
+				world.spawnEntityInWorld(entityZombie);
 			}
 		}
 	}
 	
-	public void fillChestWithBonuses(World worldObj, Random rand, int x, int y, int z) {
-		TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
+	public void fillChestWithBonuses(final World worldObj, final Random rand, final int x, final int y, final int z) {
+		final TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
 		
 		if (tileEntity != null) {
-			TileEntityChest chest = (TileEntityChest) tileEntity;
-			int size = chest.getSizeInventory();
+			final TileEntityChest chest = (TileEntityChest) tileEntity;
+			final int size = chest.getSizeInventory();
 			int numBonuses = rand.nextInt(size) / 2;
 			
 			for (int i = 0; i < size; i++) {
@@ -545,7 +546,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		}
 	}
 	
-	private ItemStack getRandomBonus(Random rand) {
+	private ItemStack getRandomBonus(final Random rand) {
 		ItemStack res = null;
 		boolean isDone = false;
 		

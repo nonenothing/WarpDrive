@@ -53,6 +53,23 @@ public class BreathingManager {
 		return false;
 	}
 	
+	public static boolean onLivingJoinEvent(EntityLivingBase entityLivingBase, final int x, final int y, final int z) {
+		// skip living entities who don't need air
+		final String idEntity = EntityList.getEntityString(entityLivingBase);
+		if (Dictionary.ENTITIES_LIVING_WITHOUT_AIR.contains(idEntity)) {
+			return true;
+		}
+		
+		if (hasAirBlock(entityLivingBase, x, y, z)) {
+			return true;
+		}
+		if (hasValidSetup(entityLivingBase)) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public static void onLivingUpdateEvent(EntityLivingBase entityLivingBase, final int x, final int y, final int z) {
 		// skip living entities who don't need air
 		final String idEntity = EntityList.getEntityString(entityLivingBase);
