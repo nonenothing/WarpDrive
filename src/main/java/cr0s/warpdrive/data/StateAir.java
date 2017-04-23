@@ -435,7 +435,7 @@ public class StateAir {
 				}
 			}
 		}
-		StringBuilder message = new StringBuilder("§3Air, §aGenerator §7and §dVoid §7stats at " + entityPlayer.ticksExisted);
+		StringBuilder message = new StringBuilder("------------------------------------------------\n§3Air, §aGenerator §7and §dVoid §7stats at " + entityPlayer.ticksExisted);
 		for (int indexY = 2; indexY >= 0; indexY--) {
 			for (int indexZ = 2; indexZ >= 0; indexZ--) {
 				message.append("\n");
