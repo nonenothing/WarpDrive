@@ -17,7 +17,7 @@ public interface IAirContainerItem {
 	ItemStack consumeAir(ItemStack itemStack);
 	
 	// Return duration of air for a single call to consumeAir(). Defaults to 300 ticks.
-	int airTicksPerConsumption(ItemStack itemStack);
+	int getAirTicksPerConsumption(ItemStack itemStack);
 	
 	// Return an empty air container
 	ItemStack getEmptyAirContainer(ItemStack itemStack);

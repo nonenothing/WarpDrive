@@ -127,6 +127,7 @@ import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
 import cr0s.warpdrive.render.RenderBlockForceField;
 import cr0s.warpdrive.render.RenderBlockStandard;
+import cr0s.warpdrive.render.RenderOverlayAir;
 import cr0s.warpdrive.render.RenderOverlayCamera;
 import cr0s.warpdrive.world.BiomeSpace;
 import cr0s.warpdrive.world.HyperSpaceWorldGenerator;
@@ -143,7 +144,6 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
-import net.minecraft.client.Minecraft;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -294,7 +294,8 @@ public class WarpDrive implements LoadingCallback {
 		RecipeSorter.register("warpdrive:tuningDriver", RecipeTuningDriver.class, RecipeSorter.Category.SHAPELESS, "before:minecraft:shapeless");
 		
 		if (FMLCommonHandler.instance().getSide().isClient()) {
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera(Minecraft.getMinecraft()));
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
 			
 			FMLCommonHandler.instance().bus().register(new ClientCameraHandler());
 			

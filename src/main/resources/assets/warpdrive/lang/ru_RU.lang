@@ -499,6 +499,11 @@ warpdrive.beam_frequency.statusLine.valid=Частота луча %1$d дейс�
 warpdrive.beam_frequency.statusLine.invalid=§cЧастота луча %1$d недействительна.
 warpdrive.beam_frequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set Beam frequency.
 
+warpdrive.breathing.alarm=Breathing alarm
+warpdrive.breathing.invalid_setup=No breathing helmet\nor incomplete armor
+warpdrive.breathing.low_reserve=Low air reserve!
+warpdrive.breathing.no_air=No more air!
+
 warpdrive.control_channel.tooltip=Control channel is set to %1$d
 warpdrive.control_channel.get=Control channel %2$d has been retrieved from %1$s 
 warpdrive.control_channel.set=%1$s is now tuned with Control channel %2$d

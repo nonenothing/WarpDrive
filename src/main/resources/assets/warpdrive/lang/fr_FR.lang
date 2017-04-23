@@ -498,6 +498,11 @@ warpdrive.beam_frequency.statusLine.valid=La fréquence de faisceau %1$d est val
 warpdrive.beam_frequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
 warpdrive.beam_frequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
 
+warpdrive.breathing.alarm=Alarme de respiration
+warpdrive.breathing.invalid_setup=Pas de casque respiratoire\nou armure incomplète
+warpdrive.breathing.low_reserve=Réserve d'air faible!
+warpdrive.breathing.no_air=Réserve d'air épuisée!
+
 warpdrive.control_channel.tooltip=Canal de contrôle ajusté à %1$d
 warpdrive.control_channel.get=Le canal de contrôle %2$d a été récupéré de %1$s 
 warpdrive.control_channel.set=%1$s est désormais accordé au Canal de contrôle %2$d

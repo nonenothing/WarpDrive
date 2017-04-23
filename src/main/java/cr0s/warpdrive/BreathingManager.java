@@ -110,37 +110,24 @@ public class BreathingManager {
 			}
 			
 			// damage entity if in vacuum without protection
-			final ItemStack itemStackHelmet     = entityLivingBase.getEquipmentInSlot(4);
-			final ItemStack itemStackChestplate = entityLivingBase.getEquipmentInSlot(3);
-			final ItemStack itemStackLeggings   = entityLivingBase.getEquipmentInSlot(2);
-			final ItemStack itemStackBoots      = entityLivingBase.getEquipmentInSlot(1);
+			final boolean hasValidSetup = hasValidSetup(entityLivingBase);
 			if (entityLivingBase instanceof EntityPlayerMP) {
 				EntityPlayerMP player = (EntityPlayerMP) entityLivingBase;
 				air = player_airTank.get(uuidEntity);
 				
-				boolean hasHelmet = false;
-				// need full armor set to breath
-				if ( itemStackHelmet     != null
-				  && itemStackChestplate != null
-				  && itemStackLeggings   != null
-				  && itemStackBoots      != null ) {
-					// need a working breathing helmet to breath
-					Item itemHelmet = itemStackHelmet.getItem();
-					if ( (itemHelmet instanceof IBreathingHelmet && ((IBreathingHelmet) itemHelmet).canBreath(entityLivingBase))
-					  || Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet) ) {
-						hasHelmet = true;
-						if (air == null) {// new player in space => grace period
-							player_airTank.put(uuidEntity, AIR_FIRST_BREATH_TICKS);
-						} else if (air <= 1) {
-							int ticksAir = consumeAir(player);
-							if (ticksAir > 0) {
-								player_airTank.put(uuidEntity, ticksAir);
-							} else {
-								hasHelmet = false;
-							}
+				boolean hasHelmet = hasValidSetup;
+				if (hasValidSetup) {
+					if (air == null) {// new player in space => grace period
+						player_airTank.put(uuidEntity, AIR_FIRST_BREATH_TICKS);
+					} else if (air <= 1) {
+						int ticksAir = consumeAir(player);
+						if (ticksAir > 0) {
+							player_airTank.put(uuidEntity, ticksAir);
 						} else {
-							player_airTank.put(uuidEntity, air - 1);
+							hasHelmet = false;
 						}
+					} else {
+						player_airTank.put(uuidEntity, air - 1);
 					}
 				}
 				
@@ -156,18 +143,9 @@ public class BreathingManager {
 				}
 				
 			} else {// (in space, no air block and not a player)
-				// need just a working breathing helmet to breath
-				if (itemStackHelmet != null) {
-					final Item itemHelmet = itemStackHelmet.getItem();
-					if ( (itemHelmet instanceof IBreathingHelmet && ((IBreathingHelmet) itemHelmet).canBreath(entityLivingBase))
-					  || Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet) ) {
-						// let it live for now, checking periodically if helmet gets broken in combat
-						entity_airBlock.put(uuidEntity, AIR_FIRST_BREATH_TICKS);
-					} else {
-						entity_airBlock.put(uuidEntity, 0);
-						entityLivingBase.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
-					}
-					
+				if (hasValidSetup) {
+					// let it live for now, checking periodically if helmet gets broken in combat
+					entity_airBlock.put(uuidEntity, AIR_FIRST_BREATH_TICKS);
 				} else {
 					entity_airBlock.put(uuidEntity, 0);
 					entityLivingBase.attackEntityFrom(WarpDrive.damageAsphyxia, 2.0F);
@@ -176,15 +154,15 @@ public class BreathingManager {
 		}
 	}
 	
-	static private int consumeAir(Entity entity) {
+	private static int consumeAir(EntityLivingBase entityLivingBase) {
 		if (WarpDriveConfig.LOGGING_BREATHING) {
 			WarpDrive.logger.info("Checking inventory for air reserves...");
 		}
-		if (!(entity instanceof EntityPlayerMP)) {
+		if (!(entityLivingBase instanceof EntityPlayerMP)) {
 			return 0;
 		}
 		
-		EntityPlayerMP entityPlayer = (EntityPlayerMP) entity;
+		EntityPlayerMP entityPlayer = (EntityPlayerMP) entityLivingBase;
 		ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
 		int slotAirCanisterFound = -1;
 		float fillingRatioAirCanisterFound = 0.0F;
@@ -225,10 +203,10 @@ public class BreathingManager {
 					} else {
 						ItemStack itemStackNew = airContainerItem.consumeAir(itemStack);
 						if (itemStack != itemStackNew) {
-							playerInventory[slotAirCanisterFound] = itemStack;
+							playerInventory[slotAirCanisterFound] = itemStackNew;
 						}
 					}
-					return airContainerItem.airTicksPerConsumption(itemStack);
+					return airContainerItem.getAirTicksPerConsumption(itemStack);
 				}
 			}
 		}
@@ -262,13 +240,110 @@ public class BreathingManager {
 		if (itemStackChestplate != null) {
 			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
-				return electrolyseIceToAir(entity);
+				return electrolyseIceToAir(entityLivingBase);
 			}
 		}
 		return 0;
 	}
 	
-	static private int electrolyseIceToAir(Entity entity) {
+	public static boolean hasValidSetup(EntityLivingBase entityLivingBase) {
+		final ItemStack itemStackHelmet = entityLivingBase.getEquipmentInSlot(4);
+		if (entityLivingBase instanceof EntityPlayer) {
+			final ItemStack itemStackChestplate = entityLivingBase.getEquipmentInSlot(3);
+			final ItemStack itemStackLeggings = entityLivingBase.getEquipmentInSlot(2);
+			final ItemStack itemStackBoots = entityLivingBase.getEquipmentInSlot(1);
+			// need full armor set to breath
+			if ( itemStackHelmet != null
+			  && itemStackChestplate != null
+			  && itemStackLeggings != null
+			  && itemStackBoots != null) {
+				// need a working breathing helmet to breath
+				final Item itemHelmet = itemStackHelmet.getItem();
+				return (itemHelmet instanceof IBreathingHelmet && ((IBreathingHelmet) itemHelmet).canBreath(entityLivingBase))
+				    || Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet);
+			}
+			
+		} else {
+			// need just a working breathing helmet to breath
+			if (itemStackHelmet != null) {
+				final Item itemHelmet = itemStackHelmet.getItem();
+				return (itemHelmet instanceof IBreathingHelmet && ((IBreathingHelmet) itemHelmet).canBreath(entityLivingBase))
+				    || Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet);
+			}
+		}
+		return false;
+	}
+	
+	public static float getAirReserveRatio(EntityPlayer entityPlayer) {
+		ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+		
+		// check electrolysing
+		boolean canElectrolyse = false;
+		final ItemStack itemStackChestplate = entityPlayer.getCurrentArmor(2);
+		if (itemStackChestplate != null) {
+			final Item itemChestplate = itemStackChestplate.getItem();
+			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
+				canElectrolyse = true;
+			}
+		}
+		
+		// check all inventory slots for air containers, etc.
+		final Item itemIce = Item.getItemFromBlock(Blocks.ice);
+		int sumAirCapacityTicks = 0;
+		int sumAirStoredTicks = 0;
+		int countAirContainer = 0;
+		int countIce = 0;
+		int countEnergy = 0;
+		ItemStack itemStackAirContainer = null;
+		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
+			final ItemStack itemStack = playerInventory[slotIndex];
+			if (itemStack != null) {
+				if (itemStack.getItem() instanceof IAirContainerItem) {
+					countAirContainer++;
+					itemStackAirContainer = itemStack;
+					final IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
+					final int airAvailable = airContainerItem.getCurrentAirStorage(itemStack);
+					if (airAvailable > 0) {
+						sumAirStoredTicks += airAvailable * airContainerItem.getAirTicksPerConsumption(itemStack);
+					}
+					final int airCapacity = airContainerItem.getMaxAirStorage(itemStack);
+					sumAirCapacityTicks += airCapacity * airContainerItem.getAirTicksPerConsumption(itemStack);
+					
+				} else if (WarpDriveConfig.IC2_compressedAir != null && itemStack.isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
+					sumAirStoredTicks += AIR_IC2_COMPRESSED_AIR_TICKS;
+					sumAirCapacityTicks += AIR_IC2_COMPRESSED_AIR_TICKS;
+					
+				} else if (WarpDriveConfig.IC2_emptyCell != null && itemStack.isItemEqual(WarpDriveConfig.IC2_emptyCell)) {
+					sumAirCapacityTicks += AIR_IC2_COMPRESSED_AIR_TICKS;
+					
+				} else if (canElectrolyse) {
+					if (itemStack.getItem() == itemIce) {
+						countIce += itemStack.stackSize;
+					} else if ( ItemEnergyWrapper.isEnergyContainer(itemStack)
+					         && ItemEnergyWrapper.canOutput(itemStack)
+					         && ItemEnergyWrapper.getEnergyStored(itemStack) >= AIR_ENERGY_FOR_ELECTROLYSE ) {
+						countEnergy += Math.floor(ItemEnergyWrapper.getEnergyStored(itemStack) / AIR_ENERGY_FOR_ELECTROLYSE);
+					}
+				}
+			}
+		}
+		
+		// add electrolyse bonus
+		if (countAirContainer >= 1 && countIce > 0 && countEnergy > 0 && itemStackAirContainer.getItem() instanceof IAirContainerItem) {
+			IAirContainerItem airContainerItem = (IAirContainerItem) itemStackAirContainer.getItem();
+			final int sumElectrolyseTicks =
+					  Math.min(2, countAirContainer)       // up to 2 containers refilled
+			        * Math.min(countIce, countEnergy)      // requiring both ice and energy
+			        * airContainerItem.getMaxAirStorage(itemStackAirContainer)
+			        * airContainerItem.getAirTicksPerConsumption(itemStackAirContainer);
+			sumAirStoredTicks += sumElectrolyseTicks;
+			sumAirCapacityTicks += sumElectrolyseTicks;
+		}
+		
+		return sumAirCapacityTicks > 0 ? sumAirStoredTicks / (float) sumAirCapacityTicks : 0.0F;
+	}
+	
+	private static int electrolyseIceToAir(Entity entity) {
 		if (WarpDriveConfig.LOGGING_BREATHING) {
 			WarpDrive.logger.info("Checking inventory for ice electrolysing...");
 		}
@@ -348,7 +423,7 @@ public class BreathingManager {
 				entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				
 				// first air breath is free
-				return airCanister.airTicksPerConsumption(itemStackAirCanister);
+				return airCanister.getAirTicksPerConsumption(itemStackAirCanister);
 			}
 		}
 		

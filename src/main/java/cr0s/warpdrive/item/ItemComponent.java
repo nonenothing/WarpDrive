@@ -86,7 +86,11 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	
 	@Override
 	public int getMaxAirStorage(ItemStack itemStack) {
-		return 0;
+		if (canContainAir(itemStack)) {
+			return WarpDrive.itemAirCanisterFull.getMaxAirStorage(itemStack);
+		} else {
+			return 0;
+		}
 	}
 	
 	@Override
@@ -101,8 +105,12 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public int airTicksPerConsumption(ItemStack itemStack) {
-		return 0;
+	public int getAirTicksPerConsumption(ItemStack itemStack) {
+		if (canContainAir(itemStack)) {
+			return WarpDrive.itemAirCanisterFull.getAirTicksPerConsumption(itemStack);
+		} else {
+			return 0;
+		}
 	}
 	
 	@Override

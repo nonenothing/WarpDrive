@@ -42,11 +42,16 @@ public class ItemAirCanisterFull extends Item implements IAirContainerItem {
 	
 	@Override
 	public int getMaxAirStorage(ItemStack itemStack) {
-		if ( itemStack == null
-		  || itemStack.getItem() != this ) {
+		if (itemStack == null) {
 			return 0;
 		}
-		return itemStack.getMaxDamage();
+		if (itemStack.getItem() == this) {
+			return itemStack.getMaxDamage();
+		}
+		if (itemStack.getItem() == WarpDrive.itemComponent) {
+			return 20;  // @TODO add proper empty air canister item
+		}
+		return 0;
 	}
 	
 	@Override
@@ -72,7 +77,7 @@ public class ItemAirCanisterFull extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public int airTicksPerConsumption(ItemStack itemStack) {
+	public int getAirTicksPerConsumption(ItemStack itemStack) {
 		return 300;
 	}
 	
