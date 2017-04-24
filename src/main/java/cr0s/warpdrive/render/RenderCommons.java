@@ -52,7 +52,7 @@ public class RenderCommons {
 		int y = scaledHeight / 10;
 		
 		// bold title, single line, centered, with shadows
-		final String textTitle = "§l" + StatCollector.translateToLocal(title);
+		final String textTitle = Commons.updateEscapeCodes("§l" + StatCollector.translateToLocal(title));
 		minecraft.fontRenderer.drawString(textTitle,
 		                                  scaledWidth / 4 - minecraft.fontRenderer.getStringWidth(textTitle) / 2,
 		                                  y - minecraft.fontRenderer.FONT_HEIGHT,
@@ -60,7 +60,7 @@ public class RenderCommons {
 		                                  true);
 		
 		// normal message, multi-lines, centered, without shadows
-		final String textMessage = StatCollector.translateToLocal(message).replace("\\n", "\n");
+		final String textMessage = Commons.updateEscapeCodes(StatCollector.translateToLocal(message));
 		final int alpha = 160 + (int) (85.0D * Math.sin(cycle * 2 * Math.PI));
 		
 		@SuppressWarnings("unchecked")

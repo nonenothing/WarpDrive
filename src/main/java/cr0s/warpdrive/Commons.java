@@ -13,7 +13,6 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -32,12 +31,23 @@ import java.util.Set;
  */
 public class Commons {
 	
+	private static final String CHAR_FORMATTING = "" + (char)167;
+	
+	public static String updateEscapeCodes(final String message) {
+		return message
+		       .replace("§", CHAR_FORMATTING)
+		       .replace("\\n", "\n")
+		       .replace("|", "\n")
+		       .replace(CHAR_FORMATTING + "r", CHAR_FORMATTING + "7")
+		       .replaceAll("\u00A0", " ");  // u00A0 is 'NO-BREAK SPACE'
+	}
+	
 	public static void addChatMessage(final ICommandSender sender, final String message) {
 		if (sender == null) {
 			WarpDrive.logger.error("Unable to send message to NULL sender: " + message);
 			return;
 		}
-		String[] lines = message.replace("§", "" + (char)167).replace("\\n", "\n").replaceAll("\u00A0", " ").split("\n");
+		String[] lines = updateEscapeCodes(message).split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new ChatComponentText(line));
 		}
@@ -48,9 +58,7 @@ public class Commons {
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(List<String> list, String tooltip) {
-		final String charFormatting = "" + (char)167;
-		tooltip = tooltip.replace("§", charFormatting).replace("\\n", "\n").replace("|", "\n");
-		tooltip = tooltip.replace(charFormatting + "r", charFormatting + "7");
+		tooltip = updateEscapeCodes(tooltip);
 		
 		String[] split = tooltip.split("\n");
 		for (String line : split) {
