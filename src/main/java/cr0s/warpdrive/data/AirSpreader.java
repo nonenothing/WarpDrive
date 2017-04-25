@@ -72,7 +72,7 @@ public class AirSpreader {
 				}
 				// keep highest generator pressure that's going towards us
 				if ( max_pressureGenerator < stateAir.pressureGenerator
-				     && (forgeDirection.getOpposite() != stateAir.directionGenerator || stateAir.isAirSource())) {
+				  && (forgeDirection.getOpposite() != stateAir.directionGenerator || stateAir.isAirSource())) {
 					max_pressureGenerator = stateAir.pressureGenerator;
 					max_directionGenerator = forgeDirection;
 				}
