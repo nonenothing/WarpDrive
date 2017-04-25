@@ -8,6 +8,7 @@ import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
 // wrapper to native classes to renderId is non-zero so we don't render faces when player camera is inside the block
 public class RenderBlockStandard implements ISimpleBlockRenderingHandler {
+	
 	public static int renderId = 0;
 	public static RenderBlockStandard instance = new RenderBlockStandard();
 	

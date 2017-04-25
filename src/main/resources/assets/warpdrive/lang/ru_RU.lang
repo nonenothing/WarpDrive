@@ -154,7 +154,6 @@ item.warpdrive.tool.tuning_fork.black.name=Черный камертон
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bИспользуйте на блоке§7, чтобы настроить его кристаллы\n§bПрисядьте§7, чтобы настроить вторичные кристаллы
 
 
-tile.warpdrive.passive.air.name=Воздух
 tile.warpdrive.passive.Energized.name=Энергизированный блок
 tile.warpdrive.passive.Gas.name=Газ
 tile.warpdrive.passive.IridiumBlock.name=Блок иридия
@@ -163,10 +162,6 @@ tile.warpdrive.passive.Network.name=Сетевой блок
 tile.warpdrive.passive.Plain.name=Простой блок
 tile.warpdrive.passive.TransportBeacon.name=Маяк для транспортера
 
-tile.warpdrive.machines.air_generator.name=Air Generator
-tile.warpdrive.machines.air_generator1.name=Basic Air Generator
-tile.warpdrive.machines.air_generator2.name=Advanced Air Generator
-tile.warpdrive.machines.air_generator3.name=Superior Air Generator
 tile.warpdrive.machines.AirGenerator.name=Генератор воздуха
 tile.warpdrive.machines.ChunkLoader.name=Загрузчик чанков
 tile.warpdrive.machines.Laser.name=Лазер
@@ -202,6 +197,12 @@ tile.warpdrive.atomic.void_shell_plain.name=Plain Void Shell
 tile.warpdrive.atomic.void_shell_plain.tooltip=Provides 2 empty channels for particles to travel inside an accelerator setup.\nConnects only horizontally to other Void Shells.
 tile.warpdrive.atomic.void_shell_glass.name=Glass Void Shell
 tile.warpdrive.atomic.void_shell_glass.tooltip=Same as a Plain Void Shell, except you can see particles moving through it.
+
+tile.warpdrive.breathing.air.name=Воздух
+tile.warpdrive.breathing.air_generator.name=Air Generator
+tile.warpdrive.breathing.air_generator1.name=Basic Air Generator
+tile.warpdrive.breathing.air_generator2.name=Advanced Air Generator
+tile.warpdrive.breathing.air_generator3.name=Superior Air Generator
 
 tile.warpdrive.building.ShipScanner.name=Сканер кораблей
 

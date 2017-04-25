@@ -154,7 +154,6 @@ item.warpdrive.tool.tuning_fork.black.name=Schwarze Stimmgabel
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRecktsklicke einen Block§7 um seine Kristalle einzustellen\n§bSschleiche§7 um alternative Kristalle einzustellen
 
 
-tile.warpdrive.passive.air.name=Luft Block
 tile.warpdrive.passive.Energized.name=Energiegeladener Block
 tile.warpdrive.passive.Gas.name=Gas Block
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
@@ -163,10 +162,6 @@ tile.warpdrive.passive.Network.name=Netzwerk Block
 tile.warpdrive.passive.Plain.name=Ebenen Block
 tile.warpdrive.passive.TransportBeacon.name=Transport Leuchtfeuer
 
-tile.warpdrive.machines.air_generator.name=Luftgenerator
-tile.warpdrive.machines.air_generator1.name=Standard Luftgenerator
-tile.warpdrive.machines.air_generator2.name=Weiterentwickeltes Luftgenerator
-tile.warpdrive.machines.air_generator3.name=Überlegenes Luftgenerator
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Medium Laser (Partikel Beschleuniger)
@@ -201,6 +196,12 @@ tile.warpdrive.atomic.void_shell_plain.name=Plain Void Shell !!!
 tile.warpdrive.atomic.void_shell_plain.tooltip=Provides 2 empty channels for particles to travel inside an accelerator setup.\nConnects only horizontally to other Void Shells. !!!
 tile.warpdrive.atomic.void_shell_glass.name=Glass Void Shell !!!
 tile.warpdrive.atomic.void_shell_glass.tooltip=Same as a Plain Void Shell, except you can see particles moving through it. !!!
+
+tile.warpdrive.breathing.air.name=Luft Block
+tile.warpdrive.breathing.air_generator.name=Luftgenerator
+tile.warpdrive.breathing.air_generator1.name=Standard Luftgenerator
+tile.warpdrive.breathing.air_generator2.name=Weiterentwickeltes Luftgenerator
+tile.warpdrive.breathing.air_generator3.name=Überlegenes Luftgenerator
 
 tile.warpdrive.building.ShipScanner.name=Raumschiff Scanner
 

@@ -27,7 +27,7 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 	
 	public BlockAirGenerator() {
 		super(Material.iron);
-		setBlockName("warpdrive.machines.air_generator");
+		setBlockName("warpdrive.breathing.air_generator");
 	}
 	
 	@Override

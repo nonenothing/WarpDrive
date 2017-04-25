@@ -37,7 +37,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		super(Material.iron);
 		this.tier = tier;
 		isRotating = true;
-		setBlockName("warpdrive.machines.air_generator" + tier);
+		setBlockName("warpdrive.breathing.air_generator" + tier);
 	}
 	
 	@Override

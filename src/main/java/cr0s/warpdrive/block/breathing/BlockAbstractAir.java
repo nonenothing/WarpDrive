@@ -27,7 +27,7 @@ public abstract class BlockAbstractAir extends Block {
 		super(Material.fire);
 		setHardness(0.0F);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.passive.air");
+		setBlockName("warpdrive.breathing.air");
 	}
 	
 	@Override
