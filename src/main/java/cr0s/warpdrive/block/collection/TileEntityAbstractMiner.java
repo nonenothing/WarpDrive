@@ -45,11 +45,11 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	
 	protected void harvestBlock(VectorI valuable) {
 		Block block = worldObj.getBlock(valuable.x, valuable.y, valuable.z);
-		if (block == Blocks.air) {
+		if (block == null || block.isAir(worldObj, valuable.x, valuable.y, valuable.z)) {
 			return;
 		}
 		int blockMeta = worldObj.getBlockMetadata(valuable.x, valuable.y, valuable.z);
-		if (block != null && (block instanceof BlockLiquid)) {
+		if (block instanceof BlockLiquid) {
 			// Evaporate fluid
 			worldObj.playSoundEffect(valuable.x + 0.5D, valuable.y + 0.5D, valuable.z + 0.5D, "random.fizz", 0.5F,
 					2.6F + (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()) * 0.8F);
