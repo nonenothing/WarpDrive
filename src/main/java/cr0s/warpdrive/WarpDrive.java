@@ -1,15 +1,10 @@
 package cr0s.warpdrive;
 
-import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
-import cr0s.warpdrive.block.breathing.BlockAirFlow;
-import cr0s.warpdrive.block.breathing.BlockAirGenerator;
 import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
 import cr0s.warpdrive.block.BlockLaserMedium;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.block.TileEntityAbstractChunkLoading;
-import cr0s.warpdrive.block.breathing.BlockAirSource;
-import cr0s.warpdrive.block.breathing.TileEntityAirGenerator;
 import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
@@ -23,6 +18,12 @@ import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
+import cr0s.warpdrive.block.breathing.BlockAirFlow;
+import cr0s.warpdrive.block.breathing.BlockAirGenerator;
+import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
+import cr0s.warpdrive.block.breathing.BlockAirShield;
+import cr0s.warpdrive.block.breathing.BlockAirSource;
+import cr0s.warpdrive.block.breathing.TileEntityAirGenerator;
 import cr0s.warpdrive.block.breathing.TileEntityAirGeneratorTiered;
 import cr0s.warpdrive.block.building.BlockShipScanner;
 import cr0s.warpdrive.block.building.TileEntityShipScanner;
@@ -59,6 +60,7 @@ import cr0s.warpdrive.block.forcefield.TileEntityForceField;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldRelay;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
+import cr0s.warpdrive.block.hull.BlockHullOmnipanel;
 import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
@@ -126,6 +128,7 @@ import cr0s.warpdrive.item.ItemWarpArmor;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
 import cr0s.warpdrive.render.RenderBlockForceField;
+import cr0s.warpdrive.render.RenderBlockOmnipanel;
 import cr0s.warpdrive.render.RenderBlockStandard;
 import cr0s.warpdrive.render.RenderOverlayAir;
 import cr0s.warpdrive.render.RenderOverlayCamera;
@@ -212,6 +215,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockAir;
 	public static Block blockAirFlow;
 	public static Block blockAirSource;
+	public static Block blockAirShield;
 	public static Block blockGas;
 	public static Block blockIridium;
 	public static Block blockHighlyAdvancedMachine;
@@ -232,6 +236,7 @@ public class WarpDrive implements LoadingCallback {
 	public static BlockDecorative blockDecorative;
 	public static Block[][] blockHulls_plain;
 	public static Block[] blockHulls_glass;
+	public static Block[] blockHulls_omnipanel;
 	public static Block[][] blockHulls_stairs;
 	public static Block[][] blockHulls_slab;
 	public static Block blockSiren;
@@ -304,6 +309,9 @@ public class WarpDrive implements LoadingCallback {
 			
 			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
 			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
+			
+			RenderBlockOmnipanel.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockOmnipanel.instance);
 		}
 	}
 	
@@ -357,10 +365,12 @@ public class WarpDrive implements LoadingCallback {
 		blockAir = new BlockAir();
 		blockAirFlow = new BlockAirFlow();
 		blockAirSource = new BlockAirSource();
+		blockAirShield = new BlockAirShield();
 		
 		GameRegistry.registerBlock(blockAir, ItemBlockAbstractBase.class, "blockAir");
 		GameRegistry.registerBlock(blockAirFlow, ItemBlockAbstractBase.class, "blockAirFlow");
 		GameRegistry.registerBlock(blockAirSource, ItemBlockAbstractBase.class, "blockAirSource");
+		GameRegistry.registerBlock(blockAirShield, ItemBlockAbstractBase.class, "blockAirShield");
 		
 		// GAS BLOCK
 		blockGas = new BlockGas();
@@ -566,6 +576,7 @@ public class WarpDrive implements LoadingCallback {
 		// HULL BLOCKS
 		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
+		blockHulls_omnipanel = new Block[3];
 		blockHulls_stairs = new Block[3][16];
 		blockHulls_slab = new Block[3][16];
 		
@@ -577,6 +588,8 @@ public class WarpDrive implements LoadingCallback {
 			}
 			blockHulls_glass[index] = new BlockHullGlass(tier);
 			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
+			blockHulls_omnipanel[index] = new BlockHullOmnipanel(tier);
+			GameRegistry.registerBlock(blockHulls_omnipanel[index], ItemBlockHull.class, "blockHull" + tier + "_omnipanel");
 			for (int woolColor = 0; woolColor <= 15; woolColor++) {
 				blockHulls_stairs[index][woolColor] = new BlockHullStairs(blockHulls_plain[index][0], woolColor, tier);
 				GameRegistry.registerBlock(blockHulls_stairs[index][woolColor], ItemBlockHull.class, "blockHull" + tier + "_stairs_" + ItemDye.field_150923_a[BlockColored.func_150031_c(woolColor)]);

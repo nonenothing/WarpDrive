@@ -2,6 +2,7 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractOmnipanel;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -212,6 +213,9 @@ public class StateAir {
 			typeBlock = BLOCK_AIR_SOURCE;
 			
 		} else if (block.isNormalCube()) {
+			typeBlock = BLOCK_SEALER;
+			
+		} else if (block instanceof BlockAbstractOmnipanel) {
 			typeBlock = BLOCK_SEALER;
 			
 		} else if (block instanceof BlockStaticLiquid || block instanceof BlockDynamicLiquid) {// vanilla liquid (water & lava sources or flowing)
