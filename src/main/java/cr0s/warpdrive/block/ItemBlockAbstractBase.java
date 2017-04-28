@@ -29,8 +29,13 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int p_77617_1_) {
-		return field_150939_a.getIcon(2, p_77617_1_);
+	public IIcon getIconFromDamage(int damage) {
+		return field_150939_a.getIcon(2, damage);
+	}
+	
+	@Override
+	public int getColorFromItemStack(ItemStack itemStack, int indexPass) {
+		return Block.getBlockFromItem(itemStack.getItem()).getRenderColor(itemStack.getItemDamage());
 	}
 	
 	@Override

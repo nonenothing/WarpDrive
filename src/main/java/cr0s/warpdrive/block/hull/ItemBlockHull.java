@@ -1,36 +1,21 @@
 package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.api.IBlockBase;
+import cr0s.warpdrive.block.ItemBlockAbstractBase;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockColored;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-public class ItemBlockHull extends ItemBlock {
+public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	public ItemBlockHull(Block block) {
 		super(block);	// sets field_150939_a to block
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.hull");
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(final int damage) {
-		return field_150939_a.getIcon(2, damage);
-	}
-	
-	@Override
-	public int getMetadata(int damage) {
-		return damage;
 	}
 	
 	@Override
