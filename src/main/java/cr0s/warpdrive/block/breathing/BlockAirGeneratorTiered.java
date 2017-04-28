@@ -43,9 +43,9 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister par1IconRegister) {
 		iconBuffer = new IIcon[3];
-		iconBuffer[ICON_INACTIVE_SIDE] = par1IconRegister.registerIcon("warpdrive:airGeneratorSideInactive");
-		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:airGeneratorBottom");
-		iconBuffer[ICON_SIDE_ACTIVATED] = par1IconRegister.registerIcon("warpdrive:airGeneratorSideActive");
+		iconBuffer[ICON_INACTIVE_SIDE] = par1IconRegister.registerIcon("warpdrive:breathing/air_generator-side_inactive");
+		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:breathing/air_generator-connection");
+		iconBuffer[ICON_SIDE_ACTIVATED] = par1IconRegister.registerIcon("warpdrive:breathing/air_generator-side_active");
 	}
 	
 	@Override
