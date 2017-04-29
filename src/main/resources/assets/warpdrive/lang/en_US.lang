@@ -202,6 +202,7 @@ tile.warpdrive.breathing.air_generator.name=Air Generator
 tile.warpdrive.breathing.air_generator1.name=Basic Air Generator
 tile.warpdrive.breathing.air_generator2.name=Advanced Air Generator
 tile.warpdrive.breathing.air_generator3.name=Superior Air Generator
+tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
 tile.warpdrive.building.ShipScanner.name=Ship Scanner
 
@@ -300,6 +301,23 @@ tile.warpdrive.hull1.glass.green.name=Green Stained Basic Hull Glass
 tile.warpdrive.hull1.glass.red.name=Red Stained Basic Hull Glass
 tile.warpdrive.hull1.glass.black.name=Black Stained Basic Hull Glass
 
+tile.warpdrive.hull1.omnipanel.white.name=White Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.orange.name=Orange Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.magenta.name=Magenta Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.lightBlue.name=Light Blue Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.yellow.name=Yellow Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.lime.name=Lime Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.pink.name=Pink Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.gray.name=Gray Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.silver.name=Silver Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.cyan.name=Cyan Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.purple.name=Purple Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.blue.name=Blue Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.brown.name=Brown Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.green.name=Green Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.red.name=Red Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.black.name=Black Stained Basic Hull Omnipanel
+
 tile.warpdrive.hull1.slab.white.name=White Stained Basic Hull Slab
 tile.warpdrive.hull1.slab.orange.name=Orange Stained Basic Hull Slab
 tile.warpdrive.hull1.slab.magenta.name=Magenta Stained Basic Hull Slab
@@ -369,6 +387,23 @@ tile.warpdrive.hull2.glass.green.name=Green Stained Advanced Hull Glass
 tile.warpdrive.hull2.glass.red.name=Red Stained Advanced Hull Glass
 tile.warpdrive.hull2.glass.black.name=Black Stained Advanced Hull Glass
 
+tile.warpdrive.hull2.omnipanel.white.name=White Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.orange.name=Orange Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.magenta.name=Magenta Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.lightBlue.name=Light Blue Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.yellow.name=Yellow Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.lime.name=Lime Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.pink.name=Pink Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.gray.name=Gray Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.silver.name=Silver Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.cyan.name=Cyan Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.purple.name=Purple Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.blue.name=Blue Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.brown.name=Brown Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.green.name=Green Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.red.name=Red Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.black.name=Black Stained Advanced Hull Omnipanel
+
 tile.warpdrive.hull2.slab.white.name=White Stained Advanced Hull Slab
 tile.warpdrive.hull2.slab.orange.name=Orange Stained Advanced Hull Slab
 tile.warpdrive.hull2.slab.magenta.name=Magenta Stained Advanced Hull Slab
@@ -437,6 +472,23 @@ tile.warpdrive.hull3.glass.brown.name=Brown Stained Superior Hull Glass
 tile.warpdrive.hull3.glass.green.name=Green Stained Superior Hull Glass
 tile.warpdrive.hull3.glass.red.name=Red Stained Superior Hull Glass
 tile.warpdrive.hull3.glass.black.name=Black Stained Superior Hull Glass
+
+tile.warpdrive.hull3.omnipanel.white.name=White Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.orange.name=Orange Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.magenta.name=Magenta Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.lightBlue.name=Light Blue Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.yellow.name=Yellow Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.lime.name=Lime Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.pink.name=Pink Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.gray.name=Gray Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.silver.name=Silver Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.cyan.name=Cyan Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.purple.name=Purple Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.blue.name=Blue Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.brown.name=Brown Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.green.name=Green Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.red.name=Red Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.black.name=Black Stained Superior Hull Omnipanel
 
 tile.warpdrive.hull3.slab.white.name=White Stained Superior Hull Slab
 tile.warpdrive.hull3.slab.orange.name=Orange Stained Superior Hull Slab
