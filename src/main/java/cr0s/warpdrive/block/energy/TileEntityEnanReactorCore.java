@@ -306,17 +306,47 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] active(Context context, Arguments arguments) throws Exception {
+	public Object[] active(Context context, Arguments arguments) {
 		return active(argumentsOCtoCC(arguments));
 	}
 	
-	private Object[] active(Object[] arguments) throws Exception {
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] release(Context context, Arguments arguments) {
+		return release(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] releaseRate(Context context, Arguments arguments) {
+		return releaseRate(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] releaseAbove(Context context, Arguments arguments) {
+		return releaseAbove(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] instability(Context context, Arguments arguments) {
+		// computer is alive => start updating reactor
+		hold = false;
+		return new Double[] { instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3] };
+	}
+	
+	// Common OC/CC methods
+	private Object[] active(Object[] arguments) {
 		if (arguments.length == 1) {
 			boolean activate;
 			try {
 				activate = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
-				throw new Exception("Function expects a boolean value");
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on active(): Boolean expected for 1st argument " + arguments[0]);
+				}
+				return active(new Object[0]);
 			}
 			if (active && !activate) {
 				sendEvent("reactorDeactivation");
@@ -334,19 +364,16 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] release(Context context, Arguments arguments) throws Exception {
-		return release(argumentsOCtoCC(arguments));
-	}
-	
-	private Object[] release(Object[] arguments) throws Exception {
-		boolean doRelease;
-		if (arguments.length > 0) {
+	private Object[] release(Object[] arguments) {
+		if (arguments.length == 1) {
+			boolean doRelease;
 			try {
 				doRelease = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
-				throw new Exception("Function expects a boolean value");
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on release(): Boolean expected for 1st argument " + arguments[0]);
+				}
+				return new Object[] { releaseMode != MODE_DONT_RELEASE };
 			}
 			
 			releaseMode = doRelease ? MODE_MANUAL_RELEASE : MODE_DONT_RELEASE;
@@ -356,44 +383,39 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		return new Object[] { releaseMode != MODE_DONT_RELEASE };
 	}
 	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] releaseRate(Context context, Arguments arguments) throws Exception {
-		return releaseRate(argumentsOCtoCC(arguments));
-	}
-	
-	private Object[] releaseRate(Object[] arguments) throws Exception {
-		int rate;
-		try {
-			rate = Commons.toInt(arguments[0]);
-		} catch (Exception exception) {
-			throw new Exception("Function expects an integer value");
+	private Object[] releaseRate(Object[] arguments) {
+		if (arguments.length == 1) {
+			int rate;
+			try {
+				rate = Commons.toInt(arguments[0]);
+			} catch (Exception exception) {
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on releaseRate(): Integer expected for 1st argument " + arguments[0]);
+				}
+				return new Object[] { MODE_STRING[releaseMode], releaseRate };
+			}
+			
+			if (rate <= 0) {
+				releaseMode = MODE_DONT_RELEASE;
+				releaseRate = 0;
+			} else {
+				// player has to adjust it
+				releaseRate = rate;
+				releaseMode = MODE_RELEASE_AT_RATE;
+			}
 		}
-		
-		if (rate <= 0) {
-			releaseMode = MODE_DONT_RELEASE;
-			releaseRate = 0;
-		} else {
-			// player has to adjust it
-			releaseRate = rate;
-			releaseMode = MODE_RELEASE_AT_RATE;
-		}
-		
 		return new Object[] { MODE_STRING[releaseMode], releaseRate };
 	}
 	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] releaseAbove(Context context, Arguments arguments) throws Exception {
-		return releaseAbove(argumentsOCtoCC(arguments));
-	}
-	
-	private Object[] releaseAbove(Object[] arguments) throws Exception {
+	private Object[] releaseAbove(Object[] arguments) {
 		int above;
 		try {
 			above = Commons.toInt(arguments[0]);
 		} catch (Exception exception) {
-			throw new Exception("Function expects an integer value");
+			if (WarpDriveConfig.LOGGING_LUA) {
+				WarpDrive.logger.error(this + " LUA error on releaseAbove(): Integer expected for 1st argument " + arguments[0]);
+			}
+			return new Object[] { MODE_STRING[releaseMode], releaseAbove };
 		}
 		
 		if (above <= 0) {
@@ -407,14 +429,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		return new Object[] { MODE_STRING[releaseMode], releaseAbove };
 	}
 	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] instability(Context context, Arguments arguments) throws Exception {
-		// computer is alive => start updating reactor
-		hold = false;
-		return new Double[] { instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3] };
-	}
-	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
@@ -422,7 +436,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy {
 		// computer is alive => start updating reactor
 		hold = false;
 		
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		try {
 			switch (methodName) {

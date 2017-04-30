@@ -129,7 +129,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) throws Exception {
+	public Object[] enable(Context context, Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
@@ -149,13 +149,16 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	// Common OC/CC methods
-	public Object[] enable(Object[] arguments) throws Exception {
+	public Object[] enable(Object[] arguments) {
 		if (arguments.length == 1) {
 			boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
-				throw new Exception("Function expects a boolean value");
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
+				}
+				return new Object[] { isEnabled };
 			}
 			isEnabled = enable;
 		}
