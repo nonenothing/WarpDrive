@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageReceiver {
+	
 	final byte tier;
 	
 	public BlockHullGlass(final byte tier) {

@@ -28,6 +28,7 @@ import net.minecraftforge.event.world.BlockEvent;
 
 
 public class CommonProxy {
+	
 	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
 	
 	void registerEntities() {

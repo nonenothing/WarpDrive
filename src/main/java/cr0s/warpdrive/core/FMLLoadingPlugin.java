@@ -46,7 +46,7 @@ public class FMLLoadingPlugin implements IFMLLoadingPlugin, IFMLCallHook {
 	}
 	
 	@Override
-	public Void call() throws Exception {
+	public Void call() {
 		if (debugLog) { logger.info("call()"); }
 		return null;
 	}
