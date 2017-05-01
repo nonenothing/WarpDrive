@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableSet;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
 import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
+import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
@@ -18,12 +20,14 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -91,17 +95,17 @@ public class AcceleratorSetup extends GlobalPosition {
 			keyInjectors = mapInjectors.keySet().toArray(new Integer[0]);
 		}
 		
-		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 			WarpDrive.logger.info(String.format("Accelerator length: %d + %d including %d + %d + %d magnets, %d chillers and %d energy banks"
 											  + " cooldown: %.3f %.3f %.3f /t %.3f EU/t"
 											  + " sustain: %.3f %.3f %.3f EU/t"
 											  + " acceleration: %.3f /particle",
-				trajectoryAccelerator.size(), trajectoryTransfer.size(),
-				countMagnets[0], countMagnets[1], countMagnets[2], chillers.size(), energyBanks.size(),
-				temperatures_cooling_K_perTick[0], temperatures_cooling_K_perTick[1], temperatures_cooling_K_perTick[2],
-				temperature_coolingEnergyCost_perTick,
-				temperatures_sustainEnergyCost_perTick[0], temperatures_sustainEnergyCost_perTick[1], temperatures_sustainEnergyCost_perTick[2],
-				particleEnergy_energyCost_perTick));
+			        trajectoryAccelerator == null ? -1 : trajectoryAccelerator.size(), trajectoryTransfer == null ? -1 : trajectoryTransfer.size(),
+					countMagnets[0], countMagnets[1], countMagnets[2], chillers.size(), energyBanks.size(),
+					temperatures_cooling_K_perTick[0], temperatures_cooling_K_perTick[1], temperatures_cooling_K_perTick[2],
+					temperature_coolingEnergyCost_perTick,
+					temperatures_sustainEnergyCost_perTick[0], temperatures_sustainEnergyCost_perTick[1], temperatures_sustainEnergyCost_perTick[2],
+					particleEnergy_energyCost_perTick));
 		}
 		
 		LocalProfiler.stop();
@@ -368,7 +372,8 @@ public class AcceleratorSetup extends GlobalPosition {
 	}
 	
 	public boolean isMajorChange(final AcceleratorSetup acceleratorSetup) {
-		return trajectoryAccelerator.size() != acceleratorSetup.trajectoryAccelerator.size()
+		return acceleratorSetup == null
+		    || trajectoryAccelerator.size() != acceleratorSetup.trajectoryAccelerator.size()
 		    || trajectoryTransfer.size() != acceleratorSetup.trajectoryTransfer.size()
 		    || countMagnets[0] != acceleratorSetup.countMagnets[0]
 		    || countMagnets[1] != acceleratorSetup.countMagnets[1]
@@ -531,6 +536,62 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 		assert(energyConsumed == amount_internal);
 		assert(energyLeft == 0);
+	}
+	
+	// Pseudo-API for computers
+	public int enableControlPoints(final IBlockAccess world, final int controlChannel, final boolean isEnabled) {
+		int count = 0;
+		for (final Entry<VectorI, Integer> entryControlPoint : controlPoints.entrySet()) {
+			final TileEntity tileEntity = entryControlPoint.getKey().getTileEntity(world);
+			if ( tileEntity instanceof TileEntityAcceleratorControlPoint
+			  && ((TileEntityAcceleratorControlPoint) tileEntity).getControlChannel() == controlChannel ) {
+				if (isEnabled != ((TileEntityAcceleratorControlPoint) tileEntity).isEnabled) {
+					count++;
+					((TileEntityAcceleratorControlPoint) tileEntity).isEnabled = isEnabled;
+				}
+			}
+		}
+		for (final Entry<Integer, VectorI> entryControlPoint : mapInjectors.entrySet()) {
+			final TileEntity tileEntity = entryControlPoint.getValue().getTileEntity(world);
+			if ( tileEntity instanceof TileEntityParticlesInjector
+			  && ((TileEntityParticlesInjector) tileEntity).getControlChannel() == controlChannel ) {
+				if (isEnabled != ((TileEntityParticlesInjector) tileEntity).isEnabled) {
+					count++;
+					((TileEntityParticlesInjector) tileEntity).isEnabled = isEnabled;
+				}
+			}
+		}
+		return count;
+	}
+	
+	public Object[][] getControlPoints(final IBlockAccess world) {
+		final Object[][] objectResults  = new Object[controlPoints.size() + keyInjectors.length][];
+		int index = 0;
+		for (final Entry<VectorI, Integer> entryControlPoint : controlPoints.entrySet()) {
+			final Integer tier = TrajectoryPoint.getTier(entryControlPoint.getValue());
+			final String type = TrajectoryPoint.isCollider(entryControlPoint.getValue()) ? "Collider" :
+			                    TrajectoryPoint.isOutput(entryControlPoint.getValue()) ? "Output" :
+			                    TrajectoryPoint.isInput(entryControlPoint.getValue()) ? "Input" : "?";
+			final TileEntity tileEntity = entryControlPoint.getKey().getTileEntity(world);
+			final Boolean isEnabled = (tileEntity instanceof TileEntityAcceleratorControlPoint) && ((TileEntityAcceleratorControlPoint) tileEntity).isEnabled;
+			final Integer controlChannel = (tileEntity instanceof IControlChannel) ? ((IControlChannel) tileEntity).getControlChannel() : -1;
+			
+			objectResults[index++] = new Object[] {
+				entryControlPoint.getKey().x, entryControlPoint.getKey().y, entryControlPoint.getKey().z,
+				tier, type, isEnabled, controlChannel };
+		}
+		for (final Entry<Integer, VectorI> entryControlPoint : mapInjectors.entrySet()) {
+			final Integer tier = 1;
+			final String type = "Injector";
+			final TileEntity tileEntity = entryControlPoint.getValue().getTileEntity(world);
+			final Boolean isEnabled = (tileEntity instanceof TileEntityParticlesInjector) && ((TileEntityParticlesInjector) tileEntity).isEnabled;
+			final Integer controlChannel = (tileEntity instanceof IControlChannel) ? ((IControlChannel) tileEntity).getControlChannel() : -1;
+			
+			objectResults[index++] = new Object[] {
+				entryControlPoint.getValue().x, entryControlPoint.getValue().y, entryControlPoint.getValue().z,
+				tier, type, isEnabled, controlChannel };
+		}
+		return objectResults;
 	}
 	
 	

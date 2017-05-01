@@ -369,6 +369,10 @@ public class TrajectoryPoint extends VectorI {
 	}
 	
 	public int getTier() {
+		return getTier(type);
+	}
+	
+	public static int getTier(final int type) {
 		switch (type & MASK_TIERS) {
 		case TIER_NORMAL: return 1;
 		case TIER_ADVANCED: return 2;
@@ -391,7 +395,19 @@ public class TrajectoryPoint extends VectorI {
 	}
 	
 	public boolean isCollider() {
+		return isCollider(type);
+	}
+	
+	public static boolean isCollider(final int type) {
 		return (type & IS_COLLIDER) != 0;
+	}
+	
+	public static boolean isInput(final int type) {
+		return (type & MASK_IS_INPUT) != 0;
+	}
+	
+	public static boolean isOutput(final int type) {
+		return (type & MASK_IS_OUTPUT) != 0;
 	}
 	
 	public Vector3 getJunctionOut(final ForgeDirection directionCurrent) {
