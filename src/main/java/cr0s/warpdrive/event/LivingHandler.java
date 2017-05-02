@@ -217,6 +217,8 @@ public class LivingHandler {
 		// 5 blocks high is motionY = -0.844
 		// slime in the overworld falling from
 		// 2.177279 blocks high is motionY -0.6517000126838683
+		// spider in the overworld falling from
+		// 3.346 blocks high is motionY -0.717
 		
 		// cancel in case of very low speed
 		final EntityLivingBase entity = event.entityLiving;
@@ -235,7 +237,9 @@ public class LivingHandler {
 			return;
 		}
 		
-		WarpDrive.logger.warn(String.format("Entity fall damage at motionY %.3f from distance %.3f of %s", entity.motionY, distance, entity));
+		if (WarpDrive.isDev) {
+			WarpDrive.logger.warn(String.format("Entity fall damage at motionY %.3f from distance %.3f of %s", entity.motionY, distance, entity));
+		}
 		
 		// check for equipment with NOFALLDAMAGE tag
 		for (int i = 1; i < 5; i++) {
