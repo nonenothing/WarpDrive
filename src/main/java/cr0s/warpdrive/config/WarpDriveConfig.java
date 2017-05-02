@@ -170,6 +170,7 @@ public class WarpDriveConfig {
 	public static int SHIP_HYPERJUMP_ENERGY_PER_DISTANCE = 1000;
 	public static int SHIP_TELEPORT_ENERGY_PER_ENTITY = 1000000;
 	public static int SHIP_MAX_JUMP_DISTANCE = 128;
+	public static int SHIP_HYPERSPACE_ACCELERATION = 100;
 	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 3000;
 	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 1200;
 	public static int SHIP_MAX_SIDE_SIZE = 127;
@@ -491,6 +492,8 @@ public class WarpDriveConfig {
 		
 		SHIP_MAX_JUMP_DISTANCE = Commons.clamp(0, 30000000,
 				config.get("ship", "max_jump_distance", SHIP_MAX_JUMP_DISTANCE, "Maximum jump length value in blocks").getInt());
+		SHIP_HYPERSPACE_ACCELERATION = Commons.clamp(1, 10000,
+				config.get("ship", "hyperspace_acceleration", SHIP_HYPERSPACE_ACCELERATION, "Acceleration gain from moving while in hyperspace").getInt());
 		
 		SHIP_VOLUME_MAX_ON_PLANET_SURFACE = Commons.clamp(0, 10000000,
 				config.get("ship", "volume_max_on_planet_surface", SHIP_VOLUME_MAX_ON_PLANET_SURFACE, "Maximum ship mass (in blocks) to jump on a planet").getInt());

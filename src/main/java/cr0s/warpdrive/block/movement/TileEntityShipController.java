@@ -24,6 +24,7 @@ import net.minecraft.util.StatCollector;
 import cpw.mods.fml.common.Optional;
 
 public class TileEntityShipController extends TileEntityAbstractInterfaced {
+	
 	// Variables
 	private int distance = 0;
 	private int direction = 0;
@@ -39,7 +40,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	private String targetJumpgateName = "";
 	
-	// Gabarits
+	// Dimensions
 	private int front, right, up;
 	private int back, left, down;
 	
@@ -80,7 +81,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				"isAttached",
 				"getEnergyRequired",
 				"movement",
-				"rotationSteps"
+				"rotationSteps",
+				"getMaxJumpDistance"
 		});
 		CC_scripts = Arrays.asList("startup");
 	}
@@ -360,8 +362,16 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		this.down = down;
 	}
 	
-	private void setDistance(int distance) {
-		this.distance = Math.max(1, Math.min(WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE, distance));
+	public int getMaxJumpDistance() {
+		int maxDistance = WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE;
+		if (worldObj == null || WarpDrive.starMap.isInHyperspace(worldObj, xCoord, zCoord)) {
+			maxDistance *= WarpDriveConfig.SHIP_HYPERSPACE_ACCELERATION;
+		}
+		return maxDistance;
+	}
+	
+	private void setDistance(final int distance) {
+		this.distance = Math.max(1, Math.min(getMaxJumpDistance(), distance));
 		if (WarpDriveConfig.LOGGING_JUMP && worldObj != null) {
 			WarpDrive.logger.info(this + " Jump distance set to " + distance);
 		}
@@ -521,6 +531,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
+	public Object[] getMaxJumpDistance(Context context, Arguments arguments) {
+		return new Object[] { getMaxJumpDistance() };
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] getEnergyRequired(Context context, Arguments arguments) {
 		if (core == null) {
 			return null;
@@ -590,6 +606,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		return null;
 	}
 	
+	// Common OC/CC methods
 	private Object[] dim_positive(Object[] arguments) {
 		try {
 			if (arguments.length == 3) {
@@ -870,6 +887,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 			case "rotationSteps":
 				return rotationSteps(arguments);
 			
+			case "getMaxJumpDistance":
+				return new Object[] { getMaxJumpDistance() };
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

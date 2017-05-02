@@ -865,10 +865,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				VectorI shipSize = new VectorI(controller.getFront() + 1 + controller.getBack(),
 				                               controller.getUp()    + 1 + controller.getDown(),
 				                               controller.getRight() + 1 + controller.getLeft());
-				int maxDistance = WarpDriveConfig.SHIP_MAX_JUMP_DISTANCE;
-				if (WarpDrive.starMap.isInHyperspace(worldObj, xCoord, zCoord)) {
-					maxDistance *= 100;
-				}
+				final int maxDistance = controller.getMaxJumpDistance();
 				if (Math.abs(movement.x) - shipSize.x > maxDistance) {
 					movement.x = (int) Math.signum(movement.x) * (shipSize.x + maxDistance);
 				}
@@ -881,12 +878,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				moveX = dx * movement.x - dz * movement.z;
 				moveY = movement.y;
 				moveZ = dz * movement.x + dx * movement.z;
-				if (currentMode == EnumShipCoreMode.BASIC_JUMP) {
-					// VectorI sizes = new VectorI(controller.getBack() + controller.getFront(), controller.getDown() + controller.getUp(), controller.getLeft() + controller.getRight());
-					// moveX += Math.signum((double)moveX) * Math.abs(dx * sizes.x - dz * sizes.z);
-					// moveY += Math.signum((double)moveY) * (sizes.y);
-					// moveZ += Math.signum((double)moveZ) * Math.abs(dz * sizes.x + dx * sizes.z);
-				} else if (currentMode == EnumShipCoreMode.LONG_JUMP) {
+				if (currentMode == EnumShipCoreMode.LONG_JUMP) {
 					moveX *= 100;
 					moveZ *= 100;
 				}
