@@ -238,9 +238,10 @@ public class StarMapRegistry {
 				double dZ = entry.z - tileEntity.zCoord;
 				double distance2 = dX * dX + dY * dY + dZ * dZ;
 				
-				if (distance2 <= radius2
-				    && (entry.isolationRate == 0.0D || tileEntity.getWorldObj().rand.nextDouble() >= entry.isolationRate)
-				    && (entry.getSpaceCoordinates() != null)) {
+				if ( distance2 <= radius2
+				  && (entry.isolationRate == 0.0D || tileEntity.getWorldObj().rand.nextDouble() >= entry.isolationRate)
+				  && (entry.getSpaceCoordinates() != null)
+				  && (entry.type != EnumStarMapEntryType.ACCELERATOR) ) {
 					starMapRegistryItems.add(entry);
 				}
 			}

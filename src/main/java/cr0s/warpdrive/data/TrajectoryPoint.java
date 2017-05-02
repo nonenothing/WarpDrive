@@ -8,6 +8,7 @@ import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
 
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.util.ForgeDirection;
@@ -49,8 +50,8 @@ public class TrajectoryPoint extends VectorI {
 	public static final int ERROR_MISSING_MAIN_MAGNET    = 0x00080000;   // missing main magnets at control point
 	public static final int ERROR_MISSING_CORNER_MAGNET  = 0x00100000;   // missing corner magnets at control point
 	public static final int ERROR_MISSING_COLLIDER       = 0x00200000;
-	public static final int ERROR_MISSING_VOID_SHELL     = 0x00400000;   // too many void shells
-	public static final int ERROR_TOO_MANY_VOID_SHELLS   = 0x00800000;   // not enough void shells
+	public static final int ERROR_MISSING_VOID_SHELL     = 0x00400000;
+	public static final int ERROR_TOO_MANY_VOID_SHELLS   = 0x00800000;
 	// public static final int ERROR_OUT_OF_RANGE        = 0x01000000;
 	// public static final int ERROR_TBD2                = 0x02000000;
 	// public static final int ERROR_TBD4                = 0x04000000;
@@ -149,19 +150,29 @@ public class TrajectoryPoint extends VectorI {
 		int new_controlChannel = -1;
 		if (isShellValid) {
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-				Block block = world.getBlock(
-					x + 2 * direction.offsetX,
-					y + 2 * direction.offsetY,
-					z + 2 * direction.offsetZ);
-				if (block instanceof BlockAcceleratorControlPoint && !(block instanceof BlockParticlesInjector)) {
-					if ((typeNew & MASK_MAGNETS_BOTH) == 0) {
-						typeNew |= ERROR_MISSING_MAIN_MAGNET;
-					} else {
-						new_vControlPoint = new VectorI(
+				final Block block = world.getBlock(
+						x + 2 * direction.offsetX,
+						y + 2 * direction.offsetY,
+						z + 2 * direction.offsetZ);
+				
+				if ( block instanceof BlockAcceleratorControlPoint
+				  && !(block instanceof BlockParticlesInjector) ) {
+					final TileEntity tileEntity = world.getTileEntity(
 							x + 2 * direction.offsetX,
 							y + 2 * direction.offsetY,
 							z + 2 * direction.offsetZ);
-						new_controlChannel = ((TileEntityAcceleratorControlPoint) new_vControlPoint.getTileEntity(world)).getControlChannel();
+					
+					if ( tileEntity instanceof TileEntityAcceleratorControlPoint
+					  && ((TileEntityAcceleratorControlPoint) tileEntity).getIsEnabled()) {
+						if ((typeNew & MASK_MAGNETS_BOTH) == 0) {
+							typeNew |= ERROR_MISSING_MAIN_MAGNET;
+						} else {
+							new_vControlPoint = new VectorI(
+							        x + 2 * direction.offsetX,
+							        y + 2 * direction.offsetY,
+							        z + 2 * direction.offsetZ);
+							new_controlChannel = ((TileEntityAcceleratorControlPoint) new_vControlPoint.getTileEntity(world)).getControlChannel();
+						}
 					}
 					break;
 				}

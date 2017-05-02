@@ -22,7 +22,7 @@ import cpw.mods.fml.common.Optional;
 public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfaced implements IControlChannel {
 	
 	// persistent properties
-	public boolean isEnabled = true;
+	private boolean isEnabled = true;
 	private int controlChannel = -1;
 	
 	// computed properties
@@ -56,14 +56,13 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		updateTicks--;
 		if (updateTicks <= 0) {
 			updateTicks = UPDATE_INTERVAL_TICKS;
-			updateMetadata((controlChannel == -1) ? 0 : 1);
+			updateMetadata((controlChannel == -1) || !isEnabled ? 0 : 1);
 		}
 	}
 	
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		// @TODO
 	}
 	
 	@Override
@@ -72,9 +71,9 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void setControlChannel(int parVideoChannel) {
-		if (controlChannel != parVideoChannel) {
-			controlChannel = parVideoChannel;
+	public void setControlChannel(final int controlChannel) {
+		if (this.controlChannel != controlChannel) {
+			this.controlChannel = controlChannel;
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Accelerator control point controlChannel channel set to " + controlChannel);
 			}
@@ -126,6 +125,15 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		readFromNBT(tagCompound);
 	}
 	
+	public boolean getIsEnabled() {
+		return isEnabled;
+	}
+	
+	public void setIsEnabled(final boolean isEnabled) {
+		this.isEnabled = isEnabled;
+		WarpDrive.starMap.onBlockUpdated(worldObj, xCoord, yCoord, zCoord, getBlockType(), getBlockMetadata());
+	}
+	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
@@ -160,7 +168,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 				}
 				return new Object[] { isEnabled };
 			}
-			isEnabled = enable;
+			setIsEnabled(enable);
 		}
 		return new Object[] { isEnabled };
 	}
