@@ -1059,13 +1059,34 @@ public class Recipes {
 		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("EnderIO", "blockReservoir", 0);
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "aca", "ata", "gmp",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "ata", "aca", "gmp",
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 				'a', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
 				't', itemStackMotors[1],
 				'g', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 				'm', itemStackMachineCasings[1],
 				'c', itemStackCompressorOrTank));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGeneratorTiered[0]), false, "aca", "ata", "gmp",
+		        'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+		        'a', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
+		        't', itemStackMotors[1],
+		        'g', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
+		        'm', itemStackMachineCasings[1],
+		        'c', itemStackCompressorOrTank));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGeneratorTiered[1]), false, "aaa", "ata", "ama",
+		        'a', WarpDrive.blockAirGeneratorTiered[0],
+		        't', itemStackMotors[2],
+		        'm', itemStackMachineCasings[2]));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGeneratorTiered[2]), false, "aaa", "ata", "ama",
+		        'a', WarpDrive.blockAirGeneratorTiered[1],
+		        't', itemStackMotors[3],
+		        'm', itemStackMachineCasings[3]));
+		
+		// Air shield is 4 glowstones, 4 omnipanels and 1 coil crystal 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirShield, 4, 0), false, "gog", "oco", "gog",
+				'g', Items.glowstone_dust,
+				'o', "blockHull1_omnipanel",
+				'c', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL) ));
 		
 		// Laser cannon is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 HV Machine casing, 1 redstone dust, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaser), false, "gtr", "ldm", "gtc",
@@ -1668,6 +1689,11 @@ public class Recipes {
 				OreDictionary.registerOre("blockHull" + tier + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
 				OreDictionary.registerOre("blockHull" + tier + "_tiled", new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8));
+				OreDictionary.registerOre("blockHull" + tier + "_omnipanel", new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor));
 			}
 		}
 		
@@ -1818,6 +1844,21 @@ public class Recipes {
 				// uncrafting tiled
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
 				        new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				
+				// crafting omnipanel
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_omnipanel[index], 16, woolColor), false, "ggg", "ggg",
+						'g', new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor)));
+				
+				// uncrafting omnipanel
+				GameRegistry.addRecipe(new ShapelessOreRecipe( new ItemStack(WarpDrive.blockHulls_glass[index], 3, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor) ));
 				
 				// crafting slab
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 0), false, "bbb",
