@@ -16,7 +16,7 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	public ItemBlockDecorative(Block block) {
 		super(block);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.passive.Decorative");
+		setUnlocalizedName("warpdrive.decoration");
 	}
 	
 	@Nonnull
@@ -38,6 +38,6 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 		if (itemStack == null) {
 			return getUnlocalizedName();
 		}
-		return "tile.warpdrive.passive.Decorative." + EnumDecorativeType.get(itemStack.getItemDamage()).getUnlocalizedName();
+		return "tile.warpdrive.decoration.decorative." + EnumDecorativeType.get(itemStack.getItemDamage()).getUnlocalizedName();
 	}
 }

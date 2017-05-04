@@ -12,22 +12,20 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.Pre;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SideOnly(Side.CLIENT)
 public class RenderOverlayCamera {
-	private Minecraft mc;
-	private int frameCount = 0;
+	
 	private static final int ANIMATION_FRAMES = 200;
 	
-	public RenderOverlayCamera(Minecraft parMinecraft) {
-		mc = parMinecraft;
-	}
+	private Minecraft minecraft = Minecraft.getMinecraft();
+	private int frameCount = 0;
 	
-	private static int colorGradient(float gradient, int start, int end) {
-		return Math.max(0, Math.min(255, start + Math.round(gradient * (end - start))));
-	}
-	
-	private void renderOverlay(int scaledWidth, int scaledHeight) {
+	private void renderOverlay(final int scaledWidth, final int scaledHeight) {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(false);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -35,12 +33,12 @@ public class RenderOverlayCamera {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		
 		try {
-			String strHelp;
+			final String strHelp;
 			if (ClientCameraHandler.overlayType == EnumCameraType.SIMPLE_CAMERA) {
-				mc.getTextureManager().bindTexture(new ResourceLocation("warpdrive", "textures/blocks/detection/cameraOverlay.png"));
+				minecraft.getTextureManager().bindTexture(new ResourceLocation("warpdrive", "textures/blocks/detection/cameraOverlay.png"));
 				strHelp = "Left click to zoom / Right click to exit";
 			} else {
-				mc.getTextureManager().bindTexture(new ResourceLocation("warpdrive", "textures/blocks/weapon/laserCameraOverlay.png"));
+				minecraft.getTextureManager().bindTexture(new ResourceLocation("warpdrive", "textures/blocks/weapon/laserCameraOverlay.png"));
 				strHelp = "Left click to zoom / Right click to exit / Space to fire";
 			}
 			
@@ -58,24 +56,26 @@ public class RenderOverlayCamera {
 			if (frameCount >= ANIMATION_FRAMES) {
 				frameCount = 0;
 			}
-			float time = Math.abs(frameCount * 2.0F / ANIMATION_FRAMES - 1.0F);
-			int color = (colorGradient(time, 0x40, 0xA0) << 16) + (colorGradient(time, 0x80, 0x00) << 8) + colorGradient(time, 0x80, 0xFF);
-			mc.fontRendererObj.drawString(strHelp,
-					(scaledWidth - mc.fontRendererObj.getStringWidth(strHelp)) / 2,
-					(int)(scaledHeight * 0.19) - mc.fontRendererObj.FONT_HEIGHT,
-					color, true);
+			final float time = Math.abs(frameCount * 2.0F / ANIMATION_FRAMES - 1.0F);
+			final int color = (RenderCommons.colorGradient(time, 0x40, 0xA0) << 16)
+			                + (RenderCommons.colorGradient(time, 0x80, 0x00) << 8)
+			                +  RenderCommons.colorGradient(time, 0x80, 0xFF);
+			minecraft.fontRendererObj.drawString(strHelp,
+			                                     (scaledWidth - minecraft.fontRendererObj.getStringWidth(strHelp)) / 2,
+			                                     (int)(scaledHeight * 0.19) - minecraft.fontRendererObj.FONT_HEIGHT,
+			                                     color, true);
 			
-			String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / mc.gameSettings.fovSetting) + "x";
-			mc.fontRendererObj.drawString(strZoom,
-					(int) (scaledWidth * 0.91) - mc.fontRendererObj.getStringWidth(strZoom),
-					(int) (scaledHeight * 0.81),
-					0x40A080, true);
+			String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
+			minecraft.fontRendererObj.drawString(strZoom,
+			                                     (int) (scaledWidth * 0.91) - minecraft.fontRendererObj.getStringWidth(strZoom),
+			                                     (int) (scaledHeight * 0.81),
+			                                     0x40A080, true);
 			
 			if (WarpDriveConfig.LOGGING_CAMERA) {
-				mc.fontRendererObj.drawString(ClientCameraHandler.overlayLoggingMessage,
-					(scaledWidth - mc.fontRendererObj.getStringWidth(ClientCameraHandler.overlayLoggingMessage)) / 2,
-					(int)(scaledHeight * 0.19),
-					0xFF008F, true);
+				minecraft.fontRendererObj.drawString(ClientCameraHandler.overlayLoggingMessage,
+				                                     (scaledWidth - minecraft.fontRendererObj.getStringWidth(ClientCameraHandler.overlayLoggingMessage)) / 2,
+				                                     (int) (scaledHeight * 0.19),
+				                                     0xFF008F, true);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -88,7 +88,7 @@ public class RenderOverlayCamera {
 	}
 	
 	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent.Pre event) {
+	public void onRender(Pre event) {
 		if (ClientCameraHandler.isOverlayEnabled) {
 			if (event.getType() == ElementType.HELMET) {
 				renderOverlay(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());

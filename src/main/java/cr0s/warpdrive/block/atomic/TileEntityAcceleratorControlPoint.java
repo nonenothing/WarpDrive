@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfaced implements IControlChannel {
 	
 	// persistent properties
-	public boolean isEnabled = true;
+	private boolean isEnabled = true;
 	private int controlChannel = -1;
 	
 	// computed properties
@@ -57,14 +57,13 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		updateTicks--;
 		if (updateTicks <= 0) {
 			updateTicks = UPDATE_INTERVAL_TICKS;
-			updateMetadata((controlChannel == -1) ? 0 : 1); // @TODO MC1.10
+			updateMetadata((controlChannel == -1) || !isEnabled ? 0 : 1); // @TODO MC1.10
 		}
 	}
 	
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		// @TODO
 	}
 	
 	@Override
@@ -73,9 +72,9 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void setControlChannel(int parVideoChannel) {
-		if (controlChannel != parVideoChannel) {
-			controlChannel = parVideoChannel;
+	public void setControlChannel(final int controlChannel) {
+		if (this.controlChannel != controlChannel) {
+			this.controlChannel = controlChannel;
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Accelerator control point controlChannel channel set to " + controlChannel);
 			}
@@ -129,10 +128,19 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		readFromNBT(tagCompound);
 	}
 	
+	public boolean getIsEnabled() {
+		return isEnabled;
+	}
+	
+	public void setIsEnabled(final boolean isEnabled) {
+		this.isEnabled = isEnabled;
+		WarpDrive.starMap.onBlockUpdated(worldObj, pos, worldObj.getBlockState(pos));
+	}
+	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) throws Exception {
+	public Object[] enable(Context context, Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
@@ -152,15 +160,18 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	// Common OC/CC methods
-	public Object[] enable(Object[] arguments) throws Exception {
+	public Object[] enable(Object[] arguments) {
 		if (arguments.length == 1) {
 			boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
 			} catch (Exception exception) {
-				throw new Exception("Function expects a boolean value");
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
+				}
+				return new Object[] { isEnabled };
 			}
-			isEnabled = enable;
+			setIsEnabled(enable);
 		}
 		return new Object[] { isEnabled };
 	}

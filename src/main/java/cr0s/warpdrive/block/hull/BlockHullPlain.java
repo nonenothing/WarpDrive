@@ -2,18 +2,18 @@ package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.SoundType;
+import net.minecraft.block.BlockColored;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -27,21 +27,20 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockHullPlain extends Block implements IDamageReceiver {
+public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver {
 	
-	private static final PropertyEnum<EnumDyeColor> COLOR = PropertyEnum.create("color", EnumDyeColor.class);
 	final byte tier;
+	final EnumHullPlainType enumHullPlainType;
 	
-	public BlockHullPlain(final String registryName, final byte tier) {
-		super(Material.ROCK);
+	public BlockHullPlain(final String registryName, final byte tier, final EnumHullPlainType enumHullPlainType) {
+		super(null, Material.ROCK);
 		this.tier = tier;
+		this.enumHullPlainType = enumHullPlainType;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
-		setSoundType(SoundType.METAL);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.hull" + tier + ".plain.");
+		setDefaultState(blockState.getBaseState().withProperty(BlockColored.COLOR, EnumDyeColor.WHITE));
 		setRegistryName(registryName);
-		setDefaultState(blockState.getBaseState().withProperty(COLOR, EnumDyeColor.WHITE));
 		WarpDrive.register(this, new ItemBlockHull(this));
 	}
 	
@@ -54,7 +53,7 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 	
 	@Override
 	public int damageDropped(IBlockState blockState) {
-		return blockState.getValue(COLOR).getMetadata();
+		return blockState.getValue(BlockColored.COLOR).getMetadata();
 	}
 	
 	@Override
@@ -69,25 +68,30 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 	@Nonnull
 	@Override
 	public MapColor getMapColor(IBlockState blockState) {
-		return blockState.getValue(COLOR).getMapColor();
+		return blockState.getValue(BlockColored.COLOR).getMapColor();
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public IBlockState getStateFromMeta(int metadata) {
-		return this.getDefaultState().withProperty(COLOR, EnumDyeColor.byMetadata(metadata));
+		return this.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.byMetadata(metadata));
 	}
 	
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
-		return blockState.getValue(COLOR).getMetadata();
+		return blockState.getValue(BlockColored.COLOR).getMetadata();
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, COLOR);
+		return new BlockStateContainer(this, BlockColored.COLOR);
+	}
+	
+	@Override
+	public byte getTier(ItemStack itemStack) {
+		return tier;
 	}
 	
 	@Override
@@ -97,15 +101,17 @@ public class BlockHullPlain extends Block implements IDamageReceiver {
 	}
 	
 	@Override
-	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos,
+	                       DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(blockPos);
 		} else {
-			world.setBlockState(blockPos, WarpDrive.blockHulls_plain[tier - 2]
-					.getDefaultState().withProperty(COLOR, blockState.getValue(COLOR)), 2);
+			world.setBlockState(blockPos, WarpDrive.blockHulls_plain[tier - 2][enumHullPlainType.ordinal()]
+			                              .getDefaultState()
+			                              .withProperty(BlockColored.COLOR, blockState.getValue(BlockColored.COLOR)), 2);
 		}
 		return 0;
 	}

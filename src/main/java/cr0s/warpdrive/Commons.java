@@ -4,6 +4,7 @@ import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -14,6 +15,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -28,12 +33,23 @@ import java.util.Set;
  */
 public class Commons {
 	
+	private static final String CHAR_FORMATTING = "" + (char)167;
+	
+	public static String updateEscapeCodes(final String message) {
+		return message
+		       .replace("§", CHAR_FORMATTING)
+		       .replace("\\n", "\n")
+		       .replace("|", "\n")
+		       .replace(CHAR_FORMATTING + "r", CHAR_FORMATTING + "7")
+		       .replaceAll("\u00A0", " ");  // u00A0 is 'NO-BREAK SPACE'
+	}
+	
 	public static void addChatMessage(final ICommandSender sender, final ITextComponent textComponent) {
 		if (sender == null) {
 			WarpDrive.logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
 			return;
 		}
-		String[] lines = textComponent.getFormattedText().replace("§", "" + (char)167).replace("\\n", "\n").replaceAll("\u00A0", " ").split("\n");
+		String[] lines = updateEscapeCodes(textComponent.getFormattedText()).split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new TextComponentString(line));
 		}
@@ -44,9 +60,7 @@ public class Commons {
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(List<String> list, String tooltip) {
-		final String charFormatting = "" + (char)167;
-		tooltip = tooltip.replace("§", charFormatting).replace("\\n", "\n").replace("|", "\n");
-		tooltip = tooltip.replace(charFormatting + "r", charFormatting + "7");
+		tooltip = updateEscapeCodes(tooltip);
 		
 		String[] split = tooltip.split("\n");
 		for (String line : split) {
@@ -163,7 +177,9 @@ public class Commons {
 	// searching methods
 	
 	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
-	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = {EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static final EnumFacing[] VERTICAL_DIRECTIONS = { EnumFacing.UP, EnumFacing.DOWN };
+	
 	public static Set<BlockPos> getConnectedBlocks(World world, final BlockPos start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
 	}
@@ -212,7 +228,7 @@ public class Commons {
 	}
 	
 	public static int toInt(Object object) {
-		return Commons.toInt(toDouble(object));
+		return toInt(toDouble(object));
 	}
 	
 	public static double toDouble(Object object) {
@@ -241,12 +257,34 @@ public class Commons {
 		return Math.min(max, Math.max(value, min));
 	}
 	
+	public static long clamp(final long min, final long max, final long value) {
+		return Math.min(max, Math.max(value, min));
+	}
+	
 	public static float clamp(final float min, final float max, final float value) {
 		return Math.min(max, Math.max(value, min));
 	}
 	
 	public static double clamp(final double min, final double max, final double value) {
 		return Math.min(max, Math.max(value, min));
+	}
+	
+	// clamping while keeping the sign
+	public static float clampMantisse(final float min, final float max, final float value) {
+		return Math.min(max, Math.max(Math.abs(value), min)) * Math.signum(value == 0.0F ? 1.0F : value);
+	}
+	
+	// clamping while keeping the sign
+	public static double clampMantisse(final double min, final double max, final double value) {
+		return Math.min(max, Math.max(Math.abs(value), min)) * Math.signum(value == 0.0D ? 1.0D : value);
+	}
+	
+	public static int randomRange(Random random, final int min, final int max) {
+		return min + ((max - min > 0) ? random.nextInt(max - min + 1) : 0);
+	}
+	
+	public static double randomRange(Random random, final double min, final double max) {
+		return min + ((max - min > 0) ? random.nextDouble() * (max - min) : 0);
 	}
 	
 	
@@ -275,5 +313,57 @@ public class Commons {
 	
 	private static double interpolate(final double xMin, final double yMin, final double xMax, final double yMax, final double x) {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
+	}
+	
+	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
+		if (entityLiving != null) {
+			int metadata;
+			if (entityLiving.rotationPitch > 65) {
+				metadata = 1;
+			} else if (entityLiving.rotationPitch < -65) {
+				metadata = 0;
+			} else {
+				int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+				switch (direction) {
+					case 0:
+						metadata = 2;
+						break;
+					case 1:
+						metadata = 5;
+						break;
+					case 2:
+						metadata = 3;
+						break;
+					case 3:
+						metadata = 4;
+						break;
+					default:
+						metadata = 2;
+						break;
+				}
+			}
+			return metadata;
+		}
+		return 0;
+	}
+	
+	// loosely inspired by crunchify
+	public static void dumpAllThreads() {
+		final StringBuilder stringBuilder = new StringBuilder();
+		final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+		final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 100);
+		for (ThreadInfo threadInfo : threadInfos) {
+			stringBuilder.append('"');
+			stringBuilder.append(threadInfo.getThreadName());
+			stringBuilder.append("\"\n\tjava.lang.Thread.State: ");
+			stringBuilder.append(threadInfo.getThreadState());
+			final StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();
+			for (final StackTraceElement stackTraceElement : stackTraceElements) {
+				stringBuilder.append("\n\t\tat ");
+				stringBuilder.append(stackTraceElement);
+			}
+			stringBuilder.append("\n\n");
+		}
+		WarpDrive.logger.error(stringBuilder.toString());
 	}
 }

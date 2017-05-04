@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 
 public abstract class BlockAbstractForceField extends BlockAbstractContainer {
+	
 	protected byte tier;
 	
 	BlockAbstractForceField(final String registryName, final byte tier, final Material material) {
@@ -39,7 +40,7 @@ public abstract class BlockAbstractForceField extends BlockAbstractContainer {
 	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
-		
+	
 	@Override
 	public void onEMP(World world, final BlockPos blockPos, final float efficiency) {
 		super.onEMP(world, blockPos, efficiency * (1.0F - 0.2F * (tier - 1)));

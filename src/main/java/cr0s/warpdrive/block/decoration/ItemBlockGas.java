@@ -17,7 +17,7 @@ public class ItemBlockGas extends ItemBlockAbstractBase {
 	public ItemBlockGas(Block block) {
 		super(block);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.passive.Gas");
+		setUnlocalizedName("warpdrive.decoration.gas");
 	}
 	
 	@Nonnull

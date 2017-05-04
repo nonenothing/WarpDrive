@@ -58,41 +58,41 @@ public class ItemEnergyWrapper {
 	public static int getEnergyStored(ItemStack itemStack) {
 		// IndustrialCraft2
 		if (WarpDriveConfig.isIndustrialCraft2Loaded && IC2_isContainer(itemStack)) {
-			double amount_EU = Commons.clamp(0, IC2_getMaxEnergyStorage(itemStack), IC2_getEnergyStored(itemStack));
-			return TileEntityAbstractEnergy.convertEUtoInternal_floor(amount_EU);
+			final double amount_EU = Commons.clamp(0, IC2_getMaxEnergyStorage(itemStack), IC2_getEnergyStored(itemStack));
+			return (int) TileEntityAbstractEnergy.convertEUtoInternal_floor(amount_EU);
 		}
 		
 		// Thermal Expansion
 		if (WarpDriveConfig.isCoFHCoreLoaded && CoFH_isContainer(itemStack)) {
-			int amount_RF = Commons.clamp(0, CoFH_getMaxEnergyStorage(itemStack), CoFH_getEnergyStored(itemStack));
-			return TileEntityAbstractEnergy.convertRFtoInternal_floor(amount_RF);
+			final int amount_RF = Commons.clamp(0, CoFH_getMaxEnergyStorage(itemStack), CoFH_getEnergyStored(itemStack));
+			return (int) TileEntityAbstractEnergy.convertRFtoInternal_floor(amount_RF);
 		}
 		return 0;
 	}
 	public static int getMaxEnergyStorage(ItemStack itemStack) {
 		// IndustrialCraft2
 		if (WarpDriveConfig.isIndustrialCraft2Loaded && IC2_isContainer(itemStack)) {
-			double amount_EU = IC2_getMaxEnergyStorage(itemStack);
-			return TileEntityAbstractEnergy.convertEUtoInternal_floor(amount_EU);
+			final double amount_EU = IC2_getMaxEnergyStorage(itemStack);
+			return (int) TileEntityAbstractEnergy.convertEUtoInternal_floor(amount_EU);
 		}
 		
 		// Thermal Expansion
 		if (WarpDriveConfig.isCoFHCoreLoaded && CoFH_isContainer(itemStack)) {
-			int amount_RF = CoFH_getMaxEnergyStorage(itemStack);
-			return TileEntityAbstractEnergy.convertRFtoInternal_floor(amount_RF);
+			final int amount_RF = CoFH_getMaxEnergyStorage(itemStack);
+			return (int) TileEntityAbstractEnergy.convertRFtoInternal_floor(amount_RF);
 		}
 		return 0;
 	}
 	public static ItemStack consume(ItemStack itemStack, final int amount, final boolean simulate) {
 		// IndustrialCraft2
 		if (WarpDriveConfig.isIndustrialCraft2Loaded && IC2_isContainer(itemStack)) {
-			double amount_EU = TileEntityAbstractEnergy.convertInternalToEU_ceil(amount);
+			final double amount_EU = TileEntityAbstractEnergy.convertInternalToEU_ceil(amount);
 			return IC2_consume(itemStack, amount_EU, simulate);
 		}
 		
 		// Thermal Expansion
 		if (WarpDriveConfig.isCoFHCoreLoaded && CoFH_isContainer(itemStack)) {
-			int amount_RF = TileEntityAbstractEnergy.convertInternalToRF_ceil(amount);
+			final int amount_RF = TileEntityAbstractEnergy.convertInternalToRF_ceil(amount);
 			return CoFH_consume(itemStack, amount_RF, simulate);
 		}
 		return null;
@@ -100,13 +100,13 @@ public class ItemEnergyWrapper {
 	public static ItemStack charge(ItemStack itemStack, final int amount, final boolean simulate) {
 		// IndustrialCraft2
 		if (WarpDriveConfig.isIndustrialCraft2Loaded && IC2_isContainer(itemStack)) {
-			double amount_EU = TileEntityAbstractEnergy.convertInternalToEU_floor(amount);
+			final double amount_EU = TileEntityAbstractEnergy.convertInternalToEU_floor(amount);
 			return IC2_charge(itemStack, amount_EU, simulate);
 		}
 		
 		// Thermal Expansion
 		if (WarpDriveConfig.isCoFHCoreLoaded && CoFH_isContainer(itemStack)) {
-			int amount_RF = TileEntityAbstractEnergy.convertInternalToRF_floor(amount);
+			final int amount_RF = TileEntityAbstractEnergy.convertInternalToRF_floor(amount);
 			return CoFH_charge(itemStack, amount_RF, simulate);
 		}
 		return null;
@@ -115,7 +115,7 @@ public class ItemEnergyWrapper {
 	// IndustrialCraft IElectricItem interface
 	@Optional.Method(modid = "IC2")
 	private static IElectricItemManager IC2_getManager(ItemStack itemStack) {
-		Item item = itemStack.getItem();
+		final Item item = itemStack.getItem();
 		if (item == null) {
 			return null;
 		}

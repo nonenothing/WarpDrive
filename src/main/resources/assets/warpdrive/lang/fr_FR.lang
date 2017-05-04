@@ -154,19 +154,18 @@ item.warpdrive.tool.tuning_fork.black.name=Diapason noir
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bCliques droit sur un block§r pour ajuster ses cristaux\n§bAccroupi§r pour ajuster les cristaux alternatifs
 
 
-tile.warpdrive.passive.Air.name=Bloc d'air
-tile.warpdrive.passive.Decorative.energized.name=Block energisé
-tile.warpdrive.passive.Decorative.network.name=Bloc de réseau
-tile.warpdrive.passive.Decorative.plain.name=Bloc ordinaire
-tile.warpdrive.passive.Gas.name=Bloc de gaz
+tile.warpdrive.decoration.decorative.energized.name=Block energisé
+tile.warpdrive.decoration.decorative.network.name=Bloc de réseau
+tile.warpdrive.decoration.decorative.plain.name=Bloc ordinaire
+tile.warpdrive.decoration.gas.name=Bloc de gaz
+tile.warpdrive.decoration.lamp_bubble.name=Lampe bulle
+tile.warpdrive.decoration.lamp_flat.name=Lampe plate
+tile.warpdrive.decoration.lamp_long.name=Lamp allongée
+
 tile.warpdrive.passive.IridiumBlock.name=Bloc d'iridium
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Bloc de machine hyper avancé
-tile.warpdrive.passive.lamp_bubble.name=Lampe bulle
-tile.warpdrive.passive.lamp_flat.name=Lampe plate
-tile.warpdrive.passive.lamp_long.name=Lamp allongée
 tile.warpdrive.passive.TransportBeacon.name=Balise de transport
 
-tile.warpdrive.machines.AirGenerator.name=Générateur d'air
 tile.warpdrive.machines.ChunkLoader.name=Chargeur de chunk
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Milieu amplificateur
@@ -201,6 +200,13 @@ tile.warpdrive.atomic.void_shell_plain.name=Coquille sous vide
 tile.warpdrive.atomic.void_shell_plain.tooltip=Fournit 2 canaux de parcours des particules dans un accélérateur.\nSe connecte uniquement horizontalement avec d'autres Coquille sous vide.
 tile.warpdrive.atomic.void_shell_glass.name=Vitre de coquille sous vide
 tile.warpdrive.atomic.void_shell_glass.tooltip=Variante transparente de la Coquille sous vide permettant de voir les particules en mouvement.
+
+tile.warpdrive.breathing.air.name=Bloc d'air
+tile.warpdrive.breathing.air_generator.name=Générateur d'air
+tile.warpdrive.breathing.air_generator1.name=Générateur d'air élémentaire
+tile.warpdrive.breathing.air_generator2.name=Générateur d'air avancé
+tile.warpdrive.breathing.air_generator3.name=Générateur d'air supérieur
+tile.warpdrive.breathing.air_shield.name=Bouclier d'air d'énergie
 
 tile.warpdrive.building.ShipScanner.name=Scanneur de vaisseau
 
@@ -299,6 +305,40 @@ tile.warpdrive.hull1.glass.green.name=Vitre de coque élémentaire verte
 tile.warpdrive.hull1.glass.red.name=Vitre de coque élémentaire rouge
 tile.warpdrive.hull1.glass.black.name=Vitre de coque élémentaire noire
 
+tile.warpdrive.hull1.omnipanel.white.name=Omnipanneau de coque élémentaire blanche
+tile.warpdrive.hull1.omnipanel.orange.name=Omnipanneau de coque élémentaire orange
+tile.warpdrive.hull1.omnipanel.magenta.name=Omnipanneau de coque élémentaire magenta
+tile.warpdrive.hull1.omnipanel.lightBlue.name=Omnipanneau de coque élémentaire bleu claire
+tile.warpdrive.hull1.omnipanel.yellow.name=Omnipanneau de coque élémentaire jaune
+tile.warpdrive.hull1.omnipanel.lime.name=Omnipanneau de coque élémentaire citron vert
+tile.warpdrive.hull1.omnipanel.pink.name=Omnipanneau de coque élémentaire rose
+tile.warpdrive.hull1.omnipanel.gray.name=Omnipanneau de coque élémentaire grise
+tile.warpdrive.hull1.omnipanel.silver.name=Omnipanneau de coque élémentaire argentée
+tile.warpdrive.hull1.omnipanel.cyan.name=Omnipanneau de coque élémentaire cyan
+tile.warpdrive.hull1.omnipanel.purple.name=Omnipanneau de coque élémentaire violette
+tile.warpdrive.hull1.omnipanel.blue.name=Omnipanneau de coque élémentaire bleue
+tile.warpdrive.hull1.omnipanel.brown.name=Omnipanneau de coque élémentaire marron
+tile.warpdrive.hull1.omnipanel.green.name=Omnipanneau de coque élémentaire verte
+tile.warpdrive.hull1.omnipanel.red.name=Omnipanneau de coque élémentaire rouge
+tile.warpdrive.hull1.omnipanel.black.name=Omnipanneau de coque élémentaire noire
+
+tile.warpdrive.hull1.slab.white.name=Dalle de coque élémentaire blanche
+tile.warpdrive.hull1.slab.orange.name=Dalle de coque élémentaire orange
+tile.warpdrive.hull1.slab.magenta.name=Dalle de coque élémentaire magenta
+tile.warpdrive.hull1.slab.lightBlue.name=Dalle de coque élémentaire bleu claire
+tile.warpdrive.hull1.slab.yellow.name=Dalle de coque élémentaire jaune
+tile.warpdrive.hull1.slab.lime.name=Dalle de coque élémentaire citron vert
+tile.warpdrive.hull1.slab.pink.name=Dalle de coque élémentaire rose
+tile.warpdrive.hull1.slab.gray.name=Dalle de coque élémentaire grise
+tile.warpdrive.hull1.slab.silver.name=Dalle de coque élémentaire argentée
+tile.warpdrive.hull1.slab.cyan.name=Dalle de coque élémentaire cyan
+tile.warpdrive.hull1.slab.purple.name=Dalle de coque élémentaire violette
+tile.warpdrive.hull1.slab.blue.name=Dalle de coque élémentaire bleue
+tile.warpdrive.hull1.slab.brown.name=Dalle de coque élémentaire marron
+tile.warpdrive.hull1.slab.green.name=Dalle de coque élémentaire verte
+tile.warpdrive.hull1.slab.red.name=Dalle de coque élémentaire rouge
+tile.warpdrive.hull1.slab.black.name=Dalle de coque élémentaire noire
+
 tile.warpdrive.hull1.stairs.white.name=Escalier de coque élémentaire blanche
 tile.warpdrive.hull1.stairs.orange.name=Escalier de coque élémentaire orange
 tile.warpdrive.hull1.stairs.magenta.name=Escalier de coque élémentaire magenta
@@ -315,6 +355,7 @@ tile.warpdrive.hull1.stairs.brown.name=Escalier de coque élémentaire marron
 tile.warpdrive.hull1.stairs.green.name=Escalier de coque élémentaire verte
 tile.warpdrive.hull1.stairs.red.name=Escalier de coque élémentaire rouge
 tile.warpdrive.hull1.stairs.black.name=Escalier de coque élémentaire noire
+
 
 tile.warpdrive.hull2.plain.white.name=Coque avancée blanche
 tile.warpdrive.hull2.plain.orange.name=Coque avancée orange
@@ -350,6 +391,40 @@ tile.warpdrive.hull2.glass.green.name=Vitre de coque avancée verte
 tile.warpdrive.hull2.glass.red.name=Vitre de coque avancée rouge
 tile.warpdrive.hull2.glass.black.name=Vitre de coque avancée noire
 
+tile.warpdrive.hull2.omnipanel.white.name=Omnipanneau de coque avancée blanche
+tile.warpdrive.hull2.omnipanel.orange.name=Omnipanneau de coque avancée orange
+tile.warpdrive.hull2.omnipanel.magenta.name=Omnipanneau de coque avancée magenta
+tile.warpdrive.hull2.omnipanel.lightBlue.name=Omnipanneau de coque avancée bleu claire
+tile.warpdrive.hull2.omnipanel.yellow.name=Omnipanneau de coque avancée jaune
+tile.warpdrive.hull2.omnipanel.lime.name=Omnipanneau de coque avancée citron vert
+tile.warpdrive.hull2.omnipanel.pink.name=Omnipanneau de coque avancée rose
+tile.warpdrive.hull2.omnipanel.gray.name=Omnipanneau de coque avancée grise
+tile.warpdrive.hull2.omnipanel.silver.name=Omnipanneau de coque avancée argentée
+tile.warpdrive.hull2.omnipanel.cyan.name=Omnipanneau de coque avancée cyan
+tile.warpdrive.hull2.omnipanel.purple.name=Omnipanneau de coque avancée violette
+tile.warpdrive.hull2.omnipanel.blue.name=Omnipanneau de coque avancée bleue
+tile.warpdrive.hull2.omnipanel.brown.name=Omnipanneau de coque avancée marron
+tile.warpdrive.hull2.omnipanel.green.name=Omnipanneau de coque avancée verte
+tile.warpdrive.hull2.omnipanel.red.name=Omnipanneau de coque avancée rouge
+tile.warpdrive.hull2.omnipanel.black.name=Omnipanneau de coque avancée noire
+
+tile.warpdrive.hull2.slab.white.name=Dalle de coque avancée blanche
+tile.warpdrive.hull2.slab.orange.name=Dalle de coque avancée orange
+tile.warpdrive.hull2.slab.magenta.name=Dalle de coque avancée magenta
+tile.warpdrive.hull2.slab.lightBlue.name=Dalle de coque avancée bleu claire
+tile.warpdrive.hull2.slab.yellow.name=Dalle de coque avancée jaune
+tile.warpdrive.hull2.slab.lime.name=Dalle de coque avancée citron vert
+tile.warpdrive.hull2.slab.pink.name=Dalle de coque avancée rose
+tile.warpdrive.hull2.slab.gray.name=Dalle de coque avancée grise
+tile.warpdrive.hull2.slab.silver.name=Dalle de coque avancée argentée
+tile.warpdrive.hull2.slab.cyan.name=Dalle de coque avancée cyan
+tile.warpdrive.hull2.slab.purple.name=Dalle de coque avancée violette
+tile.warpdrive.hull2.slab.blue.name=Dalle de coque avancée bleue
+tile.warpdrive.hull2.slab.brown.name=Dalle de coque avancée marron
+tile.warpdrive.hull2.slab.green.name=Dalle de coque avancée verte
+tile.warpdrive.hull2.slab.red.name=Dalle de coque avancée rouge
+tile.warpdrive.hull2.slab.black.name=Dalle de coque avancée noire
+
 tile.warpdrive.hull2.stairs.white.name=Escalier de coque avancée blanche
 tile.warpdrive.hull2.stairs.orange.name=Escalier de coque avancée orange
 tile.warpdrive.hull2.stairs.magenta.name=Escalier de coque avancée magenta
@@ -366,6 +441,7 @@ tile.warpdrive.hull2.stairs.brown.name=Escalier de coque avancée marron
 tile.warpdrive.hull2.stairs.green.name=Escalier de coque avancée verte
 tile.warpdrive.hull2.stairs.red.name=Escalier de coque avancée rouge
 tile.warpdrive.hull2.stairs.black.name=Escalier de coque avancée noire
+
 
 tile.warpdrive.hull3.plain.white.name=Coque supérieure blanche
 tile.warpdrive.hull3.plain.orange.name=Coque supérieure orange
@@ -400,6 +476,40 @@ tile.warpdrive.hull3.glass.brown.name=Vitre de coque supérieure marron
 tile.warpdrive.hull3.glass.green.name=Vitre de coque supérieure verte
 tile.warpdrive.hull3.glass.red.name=Vitre de coque supérieure rouge
 tile.warpdrive.hull3.glass.black.name=Vitre de coque supérieure noire
+
+tile.warpdrive.hull3.omnipanel.white.name=Omnipanneau de coque supérieure blanche
+tile.warpdrive.hull3.omnipanel.orange.name=Omnipanneau de coque supérieure orange
+tile.warpdrive.hull3.omnipanel.magenta.name=Omnipanneau de coque supérieure magenta
+tile.warpdrive.hull3.omnipanel.lightBlue.name=Omnipanneau de coque supérieure bleu claire
+tile.warpdrive.hull3.omnipanel.yellow.name=Omnipanneau de coque supérieure jaune
+tile.warpdrive.hull3.omnipanel.lime.name=Omnipanneau de coque supérieure citron vert
+tile.warpdrive.hull3.omnipanel.pink.name=Omnipanneau de coque supérieure rose
+tile.warpdrive.hull3.omnipanel.gray.name=Omnipanneau de coque supérieure grise
+tile.warpdrive.hull3.omnipanel.silver.name=Omnipanneau de coque supérieure argentée
+tile.warpdrive.hull3.omnipanel.cyan.name=Omnipanneau de coque supérieure cyan
+tile.warpdrive.hull3.omnipanel.purple.name=Omnipanneau de coque supérieure violette
+tile.warpdrive.hull3.omnipanel.blue.name=Omnipanneau de coque supérieure bleue
+tile.warpdrive.hull3.omnipanel.brown.name=Omnipanneau de coque supérieure marron
+tile.warpdrive.hull3.omnipanel.green.name=Omnipanneau de coque supérieure verte
+tile.warpdrive.hull3.omnipanel.red.name=Omnipanneau de coque supérieure rouge
+tile.warpdrive.hull3.omnipanel.black.name=Omnipanneau de coque supérieure noire
+
+tile.warpdrive.hull3.slab.white.name=Dalle de coque supérieure blanche
+tile.warpdrive.hull3.slab.orange.name=Dalle de coque supérieure orange
+tile.warpdrive.hull3.slab.magenta.name=Dalle de coque supérieure magenta
+tile.warpdrive.hull3.slab.lightBlue.name=Dalle de coque supérieure bleu claire
+tile.warpdrive.hull3.slab.yellow.name=Dalle de coque supérieure jaune
+tile.warpdrive.hull3.slab.lime.name=Dalle de coque supérieure citron vert
+tile.warpdrive.hull3.slab.pink.name=Dalle de coque supérieure rose
+tile.warpdrive.hull3.slab.gray.name=Dalle de coque supérieure grise
+tile.warpdrive.hull3.slab.silver.name=Dalle de coque supérieure argentée
+tile.warpdrive.hull3.slab.cyan.name=Dalle de coque supérieure cyan
+tile.warpdrive.hull3.slab.purple.name=Dalle de coque supérieure violette
+tile.warpdrive.hull3.slab.blue.name=Dalle de coque supérieure bleue
+tile.warpdrive.hull3.slab.brown.name=Dalle de coque supérieure marron
+tile.warpdrive.hull3.slab.green.name=Dalle de coque supérieure verte
+tile.warpdrive.hull3.slab.red.name=Dalle de coque supérieure rouge
+tile.warpdrive.hull3.slab.black.name=Dalle de coque supérieure noire
 
 tile.warpdrive.hull3.stairs.white.name=Escalier de coque supérieure blanche
 tile.warpdrive.hull3.stairs.orange.name=Escalier de coque supérieure orange
@@ -444,6 +554,11 @@ warpdrive.beam_frequency.set=%1$s est désormais accordé à la Fréquence de fa
 warpdrive.beam_frequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
 warpdrive.beam_frequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
 warpdrive.beam_frequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
+
+warpdrive.breathing.alarm=Alarme de respiration
+warpdrive.breathing.invalid_setup=Pas de casque respiratoire\nou armure incomplète
+warpdrive.breathing.low_reserve=Réserve d'air faible!
+warpdrive.breathing.no_air=Réserve d'air épuisée!
 
 warpdrive.control_channel.tooltip=Canal de contrôle ajusté à %1$d
 warpdrive.control_channel.get=Le canal de contrôle %2$d a été récupéré de %1$s 

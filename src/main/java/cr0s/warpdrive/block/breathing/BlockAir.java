@@ -4,110 +4,37 @@ import cr0s.warpdrive.WarpDrive;
 
 import java.util.Random;
 
-import cr0s.warpdrive.block.BlockAbstractBase;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.EnumPushReaction;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-public class BlockAir extends BlockAbstractBase {
-	private static final boolean TRANSPARENT_AIR = true;
-	private static final boolean AIR_DEBUG = false;
+public class BlockAir extends BlockAbstractAir {
+	
 	private static final int AIR_BLOCK_TICKS = 40;
 	
 	public BlockAir(final String registryName) {
-		super(registryName, Material.FIRE);
-		setHardness(0.0F);
-		setUnlocalizedName("warpdrive.passive.Air");
+		super(registryName);
 	}
 	
 	@Override
-	public boolean isVisuallyOpaque() {
-		return false;
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Override
-	public boolean isOpaqueCube(IBlockState state) {
-		return false;
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public boolean isFullyOpaque(IBlockState state) {
-		return false;
-	}
-	
-	@Override
-	public boolean isAir(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
-		return true;
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nullable
-	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
-		return null;
-	}
-
-	@Override
-	public boolean isReplaceable(IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
-		return true;
-	}
-	
-	@Override
-	public boolean canPlaceBlockAt(World world, @Nonnull BlockPos blockPos) {
-		return true;
-	}
-
-	@Override
-	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
-		return false;
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nonnull
-	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
-		return EnumPushReaction.DESTROY;
-	}
-
-	@Nullable
-	@Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-		return null;
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 0;
-	}
-	
-	@Override
-	public int tickRate(World par1World) {
+	public int tickRate(World world) {
 		return AIR_BLOCK_TICKS;
 	}
 	
+	// profiling as of WWM9 spawn with 1.3.30
+	// 2.74% updateTick including 1.37% scheduleBlockUpdate (50%) + 1.23% spreadAirBlock (45%)
+	// 1.23% spreadAirBlock including 0.36% getAirBlock + 0.33% getBlock + 0.13% getBlockMetadata
 	@Override
 	public void updateTick(World world, BlockPos blockPos, IBlockState blockState, Random random) {
 		if (world.isRemote) {
 			return;
 		}
 		
-		int concentration = blockState.getBlock().getMetaFromState(blockState);
-		boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ());
+		final int concentration = blockState.getBlock().getMetaFromState(blockState);
+		final boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ());
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || hasAtmosphere) {
@@ -119,18 +46,6 @@ public class BlockAir extends BlockAbstractBase {
 		world.scheduleBlockUpdate(blockPos, this, 30 + 2 * concentration, 0);
 	}
 	
-	@SuppressWarnings("deprecation")
-	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
-		if (AIR_DEBUG) {
-			return facing == EnumFacing.DOWN || facing == EnumFacing.UP;
-		}
-
-		BlockPos blockPosSide = blockPos.offset(facing);
-		Block sideBlock = blockAccess.getBlockState(blockPosSide).getBlock();
-		return sideBlock != this && blockAccess.isAirBlock(blockPosSide);
-	}
-	
 	private void spreadAirBlock(World world, final BlockPos blockPos, final int concentration) {
 		/* @TODO MC1.10 air overhaul
 		int air_count = 1;
@@ -139,7 +54,7 @@ public class BlockAir extends BlockAbstractBase {
 		int max_concentration = concentration + 1;
 		int min_concentration = concentration + 1;
 		
-		// Check air in adjacent blocks
+		// check air in adjacent blocks
 		Block xp_block = world.getBlock(x + 1, y, z);
 		boolean xp_isAir = world.isAirBlock(x + 1, y, z);
 		int xp_concentration = (xp_block != this) ? -1 : world.getBlockMetadata(x + 1, y, z);
@@ -234,7 +149,8 @@ public class BlockAir extends BlockAbstractBase {
 		// compute new concentration, buffing closed space
 		int mid_concentration;
 		int new_concentration;
-		boolean isGrowth = (max_concentration > 8 && (max_concentration - min_concentration < 9)) || (max_concentration > 5 && (max_concentration - min_concentration < 4));
+		final boolean isGrowth = (max_concentration > 8 && (max_concentration - min_concentration < 9))
+		                      || (max_concentration > 5 && (max_concentration - min_concentration < 4));
 		if (isGrowth) {
 			mid_concentration = Math.round(sum_concentration / (float)air_count) - 1;
 			new_concentration = sum_concentration - mid_concentration * (air_count - 1);
@@ -353,11 +269,6 @@ public class BlockAir extends BlockAbstractBase {
 			}
 		}
 		/**/
-	}
-	
-	@Override
-	public boolean isCollidable() {
-		return false;
 	}
 	
 	@Override

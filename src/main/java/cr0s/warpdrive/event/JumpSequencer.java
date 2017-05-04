@@ -54,6 +54,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 
 public class JumpSequencer extends AbstractSequencer {
+	
 	// Jump vector
 	private Transformation transformation;
 	
@@ -72,17 +73,17 @@ public class JumpSequencer extends AbstractSequencer {
 	private float collisionStrength = 0;
 	
 	private boolean isEnabled = false;
-	private final static int STATE_IDLE = 0;
-	private final static int STATE_CHUNKLOADING = 1;
-	private final static int STATE_SAVING = 2;
-	private final static int STATE_BORDERS = 3;
-	private final static int STATE_TRANSFORMER = 4;
-	private final static int STATE_BLOCKS = 5;
-	private final static int STATE_EXTERNALS = 6;
-	private final static int STATE_ENTITIES = 7;
-	private final static int STATE_REMOVING = 8;
-	private final static int STATE_CHUNKUNLOADING = 9;
-	private final static int STATE_FINISHING = 10;
+	private static final int STATE_IDLE = 0;
+	private static final int STATE_CHUNKLOADING = 1;
+	private static final int STATE_SAVING = 2;
+	private static final int STATE_BORDERS = 3;
+	private static final int STATE_TRANSFORMER = 4;
+	private static final int STATE_BLOCKS = 5;
+	private static final int STATE_EXTERNALS = 6;
+	private static final int STATE_ENTITIES = 7;
+	private static final int STATE_REMOVING = 8;
+	private static final int STATE_CHUNKUNLOADING = 9;
+	private static final int STATE_FINISHING = 10;
 	private int state = STATE_IDLE;
 	private int actualIndexInShip = 0;
 	
@@ -1001,9 +1002,7 @@ public class JumpSequencer extends AbstractSequencer {
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Jump done in " + ((System.currentTimeMillis() - msCounter) / 1000F) + " seconds and " + ticks + " ticks");
 		}
-		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Removing TE duplicates: tileEntities in target world after jump, before cleanup: " + targetWorld.loadedTileEntityList.size());
-		}
+		final int countBefore = targetWorld.loadedTileEntityList.size();
 		
 		try {
 			// @TODO MC1.10 still leaking tile entities?
@@ -1018,8 +1017,10 @@ public class JumpSequencer extends AbstractSequencer {
 		doCollisionDamage(true);
 		
 		disable(new TextComponentString("Jump done"));
-		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Removing TE duplicates: tileEntities in target world after jump, after cleanup: " + targetWorld.loadedTileEntityList.size());
+		final int countAfter = targetWorld.loadedTileEntityList.size();
+		if (WarpDriveConfig.LOGGING_JUMP && countBefore != countAfter) {
+			WarpDrive.logger.info(String.format("Removing TE duplicates: tileEntities in target world after jump, cleanup %d -> %d",
+			                      countBefore, countAfter));
 		}
 		LocalProfiler.stop();
 	}
@@ -1309,7 +1310,7 @@ public class JumpSequencer extends AbstractSequencer {
 			@Override
 			public int compare(TileEntity o1, TileEntity o2) {
 				if (o1.getPos().getX() == o2.getPos().getX() && o1.getPos().getY() == o2.getPos().getY() && o1.getPos().getZ() == o2.getPos().getZ()) {
-					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
+					if (WarpDriveConfig.LOGGING_JUMP) {
 						WarpDrive.logger.info("Removed duplicated TE: " + o1 + " vs " + o2);
 					}
 					return 0;

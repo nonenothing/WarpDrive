@@ -8,8 +8,8 @@ import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
 
 import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -51,8 +51,8 @@ public class TrajectoryPoint extends VectorI {
 	public static final int ERROR_MISSING_MAIN_MAGNET    = 0x00080000;   // missing main magnets at control point
 	public static final int ERROR_MISSING_CORNER_MAGNET  = 0x00100000;   // missing corner magnets at control point
 	public static final int ERROR_MISSING_COLLIDER       = 0x00200000;
-	public static final int ERROR_MISSING_VOID_SHELL     = 0x00400000;   // too many void shells
-	public static final int ERROR_TOO_MANY_VOID_SHELLS   = 0x00800000;   // not enough void shells
+	public static final int ERROR_MISSING_VOID_SHELL     = 0x00400000;
+	public static final int ERROR_TOO_MANY_VOID_SHELLS   = 0x00800000;
 	// public static final int ERROR_OUT_OF_RANGE        = 0x01000000;
 	// public static final int ERROR_TBD2                = 0x02000000;
 	// public static final int ERROR_TBD4                = 0x04000000;
@@ -152,13 +152,21 @@ public class TrajectoryPoint extends VectorI {
 		int new_controlChannel = -1;
 		if (isShellValid) {
 			for (EnumFacing direction : EnumFacing.VALUES) {
-				Block block = world.getBlockState(blockPos.offset(direction, 2)).getBlock();
-				if (block instanceof BlockAcceleratorControlPoint && !(block instanceof BlockParticlesInjector)) {
-					if ((typeNew & MASK_MAGNETS_BOTH) == 0) {
-						typeNew |= ERROR_MISSING_MAIN_MAGNET;
-					} else {
-						new_vControlPoint = new VectorI(blockPos.offset(direction, 2));
-						new_controlChannel = ((TileEntityAcceleratorControlPoint) new_vControlPoint.getTileEntity(world)).getControlChannel();
+				final BlockPos blockPosOffset = blockPos.offset(direction, 2);
+				final Block block = world.getBlockState(blockPosOffset).getBlock();
+				
+				if ( block instanceof BlockAcceleratorControlPoint
+				  && !(block instanceof BlockParticlesInjector) ) {
+					TileEntity tileEntity = world.getTileEntity(blockPosOffset);
+					
+					if ( tileEntity instanceof TileEntityAcceleratorControlPoint
+					  && ((TileEntityAcceleratorControlPoint) tileEntity).getIsEnabled()) {
+						if ((typeNew & MASK_MAGNETS_BOTH) == 0) {
+							typeNew |= ERROR_MISSING_MAIN_MAGNET;
+						} else {
+							new_vControlPoint = new VectorI(blockPos.offset(direction, 2));
+							new_controlChannel = ((TileEntityAcceleratorControlPoint) new_vControlPoint.getTileEntity(world)).getControlChannel();
+						}
 					}
 					break;
 				}
@@ -366,6 +374,10 @@ public class TrajectoryPoint extends VectorI {
 	}
 	
 	public int getTier() {
+		return getTier(type);
+	}
+	
+	public static int getTier(final int type) {
 		switch (type & MASK_TIERS) {
 		case TIER_NORMAL: return 1;
 		case TIER_ADVANCED: return 2;
@@ -388,7 +400,19 @@ public class TrajectoryPoint extends VectorI {
 	}
 	
 	public boolean isCollider() {
+		return isCollider(type);
+	}
+	
+	public static boolean isCollider(final int type) {
 		return (type & IS_COLLIDER) != 0;
+	}
+	
+	public static boolean isInput(final int type) {
+		return (type & MASK_IS_INPUT) != 0;
+	}
+	
+	public static boolean isOutput(final int type) {
+		return (type & MASK_IS_OUTPUT) != 0;
 	}
 	
 	public Vector3 getJunctionOut(final EnumFacing directionCurrent) {

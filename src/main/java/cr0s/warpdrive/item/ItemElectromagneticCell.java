@@ -85,7 +85,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000));
-		// list.add(getItemStackNoCache(ParticleRegistry.TACHYONS, 100));
+		// list.add(getItemStackNoCache(ParticleRegistry.TACHYONS, 1000));
 	}
 	
 	@Override

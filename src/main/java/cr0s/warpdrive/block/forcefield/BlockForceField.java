@@ -48,7 +48,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockForceField extends BlockAbstractForceField implements IDamageReceiver {
+	
 	private static final float BOUNDING_TOLERANCE = 0.05F;
+	private static final AxisAlignedBB AABB_FORCEFIELD = new AxisAlignedBB(
+			BOUNDING_TOLERANCE, BOUNDING_TOLERANCE, BOUNDING_TOLERANCE,
+		    1 - BOUNDING_TOLERANCE, 1 - BOUNDING_TOLERANCE, 1 - BOUNDING_TOLERANCE);
+	
 	public static final PropertyInteger FREQUENCY = PropertyInteger.create("frequency", 0, 15);
 	
 	public BlockForceField(final String registryName, final byte tier) {
@@ -114,7 +119,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}
-
+	
 	@Nonnull
 	@Override
 	public ItemStack getPickBlock(@Nonnull IBlockState blockState, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
@@ -130,7 +135,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
 		// @TODO: Hide in NEI
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < 16; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
@@ -142,6 +147,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@SuppressWarnings("deprecation")
+	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
 		BlockPos blockPosSide = blockPos.offset(facing);
@@ -182,7 +188,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			forceFieldSetup.onEntityEffect(world, blockPos, entityPlayer);
 		}
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
@@ -191,7 +197,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		if (forceFieldSetup != null) {
 			List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
 				blockPos.getX(), blockPos.getY(), blockPos.getZ(),
-				blockPos.getX() + 1.0D, blockPos.getY() + 0.9D, blockPos.getZ() + 1.0D));
+				blockPos.getX() + 1.0D, blockPos.getY() + 1.0D, blockPos.getZ() + 1.0D));
 			
 			for (EntityPlayer entityPlayer : entities) {
 				if (entityPlayer != null && entityPlayer.isSneaking()) {
@@ -203,9 +209,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			}
 		}
 		
-		return new AxisAlignedBB(blockPos).expand(-BOUNDING_TOLERANCE, -BOUNDING_TOLERANCE, -BOUNDING_TOLERANCE);
+		return AABB_FORCEFIELD;
 	}
-
+	
 	@Override
 	public void onEntityCollidedWithBlock(World world, BlockPos blockPos, IBlockState blockState, Entity entity) {
 		if (world.isRemote) {
@@ -256,7 +262,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return super.colorMultiplier(blockAccess, blockPos);
 	}
 	/**/
-
+	
 	@Override
 	public int getLightValue(@Nonnull IBlockState blockState, IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
 		TileEntity tileEntity = blockAccess.getTileEntity(blockPos);

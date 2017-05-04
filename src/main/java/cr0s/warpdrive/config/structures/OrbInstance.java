@@ -1,5 +1,6 @@
 package cr0s.warpdrive.config.structures;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.world.EntitySphereGen;
@@ -12,7 +13,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class OrbInstance extends AbstractInstance {
+public class OrbInstance extends AbstractStructureInstance {
 	protected OrbShell[] orbShells;
 	protected int[] orbShellThicknesses;
 	protected int totalThickness;
@@ -33,7 +34,7 @@ public class OrbInstance extends AbstractInstance {
 			OrbShell orbShell = orb.orbShells[orbShellIndexIn].instantiate(random);
 			if (orbShell != null) {
 				orbShells[orbShellIndexOut] = orbShell;
-				int thickness = randomRange(random, orbShell.minThickness, orbShell.maxThickness);
+				int thickness = Commons.randomRange(random, orbShell.minThickness, orbShell.maxThickness);
 				orbShellThicknesses[orbShellIndexOut] = thickness;
 				totalThickness += thickness;
 				minThickness += orbShell.minThickness;

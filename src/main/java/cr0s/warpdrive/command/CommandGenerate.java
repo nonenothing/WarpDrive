@@ -2,11 +2,9 @@ package cr0s.warpdrive.command;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.world.JumpgateGenerator;
-import cr0s.warpdrive.world.SpaceWorldGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
 import cr0s.warpdrive.world.WorldGenStation;
 import mcp.MethodsReturnNonnullByDefault;
@@ -88,11 +86,10 @@ public class CommandGenerate extends CommandBase {
 					generateStructure(commandSender, StructureManager.GROUP_ASTEROIDS, name, world, blockPos);
 					break;
 				case "astfield":
-					WarpDrive.logger.info("/generate: generating asteroid field at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
-					SpaceWorldGenerator.generateAsteroidField(world, blockPos);
+					generateStructure(commandSender, StructureManager.GROUP_ASTEROIDS_FIELDS, name, world, blockPos);
 					break;
 				case "gascloud":
-					generateStructure(commandSender, StructureManager.GROUP_GASCLOUDS, name, world, blockPos);
+					generateStructure(commandSender, StructureManager.GROUP_GAS_CLOUDS, name, world, blockPos);
 					break;
 				case "moon":
 					blockPos = new BlockPos(blockPos.getX(), blockPos.getY() - 16, blockPos.getZ());

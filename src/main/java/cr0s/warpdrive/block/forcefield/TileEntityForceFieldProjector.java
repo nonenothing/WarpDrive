@@ -64,7 +64,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private static final int PROJECTOR_SETUP_TICKS = 20;
 	private static final int PROJECTOR_SOUND_UPDATE_TICKS = 60;
 	private static final int PROJECTOR_GUIDE_UPDATE_TICKS = 300;
-	private int maxEnergyStored;
 	
 	// persistent properties
 	public boolean isDoubleSided;
@@ -79,6 +78,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	private boolean legacy_isOn = false;
 	
 	// computed properties
+	private int maxEnergyStored;
 	private int cooldownTicks;
 	private int setupTicks;
 	private int updateTicks;

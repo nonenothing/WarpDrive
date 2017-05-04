@@ -137,3 +137,11 @@ idea {
         inheritOutputDirs = true
     }
 }
+
+runClient {
+    jvmArgs "-Xmx2048m", "-Xms2048m"
+}
+
+runServer {
+    jvmArgs "-Xmx2048m", "-Xms2048m"
+}

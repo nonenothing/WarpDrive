@@ -4,6 +4,7 @@ package cr0s.warpdrive.compat;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
+import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import net.minecraft.block.Block;
@@ -19,7 +20,8 @@ public class CompatWarpDrive implements IBlockTransformer {
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		return tileEntity instanceof TileEntityEnergyBank;
+		return block instanceof BlockHullSlab
+		    || tileEntity instanceof TileEntityEnergyBank;
 	}
 	
 	@Override
@@ -38,20 +40,21 @@ public class CompatWarpDrive implements IBlockTransformer {
 		// nothing to do
 	}
 	
-	private static final short[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+	private static final short[] mrotDirection = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+	private static final short[] mrotHullSlab  = {  0,  1,  5,  4,  2,  3,  6,  7, 11, 10,  8,  9, 12, 13, 15, 14 };
 	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
 		byte[] newData = data.clone();
 		for (int index = 0; index < data.length; index++) {
 			switch (rotationSteps) {
 			case 1:
-				newData[mrot[index]] = data[index];
+				newData[mrotDirection[index]] = data[index];
 				break;
 			case 2:
-				newData[mrot[mrot[index]]] = data[index];
+				newData[mrotDirection[mrotDirection[index]]] = data[index];
 				break;
 			case 3:
-				newData[mrot[mrot[mrot[index]]]] = data[index];
+				newData[mrotDirection[mrotDirection[mrotDirection[index]]]] = data[index];
 				break;
 			default:
 				break;
@@ -64,8 +67,22 @@ public class CompatWarpDrive implements IBlockTransformer {
 	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		byte rotationSteps = transformation.getRotationSteps();
 		
+		// Hull slabs
+		if (block instanceof BlockHullSlab) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotHullSlab[metadata];
+			case 2:
+				return mrotHullSlab[mrotHullSlab[metadata]];
+			case 3:
+				return mrotHullSlab[mrotHullSlab[mrotHullSlab[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
 		// Energy bank sides
-		if (nbtTileEntity.hasKey("modeSide")) {
+		if (nbtTileEntity != null && nbtTileEntity.hasKey("modeSide")) {
 			nbtTileEntity.setByteArray("modeSide", rotate_byteArray(rotationSteps, nbtTileEntity.getByteArray("modeSide")));
 		}
 		return metadata;

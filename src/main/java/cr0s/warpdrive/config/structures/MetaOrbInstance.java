@@ -1,5 +1,6 @@
 package cr0s.warpdrive.config.structures;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -29,7 +30,7 @@ public class MetaOrbInstance extends OrbInstance {
 	
 	@Override
 	public boolean generate(World world, Random random, BlockPos blockPos) {
-		if (WarpDriveConfig.LOGGING_WORLDGEN) {
+		if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 			WarpDrive.logger.info("Generating MetaOrb " + structure.name + " of " + metaShell.count  + " cores with radius of " + totalThickness);
 		}
 		LocalProfiler.start("[AsteroidInstance] Generating MetaOrb " + structure.name + " of " + metaShell.count + " cores with radius of " + totalThickness);
@@ -122,7 +123,7 @@ public class MetaOrbInstance extends OrbInstance {
 				metadata = 0;
 				return;
 			}
-			count = randomRange(random, asteroid.metaShell.minCount, asteroid.metaShell.maxCount);
+			count = Commons.randomRange(random, asteroid.metaShell.minCount, asteroid.metaShell.maxCount);
 			radius = Math.max(asteroid.metaShell.minRadius, asteroid.metaShell.relativeRadius * totalThickness);
 			block = asteroid.metaShell.block;
 			metadata = asteroid.metaShell.metadata;

@@ -46,8 +46,8 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	}
 	
 	protected void harvestBlock(final BlockPos valuable) {
-		IBlockState blockState = worldObj.getBlockState(valuable);
-		if (blockState.getBlock() == Blocks.AIR) {
+		final IBlockState blockState = worldObj.getBlockState(valuable);
+		if (blockState.getBlock().isAir(blockState, worldObj, valuable)) {
 			return;
 		}
 		if (blockState.getBlock() instanceof BlockLiquid) {

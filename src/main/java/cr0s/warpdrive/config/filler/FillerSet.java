@@ -3,13 +3,14 @@ package cr0s.warpdrive.config.filler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
-import cr0s.warpdrive.config.RandomCollection;
-import org.w3c.dom.Document;
+import cr0s.warpdrive.config.XmlFileManager;
+import cr0s.warpdrive.config.XmlRandomCollection;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
@@ -20,7 +21,7 @@ import net.minecraft.init.Blocks;
 public class FillerSet implements IXmlRepresentable, Comparable {
 	protected String group;
 	protected String name;
-	private RandomCollection<Filler> fillers;
+	private XmlRandomCollection<Filler> fillers;
 	private ArrayList<String> importGroupNames;
 	private ArrayList<String> importGroups;
 	
@@ -36,7 +37,7 @@ public class FillerSet implements IXmlRepresentable, Comparable {
 	public FillerSet(final String group, final String name) {
 		this.group = group;
 		this.name = name;
-		fillers = new RandomCollection<>();
+		fillers = new XmlRandomCollection<>();
 		importGroupNames = new ArrayList<>();
 		importGroups = new ArrayList<>();
 	}
@@ -57,19 +58,15 @@ public class FillerSet implements IXmlRepresentable, Comparable {
 	
 	@Override
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
-		NodeList nodeListFillers = element.getElementsByTagName("filler");
-		for (int i = 0; i < nodeListFillers.getLength(); i++) {
-			
-			Element elementFiller = (Element) nodeListFillers.item(i);
-			
+		List<Element> listFillers = XmlFileManager.getChildrenElementByTagName(element, "filler");
+		for (Element elementFiller : listFillers) {
 			Filler filler = new Filler();
 			fillers.loadFromXML(filler, elementFiller);
 		}
 		
-		NodeList nodeListImports = element.getElementsByTagName("import");
-		if (nodeListImports.getLength() > 0) { 
-			for (int importIndex = 0; importIndex < nodeListImports.getLength(); importIndex++) {
-				Element elementImport = (Element) nodeListImports.item(importIndex);
+		List<Element> listImports = XmlFileManager.getChildrenElementByTagName(element, "import");
+		if (!listImports.isEmpty()) { 
+			for (Element elementImport : listImports) {
 				String importGroup = elementImport.getAttribute("group");
 				String importName = elementImport.getAttribute("name");
 				if (!importGroup.isEmpty()) {
@@ -87,17 +84,8 @@ public class FillerSet implements IXmlRepresentable, Comparable {
 		return true;
 	}
 	
-	/**
-	 * @deprecated Not implemented
-	 **/
-	@Deprecated
 	@Override
-	public void saveToXmlElement(Element element, Document document) throws InvalidXmlException {
-		throw new InvalidXmlException("Not implemented");
-	}
-	
-	@Override
-	public int compareTo(Object object) {
+	public int compareTo(@Nonnull Object object) {
 		return name.compareTo(((FillerSet) object).name);
 	}
 	

@@ -7,7 +7,6 @@ import cr0s.warpdrive.render.ClientCameraHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -36,6 +35,11 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityLaserCamera();
+	}
+	
+	@Override
+	public boolean isVisuallyOpaque() {
+		return false;
 	}
 	
 	@Override

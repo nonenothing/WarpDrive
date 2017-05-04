@@ -1,6 +1,8 @@
 package cr0s.warpdrive.data;
 
 
+import cr0s.warpdrive.event.ChunkHandler;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -8,13 +10,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ChunkProviderServer;
 
 /**
  * Generic 3D vector for efficient block manipulation.
@@ -104,8 +103,10 @@ public class VectorI implements Cloneable {
 	
 	static public boolean isChunkLoaded(IBlockAccess world, final int x, final int z) {
 		if (world instanceof WorldServer) {
+			return ChunkHandler.isLoaded((WorldServer) world, x, 64, z);
+			/*
 			if (((WorldServer)world).getChunkProvider() instanceof ChunkProviderServer) {
-				ChunkProviderServer chunkProviderServer = ((WorldServer)world).getChunkProvider();
+				ChunkProviderServer chunkProviderServer = ((WorldServer) world).getChunkProvider();
 				try {
 					Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(x >> 4, z >> 4));
 					return chunk != null && chunk.isLoaded();
@@ -113,8 +114,9 @@ public class VectorI implements Cloneable {
 					return chunkProviderServer.chunkExists(x >> 4, z >> 4);
 				}
 			} else {
-				return ((WorldServer)world).getChunkProvider().chunkExists(x >> 4, z >> 4);
+				return ((WorldServer) world).getChunkProvider().chunkExists(x >> 4, z >> 4);
 			}
+			/**/
 		}
 		return true;
 	}

@@ -3,8 +3,10 @@ package cr0s.warpdrive.client;
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
+import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.api.IItemBase;
+import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.render.MyCustomModelLoader;
 
 import javax.annotation.Nonnull;
@@ -85,11 +87,14 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockDecorative);
 		
 		for (int index = 0; index < 3; index++) {
-			IModelInitialisation(WarpDrive.blockHulls_plain[index]);
+			for (EnumHullPlainType enumHullPlainType : EnumHullPlainType.values()) {
+				IModelInitialisation(WarpDrive.blockHulls_plain[index][enumHullPlainType.ordinal()]);
+			}
 			IModelInitialisation(WarpDrive.blockHulls_glass[index]);
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 				IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);
+				// IModelInitialisation(WarpDrive.blockHulls_omnipanel[index][enumDyeColor.getMetadata()]);
 			}
 		}
 		

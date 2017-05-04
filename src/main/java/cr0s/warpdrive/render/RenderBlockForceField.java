@@ -35,8 +35,9 @@ import net.minecraft.world.IBlockAccess;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-// wrapper to native classes to renderId is non-zero so we don't render faces when player camera is inside the block
+// wrapper to camouflage block
 public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
+	
 	public static int renderId = 0;
 	public static RenderBlockForceField instance = new RenderBlockForceField();
 	

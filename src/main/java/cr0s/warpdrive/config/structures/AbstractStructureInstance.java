@@ -11,11 +11,11 @@ import net.minecraft.world.gen.feature.WorldGenerator;
  * @author LemADEC
  *
  */
-public abstract class AbstractInstance extends WorldGenerator {
+public abstract class AbstractStructureInstance extends WorldGenerator {
 	protected AbstractStructure structure;
 	protected HashMap<String,Double> variables = new HashMap<>();
 	
-	public AbstractInstance(AbstractStructure structure, Random random) {
+	public AbstractStructureInstance(AbstractStructure structure, Random random) {
 		this.structure = structure;
 		
 		// evaluate variables
@@ -40,14 +40,6 @@ public abstract class AbstractInstance extends WorldGenerator {
 		}
 	}
 	
-	protected static int randomRange(Random random, final int min, final int max) {
-		return min + ((max - min > 0) ? random.nextInt(max - min + 1) : 0); 
-	}
-	
-	protected static double randomRange(Random random, final double min, final double max) {
-		return min + ((max - min > 0) ? random.nextDouble() * (max - min) : 0); 
-	}
-	
 	protected String evaluate(final String valueOrExpression) {
 		if (!valueOrExpression.contains("%")) {
 			return valueOrExpression;
@@ -59,7 +51,7 @@ public abstract class AbstractInstance extends WorldGenerator {
 		return result;
 	}
 	
-	public AbstractInstance(NBTTagCompound tag) {
+	public AbstractStructureInstance(NBTTagCompound tag) {
 		// FIXME to be implemented
 		
 		// get deployable

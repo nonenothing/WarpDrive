@@ -26,6 +26,9 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class BlockGas extends BlockAbstractBase {
 	
 	public static final PropertyEnum<EnumGasColor> COLOR = PropertyEnum.create("color", EnumGasColor.class);
@@ -33,7 +36,7 @@ public class BlockGas extends BlockAbstractBase {
 	public BlockGas(final String registryName) {
 		super(registryName, Material.FIRE);
 		setHardness(0.0F);
-		setUnlocalizedName("warpdrive.passive.Gas");
+		setUnlocalizedName("warpdrive.decoration.gas");
 		
 		setDefaultState(getDefaultState().withProperty(COLOR, EnumGasColor.RED));
 	}
@@ -143,6 +146,7 @@ public class BlockGas extends BlockAbstractBase {
 	}
 
 	@SuppressWarnings("deprecation")
+	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
 		BlockPos blockPosSide = blockPos.offset(facing);

@@ -24,9 +24,10 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityMonitor extends TileEntityAbstractInterfaced implements IVideoChannel {
+	
 	private int videoChannel = -1;
 	
-	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
+	private static final int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
 	private int packetSendTicks = 10;
 	
 	public TileEntityMonitor() {

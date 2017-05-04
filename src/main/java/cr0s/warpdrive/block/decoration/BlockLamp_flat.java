@@ -18,7 +18,7 @@ public class BlockLamp_flat extends BlockAbstractLamp {
 	private static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 0.16D, 1.00D, 1.00D);
 	
 	public BlockLamp_flat(final String registryName) {
-		super(registryName, "warpdrive.passive.flat_lamp");
+		super(registryName, "warpdrive.decoration.flat_lamp");
 	}
 	
 	@Nonnull

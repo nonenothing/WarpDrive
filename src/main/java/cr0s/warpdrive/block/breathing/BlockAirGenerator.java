@@ -2,15 +2,14 @@ package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IAirCanister;
+import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractBase;
-import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
@@ -30,11 +29,11 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class BlockAirGenerator extends BlockAbstractRotatingContainer {
+public class BlockAirGenerator extends BlockAbstractContainer {
 	
 	public BlockAirGenerator(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.machines.AirGenerator");
+		setUnlocalizedName("warpdrive.breathing.air_generator");
 		GameRegistry.registerTileEntity(TileEntityAirGenerator.class, WarpDrive.PREFIX + registryName);
 		
 		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false));
@@ -51,8 +50,8 @@ public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 	@Override
 	public IBlockState getStateFromMeta(int metadata) {
 		return getDefaultState()
-				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7))
-				.withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
+		       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7))
+		       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
 	}
 	
 	@Override
@@ -92,18 +91,18 @@ public class BlockAirGenerator extends BlockAbstractRotatingContainer {
 				return true;
 			} else {
 				Item itemHeld = itemStackHeld.getItem();
-				if (itemHeld instanceof IAirCanister) {
-					IAirCanister airCanister = (IAirCanister) itemHeld;
-					if (airCanister.canContainAir(itemStackHeld) && airGenerator.energy_consume(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, true)) {
+				if (itemHeld instanceof IAirContainerItem) {
+					IAirContainerItem airCanister = (IAirContainerItem) itemHeld;
+					if (airCanister.canContainAir(itemStackHeld) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						ItemStack toAdd = airCanister.fullDrop(itemStackHeld);
+						ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
-								EntityItem ie = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
-								entityPlayer.worldObj.spawnEntityInWorld(ie);
+								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 							}
 							((EntityPlayerMP)entityPlayer).sendContainerToPlayer(entityPlayer.inventoryContainer);
-							airGenerator.energy_consume(WarpDriveConfig.AIRGEN_ENERGY_PER_CANISTER, false);
+							airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, false);
 						}
 					}
 				}

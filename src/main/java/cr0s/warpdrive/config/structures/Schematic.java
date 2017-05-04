@@ -18,7 +18,7 @@ public class Schematic extends AbstractStructure {
 	}
 
 	@Override
-	public AbstractInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(Random random) {
 		// TODO Auto-generated method stub
 		return null;
 	}

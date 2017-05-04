@@ -6,6 +6,8 @@ import cr0s.warpdrive.client.ClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -14,7 +16,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.data.BlockProperties;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	
@@ -24,8 +35,10 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		setResistance(6.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setRegistryName(registryName);
-		WarpDrive.register(this);
+		if (registryName != null) {
+			setRegistryName(registryName);
+			WarpDrive.register(this);
+		}
 	}
 	
 	@Nullable
@@ -41,6 +54,43 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		ClientProxy.modelInitialisation(item);
 	}
 	
+	@Override
+	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState, final EntityLivingBase entityLiving, final ItemStack itemStack) {
+		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
+		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
+		if (isRotating) {
+			EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(blockPos, entityLiving);
+			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
+		}
+	}
+	
+	@Override
+	public boolean removedByPlayer(@Nonnull final IBlockState blockState, final World world, @Nonnull final BlockPos blockPos, @Nonnull final EntityPlayer player, final boolean willHarvest) {
+		return willHarvest || super.removedByPlayer(blockState, world, blockPos, player, false);
+	}
+	
+	@Override
+	public boolean rotateBlock(final World world, @Nonnull final BlockPos blockPos, final EnumFacing axis) {
+		// already handled by vanilla
+		return super.rotateBlock(world, blockPos, axis);
+	}
+	
+	@Override
+	public byte getTier(final ItemStack itemStack) {
+		return 1;
+	}
+	
+	@Override
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
+		switch (getTier(itemStack)) {
+		case 0:  return EnumRarity.EPIC;
+		case 1:  return EnumRarity.COMMON;
+		case 2:  return EnumRarity.UNCOMMON;
+		case 3:  return EnumRarity.RARE;
+		default: return rarity;
+		}
+	}
+		
 	public static EnumFacing getFacingFromEntity(BlockPos clickedBlock, EntityLivingBase entity) {
 		return EnumFacing.getFacingFromVector(
 		(float) (entity.posX - clickedBlock.getX()),

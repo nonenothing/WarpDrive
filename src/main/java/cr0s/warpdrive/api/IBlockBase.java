@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 
 public interface IBlockBase {
 	
+	byte getTier(final ItemStack itemStack);
+	
 	EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity);
 	
     @Nullable

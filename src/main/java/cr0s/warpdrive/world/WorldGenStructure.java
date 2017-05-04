@@ -42,14 +42,14 @@ public class WorldGenStructure {
 		case 3:
 		case 4:
 		case 5:
-			hullPlain_block = WarpDrive.blockHulls_plain[0];
+			hullPlain_block = WarpDrive.blockHulls_plain[0][0];
 			hullPlain_metadata = rand.nextInt(16);
 			hullGlass_block = WarpDrive.blockHulls_glass[0];
 			hullGlass_metadata = hullPlain_metadata;
 			break;
 			
 		case 6:
-			hullPlain_block = WarpDrive.blockHulls_plain[1];
+			hullPlain_block = WarpDrive.blockHulls_plain[1][0];
 			hullPlain_metadata = rand.nextInt(16);
 			hullGlass_block = WarpDrive.blockHulls_glass[1];
 			hullGlass_metadata = hullPlain_metadata;

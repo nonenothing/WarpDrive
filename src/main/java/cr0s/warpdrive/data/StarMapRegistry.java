@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
+import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 
@@ -116,7 +117,7 @@ public class StarMapRegistry {
 	public static CelestialObject getCelestialObject(final int dimensionId, final int x, final int z) {
 		double distanceClosest = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			if (dimensionId == celestialObject.dimensionId) {
 				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
 				if (distanceSquared <= 0) {
@@ -138,7 +139,7 @@ public class StarMapRegistry {
 	public static CelestialObject getClosestParentCelestialObject(final int dimensionId, final int x, final int z) {
 		double closestPlanetDistance = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
 			if (distanceSquared <= 0) {
 				return celestialObject;
@@ -153,7 +154,7 @@ public class StarMapRegistry {
 	public static CelestialObject getClosestChildCelestialObject(final int dimensionId, final int x, final int z) {
 		double closestPlanetDistance = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			final double distanceSquared = celestialObject.getSquareDistanceInParent(dimensionId, x, z);
 			if (distanceSquared <= 0.0D) {
 				return celestialObject;
@@ -240,9 +241,10 @@ public class StarMapRegistry {
 				double dZ = entry.z - tileEntity.getPos().getZ();
 				double distance2 = dX * dX + dY * dY + dZ * dZ;
 				
-				if (distance2 <= radius2
-				    && (entry.isolationRate == 0.0D || tileEntity.getWorld().rand.nextDouble() >= entry.isolationRate)
-				    && (entry.getSpaceCoordinates() != null)) {
+				if ( distance2 <= radius2
+				  && (entry.isolationRate == 0.0D || tileEntity.getWorld().rand.nextDouble() >= entry.isolationRate)
+				  && (entry.getSpaceCoordinates() != null)
+				  && (entry.type != EnumStarMapEntryType.ACCELERATOR) ) {
 					starMapRegistryItems.add(entry);
 				}
 			}

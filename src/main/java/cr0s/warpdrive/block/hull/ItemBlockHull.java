@@ -1,21 +1,22 @@
 package cr0s.warpdrive.block.hull;
 
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
 
 import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBlockHull extends ItemBlockAbstractBase {
 	
-	public ItemBlockHull(Block block) {
+	ItemBlockHull(Block block) {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
@@ -44,13 +45,9 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 		return getUnlocalizedName() + EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName();
 	}
 	
-	private byte getTier() {
-		if (block instanceof BlockHullGlass) {
-			return ((BlockHullGlass) block).tier;
-		} else if (block instanceof BlockHullPlain) {
-			return ((BlockHullPlain) block).tier;
-		} else if (block instanceof BlockHullStairs) {
-			return ((BlockHullStairs) block).tier;
+	private byte getTier(final ItemStack itemStack) {
+		if (block instanceof IBlockBase) {
+			return ((IBlockBase) block).getTier(itemStack);
 		}
 		return 1;
 	}
@@ -58,7 +55,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	@Nonnull
 	@Override
 	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
-		switch (getTier()) {
+		switch (getTier(itemStack)) {
 			case 0:	return EnumRarity.EPIC;
 			case 1:	return EnumRarity.COMMON;
 			case 2:	return EnumRarity.UNCOMMON;

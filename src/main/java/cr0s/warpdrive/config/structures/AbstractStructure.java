@@ -2,11 +2,11 @@ package cr0s.warpdrive.config.structures;
 
 import cr0s.warpdrive.config.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
-import org.w3c.dom.Document;
+import cr0s.warpdrive.config.XmlFileManager;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.world.gen.feature.WorldGenerator;
@@ -35,28 +35,18 @@ public abstract class AbstractStructure extends WorldGenerator implements IXmlRe
 	}
 	
 	
-	abstract public AbstractInstance instantiate(Random random);
+	abstract public AbstractStructureInstance instantiate(Random random);
 	
 	@Override
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
 		
-		NodeList nodeListVariables = element.getElementsByTagName("variable");
-		for (int variableIndex = 0; variableIndex < nodeListVariables.getLength(); variableIndex++) {
-			Element elementVariable = (Element) nodeListVariables.item(variableIndex);
+		List<Element> listVariables = XmlFileManager.getChildrenElementByTagName(element, "variable");
+		for (Element elementVariable : listVariables) {
 			String variableName = elementVariable.getAttribute("name");
 			String variableExpression = elementVariable.getTextContent();
 			variables.put(variableName, variableExpression);
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * @deprecated Not implemented
-	 **/
-	@Deprecated
-	@Override
-	public void saveToXmlElement(Element element, Document document) throws InvalidXmlException {
-		throw new InvalidXmlException("Not implemented");
 	}
 }

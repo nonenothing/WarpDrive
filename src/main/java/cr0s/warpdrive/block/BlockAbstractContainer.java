@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import defense.api.IEMPBlock;
 import defense.api.IExplosion;
 
@@ -13,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Optional;
@@ -36,7 +38,7 @@ import javax.annotation.Nullable;
     @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
-	protected boolean isRotating = false;
+	
 	protected boolean hasSubBlocks = false; // @TODO: code review
 	
 	protected BlockAbstractContainer(final String registryName, final Material material) {
@@ -80,18 +82,22 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase entityLiving, ItemStack itemStack) {
-		super.onBlockPlacedBy(world, pos, state, entityLiving, itemStack);
+	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState blockState, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
+		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
+		if (isRotating) {
+			EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(blockPos, entityLiving);
+			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
+		}
 		
-		TileEntity tileEntity = world.getTileEntity(pos);
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity != null && itemStack.getTagCompound() != null) {
 			NBTTagCompound nbtTagCompound = itemStack.getTagCompound().copy();
-			nbtTagCompound.setInteger("x", pos.getX());
-			nbtTagCompound.setInteger("y", pos.getY());
-			nbtTagCompound.setInteger("z", pos.getZ());
+			nbtTagCompound.setInteger("x", blockPos.getX());
+			nbtTagCompound.setInteger("y", blockPos.getY());
+			nbtTagCompound.setInteger("z", blockPos.getZ());
 			tileEntity.readFromNBT(nbtTagCompound);
-			IBlockState blockState = world.getBlockState(pos);
-			world.notifyBlockUpdate(pos, blockState, blockState, 3);
+			world.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 		}
 	}
 	
@@ -130,19 +136,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return itemStack;
 	}
 	
-	// @TODO is it still needed?
-	/*
 	@Override
-	public boolean rotateBlock(World world, BlockPos blockPos, EnumFacing axis) {
-		if (isRotating) {
-			world.setBlockMetadataWithNotify(blockPos, axis.ordinal(), 3);
-			return true;
-		}
-		return false;
+	public boolean rotateBlock(final World world, @Nonnull final BlockPos blockPos, final EnumFacing axis) {
+		// already handled by vanilla
+		return super.rotateBlock(world, blockPos, axis);
 	}
-	/**/
 	
-	// FIXME untested
+	// @FIXME untested
 	/*
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
@@ -205,6 +205,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
+	@Override
 	public byte getTier(final ItemStack itemStack) {
 		return 1;
 	}

@@ -1,40 +1,64 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IStringSerializable;
+import cr0s.warpdrive.config.CelestialObjectManager;
+import cr0s.warpdrive.config.InvalidXmlException;
+import cr0s.warpdrive.config.RandomCollection;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.config.XmlFileManager;
+import cr0s.warpdrive.config.structures.StructureGroup;
+import org.w3c.dom.Element;
 
-import java.util.NavigableMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Random;
-import java.util.TreeMap;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 
 /**
- * Celestial objects are area in space. They can be a planet or solar system (space dimension) or the all mighty hyperspace.
+ * An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
+ * They can be a planet, a more abstract construct like solar system (space dimension) or the all mighty hyperspace.
  *
  * @author LemADEC
  */
-public class CelestialObject implements Cloneable {
+public class CelestialObject implements Cloneable, IStringSerializable {
+	
+	public static final double GRAVITY_NONE = 0.0D;
+	public static final double GRAVITY_LEGACY_SPACE = -1.0D;
+	public static final double GRAVITY_LEGACY_HYPERSPACE = -2.0D;
+	public static final double GRAVITY_NORMAL = 1.0D;
+	
+	public String group;
+	public String name;
+	public boolean isVirtual;
 	public int dimensionId;
 	public int dimensionCenterX, dimensionCenterZ;
 	public int borderRadiusX, borderRadiusZ;
+	
+	public String parentGroup;
+	public String parentName;
 	public int parentDimensionId;
 	public int parentCenterX, parentCenterZ;
-	public boolean isWarpDrive;
+	
+	public boolean isProvidedByWarpDrive;
 	public double gravity;
 	public boolean isBreathable;
 	
-	// @TODO replace with RandomCollection once we switch to XML
-	private final NavigableMap<Double, String> mapGenerationRatios = new TreeMap<>();
-	private double totalRatio;
+	private final RandomCollection<StructureGroup> randomStructures = new RandomCollection<>();
+	public LinkedHashSet<RenderData> setRenderData;
 	
-	public CelestialObject() {
-		this(0, 0, 0, 5000, 5000, -2, 0, 0);
+	public CelestialObject(final String location, final String parentElementGroup, final String parentElementName, Element elementCelestialObject) throws InvalidXmlException {
+		loadFromXmlElement(location, parentElementGroup, parentElementName, elementCelestialObject);
 	}
 	
 	public CelestialObject(final int parDimensionId, final int parDimensionCenterX, final int parDimensionCenterZ,
 	                       final int parBorderRadiusX, final int parBorderRadiusZ,
 	                       final int parParentDimensionId, final int parParentCenterX, final int parParentCenterZ) {
+		isVirtual = false;
 		dimensionId = parDimensionId;
 		dimensionCenterX = parDimensionCenterX;
 		dimensionCenterZ = parDimensionCenterZ;
@@ -49,50 +73,196 @@ public class CelestialObject implements Cloneable {
 		readFromNBT(nbt);
 	}
 	
+	@Override
+	public String getName() {
+		return name;
+	}
+	
+	public String getFullName() {
+		return String.format("%s:%s", group, name);
+	}
+	
+	public boolean loadFromXmlElement(final String location, final String parentElementGroup, final String parentElementName, Element elementCelestialObject) throws InvalidXmlException {
+		// get identity
+		group = elementCelestialObject.getAttribute("group");
+		if (group.isEmpty()) {
+			throw new InvalidXmlException(String.format("Celestial object %s is missing a group attribute!", location));
+		}
+		
+		name = elementCelestialObject.getAttribute("name");
+		if (name.isEmpty()) {
+			throw new InvalidXmlException(String.format("Celestial object %s is missing a name attribute!", location));
+		}
+		
+		WarpDrive.logger.info("- found Celestial object " + getFullName());
+		
+		// get optional parent element, defaulting to parent defined by element hierarchy
+		parentGroup = parentElementGroup;
+		parentName = parentElementName;
+		List<Element> listParents = XmlFileManager.getChildrenElementByTagName(elementCelestialObject,"parent");
+		if (listParents.size() > 1) {
+			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one parent element", getFullName()));
+		}
+		if (listParents.size() == 1) {
+			Element elementParent = listParents.get(0);
+			
+			// save linked parent
+			String parentGroupRead = elementParent.getAttribute("group");
+			String parentNameRead = elementParent.getAttribute("name");
+			if (!parentNameRead.isEmpty()) {
+				parentName = parentNameRead;
+				if (!parentGroupRead.isEmpty()) {
+					parentGroup = parentGroupRead;
+				}
+			} else if (!parentGroupRead.isEmpty()) {
+				throw new InvalidXmlException(String.format("Celestial object %s parent can't have a group without a name", getFullName())); 
+			}
+			
+			// get required center element
+			List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementParent, "center");
+			if (listCenters.size() != 1) {
+				throw new InvalidXmlException(String.format("Celestial object %s parent requires exactly one center element", getFullName()));
+			}
+			Element elementCenter = listCenters.get(0);
+			parentCenterX = Integer.parseInt(elementCenter.getAttribute("x"));
+			parentCenterZ = Integer.parseInt(elementCenter.getAttribute("z"));
+		}
+		
+		// get required size element
+		{
+			List<Element> listSizes = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "size");
+			if (listSizes.size() != 1) {
+				throw new InvalidXmlException(String.format("Celestial object %s requires exactly one size element", getFullName()));
+			}
+			Element elementSize = listSizes.get(0);
+			borderRadiusX = Integer.parseInt(elementSize.getAttribute("x")) / 2;
+			borderRadiusZ = Integer.parseInt(elementSize.getAttribute("z")) / 2;
+		}
+		
+		// get optional dimension element
+		List<Element> listDimensions = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "dimension");
+		if (listDimensions.size() > 1) {
+			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one dimension element", getFullName()));
+		}
+		if (listDimensions.size() == 0) {
+			isVirtual = true;
+			dimensionId = 0;
+			isProvidedByWarpDrive = false;
+			isBreathable = true;
+			gravity = GRAVITY_NORMAL;
+			dimensionCenterX = 0;
+			dimensionCenterZ = 0;
+		} else {
+			isVirtual = false;
+			
+			Element elementDimension = listDimensions.get(0);
+			dimensionId = Integer.parseInt(elementDimension.getAttribute("id"));
+			isBreathable = Boolean.parseBoolean(elementDimension.getAttribute("isBreathable"));
+			gravity = parseGravity(elementDimension.getAttribute("gravity"));
+			if (elementDimension.hasAttribute("isProvidedByWarpDrive")) {
+				isProvidedByWarpDrive = Boolean.parseBoolean(elementDimension.getAttribute("isProvidedByWarpDrive"));
+			} else {
+				isProvidedByWarpDrive = isHyperspace() || isSpace();
+			}
+			
+			// get required center element
+			List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementDimension, "center");
+			if (listCenters.size() != 1) {
+				throw new InvalidXmlException( String.format("Celestial object %s dimension requires exactly one center element", getFullName()));
+			}
+			Element elementCenter = listCenters.get(0);
+			dimensionCenterX = Integer.parseInt(elementCenter.getAttribute("x"));
+			dimensionCenterZ = Integer.parseInt(elementCenter.getAttribute("z"));
+			
+			// get optional generate element(s)
+			List<Element> listGenerates = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "generate");
+			for (int indexElement = 0; indexElement < listGenerates.size(); indexElement++) {
+				Element elementGenerate = listGenerates.get(indexElement);
+				String locationGenerate = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listGenerates.size());
+				parseGenerateElement(locationGenerate, elementGenerate);
+			}
+			
+			// get optional effect element(s)
+			// @TODO not implemented
+			
+			WarpDrive.logger.info("  loaded " + this);
+		}
+		
+		// get optional render element(s)
+		List<Element> listRenders = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "render");
+		setRenderData = new LinkedHashSet<>(listRenders.size());
+		if (!listRenders.isEmpty()) {
+			for (int indexElement = 0; indexElement < listRenders.size(); indexElement++) {
+				Element elementRender = listRenders.get(indexElement);
+				String locationRender = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listRenders.size());
+				RenderData renderData = new RenderData(locationRender, elementRender);
+				setRenderData.add(renderData);
+			}
+		}
+		
+		return true;
+	}
+	
+	private static double parseGravity(final String stringGravity) {
+		try {
+			switch(stringGravity) {
+			case "none"            : return GRAVITY_NONE;
+			case "legacySpace"     : return GRAVITY_LEGACY_SPACE;
+			case "legacyHyperspace": return GRAVITY_LEGACY_HYPERSPACE;
+			case "normal"          : return GRAVITY_NORMAL;
+			default:
+				double gravity = Double.parseDouble(stringGravity);
+				if (gravity < 0) {
+					throw new RuntimeException();
+				}
+				return gravity;
+			}
+		} catch (Exception exception) {
+			WarpDrive.logger.error("Invalid gravity value, expecting none, legacySpace, legacyHyperspace, normal or a positive double. Found: " + stringGravity);
+			exception.printStackTrace();
+			return 1.0D;
+		}
+	}
+	
+	private void parseGenerateElement(final String location, final Element elementGenerate) throws InvalidXmlException {
+		final String group = elementGenerate.getAttribute("group");
+		if (group.isEmpty()) {
+			throw new InvalidXmlException(location + " is missing a group attribute!");
+		}
+		
+		final String name = elementGenerate.getAttribute("name");
+		
+		if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
+			WarpDrive.logger.info("  + found Generate " + group + ":" + name);
+		}
+		
+		final String stringRatio = elementGenerate.getAttribute("ratio");
+		final String stringWeight = elementGenerate.getAttribute("weight");
+		
+		StructureGroup structureGroup = new StructureGroup(group, name);
+		randomStructures.add(structureGroup, stringRatio, stringWeight);
+	}
+	
+	public void resolveParent() {
+		// is it an hyperspace/top level dimension?
+		if (parentGroup.isEmpty() && parentName.isEmpty()) {
+			parentDimensionId = dimensionId;
+		} else {
+			CelestialObject celestialObjectParent = CelestialObjectManager.get(parentGroup, parentName);
+			if (celestialObjectParent != null) {
+				parentDimensionId = celestialObjectParent.dimensionId;
+			}
+		}
+	}
+	
 	@SuppressWarnings("CloneDoesntCallSuperClone")
 	@Override
 	public CelestialObject clone() {
 		return new CelestialObject(dimensionId, dimensionCenterX, dimensionCenterZ, borderRadiusX, borderRadiusZ, parentDimensionId, parentCenterX, parentCenterZ);
 	}
 	
-	public void setSelfProvider(final boolean isWarpDrive) {
-		this.isWarpDrive = isWarpDrive;
-	}
-	
-	public void setGravity(final double gravity) {
-		this.gravity = gravity;
-	}
-	
-	public void setBreathable(final boolean isBreathable) {
-		this.isBreathable = isBreathable;
-	}
-	
-	public void addGenerationRatio(final double ratio, final String name) {
-		if (ratio <= 0 || ratio >= 1.0) {
-			WarpDrive.logger.warn("Ratio isn't in ]0, 1.0] bounds, skipping " + name + " with ratio " + ratio);
-			return;
-		}
-		if (mapGenerationRatios.containsValue(name)) {
-			WarpDrive.logger.warn("Object already has a ratio defined, skipping " + name + " with ratio " + ratio);
-			return;
-		}
-		
-		if (totalRatio + ratio > 1.0) {
-			WarpDrive.logger.warn("Total ratio is greater than 1.0, skipping " + name + " with ratio " + ratio);
-			return;
-		}
-		totalRatio += ratio;
-		mapGenerationRatios.put(totalRatio, name);
-	}
-	
-	public String getRandomGeneration(Random random) {
-		double value = random.nextDouble();
-		
-		if (value >= totalRatio) {
-			return null;
-		}
-		
-		return mapGenerationRatios.ceilingEntry(value).getValue();
+	public StructureGroup getRandomStructure(Random random, final int x, final int z) {
+		return randomStructures.getRandomEntry(random);
 	}
 	
 	public AxisAlignedBB getWorldBorderArea() {
@@ -221,7 +391,7 @@ public class CelestialObject implements Cloneable {
 		parentDimensionId = tag.getInteger("parentDimensionId");
 		parentCenterX = tag.getInteger("parentCenterX");
 		parentCenterZ = tag.getInteger("parentCenterZ");
-		isWarpDrive = tag.getBoolean("isWarpDrive");
+		isProvidedByWarpDrive = tag.getBoolean("isProvidedByWarpDrive");
 		gravity = tag.getDouble("gravity");
 		isBreathable = tag.getBoolean("isBreathable");
 		// @TODO: mapGenerationRatios
@@ -236,7 +406,7 @@ public class CelestialObject implements Cloneable {
 		tag.setInteger("parentDimensionId", parentDimensionId);
 		tag.setInteger("parentCenterX", parentCenterX);
 		tag.setInteger("parentCenterZ", parentCenterZ);
-		tag.setBoolean("isWarpDrive", isWarpDrive);
+		tag.setBoolean("isProvidedByWarpDrive", isProvidedByWarpDrive);
 		tag.setDouble("gravity", gravity);
 		tag.setBoolean("isBreathable", isBreathable);
 		// @TODO: mapGenerationRatios
@@ -266,9 +436,53 @@ public class CelestialObject implements Cloneable {
 	
 	@Override
 	public String toString() {
-		return "CelestialObject [Dimension " + dimensionId + " @ (" + dimensionCenterX + " " + dimensionCenterZ + ")"
-				+ " Border(" + borderRadiusX + " " + borderRadiusZ + ")"
-				+ " Parent(" + parentDimensionId + " @ (" + parentCenterX + " " + parentCenterZ + "))]"
-				+ " isWarpDrive + " + isWarpDrive + " gravity " + gravity + " isBreathable " + isBreathable;
+		return String.format("CelestialObject %s:%s [Dimension %d @ %d %d Border(%d %d) Parent(%d @ %d %d) isProvidedByWarpDrive %s gravity %.3f isBreathable %s]",
+				group, name, dimensionId, dimensionCenterX, dimensionCenterZ,
+				borderRadiusX, borderRadiusZ,
+				parentDimensionId, parentCenterX, parentCenterZ,
+				isProvidedByWarpDrive, gravity, isBreathable);
+	}
+	
+	
+	public class RenderData {
+		
+		public float red;
+		public float green;
+		public float blue;
+		public float alpha;
+		public String texture;
+		public ResourceLocation resourceLocation;
+		public double periodU;
+		public double periodV;
+		public boolean isAdditive;
+		
+		RenderData(final String location, final Element elementRender) throws InvalidXmlException {
+			try {
+				red = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("red")));
+				green = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("green")));
+				blue = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("blue")));
+				alpha = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("alpha")));
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				WarpDrive.logger.error("Exception while parsing Render element at " + location);
+				red = 0.5F;
+				green = 0.5F;
+				blue = 0.5F;
+				alpha = 0.5F;
+			}
+			texture = elementRender.getAttribute("texture");
+			if (texture == null || texture.isEmpty()) {
+				texture = null;
+				resourceLocation = null;
+				periodU = 1.0F;
+				periodV = 1.0F;
+				isAdditive = false;
+			} else {
+				resourceLocation = new ResourceLocation(texture);
+				periodU = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(elementRender.getAttribute("periodU")));
+				periodV = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(elementRender.getAttribute("periodV")));
+				isAdditive = Boolean.parseBoolean(elementRender.getAttribute("additive"));
+			}
+		}
 	}
 }

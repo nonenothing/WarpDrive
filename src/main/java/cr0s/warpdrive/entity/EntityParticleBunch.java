@@ -9,7 +9,6 @@ import cr0s.warpdrive.data.Vector3;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
@@ -108,7 +107,7 @@ public class EntityParticleBunch extends Entity {
 		if (soundTicks < 0) {
 			final double factor = Commons.interpolate(PARTICLE_BUNCH_ENERGY_TO_X, PARTICLE_BUNCH_ENERGY_TO_SOUND_Y, getEnergy());
 			final int indexSound = (int) Math.floor(factor);
-			final SoundEvent soundEvent = PARTICLE_BUNCH_SOUNDS[ Commons.clamp(0, PARTICLE_BUNCH_SOUNDS.length, indexSound) ];
+			final SoundEvent soundEvent = PARTICLE_BUNCH_SOUNDS[ Commons.clamp(0, PARTICLE_BUNCH_SOUNDS.length - 1, indexSound) ];
 			final float pitch = 0.6F + 0.4F * (float) (factor - indexSound);
 			
 			soundTicks = (int) Math.floor(ACCELERATION_SOUND_UPDATE_TICKS * pitch);

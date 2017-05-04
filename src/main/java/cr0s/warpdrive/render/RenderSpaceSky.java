@@ -1,8 +1,10 @@
 package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.CelestialObject.RenderData;
 
 import java.awt.Color;
 import java.util.Random;
@@ -13,7 +15,6 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.IRenderHandler;
@@ -30,15 +31,6 @@ public class RenderSpaceSky extends IRenderHandler {
 		}
 		return INSTANCE;
 	}
-	
-	private static final ResourceLocation[] texturePlanets = {
-		new ResourceLocation("warpdrive:textures/celestial/planet_icy.png"),
-		new ResourceLocation("warpdrive:textures/celestial/planet_magma.png"),
-		new ResourceLocation("warpdrive:textures/celestial/planet_metallic.png"),
-		new ResourceLocation("warpdrive:textures/celestial/planet_oceanic.png"),
-		new ResourceLocation("warpdrive:textures/celestial/planet_temperate.png")
-		};
-	private static final ResourceLocation textureStar = new ResourceLocation("warpdrive:textures/celestial/star_yellow.png");
 	
 	public static final int callListStars = GLAllocation.generateDisplayLists(3);
 	public static final int callListUpperSkyBox = callListStars + 1;
@@ -149,6 +141,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		
 		// Star
+		/*
 		{
 			GL11.glPushMatrix();
 			final double starScale = isSpace ? 30.0D : 40.0D;
@@ -167,6 +160,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			tessellator.draw();
 			GL11.glPopMatrix();
 		}
+		/**/
 		
 		// CelestialObject
 		/*
@@ -195,7 +189,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		/**/
 		
 		// Planets
-		for(CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
+		for(CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			renderCelestialObject(tessellator, celestialObject, isSpace, mc.thePlayer.getEntityWorld().provider.getDimension(), playerCoordinates);
 		}
 		
@@ -294,7 +288,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double planetY = planetY_far * transitionApproaching;
 		
 		// render range is only used for Z-ordering
-		final double renderRange = 180.0D + 10.0D * (distanceToCenter / Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ));
+		double renderRange = 180.0D + 10.0D * (distanceToCenter / Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ));
 		
 		// render size is 1 at space border range
 		// render size is 10 at approaching range
@@ -303,7 +297,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double renderSize = 100.0D / 1000.0D * Math.min(1000.0D, Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ)) * (1.0D - transitionOrbit)
 								+ 50.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
 								+ 5.0D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
-								+ 1.0D * transitionFar;
+								+ 2.0D * transitionFar;
 		
 		// angles
 		@SuppressWarnings("SuspiciousNameCombination")
@@ -314,7 +308,9 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double angleS = 0.15D * celestialObject.dimensionId * transitionApproaching // + (world.getTotalWorldTime() + partialTicks) * Math.PI / 6000.0D;
 							+ angleH * (1.0D - transitionApproaching);
 		
-		if (celestialObject.dimensionId == 1 && (Minecraft.getSystemTime() / 10) % 100 == 0) {
+		if ( WarpDriveConfig.LOGGING_RENDERING
+		  && celestialObject.dimensionId == 1
+		  && (Minecraft.getSystemTime() / 10) % 100 == 0) {
 			WarpDrive.logger.info(String.format("transition Far %.2f Approaching %.2f Orbit %.2f distanceToCenter %.3f %.3f offset %.3f %.3f angle H %.3f V_far %.3f V %.3f S %.3f",
 				transitionFar, transitionApproaching, transitionOrbit, distanceToCenterX, distanceToCenterZ, offsetX, offsetZ, angleH, angleV_far, angleV, angleS));
 		}
@@ -328,22 +324,56 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double cosS = Math.cos(angleS);
 		
 		GL11.glPushMatrix();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, isSpace ? 1.0F : 0.2F);
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(texturePlanets[Math.abs(celestialObject.dimensionId) % texturePlanets.length]);
+		
+		// GL11.glEnable(GL11.GL_BLEND);    // by caller
+		final double time = Minecraft.getSystemTime() / 1000.0D;
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
-			final double offset1 = ((indexVertex     & 2) - 1) * renderSize;
-			final double offset2 = ((indexVertex + 1 & 2) - 1) * renderSize;
-			final double valV = offset1 * cosS - offset2 * sinS;
-			final double valH = offset2 * cosS + offset1 * sinS;
-			final double y = valV * sinV + renderRange * cosV;
-			final double valD = renderRange * sinV - valV * cosV;
-			final double x = valD * sinH - valH * cosH + renderSize * offsetX;
-			final double z = valH * sinH + valD * cosH + renderSize * offsetZ;
-			vertexBuffer.pos(x, y, z).tex((indexVertex & 2) / 2, (indexVertex + 1 & 2) / 2).endVertex();
+		for (RenderData renderData : celestialObject.setRenderData) {
+			// compute texture offsets for clouds animation 
+			final float offsetU = (float) ( Math.signum(renderData.periodU) * ((time / Math.abs(renderData.periodU)) % 1.0D) );
+			final float offsetV = (float) ( Math.signum(renderData.periodV) * ((time / Math.abs(renderData.periodV)) % 1.0D) );
+			
+			// apply rendering parameters
+			GL11.glColor4f(renderData.red, renderData.green, renderData.blue, renderData.alpha * (isSpace ? 1.0F : 0.2F));
+			if (renderData.texture != null) {
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				FMLClientHandler.instance().getClient().renderEngine.bindTexture(renderData.resourceLocation);
+				vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			} else {
+				GL11.glDisable(GL11.GL_TEXTURE_2D);
+				vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
+			}
+			if (renderData.isAdditive) {
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			} else {
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			}
+			
+			// draw current layer
+			for (int indexVertex = 0; indexVertex < 4; indexVertex++) {
+				final double offset1 = ((indexVertex & 2) - 1) * renderSize;
+				final double offset2 = ((indexVertex + 1 & 2) - 1) * renderSize;
+				final double valV = offset1 * cosS - offset2 * sinS;
+				final double valH = offset2 * cosS + offset1 * sinS;
+				final double y = valV * sinV + renderRange * cosV;
+				final double valD = renderRange * sinV - valV * cosV;
+				final double x = valD * sinH - valH * cosH + renderSize * offsetX;
+				final double z = valH * sinH + valD * cosH + renderSize * offsetZ;
+				if (renderData.texture != null) {
+					vertexBuffer.pos(x, y, z).tex((indexVertex & 2) / 2 + offsetU, (indexVertex + 1 & 2) / 2 + offsetV).endVertex();
+				} else {
+					vertexBuffer.pos(x, y, z).endVertex();
+				}
+			}
+			tessellator.draw();
+			
+			// slight offset to get volumetric illusion
+			renderRange -= 5.0D;
 		}
-		tessellator.draw();
+		
+		// restore settings
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 		GL11.glPopMatrix();
 	}

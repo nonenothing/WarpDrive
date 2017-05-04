@@ -23,6 +23,8 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
@@ -874,7 +876,7 @@ public class Recipes {
 		if (WarpDriveConfig.isThermalExpansionLoaded) {
 			oreCoolant = "dustCryotheum";
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			oreCoolant = WarpDriveConfig.getModItemStack("IC2", "heat_storage", -1);
+			oreCoolant = WarpDriveConfig.getModItemStack("ic2", "heat_storage", -1);    // 10k Coolant Cell
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR), false, "pcp", "cec", "pcp",
 		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
@@ -1057,13 +1059,34 @@ public class Recipes {
 		} else if (WarpDriveConfig.isEnderIOLoaded) {
 			itemStackCompressorOrTank = WarpDriveConfig.getModItemStack("EnderIO", "blockReservoir", 0);
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "aca", "ata", "gmp",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGenerator), false, "ata", "aca", "gmp",
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
 				'a', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
 				't', itemStackMotors[1],
 				'g', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 				'm', itemStackMachineCasings[1],
 				'c', itemStackCompressorOrTank));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGeneratorTiered[0]), false, "aca", "ata", "gmp",
+		        'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+		        'a', ItemComponent.getItemStack(EnumComponentType.ACTIVATED_CARBON),
+		        't', itemStackMotors[1],
+		        'g', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
+		        'm', itemStackMachineCasings[1],
+		        'c', itemStackCompressorOrTank));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGeneratorTiered[1]), false, "aaa", "ata", "ama",
+		        'a', WarpDrive.blockAirGeneratorTiered[0],
+		        't', itemStackMotors[2],
+		        'm', itemStackMachineCasings[2]));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirGeneratorTiered[2]), false, "aaa", "ata", "ama",
+		        'a', WarpDrive.blockAirGeneratorTiered[1],
+		        't', itemStackMotors[3],
+		        'm', itemStackMachineCasings[3]));
+		
+		// Air shield is 4 glowstones, 4 omnipanels and 1 coil crystal 
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirShield, 4, 0), false, "gog", "oco", "gog",
+				'g', Items.GLOWSTONE_DUST,
+				'o', "blockHull1_omnipanel",
+				'c', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL) ));
 		
 		// Laser cannon is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 HV Machine casing, 1 redstone dust, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaser), false, "gtr", "ldm", "gtc",
@@ -1502,12 +1525,14 @@ public class Recipes {
 				'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED)));
 		
 		// Accelerator related ore dictionary
-		OreDictionary.registerOre("blockVoidShell", new ItemStack(WarpDrive.blockVoidShellPlain, 1));
-		OreDictionary.registerOre("blockVoidShell", new ItemStack(WarpDrive.blockVoidShellGlass, 1));
-		for(int tier = 1; tier <= 3; tier++) {
-			int index = tier - 1;
-			OreDictionary.registerOre("blockElectromagnet" + tier, new ItemStack(WarpDrive.blockElectromagnetPlain[index], 1));
-			OreDictionary.registerOre("blockElectromagnet" + tier, new ItemStack(WarpDrive.blockElectromagnetGlass[index], 1));
+		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
+			OreDictionary.registerOre("blockVoidShell", new ItemStack(WarpDrive.blockVoidShellPlain, 1));
+			OreDictionary.registerOre("blockVoidShell", new ItemStack(WarpDrive.blockVoidShellGlass, 1));
+			for (int tier = 1; tier <= 3; tier++) {
+				int index = tier - 1;
+				OreDictionary.registerOre("blockElectromagnet" + tier, new ItemStack(WarpDrive.blockElectromagnetPlain[index], 1));
+				OreDictionary.registerOre("blockElectromagnet" + tier, new ItemStack(WarpDrive.blockElectromagnetGlass[index], 1));
+			}
 		}
 		
 		// iron or steel
@@ -1516,133 +1541,168 @@ public class Recipes {
 			ingotIronOrSteel = "ingotSteel";
 		}
 		
-		// Void shells is hull + power interface + steel or iron
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockVoidShellPlain, 6), "psh", "s s", "hsp",
-		                                          'h', "blockHull1_plain",
-		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                          's', ingotIronOrSteel));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockVoidShellGlass, 6), "psh", "s s", "hsp",
-		                                          'h', "blockHull1_glass",
-		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                          's', ingotIronOrSteel));
-		
-		// Electromagnetic cell
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemElectromagneticCell, 2), "iri", "i i", "ici",
-		                                          'i', ironBars,
-		                                          'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
-		                                          'r', Items.REDSTONE));
-		
-		// Accelerator control point
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAcceleratorControlPoint), "hd ", "vc ", "he ",
-		                                          'h', Blocks.HOPPER,
-		                                          'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL),
-		                                          'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-		                                          'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
-		                                          'v', "blockVoidShell"));
-		
-		// Particles injector
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockParticlesInjector), "mm ", "vvp", "mmc",
-		                                          'p', Blocks.PISTON,
-		                                          'm', "blockElectromagnet1",
-		                                          'c', WarpDrive.blockAcceleratorControlPoint,
-		                                          'v', "blockVoidShell"));
-		
-		// Accelerator controller
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAcceleratorController), "MmM", "mcm", "MmM",
-		                                          'M', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
-		                                          'm', "blockElectromagnet1",
-		                                          'c', WarpDrive.blockAcceleratorControlPoint));
-		
-		// Particles collider
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockParticlesCollider), "hoh", "odo", "hoh",
-		                                          'h', "blockHull1_plain",
-		                                          'o', Blocks.OBSIDIAN,
-		                                          'd', Items.DIAMOND));
-		
-		// Chillers
-		Object snowOrIce = Blocks.SNOW;
-		if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
-			snowOrIce = Blocks.ICE;
+		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
+			
+			// Void shells is hull + power interface + steel or iron
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockVoidShellPlain, 6), "psh", "s s", "hsp",
+			        'h', "blockHull1_plain",
+			        'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			        's', ingotIronOrSteel));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockVoidShellGlass, 6), "psh", "s s", "hsp",
+			        'h', "blockHull1_glass",
+			        'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			        's', ingotIronOrSteel));
+			
+			// Electromagnetic cell
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemElectromagneticCell, 2), "iri", "i i", "ici",
+			        'i', ironBars,
+			        'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
+			        'r', Items.REDSTONE));
+			
+			// Accelerator control point
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAcceleratorControlPoint), "hd ", "vc ", "he ",
+			        'h', Blocks.HOPPER,
+			        'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL),
+			        'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
+			        'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+			        'v', "blockVoidShell"));
+			
+			// Particles injector
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockParticlesInjector), "mm ", "vvp", "mmc",
+			        'p', Blocks.PISTON,
+			        'm', "blockElectromagnet1",
+			        'c', WarpDrive.blockAcceleratorControlPoint,
+			        'v', "blockVoidShell"));
+			
+			// Accelerator controller
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAcceleratorController), "MmM", "mcm", "MmM",
+			        'M', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
+			        'm', "blockElectromagnet1",
+			        'c', WarpDrive.blockAcceleratorControlPoint));
+			
+			// Particles collider
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockParticlesCollider), "hoh", "odo", "hoh",
+			        'h', "blockHull1_plain",
+			        'o', Blocks.OBSIDIAN,
+			        'd', Items.DIAMOND));
+			
+			// Chillers
+			Object snowOrIce = Blocks.SNOW;
+			if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
+				snowOrIce = Blocks.ICE;
+			}
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[0]), "wgw", "sms", "bMb",
+					'w', snowOrIce,
+					'g', Items.GHAST_TEAR,
+					's', ingotIronOrSteel,
+					'm', itemStackMotorLV,
+					'b', ironBars,
+					'M', "blockElectromagnet1"));
+			
+			Object nitrogen = Blocks.ICE;
+			if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
+				nitrogen = Blocks.PACKED_ICE;
+			}
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[1]), "ngn", "dmd", "bMb",
+			        'n', nitrogen,
+			        'g', Items.GHAST_TEAR,
+			        'd', Items.DIAMOND,
+			        'm', itemStackMotorMV,
+			        'b', ironBars,
+			        'M', "blockElectromagnet2"));
+			
+			Object helium = Blocks.PACKED_ICE;
+			if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
+				helium = "dustCryotheum";
+			}
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[2]), "hgh", "eme", "bMb",
+			                                          'h', helium,
+			                                          'g', Items.GHAST_TEAR,
+			                                          'e', Items.EMERALD,
+			                                          'm', itemStackMotorHV,
+			                                          'b', ironBars,
+			                                          'M', "blockElectromagnet3"));
+			
+			// Lower tier coil is iron, copper or coil
+			Object ironIngotOrCopperIngotOrCoil = new ItemStack(Items.IRON_INGOT);
+			if (WarpDriveConfig.isGregTech5Loaded) {
+				ironIngotOrCopperIngotOrCoil = itemStackGoldIngotOrCoil;   // @TODO revise GT recipes
+			} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+				ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("ic2", "crafting", 5);				// Coil
+			} else if (WarpDriveConfig.isThermalExpansionLoaded) {
+				ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("ThermalExpansion", "material", 1);    // Redstone reception coil
+			} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
+				ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "coil", 2);    // HV wire coil
+			} else if (WarpDriveConfig.isEnderIOLoaded) {
+				ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("EnderIO", "itemPowerConduit", 1);    // Enhanced energy conduit
+			} else if (OreDictionary.doesOreNameExist("ingotCopper") && !OreDictionary.getOres("ingotCopper").isEmpty()) {
+				ironIngotOrCopperIngotOrCoil = "ingotCopper";
+			}
+			
+			// Normal electromagnets
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetPlain[0], 4), "ctc", "cmc", "cCc",
+			        'c', ironIngotOrCopperIngotOrCoil,
+			        't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
+			        'm', itemStackMotorLV,
+			        'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetGlass[0], 4), "mgm", "g g", "mgm",
+			        'g', Blocks.GLASS,
+			        'm', WarpDrive.blockElectromagnetPlain[0]));
+			
+			// Advanced electromagnets
+			GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetPlain[1], 6), "mpm", "pip", "mpm",
+			        'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
+			        'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			        'm', WarpDrive.blockElectromagnetPlain[0]));
+			GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetGlass[1], 6), "mpm", "pip", "mpm",
+			        'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
+			        'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			        'm', WarpDrive.blockElectromagnetGlass[0]));
+			
+			// Superior electromagnets
+			GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mtm", "sps", "mMm",
+			        't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
+			        's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
+			        'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
+			        'M', itemStackMotorHV,
+			        'm', WarpDrive.blockElectromagnetPlain[1]));
+			GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mtm", "sps", "mMm",
+			        't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
+			        's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
+			        'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
+			        'M', itemStackMotorHV,
+			        'm', WarpDrive.blockElectromagnetGlass[1]));
+			
+			// Defense tech
+			if (WarpDriveConfig.isDefenseTechLoaded) {
+				// antimatter
+				removeRecipe(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21), "aaa", "ana", "aaa",
+				        'a', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000),
+				        'n', WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 15)));
+				
+				// red matter
+				removeRecipe(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 22));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 22), "sss", "sas", "sss",
+						's', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000),
+						'a', WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21)));
+			}
+			
+			// ICBM classic
+			if (WarpDriveConfig.isICBMClassicLoaded) {
+				// antimatter
+				removeRecipe(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 22));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 22), "aaa", "ana", "aaa",
+				        'a', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ANTIMATTER, 1000),
+				        'n', WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 15)));
+				
+				// red matter
+				removeRecipe(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 23));
+				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 23), "sss", "sas", "sss",
+						's', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000),
+						'a', WarpDriveConfig.getModItemStack("icbmclassic", "icbmCExplosive", 22)));
+			}
 		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[0]), "wgw", "sms", "bMb",
-		                                          'w', snowOrIce,
-		                                          'g', Items.GHAST_TEAR,
-		                                          's', ingotIronOrSteel,
-		                                          'm', itemStackMotorLV,
-												  'b', ironBars,
-		                                          'M', "blockElectromagnet1"));
-		Object nitrogen = Blocks.ICE;
-		if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
-			nitrogen = Blocks.PACKED_ICE;
-		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[1]), "ngn", "dmd", "bMb",
-		                                          'n', nitrogen,
-		                                          'g', Items.GHAST_TEAR,
-		                                          'd', Items.DIAMOND,
-		                                          'm', itemStackMotorMV,
-		                                          'b', ironBars,
-		                                          'M', "blockElectromagnet2"));
-		Object helium = Blocks.PACKED_ICE;
-		if (OreDictionary.doesOreNameExist("dustCryotheum") && !OreDictionary.getOres("dustCryotheum").isEmpty()) {
-			helium = "dustCryotheum";
-		}
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockChillers[2]), "hgh", "eme", "bMb",
-		                                          'h', helium,
-		                                          'g', Items.GHAST_TEAR,
-		                                          'e', Items.EMERALD,
-		                                          'm', itemStackMotorHV,
-		                                          'b', ironBars,
-		                                          'M', "blockElectromagnet3"));
-		
-		// Lower tier coil is iron, copper or coil
-		Object ironIngotOrCopperIngotOrCoil = new ItemStack(Items.IRON_INGOT);
-		if (WarpDriveConfig.isGregTech5Loaded) {
-			ironIngotOrCopperIngotOrCoil = itemStackGoldIngotOrCoil;   // @TODO revise GT recipes
-		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("IC2", "crafting", 5);	// Coil
-		} else if (WarpDriveConfig.isThermalExpansionLoaded) {
-			ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("ThermalExpansion", "material", 1);	// Redstone reception coil
-		} else if (WarpDriveConfig.isImmersiveEngineeringLoaded) {
-			ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("ImmersiveEngineering", "coil", 2);	// HV wire coil
-		} else if (WarpDriveConfig.isEnderIOLoaded) {
-			ironIngotOrCopperIngotOrCoil = WarpDriveConfig.getModItemStack("EnderIO", "itemPowerConduit", 1);	// Enhanced energy conduit
-		} else if (OreDictionary.doesOreNameExist("ingotCopper") && !OreDictionary.getOres("ingotCopper").isEmpty()) {
-			ironIngotOrCopperIngotOrCoil = "ingotCopper";
-		}
-		
-		// Normal electromagnets
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetPlain[0], 4), "ctc", "cmc", "cCc",
-		                                          'c', ironIngotOrCopperIngotOrCoil,
-		                                          't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
-		                                          'm', itemStackMotorLV,
-		                                          'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetGlass[0], 4), "mgm", "g g", "mgm",
-		                                          'g', Blocks.GLASS,
-		                                          'm', WarpDrive.blockElectromagnetPlain[0]));
-		
-		// Advanced electromagnets
-		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetPlain[1], 6), "mpm", "pip", "mpm",
-		                                          'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
-		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                          'm', WarpDrive.blockElectromagnetPlain[0]));
-		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetGlass[1], 6), "mpm", "pip", "mpm",
-		                                          'i', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.ION, 200),
-		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-		                                          'm', WarpDrive.blockElectromagnetGlass[0]));
-		
-		// Superior electromagnets
-		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetPlain[2], 6), "mtm", "sps", "mMm",
-		                                          't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
-		                                          's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
-		                                          'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
-		                                          'M', itemStackMotorHV,
-		                                          'm', WarpDrive.blockElectromagnetPlain[1]));
-		GameRegistry.addRecipe(new RecipeParticleShapedOre(new ItemStack(WarpDrive.blockElectromagnetGlass[2], 6), "mtm", "sps", "mMm",
-		                                          't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
-		                                          's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR),
-		                                          'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 24),
-		                                          'M', itemStackMotorHV,
-		                                          'm', WarpDrive.blockElectromagnetGlass[1]));
 	}
 	
 	private static void initDynamicHull() {
@@ -1650,9 +1710,15 @@ public class Recipes {
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			for (int woolColor = 0; woolColor < 16; woolColor++) {
-				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_glass", new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor));
 				OreDictionary.registerOre("blockHull" + tier + "_stairs", new ItemStack(WarpDrive.blockHulls_stairs[index][woolColor], 1));
+				OreDictionary.registerOre("blockHull" + tier + "_tiled", new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6));
+				OreDictionary.registerOre("blockHull" + tier + "_slab", new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8));
+				OreDictionary.registerOre("blockHull" + tier + "_omnipanel", new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor));
 			}
 		}
 		
@@ -1664,30 +1730,30 @@ public class Recipes {
 		// Tier 1 = 5 stone + 4 bronze ingots gives 5
 		// Tier 1 = 5 stone + 4 aluminium ingots gives 3
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("ic2", "resource", 11); // Reinforced stone
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+			ItemStack reinforcedStone = WarpDriveConfig.getModItemStack("ic2", "resource", 11);
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', Blocks.OBSIDIAN,
 					'c', reinforcedStone ));
 		} else if (OreDictionary.doesOreNameExist("ingotSteel") && !OreDictionary.getOres("ingotSteel").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotSteel",
 					'c', "stone" ));
 		} else {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 10, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 10, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotIron",
 					'c', "stone" ));
 		}
 		if (OreDictionary.doesOreNameExist("ingotBronze") && !OreDictionary.getOres("ingotBronze").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 5, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 5, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotBronze",
 					'c', "stone" ));
 		}
 		if (OreDictionary.doesOreNameExist("ingotAluminium") && !OreDictionary.getOres("ingotAluminium").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 3, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 3, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotAluminium",
 					'c', "stone" ));
 		} else if (OreDictionary.doesOreNameExist("ingotAluminum") && !OreDictionary.getOres("ingotAluminum").isEmpty()) {
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0], 3, 0), false, "cbc", "bcb", "cbc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[0][0], 3, 0), false, "cbc", "bcb", "cbc",
 					'b', "ingotAluminum",
 					'c', "stone" ));
 		}
@@ -1698,35 +1764,35 @@ public class Recipes {
 		for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 			if (WarpDriveConfig.isGregTech5Loaded) {
 				ItemStack tungstensteelReinforcedBlock = WarpDriveConfig.getModItemStack("gregtech", "gt.blockreinforced", 3);
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, " b ", "bcb", " b ",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, " b ", "bcb", " b ",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, enumDyeColor.getDyeDamage()),
 						'c', tungstensteelReinforcedBlock ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4,enumDyeColor.getDyeDamage()), false, "Xb ", "bcb", " b ",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4,enumDyeColor.getDyeDamage()), false, "Xb ", "bcb", " b ",
 						'b', "blockHull1_plain",
 						'c', tungstensteelReinforcedBlock,
 						'X', oreDyes[enumDyeColor.getMetadata()] ));    // TODO MC1.10 not tested
 			} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 				ItemStack carbonPlate = WarpDriveConfig.getModItemStack("ic2", "crafting", 15); // Carbon plate
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, enumDyeColor.getDyeDamage()),
 						'c', carbonPlate ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
 						'c', carbonPlate,
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			} else if (OreDictionary.doesOreNameExist("ingotDarkSteel") && !OreDictionary.getOres("ingotDarkSteel").isEmpty()) {// EnderIO
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, enumDyeColor.getDyeDamage()),
 						'c', "ingotDarkSteel" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
 						'c', "ingotDarkSteel",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			} else {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[0], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[0][0], 4, enumDyeColor.getDyeDamage()),
 						'c', Blocks.OBSIDIAN ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
 						'b', "blockHull1_plain",
 						'c', Blocks.OBSIDIAN,
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
@@ -1738,34 +1804,34 @@ public class Recipes {
 		// Tier 3 = 4 Tier 2 + 4 diamond gives 4
 		for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 			if (OreDictionary.doesOreNameExist("plateNaquadah") && !OreDictionary.getOres("plateNaquadah").isEmpty()) {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, " b ", "bcb", " b ",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, " b ", "bcb", " b ",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()),
 						'c', "plateNaquadah" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "Xb ", "bcb", " b ",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "Xb ", "bcb", " b ",
 						'b', "blockHull2_plain",
 						'c', "plateNaquadah",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			} else if (OreDictionary.doesOreNameExist("plateAlloyIridium") && !OreDictionary.getOres("plateAlloyIridium").isEmpty()) {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()),
 						'c', "plateAlloyIridium" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "plateAlloyIridium",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			} else if (OreDictionary.doesOreNameExist("itemPulsatingCrystal") && !OreDictionary.getOres("itemPulsatingCrystal").isEmpty()) {// EnderIO
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()),
 						'c', "itemPulsatingCrystal" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "itemPulsatingCrystal",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			} else {
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
-						'b', new ItemStack(WarpDrive.blockHulls_plain[1], 4, enumDyeColor.getDyeDamage()),
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "b b", "cbc",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[1][0], 4, enumDyeColor.getDyeDamage()),
 						'c', "gemDiamond" ));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[2][0], 4, enumDyeColor.getDyeDamage()), false, "cbc", "bXb", "cbc",
 						'b', "blockHull2_plain",
 						'c', "gemDiamond",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
@@ -1776,27 +1842,81 @@ public class Recipes {
 		for(int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+				final int woolColor = enumDyeColor.getDyeDamage();  // @TODO sounds about wrong
 				
 				// crafting glass
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 4, enumDyeColor.getDyeDamage()), false, "gpg", "pFp", "gpg",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 4, woolColor), false, "gpg", "pFp", "gpg",
 						'g', "blockGlass",
-						'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()),
+						'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, woolColor),
 						'F', "dustGlowstone" ));
 				
 				// crafting stairs
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 4), false, "p  ", "pp ", "ppp",
-				        'p', new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()) ));
+				        'p', new ItemStack(WarpDrive.blockHulls_plain[index][0], 8,woolColor) ));
 				
 				// uncrafting
-				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 6, enumDyeColor.getDyeDamage()),
-				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()],
-				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()],
-				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()],
-				        WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()] ));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 6, woolColor),
+				        WarpDrive.blockHulls_stairs[index][woolColor],
+				        WarpDrive.blockHulls_stairs[index][woolColor],
+				        WarpDrive.blockHulls_stairs[index][woolColor],
+				        WarpDrive.blockHulls_stairs[index][woolColor] ));
+				
+				// smelting tiled
+				GameRegistry.addSmelting(
+						new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
+						new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor),
+						0);
+				
+				// uncrafting tiled
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				
+				// crafting omnipanel
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_omnipanel[index], 16, woolColor), false, "ggg", "ggg",
+						'g', new ItemStack(WarpDrive.blockHulls_glass[index], 1, woolColor)));
+				
+				// uncrafting omnipanel
+				GameRegistry.addRecipe(new ShapelessOreRecipe( new ItemStack(WarpDrive.blockHulls_glass[index], 3, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor),
+				        new ItemStack(WarpDrive.blockHulls_omnipanel[index], 1, woolColor) ));
+				
+				// crafting slab
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 0), false, "bbb",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 2), false, "b", "b", "b",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 6), false, "bbb",
+						'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 6, 8), false, "b", "b", "b",
+				        'b', new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor)));
+				
+				// uncrafting slab
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor), false, "s", "s",
+						's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 0)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor), false, "ss",
+				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 2)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor), false, "s", "s",
+				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 6)));
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][1], 1, woolColor), false, "ss",
+				        's', new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 8)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 0),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 12)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 6),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 13)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 8),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 14)));
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 2, 8),
+				        new ItemStack(WarpDrive.blockHulls_slab[index][woolColor], 1, 15)));
 				
 				// changing colors
-				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 1, enumDyeColor.getDyeDamage()),
-						"dye" + enumDyeColor.getUnlocalizedName(),
+				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, enumDyeColor.getDyeDamage()),
+						oreDyes[woolColor],
 						"blockHull" + tier + "_plain"));
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 1, enumDyeColor.getDyeDamage()),
 						"dye" + enumDyeColor.getUnlocalizedName(),
@@ -1804,7 +1924,7 @@ public class Recipes {
 				GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockHulls_stairs[index][enumDyeColor.getDyeDamage()], 1),
 						"dye" + enumDyeColor.getUnlocalizedName(),
 						"blockHull" + tier + "_stairs"));
-				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
+				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_plain[index][0], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
 						'#', "blockHull" + tier + "_plain",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 				GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockHulls_glass[index], 8, enumDyeColor.getDyeDamage()), false, "###", "#X#", "###",
@@ -1814,6 +1934,28 @@ public class Recipes {
 						'#', "blockHull" + tier + "_stairs",
 						'X', oreDyes[enumDyeColor.getMetadata()] ));
 			}
+		}
+	}
+	
+	private static void removeRecipe(final ItemStack itemStackOutputOfRecipeToRemove) {
+		IRecipe recipeToRemove = null;
+		for (final Object object : CraftingManager.getInstance().getRecipeList()) {
+			if (object instanceof IRecipe) {
+				final IRecipe recipe = (IRecipe) object;
+				final ItemStack itemStackRecipeOutput = recipe.getRecipeOutput();
+				if (itemStackRecipeOutput != null && itemStackRecipeOutput.isItemEqual(itemStackOutputOfRecipeToRemove)) {
+					recipeToRemove = recipe;
+					break;
+				}
+			} else {
+				WarpDrive.logger.error(String.format("Invalid recipe %s", object));
+			}
+		}
+		if (recipeToRemove == null) {
+			WarpDrive.logger.error(String.format("Unable to find any recipe to remove with output %s", itemStackOutputOfRecipeToRemove));
+		} else {
+			WarpDrive.logger.info(String.format("Removing recipe %s with output %s", recipeToRemove, itemStackOutputOfRecipeToRemove));
+			CraftingManager.getInstance().getRecipeList().remove(recipeToRemove);
 		}
 	}
 }

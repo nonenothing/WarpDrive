@@ -40,6 +40,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				"getEnergyRequired",
 				"start",
 				"getScanDuration",
+				"getResults",
 				"getResultsCount",
 				"getResult"
 			});
@@ -125,11 +126,14 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResults(Context context, Arguments arguments) {
+		return getResults();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
 	public Object[] getResultsCount(Context context, Arguments arguments) {
-		if (results != null) {
-			return new Integer[] { results.size() };
-		}
-		return new Integer[] { -1 };
+		return getResultsCount();
 	}
 	
 	@Callback
@@ -138,6 +142,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return getResult(argumentsOCtoCC(arguments));
 	}
 	
+	// Common OC/CC methods
 	private Object[] radius(Object[] arguments) {
 		if (arguments.length == 1 && getBlockMetadata() != 2) {
 			int newRadius;
@@ -198,6 +203,30 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return new Object[] { true };
 	}
 	
+	private Object[] getResults() {
+		if (results == null) {
+			return null;
+		}
+		Object[] objectResults = new Object[results.size()];
+		int index = 0;
+		for (StarMapRegistryItem starMapRegistryItem : results) {
+			final VectorI spaceCoordinates = starMapRegistryItem.getSpaceCoordinates();
+			objectResults[index++] = new Object[] {
+					starMapRegistryItem.type.toString(),
+					starMapRegistryItem.name == null ? "" : starMapRegistryItem.name,
+					spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z,
+					starMapRegistryItem.mass };
+		}
+		return objectResults;
+	}
+	
+	private Object[] getResultsCount() {
+		if (results != null) {
+			return new Integer[] { results.size() };
+		}
+		return new Integer[] { -1 };
+	}
+	
 	private Object[] getResult(Object[] arguments) {
 		if (arguments.length == 1 && (results != null)) {
 			int index;
@@ -207,10 +236,15 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}
 			if (index >= 0 && index < results.size()) {
-				StarMapRegistryItem result = results.get(index);
-				if (result != null) {
-					VectorI spaceCoordinates = result.getSpaceCoordinates();
-					return new Object[] { true, "SHIP", result.name, spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z };
+				StarMapRegistryItem starMapRegistryItem = results.get(index);
+				if (starMapRegistryItem != null) {
+					VectorI spaceCoordinates = starMapRegistryItem.getSpaceCoordinates();
+					return new Object[] {
+							true,
+							starMapRegistryItem.type.toString(),
+							starMapRegistryItem.name == null ? "" : starMapRegistryItem.name,
+							spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z,
+							starMapRegistryItem.mass };
 				}
 			}
 		}
@@ -242,27 +276,26 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "radius":
-				return radius(arguments);
-
-			case "getEnergyRequired":
-				return getEnergyRequired(arguments);
-
-			case "getScanDuration":
-				return getScanDuration(arguments);
-
-			case "start":
-				return start();
-
-			case "getResultsCount":
-				if (results != null) {
-					return new Integer[] { results.size() };
-				}
-				return new Integer[]{-1};
-
-			case "getResult":
-				return getResult(arguments);
-			
+		case "radius":
+			return radius(arguments);
+		
+		case "getEnergyRequired":
+			return getEnergyRequired(arguments);
+		
+		case "getScanDuration":
+			return getScanDuration(arguments);
+		
+		case "start":
+			return start();
+		
+		case "getResults":
+			return getResults();
+		
+		case "getResultsCount":
+			return getResultsCount();
+		
+		case "getResult":
+			return getResult(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

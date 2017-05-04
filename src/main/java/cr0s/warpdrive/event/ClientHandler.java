@@ -66,6 +66,15 @@ public class ClientHandler {
 				} catch(Exception exception) {
 					// no operation
 				}
+				Commons.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
+				
+			} else {
+				try {
+					String uniqueName = event.getItemStack().getItem().getRegistryName().toString();
+					Commons.addTooltip(event.getToolTip(), "" + uniqueName + "");
+				} catch(Exception exception) {
+					// no operation
+				}
 			}
 		}
 	}

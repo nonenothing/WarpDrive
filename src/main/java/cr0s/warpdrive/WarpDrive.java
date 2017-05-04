@@ -6,11 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
 import cr0s.warpdrive.block.BlockLaserMedium;
-import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.block.TileEntityAbstractChunkLoading;
-import cr0s.warpdrive.block.TileEntityChunkLoader;
-import cr0s.warpdrive.block.TileEntityLaser;
-import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
 // import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
@@ -20,11 +16,13 @@ import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
-import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
-// import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
-import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
-import cr0s.warpdrive.block.breathing.BlockAir;
+import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
+import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
+import cr0s.warpdrive.block.breathing.BlockAirShield;
+import cr0s.warpdrive.block.breathing.BlockAirSource;
+// import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
+import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.decoration.BlockDecorative;
 import cr0s.warpdrive.block.decoration.BlockGas;
 import cr0s.warpdrive.block.decoration.BlockLamp_bubble;
@@ -62,8 +60,6 @@ import cr0s.warpdrive.item.ItemTuningFork;
 import cr0s.warpdrive.item.ItemUpgrade;
 import cr0s.warpdrive.item.ItemWarpArmor;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -75,8 +71,6 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -93,7 +87,6 @@ import net.minecraftforge.common.util.EnumHelper;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -112,40 +105,10 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.building.BlockShipScanner;
 import cr0s.warpdrive.block.collection.BlockLaserTreeFarm;
 import cr0s.warpdrive.block.collection.BlockMiningLaser;
-import cr0s.warpdrive.block.collection.TileEntityLaserTreeFarm;
-import cr0s.warpdrive.block.collection.TileEntityMiningLaser;
-import cr0s.warpdrive.block.detection.BlockCamera;
-import cr0s.warpdrive.block.detection.BlockCloakingCoil;
-import cr0s.warpdrive.block.detection.BlockCloakingCore;
-import cr0s.warpdrive.block.detection.BlockMonitor;
-import cr0s.warpdrive.block.detection.BlockRadar;
-import cr0s.warpdrive.block.detection.BlockSiren;
-import cr0s.warpdrive.block.detection.BlockWarpIsolation;
-import cr0s.warpdrive.block.detection.TileEntityCamera;
-import cr0s.warpdrive.block.detection.TileEntityCloakingCore;
-import cr0s.warpdrive.block.detection.TileEntityMonitor;
-import cr0s.warpdrive.block.detection.TileEntityRadar;
-import cr0s.warpdrive.block.detection.TileEntitySiren;
-import cr0s.warpdrive.block.energy.BlockEnanReactorCore;
-import cr0s.warpdrive.block.energy.BlockEnanReactorLaser;
-import cr0s.warpdrive.block.energy.BlockEnergyBank;
-import cr0s.warpdrive.block.energy.BlockIC2reactorLaserMonitor;
-import cr0s.warpdrive.block.energy.TileEntityEnanReactorCore;
-import cr0s.warpdrive.block.energy.TileEntityEnanReactorLaser;
-import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
-import cr0s.warpdrive.block.energy.TileEntityIC2reactorLaserMonitor;
-import cr0s.warpdrive.block.forcefield.BlockForceField;
-import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
-import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
-import cr0s.warpdrive.block.forcefield.ItemBlockForceFieldProjector;
-import cr0s.warpdrive.block.forcefield.ItemBlockForceFieldRelay;
-import cr0s.warpdrive.block.forcefield.TileEntityForceField;
-import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
-import cr0s.warpdrive.block.forcefield.TileEntityForceFieldRelay;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
+import cr0s.warpdrive.block.hull.BlockHullOmnipanel;
 import cr0s.warpdrive.block.hull.BlockHullPlain;
-import cr0s.warpdrive.block.hull.BlockHullStairs;
-import cr0s.warpdrive.block.hull.ItemBlockHull;
+import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.movement.BlockLift;
 import cr0s.warpdrive.block.movement.BlockTransporter;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
@@ -155,10 +118,11 @@ import cr0s.warpdrive.command.CommandEntity;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandInvisible;
 import cr0s.warpdrive.command.CommandJumpgates;
+import cr0s.warpdrive.command.CommandReload;
 import cr0s.warpdrive.command.CommandSpace;
+import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.RecipeParticleShapedOre;
 import cr0s.warpdrive.config.RecipeTuningDriver;
-import cr0s.warpdrive.config.Recipes;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.damage.DamageAsphyxia;
 import cr0s.warpdrive.damage.DamageCold;
@@ -170,37 +134,29 @@ import cr0s.warpdrive.damage.DamageWarm;
 import cr0s.warpdrive.data.CamerasRegistry;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CloakManager;
+import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
-import cr0s.warpdrive.item.ItemAirCanisterFull;
-import cr0s.warpdrive.item.ItemComponent;
-import cr0s.warpdrive.item.ItemCrystalToken;
-import cr0s.warpdrive.item.ItemElectromagneticCell;
-import cr0s.warpdrive.item.ItemForceFieldShape;
-import cr0s.warpdrive.item.ItemForceFieldUpgrade;
-import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.item.ItemTuningDriver;
-import cr0s.warpdrive.item.ItemTuningFork;
-import cr0s.warpdrive.item.ItemUpgrade;
-import cr0s.warpdrive.item.ItemWarpArmor;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
+import cr0s.warpdrive.render.RenderOverlayAir;
 import cr0s.warpdrive.render.RenderOverlayCamera;
 import cr0s.warpdrive.world.BiomeSpace;
 import cr0s.warpdrive.world.HyperSpaceWorldGenerator;
 import cr0s.warpdrive.world.HyperSpaceWorldProvider;
 import cr0s.warpdrive.world.SpaceWorldGenerator;
-import cr0s.warpdrive.world.SpaceWorldProvider;
 
 import net.minecraftforge.oredict.RecipeSorter;
 
 import javax.annotation.Nullable;
 
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2;" + " after:CoFHCore;" + " after:ComputerCraft;"
-		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;")
+		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;" + " after:DefenseTech;" + " after:icbmclassic;")
 public class WarpDrive implements LoadingCallback {
 	public static final String MODID = "warpdrive";
 	public static final String VERSION = "@version@";
@@ -213,6 +169,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockRadar;
 	public static Block blockWarpIsolation;
 	public static Block blockAirGenerator;
+	public static Block[] blockAirGeneratorTiered;
 	public static Block blockLaser;
 	public static Block blockLaserCamera;
 	public static Block blockWeaponController;
@@ -231,6 +188,9 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockEnanReactorLaser;
 	public static Block blockEnergyBank;
 	public static Block blockAir;
+	public static Block blockAirFlow;
+	public static Block blockAirSource;
+	public static Block blockAirShield;
 	public static Block blockGas;
 	public static Block blockIridium;
 	public static Block blockLamp_bubble;
@@ -252,8 +212,9 @@ public class WarpDrive implements LoadingCallback {
 	public static Block[] blockElectromagnetGlass;
 	public static Block[] blockChillers;
 	public static Block blockDecorative;
-	public static Block[] blockHulls_plain;
+	public static Block[][] blockHulls_plain;
 	public static Block[] blockHulls_glass;
+	public static Block[] blockHulls_omnipanel;
 	public static Block[][] blockHulls_stairs;
 	public static Block[][] blockHulls_slab;
 	public static Block blockSiren;
@@ -323,6 +284,19 @@ public class WarpDrive implements LoadingCallback {
 		// building blocks
 		blockShipScanner = new BlockShipScanner("blockShipScanner");
 		
+		// breathing blocks
+		blockAir = new BlockAir("blockAir");
+		blockAirFlow = new BlockAirFlow("blockAirFlow");
+		blockAirSource = new BlockAirSource("blockAirSource");
+		blockAirShield = new BlockAirShield("blockAirShield");
+		blockAirGenerator = new BlockAirGenerator("blockAirGenerator");
+		
+		blockAirGeneratorTiered = new Block[3];
+		for(byte tier = 1; tier <= 3; tier++) {
+			final int index = tier - 1;
+			blockAirGeneratorTiered[index] = new BlockAirGeneratorTiered("blockAirGenerator" + tier, tier);
+		}
+		
 		// collection blocks
 		blockMiningLaser = new BlockMiningLaser("blockMiningLaser");
 		blockLaserTreeFarm = new BlockLaserTreeFarm("blockLaserTreeFarm");
@@ -352,7 +326,6 @@ public class WarpDrive implements LoadingCallback {
 		blockTransporter = new BlockTransporter("blockTransporter");
 		
 		// passive blocks
-		blockAir = new BlockAir("blockAir");
 		blockHighlyAdvancedMachine = new BlockHighlyAdvancedMachine("blockHighlyAdvancedMachine");
 		blockIridium = new BlockIridium("blockIridium");
 		blockTransportBeacon = new BlockTransportBeacon("blockTransportBeacon");
@@ -362,7 +335,6 @@ public class WarpDrive implements LoadingCallback {
 		blockWeaponController = new BlockWeaponController("blockWeaponController");
 		
 		// common blocks
-		blockAirGenerator = new BlockAirGenerator("blockAirGenerator");
 		blockChunkLoader = new BlockChunkLoader("blockChunkLoader");
 		blockLaser = new BlockLaser("blockLaser");
 		blockLaserMedium = new BlockLaserMedium("blockLaserMedium");
@@ -383,38 +355,40 @@ public class WarpDrive implements LoadingCallback {
 		itemForceFieldShape = new ItemForceFieldShape("itemForceFieldShape");
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade("itemForceFieldUpgrade");
 		
-		/*
-		// ACCELERATOR CONTROLLER
-		blockAcceleratorController = new BlockAcceleratorController();
-		GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
-		GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
-		/**/
-		// ACCELERATOR CONTROL POINT 
-		blockAcceleratorControlPoint = new BlockAcceleratorControlPoint("blockAcceleratorControlPoint");
-		
-		// PARTICLES COLLIDER 
-		blockParticlesCollider = new BlockParticlesCollider("blockParticlesCollider");
-		
-		// PARTICLES INJECTOR 
-		blockParticlesInjector = new BlockParticlesInjector("blockParticlesInjector");
-		
-		// VOID SHELL PLAIN/GLASS 
-		blockVoidShellPlain = new BlockVoidShellPlain("blockVoidShellPlain");
-		blockVoidShellGlass = new BlockVoidShellGlass("blockVoidShellGlass");
-		
-		blockElectromagnetPlain = new Block[3];
-		blockElectromagnetGlass = new Block[3];
-		blockChillers = new Block[3];
-		for(byte tier = 1; tier <= 3; tier++) {
-			int index = tier - 1;
-			// plain electromagnets 
-			blockElectromagnetPlain[index] = new BlockElectromagnetPlain("blockElectromagnetPlain" + tier, tier);
+		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
+			/*
+			// ACCELERATOR CONTROLLER
+			blockAcceleratorController = new BlockAcceleratorController();
+			GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
+			GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
+			/**/
+			// ACCELERATOR CONTROL POINT 
+			blockAcceleratorControlPoint = new BlockAcceleratorControlPoint("blockAcceleratorControlPoint");
 			
-			// glass electromagnets
-			blockElectromagnetGlass[index] = new BlockElectromagnetGlass("blockElectromagnetGlass" + tier, tier);
+			// PARTICLES COLLIDER 
+			blockParticlesCollider = new BlockParticlesCollider("blockParticlesCollider");
 			
-			// chiller
-			blockChillers[index] = new BlockChiller("blockChiller" + tier, tier);
+			// PARTICLES INJECTOR 
+			blockParticlesInjector = new BlockParticlesInjector("blockParticlesInjector");
+			
+			// VOID SHELL PLAIN/GLASS 
+			blockVoidShellPlain = new BlockVoidShellPlain("blockVoidShellPlain");
+			blockVoidShellGlass = new BlockVoidShellGlass("blockVoidShellGlass");
+			
+			blockElectromagnetPlain = new Block[3];
+			blockElectromagnetGlass = new Block[3];
+			blockChillers = new Block[3];
+			for(byte tier = 1; tier <= 3; tier++) {
+				final int index = tier - 1;
+				// plain electromagnets 
+				blockElectromagnetPlain[index] = new BlockElectromagnetPlain("blockElectromagnetPlain" + tier, tier);
+				
+				// glass electromagnets
+				blockElectromagnetGlass[index] = new BlockElectromagnetGlass("blockElectromagnetGlass" + tier, tier);
+				
+				// chiller
+				blockChillers[index] = new BlockChiller("blockChiller" + tier, tier);
+			}
 		}
 		
 		// decorative
@@ -425,17 +399,22 @@ public class WarpDrive implements LoadingCallback {
 		blockLamp_long = new BlockLamp_long("blockLamp_long");
 		
 		// hull blocks
-		blockHulls_plain = new Block[3];
+		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
+		blockHulls_omnipanel = new Block[3];
 		blockHulls_stairs = new Block[3][16];
 		blockHulls_slab = new Block[3][16];
 		
 		for(byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
-			blockHulls_plain[index] = new BlockHullPlain("blockHull" + tier + "_plain", tier);
+			for (EnumHullPlainType enumHullPlainType : EnumHullPlainType.values()) {
+				blockHulls_plain[index][enumHullPlainType.ordinal()] = new BlockHullPlain("blockHull" + tier + "_" + enumHullPlainType.getName(), tier, enumHullPlainType);
+			}
 			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_glass", tier);
+			blockHulls_omnipanel[index] = new BlockHullOmnipanel("blockHull" + tier + "_omnipanel", tier);
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-				blockHulls_stairs[index][enumDyeColor.getMetadata()] = new BlockHullStairs("blockHull" + tier + "_stairs_" + enumDyeColor.getName(), blockHulls_plain[index].getStateFromMeta(enumDyeColor.getMetadata()), tier);
+				blockHulls_stairs[index][enumDyeColor.getMetadata()] = new BlockHullStairs("blockHull" + tier + "_stairs_" + enumDyeColor.getName(), blockHulls_plain[index][0].getStateFromMeta(enumDyeColor.getMetadata()), tier);
+				blockHulls_slab[index][enumDyeColor.getMetadata()] = new BlockHullSlab("blockHull" + tier + "_slab_" + enumDyeColor.getName(), blockHulls_plain[index][0].getStateFromMeta(enumDyeColor.getMetadata()), tier);
 			}
 		}
 		
@@ -464,8 +443,10 @@ public class WarpDrive implements LoadingCallback {
 		itemTuningDriver = new ItemTuningDriver("itemTuningDriver");
 		
 		// electromagnetic cell
-		itemElectromagneticCell = new ItemElectromagneticCell("itemElectromagneticCell");
-		
+		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
+			itemElectromagneticCell = new ItemElectromagneticCell("itemElectromagneticCell");
+		}
+			
 		// damage sources
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
@@ -495,15 +476,15 @@ public class WarpDrive implements LoadingCallback {
 		dimensionTypeHyperSpace = DimensionType.register("Hyperspace", "_hyperspace", WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
 		
 		// only create dimensions if we own them
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
-			if (celestialObject.isWarpDrive) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+			if (!celestialObject.isVirtual && celestialObject.isProvidedByWarpDrive) {
 				if (celestialObject.isSpace()) {
 					DimensionManager.registerDimension(celestialObject.dimensionId, dimensionTypeSpace);
 				} else if (celestialObject.isHyperspace()) {
 					DimensionManager.registerDimension(celestialObject.dimensionId, dimensionTypeHyperSpace);
 				} else {
-					WarpDrive.logger.error(String.format("Only space and hyperspace dimensions can be provided by WarpDrive. Dimension %d is not what of those.",
-						celestialObject.dimensionId));
+					WarpDrive.logger.error(String.format("Only space and hyperspace dimensions can be provided by WarpDrive. Dimension %d is not what of those.", 
+					                                     celestialObject.dimensionId));
 				}
 			}
 		}
@@ -513,17 +494,18 @@ public class WarpDrive implements LoadingCallback {
 		if (FMLCommonHandler.instance().getSide().isClient()) {
 			creativeTabWarpDrive.setBackgroundImageName("items.png");
 			
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera(Minecraft.getMinecraft()));
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
 			
 			MinecraftForge.EVENT_BUS.register(new ClientCameraHandler());
 			
 			// @TODO MC1.10 force field rendering
 			/*
-			RenderBlockStandard.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockStandard.instance);
-			
 			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
 			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
+				
+			RenderBlockOmnipanel.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockOmnipanel.instance);
 			/**/
 		}
 	}
@@ -538,8 +520,8 @@ public class WarpDrive implements LoadingCallback {
 	@EventHandler
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
 		// load all owned dimensions at boot
-		for (CelestialObject celestialObject : WarpDriveConfig.celestialObjects) {
-			if (celestialObject.isWarpDrive) {
+		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+			if (celestialObject.isProvidedByWarpDrive) {
 				DimensionManager.getWorld(celestialObject.dimensionId);
 			}
 		}
@@ -578,6 +560,9 @@ public class WarpDrive implements LoadingCallback {
 		
 		WorldHandler worldHandler = new WorldHandler();
 		MinecraftForge.EVENT_BUS.register(worldHandler);
+		
+		ChunkHandler chunkHandler = new ChunkHandler();
+		MinecraftForge.EVENT_BUS.register(chunkHandler);
 	}
 	
 	@EventHandler
@@ -588,6 +573,7 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandDebug());
 		event.registerServerCommand(new CommandEntity());
+		event.registerServerCommand(new CommandReload());
 	}
 	
 	private Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {

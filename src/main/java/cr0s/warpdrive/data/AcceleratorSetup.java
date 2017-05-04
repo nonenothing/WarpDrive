@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableSet;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
 import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
+import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
@@ -18,6 +20,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -26,6 +29,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -63,6 +67,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	//   increase with tier (0.25 > 1.0 > 4.0)
 	//   increase with number of cooling vents
 	
+	public double   temperatureTarget_K;
 	public double[] temperatures_cooling_K_perTick = new double[3];
 	public double   temperature_coolingEnergyCost_perTick;
 	public double[] temperatures_sustainEnergyCost_perTick = new double[3];
@@ -92,30 +97,30 @@ public class AcceleratorSetup extends GlobalPosition {
 			keyInjectors = mapInjectors.keySet().toArray(new Integer[0]);
 		}
 		
-		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 			WarpDrive.logger.info(String.format("Accelerator length: %d + %d including %d + %d + %d magnets, %d chillers and %d energy banks"
 											  + " cooldown: %.3f %.3f %.3f /t %.3f EU/t"
 											  + " sustain: %.3f %.3f %.3f EU/t"
 											  + " acceleration: %.3f /particle",
-				trajectoryAccelerator.size(), trajectoryTransfer.size(),
-				countMagnets[0], countMagnets[1], countMagnets[2], chillers.size(), energyBanks.size(),
-				temperatures_cooling_K_perTick[0], temperatures_cooling_K_perTick[1], temperatures_cooling_K_perTick[2],
-				temperature_coolingEnergyCost_perTick,
-				temperatures_sustainEnergyCost_perTick[0], temperatures_sustainEnergyCost_perTick[1], temperatures_sustainEnergyCost_perTick[2],
-				particleEnergy_energyCost_perTick));
+			        trajectoryAccelerator == null ? -1 : trajectoryAccelerator.size(), trajectoryTransfer == null ? -1 : trajectoryTransfer.size(),
+					countMagnets[0], countMagnets[1], countMagnets[2], chillers.size(), energyBanks.size(),
+					temperatures_cooling_K_perTick[0], temperatures_cooling_K_perTick[1], temperatures_cooling_K_perTick[2],
+					temperature_coolingEnergyCost_perTick,
+					temperatures_sustainEnergyCost_perTick[0], temperatures_sustainEnergyCost_perTick[1], temperatures_sustainEnergyCost_perTick[2],
+					particleEnergy_energyCost_perTick));
 		}
 		
 		LocalProfiler.stop();
 	}
 	
 	// add the vector with it's surrounding block so we can catch 'added' blocks
-	private void addToBoundingBox(final VectorI vector) {
-		vMin.x = Math.min(vMin.x, vector.x - 1);
-		vMin.y = Math.min(vMin.y, vector.y - 1);
-		vMin.z = Math.min(vMin.z, vector.z - 1);
-		vMax.x = Math.max(vMax.x, vector.x + 1);
-		vMax.y = Math.max(vMax.y, vector.y + 1);
-		vMax.z = Math.max(vMax.z, vector.z + 1);
+	private void addToBoundingBox(final VectorI vector, final int range) {
+		vMin.x = Math.min(vMin.x, vector.x - range);
+		vMin.y = Math.min(vMin.y, vector.y - range);
+		vMin.z = Math.min(vMin.z, vector.z - range);
+		vMax.x = Math.max(vMax.x, vector.x + range);
+		vMax.y = Math.max(vMax.y, vector.y + range);
+		vMax.z = Math.max(vMax.z, vector.z + range);
 	}
 	
 	private void refresh() {
@@ -142,7 +147,10 @@ public class AcceleratorSetup extends GlobalPosition {
 		computeVectorArrays(world);
 		
 		// compute values
-		double coolingFactor = 10.0 / (countMagnets[0] + countMagnets[1] + countMagnets[2]);
+		final int indexHighest = countMagnets[2] > 0 ? 2 : countMagnets[1] > 0 ? 1 : 0; 
+		temperatureTarget_K = 7.0D * indexHighest; // TileEntityAcceleratorController.ACCELERATOR_TEMPERATURES_K[indexHighest];
+		
+		final double coolingFactor = 10.0 / (countMagnets[0] + countMagnets[1] + countMagnets[2]);
 		temperatures_cooling_K_perTick[0] = (countChillers[0] * 1.00 + countChillers[1] * 0.75 + countChillers[2] * 0.5) * coolingFactor;
 		temperatures_cooling_K_perTick[1] = (countChillers[1] * 1.00 + countChillers[2] * 0.75) * coolingFactor;
 		temperatures_cooling_K_perTick[2] = (countChillers[2] * 1.00) * coolingFactor;
@@ -275,7 +283,7 @@ public class AcceleratorSetup extends GlobalPosition {
 				vMax = trajectoryPoint.getVectorI();
 				isFirst = false;
 			}
-			addToBoundingBox(trajectoryPoint);
+			addToBoundingBox(trajectoryPoint, 2);
 			
 			// count main magnets
 			int indexTier = trajectoryPoint.type & TrajectoryPoint.MASK_TIERS - 1;
@@ -306,21 +314,21 @@ public class AcceleratorSetup extends GlobalPosition {
 			if (blockForward instanceof BlockParticlesInjector) {
 				final int controlChannel = ((TileEntityParticlesInjector) vectorToAdd.getTileEntity(world)).getControlChannel();
 				mapInjectors.put(controlChannel, vectorToAdd);
-				addToBoundingBox(vectorToAdd);
+				addToBoundingBox(vectorToAdd, 1);
 			} else {
 				vectorToAdd = trajectoryPoint.clone(trajectoryPoint.directionBackward.getOpposite());
 				Block blockBackward = vectorToAdd.getBlock(world);
 				if (blockBackward instanceof BlockParticlesInjector) {
 					final int controlChannel = ((TileEntityParticlesInjector) vectorToAdd.getTileEntity(world)).getControlChannel();
 					mapInjectors.put(controlChannel, vectorToAdd);
-					addToBoundingBox(vectorToAdd);
+					addToBoundingBox(vectorToAdd, 1);
 				}
 			}
 			
 			// collect control points and colliders
 			if (trajectoryPoint.vControlPoint != null) {
 				controlPoints.put(trajectoryPoint.vControlPoint, trajectoryPoint.type);
-				addToBoundingBox(trajectoryPoint.vControlPoint);
+				addToBoundingBox(trajectoryPoint.vControlPoint, 1);
 				if (trajectoryPoint.isCollider()) {
 					listColliders.add(trajectoryPoint);
 				}
@@ -369,7 +377,8 @@ public class AcceleratorSetup extends GlobalPosition {
 	}
 	
 	public boolean isMajorChange(final AcceleratorSetup acceleratorSetup) {
-		return trajectoryAccelerator.size() != acceleratorSetup.trajectoryAccelerator.size()
+		return acceleratorSetup == null
+		    || trajectoryAccelerator.size() != acceleratorSetup.trajectoryAccelerator.size()
 		    || trajectoryTransfer.size() != acceleratorSetup.trajectoryTransfer.size()
 		    || countMagnets[0] != acceleratorSetup.countMagnets[0]
 		    || countMagnets[1] != acceleratorSetup.countMagnets[1]
@@ -532,6 +541,37 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 		assert(energyConsumed == amount_internal);
 		assert(energyLeft == 0);
+	}
+	
+	// Pseudo-API for computers
+	public Object[][] getControlPoints(final IBlockAccess world) {
+		final Object[][] objectResults  = new Object[controlPoints.size() + keyInjectors.length][];
+		int index = 0;
+		for (final Entry<VectorI, Integer> entryControlPoint : controlPoints.entrySet()) {
+			final Integer tier = TrajectoryPoint.getTier(entryControlPoint.getValue());
+			final String type = TrajectoryPoint.isCollider(entryControlPoint.getValue()) ? "Collider" :
+			                    TrajectoryPoint.isOutput(entryControlPoint.getValue()) ? "Output" :
+			                    TrajectoryPoint.isInput(entryControlPoint.getValue()) ? "Input" : "?";
+			final TileEntity tileEntity = entryControlPoint.getKey().getTileEntity(world);
+			final Boolean isEnabled = (tileEntity instanceof TileEntityAcceleratorControlPoint) && ((TileEntityAcceleratorControlPoint) tileEntity).getIsEnabled();
+			final Integer controlChannel = (tileEntity instanceof IControlChannel) ? ((IControlChannel) tileEntity).getControlChannel() : -1;
+			
+			objectResults[index++] = new Object[] {
+				entryControlPoint.getKey().x, entryControlPoint.getKey().y, entryControlPoint.getKey().z,
+				tier, type, isEnabled, controlChannel };
+		}
+		for (final Entry<Integer, VectorI> entryControlPoint : mapInjectors.entrySet()) {
+			final Integer tier = 1;
+			final String type = "Injector";
+			final TileEntity tileEntity = entryControlPoint.getValue().getTileEntity(world);
+			final Boolean isEnabled = (tileEntity instanceof TileEntityParticlesInjector) && ((TileEntityParticlesInjector) tileEntity).getIsEnabled();
+			final Integer controlChannel = (tileEntity instanceof IControlChannel) ? ((IControlChannel) tileEntity).getControlChannel() : -1;
+			
+			objectResults[index++] = new Object[] {
+				entryControlPoint.getValue().x, entryControlPoint.getValue().y, entryControlPoint.getValue().z,
+				tier, type, isEnabled, controlChannel };
+		}
+		return objectResults;
 	}
 	
 	

@@ -1,8 +1,9 @@
 package cr0s.warpdrive.config;
 
 import cr0s.warpdrive.WarpDrive;
-import org.w3c.dom.Element;
+import cr0s.warpdrive.api.IStringSerializable;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -16,7 +17,7 @@ import java.util.TreeMap;
  *
  * @param <E>
  **/
-public class RandomCollection<E extends IXmlRepresentable> {
+public class RandomCollection<E extends IStringSerializable> {
 	private final NavigableMap<Integer, E> weightMap = new TreeMap<>();
 	private int totalWeight = 0;
 	private final NavigableMap<Double, E> ratioMap = new TreeMap<>();
@@ -141,54 +142,48 @@ public class RandomCollection<E extends IXmlRepresentable> {
 	}
 	
 	/**
-	 * Loads object from given XML element and parses configurations for weighted pick.
+	 * Add an object for weighted pick.
 	 * 
 	 * @param object
 	 *            Object to load into
-	 * @param element
+	 * @param stringRatio
 	 *            Element of an XML file
-	 * @throws InvalidXmlException
+	 * @throws InvalidParameterException
 	 **/
-	public void loadFromXML(E object, Element element) throws InvalidXmlException {
-		if (!object.loadFromXmlElement(element)) {// skip invalid entries
-			return;
-		}
-		
+	public void add(E object, final String stringRatio, final String stringWeight) throws InvalidParameterException {
 		// detect and handle loading of an existing object
 		E existing = getNamedEntry(object.getName());
 		if (existing != null) {
 			if (existing.equals(object)) {
 				// all good, nothing to do
-				if (WarpDriveConfig.LOGGING_WORLDGEN) {
+				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.info("Object already exists in collection, skipping " + object.getName());
 				}
 				return;
 			} else {
-				throw new InvalidXmlException("Invalid merge of different objects with the same name " + object.getName()
+				throw new InvalidParameterException("Invalid merge of different objects with the same name " + object.getName()
 						+ "\nnew entry is " + object
 						+ "\nwhile existing entry is " + existing + "");
 			}
 		}
 		
 		// ratio takes priority over weight
-		String stringRatio = element.getAttribute("ratio");
-		if (!stringRatio.isEmpty()) {
+		if (stringRatio != null && !stringRatio.isEmpty()) {
 			double ratio;
 			try {
 				ratio = Double.parseDouble(stringRatio);
 			} catch (NumberFormatException exceptionRatio) {
-				throw new InvalidXmlException("Ratio must be double!");
+				throw new InvalidParameterException("Ratio must be double!");
 			}
 			addRatio(ratio, object);
 			
 		} else { // defaults to weight=1
 			int weight = 1;
-			String stringWeight = element.getAttribute("weight");
-			if (!stringWeight.isEmpty()) {
+			if (stringWeight != null && !stringWeight.isEmpty()) {
 				try {
 					weight = Integer.parseInt(stringWeight);
 				} catch (NumberFormatException exceptionWeight) {
-					throw new InvalidXmlException("Weight must be an integer!");
+					throw new InvalidParameterException("Weight must be an integer!");
 				}
 				weight = Math.max(1, weight);
 			}

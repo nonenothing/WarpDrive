@@ -18,7 +18,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -88,6 +87,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		}
 	}
 	
+	// IExplosionPowerOverride overrides
 	@Override
 	public boolean shouldExplode() {
 		return false;
@@ -97,7 +97,8 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	public float getExplosionPower(int tier, float defaultPower) {
 		return defaultPower;
 	}
-		
+	
+	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {

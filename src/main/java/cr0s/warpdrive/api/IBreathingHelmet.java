@@ -1,12 +1,9 @@
 package cr0s.warpdrive.api;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 
 public interface IBreathingHelmet {
 	
-	boolean canBreath(Entity player);
-	
-	boolean removeAir(Entity player);
-	
-	int ticksPerCanDamage();
+	// Called when checking armors, before checking for air containers
+	boolean canBreath(EntityLivingBase entityLivingBase);
 } 

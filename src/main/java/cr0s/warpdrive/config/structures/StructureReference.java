@@ -27,7 +27,7 @@ public class StructureReference extends AbstractStructure {
 	}
 	
 	@Override
-	public AbstractInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(Random random) {
 		return StructureManager.getStructure(random, group, name).instantiate(random);
 	}
 }

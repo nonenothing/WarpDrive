@@ -154,19 +154,18 @@ item.warpdrive.tool.tuning_fork.black.name=Schwarze Stimmgabel
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRecktsklicke einen Block§7 um seine Kristalle einzustellen\n§bSschleiche§7 um alternative Kristalle einzustellen
 
 
-tile.warpdrive.passive.Air.name=Luft Block
-tile.warpdrive.passive.Decorative.energized.name=Energiegeladener Block
-tile.warpdrive.passive.Decorative.network.name=Netzwerk Block
-tile.warpdrive.passive.Decorative.plain.name=Ebenen Block
-tile.warpdrive.passive.Gas.name=Gas Block
+tile.warpdrive.decoration.decorative.energized.name=Energiegeladener Block
+tile.warpdrive.decoration.decorative.network.name=Netzwerk Block
+tile.warpdrive.decoration.decorative.plain.name=Ebenen Block
+tile.warpdrive.decoration.gas.name=Gas Block
+tile.warpdrive.decoration.lamp_bubble.name=Bubble Lamp **
+tile.warpdrive.decoration.lamp_flat.name=Flat Lamp **
+tile.warpdrive.decoration.lamp_long.name=Long Lamp **
+
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Stark weiterentwickelter Maschinen Block
-tile.warpdrive.passive.lamp_bubble.name=Bubble Lamp **
-tile.warpdrive.passive.lamp_flat.name=Flat Lamp **
-tile.warpdrive.passive.lamp_long.name=Long Lamp **
 tile.warpdrive.passive.TransportBeacon.name=Transport Leuchtfeuer
 
-tile.warpdrive.machines.AirGenerator.name=Luftgenerator
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
 tile.warpdrive.machines.LaserMedium.name=Medium Laser (Partikel Beschleuniger)
@@ -201,6 +200,13 @@ tile.warpdrive.atomic.void_shell_plain.name=Plain Void Shell !!!
 tile.warpdrive.atomic.void_shell_plain.tooltip=Provides 2 empty channels for particles to travel inside an accelerator setup.\nConnects only horizontally to other Void Shells. !!!
 tile.warpdrive.atomic.void_shell_glass.name=Glass Void Shell !!!
 tile.warpdrive.atomic.void_shell_glass.tooltip=Same as a Plain Void Shell, except you can see particles moving through it. !!!
+
+tile.warpdrive.breathing.air.name=Luft Block
+tile.warpdrive.breathing.air_generator.name=Luftgenerator
+tile.warpdrive.breathing.air_generator1.name=Standard Luftgenerator
+tile.warpdrive.breathing.air_generator2.name=Weiterentwickeltes Luftgenerator
+tile.warpdrive.breathing.air_generator3.name=Überlegenes Luftgenerator
+tile.warpdrive.breathing.air_shield.name=Energie-Luftschild
 
 tile.warpdrive.building.ShipScanner.name=Raumschiff Scanner
 
@@ -299,6 +305,40 @@ tile.warpdrive.hull1.glass.green.name=Grüner Standard Glasrumpf
 tile.warpdrive.hull1.glass.red.name=Roter Standard Glasrumpf
 tile.warpdrive.hull1.glass.black.name=Schwarzer Standard Glasrumpf
 
+tile.warpdrive.hull1.omnipanel.white.name=Weiße Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.orange.name=Orange Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.magenta.name=Magenta Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.lightBlue.name=Hellblaue Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.yellow.name=Gelbe Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.lime.name=Hellgrüne Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.pink.name=Rosa Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.gray.name=Graue Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.silver.name=Silberne Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.cyan.name=Cyan Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.purple.name=Lila Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.blue.name=Blaue Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.brown.name=Braune Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.green.name=Grüne Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.red.name=Rote Standard Omnipanel
+tile.warpdrive.hull1.omnipanel.black.name=Schwarze Standard Omnipanel
+
+tile.warpdrive.hull1.slab.white.name=Weiße Standard Stufe
+tile.warpdrive.hull1.slab.orange.name=Orange Standard Stufe
+tile.warpdrive.hull1.slab.magenta.name=Magenta Standard Stufe
+tile.warpdrive.hull1.slab.lightBlue.name=Hellblaue Standard Stufe
+tile.warpdrive.hull1.slab.yellow.name=Gelbe Standard Stufe
+tile.warpdrive.hull1.slab.lime.name=Hellgrüne Standard Stufe
+tile.warpdrive.hull1.slab.pink.name=Rosa Standard Stufe
+tile.warpdrive.hull1.slab.gray.name=Graue Standard Stufe
+tile.warpdrive.hull1.slab.silver.name=Silberne Standard Stufe
+tile.warpdrive.hull1.slab.cyan.name=Cyan Standard Stufe
+tile.warpdrive.hull1.slab.purple.name=Lila Standard Stufe
+tile.warpdrive.hull1.slab.blue.name=Blaue Standard Stufe
+tile.warpdrive.hull1.slab.brown.name=Braune Standard Stufe
+tile.warpdrive.hull1.slab.green.name=Grüne Standard Stufe
+tile.warpdrive.hull1.slab.red.name=Rote Standard Stufe
+tile.warpdrive.hull1.slab.black.name=Schwarze Standard Stufe
+
 tile.warpdrive.hull1.stairs.white.name=Weiße Standard Treppe
 tile.warpdrive.hull1.stairs.orange.name=Orange Standard Treppe
 tile.warpdrive.hull1.stairs.magenta.name=Magenta Standard Treppe
@@ -315,6 +355,7 @@ tile.warpdrive.hull1.stairs.brown.name=Braune Standard Treppe
 tile.warpdrive.hull1.stairs.green.name=Grüne Standard Treppe
 tile.warpdrive.hull1.stairs.red.name=Rote Standard Treppe
 tile.warpdrive.hull1.stairs.black.name=Schwarze Standard Treppe
+
 
 tile.warpdrive.hull2.plain.white.name=Weißer weiterentwickelter Rumpf
 tile.warpdrive.hull2.plain.orange.name=Oranger weiterentwickelter Rumpf
@@ -350,6 +391,40 @@ tile.warpdrive.hull2.glass.green.name=Grüner weiterentwickelter Glasrumpf
 tile.warpdrive.hull2.glass.red.name=Roter weiterentwickelter Glasrumpf
 tile.warpdrive.hull2.glass.black.name=Schwarzer weiterentwickelter Glasrumpf
 
+tile.warpdrive.hull2.omnipanel.white.name=Weiße weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.orange.name=Orange weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.magenta.name=Magenta weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.lightBlue.name=Hellblaue weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.yellow.name=Gelbe weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.lime.name=Hellgrüne weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.pink.name=Rosa weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.gray.name=Graue weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.silver.name=Silberne weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.cyan.name=Cyan weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.purple.name=Lila weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.blue.name=Blaue weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.brown.name=Braune weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.green.name=Grüne weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.red.name=Rote weiterentwickelte Omnipanel
+tile.warpdrive.hull2.omnipanel.black.name=Schwarze weiterentwickelte Omnipanel
+
+tile.warpdrive.hull2.slab.white.name=Weiße weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.orange.name=Orange weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.magenta.name=Magenta weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.lightBlue.name=Hellblaue weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.yellow.name=Gelbe weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.lime.name=Hellgrüne weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.pink.name=Rosa weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.gray.name=Graue weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.silver.name=Silberne weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.cyan.name=Cyan weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.purple.name=Lila weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.blue.name=Blaue weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.brown.name=Braune weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.green.name=Grüne weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.red.name=Rote weiterentwickelte Stufe
+tile.warpdrive.hull2.slab.black.name=Schwarze weiterentwickelte Stufe
+
 tile.warpdrive.hull2.stairs.white.name=Weiße weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.orange.name=Orange weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.magenta.name=Magenta weiterentwickelte Treppe
@@ -366,6 +441,7 @@ tile.warpdrive.hull2.stairs.brown.name=Braune weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.green.name=Grüne weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.red.name=Rote weiterentwickelte Treppe
 tile.warpdrive.hull2.stairs.black.name=Schwarze weiterentwickelte Treppe
+
 
 tile.warpdrive.hull3.plain.white.name=Weißer überlegener Rumpf
 tile.warpdrive.hull3.plain.orange.name=Oranger überlegener Rumpf
@@ -400,6 +476,40 @@ tile.warpdrive.hull3.glass.brown.name=Brauner überlegener Glasrumpf
 tile.warpdrive.hull3.glass.green.name=Grüner überlegener Glasrumpf
 tile.warpdrive.hull3.glass.red.name=Roter überlegener Glasrumpf
 tile.warpdrive.hull3.glass.black.name=Schwarzer überlegener Glasrumpf
+
+tile.warpdrive.hull3.omnipanel.white.name=Weiße überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.orange.name=Orange überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.magenta.name=Magenta überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.lightBlue.name=Hellblaue überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.yellow.name=Gelbe überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.lime.name=Hellgrüne überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.pink.name=Rosa überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.gray.name=Graue überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.silver.name=Silberne überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.cyan.name=Cyan überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.purple.name=Lila überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.blue.name=Blaue überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.brown.name=Braune überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.green.name=Grüne überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.red.name=Rote überlegene Omnipanel
+tile.warpdrive.hull3.omnipanel.black.name=Schwarze überlegene Omnipanel
+
+tile.warpdrive.hull3.slab.white.name=Weiße überlegene Stufe
+tile.warpdrive.hull3.slab.orange.name=Orange überlegene Stufe
+tile.warpdrive.hull3.slab.magenta.name=Magenta überlegene Stufe
+tile.warpdrive.hull3.slab.lightBlue.name=Hellblaue überlegene Stufe
+tile.warpdrive.hull3.slab.yellow.name=Gelbe überlegene Stufe
+tile.warpdrive.hull3.slab.lime.name=Hellgrüne überlegene Stufe
+tile.warpdrive.hull3.slab.pink.name=Rosa überlegene Stufe
+tile.warpdrive.hull3.slab.gray.name=Graue überlegene Stufe
+tile.warpdrive.hull3.slab.silver.name=Silberne überlegene Stufe
+tile.warpdrive.hull3.slab.cyan.name=Cyan überlegene Stufe
+tile.warpdrive.hull3.slab.purple.name=Lila überlegene Stufe
+tile.warpdrive.hull3.slab.blue.name=Blaue überlegene Stufe
+tile.warpdrive.hull3.slab.brown.name=Braune überlegene Stufe
+tile.warpdrive.hull3.slab.green.name=Grüne überlegene Stufe
+tile.warpdrive.hull3.slab.red.name=Rote überlegene Stufe
+tile.warpdrive.hull3.slab.black.name=Schwarze überlegene Stufe
 
 tile.warpdrive.hull3.stairs.white.name=Weiße überlegene Treppe
 tile.warpdrive.hull3.stairs.orange.name=Orange überlegene Treppe
@@ -445,6 +555,11 @@ warpdrive.beam_frequency.statusLine.valid=Strahlfrequenz %1$d ist gültig.
 warpdrive.beam_frequency.statusLine.invalid=§cStrahlfrequenz %1$d ist ungültig.
 warpdrive.beam_frequency.statusLine.undefined=§7Undefinierte Strahlfrequenz.\n§bNutze eine Stimmgabel§f um die Strahlfrequenz festzulegen.
 
+warpdrive.breathing.alarm=Breathing alarm !!!
+warpdrive.breathing.invalid_setup=No breathing helmet\nor incomplete armor !!!
+warpdrive.breathing.low_reserve=Low air reserve! !!!
+warpdrive.breathing.no_air=No more air! !!!
+
 warpdrive.control_channel.tooltip=Control channel is set to %1$d !!!
 warpdrive.control_channel.get=Control channel %2$d has been retrieved from %1$s !!! 
 warpdrive.control_channel.set=%1$s is now tuned with Control channel %2$d !!!
@@ -472,13 +587,8 @@ warpdrive.forcefield.upgrade.statusLine.cooling=Kühler
 warpdrive.forcefield.upgrade.statusLine.fusion=Fusions
 warpdrive.forcefield.upgrade.statusLine.heating=Heizungs
 warpdrive.forcefield.upgrade.statusLine.inversion=Inversions
-<<<<<<< HEAD
-warpdrive.forcefield.upgrade.statusLine.itemPort=Item Anschluss
-warpdrive.forcefield.upgrade.statusLine.pumping=Pumpen
-=======
 warpdrive.forcefield.upgrade.statusLine.item_port=Item Anschluss
-warpdrive.forcefield.upgrade.statusLine.pump=Pumpen
->>>>>>> MC1.10
+warpdrive.forcefield.upgrade.statusLine.pumping=Pumpen
 warpdrive.forcefield.upgrade.statusLine.range=Reichweiten
 warpdrive.forcefield.upgrade.statusLine.repulsion=Rückstoß
 warpdrive.forcefield.upgrade.statusLine.rotation=Rotations
