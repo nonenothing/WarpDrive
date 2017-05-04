@@ -39,7 +39,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	protected int IC2_sinkTier = 3;
 	protected int IC2_sourceTier = 3;
 	
-	private final static int SCAN_INTERVAL_TICKS = 20;
+	private static final int SCAN_INTERVAL_TICKS = 20;
 	private int scanTickCount = SCAN_INTERVAL_TICKS;
 	
 	private Object[] cofhEnergyReceivers;

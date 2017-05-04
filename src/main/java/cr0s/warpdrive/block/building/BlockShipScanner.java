@@ -12,11 +12,16 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockShipScanner extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
-	private final static int ICON_BOTTOM = 0;
-	private final static int ICON_TOP = 1;
-	private final static int ICON_SIDE = 2;
+	private static final int ICON_BOTTOM = 0;
+	private static final int ICON_TOP = 1;
+	private static final int ICON_SIDE = 2;
 	
 	public BlockShipScanner() {
 		super(Material.iron);

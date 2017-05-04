@@ -9,6 +9,7 @@ import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetGlass;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
@@ -17,6 +18,7 @@ import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
@@ -233,7 +235,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block[] blockElectromagnetPlain;
 	public static Block[] blockElectromagnetGlass;
 	public static Block[] blockChillers;
-	public static BlockDecorative blockDecorative;
+	public static Block blockDecorative;
 	public static Block[][] blockHulls_plain;
 	public static Block[] blockHulls_glass;
 	public static Block[] blockHulls_omnipanel;
@@ -441,7 +443,7 @@ public class WarpDrive implements LoadingCallback {
 		
 		GameRegistry.registerBlock(blockHighlyAdvancedMachine, ItemBlockAbstractBase.class, "blockHighlyAdvancedMachine");
 		
-		// SHIP SCANNER
+		// building blocks
 		blockShipScanner = new BlockShipScanner();
 		
 		GameRegistry.registerBlock(blockShipScanner, ItemBlockAbstractBase.class, "blockShipScanner");
@@ -495,7 +497,7 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockChunkLoader, ItemBlockAbstractBase.class, "blockChunkLoader");
 		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, MODID + ":blockChunkLoader");
 		
-		// FORCE FIELD BLOCKS
+		// force field blocks and items
 		blockForceFields = new Block[3];
 		blockForceFieldProjectors = new Block[3];
 		blockForceFieldRelays = new Block[3];
@@ -517,14 +519,19 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, MODID + ":blockForceFieldRelay" + tier);
 		}
 		/* TODO
-		// SECURITY STATION
 		blockSecurityStation = new BlockSecurityStation();
 		GameRegistry.registerBlock(blockSecurityStation, ItemBlockAbstractBase.class, "blockSecurityStation");
 		GameRegistry.registerTileEntity(TileEntitySecurityStation.class, MODID + ":blockSecurityStation");
 		*/
 		
+		itemForceFieldShape = new ItemForceFieldShape();
+		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
+		
+		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
+		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
+		
 		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
-			/*
+			
 			// ACCELERATOR CONTROLLER
 			blockAcceleratorController = new BlockAcceleratorController();
 			GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
@@ -554,26 +561,26 @@ public class WarpDrive implements LoadingCallback {
 			blockElectromagnetGlass = new Block[3];
 			blockChillers = new Block[3];
 			for (byte tier = 1; tier <= 3; tier++) {
-				int index = tier - 1;
-				// ELECTROMAGNETS PLAIN 
+				final int index = tier - 1;
+				// plain electromagnets
 				blockElectromagnetPlain[index] = new BlockElectromagnetPlain(tier);
 				GameRegistry.registerBlock(blockElectromagnetPlain[index], ItemBlockAbstractBase.class, "blockElectromagnetPlain" + tier);
 				
-				// ELECTROMAGNETS GLASS
+				// glass electromagnets
 				blockElectromagnetGlass[index] = new BlockElectromagnetGlass(tier);
 				GameRegistry.registerBlock(blockElectromagnetGlass[index], ItemBlockAbstractBase.class, "blockElectromagnetGlass" + tier);
 				
-				// CHILLER
+				// chiller
 				blockChillers[index] = new BlockChiller(tier);
 				GameRegistry.registerBlock(blockChillers[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
 			}
 		}
 		
-		// DECORATIVE
+		// decorative
 		blockDecorative = new BlockDecorative();
 		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
 		
-		// HULL BLOCKS
+		// hull blocks
 		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
 		blockHulls_omnipanel = new Block[3];
@@ -638,20 +645,13 @@ public class WarpDrive implements LoadingCallback {
 		itemTuningDriver = new ItemTuningDriver();
 		GameRegistry.registerItem(itemTuningDriver, "itemTuningDriver");
 		
-		// FORCE FIELD UPGRADES
-		itemForceFieldShape = new ItemForceFieldShape();
-		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-		
-		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
-		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
-		
+		// electromagnetic cell
 		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
-			// ELECTROMAGNETIC CELL
 			itemElectromagneticCell = new ItemElectromagneticCell();
 			GameRegistry.registerItem(itemElectromagneticCell, "itemElectromagneticCell");
 		}
 		
-		// DAMAGE SOURCES
+		// damage sources
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();
 		damageIrradiation = new DamageIrradiation();

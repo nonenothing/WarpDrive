@@ -33,15 +33,15 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int meta = world.getBlockMetadata(x, y, z);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final int metadata = blockAccess.getBlockMetadata(x, y, z);
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity == null || !(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
 			return icons[0];
 		}
 		
 		if (((TileEntityIC2reactorLaserMonitor)tileEntity).isSideActive(side)) {
-			if ((meta & 8) == 0) {
+			if ((metadata & 8) == 0) {
 				return icons[1];
 			} else {
 				return icons[2];

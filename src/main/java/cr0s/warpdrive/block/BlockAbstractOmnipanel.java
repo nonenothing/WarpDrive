@@ -238,9 +238,9 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 		return true;
 	}
 	
-	public int getConnectionMask(IBlockAccess world, int x, int y, int z, ForgeDirection forgeDirection) {
-		final Block block = world.getBlock(x, y, z);
+	public int getConnectionMask(IBlockAccess blockAccess, int x, int y, int z, ForgeDirection forgeDirection) {
+		final Block block = blockAccess.getBlock(x, y, z);
 		return (block.func_149730_j() || block == this || block.getMaterial() == Material.glass || block instanceof BlockPane ? 1 : 0)
-		     + (block.isSideSolid(world, x, y, z, forgeDirection.getOpposite()) ? 2 : 0);
+		     + (block.isSideSolid(blockAccess, x, y, z, forgeDirection.getOpposite()) ? 2 : 0);
 	}
 }

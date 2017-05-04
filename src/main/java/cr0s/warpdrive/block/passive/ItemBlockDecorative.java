@@ -15,7 +15,7 @@ public class ItemBlockDecorative extends ItemBlock {
 	public ItemBlockDecorative(Block block) {
 		super(block);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.passive.decorative");
+		setUnlocalizedName("warpdrive.decoration.decorative");
 	}
 	
 	@Override
@@ -35,6 +35,6 @@ public class ItemBlockDecorative extends ItemBlock {
 		if (itemstack == null) {
 			return getUnlocalizedName();
 		}
-		return "tile.warpdrive.passive." + EnumDecorativeType.get(itemstack.getItemDamage()).unlocalizedName;
+		return "tile.warpdrive.decoration.decorative." + EnumDecorativeType.get(itemstack.getItemDamage()).unlocalizedName;
 	}
 }

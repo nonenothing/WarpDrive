@@ -27,6 +27,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
 public class LivingHandler {
+	
 	private final HashMap<String, Integer> player_cloakTicks;
 	
 	private static final int CLOAK_CHECK_TIMEOUT_TICKS = 100;
@@ -243,9 +244,9 @@ public class LivingHandler {
 		
 		// check for equipment with NOFALLDAMAGE tag
 		for (int i = 1; i < 5; i++) {
-			final ItemStack armor = entity.getEquipmentInSlot(i);
-			if (armor != null) {
-				if (Dictionary.ITEMS_NOFALLDAMAGE.contains(armor.getItem())) {
+			final ItemStack itemStackInSlot = entity.getEquipmentInSlot(i);
+			if (itemStackInSlot != null) {
+				if (Dictionary.ITEMS_NOFALLDAMAGE.contains(itemStackInSlot.getItem())) {
 					event.setCanceled(true); // Don't damage entity
 				}
 			}

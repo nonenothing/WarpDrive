@@ -876,7 +876,7 @@ public class Recipes {
 		if (WarpDriveConfig.isThermalExpansionLoaded) {
 			oreCoolant = "dustCryotheum";
 		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			oreCoolant = WarpDriveConfig.getModItemStack("IC2", "reactorCoolantSimple", -1);
+			oreCoolant = WarpDriveConfig.getModItemStack("IC2", "reactorCoolantSimple", -1);    // 10k Coolant Cell
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR), false, "pcp", "cec", "pcp",
 		                                          'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),

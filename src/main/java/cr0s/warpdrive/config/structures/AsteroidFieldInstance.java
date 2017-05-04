@@ -13,22 +13,22 @@ import net.minecraft.world.World;
 
 public class AsteroidFieldInstance extends AbstractStructureInstance {
 	
-	public AsteroidFieldInstance(AsteroidField asteroidField, Random random) {
+	public AsteroidFieldInstance(final AsteroidField asteroidField, final Random random) {
 		super(asteroidField, random);
 	}
 	
-	public AsteroidFieldInstance(NBTTagCompound tag) {
+	public AsteroidFieldInstance(final NBTTagCompound tag) {
 		super(tag);
 		// TODO not implemented
 	}
 	
 	@Override
-	public void WriteToNBT(NBTTagCompound tag) {
+	public void WriteToNBT(final NBTTagCompound tag) {
 		super.WriteToNBT(tag);
 		// TODO not implemented
 	}
 	
-	private static float binomialRandom(World world) {
+	private static float binomialRandom(final World world) {
 		float linear = world.rand.nextFloat();
 		// ideal sphere repartition = x ^ 0.5 (sqrt)
 		// Dilution but slow to compute = 0.5 * ( x ^ 0.3 + 1 + (x - 1) ^ 3 )
@@ -40,7 +40,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public boolean generate(World world, Random random, final int x, final int y1, final int z) {
+	public boolean generate(final World world, final Random random, final int x, final int y1, final int z) {
 		LocalProfiler.start("SpaceWorldGenerator.generateAsteroidField");
 		// 6.0.1 au = 120 radius with 60 to 140 big + 60 to 140 small + 5 to 13 gaz
 		// 45238 blocks surface with 120 to 280 asteroids => 161 to 376 blocks per asteroid (big & small)
@@ -84,7 +84,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		int maxHeight = 70 + world.rand.nextInt(50);
 		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - maxHeight,
 		Math.max(y1, WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + maxHeight));
-		WarpDrive.logger.info("Generating asteroid field at " + x + "," + y2 + "," + z + " qty " + numOfBigAsteroids + ", " + numOfSmallAsteroids + ", "
+		WarpDrive.logger.info("Generating asteroid field at (" + x + " " + y2 + " " + z + ") qty " + numOfBigAsteroids + ", " + numOfSmallAsteroids + ", "
 		                      + numOfClouds + " over " + maxDistance + ", " + maxHeight + " surfacePerAsteroid " + String.format("%.1f", surfacePerAsteroid));
 		
 		// Setting up of big asteroids
@@ -100,7 +100,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 			int aZ = (int) (z + Math.round(horizontalRange * Math.sin(bearing)));
 			
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-				WarpDrive.logger.info(String.format("Big asteroid: %.3f %.3f r %.3f r makes %3d, %3d, %3d",
+				WarpDrive.logger.info(String.format("Big asteroid: %.3f %.3f r %.3f r makes (%3d %3d %3d)",
 					(double) binomial, bearing, yawn, aX, aY, aZ));
 			}
 			
@@ -159,19 +159,19 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		return true;
 	}
 	
-	private static void generateSmallShip(World world, final int x, final int y, final int z, final int jitter) {
+	private static void generateSmallShip(final World world, final int x, final int y, final int z, final int jitter) {
 		int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		WarpDrive.logger.info("Generating small ship at " + x2 + "," + y2 + "," + z2);
+		WarpDrive.logger.info("Generating small ship at " + x2 + " " + y2 + " " + z2);
 		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F).generate(world, world.rand, x2, y2, z2);
 	}
 	
-	private static void generateStation(World world, final int x, final int y, final int z, final int jitter) {
+	private static void generateStation(final World world, final int x, final int y, final int z, final int jitter) {
 		int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		WarpDrive.logger.info("Generating small ship at " + x2 + "," + y2 + "," + z2);
+		WarpDrive.logger.info("Generating station at " + x2 + " " + y2 + " " + z2);
 		new WorldGenStation(world.rand.nextBoolean()).generate(world, world.rand, x2, y2, z2);
 	}
 }

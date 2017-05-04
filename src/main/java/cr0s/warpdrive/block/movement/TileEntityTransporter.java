@@ -36,7 +36,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	private double lockStrengthMul = 1;
 	private boolean isLocked = false;
 
-	private final static Vector3 centreOnMe = new Vector3(0.5D, 1.0D, 0.5D);
+	private static final Vector3 centreOnMe = new Vector3(0.5D, 1.0D, 0.5D);
 	private Vector3 sourceVec = new Vector3();
 	private Vector3 destVec = new Vector3();
 	

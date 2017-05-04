@@ -142,9 +142,9 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)",
-		getClass().getSimpleName(),
-		worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-		xCoord, yCoord, zCoord);
+			getClass().getSimpleName(),
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			xCoord, yCoord, zCoord);
 	}
 	
 	public Object[] enable(Object[] arguments) {

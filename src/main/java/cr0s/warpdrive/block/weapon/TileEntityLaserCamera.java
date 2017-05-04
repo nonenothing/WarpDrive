@@ -24,10 +24,11 @@ import net.minecraft.world.ChunkPosition;
 import cpw.mods.fml.common.Optional;
 
 public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChannel {
+	
 	private int videoChannel = -1;
 	
-	private final static int REGISTRY_UPDATE_INTERVAL_TICKS = 15 * 20;
-	private final static int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
+	private static final int REGISTRY_UPDATE_INTERVAL_TICKS = 15 * 20;
+	private static final int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
 	
 	private int packetSendTicks = 10;
 	private int registryUpdateTicks = 20;

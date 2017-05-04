@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.RenderBlockStandard;
 
@@ -18,8 +19,8 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class BlockAbstractAir extends Block {
-		
+public abstract class BlockAbstractAir extends BlockAbstractBase {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
@@ -36,7 +37,7 @@ public abstract class BlockAbstractAir extends Block {
 	}
 	
 	@Override
-	public boolean isAir(IBlockAccess world, int x, int y, int z) {
+	public boolean isAir(IBlockAccess blockAccess, int x, int y, int z) {
 		return true;
 	}
 	
@@ -46,7 +47,7 @@ public abstract class BlockAbstractAir extends Block {
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess world, int x, int y, int z) {
+	public boolean isReplaceable(IBlockAccess blockAccess, int x, int y, int z) {
 		return true;
 	}
 	
@@ -115,18 +116,19 @@ public abstract class BlockAbstractAir extends Block {
 		return 0;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
 			return side == 0 || side == 1;
 		}
 		
-		Block sideBlock = world.getBlock(x, y, z);
+		Block sideBlock = blockAccess.getBlock(x, y, z);
 		if (sideBlock instanceof BlockAbstractAir) {
 			return false;
 		}
 		
-		return world.isAirBlock(x, y, z);
+		return blockAccess.isAirBlock(x, y, z);
 	}
 	
 	@Override

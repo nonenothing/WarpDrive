@@ -33,8 +33,8 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata  = world.getBlockMetadata(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (metadata < iconBuffer.length) {
 			return iconBuffer[metadata];
 		}
@@ -60,11 +60,6 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	@Override
 	public byte getTier(final ItemStack itemStack) {
 		return 3;
-	}
-	
-	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
-		return Item.getItemFromBlock(this);
 	}
 	
 	@Override

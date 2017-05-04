@@ -54,9 +54,9 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata = world.getBlockMetadata(x, y, z);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final int metadata = blockAccess.getBlockMetadata(x, y, z);
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity == null || !(tileEntity instanceof TileEntityForceFieldProjector)) {
 			return icons[0];
 		}

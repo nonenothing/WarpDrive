@@ -14,15 +14,20 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockMiningLaser extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
-	public final static int ICON_IDLE = 0;
-	public final static int ICON_MINING_LOW_POWER = 1;
-	public final static int ICON_MINING_POWERED = 2;
-	public final static int ICON_SCANNING_LOW_POWER = 3;
-	public final static int ICON_SCANNING_POWERED = 4;
-	private final static int ICON_BOTTOM = 5;
-	private final static int ICON_TOP = 6;
+	public static final int ICON_IDLE = 0;
+	public static final int ICON_MINING_LOW_POWER = 1;
+	public static final int ICON_MINING_POWERED = 2;
+	public static final int ICON_SCANNING_LOW_POWER = 3;
+	public static final int ICON_SCANNING_POWERED = 4;
+	private static final int ICON_BOTTOM = 5;
+	private static final int ICON_TOP = 6;
 	
 	public BlockMiningLaser() {
 		super(Material.iron);
@@ -42,8 +47,8 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata  = world.getBlockMetadata(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		}

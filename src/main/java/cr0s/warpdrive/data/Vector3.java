@@ -95,16 +95,16 @@ public class Vector3 implements Cloneable {
 		return new Vector3(x, y, z);
 	}
 	
-	public Block getBlockID(IBlockAccess world) {
-		return world.getBlock(intX(), intY(), intZ());
+	public Block getBlockID(IBlockAccess blockAccess) {
+		return blockAccess.getBlock(intX(), intY(), intZ());
 	}
 	
-	public int getBlockMetadata(IBlockAccess world) {
-		return world.getBlockMetadata(intX(), intY(), intZ());
+	public int getBlockMetadata(IBlockAccess blockAccess) {
+		return blockAccess.getBlockMetadata(intX(), intY(), intZ());
 	}
 	
-	public TileEntity getTileEntity(IBlockAccess world) {
-		return world.getTileEntity(intX(), intY(), intZ());
+	public TileEntity getTileEntity(IBlockAccess blockAccess) {
+		return blockAccess.getTileEntity(intX(), intY(), intZ());
 	}
 	
 	public boolean setBlock(World world, Block id, int metadata, int notify) {

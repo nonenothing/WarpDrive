@@ -14,17 +14,22 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockLaserTreeFarm extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
-	public final static int ICON_IDLE = 0;
-	public final static int ICON_FARMING_LOW_POWER = 1;
-	public final static int ICON_FARMING_POWERED = 2;
-	public final static int ICON_SCANNING_LOW_POWER = 3;
-	public final static int ICON_SCANNING_POWERED = 4;
-	public final static int ICON_PLANTING_LOW_POWER = 5;
-	public final static int ICON_PLANTING_POWERED = 6;
-	private final static int ICON_BOTTOM = 7;
-	private final static int ICON_TOP = 8;
+	public static final int ICON_IDLE = 0;
+	public static final int ICON_FARMING_LOW_POWER = 1;
+	public static final int ICON_FARMING_POWERED = 2;
+	public static final int ICON_SCANNING_LOW_POWER = 3;
+	public static final int ICON_SCANNING_POWERED = 4;
+	public static final int ICON_PLANTING_LOW_POWER = 5;
+	public static final int ICON_PLANTING_POWERED = 6;
+	private static final int ICON_BOTTOM = 7;
+	private static final int ICON_TOP = 8;
 	
 	public BlockLaserTreeFarm() {
 		super(Material.iron);
@@ -46,8 +51,8 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata  = world.getBlockMetadata(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		}

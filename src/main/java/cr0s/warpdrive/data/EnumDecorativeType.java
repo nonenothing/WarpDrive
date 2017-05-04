@@ -3,9 +3,9 @@ package cr0s.warpdrive.data;
 import java.util.HashMap;
 
 public enum EnumDecorativeType {
-	PLAIN              ("Plain"),
-	ENERGIZED          ("Energized"),
-	NETWORK            ("Network");
+	PLAIN              ("plain"),
+	ENERGIZED          ("energized"),
+	NETWORK            ("network");
 	
 	public final String unlocalizedName;
 	
@@ -20,7 +20,7 @@ public enum EnumDecorativeType {
 		}
 	}
 	
-	private EnumDecorativeType(String unlocalizedName) {
+	EnumDecorativeType(String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

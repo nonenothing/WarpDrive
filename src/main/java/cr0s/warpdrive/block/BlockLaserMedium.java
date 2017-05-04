@@ -33,8 +33,8 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		int metadata  = world.getBlockMetadata(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[8];
 		}

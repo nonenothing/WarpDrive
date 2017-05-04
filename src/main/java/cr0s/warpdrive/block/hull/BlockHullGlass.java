@@ -16,6 +16,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageReceiver {
@@ -65,18 +67,19 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		if (world.isAirBlock(x, y, z)) {
+	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		if (blockAccess.isAirBlock(x, y, z)) {
 			return true;
 		}
 		ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
-		Block sideBlock = world.getBlock(x, y, z);
+		Block sideBlock = blockAccess.getBlock(x, y, z);
 		if (sideBlock instanceof BlockGlass || sideBlock instanceof BlockHullGlass) {
-			return world.getBlockMetadata(x, y, z)
-				!= world.getBlockMetadata(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
+			return blockAccess.getBlockMetadata(x, y, z)
+				!= blockAccess.getBlockMetadata(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
 		}
-		return !world.isSideSolid(x, y, z, direction, false);
+		return !blockAccess.isSideSolid(x, y, z, direction, false);
 	}
 	
 	@Override

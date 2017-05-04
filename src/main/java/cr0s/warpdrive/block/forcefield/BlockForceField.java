@@ -85,7 +85,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
 		/* Hide in NEI
-		for (int i = 0; i < 16; ++i) {
+		for (int i = 0; i < 16; i++) {
 			list.add(new ItemStack(item, 1, i));
 		}
 		/**/
@@ -102,27 +102,30 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@SideOnly(Side.CLIENT)
+	@Override
 	public int getRenderBlockPass() {
 		return 1;
 	}
 	
 	@SideOnly(Side.CLIENT)
+	@Override
 	public int getRenderType() {
 		return RenderBlockForceField.renderId;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		if (world.isAirBlock(x, y, z)) {
+	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		if (blockAccess.isAirBlock(x, y, z)) {
 			return true;
 		}
 		ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
-		Block sideBlock = world.getBlock(x, y, z);
+		Block sideBlock = blockAccess.getBlock(x, y, z);
 		if (sideBlock instanceof BlockGlass || sideBlock instanceof BlockHullGlass || sideBlock instanceof BlockForceField) {
-			return world.getBlockMetadata(x, y, z)
-				!= world.getBlockMetadata(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
+			return blockAccess.getBlockMetadata(x, y, z)
+				!= blockAccess.getBlockMetadata(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
 		}
-		return !world.isSideSolid(x, y, z, direction, false);
+		return !blockAccess.isSideSolid(x, y, z, direction, false);
 	}
 	
 	protected TileEntityForceFieldProjector getProjector(World world, int x, int y, int z) {

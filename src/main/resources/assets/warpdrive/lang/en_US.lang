@@ -84,8 +84,8 @@ item.warpdrive.forcefield.upgrade.heating.name=Heating upgrade
 item.warpdrive.forcefield.upgrade.heating.tooltip=Heat up blocks and entities. Add more Heating upgrades to boost effect. Add an Inversion for an area/terraforming effect.
 item.warpdrive.forcefield.upgrade.inversion.name=Inversion upgrade
 item.warpdrive.forcefield.upgrade.inversion.tooltip=§4Work in progress\nChange from surface to volume effect area. Use this for entity targeting or terraforming.
-item.warpdrive.forcefield.upgrade.itemPort.name=Item port upgrade
-item.warpdrive.forcefield.upgrade.itemPort.tooltip=Interface with attached containers. Add an Attraction upgrade to collect Block breaker drops. Add a Repulsion upgrade to provide blocks to place using a Stabilization upgrade.
+item.warpdrive.forcefield.upgrade.item_port.name=Item port upgrade
+item.warpdrive.forcefield.upgrade.item_port.tooltip=Interface with attached containers. Add an Attraction upgrade to collect Block breaker drops. Add a Repulsion upgrade to provide blocks to place using a Stabilization upgrade.
 item.warpdrive.forcefield.upgrade.pumping.name=Pumping upgrade
 item.warpdrive.forcefield.upgrade.pumping.tooltip=§4Work in progress\nPump fluids at the force field location. Add more Pump upgrades to pull fluid with higher viscosity fluids like lava.
 item.warpdrive.forcefield.upgrade.range.name=Range upgrade
@@ -154,12 +154,13 @@ item.warpdrive.tool.tuning_fork.black.name=Black Tuning Fork
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to tune alternate crystals
 
 
-tile.warpdrive.passive.Energized.name=Energized Block
-tile.warpdrive.passive.Gas.name=Gas Block
+tile.warpdrive.decoration.decorative.energized.name=Energized Block
+tile.warpdrive.decoration.decorative.network.name=Network Block
+tile.warpdrive.decoration.decorative.plain.name=Plain Block
+tile.warpdrive.decoration.gas.name=Gas Block
+
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Highly Advanced Machine Block
-tile.warpdrive.passive.Network.name=Network Block
-tile.warpdrive.passive.Plain.name=Plain Block
 tile.warpdrive.passive.TransportBeacon.name=Transport Beacon
 
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
@@ -583,7 +584,7 @@ warpdrive.forcefield.upgrade.statusLine.cooling=cooling
 warpdrive.forcefield.upgrade.statusLine.fusion=fusion
 warpdrive.forcefield.upgrade.statusLine.heating=heating
 warpdrive.forcefield.upgrade.statusLine.inversion=inversion
-warpdrive.forcefield.upgrade.statusLine.itemPort=item port
+warpdrive.forcefield.upgrade.statusLine.item_port=item port
 warpdrive.forcefield.upgrade.statusLine.pumping=pumping
 warpdrive.forcefield.upgrade.statusLine.range=increased range
 warpdrive.forcefield.upgrade.statusLine.repulsion=repulsion

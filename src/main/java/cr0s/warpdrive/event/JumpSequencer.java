@@ -52,6 +52,7 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 
 public class JumpSequencer extends AbstractSequencer {
+	
 	// Jump vector
 	private Transformation transformation;
 	
@@ -70,17 +71,17 @@ public class JumpSequencer extends AbstractSequencer {
 	private float collisionStrength = 0;
 	
 	private boolean isEnabled = false;
-	private final static int STATE_IDLE = 0;
-	private final static int STATE_CHUNKLOADING = 1;
-	private final static int STATE_SAVING = 2;
-	private final static int STATE_BORDERS = 3;
-	private final static int STATE_TRANSFORMER = 4;
-	private final static int STATE_BLOCKS = 5;
-	private final static int STATE_EXTERNALS = 6;
-	private final static int STATE_ENTITIES = 7;
-	private final static int STATE_REMOVING = 8;
-	private final static int STATE_CHUNKUNLOADING = 9;
-	private final static int STATE_FINISHING = 10;
+	private static final int STATE_IDLE = 0;
+	private static final int STATE_CHUNKLOADING = 1;
+	private static final int STATE_SAVING = 2;
+	private static final int STATE_BORDERS = 3;
+	private static final int STATE_TRANSFORMER = 4;
+	private static final int STATE_BLOCKS = 5;
+	private static final int STATE_EXTERNALS = 6;
+	private static final int STATE_ENTITIES = 7;
+	private static final int STATE_REMOVING = 8;
+	private static final int STATE_CHUNKUNLOADING = 9;
+	private static final int STATE_FINISHING = 10;
 	private int state = STATE_IDLE;
 	private int actualIndexInShip = 0;
 	

@@ -9,32 +9,35 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderGenerate;
 
 public class SpaceChunkProvider extends ChunkProviderGenerate {
-	private World worldObj;
-	private Random rand;
-	private BiomeGenBase[] biomesForGeneration = new BiomeGenBase[1];
 	
-	public SpaceChunkProvider(World worldObj, long par2) {
-		super(worldObj, par2, false);
-		rand = new Random(par2);
-		this.worldObj = worldObj;
+	private final World world;
+	private final Random rand;
+	
+	public SpaceChunkProvider(World world, long seed) {
+		super(world, seed, false);
+		rand = new Random(seed);
+		this.world = world;
 	}
 	
 	@Override
-	public Chunk provideChunk(int par1, int par2) {
-		rand.setSeed(par1 * 341873128712L + par2 * 132897987541L);
-		Block[] var3 = new Block[32768];
-		// biomesForGeneration[0] = WarpDrive.spaceBiome;
-		// caveGenerator.generate(this, this.worldObj, par1, par2, var3);
-		biomesForGeneration[0] = WarpDrive.spaceBiome;
-		Chunk var4 = new Chunk(worldObj, var3, par1, par2);
-		var4.generateSkylightMap();
-		return var4;
+	public Chunk provideChunk(int x, int z) {
+		rand.setSeed(x * 341873128712L + z * 132897987541L);
+		
+		final Block[] chunkprimer = new Block[32768];
+		final Chunk chunk = new Chunk(world, chunkprimer, x, z);
+		
+		final byte[] byteBiomes = chunk.getBiomeArray();
+		for (int i = 0; i < byteBiomes.length; ++i) {
+			byteBiomes[i] = (byte) WarpDrive.spaceBiome.biomeID;
+		}
+		
+		chunk.generateSkylightMap();
+		return chunk;
 	}
 	
 	@Override

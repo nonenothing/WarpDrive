@@ -12,7 +12,6 @@ import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
-import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
@@ -148,7 +147,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		
 		// compute values
 		final int indexHighest = countMagnets[2] > 0 ? 2 : countMagnets[1] > 0 ? 1 : 0; 
-		temperatureTarget_K = TileEntityAcceleratorController.ACCELERATOR_TEMPERATURES_K[indexHighest];
+		temperatureTarget_K = WarpDriveConfig.ACCELERATOR_TEMPERATURES_K[indexHighest];
 		
 		final double coolingFactor = 10.0 / (countMagnets[0] + countMagnets[1] + countMagnets[2]);
 		temperatures_cooling_K_perTick[0] = (countChillers[0] * 1.00 + countChillers[1] * 0.75 + countChillers[2] * 0.5) * coolingFactor;
@@ -544,7 +543,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	}
 	
 	// Pseudo-API for computers
-	public Object[][] getControlPoints(final IBlockAccess world) {
+	public Object[][] getControlPoints(final IBlockAccess blockAccess) {
 		final Object[][] objectResults  = new Object[controlPoints.size() + keyInjectors.length][];
 		int index = 0;
 		for (final Entry<VectorI, Integer> entryControlPoint : controlPoints.entrySet()) {
@@ -552,7 +551,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			final String type = TrajectoryPoint.isCollider(entryControlPoint.getValue()) ? "Collider" :
 			                    TrajectoryPoint.isOutput(entryControlPoint.getValue()) ? "Output" :
 			                    TrajectoryPoint.isInput(entryControlPoint.getValue()) ? "Input" : "?";
-			final TileEntity tileEntity = entryControlPoint.getKey().getTileEntity(world);
+			final TileEntity tileEntity = entryControlPoint.getKey().getTileEntity(blockAccess);
 			final Boolean isEnabled = (tileEntity instanceof TileEntityAcceleratorControlPoint) && ((TileEntityAcceleratorControlPoint) tileEntity).getIsEnabled();
 			final Integer controlChannel = (tileEntity instanceof IControlChannel) ? ((IControlChannel) tileEntity).getControlChannel() : -1;
 			
@@ -563,7 +562,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		for (final Entry<Integer, VectorI> entryControlPoint : mapInjectors.entrySet()) {
 			final Integer tier = 1;
 			final String type = "Injector";
-			final TileEntity tileEntity = entryControlPoint.getValue().getTileEntity(world);
+			final TileEntity tileEntity = entryControlPoint.getValue().getTileEntity(blockAccess);
 			final Boolean isEnabled = (tileEntity instanceof TileEntityParticlesInjector) && ((TileEntityParticlesInjector) tileEntity).getIsEnabled();
 			final Integer controlChannel = (tileEntity instanceof IControlChannel) ? ((IControlChannel) tileEntity).getControlChannel() : -1;
 			

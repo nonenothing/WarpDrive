@@ -3,6 +3,9 @@ package cr0s.warpdrive.block.atomic;
 import net.minecraft.block.Block;
 import net.minecraft.world.IBlockAccess;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockVoidShellGlass extends BlockVoidShellPlain {
 	
 	public BlockVoidShellGlass() {
@@ -21,12 +24,13 @@ public class BlockVoidShellGlass extends BlockVoidShellPlain {
 		return 1;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
-		if (world.isAirBlock(x, y, z)) {
+	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		if (blockAccess.isAirBlock(x, y, z)) {
 			return true;
 		}
-		Block sideBlock = world.getBlock(x, y, z);
+		Block sideBlock = blockAccess.getBlock(x, y, z);
 		return !(sideBlock instanceof BlockElectromagnetGlass);
 	}
 }

@@ -51,7 +51,7 @@ public class BlockAbstractAccelerator extends BlockAbstractBase implements IBloc
 	}
 	
 	@Override
-	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess world, int x, int y, int z) {
+	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess blockAccess, int x, int y, int z) {
 		return false;
 	}
 }

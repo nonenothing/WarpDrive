@@ -13,15 +13,21 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockDecorative extends Block {
+	
+	@SideOnly(Side.CLIENT)
 	private static IIcon[] icons;
+	
 	private static ItemStack[] itemStackCache;
 	
 	public BlockDecorative() {
 		super(Material.iron);
 		setHardness(1.5f);
 		setStepSound(Block.soundTypeMetal);
-		setBlockName("warpdrive.passive.Plain");
+		setBlockName("warpdrive.decoration.decorative.plain");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
 		icons = new IIcon[EnumDecorativeType.length];
@@ -38,7 +44,7 @@ public class BlockDecorative extends Block {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
-			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:passive/decorative" + enumDecorativeType.unlocalizedName);
+			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:decoration/decorative-" + enumDecorativeType.unlocalizedName);
 		}
 	}
 	

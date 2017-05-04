@@ -82,8 +82,8 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity == null || !(tileEntity instanceof TileEntityEnergyBank)) {
 			return icons[3];
 		}
@@ -108,6 +108,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 			return (byte) itemStack.getItemDamage();
 		}
 	}
+	
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {

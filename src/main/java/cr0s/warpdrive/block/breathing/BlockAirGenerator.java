@@ -85,17 +85,17 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityAirGenerator) {
 			TileEntityAirGenerator airGenerator = (TileEntityAirGenerator)tileEntity;
-			ItemStack heldItemStack = entityPlayer.getHeldItem();
-			if (heldItemStack == null) {
+			ItemStack itemStackHeld = entityPlayer.getHeldItem();
+			if (itemStackHeld == null) {
 				Commons.addChatMessage(entityPlayer, airGenerator.getStatus());
 				return true;
 			} else {
-				Item heldItem = heldItemStack.getItem();
-				if (heldItem != null && (heldItem instanceof IAirContainerItem)) {
-					IAirContainerItem airCanister = (IAirContainerItem) heldItem;
-					if (airCanister.canContainAir(heldItemStack) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
+				Item itemHeld = itemStackHeld.getItem();
+				if (itemHeld instanceof IAirContainerItem) {
+					IAirContainerItem airCanister = (IAirContainerItem) itemHeld;
+					if (airCanister.canContainAir(itemStackHeld) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						ItemStack toAdd = airCanister.getFullAirContainer(heldItemStack);
+						ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
 								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);

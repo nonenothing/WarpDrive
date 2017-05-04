@@ -16,6 +16,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageReceiver {
+	
 	protected final byte tier;
 	private final int metaHull;
 	

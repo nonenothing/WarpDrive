@@ -176,8 +176,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess world, int x, int y, int z) {
-		final int metadata = world.getBlockMetadata(x, y, z);
+	public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		setBlockBoundsFromMetadata(metadata);
 	}
 	
@@ -268,10 +268,10 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		if (this.field_150004_a) {
-			return super.shouldSideBeRendered(world, x, y, z, side);
-		} else if (side != 1 && side != 0 && !super.shouldSideBeRendered(world, x, y, z, side)) {
+			return super.shouldSideBeRendered(blockAccess, x, y, z, side);
+		} else if (side != 1 && side != 0 && !super.shouldSideBeRendered(blockAccess, x, y, z, side)) {
 			return false;
 		} else {
 			return true;

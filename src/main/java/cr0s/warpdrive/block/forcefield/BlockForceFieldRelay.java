@@ -44,8 +44,8 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public IIcon getIcon(IBlockAccess world, int x, int y, int z, int side) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity == null || !(tileEntity instanceof TileEntityForceFieldRelay)) {
 			return icons[0];
 		}

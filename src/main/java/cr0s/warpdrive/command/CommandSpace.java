@@ -30,17 +30,17 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender sender, String[] params) {
-		if (sender == null) { return; } 
+	public void processCommand(ICommandSender commandSender, String[] params) {
+		if (commandSender == null) { return; } 
 		MinecraftServer server = MinecraftServer.getServer();
 		
 		// set defaults
 		int targetDimensionId = Integer.MAX_VALUE;
 		
 		EntityPlayerMP[] entityPlayerMPs = null;
-		if (sender instanceof EntityPlayerMP) {
+		if (commandSender instanceof EntityPlayerMP) {
 			entityPlayerMPs = new EntityPlayerMP[1];
-			entityPlayerMPs[0] = (EntityPlayerMP) sender;
+			entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
 		}
 		
 		// parse arguments
@@ -49,37 +49,37 @@ public class CommandSpace extends CommandBase {
 			// nop
 		} else if (params.length == 1) {
 			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
-				Commons.addChatMessage(sender, getCommandUsage(sender));
+				Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 				return;
 			}
-			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(sender, params[0]);
+			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(commandSender, params[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
-			} else if (sender instanceof EntityPlayer) {
-				targetDimensionId = StarMapRegistry.getDimensionId(params[0], (EntityPlayer) sender);
+			} else if (commandSender instanceof EntityPlayer) {
+				targetDimensionId = StarMapRegistry.getDimensionId(params[0], (EntityPlayer) commandSender);
 			} else {
-				Commons.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				Commons.addChatMessage(commandSender, "/space: player not found '" + params[0] + "'");
 				return;
 			}
 			
 		} else if (params.length == 2) {
-			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(sender, params[0]);
+			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(commandSender, params[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
-				Commons.addChatMessage(sender, "/space: player not found '" + params[0] + "'");
+				Commons.addChatMessage(commandSender, "/space: player not found '" + params[0] + "'");
 				return;
 			}
 			targetDimensionId = StarMapRegistry.getDimensionId(params[1], entityPlayerMPs[0]);
 			
 		} else {
-			Commons.addChatMessage(sender, "/space: too many arguments " + params.length);
+			Commons.addChatMessage(commandSender, "/space: too many arguments " + params.length);
 			return;
 		}
 		
 		// check player
 		if (entityPlayerMPs == null || entityPlayerMPs.length <= 0) {
-			Commons.addChatMessage(sender, "/space: undefined player");
+			Commons.addChatMessage(commandSender, "/space: undefined player");
 			return;
 		}
 		
@@ -91,7 +91,7 @@ public class CommandSpace extends CommandBase {
 			if (targetDimensionId == Integer.MAX_VALUE) {
 				CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 				if (celestialObject == null) {
-					Commons.addChatMessage(sender, 
+					Commons.addChatMessage(commandSender, 
 						String.format("/space: player %s is in unknown dimension %d. Try specifying an explicit target dimension instead.",
 							    entityPlayerMP.getCommandSenderName(), entityPlayerMP.worldObj.provider.dimensionId));
 					return;
@@ -102,9 +102,9 @@ public class CommandSpace extends CommandBase {
 					if (celestialObject == null) {
 						targetDimensionId = 0;
 					} else if (celestialObject.isVirtual) {
-						Commons.addChatMessage(sender,
-						String.format("/space: player %s closest celestial object is virtual (%s). Try specifying an explicit target dimension instead.",
-							entityPlayerMP.getCommandSenderName(), celestialObject.getFullName()));
+						Commons.addChatMessage(commandSender,
+							String.format("/space: player %s closest celestial object is virtual (%s). Try specifying an explicit target dimension instead.",
+								entityPlayerMP.getCommandSenderName(), celestialObject.getFullName()));
 						return;
 					} else {
 						targetDimensionId = celestialObject.dimensionId;
@@ -147,16 +147,16 @@ public class CommandSpace extends CommandBase {
 			// get target world
 			WorldServer targetWorld = server.worldServerForDimension(targetDimensionId);
 			if (targetWorld == null) {
-				Commons.addChatMessage(sender, "/space: undefined dimension '" + targetDimensionId + "'");
+				Commons.addChatMessage(commandSender, "/space: undefined dimension '" + targetDimensionId + "'");
 				return;
 			}
 			
 			// inform player
 			String message = "Teleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + targetDimensionId + "..."; // + ":" + targetWorld.getWorldInfo().getWorldName();
-			Commons.addChatMessage(sender, message);
+			Commons.addChatMessage(commandSender, message);
 			WarpDrive.logger.info(message);
-			if (sender != entityPlayerMP) {
-				Commons.addChatMessage(entityPlayerMP, sender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
+			if (commandSender != entityPlayerMP) {
+				Commons.addChatMessage(entityPlayerMP, commandSender.getCommandSenderName() + " is teleporting you to dimension " + targetDimensionId); // + ":" + targetWorld.getWorldInfo().getWorldName());
 			}
 			
 			// find a good spot

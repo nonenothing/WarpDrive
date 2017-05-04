@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockHullPlain extends BlockAbstractBase implements IBlockBase, IDamageReceiver {
+public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;

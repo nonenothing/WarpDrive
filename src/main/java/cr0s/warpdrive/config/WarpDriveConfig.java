@@ -300,7 +300,7 @@ public class WarpDriveConfig {
 	public static int[] BREATHING_AIR_GENERATION_RANGE_BLOCKS = { 16, 48, 144 };
 	public static int BREATHING_REPRESSURIZATION_SPEED_BLOCKS = 512;
 	public static int BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
-	public final static boolean BREATHING_AIR_BLOCK_DEBUG = false;
+	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
 	public static boolean BREATHING_AIR_AT_ENTITY_DEBUG = false;
 	
 	// IC2 Reactor monitor
@@ -344,6 +344,8 @@ public class WarpDriveConfig {
 	
 	// Particles accelerator
 	public static boolean ACCELERATOR_ENABLE = false;
+	public static final double[]  ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
+	public static final double    ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
 	public static int ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
 	public static Block getModBlock(final String mod, final String id) {

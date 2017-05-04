@@ -193,15 +193,17 @@ public class AirSpreader {
 			} else {
 				boolean hasGenerator = false;
 				final int metadataSource = world.getBlockMetadata(x, y, z);
-				ForgeDirection forgeDirection = ForgeDirection.getOrientation(metadataSource & 7).getOpposite();
-				Block block = world.getBlock(x + forgeDirection.offsetX,
-				                             y + forgeDirection.offsetY,
-				                             z + forgeDirection.offsetZ);
+				final ForgeDirection facingSource = ForgeDirection.getOrientation(metadataSource & 7);
+				final Block block = world.getBlock(x - facingSource.offsetX, 
+				                                   y - facingSource.offsetY, 
+				                                   z - facingSource.offsetZ);
 				if (block instanceof BlockAirGeneratorTiered) {
-					int metadataGenerator = world.getBlockMetadata(x + forgeDirection.offsetX,
-					                                               y + forgeDirection.offsetY,
-					                                               z + forgeDirection.offsetZ);
-					if ((metadataGenerator & 8) != 0 && (metadataGenerator & 7) == (metadataSource & 7)) {
+					final int metadataGenerator = world.getBlockMetadata(x - facingSource.offsetX, 
+					                                                     y - facingSource.offsetY, 
+					                                                     z - facingSource.offsetZ);
+					final ForgeDirection facingGenerator = ForgeDirection.getOrientation(metadataGenerator & 7);
+					final boolean isActiveGenerator = (metadataGenerator & 8) != 0;
+					if (isActiveGenerator && facingGenerator == facingSource) {
 						// all good
 						hasGenerator = true;
 					}

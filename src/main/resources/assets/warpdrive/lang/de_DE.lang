@@ -84,8 +84,8 @@ item.warpdrive.forcefield.upgrade.heating.name=Heizungs Upgrade
 item.warpdrive.forcefield.upgrade.heating.tooltip=Erhitze Blöcke und Entities. Mehr Upgrades verstärken den Effekt. Nutze ein Inversions Upgrade für Terraforming Effekt.
 item.warpdrive.forcefield.upgrade.inversion.name=Inversions Upgrade
 item.warpdrive.forcefield.upgrade.inversion.tooltip=§4Work in progress\nOberflächen Effekt zu Raum Effekt. Für Entity Zielerfassung oder Terraforming.
-item.warpdrive.forcefield.upgrade.itemPort.name=Item Anschluss Upgrade
-item.warpdrive.forcefield.upgrade.itemPort.tooltip=Interagiere mit angeschlossenen Stauräumen. Nutze ein Anziehungs Upgrade, um Block Brecher Drops anzuziehen. Nutze ein Rückstoß Upgrade, um mit einem Stabilisations Upgrade Blöcke zu setzen.
+item.warpdrive.forcefield.upgrade.item_port.name=Item Anschluss Upgrade
+item.warpdrive.forcefield.upgrade.item_port.tooltip=Interagiere mit angeschlossenen Stauräumen. Nutze ein Anziehungs Upgrade, um Block Brecher Drops anzuziehen. Nutze ein Rückstoß Upgrade, um mit einem Stabilisations Upgrade Blöcke zu setzen.
 item.warpdrive.forcefield.upgrade.pumping.name=Pumpen Upgrade
 item.warpdrive.forcefield.upgrade.pumping.tooltip=§4Work in progress\nPumpe Flüssigkeiten im Einflussbereich. Um dickflüssigeres zu pumpen füge mehr  Pumpen Upgrades hinzu.
 item.warpdrive.forcefield.upgrade.range.name=Reichweiten Upgrade
@@ -154,12 +154,13 @@ item.warpdrive.tool.tuning_fork.black.name=Schwarze Stimmgabel
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRecktsklicke einen Block§7 um seine Kristalle einzustellen\n§bSschleiche§7 um alternative Kristalle einzustellen
 
 
-tile.warpdrive.passive.Energized.name=Energiegeladener Block
-tile.warpdrive.passive.Gas.name=Gas Block
+tile.warpdrive.decoration.decorative.energized.name=Energiegeladener Block
+tile.warpdrive.decoration.decorative.network.name=Netzwerk Block
+tile.warpdrive.decoration.decorative.plain.name=Ebenen Block
+tile.warpdrive.decoration.gas.name=Gas Block
+
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Stark weiterentwickelter Maschinen Block
-tile.warpdrive.passive.Network.name=Netzwerk Block
-tile.warpdrive.passive.Plain.name=Ebenen Block
 tile.warpdrive.passive.TransportBeacon.name=Transport Leuchtfeuer
 
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
@@ -583,7 +584,7 @@ warpdrive.forcefield.upgrade.statusLine.cooling=Kühler
 warpdrive.forcefield.upgrade.statusLine.fusion=Fusions
 warpdrive.forcefield.upgrade.statusLine.heating=Heizungs
 warpdrive.forcefield.upgrade.statusLine.inversion=Inversions
-warpdrive.forcefield.upgrade.statusLine.itemPort=Item Anschluss
+warpdrive.forcefield.upgrade.statusLine.item_port=Item Anschluss
 warpdrive.forcefield.upgrade.statusLine.pumping=Pumpen
 warpdrive.forcefield.upgrade.statusLine.range=Reichweiten
 warpdrive.forcefield.upgrade.statusLine.repulsion=Rückstoß

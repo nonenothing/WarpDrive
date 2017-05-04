@@ -92,20 +92,20 @@ public class VectorI implements Cloneable {
 		return new VectorI(x + side.offsetX, y + side.offsetY, z + side.offsetZ);
 	}
 	
-	public Block getBlock(IBlockAccess world) {
-		return world.getBlock(x, y, z);
+	public Block getBlock(IBlockAccess blockAccess) {
+		return blockAccess.getBlock(x, y, z);
 	}
 	
-	public boolean isChunkLoaded(IBlockAccess world) {
-		return isChunkLoaded(world, x, z);
+	public boolean isChunkLoaded(IBlockAccess blockAccess) {
+		return isChunkLoaded(blockAccess, x, z);
 	}
 	
-	static public boolean isChunkLoaded(IBlockAccess world, final int x, final int z) {
-		if (world instanceof WorldServer) {
-			return ChunkHandler.isLoaded((WorldServer) world, x, 64, z);
+	static public boolean isChunkLoaded(IBlockAccess blockAccess, final int x, final int z) {
+		if (blockAccess instanceof WorldServer) {
+			return ChunkHandler.isLoaded((WorldServer) blockAccess, x, 64, z);
 			/*
-			if (((WorldServer) world).getChunkProvider() instanceof ChunkProviderServer) {
-				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer) world).getChunkProvider();
+			if (((WorldServer) blockAccess).getChunkProvider() instanceof ChunkProviderServer) {
+				ChunkProviderServer chunkProviderServer = (ChunkProviderServer) ((WorldServer) blockAccess).getChunkProvider();
 				try {
 					Chunk chunk = (Chunk) chunkProviderServer.loadedChunkHashMap.getValueByKey(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
 					return chunk != null && chunk.isChunkLoaded;
@@ -113,39 +113,39 @@ public class VectorI implements Cloneable {
 					return chunkProviderServer.chunkExists(x >> 4, z >> 4);
 				}
 			} else {
-				return ((WorldServer) world).getChunkProvider().chunkExists(x >> 4, z >> 4);
+				return ((WorldServer) blockAccess).getChunkProvider().chunkExists(x >> 4, z >> 4);
 			}
 			/**/
 		}
 		return true;
 	}
 	
-	public Block getBlock_noChunkLoading(IBlockAccess world, ForgeDirection side) {
-		return getBlock_noChunkLoading(world, x + side.offsetX, y + side.offsetY, z + side.offsetZ);
+	public Block getBlock_noChunkLoading(IBlockAccess blockAccess, ForgeDirection side) {
+		return getBlock_noChunkLoading(blockAccess, x + side.offsetX, y + side.offsetY, z + side.offsetZ);
 	}
 	
-	public Block getBlock_noChunkLoading(IBlockAccess world) {
-		return getBlock_noChunkLoading(world, x, y, z);
+	public Block getBlock_noChunkLoading(IBlockAccess blockAccess) {
+		return getBlock_noChunkLoading(blockAccess, x, y, z);
 	}
 	
-	static public Block getBlock_noChunkLoading(IBlockAccess world, final int x, final int y, final int z) {
+	static public Block getBlock_noChunkLoading(IBlockAccess blockAccess, final int x, final int y, final int z) {
 		// skip unloaded worlds
-		if (world == null) {
+		if (blockAccess == null) {
 			return null;
 		}
 		// skip unloaded chunks
-		if (!isChunkLoaded(world, x, z)) {
+		if (!isChunkLoaded(blockAccess, x, z)) {
 			return null;
 		}
-		return world.getBlock(x, y, z);
+		return blockAccess.getBlock(x, y, z);
 	}
 	
-	public TileEntity getTileEntity(IBlockAccess world) {
-		return world.getTileEntity(x, y, z);
+	public TileEntity getTileEntity(IBlockAccess blockAccess) {
+		return blockAccess.getTileEntity(x, y, z);
 	}
 	
-	public int getBlockMetadata(IBlockAccess world) {
-		return world.getBlockMetadata(x, y, z);
+	public int getBlockMetadata(IBlockAccess blockAccess) {
+		return blockAccess.getBlockMetadata(x, y, z);
 	}
 	
 	public void setBlock(World worldObj, final Block block) {

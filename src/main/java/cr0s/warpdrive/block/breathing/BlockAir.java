@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class BlockAir extends BlockAbstractAir {
 	
-	private final static int AIR_BLOCK_TICKS = 40;
+	private static final int AIR_BLOCK_TICKS = 40;
 	
 	public BlockAir() {
 		super();
