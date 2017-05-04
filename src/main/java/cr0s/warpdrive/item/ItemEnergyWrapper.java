@@ -11,8 +11,7 @@ import ic2.api.item.ISpecialElectricItem;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 
 public class ItemEnergyWrapper {
 	

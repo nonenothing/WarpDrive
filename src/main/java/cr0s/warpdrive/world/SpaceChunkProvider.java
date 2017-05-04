@@ -2,61 +2,71 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.WarpDrive;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.world.ChunkPosition;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.gen.ChunkProviderGenerate;
+import net.minecraft.world.chunk.ChunkPrimer;
+import net.minecraft.world.gen.ChunkProviderOverworld;
 
-public class SpaceChunkProvider extends ChunkProviderGenerate {
-	private World worldObj;
-	private Random rand;
-	private BiomeGenBase[] biomesForGeneration = new BiomeGenBase[1];
+public class SpaceChunkProvider extends ChunkProviderOverworld {
 	
-	public SpaceChunkProvider(World worldObj, long par2) {
-		super(worldObj, par2, false);
-		rand = new Random(par2);
-		this.worldObj = worldObj;
+	private final World world;
+	private final Random rand;
+	
+	public SpaceChunkProvider(World world, long seed) {
+		super(world, seed, false, null);
+		rand = new Random(seed);
+		this.world = world;
+	}
+	
+	@Nonnull
+	@Override
+	public Chunk provideChunk(int x, int z) {
+		rand.setSeed(x * 341873128712L + z * 132897987541L);
+		ChunkPrimer chunkprimer = new ChunkPrimer();
+		setBlocksInChunk(x, z, chunkprimer);
+		
+		Chunk chunk = new Chunk(world, chunkprimer, x, z);
+		byte[] byteBiomes = chunk.getBiomeArray();
+		for (int i = 0; i < byteBiomes.length; ++i) {
+			byteBiomes[i] = (byte) Biome.getIdForBiome(WarpDrive.spaceBiome);
+		}
+		
+		chunk.generateSkylightMap();
+		return chunk;
 	}
 	
 	@Override
-	public Chunk provideChunk(int par1, int par2) {
-		rand.setSeed(par1 * 341873128712L + par2 * 132897987541L);
-		Block[] var3 = new Block[32768];
-		// biomesForGeneration[0] = WarpDrive.spaceBiome;
-		// caveGenerator.generate(this, this.worldObj, par1, par2, var3);
-		biomesForGeneration[0] = WarpDrive.spaceBiome;
-		Chunk var4 = new Chunk(worldObj, var3, par1, par2);
-		var4.generateSkylightMap();
-		return var4;
+	public void populate(int x, int z) {
+		// super.populate(x, z);
 	}
 	
 	@Override
-	public void populate(IChunkProvider var1, int var2, int var3) {
-		// super.populate(var1, var2, var3);
-		// Generate chunk population
-		// GameRegistry.generateWorld(var2, var3, worldObj, var1, var1);
+	public boolean generateStructures(@Nonnull Chunk chunkIn, int x, int z) {
+		return false;
 	}
 	
 	@Override
-	public List getPossibleCreatures(EnumCreatureType var1, int var2, int var3, int var4) {
+	public @Nonnull List<Biome.SpawnListEntry> getPossibleCreatures(@Nonnull EnumCreatureType creatureType, @Nonnull BlockPos pos) {
+		return new ArrayList<>();
+	}
+	
+	@Nullable
+	@Override
+	public BlockPos getStrongholdGen(@Nonnull World worldIn, String structureName, @Nonnull BlockPos position) {
 		return null;
 	}
 	
 	@Override
-	public ChunkPosition func_147416_a(World var1, String var2, int var3, int var4, int var5) {
-		// no structure generation
-		return null;
-	}
-
-	@Override
-	public void recreateStructures(int var1, int var2) {
+	public void recreateStructures(Chunk chunkIn, int x, int z) {
 		// no structure generation
 	}
 }

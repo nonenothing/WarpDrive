@@ -44,14 +44,13 @@ import net.minecraft.block.BlockTorch;
 import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockTripWireHook;
 import net.minecraft.block.BlockVine;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class JumpBlock {
 	public Block block;
@@ -66,13 +65,13 @@ public class JumpBlock {
 	public JumpBlock() {
 	}
 
-	public JumpBlock(Block block, int blockMeta, TileEntity tileEntity, int x, int y, int z) {
-		this.block = block;
-		this.blockMeta = blockMeta;
+	public JumpBlock(IBlockState blockState, TileEntity tileEntity, final BlockPos blockPos) {
+		this.block = blockState.getBlock();
+		this.blockMeta = blockState.getBlock().getMetaFromState(blockState);
 		blockTileEntity = tileEntity;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		this.x = blockPos.getX();
+		this.y = blockPos.getY();
+		this.z = blockPos.getZ();
 		
 		// save externals
 		for (Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
@@ -86,11 +85,11 @@ public class JumpBlock {
 	public JumpBlock(Filler filler, int x, int y, int z) {
 		if (filler.block == null) {
 			WarpDrive.logger.info("Forcing glass for invalid filler with null block at " + x + " " + y + " " + z);
-			filler.block = Blocks.glass;
+			filler.block = Blocks.GLASS;
 		}
 		block = filler.block;
 		blockMeta = filler.metadata;
-		blockNBT = (filler.tag != null) ? (NBTTagCompound) filler.tag.copy() : null;
+		blockNBT = (filler.tag != null) ? filler.tag.copy() : null;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -167,7 +166,7 @@ public class JumpBlock {
 		} else if (block instanceof BlockStairs) {
 			mrot = mrotStair;
 		} else if (block instanceof BlockSign) {
-			if (block == Blocks.wall_sign) {
+			if (block == Blocks.WALL_SIGN) {
 				mrot = mrotForgeDirection;
 			} else {
 				mrot = mrotSign;
@@ -229,7 +228,7 @@ public class JumpBlock {
 				nbtToDeploy = new NBTTagCompound();
 				blockTileEntity.writeToNBT(nbtToDeploy);
 			} else if (blockNBT != null) {
-				nbtToDeploy = (NBTTagCompound) blockNBT.copy();
+				nbtToDeploy = blockNBT.copy();
 			}
 			int newBlockMeta = blockMeta;
 			if (externals != null) {
@@ -242,28 +241,29 @@ public class JumpBlock {
 			} else {
 				newBlockMeta = getMetadataRotation(nbtToDeploy, transformation.getRotationSteps());
 			}
-			ChunkCoordinates target = transformation.apply(x, y, z);
-			setBlockNoLight(targetWorld, target.posX, target.posY, target.posZ, block, newBlockMeta, 2);
+			BlockPos target = transformation.apply(x, y, z);
+			IBlockState blockState = block.getStateFromMeta(newBlockMeta);
+			setBlockNoLight(targetWorld, target, blockState, 2);
 			
 			// Re-schedule air blocks update
 			if (block == WarpDrive.blockAir) {
-				targetWorld.markBlockForUpdate(target.posX, target.posY, target.posZ);
-				targetWorld.scheduleBlockUpdate(target.posX, target.posY, target.posZ, block, 40 + targetWorld.rand.nextInt(20));
+				targetWorld.notifyBlockUpdate(target, blockState, blockState, 3);
+				targetWorld.scheduleBlockUpdate(target, block, 40 + targetWorld.rand.nextInt(20), 0);
 			}
 			
 			if (nbtToDeploy != null) {
-				nbtToDeploy.setInteger("x", target.posX);
-				nbtToDeploy.setInteger("y", target.posY);
-				nbtToDeploy.setInteger("z", target.posZ);
+				nbtToDeploy.setInteger("x", target.getX());
+				nbtToDeploy.setInteger("y", target.getY());
+				nbtToDeploy.setInteger("z", target.getZ());
 				
 				if (nbtToDeploy.hasKey("mainX") && nbtToDeploy.hasKey("mainY") && nbtToDeploy.hasKey("mainZ")) {// Mekanism 6.0.4.44
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 						WarpDrive.logger.info(this + " deploy: TileEntity has mainXYZ");
 					}
-					ChunkCoordinates mainTarget = transformation.apply(nbtToDeploy.getInteger("mainX"), nbtToDeploy.getInteger("mainY"), nbtToDeploy.getInteger("mainZ"));
-					nbtToDeploy.setInteger("mainX", mainTarget.posX);
-					nbtToDeploy.setInteger("mainY", mainTarget.posY);
-					nbtToDeploy.setInteger("mainZ", mainTarget.posZ);
+					BlockPos mainTarget = transformation.apply(nbtToDeploy.getInteger("mainX"), nbtToDeploy.getInteger("mainY"), nbtToDeploy.getInteger("mainZ"));
+					nbtToDeploy.setInteger("mainX", mainTarget.getX());
+					nbtToDeploy.setInteger("mainY", mainTarget.getY());
+					nbtToDeploy.setInteger("mainZ", mainTarget.getZ());
 				}
 				
 				if (nbtToDeploy.hasKey("screenData")) {// IC2NuclearControl 2.2.5a
@@ -273,14 +273,14 @@ public class JumpBlock {
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 							WarpDrive.logger.info(this + " deploy: TileEntity has screenData.min/maxXYZ");
 						}
-						ChunkCoordinates minTarget = transformation.apply(nbtScreenData.getInteger("minX"), nbtScreenData.getInteger("minY"), nbtScreenData.getInteger("minZ"));
-						nbtScreenData.setInteger("minX", minTarget.posX);
-						nbtScreenData.setInteger("minY", minTarget.posY);
-						nbtScreenData.setInteger("minZ", minTarget.posZ);
-						ChunkCoordinates maxTarget = transformation.apply(nbtScreenData.getInteger("maxX"), nbtScreenData.getInteger("maxY"), nbtScreenData.getInteger("maxZ"));
-						nbtScreenData.setInteger("maxX", maxTarget.posX);
-						nbtScreenData.setInteger("maxY", maxTarget.posY);
-						nbtScreenData.setInteger("maxZ", maxTarget.posZ);
+						BlockPos minTarget = transformation.apply(nbtScreenData.getInteger("minX"), nbtScreenData.getInteger("minY"), nbtScreenData.getInteger("minZ"));
+						nbtScreenData.setInteger("minX", minTarget.getX());
+						nbtScreenData.setInteger("minY", minTarget.getY());
+						nbtScreenData.setInteger("minZ", minTarget.getZ());
+						BlockPos maxTarget = transformation.apply(nbtScreenData.getInteger("maxX"), nbtScreenData.getInteger("maxY"), nbtScreenData.getInteger("maxZ"));
+						nbtScreenData.setInteger("maxX", maxTarget.getX());
+						nbtScreenData.setInteger("maxY", maxTarget.getY());
+						nbtScreenData.setInteger("maxZ", maxTarget.getZ());
 						nbtToDeploy.setTag("screenData", nbtScreenData);
 					}
 				}
@@ -298,20 +298,20 @@ public class JumpBlock {
 					
 				} else if (block == WarpDriveConfig.CC_Computer || block == WarpDriveConfig.CC_peripheral
 						|| block == WarpDriveConfig.CCT_Turtle || block == WarpDriveConfig.CCT_Expanded || block == WarpDriveConfig.CCT_Advanced) {
-					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
+					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
 					newTileEntity.invalidate();
 					
 				}
 				
 				if (newTileEntity == null) {
-					newTileEntity = TileEntity.createAndLoadEntity(nbtToDeploy);
+					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
 				}
 				
 				if (newTileEntity != null) {
 					newTileEntity.setWorldObj(targetWorld);
 					newTileEntity.validate();
 					
-					targetWorld.setTileEntity(target.posX, target.posY, target.posZ, newTileEntity);
+					targetWorld.setTileEntity(target, newTileEntity);
 					if (isForgeMultipart) {
 						CompatForgeMultipart.methodTileMultipart_onChunkLoad.invoke(newTileEntity);
 						CompatForgeMultipart.methodMultipartHelper_sendDescPacket.invoke(null, targetWorld, newTileEntity);
@@ -335,13 +335,13 @@ public class JumpBlock {
 		}
 	}
 	
-	public static void refreshBlockStateOnClient(World world, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public static void refreshBlockStateOnClient(World world, BlockPos blockPos) {
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity != null) {
 			Class<?> teClass = tileEntity.getClass();
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info(String.format("Refreshing clients at %d %d %d with %s derived from %s", 
-				                                    x, y, z, 
+				WarpDrive.logger.info(String.format("Refreshing clients at %d %d %d with %s derived from %s",
+				                                    blockPos.getX(), blockPos.getY(), blockPos.getZ(), 
 						                            teClass, 
 						                            teClass.getSuperclass()));
 			}
@@ -355,7 +355,8 @@ public class JumpBlock {
 						onUnloaded.invoke(tileEntity);
 						onLoaded.invoke(tileEntity);
 					} else {
-						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "' at " + x + " " + y + " " + z + ". Please report this issue!");
+						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "'"
+							+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ". Please report this issue!");
 					}
 					
 					tileEntity.updateContainingBlockInfo();
@@ -389,7 +390,8 @@ public class JumpBlock {
 						// WarpDrive.logger.info("Tile has no getNetworkedFields method");
 					} catch (NoClassDefFoundError exception) {
 						if (WarpDriveConfig.LOGGING_JUMP) {
-							WarpDrive.logger.info("TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z + " is missing a class definition");
+							WarpDrive.logger.info("TileEntity " + teClass.getName()
+								+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + " is missing a class definition");
 							if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 								exception.printStackTrace();
 							}
@@ -397,7 +399,8 @@ public class JumpBlock {
 					}
 				}
 			} catch (Exception exception) {
-				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z);
+				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName()
+					+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 				exception.printStackTrace();
 			}
 		}
@@ -409,7 +412,7 @@ public class JumpBlock {
 			if (WarpDriveConfig.LOGGING_BUILDING) {
 				WarpDrive.logger.warn("Ignoring unknown block " + tag.getString("block") + " from tag " + tag);
 			}
-			block = Blocks.air;
+			block = Blocks.AIR;
 			return;
 		}
 		blockMeta = tag.getByte("blockMeta");
@@ -436,7 +439,7 @@ public class JumpBlock {
 		if (tag.hasKey("externals")) {
 			NBTTagCompound tagCompoundExternals = tag.getCompoundTag("externals");
 			externals = new HashMap<>();
-			for (Object key : tagCompoundExternals.func_150296_c()) {
+			for (Object key : tagCompoundExternals.getKeySet()) {
 				assert (key instanceof String);
 				externals.put((String) key, tagCompoundExternals.getTag((String) key));
 			}
@@ -446,7 +449,7 @@ public class JumpBlock {
 	}
 	
 	public void writeToNBT(NBTTagCompound tag) {
-		tag.setString("block", Block.blockRegistry.getNameForObject(block));
+		tag.setString("block", Block.REGISTRY.getNameForObject(block).toString());
 		tag.setByte("blockMeta", (byte)blockMeta);
 		if (blockTileEntity != null) {
 			NBTTagCompound tagCompound = new NBTTagCompound();
@@ -477,15 +480,8 @@ public class JumpBlock {
 	
 	private static void NetworkHelper_init() {
 		try {
-			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", new Class[] { TileEntity.class, String.class });
-			
+			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", TileEntity.class, String.class);
 			NetworkManager_instance = Class.forName("ic2.core.IC2").getDeclaredField("network").get(null);
-			// This code is an IC2 hack to fix an issue on 1.7.10 up to industrialcraft-2-2.2.763-experimental, see http://bt.industrial-craft.net/view.php?id=1704
-			if (!NetworkManager_instance.getClass().getName().contains("NetworkManager")) {
-				NetworkManager_instance = Class.forName("ic2.core.util.SideGateway").getMethod("get").invoke(NetworkManager_instance);
-				WarpDrive.logger.error("Patched IC2 API, new instance is '" + NetworkManager_instance + "'");
-			}
-			// IC2 hack ends here
 		} catch (Exception exception) {
 			throw new RuntimeException(exception);
 		}
@@ -504,9 +500,11 @@ public class JumpBlock {
 	// IC2 support ends here
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.World.setBlock to remove lighting computations
-	public static boolean setBlockNoLight(World w, int x, int y, int z, Block block, int blockMeta, int par6) {
-		// return w.setBlock(x, y, z, block, blockMeta, par6);
-		
+	public static boolean setBlockNoLight(World w, BlockPos blockPos, IBlockState blockState, int flags) {
+		return w.setBlockState(blockPos, blockState, flags);
+		/*
+		// x, y, z -> blockPos
+		// par6 -> flags
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
 			if (y < 0) {
 				return false;
@@ -553,7 +551,7 @@ public class JumpBlock {
 		}
 		/**/
 	}
-	
+	/*
 	// This code is a straight copy from Vanilla net.minecraft.world.Chunk.func_150807_a to remove lighting computations
 	private static boolean myChunkSBIDWMT(Chunk c, int x, int y, int z, Block block, int blockMeta) {
 		int i1 = z << 4 | x;
@@ -640,7 +638,7 @@ public class JumpBlock {
 					}
 				}
 				/**/
-				
+				/*
 				TileEntity tileentity;
 				
 				// Removed onBlockAdded event
@@ -665,4 +663,5 @@ public class JumpBlock {
 			}
 		}
 	}
+	/**/
 }

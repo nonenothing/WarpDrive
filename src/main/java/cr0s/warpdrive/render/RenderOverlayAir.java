@@ -7,15 +7,15 @@ import cr0s.warpdrive.data.StarMapRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderOverlayAir {
@@ -60,7 +60,7 @@ public class RenderOverlayAir {
 		}
 		
 		// restore texture
-		minecraft.getTextureManager().bindTexture(Gui.icons);
+		minecraft.getTextureManager().bindTexture(Gui.ICONS);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		// position right above food bar
@@ -98,8 +98,8 @@ public class RenderOverlayAir {
 	
 	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent.Pre event) {
-		if (event.type == ElementType.AIR) {
-			renderAir(event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+		if (event.getType() == ElementType.AIR) {
+			renderAir(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
 		}
 	}
 }

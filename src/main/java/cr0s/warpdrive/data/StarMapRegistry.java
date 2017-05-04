@@ -16,12 +16,15 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 
 import net.minecraftforge.common.DimensionManager;
@@ -50,7 +53,7 @@ public class StarMapRegistry {
 				WarpDrive.logger.info("Starmap registry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
 			}
 		}
-		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
+		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
@@ -65,7 +68,7 @@ public class StarMapRegistry {
 		// not found => add
 		countAdd++;
 		setRegistryItems.add(new StarMapRegistryItem(tileEntity));
-		registry.put(((TileEntity) tileEntity).getWorldObj().provider.dimensionId, setRegistryItems);
+		registry.put(((TileEntity) tileEntity).getWorld().provider.getDimension(), setRegistryItems);
 		if (WarpDriveConfig.LOGGING_STARMAP) {
 			printRegistry("added");
 		}
@@ -75,7 +78,7 @@ public class StarMapRegistry {
 		assert(tileEntity instanceof TileEntity);
 		
 		countRead++;
-		Set<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
+		Set<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			// noting to remove
 			return;
@@ -92,23 +95,23 @@ public class StarMapRegistry {
 		// not found => ignore it
 	}
 	
-	public void onBlockUpdated(World world, final int x, final int y, final int z, final Block block, final int metadata) {
-		CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.dimensionId);
+	public void onBlockUpdated(World world, final BlockPos blockPos, final IBlockState blockState) {
+		CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.getDimension());
 		if (setStarMapRegistryItems == null) {
 			return;
 		}
 		for (StarMapRegistryItem registryItem : setStarMapRegistryItems) {
-			if (registryItem.contains(x, y, z)) {
-				TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			if (registryItem.contains(blockPos)) {
+				TileEntity tileEntity = world.getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 				if (tileEntity instanceof IStarMapRegistryTileEntity) {
-					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(x, y, z), block, metadata);
+					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(blockPos), blockState);
 				}
 			}
 		}
 	}
 	
 	public static CelestialObject getCelestialObject(World world, final int x, final int z) {
-		return getCelestialObject(world.provider.dimensionId, x, z);
+		return getCelestialObject(world.provider.getDimension(), x, z);
 	}
 	
 	public static CelestialObject getCelestialObject(final int dimensionId, final int x, final int z) {
@@ -171,11 +174,11 @@ public class StarMapRegistry {
 		}
 		// coming from hyperspace?
 		if (celestialObject.isHyperspace()) {
-			celestialObject = getClosestChildCelestialObject(world.provider.dimensionId, x, z);
+			celestialObject = getClosestChildCelestialObject(world.provider.getDimension(), x, z);
 			return celestialObject == null ? 0 : celestialObject.dimensionId;
 		}
 		// coming from a planet?
-		celestialObject = getClosestParentCelestialObject(world.provider.dimensionId, x, z);
+		celestialObject = getClosestParentCelestialObject(world.provider.getDimension(), x, z);
 		return celestialObject == null ? 0 : (celestialObject.isSpace() ? celestialObject.dimensionId : celestialObject.parentDimensionId);
 	}
 	
@@ -190,9 +193,9 @@ public class StarMapRegistry {
 			return celestialObject.parentDimensionId;
 		}
 		// coming from a planet?
-		celestialObject = getClosestParentCelestialObject(world.provider.dimensionId, x, z);
+		celestialObject = getClosestParentCelestialObject(world.provider.getDimension(), x, z);
 		if (celestialObject != null && !celestialObject.isHyperspace()) {
-			celestialObject = getClosestParentCelestialObject(world.provider.dimensionId, x, z);
+			celestialObject = getClosestParentCelestialObject(world.provider.getDimension(), x, z);
 		}
 		return celestialObject == null ? 0 : celestialObject.parentDimensionId;
 	}
@@ -233,13 +236,13 @@ public class StarMapRegistry {
 		int radius2 = radius * radius;
 		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			for (StarMapRegistryItem entry : entryDimension.getValue()) {
-				double dX = entry.x - tileEntity.xCoord;
-				double dY = entry.y - tileEntity.yCoord;
-				double dZ = entry.z - tileEntity.zCoord;
+				double dX = entry.x - tileEntity.getPos().getX();
+				double dY = entry.y - tileEntity.getPos().getY();
+				double dZ = entry.z - tileEntity.getPos().getZ();
 				double distance2 = dX * dX + dY * dY + dZ * dZ;
 				
 				if ( distance2 <= radius2
-				  && (entry.isolationRate == 0.0D || tileEntity.getWorldObj().rand.nextDouble() >= entry.isolationRate)
+				  && (entry.isolationRate == 0.0D || tileEntity.getWorld().rand.nextDouble() >= entry.isolationRate)
 				  && (entry.getSpaceCoordinates() != null)
 				  && (entry.type != EnumStarMapEntryType.ACCELERATOR) ) {
 					starMapRegistryItems.add(entry);
@@ -251,12 +254,12 @@ public class StarMapRegistry {
 	}
 	
 	public boolean isInSpace(final World world, final int x, final int z) {
-		CelestialObject celestialObject = getCelestialObject(world.provider.dimensionId, x, z);
+		CelestialObject celestialObject = getCelestialObject(world.provider.getDimension(), x, z);
 		return celestialObject != null && celestialObject.isSpace();
 	}
 	
 	public boolean isInHyperspace(final World world, final int x, final int z) {
-		CelestialObject celestialObject = getCelestialObject(world.provider.dimensionId, x, z);
+		CelestialObject celestialObject = getCelestialObject(world.provider.getDimension(), x, z);
 		return celestialObject != null && celestialObject.isHyperspace();
 	}
 	
@@ -291,14 +294,14 @@ public class StarMapRegistry {
 		cleanup();
 		
 		core.validateShipSpatialParameters(reason);
-		aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
+		aabb1 = new AxisAlignedBB(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
 		
-		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorldObj().provider.dimensionId);
+		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			return false;
 		}
 		for (StarMapRegistryItem registryItem : setRegistryItems) {
-			assert(registryItem.dimensionId == core.getWorldObj().provider.dimensionId);
+			assert(registryItem.dimensionId == core.getWorld().provider.getDimension());
 			
 			// only check cores
 			if (registryItem.type != EnumStarMapEntryType.SHIP) {
@@ -306,26 +309,34 @@ public class StarMapRegistry {
 			}
 			
 			// Skip self
-			if (registryItem.x == core.xCoord && registryItem.y == core.yCoord && registryItem.z == core.zCoord) {
+			if (registryItem.x == core.getPos().getX() && registryItem.y == core.getPos().getY() && registryItem.z == core.getPos().getZ()) {
 				continue;
 			}
 			
 			// Skip missing ship cores
-			TileEntity tileEntity = core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			TileEntity tileEntity = core.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			TileEntityShipCore shipCore = (TileEntityShipCore) tileEntity;
 			
 			// Skip offline warp cores
 			if (shipCore.controller == null || shipCore.controller.getMode() == EnumShipCoreMode.IDLE || !shipCore.validateShipSpatialParameters(reason)) {
 				continue;
 			}
 			
-			// Compare areas for intersection
-			aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
-			if (aabb1.intersectsWith(aabb2)) {
-				return true;
+			// Search for nearest warp cores
+			double d3 = registryItem.x - core.getPos().getX();
+			double d4 = registryItem.y - core.getPos().getY();
+			double d5 = registryItem.z - core.getPos().getZ();
+			double distance2 = d3 * d3 + d4 * d4 + d5 * d5;
+			
+			if (distance2 <= ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1) * ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1)) {
+				// Compare warp-fields for intersection
+				aabb2 = new AxisAlignedBB(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+				if (aabb1.intersectsWith(aabb2)) {
+					return true;
+				}
 			}
 		}
 		
@@ -349,9 +360,10 @@ public class StarMapRegistry {
 					
 					boolean isLoaded;
 					if (world.getChunkProvider() instanceof ChunkProviderServer) {
-						ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
+						ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 						try {
-							isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+							Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+							isLoaded = chunk != null && chunk.isLoaded();
 						} catch (NoSuchFieldError exception) {
 							isLoaded = chunkProviderServer.chunkExists(registryItem.x >> 4, registryItem.z >> 4);
 						}
@@ -364,9 +376,9 @@ public class StarMapRegistry {
 					}
 					
 					// get block and tile entity
-					Block block = world.getBlock(registryItem.x, registryItem.y, registryItem.z);
+					Block block = world.getBlockState(new BlockPos(registryItem.x, registryItem.y, registryItem.z)).getBlock();
 					
-					TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+					TileEntity tileEntity = world.getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 					isValid = true;
 					switch (registryItem.type) {
 						case UNDEFINED:

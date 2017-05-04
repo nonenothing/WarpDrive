@@ -8,78 +8,62 @@ import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.api.ParticleStack;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextComponentTranslation;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class ItemElectromagneticCell extends Item implements IParticleContainerItem {
+public class ItemElectromagneticCell extends ItemAbstractBase implements IParticleContainerItem {
 	
 	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
 	
-	@SideOnly(Side.CLIENT)
-	private IIcon[] icons;
-	
-	public ItemElectromagneticCell() {
-		super();
+	public ItemElectromagneticCell(final String registryName) {
+		super(registryName);
 		setMaxDamage(0);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.atomic.electromagnetic_cell");
 		setHasSubtypes(true);
 	}
 	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void registerIcons(IIconRegister iconRegister) {
-		icons = new IIcon[31];
-		icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
-		icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");
-		icons[ 2] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-40");
-		icons[ 3] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-60");
-		icons[ 4] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-80");
-		icons[ 5] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-100");
-		icons[ 6] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-full");
-		icons[ 7] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-20");
-		icons[ 8] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-40");
-		icons[ 9] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-60");
-		icons[10] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-80");
-		icons[11] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-100");
-		icons[12] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-full");
-		icons[13] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-20");
-		icons[14] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-40");
-		icons[15] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-60");
-		icons[16] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-80");
-		icons[17] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-100");
-		icons[18] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-full");
-		icons[19] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-20");
-		icons[20] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-40");
-		icons[21] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-60");
-		icons[22] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-80");
-		icons[23] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-100");
-		icons[24] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-full");
-		icons[25] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-20");
-		icons[26] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-40");
-		icons[27] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-60");
-		icons[28] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-80");
-		icons[29] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-100");
-		icons[30] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-full");
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int damage) {
-		return icons[damage % icons.length];
-	}
+	// @TODO MC1.10 rendering
+	//	icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
+	//	icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");
+	//	icons[ 2] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-40");
+	//	icons[ 3] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-60");
+	//	icons[ 4] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-80");
+	//	icons[ 5] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-100");
+	//	icons[ 6] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-full");
+	//	icons[ 7] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-20");
+	//	icons[ 8] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-40");
+	//	icons[ 9] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-60");
+	//	icons[10] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-80");
+	//	icons[11] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-100");
+	//	icons[12] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-green-full");
+	//	icons[13] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-20");
+	//	icons[14] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-40");
+	//	icons[15] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-60");
+	//	icons[16] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-80");
+	//	icons[17] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-100");
+	//	icons[18] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-pink-full");
+	//	icons[19] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-20");
+	//	icons[20] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-40");
+	//	icons[21] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-60");
+	//	icons[22] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-80");
+	//	icons[23] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-100");
+	//	icons[24] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-red-full");
+	//	icons[25] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-20");
+	//	icons[26] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-40");
+	//	icons[27] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-60");
+	//	icons[28] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-80");
+	//	icons[29] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-100");
+	//	icons[30] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-yellow-full");
 	
 	public static ItemStack getItemStackNoCache(final Particle particle, final int amount) {
 		ItemStack itemStack = new ItemStack(WarpDrive.itemElectromagneticCell, 1, 0);
@@ -95,7 +79,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
 		list.add(getItemStackNoCache(null, 0));
 		list.add(getItemStackNoCache(ParticleRegistry.ION, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
@@ -109,18 +93,15 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		return true;
 	}
 	
-	@Override
-	public boolean doesContainerItemLeaveCraftingGrid(ItemStack itemStack) {
-		return false;
-	}
-	
+	@Nonnull
 	@Override
 	public Item getContainerItem() {
-		return Item.getItemFromBlock(Blocks.fire);
+		return Item.getItemFromBlock(Blocks.FIRE);
 	}
 	
+	@Nonnull
 	@Override
-	public ItemStack getContainerItem(ItemStack itemStackFilled) {
+	public ItemStack getContainerItem(@Nonnull ItemStack itemStackFilled) {
 		ParticleStack particleStack = getParticleStack(itemStackFilled);
 		if (particleStack != null) {
 			final int amount = particleStack.getAmount() - getAmountToConsume(itemStackFilled);
@@ -129,7 +110,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 			}
 			return getItemStackNoCache(particleStack.getParticle(), amount);
 		}
-		return new ItemStack(Blocks.fire);
+		return new ItemStack(Blocks.FIRE);
 	}
 	
 	@Override
@@ -237,7 +218,7 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
@@ -248,14 +229,14 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		final ParticleStack particleStack = itemElectromagneticCell.getParticleStack(itemStack);
 		String tooltip;
 		if (particleStack == null || particleStack.getParticle() == null) {
-			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty");
+			tooltip = new TextComponentTranslation("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty").getFormattedText();
 			Commons.addTooltip(list, tooltip);
 			
 		} else {
 			final Particle particle = particleStack.getParticle();
 			
-			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.filled",
-				particleStack.getAmount(), particle.getLocalizedName());
+			tooltip = new TextComponentTranslation("item.warpdrive.atomic.electromagnetic_cell.tooltip.filled",
+				particleStack.getAmount(), particle.getLocalizedName()).getFormattedText();
 			Commons.addTooltip(list, tooltip);
 			
 			String particleTooltip = particle.getLocalizedTooltip();

@@ -6,12 +6,14 @@ import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.StatCollector;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderCommons {
@@ -32,12 +34,13 @@ public class RenderCommons {
 	// from net.minecraft.client.gui.Gui
 	private static final float scaleUV = 0.00390625F;  // 1/256
 	protected static void drawTexturedModalRect(final int x, final int y, final int u, final int v, final int sizeX, final int sizeY, final int zLevel) {
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawingQuads();
-		tessellator.addVertexWithUV( x         , (y + sizeY), zLevel, scaleUV * u          , scaleUV * (v + sizeY));
-		tessellator.addVertexWithUV((x + sizeX), (y + sizeY), zLevel, scaleUV * (u + sizeX), scaleUV * (v + sizeY));
-		tessellator.addVertexWithUV((x + sizeX),  y         , zLevel, scaleUV * (u + sizeX), scaleUV *  v         );
-		tessellator.addVertexWithUV( x         ,  y         , zLevel, scaleUV * u          , scaleUV *  v         );
+		final Tessellator tessellator = Tessellator.getInstance();
+		VertexBuffer vertexBuffer = tessellator.getBuffer();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		vertexBuffer.pos( x         , (y + sizeY), zLevel).tex(scaleUV * u          , scaleUV * (v + sizeY)).endVertex();
+		vertexBuffer.pos((x + sizeX), (y + sizeY), zLevel).tex(scaleUV * (u + sizeX), scaleUV * (v + sizeY)).endVertex();
+		vertexBuffer.pos((x + sizeX),  y         , zLevel).tex(scaleUV * (u + sizeX), scaleUV *  v         ).endVertex();
+		vertexBuffer.pos( x         ,  y         , zLevel).tex(scaleUV * u          , scaleUV *  v         ).endVertex();
 		tessellator.draw();
 	}
 	
@@ -52,26 +55,26 @@ public class RenderCommons {
 		int y = scaledHeight / 10;
 		
 		// bold title, single line, centered, with shadows
-		final String textTitle = Commons.updateEscapeCodes("§l" + StatCollector.translateToLocal(title));
-		minecraft.fontRenderer.drawString(textTitle,
-		                                  scaledWidth / 4 - minecraft.fontRenderer.getStringWidth(textTitle) / 2,
-		                                  y - minecraft.fontRenderer.FONT_HEIGHT,
+		final String textTitle = Commons.updateEscapeCodes("§l" + new TextComponentTranslation(title).getFormattedText());
+		minecraft.fontRendererObj.drawString(textTitle,
+		                                  scaledWidth / 4 - minecraft.fontRendererObj.getStringWidth(textTitle) / 2,
+		                                  y - minecraft.fontRendererObj.FONT_HEIGHT,
 		                                  colorARGBtoInt(230, 255, 32, 24),
 		                                  true);
 		
 		// normal message, multi-lines, centered, without shadows
-		final String textMessage = Commons.updateEscapeCodes(StatCollector.translateToLocal(message));
+		final String textMessage = Commons.updateEscapeCodes(new TextComponentTranslation(message).getFormattedText());
 		final int alpha = 160 + (int) (85.0D * Math.sin(cycle * 2 * Math.PI));
 		
 		@SuppressWarnings("unchecked")
-		final List<String> listMessages = minecraft.fontRenderer.listFormattedStringToWidth(textMessage, scaledWidth / 2);
+		final List<String> listMessages = minecraft.fontRendererObj.listFormattedStringToWidth(textMessage, scaledWidth / 2);
 		for (final String textLine : listMessages) {
-			minecraft.fontRenderer.drawString(textLine,
-			                                  scaledWidth / 4 - minecraft.fontRenderer.getStringWidth(textLine) / 2,
+			minecraft.fontRendererObj.drawString(textLine,
+			                                  scaledWidth / 4 - minecraft.fontRendererObj.getStringWidth(textLine) / 2,
 			                                  y,
 			                                  colorARGBtoInt(alpha, 192, 64, 48),
 			                                  false);
-			y += minecraft.fontRenderer.FONT_HEIGHT;
+			y += minecraft.fontRendererObj.FONT_HEIGHT;
 		}
 		
 		// close rendering

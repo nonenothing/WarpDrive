@@ -4,13 +4,14 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
+import net.minecraft.util.math.MathHelper;
 
 public class GravityManager {
 	private static final double OVERWORLD_ENTITY_GRAVITY = 0.080000000000000002D;	// Default value from Vanilla
@@ -52,8 +53,7 @@ public class GravityManager {
 					EntityPlayer player = (EntityPlayer) entity;
 					
 					if (player.isSneaking()) {
-						for (int i = 0; i < 4; i++) {
-							ItemStack armor = player.getCurrentArmor(i);
+						for (ItemStack armor : player.getArmorInventoryList()) {
 							if (armor != null) {
 								if (Dictionary.ITEMS_FLYINSPACE.contains(armor.getItem())) {
 									return SPACE_VOID_GRAVITY_JETPACK_SNEAK;
@@ -122,10 +122,12 @@ public class GravityManager {
 		final int CHECK_DISTANCE = 20;
 		
 		// Search non-air blocks under player
+		final MutableBlockPos blockPos = new MutableBlockPos(x, y, z);
 		for (int ny = y; ny > (y - CHECK_DISTANCE); ny--) {
-			if (!entity.worldObj.isAirBlock(x, ny, z)) {
-				final Block block = entity.worldObj.getBlock(x, ny, z);
-				final AxisAlignedBB axisAlignedBB = block.getCollisionBoundingBoxFromPool(entity.worldObj, x, ny, z);
+			blockPos.setY(ny);
+			final IBlockState blockState = entity.worldObj.getBlockState(blockPos);
+			if (!blockState.getBlock().isAir(blockState, entity.worldObj, blockPos)) {
+				final AxisAlignedBB axisAlignedBB = blockState.getCollisionBoundingBox(entity.worldObj, blockPos);
 				if (axisAlignedBB != null && axisAlignedBB.getAverageEdgeLength() > 0.90D) {
 					return true;
 				}

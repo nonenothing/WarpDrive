@@ -12,7 +12,6 @@ import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
-import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
@@ -27,14 +26,15 @@ import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class AcceleratorSetup extends GlobalPosition {
 	private static final int ACCELERATOR_MAX_RANGE_SQUARED = 192 * 192;
@@ -148,7 +148,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		
 		// compute values
 		final int indexHighest = countMagnets[2] > 0 ? 2 : countMagnets[1] > 0 ? 1 : 0; 
-		temperatureTarget_K = TileEntityAcceleratorController.ACCELERATOR_TEMPERATURES_K[indexHighest];
+		temperatureTarget_K = 7.0D * indexHighest; // TileEntityAcceleratorController.ACCELERATOR_TEMPERATURES_K[indexHighest];
 		
 		final double coolingFactor = 10.0 / (countMagnets[0] + countMagnets[1] + countMagnets[2]);
 		temperatures_cooling_K_perTick[0] = (countChillers[0] * 1.00 + countChillers[1] * 0.75 + countChillers[2] * 0.5) * coolingFactor;
@@ -175,12 +175,12 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockElectromagnetGlass[2],
 			WarpDrive.blockVoidShellPlain,
 			WarpDrive.blockVoidShellGlass);
-		Set<VectorI> connections = Commons.getConnectedBlocks(world, new VectorI(x, y, z), ForgeDirection.VALID_DIRECTIONS, whitelist, 3);
+		Set<BlockPos> connections = Commons.getConnectedBlocks(world, new BlockPos(x, y, z), EnumFacing.VALUES, whitelist, 3);
 		VectorI firstVoidShell = null;
-		for (VectorI connection : connections) {
-			Block block = connection.getBlock(world);
+		for (BlockPos connection : connections) {
+			Block block = world.getBlockState(connection).getBlock();
 			if (block instanceof BlockVoidShellPlain) {
-				firstVoidShell = connection.clone();
+				firstVoidShell = new VectorI(connection);
 				break;
 			}
 		}
@@ -195,9 +195,9 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockVoidShellPlain,
 			WarpDrive.blockVoidShellGlass);
 		TrajectoryPoint trajectoryPoint = null;
-		for(ForgeDirection direction : Commons.HORIZONTAL_DIRECTIONS) {
+		for(EnumFacing direction : Commons.HORIZONTAL_DIRECTIONS) {
 			VectorI next = firstVoidShell.clone(direction);
-			if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
+			if (whitelist.contains(next.getBlockState_noChunkLoading(world).getBlock())) {
 				trajectoryPoint = new TrajectoryPoint(world, firstVoidShell.translate(direction), direction);
 				break;
 			}
@@ -344,14 +344,14 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 	}
 	
-	private void scanCorners(WorldServer world, final VectorI vCenter, final ForgeDirection forgeDirection) {
-		ForgeDirection directionLeft = forgeDirection.getRotation(ForgeDirection.UP);
-		ForgeDirection directionRight = forgeDirection.getRotation(ForgeDirection.DOWN);
+	private void scanCorners(WorldServer world, final VectorI vCenter, final EnumFacing forgeDirection) {
+		EnumFacing directionLeft = forgeDirection.rotateY();
+		EnumFacing directionRight = forgeDirection.rotateYCCW();
 		for (int indexCorner = 0; indexCorner < 4; indexCorner++) {
 			VectorI vector = new VectorI(
-				vCenter.x + ((indexCorner & 1) != 0 ? directionLeft.offsetX : directionRight.offsetX),
+				vCenter.x + ((indexCorner & 1) != 0 ? directionLeft.getFrontOffsetX() : directionRight.getFrontOffsetX()),
 				vCenter.y + ((indexCorner & 2) != 0 ? 1 : -1),
-			    vCenter.z + ((indexCorner & 1) != 0 ? directionLeft.offsetZ : directionRight.offsetZ));
+			    vCenter.z + ((indexCorner & 1) != 0 ? directionLeft.getFrontOffsetZ() : directionRight.getFrontOffsetZ()));
 			Block block = vector.getBlock(world);
 			if (block instanceof BlockChiller) {
 				chillers.put(vector, ((BlockChiller)block).tier);
@@ -430,14 +430,14 @@ public class AcceleratorSetup extends GlobalPosition {
 		
 		// check connections
 		if (checkDirectConnection || checkCornerConnection) {
-			for (ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing forgeDirection : EnumFacing.VALUES) {
 				Block blockConnected = vector.translate(forgeDirection).getBlock(world);
 				if (blockConnected instanceof BlockVoidShellPlain) {
 					if (isTrajectoryPoint(vector)) {
 						return true;
 					}
 				} else if (checkCornerConnection && blockConnected instanceof BlockElectromagnetPlain) {
-					for (ForgeDirection forgeDirection2 : ForgeDirection.VALID_DIRECTIONS) {
+					for (EnumFacing forgeDirection2 : EnumFacing.VALUES) {
 						Block blockSubConnected = vector.translate(forgeDirection2).getBlock(world);
 						if (blockSubConnected instanceof BlockVoidShellPlain) {
 							if (isTrajectoryPoint(vector)) {
@@ -450,7 +450,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 		
 		if (checkRangedConnection) {
-			for (ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
+			for (EnumFacing forgeDirection : EnumFacing.VALUES) {
 				Block blockConnected = vector.translate(forgeDirection, 2).getBlock(world);
 				if (blockConnected instanceof BlockVoidShellPlain) {
 					if (isTrajectoryPoint(vector)) {
@@ -478,7 +478,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		if (vMin == null || vMax == null) {
 			return null;
 		}
-		return AxisAlignedBB.getBoundingBox(
+		return new AxisAlignedBB(
 			vMin.x, vMin.y, vMin.z,
 			vMax.x, vMax.y, vMax.z);
 	}

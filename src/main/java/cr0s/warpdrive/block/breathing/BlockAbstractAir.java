@@ -1,137 +1,113 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.render.RenderBlockStandard;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class BlockAbstractAir extends Block {
-		
-	@SideOnly(Side.CLIENT)
-	private IIcon[] iconBuffer;
+public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
-	public BlockAbstractAir() {
-		super(Material.fire);
+	public static final PropertyInteger CONCENTRATION = PropertyInteger.create("concentration", 0, 15);
+	
+	BlockAbstractAir(final String registryName) {
+		super(registryName, Material.FIRE);
 		setHardness(0.0F);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.breathing.air");
+		setUnlocalizedName("warpdrive.breathing.air");
 	}
 	
 	@Override
-	public boolean isOpaqueCube() {
+	public boolean isVisuallyOpaque() {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}
 	
 	@Override
-	public boolean isAir(IBlockAccess world, int x, int y, int z) {
+	public boolean isAir(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
 		return true;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
 		return null;
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess world, int x, int y, int z) {
+	public boolean isReplaceable(IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(World world, @Nonnull BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
-	public boolean canCollideCheck(int metadata, boolean hitIfLiquid) {
+	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Nonnull
 	@Override
-	public int getRenderBlockPass() {
-		// 1 is required to apply alpha transparency
-		return 1;
+	public EnumPushReaction getMobilityFlag(IBlockState state) {
+		return EnumPushReaction.DESTROY;
 	}
 	
+	@Nullable
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
-			iconBuffer = new IIcon[16];
-			iconBuffer[ 0] = iconRegister.registerIcon("warpdrive:breathing/air0");
-			iconBuffer[ 1] = iconRegister.registerIcon("warpdrive:breathing/air1");
-			iconBuffer[ 2] = iconRegister.registerIcon("warpdrive:breathing/air2");
-			iconBuffer[ 3] = iconRegister.registerIcon("warpdrive:breathing/air3");
-			iconBuffer[ 4] = iconRegister.registerIcon("warpdrive:breathing/air4");
-			iconBuffer[ 5] = iconRegister.registerIcon("warpdrive:breathing/air5");
-			iconBuffer[ 6] = iconRegister.registerIcon("warpdrive:breathing/air6");
-			iconBuffer[ 7] = iconRegister.registerIcon("warpdrive:breathing/air7");
-			iconBuffer[ 8] = iconRegister.registerIcon("warpdrive:breathing/air8");
-			iconBuffer[ 9] = iconRegister.registerIcon("warpdrive:breathing/air9");
-			iconBuffer[10] = iconRegister.registerIcon("warpdrive:breathing/air10");
-			iconBuffer[11] = iconRegister.registerIcon("warpdrive:breathing/air11");
-			iconBuffer[12] = iconRegister.registerIcon("warpdrive:breathing/air12");
-			iconBuffer[13] = iconRegister.registerIcon("warpdrive:breathing/air13");
-			iconBuffer[14] = iconRegister.registerIcon("warpdrive:breathing/air14");
-			iconBuffer[15] = iconRegister.registerIcon("warpdrive:breathing/air15");
-		} else {
-			blockIcon = iconRegister.registerIcon("warpdrive:breathing/air");
-		}
-	}
-	
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
-			return iconBuffer[metadata];
-		} else {
-			return blockIcon;
-		}
-	}
-	
-	@Override
-	public int getMobilityFlag() {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(int metadata, Random random, int fortune) {
+	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
 		return null;
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(Random par1Random) {
 		return 0;
 	}
 	
+	@SuppressWarnings("deprecation")
+	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess world, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
-			return side == 0 || side == 1;
+			return facing == EnumFacing.DOWN || facing == EnumFacing.UP;
 		}
 		
-		Block sideBlock = world.getBlock(x, y, z);
-		if (sideBlock instanceof BlockAbstractAir) {
-			return false;
-		}
-		
-		return world.isAirBlock(x, y, z);
-	}
-	
-	@Override
-	public int getRenderType() {
-		return RenderBlockStandard.renderId;
+		BlockPos blockPosSide = blockPos.offset(facing);
+		Block sideBlock = blockAccess.getBlockState(blockPosSide).getBlock();
+		return !(sideBlock instanceof BlockAbstractAir) && blockAccess.isAirBlock(blockPosSide);
 	}
 	
 	@Override

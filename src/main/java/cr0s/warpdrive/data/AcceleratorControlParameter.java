@@ -1,7 +1,6 @@
 package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.api.IControlChannel;
-import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -10,7 +9,7 @@ public class AcceleratorControlParameter {
 	// persistent properties
 	public int controlChannel;  // final
 	public boolean isEnabled = true;
-	public double threshold = TileEntityAcceleratorController.ACCELERATOR_THRESHOLD_DEFAULT;
+	public double threshold = 0.95D; // TileEntityAcceleratorController.ACCELERATOR_THRESHOLD_DEFAULT;
 	public String description = "-";
 	
 	public AcceleratorControlParameter(final int controlChannel) {

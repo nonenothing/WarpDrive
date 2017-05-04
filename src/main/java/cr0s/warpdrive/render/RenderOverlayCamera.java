@@ -6,13 +6,16 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.Pre;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RenderOverlayCamera {
@@ -39,12 +42,14 @@ public class RenderOverlayCamera {
 				strHelp = "Left click to zoom / Right click to exit / Space to fire";
 			}
 			
-			Tessellator tessellator = Tessellator.instance;
-			tessellator.startDrawingQuads();
-			tessellator.addVertexWithUV(       0.0D, scaledHeight, -90.0D, 0.0D, 1.0D);
-			tessellator.addVertexWithUV(scaledWidth, scaledHeight, -90.0D, 1.0D, 1.0D);
-			tessellator.addVertexWithUV(scaledWidth,         0.0D, -90.0D, 1.0D, 0.0D);
-			tessellator.addVertexWithUV(       0.0D,         0.0D, -90.0D, 0.0D, 0.0D);
+			Tessellator tessellator = Tessellator.getInstance();
+			VertexBuffer vertexBuffer = tessellator.getBuffer();
+			
+			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+			vertexBuffer.pos(       0.0D, scaledHeight, -90.0D).tex(0.0D, 1.0D).endVertex();
+			vertexBuffer.pos(scaledWidth, scaledHeight, -90.0D).tex(1.0D, 1.0D).endVertex();
+			vertexBuffer.pos(scaledWidth,         0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
+			vertexBuffer.pos(       0.0D,         0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
 			tessellator.draw();
 			
 			frameCount++;
@@ -55,22 +60,22 @@ public class RenderOverlayCamera {
 			final int color = (RenderCommons.colorGradient(time, 0x40, 0xA0) << 16)
 			                + (RenderCommons.colorGradient(time, 0x80, 0x00) << 8)
 			                +  RenderCommons.colorGradient(time, 0x80, 0xFF);
-			minecraft.fontRenderer.drawString(strHelp,
-			                                  (scaledWidth - minecraft.fontRenderer.getStringWidth(strHelp)) / 2,
-			                                  (int)(scaledHeight * 0.19) - minecraft.fontRenderer.FONT_HEIGHT,
-			                                  color, true);
+			minecraft.fontRendererObj.drawString(strHelp,
+			                                     (scaledWidth - minecraft.fontRendererObj.getStringWidth(strHelp)) / 2,
+			                                     (int)(scaledHeight * 0.19) - minecraft.fontRendererObj.FONT_HEIGHT,
+			                                     color, true);
 			
 			String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
-			minecraft.fontRenderer.drawString(strZoom,
-			                                  (int) (scaledWidth * 0.91) - minecraft.fontRenderer.getStringWidth(strZoom),
-			                                  (int) (scaledHeight * 0.81),
-			                                  0x40A080, true);
+			minecraft.fontRendererObj.drawString(strZoom,
+			                                     (int) (scaledWidth * 0.91) - minecraft.fontRendererObj.getStringWidth(strZoom),
+			                                     (int) (scaledHeight * 0.81),
+			                                     0x40A080, true);
 			
 			if (WarpDriveConfig.LOGGING_CAMERA) {
-				minecraft.fontRenderer.drawString(ClientCameraHandler.overlayLoggingMessage,
-				                                  (scaledWidth - minecraft.fontRenderer.getStringWidth(ClientCameraHandler.overlayLoggingMessage)) / 2,
-				                                  (int)(scaledHeight * 0.19),
-				                                  0xFF008F, true);
+				minecraft.fontRendererObj.drawString(ClientCameraHandler.overlayLoggingMessage,
+				                                     (scaledWidth - minecraft.fontRendererObj.getStringWidth(ClientCameraHandler.overlayLoggingMessage)) / 2,
+				                                     (int) (scaledHeight * 0.19),
+				                                     0xFF008F, true);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -83,20 +88,20 @@ public class RenderOverlayCamera {
 	}
 	
 	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent.Pre event) {
+	public void onRender(Pre event) {
 		if (ClientCameraHandler.isOverlayEnabled) {
-			if (event.type == ElementType.HELMET) {
-				renderOverlay(event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
-			} else if (event.type == ElementType.AIR
-					|| event.type == ElementType.ARMOR
-					|| event.type == ElementType.BOSSHEALTH
-					|| event.type == ElementType.CROSSHAIRS
-					|| event.type == ElementType.EXPERIENCE
-					|| event.type == ElementType.FOOD
-					|| event.type == ElementType.HEALTH
-					|| event.type == ElementType.HEALTHMOUNT
-					|| event.type == ElementType.HOTBAR
-					|| event.type == ElementType.TEXT) {
+			if (event.getType() == ElementType.HELMET) {
+				renderOverlay(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
+			} else if (event.getType() == ElementType.AIR
+					|| event.getType() == ElementType.ARMOR
+					|| event.getType() == ElementType.BOSSHEALTH
+					|| event.getType() == ElementType.CROSSHAIRS
+					|| event.getType() == ElementType.EXPERIENCE
+					|| event.getType() == ElementType.FOOD
+					|| event.getType() == ElementType.HEALTH
+					|| event.getType() == ElementType.HEALTHMOUNT
+					|| event.getType() == ElementType.HOTBAR
+					|| event.getType() == ElementType.TEXT) {
 				// Don't render other GUI parts
 				if (event.isCancelable()) {
 					event.setCanceled(true);

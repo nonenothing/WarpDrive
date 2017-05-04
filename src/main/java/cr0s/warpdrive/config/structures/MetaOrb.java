@@ -5,6 +5,8 @@ import cr0s.warpdrive.config.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
+
+import net.minecraft.util.math.BlockPos;
 import org.w3c.dom.Element;
 
 import java.util.List;
@@ -37,8 +39,8 @@ public class MetaOrb extends Orb {
 	}
 	
 	@Override
-	public boolean generate(World world, Random random, int x, int y, int z) {
-		return instantiate(random).generate(world, random, x, y, z);
+	public boolean generate(World world, Random random, BlockPos blockPos) {
+		return instantiate(random).generate(world, random, blockPos);
 	}
 	
 	@Override

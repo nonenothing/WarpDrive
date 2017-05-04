@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,6 +21,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -45,7 +47,7 @@ public class BreathingManager {
 		Block block;
 		for (final VectorI vOffset : vAirOffsets) {
 			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
-			block = entityLivingBase.worldObj.getBlock(vPosition.x, vPosition.y, vPosition.z);
+			block = vPosition.getBlockState(entityLivingBase.worldObj).getBlock();
 			if (block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
 				return true;
 			}
@@ -80,14 +82,16 @@ public class BreathingManager {
 		// find an air block
 		UUID uuidEntity = entityLivingBase.getUniqueID();
 		VectorI vAirBlock = null;
+		IBlockState blockState = null;
 		Block block = null;
 		for (final VectorI vOffset : vAirOffsets) {
 			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
-			block = entityLivingBase.worldObj.getBlock(vPosition.x, vPosition.y, vPosition.z);
+			blockState = vPosition.getBlockState(entityLivingBase.worldObj);
+			block = blockState.getBlock();
 			if (block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
 				vAirBlock = vPosition;
 				break;
-			} else if (block != Blocks.air) {
+			} else if (block != Blocks.AIR) {
 				StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.worldObj, vPosition.x, vPosition.y, vPosition.z);
 				if (stateAir.concentration > 0) {
 					vAirBlock = vPosition;
@@ -106,9 +110,9 @@ public class BreathingManager {
 				entity_airBlock.put(uuidEntity, AIR_BLOCK_TICKS);
 				
 				if (block == WarpDrive.blockAir) {
-					final int metadata = entityLivingBase.worldObj.getBlockMetadata(vAirBlock.x, vAirBlock.y, vAirBlock.z);
+					final int metadata = blockState.getBlock().getMetaFromState(blockState);
 					if (metadata > 0 && metadata < 15) {
-						entityLivingBase.worldObj.setBlockMetadataWithNotify(vAirBlock.x, vAirBlock.y, vAirBlock.z, metadata - 1, 2);
+						entityLivingBase.worldObj.setBlockState(vAirBlock.getBlockPos(), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
 					}
 				}
 			} else {
@@ -253,7 +257,7 @@ public class BreathingManager {
 		}
 		
 		// all air containers are empty
-		final ItemStack itemStackChestplate = entityLivingBase.getEquipmentInSlot(3);
+		final ItemStack itemStackChestplate = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 		if (itemStackChestplate != null) {
 			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
@@ -264,11 +268,11 @@ public class BreathingManager {
 	}
 	
 	public static boolean hasValidSetup(EntityLivingBase entityLivingBase) {
-		final ItemStack itemStackHelmet = entityLivingBase.getEquipmentInSlot(4);
+		final ItemStack itemStackHelmet = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 		if (entityLivingBase instanceof EntityPlayer) {
-			final ItemStack itemStackChestplate = entityLivingBase.getEquipmentInSlot(3);
-			final ItemStack itemStackLeggings = entityLivingBase.getEquipmentInSlot(2);
-			final ItemStack itemStackBoots = entityLivingBase.getEquipmentInSlot(1);
+			final ItemStack itemStackChestplate = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+			final ItemStack itemStackLeggings = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
+			final ItemStack itemStackBoots = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.FEET);
 			// need full armor set to breath
 			if ( itemStackHelmet != null
 			  && itemStackChestplate != null
@@ -296,7 +300,7 @@ public class BreathingManager {
 		
 		// check electrolysing
 		boolean canElectrolyse = false;
-		final ItemStack itemStackChestplate = entityPlayer.getCurrentArmor(2);
+		final ItemStack itemStackChestplate = entityPlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 		if (itemStackChestplate != null) {
 			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
@@ -305,7 +309,7 @@ public class BreathingManager {
 		}
 		
 		// check all inventory slots for air containers, etc.
-		final Item itemIce = Item.getItemFromBlock(Blocks.ice);
+		final Item itemIce = Item.getItemFromBlock(Blocks.ICE);
 		int sumAirCapacityTicks = 0;
 		int sumAirStoredTicks = 0;
 		int countAirContainer = 0;
@@ -375,7 +379,7 @@ public class BreathingManager {
 		int slotEnergyContainer = -1;
 		
 		// find 1 ice, 1 energy and 2 empty air containers
-		final Item itemIce = Item.getItemFromBlock(Blocks.ice);
+		final Item itemIce = Item.getItemFromBlock(Blocks.ICE);
 		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
 			final ItemStack itemStack = playerInventory[slotIndex];
 			if (itemStack == null || itemStack.stackSize <= 0) {

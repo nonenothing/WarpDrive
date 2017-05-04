@@ -1,16 +1,17 @@
 package cr0s.warpdrive.render;
 
+
+public class RenderBlockOmnipanel {
+	
+}
+
+/* @TODO MC1.10
 import cr0s.warpdrive.block.BlockAbstractOmnipanel;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
-
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
-
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 	
@@ -64,12 +65,12 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 		
 		// get direct connections
 		BlockAbstractOmnipanel blockAbstractOmnipanel = (BlockAbstractOmnipanel) block;
-		final int maskConnectY_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z, ForgeDirection.DOWN);
-		final int maskConnectY_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z, ForgeDirection.UP);
-		final int maskConnectZ_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y, z - 1, ForgeDirection.NORTH);
-		final int maskConnectZ_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y, z + 1, ForgeDirection.SOUTH);
-		final int maskConnectX_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y, z, ForgeDirection.WEST);
-		final int maskConnectX_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y, z, ForgeDirection.EAST);
+		final int maskConnectY_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z, EnumFacing.DOWN);
+		final int maskConnectY_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z, EnumFacing.UP);
+		final int maskConnectZ_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y, z - 1, EnumFacing.NORTH);
+		final int maskConnectZ_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y, z + 1, EnumFacing.SOUTH);
+		final int maskConnectX_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y, z, EnumFacing.WEST);
+		final int maskConnectX_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y, z, EnumFacing.EAST);
 		
 		final boolean canConnectY_neg = maskConnectY_neg > 0;
 		final boolean canConnectY_pos = maskConnectY_pos > 0;
@@ -80,19 +81,19 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 		final boolean canConnectNone = !canConnectY_neg && !canConnectY_pos && !canConnectZ_neg && !canConnectZ_pos && !canConnectX_neg && !canConnectX_pos;
 		
 		// get diagonal connections
-		final boolean canConnectXn_Y_neg = (maskConnectX_neg > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y - 1, z, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectXn_Y_pos = (maskConnectX_neg > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y + 1, z, ForgeDirection.UP   ) > 0;
-		final boolean canConnectXn_Z_neg = (maskConnectX_neg > 1 && maskConnectZ_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y, z - 1, ForgeDirection.NORTH) > 0;
-		final boolean canConnectXn_Z_pos = (maskConnectX_neg > 1 && maskConnectZ_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y, z + 1, ForgeDirection.SOUTH) > 0;
-		final boolean canConnectZn_Y_neg = (maskConnectZ_neg > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z - 1, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectZn_Y_pos = (maskConnectZ_neg > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z - 1, ForgeDirection.UP   ) > 0;
+		final boolean canConnectXn_Y_neg = (maskConnectX_neg > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y - 1, z, EnumFacing.DOWN ) > 0;
+		final boolean canConnectXn_Y_pos = (maskConnectX_neg > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y + 1, z, EnumFacing.UP   ) > 0;
+		final boolean canConnectXn_Z_neg = (maskConnectX_neg > 1 && maskConnectZ_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y, z - 1, EnumFacing.NORTH) > 0;
+		final boolean canConnectXn_Z_pos = (maskConnectX_neg > 1 && maskConnectZ_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x - 1, y, z + 1, EnumFacing.SOUTH) > 0;
+		final boolean canConnectZn_Y_neg = (maskConnectZ_neg > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z - 1, EnumFacing.DOWN ) > 0;
+		final boolean canConnectZn_Y_pos = (maskConnectZ_neg > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z - 1, EnumFacing.UP   ) > 0;
 		
-		final boolean canConnectXp_Y_neg = (maskConnectX_pos > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y - 1, z, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectXp_Y_pos = (maskConnectX_pos > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y + 1, z, ForgeDirection.UP   ) > 0;
-		final boolean canConnectXp_Z_neg = (maskConnectX_pos > 1 && maskConnectZ_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y, z - 1, ForgeDirection.NORTH) > 0;
-		final boolean canConnectXp_Z_pos = (maskConnectX_pos > 1 && maskConnectZ_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y, z + 1, ForgeDirection.SOUTH) > 0;
-		final boolean canConnectZp_Y_neg = (maskConnectZ_pos > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z + 1, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectZp_Y_pos = (maskConnectZ_pos > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z + 1, ForgeDirection.UP   ) > 0;
+		final boolean canConnectXp_Y_neg = (maskConnectX_pos > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y - 1, z, EnumFacing.DOWN ) > 0;
+		final boolean canConnectXp_Y_pos = (maskConnectX_pos > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y + 1, z, EnumFacing.UP   ) > 0;
+		final boolean canConnectXp_Z_neg = (maskConnectX_pos > 1 && maskConnectZ_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y, z - 1, EnumFacing.NORTH) > 0;
+		final boolean canConnectXp_Z_pos = (maskConnectX_pos > 1 && maskConnectZ_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x + 1, y, z + 1, EnumFacing.SOUTH) > 0;
+		final boolean canConnectZp_Y_neg = (maskConnectZ_pos > 1 && maskConnectY_neg > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z + 1, EnumFacing.DOWN ) > 0;
+		final boolean canConnectZp_Y_pos = (maskConnectZ_pos > 1 && maskConnectY_pos > 1) || blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z + 1, EnumFacing.UP   ) > 0;
 		
 		// get panels
 		final boolean hasXnYn = canConnectNone || (canConnectX_neg && canConnectY_neg && canConnectXn_Y_neg);
@@ -566,3 +567,4 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 		return renderId;
 	}
 }
+/**/

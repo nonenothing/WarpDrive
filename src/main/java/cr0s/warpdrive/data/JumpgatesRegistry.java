@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.minecraft.util.math.BlockPos;
+
 public final class JumpgatesRegistry {
     private File file;
     private ArrayList<Jumpgate> gates = new ArrayList<>();
@@ -64,13 +66,13 @@ public final class JumpgatesRegistry {
         gates.add(jg);
     }
     
-    public boolean addGate(String name, int x, int y, int z) {
+    public boolean addGate(String name, BlockPos blockPos) {
         // Gate already exists
         if (findGateByName(name) != null) {
             return false;
         }
 
-        addGate(new Jumpgate(name, x, y, z));
+        addGate(new Jumpgate(name, blockPos));
 
         try {
             saveGates();
@@ -133,14 +135,14 @@ public final class JumpgatesRegistry {
     	return result;
     }
     
-    public Jumpgate findNearestGate(int x, int y, int z) {
+    public Jumpgate findNearestGate(BlockPos blockPos) {
         double minDistance2 = -1;
         Jumpgate res = null;
         
         for (Jumpgate jg : gates) {
-            double dX = jg.xCoord - x;
-            double dY = jg.yCoord - y;
-            double dZ = jg.zCoord - z;
+            double dX = jg.xCoord - blockPos.getX();
+            double dY = jg.yCoord - blockPos.getY();
+            double dZ = jg.zCoord - blockPos.getZ();
             double distance2 = dX * dX + dY * dY + dZ * dZ;
 
             if ((minDistance2 == -1) || (distance2 < minDistance2)) {

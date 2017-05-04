@@ -4,8 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 
 public class ParticleStack {
 	private final Particle particle;
@@ -25,7 +24,7 @@ public class ParticleStack {
 		this(particle, amount);
 		
 		if (nbt != null) {
-			tag = (NBTTagCompound) nbt.copy();
+			tag = nbt.copy();
 		}
 	}
 	

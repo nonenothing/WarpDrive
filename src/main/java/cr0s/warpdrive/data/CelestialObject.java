@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
@@ -266,19 +266,19 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	}
 	
 	public AxisAlignedBB getWorldBorderArea() {
-		return AxisAlignedBB.getBoundingBox(
-		(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
-		(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
+		return new AxisAlignedBB(
+			(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
+			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
 	public AxisAlignedBB getAreaToReachParent() {
-		return AxisAlignedBB.getBoundingBox(
+		return new AxisAlignedBB(
 			(dimensionCenterX - borderRadiusX), 250, (dimensionCenterZ - borderRadiusZ),
 			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
 	public AxisAlignedBB getAreaInParent() {
-		return AxisAlignedBB.getBoundingBox(
+		return new AxisAlignedBB(
 			(parentCenterX - borderRadiusX), 0, (parentCenterZ - borderRadiusZ),
 			(parentCenterX + borderRadiusX), 8, (parentCenterZ + borderRadiusZ) );
 	}

@@ -1,34 +1,31 @@
 package cr0s.warpdrive.block.breathing;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
 
-import net.minecraft.util.AxisAlignedBB;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockAirFlow extends BlockAbstractAir {
 	
-	public BlockAirFlow() {
-		super();
+	public BlockAirFlow(final String registryName) {
+		super(registryName);
 	}
 	
+	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
 		if (!world.isRemote) {
-			final StateAir stateAir = ChunkHandler.getStateAir(world, x, y, z);
-			if (!stateAir.isAirFlow() || stateAir.concentration == 0) {
-				if (WarpDrive.isDev) {
-					WarpDrive.logger.info(String.format("Recovering: AirFlow removal by collision at %s", stateAir));
-				}
-				world.setBlockToAir(x, y, z);
+			StateAir stateAir = ChunkHandler.getStateAir(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			if (!stateAir.isAirSource() || stateAir.concentration == 0) {
+				world.setBlockToAir(blockPos);
 			}
 		}
-		return super.getCollisionBoundingBoxFromPool(world, x, y, z);
-	}
-	
-	@Override
-	public boolean onBlockEventReceived(World p_149696_1_, int p_149696_2_, int p_149696_3_, int p_149696_4_, int p_149696_5_, int p_149696_6_) {
-		return super.onBlockEventReceived(p_149696_1_, p_149696_2_, p_149696_3_, p_149696_4_, p_149696_5_, p_149696_6_);
+		return super.getCollisionBoundingBox(blockState, world, blockPos);
 	}
 }

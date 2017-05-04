@@ -1,29 +1,25 @@
 package cr0s.warpdrive.world;
 
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.fml.common.IWorldGenerator;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.filler.Filler;
-import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.AbstractStructureInstance;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
-import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
 
 import java.util.Random;
 
-import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
-
-import cpw.mods.fml.common.IWorldGenerator;
-
 public class SpaceWorldGenerator implements IWorldGenerator {
 
 	@Override
-	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
 		try {
 			final int x = (chunkX * 16) + (5 - random.nextInt(10));
 			final int z = (chunkZ * 16) + (5 - random.nextInt(10));
@@ -45,12 +41,13 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 				return;
 			}
 			AbstractStructureInstance abstractStructureInstance = structureGroup.instantiate(random);
-			abstractStructureInstance.generate(world, random, x, y, z);
+			abstractStructureInstance.generate(world, random, new BlockPos(x, y, z));
 			
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
 	}
+	
 	/**
 	 * 
 	 * @deprecated reference design for EntitySphereGenerator
@@ -82,14 +79,14 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 					
 					OrbShell orbShell = orbInstance.getShellForSqRadius(dSq);
 					Filler filler = orbShell.getRandomBlock(world.rand);
-					filler.setBlock(world, xCoord + x, yCoord + y, zCoord + z);
-					filler.setBlock(world, xCoord - x, yCoord + y, zCoord + z);
-					filler.setBlock(world, xCoord + x, yCoord - y, zCoord + z);
-					filler.setBlock(world, xCoord + x, yCoord + y, zCoord - z);
-					filler.setBlock(world, xCoord - x, yCoord - y, zCoord + z);
-					filler.setBlock(world, xCoord + x, yCoord - y, zCoord - z);
-					filler.setBlock(world, xCoord - x, yCoord + y, zCoord - z);
-					filler.setBlock(world, xCoord - x, yCoord - y, zCoord - z);
+					filler.setBlock(world, new BlockPos(xCoord + x, yCoord + y, zCoord + z));
+					filler.setBlock(world, new BlockPos(xCoord - x, yCoord + y, zCoord + z));
+					filler.setBlock(world, new BlockPos(xCoord + x, yCoord - y, zCoord + z));
+					filler.setBlock(world, new BlockPos(xCoord + x, yCoord + y, zCoord - z));
+					filler.setBlock(world, new BlockPos(xCoord - x, yCoord - y, zCoord + z));
+					filler.setBlock(world, new BlockPos(xCoord + x, yCoord - y, zCoord - z));
+					filler.setBlock(world, new BlockPos(xCoord - x, yCoord + y, zCoord - z));
+					filler.setBlock(world, new BlockPos(xCoord - x, yCoord - y, zCoord - z));
 				}
 			}
 		}
