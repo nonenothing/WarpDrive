@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -13,10 +14,11 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	
@@ -45,13 +47,13 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 			tier = ((BlockAirGeneratorTiered) block).tier;
 			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[tier - 1];
 		} else {
-			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + xCoord + " " + yCoord + " " + zCoord);
+			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 		}
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -63,35 +65,36 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		
 		// Air generator works only in space & hyperspace
 		final int metadata = getBlockMetadata();
-		if (WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord)) {
-			if ((metadata & 8) != 0) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata & 7, 2); // set disabled texture
+		if (WarpDrive.starMap.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
+			IBlockState blockState = worldObj.getBlockState(pos);
+			if (blockState.getValue(BlockProperties.ACTIVE)) {
+				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 			}
 			return;
 		}
 		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS) {
+			IBlockState blockState = worldObj.getBlockState(pos);
 			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1], true)) {
-				if ((metadata & 8) == 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata | 8, 2); // set enabled texture
+				if (!blockState.getValue(BlockProperties.ACTIVE)) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, true)); // set enabled texture
 				}
 			} else {
-				if ((metadata & 8) != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata & 7, 2); // set disabled texture
+				if (blockState.getValue(BlockProperties.ACTIVE)) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 				}
 			}
-			ForgeDirection direction = ForgeDirection.getOrientation(metadata & 7);
-			releaseAir(direction);
+			releaseAir(blockState.getValue(BlockProperties.FACING));
 			
 			cooldownTicks = 0;
 		}
 	}
 	
-	private void releaseAir(final ForgeDirection direction) {
-		final int x = xCoord + direction.offsetX;
-		final int y = yCoord + direction.offsetY;
-		final int z = zCoord + direction.offsetZ;
+	private void releaseAir(final EnumFacing direction) {
+		final int x = pos.getX() + direction.getFrontOffsetX();
+		final int y = pos.getY() + direction.getFrontOffsetY();
+		final int z = pos.getZ() + direction.getFrontOffsetZ();
 		
 		StateAir stateAir = ChunkHandler.getStateAir(worldObj, x, y, z);
 		stateAir.updateBlockCache(worldObj);
@@ -124,9 +127,9 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		tag.setBoolean("isEnabled", isEnabled);
+		return super.writeToNBT(tag);
 	}
 	
 	@Override
@@ -135,16 +138,16 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)",
-			getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			xCoord, yCoord, zCoord);
+				getClass().getSimpleName(),
+				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+				pos.getX(), pos.getY(), pos.getZ());
 	}
 	
 	public Object[] enable(Object[] arguments) {

@@ -2,33 +2,23 @@ package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.block.BlockAbstractOmnipanel;
 
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class BlockAirShield extends BlockAbstractOmnipanel {
 	
-	public BlockAirShield() {
-		super(Material.cloth);
-		setBlockName("warpdrive.breathing.air_shield");
+	public BlockAirShield(final String registryName) {
+		super(registryName, Material.CLOTH);
+		setUnlocalizedName("warpdrive.breathing.air_shield");
 	}
 	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerBlockIcons(final IIconRegister iconRegister) {
-		blockIcon = iconRegister.registerIcon("warpdrive:breathing/air_shield");
-	}
-	
-	@Override
-	public int damageDropped(final int metadata) {
-		return metadata;
-	}
-	
+	/* @TODO rendering
 	@Override
 	public int getRenderColor(final int metadata) {
 		switch (metadata) {
@@ -45,20 +35,39 @@ public class BlockAirShield extends BlockAbstractOmnipanel {
 			return 0x5D1072;    // purple
 		}
 	}
+	/**/
 	
 	@Override
-	public int colorMultiplier(final IBlockAccess blockAccess, final int x, final int y, final int z) {
-		final int metadata = blockAccess.getBlockMetadata(x, y, z);
-		return getRenderColor(metadata);
+	public boolean isVisuallyOpaque() {
+		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(final World world, final int x, final int y, final int z) {
+	public boolean isOpaqueCube(IBlockState state) {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isFullyOpaque(IBlockState state) {
+		return false;
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nullable
+	@Override
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
 		return null;
 	}
 	
 	@Override
-	public boolean canCollideCheck(final int metadata, final boolean hitIfLiquid) {
+	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
 		return !hitIfLiquid;
+	}
+	
+	@Override
+	public boolean isCollidable() {
+		return false;
 	}
 }

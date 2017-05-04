@@ -8,10 +8,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-
 
 public final class EntityStarCore extends Entity {
 	public int xCoord;
@@ -58,7 +57,7 @@ public final class EntityStarCore extends Entity {
 		
 		yMin = yCoord - MAX_RANGE;
 		yMax = yCoord + MAX_RANGE;
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, yMin, zMin, xMax, yMax, zMax);
+		AxisAlignedBB aabb = new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
 		List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, aabb);
 		
 		if (!isLogged) {
@@ -76,7 +75,7 @@ public final class EntityStarCore extends Entity {
 				//System.out.println("Found: " + entity.getEntityName() + " distance: " + entity.getDistanceToEntity(this));
 				
 				// creative bypass
-				if (entity.invulnerable) {
+				if (entity.isEntityInvulnerable(WarpDrive.damageWarm)) {
 					continue;
 				}
 				if (entity instanceof EntityPlayer) {
@@ -113,10 +112,6 @@ public final class EntityStarCore extends Entity {
 		}
 	}
 	
-	public void killEntity() {
-		worldObj.removeEntity(this);
-	}
-	
 	@Override
 	public void onUpdate() {
 		if (worldObj.isRemote) {
@@ -144,8 +139,8 @@ public final class EntityStarCore extends Entity {
 	
 	// override to skip the block bounding override on client side
 	@Override
-	public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
-		//	super.setPositionAndRotation2(x, y, z, yaw, pitch, p_70056_9_);
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
 	}

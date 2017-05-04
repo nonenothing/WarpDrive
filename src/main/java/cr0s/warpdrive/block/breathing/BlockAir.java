@@ -1,20 +1,22 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockAir extends BlockAbstractAir {
 	
 	private static final int AIR_BLOCK_TICKS = 40;
 	
-	public BlockAir() {
-		super();
+	public BlockAir(final String registryName) {
+		super(registryName);
 	}
 	
 	@Override
@@ -26,25 +28,26 @@ public class BlockAir extends BlockAbstractAir {
 	// 2.74% updateTick including 1.37% scheduleBlockUpdate (50%) + 1.23% spreadAirBlock (45%)
 	// 1.23% spreadAirBlock including 0.36% getAirBlock + 0.33% getBlock + 0.13% getBlockMetadata
 	@Override
-	public void updateTick(World world, int x, int y, int z, Random random) {
+	public void updateTick(World world, BlockPos blockPos, IBlockState blockState, Random random) {
 		if (world.isRemote) {
 			return;
 		}
 		
-		final int concentration = world.getBlockMetadata(x, y, z);
-		final boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, x, z);
+		final int concentration = blockState.getBlock().getMetaFromState(blockState);
+		final boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ());
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || hasAtmosphere) {
-			world.setBlock(x, y, z, Blocks.air, 0, 3); // replace our air block to vacuum block
+			world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3); // replace our air block to vacuum block
 		} else {
 			// Try to spread the air
-			spreadAirBlock(world, x, y, z, concentration);
+			spreadAirBlock(world, blockPos, concentration);
 		}
-		world.scheduleBlockUpdate(x, y, z, this, 30 + 2 * concentration);
+		world.scheduleBlockUpdate(blockPos, this, 30 + 2 * concentration, 0);
 	}
 	
-	private void spreadAirBlock(World world, int x, int y, int z, int concentration) {
+	private void spreadAirBlock(World world, final BlockPos blockPos, final int concentration) {
+		/* @TODO MC1.10 air overhaul
 		int air_count = 1;
 		int empty_count = 0;
 		int sum_concentration = concentration + 1;
@@ -265,14 +268,21 @@ public class BlockAir extends BlockAbstractAir {
 				world.setBlock(x, y, z - 1, this, mid_concentration, 2);
 			}
 		}
+		/**/
 	}
 	
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
-		if (!WarpDrive.starMap.hasAtmosphere(world, x, z)) {
-			world.scheduleBlockUpdate(x, y, z, this, tickRate(world));
+	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
+		if (!WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
+			world.scheduleBlockUpdate(blockPos, this, tickRate(world), 0);
 		} else {
-			world.setBlockToAir(x, y, z);
+			world.setBlockToAir(blockPos);
 		}
+		super.onBlockAdded(world, blockPos, blockState);
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 }

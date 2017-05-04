@@ -1,14 +1,13 @@
 package cr0s.warpdrive.block.detection;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.client.SirenSound;
+import cr0s.warpdrive.data.SoundEvents;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntitySiren extends TileEntityAbstractBase {
 	public enum SirenState {
@@ -35,8 +34,8 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		/* Updating the sound too quickly breaks Minecraft's sounds handler.
 		 * Therefore, we only update our sound once every 0.5 seconds.
@@ -123,8 +122,7 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	// Create a new SirenSound object that the siren will use.
 	@SideOnly(Side.CLIENT)
 	private void setSound() {
-		String resource = WarpDrive.MODID + ":siren_" + (isRaidSiren ? "raid" : "industrial");
-		sound = new SirenSound(new ResourceLocation(resource), range, xCoord, yCoord, zCoord);
+		sound = new SirenSound(isRaidSiren ? SoundEvents.SIREN_RAID : SoundEvents.SIREN_INDUSTRIAL, range, pos.getX(), pos.getY(), pos.getZ());
 	}
     
 	// Forces the siren to start playing its sound;
@@ -156,6 +154,6 @@ public class TileEntitySiren extends TileEntityAbstractBase {
     
 	// Checks if the siren is being powered by redstone.
 	private boolean isPowered() {
-		return worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord);
+		return worldObj.isBlockIndirectlyGettingPowered(pos) > 0;
 	}
 }

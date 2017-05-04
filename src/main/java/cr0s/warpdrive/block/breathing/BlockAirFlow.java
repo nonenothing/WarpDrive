@@ -3,23 +3,29 @@ package cr0s.warpdrive.block.breathing;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
 
-import net.minecraft.util.AxisAlignedBB;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockAirFlow extends BlockAbstractAir {
 	
-	public BlockAirFlow() {
-		super();
+	public BlockAirFlow(final String registryName) {
+		super(registryName);
 	}
 	
+	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
 		if (!world.isRemote) {
-			final StateAir stateAir = ChunkHandler.getStateAir(world, x, y, z);
-			if (!stateAir.isAirFlow() || stateAir.concentration == 0) {
-				world.setBlockToAir(x, y, z);
+			StateAir stateAir = ChunkHandler.getStateAir(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			if (!stateAir.isAirSource() || stateAir.concentration == 0) {
+				world.setBlockToAir(blockPos);
 			}
 		}
-		return super.getCollisionBoundingBoxFromPool(world, x, y, z);
+		return super.getCollisionBoundingBox(blockState, world, blockPos);
 	}
 }

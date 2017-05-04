@@ -8,16 +8,16 @@ import cr0s.warpdrive.data.StarMapRegistry;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
@@ -31,11 +31,11 @@ public class WorldHandler {
 	
 	//TODO: register as event receiver
 	public void onChunkLoaded(ChunkWatchEvent event) {
-		ChunkCoordIntPair chunk = event.chunk;
+		ChunkPos chunk = event.getChunk();
 		
 		// Check chunk for locating in cloaked areas
 		WarpDrive.logger.info("onChunkLoaded " + chunk.chunkXPos + " " + chunk.chunkZPos);
-		WarpDrive.cloaks.onChunkLoaded(event.player, chunk.chunkXPos, chunk.chunkZPos);
+		WarpDrive.cloaks.onChunkLoaded(event.getPlayer(), chunk.chunkXPos, chunk.chunkZPos);
 		
 		/*
 		List<Chunk> list = new ArrayList<Chunk>();
@@ -43,25 +43,25 @@ public class WorldHandler {
 		
 		// Send obscured chunk
 		System.out.println("[Cloak] Sending to player " + p.username + " obscured chunk at (" + chunk.chunkXPos + "; " + chunk.chunkZPos + ")");
-		((EntityPlayerMP)p).playerNetServerHandler.sendPacketToPlayer(new Packet56MapChunks(list));
+		((EntityPlayerMP)p).connection.sendPacketToPlayer(new Packet56MapChunks(list));
 		*/
 	}
 	
 	// Server side
 	@SubscribeEvent
 	public void onEntityJoinWorld(EntityJoinWorldEvent event){
-		if (event.world.isRemote) {
+		if (event.getWorld().isRemote) {
 			return;
 		}			
 		// WarpDrive.logger.info("onEntityJoinWorld " + event.entity);
-		if (event.entity instanceof EntityPlayer) {
-			WarpDrive.cloaks.onPlayerEnteringDimension((EntityPlayer)event.entity);
+		if (event.getEntity() instanceof EntityPlayer) {
+			WarpDrive.cloaks.onPlayerEnteringDimension((EntityPlayer) event.getEntity());
 			
-		} else if (event.entity instanceof EntityLivingBase) {
-			final EntityLivingBase entityLivingBase = (EntityLivingBase) event.entity;
-			final int x = MathHelper.floor_double(event.entity.posX);
-			final int y = MathHelper.floor_double(event.entity.posY);
-			final int z = MathHelper.floor_double(event.entity.posZ);
+		} else if (event.getEntity() instanceof EntityLivingBase) {
+			final EntityLivingBase entityLivingBase = (EntityLivingBase) event.getEntity();
+			final int x = MathHelper.floor_double(event.getEntity().posX);
+			final int y = MathHelper.floor_double(event.getEntity().posY);
+			final int z = MathHelper.floor_double(event.getEntity().posZ);
 			final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entityLivingBase.worldObj, x, z);
 			if (celestialObject == null) {
 				// unregistered dimension => exit
@@ -78,7 +78,7 @@ public class WorldHandler {
 	
 	@SubscribeEvent
 	public void onPlayerChangedDimension(PlayerChangedDimensionEvent event) {
-		// WarpDrive.logger.info("onPlayerChangedDimension " + event.player.getCommandSenderName() + " " + event.fromDim + " -> " + event.toDim);
+		// WarpDrive.logger.info("onPlayerChangedDimension " + event.player.getName() + " " + event.fromDim + " -> " + event.toDim);
 		WarpDrive.cloaks.onPlayerEnteringDimension(event.player);
 	}
 	
@@ -93,7 +93,7 @@ public class WorldHandler {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onWorldUnload(WorldEvent.Unload event) {
-		// WarpDrive.logger.info("onWorldUnload world " + event.world);
+		// WarpDrive.logger.info("onWorldUnload world " + event.getWorld());
 		WarpDrive.cloaks.onClientChangingDimension();
 	}
 	
@@ -109,11 +109,10 @@ public class WorldHandler {
 	@SubscribeEvent
 	public void onBlockUpdated(BlockEvent blockEvent) {
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE && WarpDrive.isDev) {
-			WarpDrive.logger.info("onBlockUpdate args " + blockEvent.block + "@" + blockEvent.blockMetadata
-			                      + " actual " + blockEvent.world.getBlock(blockEvent.x, blockEvent.y, blockEvent.z)
-			                      + "@" + blockEvent.world.getBlockMetadata(blockEvent.x, blockEvent.y, blockEvent.z));
+			WarpDrive.logger.info("onBlockUpdate args " + blockEvent.getState()
+			                      + " actual " + blockEvent.getWorld().getBlockState(blockEvent.getPos()));
 		}
-		WarpDrive.starMap.onBlockUpdated(blockEvent.world, blockEvent.x, blockEvent.y, blockEvent.z, blockEvent.block, blockEvent.blockMetadata);
-		ChunkHandler.onBlockUpdated(blockEvent.world, blockEvent.x, blockEvent.y, blockEvent.z);
+		WarpDrive.starMap.onBlockUpdated(blockEvent.getWorld(), blockEvent.getPos(), blockEvent.getState());
+		ChunkHandler.onBlockUpdated(blockEvent.getWorld(), blockEvent.getPos().getX(), blockEvent.getPos().getY(), blockEvent.getPos().getZ());
 	}
 }

@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -30,7 +29,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -39,11 +38,14 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -99,12 +101,10 @@ public class JumpSequencer extends AbstractSequencer {
 	public JumpSequencer(TileEntityShipCore shipCore, boolean isHyperspaceJump,
 	                     final int moveX, final int moveY, final int moveZ, final byte rotationSteps,
 	                     boolean isCoordJump, int destX, int destY, int destZ) {
-		this.sourceWorld = shipCore.getWorldObj();
+		this.sourceWorld = shipCore.getWorld();
 		this.ship = new JumpShip();
 		this.ship.worldObj = sourceWorld;
-		this.ship.coreX = shipCore.xCoord;
-		this.ship.coreY = shipCore.yCoord;
-		this.ship.coreZ = shipCore.zCoord;
+		this.ship.core = shipCore.getPos();
 		this.ship.dx = shipCore.dx;
 		this.ship.dz = shipCore.dz;
 		this.ship.minX = shipCore.minX;
@@ -136,8 +136,16 @@ public class JumpSequencer extends AbstractSequencer {
 		isEnabled = true;
 		register();
 	}
-	
-	public void disable(String reason) {
+
+	@Deprecated
+	private void disableAndMessage(String message) {
+		disableAndMessage(new TextComponentString(message));
+	}
+	private void disableAndMessage(ITextComponent textComponent) {
+		disable(textComponent);
+		ship.messageToAllPlayersOnShip(textComponent);
+	}
+	private void disable(ITextComponent textComponent) {
 		if (!isEnabled) {
 			return;
 		}
@@ -145,10 +153,10 @@ public class JumpSequencer extends AbstractSequencer {
 		isEnabled = false;
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			if (reason == null || reason.isEmpty()) {
+			if (textComponent == null || textComponent.getFormattedText().isEmpty()) {
 				WarpDrive.logger.info(this + " Killing jump sequencer...");
 			} else {
-				WarpDrive.logger.info(this + " Killing jump sequencer... (" + reason + ")");
+				WarpDrive.logger.info(this + " Killing jump sequencer... (" + textComponent.getFormattedText() + ")");
 			}
 		}
 		
@@ -172,9 +180,7 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		if (ship.minY < 0 || ship.maxY > 255) {
-			String msg = "Invalid Y coordinate(s), check ship dimensions...";
-			ship.messageToAllPlayersOnShip(msg);
-			disable(msg);
+			disableAndMessage(new TextComponentString("Invalid Y coordinate(s), check ship dimensions..."));
 			return true;
 		}
 		
@@ -263,9 +269,7 @@ public class JumpSequencer extends AbstractSequencer {
 			break;
 			
 		default:
-			String msg = "Invalid state, aborting jump...";
-			ship.messageToAllPlayersOnShip(msg);
-			disable(msg);
+			disableAndMessage(new TextComponentString("Invalid state, aborting jump..."));
 			return true;
 		}
 		return true;
@@ -273,7 +277,7 @@ public class JumpSequencer extends AbstractSequencer {
 	
 	private boolean forceSourceChunks(StringBuilder reason) {
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Forcing source chunks in " + sourceWorld.provider.getDimensionName());
+			WarpDrive.logger.info(this + " Forcing source chunks in " + sourceWorld.provider.getDimensionType().getName());
 		}
 		sourceWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, sourceWorld, Type.NORMAL);
 		if (sourceWorldTicket == null) {
@@ -293,7 +297,7 @@ public class JumpSequencer extends AbstractSequencer {
 						sourceWorldTicket.getMaxChunkListDepth()));
 					return false;
 				}
-				ForgeChunkManager.forceChunk(sourceWorldTicket, new ChunkCoordIntPair(x, z));
+				ForgeChunkManager.forceChunk(sourceWorldTicket, new ChunkPos(x, z));
 			}
 		}
 		return true;
@@ -302,7 +306,7 @@ public class JumpSequencer extends AbstractSequencer {
 	private boolean forceTargetChunks(StringBuilder reason) {
 		LocalProfiler.start("Jump.forceTargetChunks");
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Forcing target chunks in " + targetWorld.provider.getDimensionName());
+			WarpDrive.logger.info(this + " Forcing target chunks in " + targetWorld.provider.getDimensionType().getName());
 		}
 		targetWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, targetWorld, Type.NORMAL);
 		if (targetWorldTicket == null) {
@@ -311,12 +315,12 @@ public class JumpSequencer extends AbstractSequencer {
 			return false;
 		}
 		
-		ChunkCoordinates targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
-		ChunkCoordinates targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
-		int x1 = Math.min(targetMin.posX, targetMax.posX) >> 4;
-		int x2 = Math.max(targetMin.posX, targetMax.posX) >> 4;
-		int z1 = Math.min(targetMin.posZ, targetMax.posZ) >> 4;
-		int z2 = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
+		BlockPos targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
+		BlockPos targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+		int x1 = Math.min(targetMin.getX(), targetMax.getX()) >> 4;
+		int x2 = Math.max(targetMin.getX(), targetMax.getX()) >> 4;
+		int z1 = Math.min(targetMin.getZ(), targetMax.getZ()) >> 4;
+		int z2 = Math.max(targetMin.getZ(), targetMax.getZ()) >> 4;
 		int chunkCount = 0;
 		for (int x = x1; x <= x2; x++) {
 			for (int z = z1; z <= z2; z++) {
@@ -326,7 +330,7 @@ public class JumpSequencer extends AbstractSequencer {
 						targetWorldTicket.getMaxChunkListDepth()));
 					return false;
 				}
-				ForgeChunkManager.forceChunk(targetWorldTicket, new ChunkCoordIntPair(x, z));
+				ForgeChunkManager.forceChunk(targetWorldTicket, new ChunkPos(x, z));
 			}
 		}
 		LocalProfiler.stop();
@@ -346,7 +350,7 @@ public class JumpSequencer extends AbstractSequencer {
 			z2 = ship.maxZ >> 4;
 			for (int x = x1; x <= x2; x++) {
 				for (int z = z1; z <= z2; z++) {
-					ForgeChunkManager.unforceChunk(sourceWorldTicket, new ChunkCoordIntPair(x, z));
+					ForgeChunkManager.unforceChunk(sourceWorldTicket, new ChunkPos(x, z));
 				}
 			}
 			ForgeChunkManager.releaseTicket(sourceWorldTicket);
@@ -354,15 +358,15 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		if (targetWorldTicket != null) {
-			ChunkCoordinates targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
-			ChunkCoordinates targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
-			x1 = Math.min(targetMin.posX, targetMax.posX) >> 4;
-			x2 = Math.max(targetMin.posX, targetMax.posX) >> 4;
-			z1 = Math.min(targetMin.posZ, targetMax.posZ) >> 4;
-			z2 = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
+			BlockPos targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
+			BlockPos targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+			x1 = Math.min(targetMin.getX(), targetMax.getX()) >> 4;
+			x2 = Math.max(targetMin.getX(), targetMax.getX()) >> 4;
+			z1 = Math.min(targetMin.getZ(), targetMax.getZ()) >> 4;
+			z2 = Math.max(targetMin.getZ(), targetMax.getZ()) >> 4;
 			for (int x = x1; x <= x2; x++) {
 				for (int z = z1; z <= z2; z++) {
-					ForgeChunkManager.unforceChunk(targetWorldTicket, new ChunkCoordIntPair(x, z));
+					ForgeChunkManager.unforceChunk(targetWorldTicket, new ChunkPos(x, z));
 				}
 			}
 			ForgeChunkManager.releaseTicket(targetWorldTicket);
@@ -376,9 +380,7 @@ public class JumpSequencer extends AbstractSequencer {
 		StringBuilder reason = new StringBuilder();
 		
 		if (!forceSourceChunks(reason)) {
-			String msg = reason.toString();
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(reason.toString());
 			LocalProfiler.stop();
 			return;
 		}
@@ -395,9 +397,7 @@ public class JumpSequencer extends AbstractSequencer {
 		StringBuilder reason = new StringBuilder();
 		
 		if (!ship.save(reason)) {
-			String msg = reason.toString();
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(reason.toString());
 			LocalProfiler.stop();
 			return;
 		}
@@ -415,9 +415,7 @@ public class JumpSequencer extends AbstractSequencer {
 		StringBuilder reason = new StringBuilder();
 		
 		if (!ship.checkBorders(reason)) {
-			String msg = reason.toString();
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(reason.toString());
 			LocalProfiler.stop();
 			return;
 		}
@@ -497,7 +495,7 @@ public class JumpSequencer extends AbstractSequencer {
 		StringBuilder reason = new StringBuilder();
 		
 		final CelestialObject celestialObjectSource = StarMapRegistry.getCelestialObject(
-			sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 		final boolean isInSpace = celestialObjectSource.isSpace();
 		final boolean isInHyperSpace = celestialObjectSource.isHyperspace();
 		
@@ -506,7 +504,7 @@ public class JumpSequencer extends AbstractSequencer {
 		betweenWorlds = fromSpace || toSpace || isHyperspaceJump;
 		
 		{// compute targetWorld and movement vector (moveX, moveY, moveZ)
-			String message = computeTargetWorld(celestialObjectSource, isInSpace, isInHyperSpace, toSpace, fromSpace);
+			ITextComponent message = computeTargetWorld(celestialObjectSource, isInSpace, isInHyperSpace, toSpace, fromSpace);
 			if (message != null) {
 				LocalProfiler.stop();
 				ship.messageToAllPlayersOnShip(message);
@@ -516,28 +514,28 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		// Check mass constrains
-		if ( WarpDrive.starMap.isPlanet(sourceWorld, ship.coreX, ship.coreZ)
-		  || WarpDrive.starMap.isPlanet(targetWorld, ship.coreX + moveX, ship.coreZ + moveZ) ) {
+		if ( WarpDrive.starMap.isPlanet(sourceWorld, ship.core.getX(), ship.core.getZ())
+		  || WarpDrive.starMap.isPlanet(targetWorld, ship.core.getX() + moveX, ship.core.getZ() + moveZ) ) {
 			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE) {
 				LocalProfiler.stop();
-				String msg = "Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)";
-				ship.messageToAllPlayersOnShip(msg);
-				disable(msg);
+				ITextComponent message = new TextComponentString("Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)");
+				ship.messageToAllPlayersOnShip(message);
+				disable(message);
 				return;
 			}
 		}
 		
 		if (betweenWorlds && WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " From world " + sourceWorld.provider.getDimensionName() + " to " + targetWorld.provider.getDimensionName());
+			WarpDrive.logger.info(this + " From world " + sourceWorld.provider.getDimensionType().getName() + " to " + targetWorld.provider.getDimensionType().getName());
 		}
 		
 		// Calculate jump vector
 		Boolean isPluginCheckDone = false;
 		String firstAdjustmentReason = "";
 		if (isCoordJump) {
-			moveX = destX - ship.coreX;
-			moveY = destY - ship.coreY;
-			moveZ = destZ - ship.coreZ;
+			moveX = destX - ship.core.getX();
+			moveY = destY - ship.core.getY();
+			moveZ = destZ - ship.core.getZ();
 		} else if (!isHyperspaceJump) {
 			if (toSpace) {
 				// enter space at current altitude
@@ -565,14 +563,18 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		transformation = new Transformation(ship, targetWorld, moveX, moveY, moveZ, rotationSteps);
 		
+		if (betweenWorlds && WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(this + " From world " + sourceWorld.provider.getDimensionType().getName() + " to " + targetWorld.provider.getDimensionType().getName());
+		}
+		
 		{
-			ChunkCoordinates target1 = transformation.apply(ship.minX, ship.minY, ship.minZ);
-			ChunkCoordinates target2 = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
-			AxisAlignedBB aabbSource = AxisAlignedBB.getBoundingBox(ship.minX, ship.minY, ship.minZ, ship.maxX, ship.maxY, ship.maxZ);
+			BlockPos target1 = transformation.apply(ship.minX, ship.minY, ship.minZ);
+			BlockPos target2 = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+			AxisAlignedBB aabbSource = new AxisAlignedBB(ship.minX, ship.minY, ship.minZ, ship.maxX, ship.maxY, ship.maxZ);
 			aabbSource.expand(1.0D, 1.0D, 1.0D);
-			AxisAlignedBB aabbTarget = AxisAlignedBB.getBoundingBox(
-					Math.min(target1.posX, target2.posX), Math.min(target1.posY, target2.posY), Math.min(target1.posZ, target2.posZ),
-					Math.max(target1.posX, target2.posX), Math.max(target1.posY, target2.posY), Math.max(target1.posZ, target2.posZ));
+			AxisAlignedBB aabbTarget = new AxisAlignedBB(
+					Math.min(target1.getX(), target2.getX()), Math.min(target1.getY(), target2.getY()), Math.min(target1.getZ(), target2.getZ()),
+					Math.max(target1.getX(), target2.getX()), Math.max(target1.getY(), target2.getY()), Math.max(target1.getZ(), target2.getZ()));
 			// Validate positions aren't overlapping
 			if (!betweenWorlds && aabbSource.intersectsWith(aabbTarget)) {
 				// render fake explosions
@@ -585,26 +587,25 @@ public class JumpSequencer extends AbstractSequencer {
 				} else {
 					msg = firstAdjustmentReason + "\nNot enough space after adjustment, jump aborted!";
 				}
-				disable(msg);
-				ship.messageToAllPlayersOnShip(msg);
+				disableAndMessage(msg);
 				LocalProfiler.stop();
 				return;
 			}
 			
 			// Check world border
-			CelestialObject celestialObjectTarget = StarMapRegistry.getCelestialObject(targetWorld.provider.dimensionId, (int) aabbTarget.minX, (int) aabbTarget.minZ);
+			CelestialObject celestialObjectTarget = StarMapRegistry.getCelestialObject(targetWorld.provider.getDimension(), (int) aabbTarget.minX, (int) aabbTarget.minZ);
 			if (celestialObjectTarget == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.error(String.format("There's no world border defined for dimension %s (%d)",
-						targetWorld.provider.getDimensionName(), targetWorld.provider.dimensionId));
+						targetWorld.provider.getDimensionType().getName(), targetWorld.provider.getDimension()));
 				}
 				
 			} else {
 				// are we in range?
-				final double distanceSquared = celestialObjectTarget.getSquareDistanceOutsideBorder(targetWorld.provider.dimensionId, aabbTarget);
+				final double distanceSquared = celestialObjectTarget.getSquareDistanceOutsideBorder(targetWorld.provider.getDimension(), aabbTarget);
 				if (distanceSquared > 0) {
 					AxisAlignedBB axisAlignedBB = celestialObjectTarget.getWorldBorderArea();
-					String message = String.format(
+					ITextComponent message = new TextComponentTranslation(
 						  "Target ship position is outside planet border, unable to jump!\n"
 						+ "World borders are (%d %d %d) to (%d %d %d).",
 						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
@@ -620,17 +621,14 @@ public class JumpSequencer extends AbstractSequencer {
 			CheckMovementResult checkMovementResult = checkCollisionAndProtection(transformation, true, "target");
 			if (checkMovementResult != null) {
 				String msg = checkMovementResult.reason + "\nJump aborted!";
-				disable(msg);
-				ship.messageToAllPlayersOnShip(msg);
+				disableAndMessage(msg);
 				LocalProfiler.stop();
 				return;
 			}
 		}
 		
 		if (!forceTargetChunks(reason)) {
-			String msg = reason.toString();
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(reason.toString());
 			LocalProfiler.stop();
 			return;
 		}
@@ -638,8 +636,7 @@ public class JumpSequencer extends AbstractSequencer {
 		{
 			String msg = ship.saveEntities();
 			if (msg != null) {
-				disable(msg);
-				ship.messageToAllPlayersOnShip(msg);
+				disableAndMessage(msg);
 				LocalProfiler.stop();
 				return;
 			}
@@ -649,23 +646,23 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		if (isHyperspaceJump && isInSpace) {
-			ship.messageToAllPlayersOnShip("Entering HYPERSPACE...");
+			ship.messageToAllPlayersOnShip(new TextComponentString("Entering HYPERSPACE..."));
 		} else if (isHyperspaceJump && isInHyperSpace) {
-			ship.messageToAllPlayersOnShip("Leaving HYPERSPACE..");
+			ship.messageToAllPlayersOnShip(new TextComponentString("Leaving HYPERSPACE.."));
 		} else if (isCoordJump) {
-			ship.messageToAllPlayersOnShip("Jumping to coordinates (" + destX + " " + destY + " " + destZ + ")!");
+			ship.messageToAllPlayersOnShip(new TextComponentString("Jumping to coordinates (" + destX + " " + destY + " " + destZ + ")!"));
 		} else {
-			ship.messageToAllPlayersOnShip("Jumping of " + Math.round(Math.sqrt(moveX * moveX + moveY * moveY + moveZ * moveZ)) + " blocks (" + moveX + " " + moveY + " " + moveZ + ")");
+			ship.messageToAllPlayersOnShip(new TextComponentString("Jumping of " + Math.round(Math.sqrt(moveX * moveX + moveY * moveY + moveZ * moveZ)) + " blocks (" + moveX + " " + moveY + " " + moveZ + ")"));
 		}
 		switch (rotationSteps) {
 			case 1:
-				ship.messageToAllPlayersOnShip("Turning to the right");
+				ship.messageToAllPlayersOnShip(new TextComponentString("Turning to the right"));
 				break;
 			case 2:
-				ship.messageToAllPlayersOnShip("Turning back");
+				ship.messageToAllPlayersOnShip(new TextComponentString("Turning back"));
 				break;
 			case 3:
-				ship.messageToAllPlayersOnShip("Turning to the left");
+				ship.messageToAllPlayersOnShip(new TextComponentString("Turning to the left"));
 				break;
 			default:
 				break;
@@ -677,21 +674,21 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 	}
 	
-	private String computeTargetWorld(CelestialObject celestialObjectSource, boolean isInSpace, boolean isInHyperSpace, boolean toSpace, boolean fromSpace) {
+	private ITextComponent computeTargetWorld(CelestialObject celestialObjectSource, boolean isInSpace, boolean isInHyperSpace, boolean toSpace, boolean fromSpace) {
 		if (isHyperspaceJump) {
 			if (isInHyperSpace) {
-				CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+				CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 				// anything defined?
 				if (celestialObject == null) {
-					return String.format("Unable to reach space from this location!\nThere's no celestial object defined for current dimension %s (%d).",
-						sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId);
+					return new TextComponentTranslation("Unable to reach space from this location!\nThere's no celestial object defined for current dimension %s (%d).",
+						sourceWorld.provider.getDimensionType().getName(), sourceWorld.provider.getDimension());
 				}
 				
 				// are we clear for transit?
-				final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+				final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 				if (distanceSquared > 0.0D) {
 					AxisAlignedBB axisAlignedBB = celestialObject.getAreaInParent();
-					return String.format(
+					return new TextComponentTranslation(
 						  "Ship is outside any solar system, unable to reach space!\n"
 						+ "Closest transition area is ~%d m away (%d %d %d) to (%d %d %d).",
 						(int) Math.sqrt(distanceSquared),
@@ -701,9 +698,13 @@ public class JumpSequencer extends AbstractSequencer {
 				
 				// is world available?
 				final int dimensionIdSpace = celestialObject.dimensionId;
-				targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
-				if (targetWorld == null) {
-					return String.format("Unable to load Space dimension %d, aborting jump.",
+				MinecraftServer server = sourceWorld.getMinecraftServer();
+				assert(server != null);
+				try {
+					targetWorld = server.worldServerForDimension(dimensionIdSpace);
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					return new TextComponentTranslation("Unable to load Space dimension %d, aborting jump.",
 						dimensionIdSpace);
 				}
 				
@@ -712,29 +713,33 @@ public class JumpSequencer extends AbstractSequencer {
 				
 				// is world available?
 				final int dimensionIdHyperspace = celestialObjectSource.parentDimensionId;
-				targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdHyperspace);
-				if (targetWorld == null) {
-					return String.format("Unable to load Hyperspace dimension %d, aborting jump.",
+				MinecraftServer server = sourceWorld.getMinecraftServer();
+				assert(server != null);
+				try {
+					targetWorld = server.worldServerForDimension(dimensionIdHyperspace);
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					return new TextComponentTranslation("Unable to load Hyperspace dimension %d, aborting jump.",
 						dimensionIdHyperspace);
 				}
 				
 			} else {
-				return "Unable to reach hyperspace from a planet";
+				return new TextComponentTranslation("Unable to reach hyperspace from a planet");
 			}
 			
 		} else if (toSpace) {
-			CelestialObject celestialObject = StarMapRegistry.getClosestParentCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			CelestialObject celestialObject = StarMapRegistry.getClosestParentCelestialObject(sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 			// anything defined?
 			if (celestialObject == null) {
-				return String.format("Unable to reach space!\nThere's no planet defined for current dimension %s (%d).",
-					sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId);
+				return new TextComponentTranslation("Unable to reach space!\nThere's no planet defined for current dimension %s (%d).",
+					sourceWorld.provider.getDimensionType().getName(), sourceWorld.provider.getDimension());
 			}
 			
 			// are we clear for transit?
-			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 			if (distanceSquared > 0) {
 				AxisAlignedBB axisAlignedBB = celestialObject.getAreaToReachParent();
-				return String.format(
+				return new TextComponentTranslation(
 					  "Ship is outside planet border, unable to reach space!\n"
 					+ "Closest transition area is ~%d m away (%d %d %d) to (%d %d %d).",
 					(int) Math.sqrt(distanceSquared),
@@ -744,9 +749,13 @@ public class JumpSequencer extends AbstractSequencer {
 			
 			// is world available?
 			final int dimensionIdSpace = celestialObject.parentDimensionId;
-			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
-			if (targetWorld == null) {
-				return "Unable to load Space dimension " + dimensionIdSpace + ", aborting jump.";
+			MinecraftServer server = sourceWorld.getMinecraftServer();
+			assert(server != null);
+			try {
+				targetWorld = server.worldServerForDimension(dimensionIdSpace);
+			} catch(Exception exception) {
+				exception.printStackTrace();
+				return new TextComponentTranslation("Unable to load Space dimension %d, aborting jump.", dimensionIdSpace);
 			}
 			
 			// update movement vector
@@ -755,17 +764,17 @@ public class JumpSequencer extends AbstractSequencer {
 			moveZ = -vEntry.z;
 			
 		} else if (fromSpace) {
-			CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 			// anything defined?
 			if (celestialObject == null) {
-				return "No planet exists in this dimension, there's nowhere to land!";
+				return new TextComponentTranslation("No planet exists in this dimension, there's nowhere to land!");
 			}
 			
 			// are we in orbit?
-			final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.getDimension(), ship.core.getX(), ship.core.getZ());
 			if (distanceSquared > 0.0D) {
 				AxisAlignedBB axisAlignedBB = celestialObject.getAreaInParent();
-				return String.format(
+				return new TextComponentTranslation(
 					  "No planet in range, unable to enter atmosphere!\n"
 					+ "Closest planet is %d m away (%d %d %d) to (%d %d %d).",
 					(int) Math.sqrt(distanceSquared),
@@ -774,9 +783,13 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			
 			// validate world availability
-			targetWorld = MinecraftServer.getServer().worldServerForDimension(celestialObject.dimensionId);
-			if (targetWorld == null) {
-				return String.format("Sorry, we can't land here. Dimension %d isn't defined. It might be a decorative planet or a server misconfiguration",
+			MinecraftServer server = sourceWorld.getMinecraftServer();
+			assert(server != null);
+			try {
+				targetWorld = server.worldServerForDimension(celestialObject.dimensionId);
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				return new TextComponentTranslation("Sorry, we can't land here. Dimension %d isn't defined. It might be a decorative planet or a server misconfiguration",
 					celestialObject.dimensionId);
 			}
 			
@@ -810,7 +823,7 @@ public class JumpSequencer extends AbstractSequencer {
 				}
 				jumpBlock.deploy(targetWorld, transformation);
 				
-				sourceWorld.removeTileEntity(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+				sourceWorld.removeTileEntity(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z));
 			}
 			actualIndexInShip++;
 		}
@@ -844,8 +857,8 @@ public class JumpSequencer extends AbstractSequencer {
 					if (blockTransformer != null) {
 						blockTransformer.remove(jumpBlock.blockTileEntity);
 						
-						ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-						TileEntity newTileEntity = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
+						BlockPos target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+						TileEntity newTileEntity = targetWorld.getTileEntity(target);
 						blockTransformer.restoreExternals(newTileEntity, transformation, external.getValue());
 					}
 				}
@@ -873,7 +886,7 @@ public class JumpSequencer extends AbstractSequencer {
 				double oldEntityX = me.oldX;
 				double oldEntityY = me.oldY;
 				double oldEntityZ = me.oldZ;
-				Vec3 target = transformation.apply(oldEntityX, oldEntityY, oldEntityZ);
+				Vec3d target = transformation.apply(oldEntityX, oldEntityY, oldEntityZ);
 				double newEntityX = target.xCoord;
 				double newEntityY = target.yCoord;
 				double newEntityZ = target.zCoord;
@@ -886,9 +899,10 @@ public class JumpSequencer extends AbstractSequencer {
 				
 				// Travel to another dimension if needed
 				if (betweenWorlds) {
-					MinecraftServer server = MinecraftServer.getServer();
-					WorldServer from = server.worldServerForDimension(sourceWorld.provider.dimensionId);
-					WorldServer to = server.worldServerForDimension(targetWorld.provider.dimensionId);
+					MinecraftServer server = sourceWorld.getMinecraftServer();
+					assert(server != null);
+					WorldServer from = server.worldServerForDimension(sourceWorld.provider.getDimension());
+					WorldServer to = server.worldServerForDimension(targetWorld.provider.getDimension());
 					SpaceTeleporter teleporter = new SpaceTeleporter(to, 0,
 							MathHelper.floor_double(newEntityX),
 							MathHelper.floor_double(newEntityY),
@@ -896,10 +910,10 @@ public class JumpSequencer extends AbstractSequencer {
 					
 					if (entity instanceof EntityPlayerMP) {
 						EntityPlayerMP player = (EntityPlayerMP) entity;
-						server.getConfigurationManager().transferPlayerToDimension(player, targetWorld.provider.dimensionId, teleporter);
+						server.getPlayerList().transferPlayerToDimension(player, targetWorld.provider.getDimension(), teleporter);
 						player.sendPlayerAbilities();
 					} else {
-						server.getConfigurationManager().transferEntityToWorld(entity, sourceWorld.provider.dimensionId, from, to, teleporter);
+						server.getPlayerList().transferEntityToWorld(entity, sourceWorld.provider.getDimension(), from, to, teleporter);
 					}
 				}
 				
@@ -908,14 +922,13 @@ public class JumpSequencer extends AbstractSequencer {
 				if (entity instanceof EntityPlayerMP) {
 					EntityPlayerMP player = (EntityPlayerMP) entity;
 					
-					ChunkCoordinates bedLocation = player.getBedLocation(sourceWorld.provider.dimensionId);
+					BlockPos bedLocation = player.getBedLocation(player.worldObj.provider.getDimension());
 					
-					if (bedLocation != null
-					  && ship.minX <= bedLocation.posX && ship.maxX >= bedLocation.posX
-					  && ship.minY <= bedLocation.posY && ship.maxY >= bedLocation.posY
-					  && ship.minZ <= bedLocation.posZ && ship.maxZ >= bedLocation.posZ) {
+					if ( ship.minX <= bedLocation.getX() && ship.maxX >= bedLocation.getX()
+					  && ship.minY <= bedLocation.getY() && ship.maxY >= bedLocation.getY()
+					  && ship.minZ <= bedLocation.getZ() && ship.maxZ >= bedLocation.getZ()) {
 						bedLocation = transformation.apply(bedLocation);
-						player.setSpawnChunk(bedLocation, false, targetWorld.provider.dimensionId);
+						player.setSpawnChunk(bedLocation, false, targetWorld.provider.getDimension());
 					}
 					player.setPositionAndUpdate(newEntityX, newEntityY, newEntityZ);
 				} else {
@@ -953,10 +966,10 @@ public class JumpSequencer extends AbstractSequencer {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Removing tile entity at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				}
-				sourceWorld.removeTileEntity(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+				sourceWorld.removeTileEntity(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z));
 			}
 			try {
-				JumpBlock.setBlockNoLight(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z, Blocks.air, 0, 2);
+				JumpBlock.setBlockNoLight(sourceWorld, new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), Blocks.AIR.getDefaultState(), 2);
 			} catch (Exception exception) {
 				WarpDrive.logger.info("Exception while removing " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
@@ -964,8 +977,8 @@ public class JumpSequencer extends AbstractSequencer {
 				}
 			}
 			
-			ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z); 
-			JumpBlock.refreshBlockStateOnClient(targetWorld, target.posX, target.posY, target.posZ);
+			BlockPos target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z); 
+			JumpBlock.refreshBlockStateOnClient(targetWorld, target);
 			
 			actualIndexInShip++;
 		}
@@ -992,7 +1005,8 @@ public class JumpSequencer extends AbstractSequencer {
 		final int countBefore = targetWorld.loadedTileEntityList.size();
 		
 		try {
-			targetWorld.loadedTileEntityList = removeDuplicates(targetWorld.loadedTileEntityList);
+			// @TODO MC1.10 still leaking tile entities?
+			// targetWorld.loadedTileEntityList = removeDuplicates(targetWorld.loadedTileEntityList);
 		} catch (Exception exception) {
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info("TE Duplicates removing exception: " + exception.getMessage());
@@ -1002,7 +1016,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		doCollisionDamage(true);
 		
-		disable("Jump done");
+		disable(new TextComponentString("Jump done"));
 		final int countAfter = targetWorld.loadedTileEntityList.size();
 		if (WarpDriveConfig.LOGGING_JUMP && countBefore != countAfter) {
 			WarpDrive.logger.info(String.format("Removing TE duplicates: tileEntities in target world after jump, cleanup %d -> %d",
@@ -1113,7 +1127,7 @@ public class JumpSequencer extends AbstractSequencer {
 		double rx = Math.round(min.x + sourceWorld.rand.nextInt(Math.max(1, (int) (max.x - min.x))));
 		double ry = Math.round(min.y + sourceWorld.rand.nextInt(Math.max(1, (int) (max.y - min.y))));
 		double rz = Math.round(min.z + sourceWorld.rand.nextInt(Math.max(1, (int) (max.z - min.z))));
-		ship.messageToAllPlayersOnShip("Ship collision detected around " + (int) rx + ", " + (int) ry + ", " + (int) rz + ". Damage report pending...");
+		ship.messageToAllPlayersOnShip(new TextComponentString("Ship collision detected around " + (int) rx + ", " + (int) ry + ", " + (int) rz + ". Damage report pending..."));
 		
 		// randomize if too many collision points
 		int nbExplosions = Math.min(5, collisionPoints.size());
@@ -1204,22 +1218,22 @@ public class JumpSequencer extends AbstractSequencer {
 		VectorI offset = new VectorI((int)Math.signum(moveX), (int)Math.signum(moveY), (int)Math.signum(moveZ));
 		
 		int x, y, z;
-		ChunkCoordinates coordTarget;
-		ChunkCoordinates coordCoreAtTarget = transformation.apply(ship.coreX, ship.coreY, ship.coreZ);
-		Block blockSource;
-		Block blockTarget;
+		BlockPos blockPosTarget;
+		BlockPos blockPosCoreAtTarget = transformation.apply(ship.core.getX(), ship.core.getY(), ship.core.getZ());
+		IBlockState blockStateSource;
+		IBlockState blockStateTarget;
 		for (y = ship.minY; y <= ship.maxY; y++) {
 			for (x = ship.minX; x <= ship.maxX; x++) {
 				for (z = ship.minZ; z <= ship.maxZ; z++) {
-					coordTarget = transformation.apply(x, y, z);
-					blockSource = sourceWorld.getBlock(x, y, z);
-					blockTarget = targetWorld.getBlock(coordTarget.posX, coordTarget.posY, coordTarget.posZ);
-					if (Dictionary.BLOCKS_ANCHOR.contains(blockTarget)) {
+					blockPosTarget = transformation.apply(x, y, z);
+					blockStateSource = sourceWorld.getBlockState(new BlockPos(x, y, z));
+					blockStateTarget = targetWorld.getBlockState(blockPosTarget);
+					if (Dictionary.BLOCKS_ANCHOR.contains(blockStateTarget.getBlock())) {
 						result.add(x, y, z,
-							coordTarget.posX + 0.5D - offset.x,
-							coordTarget.posY + 0.5D - offset.y,
-							coordTarget.posZ + 0.5D - offset.z,
-							true, "Impassable " + blockTarget.getLocalizedName() + " detected at destination (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
+							blockPosTarget.getX() + 0.5D - offset.x,
+							blockPosTarget.getY() + 0.5D - offset.y,
+							blockPosTarget.getZ() + 0.5D - offset.z,
+							true, "Impassable block " + blockStateTarget + " detected at destination (" + blockPosTarget.getX() + " " + blockPosTarget.getY() + " " + blockPosTarget.getZ() + ")");
 						if (!fullCollisionDetails) {
 							return result;
 						} else if (WarpDriveConfig.LOGGING_JUMP) {
@@ -1227,15 +1241,15 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if ( blockSource != Blocks.air
-					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockSource)
-					  && blockTarget != Blocks.air
-					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockTarget)) {
+					if ( blockStateSource != Blocks.AIR
+					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockStateSource.getBlock())
+					  && blockStateTarget != Blocks.AIR
+					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockStateTarget.getBlock())) {
 						result.add(x, y, z,
-							coordTarget.posX + 0.5D + offset.x * 0.1D,
-							coordTarget.posY + 0.5D + offset.y * 0.1D,
-							coordTarget.posZ + 0.5D + offset.z * 0.1D,
-							true, "Obstacle " + blockTarget.getLocalizedName() + " detected at (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
+							blockPosTarget.getX() + 0.5D + offset.x * 0.1D,
+							blockPosTarget.getY() + 0.5D + offset.y * 0.1D,
+							blockPosTarget.getZ() + 0.5D + offset.z * 0.1D,
+							true, "Obstacle " + blockStateTarget + " detected at (" + blockPosTarget.getX() + " " + blockPosTarget.getY() + " " + blockPosTarget.getZ() + ")");
 						if (!fullCollisionDetails) {
 							return result;
 						} else if (WarpDriveConfig.LOGGING_JUMP) {
@@ -1243,12 +1257,11 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if (blockSource != Blocks.air && CommonProxy.isBlockPlaceCanceled(null, coordCoreAtTarget.posX, coordCoreAtTarget.posY, coordCoreAtTarget.posZ,
-						targetWorld, coordTarget.posX, coordTarget.posY, coordTarget.posZ, blockSource, 0)) {
+					if ( blockStateSource != Blocks.AIR
+					  && CommonProxy.isBlockPlaceCanceled(null, blockPosCoreAtTarget,
+							targetWorld, blockPosTarget, blockStateSource)) {
 						result.add(x, y, z,
-							coordTarget.posX,
-							coordTarget.posY,
-							coordTarget.posZ,
+							blockPosTarget.getX(), blockPosTarget.getZ(), blockPosTarget.getZ(),
 							false, "Ship is entering a protected area");
 						return result;
 					}
@@ -1267,19 +1280,19 @@ public class JumpSequencer extends AbstractSequencer {
 		CheckMovementResult result = new CheckMovementResult();
 		VectorI testMovement = getMovementVector(ratio);
 		if ((moveY > 0 && ship.maxY + testMovement.y > 255) && !betweenWorlds) {
-			result.add(ship.coreX, ship.maxY + testMovement.y,
-				ship.coreZ, ship.coreX + 0.5D,
+			result.add(ship.core.getX(), ship.maxY + testMovement.y,
+				ship.core.getZ(), ship.core.getX() + 0.5D,
 				ship.maxY + testMovement.y + 1.0D,
-				ship.coreZ + 0.5D,
+				ship.core.getZ() + 0.5D,
 				false, "Ship core is moving too high");
 			return result;
 		}
 		
 		if ((moveY < 0 && ship.minY + testMovement.y <= 8) && !betweenWorlds) {
-			result.add(ship.coreX, ship.minY + testMovement.y, ship.coreZ,
-				ship.coreX + 0.5D,
+			result.add(ship.core.getX(), ship.minY + testMovement.y, ship.core.getZ(),
+				ship.core.getX() + 0.5D,
 				ship.maxY + testMovement.y,
-				ship.coreZ + 0.5D,
+				ship.core.getZ() + 0.5D,
 				false, "Ship core is moving too low");
 			return result;
 		}
@@ -1292,14 +1305,13 @@ public class JumpSequencer extends AbstractSequencer {
 		return new VectorI((int)Math.round(moveX * ratio), (int)Math.round(moveY * ratio), (int)Math.round(moveZ * ratio));
 	}
 	
-	private static ArrayList<Object> removeDuplicates(List<TileEntity> l) {
-		@SuppressWarnings("Convert2Lambda")
+	private static List<TileEntity> removeDuplicates(List<TileEntity> l) {
 		Set<TileEntity> s = new TreeSet<>(new Comparator<TileEntity>() {
 			@Override
 			public int compare(TileEntity o1, TileEntity o2) {
-				if (o1.xCoord == o2.xCoord && o1.yCoord == o2.yCoord && o1.zCoord == o2.zCoord) {
+				if (o1.getPos().getX() == o2.getPos().getX() && o1.getPos().getY() == o2.getPos().getY() && o1.getPos().getZ() == o2.getPos().getZ()) {
 					if (WarpDriveConfig.LOGGING_JUMP) {
-						WarpDrive.logger.warn("Removed duplicated TE: " + o1 + " vs " + o2);
+						WarpDrive.logger.info("Removed duplicated TE: " + o1 + " vs " + o2);
 					}
 					return 0;
 				} else {
@@ -1308,7 +1320,9 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 		});
 		s.addAll(l);
-		return new ArrayList<>(Arrays.asList(s.toArray()));
+		List<TileEntity> listTileEntities = new ArrayList<>();
+		listTileEntities.addAll(s);
+		return listTileEntities;
 	}
 	
 	@Override
@@ -1317,8 +1331,9 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	@Override
-	protected void writeToNBT(NBTTagCompound nbttagcompound) {
+	protected NBTTagCompound writeToNBT(NBTTagCompound tag) {
 		WarpDrive.logger.error(this + " writeToNBT()");
+		return tag;
 	}
 	
 	@Override
@@ -1327,7 +1342,7 @@ public class JumpSequencer extends AbstractSequencer {
 			getClass().getSimpleName(), hashCode(),
 			(ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
 			sourceWorld == null ? "~NULL~" : sourceWorld.getWorldInfo().getWorldName(),
-			ship == null ? -1 : ship.coreX, ship == null ? -1 : ship.coreY, ship == null ? -1 : ship.coreZ,
+			ship == null ? -1 : ship.core.getX(), ship == null ? -1 : ship.core.getY(), ship == null ? -1 : ship.core.getZ(),
 			ticks);
 	}
 }

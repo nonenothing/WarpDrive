@@ -17,7 +17,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -159,6 +159,11 @@ public class RecipeParticleShapedOre implements IRecipe {
 	@Override
 	public ItemStack getRecipeOutput() {
 		return itemStackResult;
+	}
+	
+	@Override
+	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+		return new ItemStack[0];    // @TODO MC1.10
 	}
 	
 	// check if a recipe matches current crafting inventory
