@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumDecorativeType implements IStringSerializable {
+	
 	PLAIN              ("plain"),
 	ENERGIZED          ("energized"),
 	NETWORK            ("network");

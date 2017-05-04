@@ -49,14 +49,14 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 	}
 	
 	@Override
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public boolean renderWorldBlock(IBlockAccess blockAccess, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityForceField)) {
 			return false;
 		}
 		
 		int renderType = -1;
-		Block blockCamouflage = ((TileEntityForceField)tileEntity).cache_blockCamouflage;
+		Block blockCamouflage = ((TileEntityForceField) tileEntity).cache_blockCamouflage;
 		if (blockCamouflage != null && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockCamouflage)) {
 			renderType = blockCamouflage.getRenderType();
 		}

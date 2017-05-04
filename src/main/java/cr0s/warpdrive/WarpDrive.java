@@ -446,7 +446,7 @@ public class WarpDrive implements LoadingCallback {
 		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
 			itemElectromagneticCell = new ItemElectromagneticCell("itemElectromagneticCell");
 		}
-			
+		
 		// damage sources
 		damageAsphyxia = new DamageAsphyxia();
 		damageCold = new DamageCold();

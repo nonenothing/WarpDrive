@@ -95,6 +95,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	}
 	
 	@SuppressWarnings("deprecation")
+	@Override
 	public boolean isFullyOpaque(IBlockState state) {
 		return false;
 	}

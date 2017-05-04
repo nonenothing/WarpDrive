@@ -31,11 +31,13 @@ public class SpaceChunkProvider extends ChunkProviderOverworld {
 	@Override
 	public Chunk provideChunk(int x, int z) {
 		rand.setSeed(x * 341873128712L + z * 132897987541L);
+		
 		ChunkPrimer chunkprimer = new ChunkPrimer();
 		setBlocksInChunk(x, z, chunkprimer);
 		
-		Chunk chunk = new Chunk(world, chunkprimer, x, z);
-		byte[] byteBiomes = chunk.getBiomeArray();
+		final Chunk chunk = new Chunk(world, chunkprimer, x, z);
+		
+		final byte[] byteBiomes = chunk.getBiomeArray();
 		for (int i = 0; i < byteBiomes.length; ++i) {
 			byteBiomes[i] = (byte) Biome.getIdForBiome(WarpDrive.spaceBiome);
 		}
