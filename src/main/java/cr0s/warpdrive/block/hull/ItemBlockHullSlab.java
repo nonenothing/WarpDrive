@@ -23,24 +23,31 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	}
 	
 	@Override
-	public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+	public boolean onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer, final World world,
+	                         final int x, final int y, final int z, final int side,
+	                         final float hitX, final float hitY, final float hitZ) {
 		if (itemStack.stackSize == 0) {
 			return false;
 		}
 		
 		// check if clicked block can be interacted with
+		final ForgeDirection facing = ForgeDirection.getOrientation(side);
 		final int metadataItem = itemStack.getItemDamage();
 		final Block blockWorld = world.getBlock(x, y, z);
 		final int metadataWorld = world.getBlockMetadata(x, y, z);
 		final int typeWorld = getType(metadataWorld);
 		final int typeItem = getType(metadataItem);
-		if (blockWorld == blockSlab && metadataItem < 12 && metadataWorld < 12 && typeWorld == typeItem) {
+		
+		if ( blockWorld == blockSlab
+		   && metadataItem < 12
+		   && metadataWorld < 12
+		   && typeWorld == typeItem ) {
 			if (!entityPlayer.canPlayerEdit(x, y, z, side, itemStack)) {
 				return false;
 			}
 			
 			// try to merge slabs when right-clicking directly the inner face
-			if (metadataWorld - typeWorld == side) {
+			if (metadataWorld - typeWorld == facing.getOpposite().ordinal()) {
 				AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D);
 				if (world.checkNoEntityCollision(boundingBox)) {
 					if (typeWorld == 0) {// plain
@@ -60,14 +67,17 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 			
 		} else {
 			// check is closer block can be interacted with
-			ForgeDirection direction = ForgeDirection.getOrientation(side);
-			final int xSide = x + direction.offsetX;
-			final int ySide = y + direction.offsetY;
-			final int zSide = z + direction.offsetZ;
+			final int xSide = x + facing.offsetX;
+			final int ySide = y + facing.offsetY;
+			final int zSide = z + facing.offsetZ;
 			final Block blockSide = world.getBlock(xSide, ySide, zSide);
 			final int metadataSide = world.getBlockMetadata(xSide, ySide, zSide);
 			final int typeSide = getType(metadataSide);
-			if (blockSide == blockSlab && metadataItem < 12 && metadataSide < 12 && typeSide == typeItem) {
+			
+			if ( blockSide == blockSlab
+			  && metadataItem < 12
+			  && metadataSide < 12
+			  && typeSide == typeItem ) {
 				if (!entityPlayer.canPlayerEdit(xSide, ySide, zSide, side, itemStack)) {
 					return false;
 				}
@@ -78,7 +88,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 				
 				// try to merge slabs when right-clicking on a side block
 				if (sidePlaced == metadataSide - typeSide) {
-					AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(xSide, ySide, zSide, xSide + 1.0D, ySide + 1.0D, zSide + 1.0D);
+					final AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(xSide, ySide, zSide, xSide + 1.0D, ySide + 1.0D, zSide + 1.0D);
 					if (world.checkNoEntityCollision(boundingBox)) {
 						if (typeSide == 0) {// plain
 							world.setBlock(xSide, ySide, zSide, blockSlab, 12, 3);

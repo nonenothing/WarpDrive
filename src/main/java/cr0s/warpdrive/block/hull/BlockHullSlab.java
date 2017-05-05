@@ -168,11 +168,11 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconPlainFull        = iconRegister.registerIcon(getTextureName() + "plain-" + BlockHullPlain.getDyeColorName(metaHull));
-		iconTiledFull = iconRegister.registerIcon(getTextureName() + "tiled-" + BlockHullPlain.getDyeColorName(metaHull));
+	public void registerBlockIcons(final IIconRegister iconRegister) {
+		iconPlainFull       = iconRegister.registerIcon(getTextureName() + "plain-" + BlockHullPlain.getDyeColorName(metaHull));
+		iconTiledFull       = iconRegister.registerIcon(getTextureName() + "tiled-" + BlockHullPlain.getDyeColorName(metaHull));
 		iconTiledHorizontal = iconRegister.registerIcon(getTextureName() + "tiled_horizontal-" + BlockHullPlain.getDyeColorName(metaHull));
-		iconTiledVertical = iconRegister.registerIcon(getTextureName() + "tiled_vertical-" + BlockHullPlain.getDyeColorName(metaHull));
+		iconTiledVertical   = iconRegister.registerIcon(getTextureName() + "tiled_vertical-" + BlockHullPlain.getDyeColorName(metaHull));
 	}
 	
 	@Override
@@ -188,25 +188,25 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		} else {
 			switch (metadata % 6) {
 			case 0:
-				setBlockBounds(0.00F, 0.50F, 0.00F, 1.00F, 1.00F, 1.00F);
-				return;
-			case 1:
 				setBlockBounds(0.00F, 0.00F, 0.00F, 1.00F, 0.50F, 1.00F);
 				return;
-			case 2:
-				setBlockBounds(0.00F, 0.00F, 0.50F, 1.00F, 1.00F, 1.00F);
+			case 1:
+				setBlockBounds(0.00F, 0.50F, 0.00F, 1.00F, 1.00F, 1.00F);
 				return;
-			case 3:
+			case 2:
 				setBlockBounds(0.00F, 0.00F, 0.00F, 1.00F, 1.00F, 0.50F);
 				return;
-			case 4:
-				setBlockBounds(0.50F, 0.00F, 0.00F, 1.00F, 1.00F, 1.00F);
+			case 3:
+				setBlockBounds(0.00F, 0.00F, 0.50F, 1.00F, 1.00F, 1.00F);
 				return;
-			case 5:
+			case 4:
 				setBlockBounds(0.00F, 0.00F, 0.00F, 0.50F, 1.00F, 1.00F);
 				return;
+			case 5:
+				setBlockBounds(0.50F, 0.00F, 0.00F, 1.00F, 1.00F, 1.00F);
+				return;
 			default:
-				setBlockBounds(0.25F, 0.25F, 0.25F, 0.50F, 0.50F, 0.50F);
+				setBlockBounds(0.25F, 0.25F, 0.25F, 0.75F, 0.75F, 0.75F);
 				// return;
 			}
 		}
@@ -229,7 +229,11 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public int onBlockPlaced(World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata) {
+	public int onBlockPlaced(final World world, final int x, final int y, final int z, final int side,
+	                         final float hitX, final float hitY, final float hitZ, final int metadata) {
+		final ForgeDirection facing = ForgeDirection.getOrientation(side);
+		final int variant = metadata < 6 ? 0 : metadata < 12 ? 6 : metadata;
+		
 		// full block?
 		if (field_150004_a || metadata >= 12) {
 			return metadata;
@@ -238,20 +242,21 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		// horizontal slab?
 		if (metadata == 0 || metadata == 6) {
 			// reuse vanilla logic
-			return (side != 0 && (side == 1 || hitY <= 0.5F) ? metadata + 1 : metadata);
+			final ForgeDirection blockFacing = (facing != ForgeDirection.DOWN && (facing == ForgeDirection.UP || hitY <= 0.5F) ? ForgeDirection.DOWN : ForgeDirection.UP);
+			return variant + blockFacing.ordinal();
 		}
 		// vertical slab?
 		if (metadata == 2 || metadata == 8) {
-			if (side != 0 && side != 1) {
-				return metadata - 2 + side;
+			if (facing != ForgeDirection.DOWN && facing != ForgeDirection.UP) {
+				return variant + facing.getOpposite().ordinal();
 			}
 			// is X the furthest away from center?
 			if (Math.abs(hitX - 0.5F) > Math.abs(hitZ - 0.5F)) {
 				// west (4) vs east (5)
-				return hitX > 0.5F ? metadata - 2 + 4 : metadata - 2 + 5; 
+				return hitX > 0.5F ? variant + ForgeDirection.EAST.ordinal() : variant + ForgeDirection.WEST.ordinal(); 
 			}
 			// north (2) vs south (3)
-			return hitZ > 0.5F ? metadata - 2 + 2 : metadata - 2 + 3;
+			return hitZ > 0.5F ? variant + ForgeDirection.SOUTH.ordinal() : variant + ForgeDirection.NORTH.ordinal();
 		}
 		return metadata;
 	}
