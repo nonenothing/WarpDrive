@@ -370,7 +370,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			return super.getStatus();
 		}
 		
-		String unlocalizedStatus;
+		final String unlocalizedStatus;
 		if (!isValid) {
 			unlocalizedStatus = "warpdrive.cloakingCore.invalidAssembly";
 		} else if (!isEnabled) {

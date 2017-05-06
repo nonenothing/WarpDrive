@@ -161,7 +161,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	public String getStatus() {
-		String strEnergyStatus = getEnergyStatus();
+		final String strEnergyStatus = getEnergyStatus();
 		return super.getStatus()
 		       + (strEnergyStatus.isEmpty() ? "" : "\n" + strEnergyStatus);
 	}

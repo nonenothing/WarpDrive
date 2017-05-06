@@ -817,7 +817,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		cache_forceFieldSetup = null;
 		isDirty.set(true);
 		markDirty();
-		if (worldObj != null) {
+		if (hasWorldObj()) {
 			destroyForceField(false);
 		}
 	}
@@ -1057,8 +1057,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// Common OC/CC methods
 	private Object[] state() {    // isConnected, isPowered, shape
-		int energy = energy_getEnergyStored();
-		String status = getStatus();
+		final int energy = energy_getEnergyStored();
+		final String status = getStatusHeaderInPureText();
 		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
 	}
 	

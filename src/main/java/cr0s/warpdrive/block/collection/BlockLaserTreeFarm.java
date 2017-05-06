@@ -101,9 +101,9 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityLaserTreeFarm) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm) tileEntity).getStatus());
 				return true;
 			}
 		}

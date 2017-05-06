@@ -67,9 +67,9 @@ public class BlockLaser extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityLaser) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityLaser)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLaser) tileEntity).getStatus());
 				return true;
 			}
 		}

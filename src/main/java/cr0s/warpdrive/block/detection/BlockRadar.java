@@ -98,9 +98,9 @@ public class BlockRadar extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityRadar) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityRadar)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityRadar) tileEntity).getStatus());
 				return true;
 			}
 		}

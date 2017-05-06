@@ -91,14 +91,14 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Beam frequency set from " + beamFrequency + " to " + parBeamFrequency);
 			}
-			if (worldObj != null) {
+			if (hasWorldObj()) {
 				ForceFieldRegistry.removeFromRegistry(this);
 			}
 			beamFrequency = parBeamFrequency;
 			vRGB = IBeamFrequency.getBeamColor(beamFrequency);
 		}
 		markDirty();
-		if (worldObj != null) {
+		if (hasWorldObj()) {
 			ForceFieldRegistry.updateInRegistry(this);
 		}
 	}

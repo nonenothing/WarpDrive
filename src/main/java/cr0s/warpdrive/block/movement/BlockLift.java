@@ -92,9 +92,9 @@ public class BlockLift extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityLift) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityLift)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLift) tileEntity).getStatus());
 				return true;
 			}
 		}

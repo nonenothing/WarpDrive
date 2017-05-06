@@ -53,9 +53,9 @@ public class BlockTransporter extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityTransporter) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityTransporter) tileEntity).getStatus());
 				return true;
 			}
 		}

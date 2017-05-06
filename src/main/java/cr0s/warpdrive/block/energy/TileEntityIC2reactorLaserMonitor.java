@@ -192,7 +192,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractEnergy {
 			return super.getStatus();
 		}
 		
-		Set<IReactor> reactors = findReactors();
+		final Set<IReactor> reactors = findReactors();
 		if (reactors != null && !reactors.isEmpty()) {
 			return super.getStatus() 
 			       + StatCollector.translateToLocalFormatted("warpdrive.IC2reactorLaserMonitor.multipleReactors",

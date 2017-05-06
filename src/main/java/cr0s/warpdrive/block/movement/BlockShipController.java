@@ -105,12 +105,12 @@ public class BlockShipController extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipController) {
 				if (entityPlayer.isSneaking()) {
-					Commons.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).getStatus());
+					Commons.addChatMessage(entityPlayer, ((TileEntityShipController) tileEntity).getStatus());
 				} else {
-					Commons.addChatMessage(entityPlayer, ((TileEntityShipController)tileEntity).attachPlayer(entityPlayer));
+					Commons.addChatMessage(entityPlayer, ((TileEntityShipController) tileEntity).attachPlayer(entityPlayer));
 				}
 				return true;
 			}

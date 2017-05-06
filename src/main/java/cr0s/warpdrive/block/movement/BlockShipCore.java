@@ -131,9 +131,9 @@ public class BlockShipCore extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipCore) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityShipCore)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityShipCore) tileEntity).getStatus());
 				return true;
 			}
 		}

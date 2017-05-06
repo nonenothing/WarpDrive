@@ -68,7 +68,7 @@ public class ItemBlockAbstractBase extends ItemBlock {
 			if (nbtTagCompound != null) {
 				tileEntity.readFromNBT(nbtTagCompound);
 			}
-			return ((TileEntityAbstractBase)tileEntity).getStatus();
+			return ((TileEntityAbstractBase) tileEntity).getStatus();
 			
 		} else {
 			return "";

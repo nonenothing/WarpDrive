@@ -45,10 +45,10 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			
 			if (tileEntity instanceof TileEntityAcceleratorControlPoint) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint) tileEntity).getStatus());
 				return true;
 			}
 		}

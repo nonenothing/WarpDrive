@@ -70,9 +70,9 @@ public class BlockShipScanner extends BlockAbstractContainer {
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipScanner) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityShipScanner)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityShipScanner) tileEntity).getStatus());
 				return true;
 			}
 		}
