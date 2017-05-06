@@ -430,9 +430,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] state() {
-		int energy = getEnergyStored();
-		String status = getStatus();
-		Integer retValuablesInLayer, retValuablesMined;
+		final int energy = getEnergyStored();
+		final String status = getStatusHeaderInPureText();
+		final Integer retValuablesInLayer, retValuablesMined;
 		if (isActive()) {
 			retValuablesInLayer = valuablesInLayer.size();
 			retValuablesMined = valuableIndex;
@@ -518,9 +518,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public String getStatus() {
-		// @TODO merge with base
-		int energy = getEnergyStored();
+	public String getStatusHeader() {
+		final int energy = getEnergyStored();
 		String state = "IDLE (not mining)";
 		if (currentState == STATE_IDLE) {
 			state = "IDLE (not mining)";

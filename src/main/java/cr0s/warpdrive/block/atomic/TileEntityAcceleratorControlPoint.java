@@ -174,7 +174,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	private Object[] state() {    // isConnected, isPowered, shape
-		String status = getStatus();
+		final String status = getStatusHeaderInPureText();
 		return new Object[] { status, isEnabled, controlChannel };
 	}
 	

@@ -42,12 +42,17 @@ public class Commons {
 		       .replaceAll("\u00A0", " ");  // u00A0 is 'NO-BREAK SPACE'
 	}
 	
+	public static String removeFormatting(final String message) {
+		return updateEscapeCodes(message)
+		       .replaceAll("(" + CHAR_FORMATTING + ".)", "");
+	}
+	
 	public static void addChatMessage(final ICommandSender sender, final String message) {
 		if (sender == null) {
 			WarpDrive.logger.error("Unable to send message to NULL sender: " + message);
 			return;
 		}
-		String[] lines = updateEscapeCodes(message).split("\n");
+		final String[] lines = updateEscapeCodes(message).split("\n");
 		for (String line : lines) {
 			sender.addChatMessage(new ChatComponentText(line));
 		}
@@ -60,7 +65,7 @@ public class Commons {
 	public static void addTooltip(List<String> list, String tooltip) {
 		tooltip = updateEscapeCodes(tooltip);
 		
-		String[] split = tooltip.split("\n");
+		final String[] split = tooltip.split("\n");
 		for (String line : split) {
 			String lineRemaining = line;
 			String formatNextLine = "";
@@ -69,7 +74,7 @@ public class Commons {
 				int displayLength = 0;
 				int length = lineRemaining.length();
 				while (indexToCut < length && displayLength <= 38) {
-					if (lineRemaining.charAt(indexToCut) == (char)167 && indexToCut + 1 < length) {
+					if (lineRemaining.charAt(indexToCut) == (char) 167 && indexToCut + 1 < length) {
 						indexToCut++;
 					} else {
 						displayLength++;
@@ -87,9 +92,9 @@ public class Commons {
 						// compute remaining format
 						int index = formatNextLine.length();
 						while (index <= indexToCut) {
-							if (lineRemaining.charAt(index) == (char)167 && index + 1 < indexToCut) {
+							if (lineRemaining.charAt(index) == (char) 167 && index + 1 < indexToCut) {
 								index++;
-								formatNextLine += ("" + (char)167) + lineRemaining.charAt(index);
+								formatNextLine += CHAR_FORMATTING + lineRemaining.charAt(index);
 							}
 							index++;
 						}

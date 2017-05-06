@@ -624,9 +624,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] state() {
-		int energy = getEnergyStored();
-		String status = getStatus();
-		Integer retValuables, retValuablesIndex;
+		final int energy = getEnergyStored();
+		final String status = getStatusHeaderInPureText();
+		final Integer retValuables, retValuablesIndex;
 		if (isFarming() && valuables != null) {
 			retValuables = valuables.size();
 			retValuablesIndex = valuableIndex;
@@ -724,9 +724,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public String getStatus() {
-		// @TODO merge with base
-		int energy = getEnergyStored();
+	public String getStatusHeader() {
+		final int energy = getEnergyStored();
 		String state = "IDLE (not farming)";
 		if (currentState == STATE_IDLE) {
 			state = "IDLE (not farming)";

@@ -54,7 +54,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	@Override
 	public void markDirty() {
 		super.markDirty();
-		if (worldObj != null) {
+		if (hasWorldObj()) {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 		}
 	}
@@ -223,13 +223,26 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
-	public String getStatus() {
+	protected String getStatusPrefix() {
 		if (worldObj == null) {
 			return "";
 		} else {
 			ItemStack itemStack = new ItemStack(Item.getItemFromBlock(getBlockType()), 1, getBlockMetadata());
 			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"));
 		}
+	}
+	
+	public String getStatusHeader() {
+		return "";
+	}
+	
+	public String getStatus() {
+		return getStatusPrefix()
+		     + getStatusHeader();
+	}
+	
+	public String getStatusHeaderInPureText() {
+		return Commons.removeFormatting( getStatusHeader() );
 	}
 	
 	// upgrade system
