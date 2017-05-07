@@ -170,6 +170,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -272,7 +273,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Field fieldBlockHardness = null;
 	
 	// Client settings
-	public static final CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive("WarpDrive", "WarpDrive").setBackgroundImageName("warpdrive:creativeTab");
+	public static final CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive(MODID.toLowerCase());
 	
 	@Instance(WarpDrive.MODID)
 	public static WarpDrive instance;
@@ -298,7 +299,7 @@ public class WarpDrive implements LoadingCallback {
 		RecipeSorter.register("warpdrive:particleShaped", RecipeParticleShapedOre.class, RecipeSorter.Category.SHAPED, "before:minecraft:shaped");
 		RecipeSorter.register("warpdrive:tuningDriver", RecipeTuningDriver.class, RecipeSorter.Category.SHAPELESS, "before:minecraft:shapeless");
 		
-		if (FMLCommonHandler.instance().getSide().isClient()) {
+		if (event.getSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
 			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
 			
@@ -686,10 +687,6 @@ public class WarpDrive implements LoadingCallback {
 					                                     celestialObject.dimensionId));
 				}
 			}
-		}
-		
-		if (FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-			creativeTabWarpDrive.setBackgroundImageName("items.png");
 		}
 	}
 	

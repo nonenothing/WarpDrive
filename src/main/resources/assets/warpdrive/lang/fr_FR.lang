@@ -14,6 +14,8 @@ death.attack.warpdrive.teleportation.player=%1$s a été tué par %2$s durant sa
 death.attack.warpdrive.warm=%1$s est mort de brûlure sévère
 death.attack.warpdrive.warm.player=%1$s a été cuit par %2$s
 
+itemGroup.warpdrive=WarpDrive
+
 item.warpdrive.crafting.Malformed.name=Item invalide
 item.warpdrive.crafting.EmeraldCrystal.name=Cristal d'émeraude accordé
 item.warpdrive.crafting.EnderCrystal.name=Cristal de l'ender accordé

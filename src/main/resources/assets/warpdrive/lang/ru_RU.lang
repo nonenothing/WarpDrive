@@ -14,6 +14,8 @@ death.attack.warpdrive.teleportation.player=%2$s убил %1$s телепорт�
 death.attack.warpdrive.warm=%1$s died from excessive temperature
 death.attack.warpdrive.warm.player=%1$s was cooked by %2$s
 
+itemGroup.warpdrive=WarpDrive
+
 item.warpdrive.crafting.Malformed.name=Поврежденный предмет
 item.warpdrive.crafting.EmeraldCrystal.name=Изумрудный настраиваемый кристалл
 item.warpdrive.crafting.EnderCrystal.name=Настраиваемый кристалл Края
