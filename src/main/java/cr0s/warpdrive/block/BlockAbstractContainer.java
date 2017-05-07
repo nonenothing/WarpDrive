@@ -113,38 +113,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return false;
 	}
 	
-	// FIXME untested
-	/*
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
-		boolean hasResponse = false;
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (tileEntity instanceof IUpgradable) {
-			IUpgradable upgradable = (IUpgradable) tileEntity;
-			ItemStack itemStack = entityPlayer.inventory.getCurrentItem();
-			if (itemStack != null) {
-				Item i = itemStack.getItem();
-				if (i instanceof ItemWarpUpgrade) {
-					if (upgradable.takeUpgrade(EnumUpgradeTypes.values()[itemStack.getItemDamage()], false)) {
-						if (!entityPlayer.capabilities.isCreativeMode)
-							entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						entityPlayer.addChatMessage("Upgrade accepted");
-					} else {
-						entityPlayer.addChatMessage("Upgrade declined");
-					}
-					hasResponse = true;
-				}
-			}
-		}
-		
-		return hasResponse;
-	}
-	/**/
-	
 	@Override
 	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
 		super.onNeighborBlockChange(world, x, y, z, block);
