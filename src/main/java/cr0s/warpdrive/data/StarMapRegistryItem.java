@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
 public class StarMapRegistryItem extends GlobalPosition {
+	
 	public final EnumStarMapEntryType type;
 	public final UUID uuid;
 	public int maxX, maxY, maxZ;
@@ -89,7 +90,7 @@ public class StarMapRegistryItem extends GlobalPosition {
 		this.name = name;
 	}
 	
-	public StarMapRegistryItem(IStarMapRegistryTileEntity tileEntity) {
+	public StarMapRegistryItem(final IStarMapRegistryTileEntity tileEntity) {
 		this(
 			EnumStarMapEntryType.getByName(tileEntity.getStarMapType()), tileEntity.getUUID(),
 			((TileEntity) tileEntity).getWorldObj().provider.dimensionId,
@@ -113,7 +114,7 @@ public class StarMapRegistryItem extends GlobalPosition {
 			assert (tileEntity instanceof TileEntity);
 			assert (sameIdOrCoordinates(tileEntity));
 		}
-		AxisAlignedBB aabbArea = tileEntity.getStarMapArea();
+		final AxisAlignedBB aabbArea = tileEntity.getStarMapArea();
 		if (aabbArea != null) {
 			maxX = (int) aabbArea.maxX;
 			maxY = (int) aabbArea.maxY;

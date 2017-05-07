@@ -36,6 +36,7 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class AcceleratorSetup extends GlobalPosition {
+	
 	private static final int ACCELERATOR_MAX_RANGE_SQUARED = 192 * 192;
 	
 	// raw data
@@ -123,7 +124,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	}
 	
 	private void refresh() {
-		WorldServer world = getWorldServerIfLoaded();
+		final WorldServer world = getWorldServerIfLoaded();
 		if (world == null) {
 			if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 				WarpDrive.logger.warn(String.format("Accelerator scan cancelled: Dimension %d isn't loaded", dimensionId));
@@ -174,10 +175,10 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockElectromagnetGlass[2],
 			WarpDrive.blockVoidShellPlain,
 			WarpDrive.blockVoidShellGlass);
-		Set<VectorI> connections = Commons.getConnectedBlocks(world, new VectorI(x, y, z), ForgeDirection.VALID_DIRECTIONS, whitelist, 3);
+		final Set<VectorI> connections = Commons.getConnectedBlocks(world, new VectorI(x, y, z), ForgeDirection.VALID_DIRECTIONS, whitelist, 3);
 		VectorI firstVoidShell = null;
 		for (VectorI connection : connections) {
-			Block block = connection.getBlock(world);
+			final Block block = connection.getBlock(world);
 			if (block instanceof BlockVoidShellPlain) {
 				firstVoidShell = connection.clone();
 				break;
@@ -195,7 +196,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockVoidShellGlass);
 		TrajectoryPoint trajectoryPoint = null;
 		for(ForgeDirection direction : Commons.HORIZONTAL_DIRECTIONS) {
-			VectorI next = firstVoidShell.clone(direction);
+			final VectorI next = firstVoidShell.clone(direction);
 			if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
 				trajectoryPoint = new TrajectoryPoint(world, firstVoidShell.translate(direction), direction);
 				break;
@@ -212,7 +213,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		trajectoryAccelerator = new HashMap<>();
 		trajectoryTransfer = new HashMap<>();
 		
-		HashSet<TrajectoryPoint> acceleratorToAdd = new HashSet<>();
+		final HashSet<TrajectoryPoint> acceleratorToAdd = new HashSet<>();
 		acceleratorToAdd.add(trajectoryPoint.clone());
 		trajectoryPoint = new TrajectoryPoint(world, trajectoryPoint.translate(trajectoryPoint.directionBackward), trajectoryPoint.directionBackward);
 		acceleratorToAdd.add(trajectoryPoint);
@@ -228,7 +229,7 @@ public class AcceleratorSetup extends GlobalPosition {
 					if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 						WarpDrive.logger.info("Adding accelerator " + trajectoryPoint);
 					}
-					TrajectoryPoint trajectoryPointToAdd = trajectoryPoint.clone();
+					final TrajectoryPoint trajectoryPointToAdd = trajectoryPoint.clone();
 					trajectoryAccelerator.put(trajectoryPointToAdd, trajectoryPointToAdd);
 					if (trajectoryPoint.vJunctionForward != null) {
 						transferToAdd.add(new TrajectoryPoint(world, trajectoryPoint, true));
@@ -251,7 +252,7 @@ public class AcceleratorSetup extends GlobalPosition {
 					if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 						WarpDrive.logger.info("Adding transfer " + trajectoryPoint);
 					}
-					TrajectoryPoint trajectoryPointToAdd = trajectoryPoint.clone();
+					final TrajectoryPoint trajectoryPointToAdd = trajectoryPoint.clone();
 					trajectoryTransfer.put(trajectoryPointToAdd, trajectoryPointToAdd);
 					trajectoryPoint = new TrajectoryPoint(world, trajectoryPoint, true);
 				}
@@ -269,13 +270,13 @@ public class AcceleratorSetup extends GlobalPosition {
 	}
 	
 	private boolean isInRange(final TrajectoryPoint trajectoryPoint) {
-		double distanceSquared = trajectoryPoint.distance2To(new VectorI(x, y, z));
+		final double distanceSquared = trajectoryPoint.distance2To(new VectorI(x, y, z));
 		return distanceSquared <= ACCELERATOR_MAX_RANGE_SQUARED;
 	}
 	
 	private void computeCountsAndBoundingBox() {
 		boolean isFirst = true;
-		for (TrajectoryPoint trajectoryPoint : trajectoryAccelerator.values()) {
+		for (final TrajectoryPoint trajectoryPoint : trajectoryAccelerator.values()) {
 			// check bounding area
 			if (isFirst) {
 				vMin = trajectoryPoint.getVectorI();
@@ -285,7 +286,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			addToBoundingBox(trajectoryPoint, 2);
 			
 			// count main magnets
-			int indexTier = trajectoryPoint.type & TrajectoryPoint.MASK_TIERS - 1;
+			final int indexTier = trajectoryPoint.type & TrajectoryPoint.MASK_TIERS - 1;
 			if ((trajectoryPoint.type & TrajectoryPoint.MAGNETS_HORIZONTAL) != 0) {
 				countMagnets[indexTier] += 2;
 			}
@@ -304,19 +305,19 @@ public class AcceleratorSetup extends GlobalPosition {
 		WarpDrive.logger.info("Bounding box is " + vMin + " to " + vMax);
 	}
 	
-	private void computeVectorArrays(WorldServer world) {
+	private void computeVectorArrays(final WorldServer world) {
 		// check for chillers, injectors and colliders blocks
-		for (TrajectoryPoint trajectoryPoint : trajectoryAccelerator.values()) {
+		for (final TrajectoryPoint trajectoryPoint : trajectoryAccelerator.values()) {
 			// check for injectors
 			VectorI vectorToAdd = trajectoryPoint.clone(trajectoryPoint.directionForward.getOpposite());
-			Block blockForward = vectorToAdd.getBlock(world);
+			final Block blockForward = vectorToAdd.getBlock(world);
 			if (blockForward instanceof BlockParticlesInjector) {
 				final int controlChannel = ((TileEntityParticlesInjector) vectorToAdd.getTileEntity(world)).getControlChannel();
 				mapInjectors.put(controlChannel, vectorToAdd);
 				addToBoundingBox(vectorToAdd, 1);
 			} else {
 				vectorToAdd = trajectoryPoint.clone(trajectoryPoint.directionBackward.getOpposite());
-				Block blockBackward = vectorToAdd.getBlock(world);
+				final Block blockBackward = vectorToAdd.getBlock(world);
 				if (blockBackward instanceof BlockParticlesInjector) {
 					final int controlChannel = ((TileEntityParticlesInjector) vectorToAdd.getTileEntity(world)).getControlChannel();
 					mapInjectors.put(controlChannel, vectorToAdd);
@@ -343,20 +344,20 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 	}
 	
-	private void scanCorners(WorldServer world, final VectorI vCenter, final ForgeDirection forgeDirection) {
-		ForgeDirection directionLeft = forgeDirection.getRotation(ForgeDirection.UP);
-		ForgeDirection directionRight = forgeDirection.getRotation(ForgeDirection.DOWN);
+	private void scanCorners(final WorldServer world, final VectorI vCenter, final ForgeDirection forgeDirection) {
+		final ForgeDirection directionLeft = forgeDirection.getRotation(ForgeDirection.UP);
+		final ForgeDirection directionRight = forgeDirection.getRotation(ForgeDirection.DOWN);
 		for (int indexCorner = 0; indexCorner < 4; indexCorner++) {
-			VectorI vector = new VectorI(
+			final VectorI vector = new VectorI(
 				vCenter.x + ((indexCorner & 1) != 0 ? directionLeft.offsetX : directionRight.offsetX),
 				vCenter.y + ((indexCorner & 2) != 0 ? 1 : -1),
 			    vCenter.z + ((indexCorner & 1) != 0 ? directionLeft.offsetZ : directionRight.offsetZ));
-			Block block = vector.getBlock(world);
+			final Block block = vector.getBlock(world);
 			if (block instanceof BlockChiller) {
 				chillers.put(vector, ((BlockChiller)block).tier);
 				countChillers[((BlockChiller)block).tier - 1]++;
 			} else if (block instanceof BlockEnergyBank) {
-				TileEntity tileEntity = vector.getTileEntity(world);
+				final TileEntity tileEntity = vector.getTileEntity(world);
 				if (tileEntity instanceof TileEntityEnergyBank) {
 					energyBanks.add((TileEntityEnergyBank) tileEntity);
 				} else {
@@ -387,7 +388,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		    || countChillers[2] != acceleratorSetup.countChillers[2];
 	}
 	
-	public boolean isBlockUpdated(World world, final VectorI vector, final Block block) {
+	public boolean isBlockUpdated(final World world, final VectorI vector, final Block block) {
 		boolean checkDirectConnection = false;
 		boolean checkRangedConnection = false;
 		boolean checkCornerConnection = false;
@@ -418,7 +419,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			checkRangedConnection = true;
 			
 		} else if (block instanceof BlockEnergyBank) {
-			TileEntity tileEntity = vector.getTileEntity(world);
+			final TileEntity tileEntity = vector.getTileEntity(world);
 			if (tileEntity instanceof TileEntityEnergyBank) {
 				if (energyBanks.contains(tileEntity)) {
 					return true;
@@ -430,14 +431,14 @@ public class AcceleratorSetup extends GlobalPosition {
 		// check connections
 		if (checkDirectConnection || checkCornerConnection) {
 			for (ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
-				Block blockConnected = vector.translate(forgeDirection).getBlock(world);
+				final Block blockConnected = vector.translate(forgeDirection).getBlock(world);
 				if (blockConnected instanceof BlockVoidShellPlain) {
 					if (isTrajectoryPoint(vector)) {
 						return true;
 					}
 				} else if (checkCornerConnection && blockConnected instanceof BlockElectromagnetPlain) {
 					for (ForgeDirection forgeDirection2 : ForgeDirection.VALID_DIRECTIONS) {
-						Block blockSubConnected = vector.translate(forgeDirection2).getBlock(world);
+						final Block blockSubConnected = vector.translate(forgeDirection2).getBlock(world);
 						if (blockSubConnected instanceof BlockVoidShellPlain) {
 							if (isTrajectoryPoint(vector)) {
 								return true;
@@ -450,7 +451,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		
 		if (checkRangedConnection) {
 			for (ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
-				Block blockConnected = vector.translate(forgeDirection, 2).getBlock(world);
+				final Block blockConnected = vector.translate(forgeDirection, 2).getBlock(world);
 				if (blockConnected instanceof BlockVoidShellPlain) {
 					if (isTrajectoryPoint(vector)) {
 						return true;
@@ -466,7 +467,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	}
 	
 	public TrajectoryPoint getTrajectoryPoint(final VectorI vectorI) {
-		TrajectoryPoint trajectoryPoint = trajectoryAccelerator.get(vectorI);
+		final TrajectoryPoint trajectoryPoint = trajectoryAccelerator.get(vectorI);
 		if (trajectoryPoint != null) {
 			return trajectoryPoint;
 		}
@@ -487,7 +488,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		if (trajectoryAccelerator == null) {
 			return false;
 		}
-		for(TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			if (tileEntityEnergyBank.isInvalid()) {
 				return false;
 			}
@@ -498,7 +499,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	// Pseudo-API for energy
 	public int energy_getEnergyStored() {
 		int energyStored = 0;
-		for(TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			energyStored += tileEntityEnergyBank.energy_getEnergyStored();
 		}
 		return energyStored;
@@ -506,7 +507,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	
 	public int energy_getPotentialOutput() {
 		long potentialOutput = 0;
-		for(TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			potentialOutput = Math.min(potentialOutput + tileEntityEnergyBank.energy_getPotentialOutput(), Integer.MAX_VALUE);
 		}
 		return (int) potentialOutput;
@@ -522,7 +523,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		int energyConsumed = 0;
 		int energyLeft = amount_internal - energyMean * energyBanks.size();
 		assert(energyConsumed + energyLeft == amount_internal);
-		for(TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyMean + energyLeft);
 			tileEntityEnergyBank.energy_consume(energyToConsume);
 			energyConsumed += energyToConsume;
@@ -531,7 +532,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		assert(energyConsumed + energyLeft == amount_internal);
 		// then, draw remaining in no special order
 		if (energyLeft > 0) {
-			for(TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+			for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 				final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyLeft);
 				tileEntityEnergyBank.energy_consume(energyToConsume);
 				energyConsumed += energyToConsume;

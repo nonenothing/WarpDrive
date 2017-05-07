@@ -62,10 +62,8 @@ public class Commons {
 	
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
-	public static void addTooltip(List<String> list, String tooltip) {
-		tooltip = updateEscapeCodes(tooltip);
-		
-		final String[] split = tooltip.split("\n");
+	public static void addTooltip(final List<String> list, final String tooltip) {
+		final String[] split = updateEscapeCodes(tooltip).split("\n");
 		for (String line : split) {
 			String lineRemaining = line;
 			String formatNextLine = "";
@@ -143,22 +141,22 @@ public class Commons {
 	}
 	
 	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
-		ItemStack ret = itemStack.copy();
+		final ItemStack ret = itemStack.copy();
 		ret.stackSize = newSize;
 		return ret;
 	}
 	
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
-		Collection<IInventory> result = new ArrayList<>(6);
+		final Collection<IInventory> result = new ArrayList<>(6);
 		
 		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
+			final TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
 				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
 				result.add((IInventory) tileEntity);
 				
 				if (tileEntity instanceof TileEntityChest) {
-					TileEntityChest tileEntityChest = (TileEntityChest) tileEntity;
+					final TileEntityChest tileEntityChest = (TileEntityChest) tileEntity;
 					tileEntityChest.checkForAdjacentChests();
 					if (tileEntityChest.adjacentChestXNeg != null) {
 						result.add(tileEntityChest.adjacentChestXNeg);
@@ -187,7 +185,7 @@ public class Commons {
 	}
 	
 	public static Set<VectorI> getConnectedBlocks(World world, final Collection<VectorI> start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
-		Set<VectorI> toIgnore = new HashSet<>();
+		final Set<VectorI> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
@@ -197,7 +195,7 @@ public class Commons {
 		
 		Set<VectorI> toIterateNext;
 		
-		Set<VectorI> iterated = new HashSet<>();
+		final Set<VectorI> iterated = new HashSet<>();
 		
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
@@ -252,7 +250,7 @@ public class Commons {
 		if (object instanceof Boolean) {
 			 return ((Boolean) object);
 		}
-		String string = object.toString();
+		final String string = object.toString();
 		return string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes");
 	}
 	

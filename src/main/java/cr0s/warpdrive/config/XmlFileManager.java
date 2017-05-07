@@ -13,7 +13,7 @@ import java.util.List;
 
 public abstract class XmlFileManager {
 	
-	protected void load(File dir, final String prefixFilename, final String elementName) {
+	protected void load(final File dir, final String prefixFilename, final String elementName) {
 		
 		// (directory is created by caller, so it can copy default files if any)
 		
@@ -21,7 +21,7 @@ public abstract class XmlFileManager {
 			throw new IllegalArgumentException("File path " + dir.getPath() + " must be a directory!");
 		}
 		
-		File[] files = dir.listFiles((file_notUsed, name) -> name.startsWith(prefixFilename) && name.endsWith(".xml"));
+		final File[] files = dir.listFiles((file_notUsed, name) -> name.startsWith(prefixFilename) && name.endsWith(".xml"));
 		if (files == null || files.length == 0) {
 			throw new IllegalArgumentException("File path " + dir.getPath() + " contains no " + prefixFilename + "*.xml files!");
 		}
@@ -29,10 +29,10 @@ public abstract class XmlFileManager {
 		for (File file : files) {
 			try {
 				WarpDrive.logger.info("Loading configuration file " + file.getName());
-				Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
+				final Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
 				
 				// pre-process the file
-				String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
+				final String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
 				if (!result.isEmpty()) {
 					WarpDrive.logger.info("Skipping configuration file " + file.getName() + " due to " + result);
 					return;
@@ -42,10 +42,10 @@ public abstract class XmlFileManager {
 				XmlPreprocessor.doLogicPreprocessing(document);
 				
 				// only add selected root elements
-				List<Element> listElements = getChildrenElementByTagName(document.getDocumentElement(), elementName);
+				final List<Element> listElements = getChildrenElementByTagName(document.getDocumentElement(), elementName);
 				for (int indexElement = 0; indexElement < listElements.size(); indexElement++) {
-					Element element = listElements.get(indexElement);
-					String location = String.format("%d/%d", indexElement + 1, listElements.size());
+					final Element element = listElements.get(indexElement);
+					final String location = String.format("%d/%d", indexElement + 1, listElements.size());
 					parseRootElement(location, element);
 				}
 			} catch (Exception exception) {
@@ -55,10 +55,10 @@ public abstract class XmlFileManager {
 		}
 	}
 	
-	protected abstract void parseRootElement(final String location, Element elementCelestialObject) throws InvalidXmlException, SAXException, IOException;
+	protected abstract void parseRootElement(final String location, final Element elementCelestialObject) throws InvalidXmlException, SAXException, IOException;
 	
 	public static List<Element> getChildrenElementByTagName(final Element parent, final String name) {
-		List<Element> listElements = new ArrayList<>();
+		final List<Element> listElements = new ArrayList<>();
 		
 		for (Node nodeChild = parent.getFirstChild(); nodeChild != null; nodeChild = nodeChild.getNextSibling()) {
 			if ( nodeChild.getNodeType() == Node.ELEMENT_NODE

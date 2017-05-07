@@ -43,9 +43,9 @@ public class AcceleratorControlParameter {
 	}
 	
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		if (object instanceof AcceleratorControlParameter) {
-			AcceleratorControlParameter acceleratorControlParameter = (AcceleratorControlParameter) object;
+			final AcceleratorControlParameter acceleratorControlParameter = (AcceleratorControlParameter) object;
 			return controlChannel == acceleratorControlParameter.controlChannel
 			    && isEnabled == acceleratorControlParameter.isEnabled
 			    && threshold == acceleratorControlParameter.threshold

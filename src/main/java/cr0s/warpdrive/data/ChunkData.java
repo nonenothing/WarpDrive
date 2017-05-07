@@ -52,7 +52,7 @@ public class ChunkData {
 		timeUnloaded = 0L;
 	}
 	
-	public void load(NBTTagCompound nbtTagCompoundChunk) {
+	public void load(final NBTTagCompound nbtTagCompoundChunk) {
 		// check consistency
 		assert(!isLoaded);
 		
@@ -66,7 +66,7 @@ public class ChunkData {
 		
 		// check version
 		if (nbtTagCompoundChunk.hasKey(TAG_CHUNK_MOD_DATA)) {
-			NBTTagCompound nbtTagCompound = nbtTagCompoundChunk.getCompoundTag(TAG_CHUNK_MOD_DATA);
+			final NBTTagCompound nbtTagCompound = nbtTagCompoundChunk.getCompoundTag(TAG_CHUNK_MOD_DATA);
 			final int version = nbtTagCompound.getInteger(TAG_VERSION);
 			assert (version == 0 || version == 1);
 			
@@ -77,7 +77,7 @@ public class ChunkData {
 			
 			// load from NBT data
 			if (version == 1) {
-				NBTTagList nbtTagList = nbtTagCompound.getTagList(TAG_AIR, Constants.NBT.TAG_COMPOUND);
+				final NBTTagList nbtTagList = nbtTagCompound.getTagList(TAG_AIR, Constants.NBT.TAG_COMPOUND);
 				if (nbtTagList.tagCount() != CHUNK_SIZE_SEGMENTS) {
 					if (nbtTagList.tagCount() != 0) {
 						WarpDrive.logger.error(String.format("Invalid chunk data loaded at (%d %d %d), restoring default",
@@ -86,7 +86,7 @@ public class ChunkData {
 				} else {
 					// check all segments
 					for (int indexSegment = 0; indexSegment < CHUNK_SIZE_SEGMENTS; indexSegment++) {
-						NBTTagCompound nbtTagCompoundInList = nbtTagList.getCompoundTagAt(indexSegment);
+						final NBTTagCompound nbtTagCompoundInList = nbtTagList.getCompoundTagAt(indexSegment);
 						
 						// get raw data
 						final int[] intData = nbtTagCompoundInList.getIntArray(TAG_AIR_SEGMENT_DATA);
@@ -184,7 +184,7 @@ public class ChunkData {
 		final int[] intData = new int[SEGMENT_SIZE_BLOCKS];
 		final byte[] byteTick = new byte[SEGMENT_SIZE_BLOCKS];
 		for (int indexSegment = 0; indexSegment < CHUNK_SIZE_SEGMENTS; indexSegment++) {
-			NBTTagCompound nbtTagCompoundInList = new NBTTagCompound();
+			final NBTTagCompound nbtTagCompoundInList = new NBTTagCompound();
 			
 			// skip empty segment
 			if (dataAirSegments[indexSegment] != null) {
@@ -298,7 +298,7 @@ public class ChunkData {
 		final int indexData = getDataIndex(x, y, z);
 		// self-test for index mapping
 		if (WarpDrive.isDev) {
-			ChunkPosition chunkPosition = getPositionFromDataIndex(indexData >> 12, indexData & 0x0FFF);
+			final ChunkPosition chunkPosition = getPositionFromDataIndex(indexData >> 12, indexData & 0x0FFF);
 			assert(chunkPosition.chunkPosX == x && chunkPosition.chunkPosY == y && chunkPosition.chunkPosZ == z);
 		}
 		// get segment
@@ -341,7 +341,7 @@ public class ChunkData {
 	}
 	
 	public StateAir getStateAir(final World world, final int x, final int y, final int z) {
-		StateAir stateAir = new StateAir(this);
+		final StateAir stateAir = new StateAir(this);
 		stateAir.refresh(world, x, y, z);
 		return stateAir;
 	}
@@ -450,13 +450,13 @@ public class ChunkData {
 	}
 	
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		if (this == object) {
 			return true;
 		} else if (!(object instanceof ChunkData)) {
 			return false;
 		} else {
-			ChunkData chunkData = (ChunkData) object;
+			final ChunkData chunkData = (ChunkData) object;
 			return chunkCoordIntPair.chunkXPos == chunkData.chunkCoordIntPair.chunkXPos
 			    && chunkCoordIntPair.chunkZPos == chunkData.chunkCoordIntPair.chunkZPos;
 		}

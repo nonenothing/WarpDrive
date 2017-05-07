@@ -82,7 +82,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		return String.format("%s:%s", group, name);
 	}
 	
-	public boolean loadFromXmlElement(final String location, final String parentElementGroup, final String parentElementName, Element elementCelestialObject) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final String location, final String parentElementGroup, final String parentElementName, final Element elementCelestialObject) throws InvalidXmlException {
 		// get identity
 		group = elementCelestialObject.getAttribute("group");
 		if (group.isEmpty()) {
@@ -99,7 +99,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		// get optional parent element, defaulting to parent defined by element hierarchy
 		parentGroup = parentElementGroup;
 		parentName = parentElementName;
-		List<Element> listParents = XmlFileManager.getChildrenElementByTagName(elementCelestialObject,"parent");
+		final List<Element> listParents = XmlFileManager.getChildrenElementByTagName(elementCelestialObject,"parent");
 		if (listParents.size() > 1) {
 			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one parent element", getFullName()));
 		}
@@ -107,8 +107,8 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			Element elementParent = listParents.get(0);
 			
 			// save linked parent
-			String parentGroupRead = elementParent.getAttribute("group");
-			String parentNameRead = elementParent.getAttribute("name");
+			final String parentGroupRead = elementParent.getAttribute("group");
+			final String parentNameRead = elementParent.getAttribute("name");
 			if (!parentNameRead.isEmpty()) {
 				parentName = parentNameRead;
 				if (!parentGroupRead.isEmpty()) {
@@ -119,28 +119,28 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			}
 			
 			// get required center element
-			List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementParent, "center");
+			final List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementParent, "center");
 			if (listCenters.size() != 1) {
 				throw new InvalidXmlException(String.format("Celestial object %s parent requires exactly one center element", getFullName()));
 			}
-			Element elementCenter = listCenters.get(0);
+			final Element elementCenter = listCenters.get(0);
 			parentCenterX = Integer.parseInt(elementCenter.getAttribute("x"));
 			parentCenterZ = Integer.parseInt(elementCenter.getAttribute("z"));
 		}
 		
 		// get required size element
 		{
-			List<Element> listSizes = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "size");
+			final List<Element> listSizes = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "size");
 			if (listSizes.size() != 1) {
 				throw new InvalidXmlException(String.format("Celestial object %s requires exactly one size element", getFullName()));
 			}
-			Element elementSize = listSizes.get(0);
+			final Element elementSize = listSizes.get(0);
 			borderRadiusX = Integer.parseInt(elementSize.getAttribute("x")) / 2;
 			borderRadiusZ = Integer.parseInt(elementSize.getAttribute("z")) / 2;
 		}
 		
 		// get optional dimension element
-		List<Element> listDimensions = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "dimension");
+		final List<Element> listDimensions = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "dimension");
 		if (listDimensions.size() > 1) {
 			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one dimension element", getFullName()));
 		}
@@ -155,7 +155,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		} else {
 			isVirtual = false;
 			
-			Element elementDimension = listDimensions.get(0);
+			final Element elementDimension = listDimensions.get(0);
 			dimensionId = Integer.parseInt(elementDimension.getAttribute("id"));
 			isBreathable = Boolean.parseBoolean(elementDimension.getAttribute("isBreathable"));
 			gravity = parseGravity(elementDimension.getAttribute("gravity"));
@@ -166,19 +166,19 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			}
 			
 			// get required center element
-			List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementDimension, "center");
+			final List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementDimension, "center");
 			if (listCenters.size() != 1) {
 				throw new InvalidXmlException( String.format("Celestial object %s dimension requires exactly one center element", getFullName()));
 			}
-			Element elementCenter = listCenters.get(0);
+			final Element elementCenter = listCenters.get(0);
 			dimensionCenterX = Integer.parseInt(elementCenter.getAttribute("x"));
 			dimensionCenterZ = Integer.parseInt(elementCenter.getAttribute("z"));
 			
 			// get optional generate element(s)
-			List<Element> listGenerates = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "generate");
+			final List<Element> listGenerates = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "generate");
 			for (int indexElement = 0; indexElement < listGenerates.size(); indexElement++) {
-				Element elementGenerate = listGenerates.get(indexElement);
-				String locationGenerate = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listGenerates.size());
+				final Element elementGenerate = listGenerates.get(indexElement);
+				final String locationGenerate = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listGenerates.size());
 				parseGenerateElement(locationGenerate, elementGenerate);
 			}
 			
@@ -189,13 +189,13 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		}
 		
 		// get optional render element(s)
-		List<Element> listRenders = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "render");
+		final List<Element> listRenders = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "render");
 		setRenderData = new LinkedHashSet<>(listRenders.size());
 		if (!listRenders.isEmpty()) {
 			for (int indexElement = 0; indexElement < listRenders.size(); indexElement++) {
-				Element elementRender = listRenders.get(indexElement);
-				String locationRender = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listRenders.size());
-				RenderData renderData = new RenderData(locationRender, elementRender);
+				final Element elementRender = listRenders.get(indexElement);
+				final String locationRender = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listRenders.size());
+				final RenderData renderData = new RenderData(locationRender, elementRender);
 				setRenderData.add(renderData);
 			}
 		}
@@ -211,7 +211,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			case "legacyHyperspace": return GRAVITY_LEGACY_HYPERSPACE;
 			case "normal"          : return GRAVITY_NORMAL;
 			default:
-				double gravity = Double.parseDouble(stringGravity);
+				final double gravity = Double.parseDouble(stringGravity);
 				if (gravity < 0) {
 					throw new RuntimeException();
 				}
@@ -239,7 +239,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		final String stringRatio = elementGenerate.getAttribute("ratio");
 		final String stringWeight = elementGenerate.getAttribute("weight");
 		
-		StructureGroup structureGroup = new StructureGroup(group, name);
+		final StructureGroup structureGroup = new StructureGroup(group, name);
 		randomStructures.add(structureGroup, stringRatio, stringWeight);
 	}
 	
@@ -248,7 +248,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		if (parentGroup.isEmpty() && parentName.isEmpty()) {
 			parentDimensionId = dimensionId;
 		} else {
-			CelestialObject celestialObjectParent = CelestialObjectManager.get(parentGroup, parentName);
+			final CelestialObject celestialObjectParent = CelestialObjectManager.get(parentGroup, parentName);
 			if (celestialObjectParent != null) {
 				parentDimensionId = celestialObjectParent.dimensionId;
 			}
@@ -292,7 +292,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		if (isHyperspace()) {
 			return false;
 		}
-		CelestialObject celestialObjectParent = StarMapRegistry.getCelestialObject(parentDimensionId, parentCenterX, parentCenterZ);
+		final CelestialObject celestialObjectParent = StarMapRegistry.getCelestialObject(parentDimensionId, parentCenterX, parentCenterZ);
 		return celestialObjectParent != null && celestialObjectParent.isHyperspace();
 	}
 	

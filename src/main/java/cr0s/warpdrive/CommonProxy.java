@@ -26,8 +26,7 @@ import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.world.BlockEvent;
 
-
-public class CommonProxy {
+public abstract class CommonProxy {
 	
 	private static final WeakHashMap<GameProfile, WeakReference<EntityPlayer>> fakePlayers = new WeakHashMap<>(100);
 	
@@ -45,7 +44,7 @@ public class CommonProxy {
 	private static EntityPlayerMP getPlayer(final UUID uuidPlayer) {
 		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			if (object instanceof EntityPlayerMP) {
-				EntityPlayerMP entityPlayerMP = (EntityPlayerMP) object;
+				final EntityPlayerMP entityPlayerMP = (EntityPlayerMP) object;
 				if (entityPlayerMP.getUniqueID() == uuidPlayer) {
 					return entityPlayerMP;
 				}
@@ -54,9 +53,9 @@ public class CommonProxy {
 		return null;
 	}
 	
-	private static EntityPlayer getFakePlayer(final UUID uuidPlayer, WorldServer world, final double x, final double y, final double z) {
-		EntityPlayer entityPlayer = uuidPlayer == null ? null : getPlayer(uuidPlayer);
-		GameProfile gameProfile = entityPlayer == null ? WarpDrive.gameProfile : entityPlayer.getGameProfile();
+	private static EntityPlayer getFakePlayer(final UUID uuidPlayer, final WorldServer world, final double x, final double y, final double z) {
+		final EntityPlayer entityPlayer = uuidPlayer == null ? null : getPlayer(uuidPlayer);
+		final GameProfile gameProfile = entityPlayer == null ? WarpDrive.gameProfile : entityPlayer.getGameProfile();
 		WeakReference<EntityPlayer> weakFakePlayer = fakePlayers.get(gameProfile);
 		EntityPlayer entityFakePlayer = (weakFakePlayer == null) ? null : weakFakePlayer.get();
 		if (entityFakePlayer == null) {
@@ -74,7 +73,7 @@ public class CommonProxy {
 		return entityFakePlayer;
 	}
 	
-	public static EntityPlayer getFakePlayer(final UUID uuidPlayer, World world, final double x, final double y, final double z) {
+	public static EntityPlayer getFakePlayer(final UUID uuidPlayer, final World world, final double x, final double y, final double z) {
 		if (world.isRemote || !(world instanceof WorldServer)) {
 			return null;
 		}
@@ -82,7 +81,7 @@ public class CommonProxy {
 	}
 	
 	public static boolean isBlockBreakCanceled(final UUID uuidPlayer, final int sourceX, final int sourceY, final int sourceZ,
-	                                       World world, final int eventX, final int eventY, final int eventZ) {
+	                                           final World world, final int eventX, final int eventY, final int eventZ) {
 		if (world.isRemote || !(world instanceof WorldServer)) {
 			return false;
 		}
@@ -91,9 +90,9 @@ public class CommonProxy {
 				+ " to " + world.provider.getDimensionName() + " " + eventX + " " + eventY + " " + eventZ);
 		}
 		
-		Block block = world.getBlock(eventX, eventY, eventZ);
+		final Block block = world.getBlock(eventX, eventY, eventZ);
 		if (!block.isAir(world, eventX, eventY, eventZ)) {
-			BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(eventX, eventY, eventZ, world,
+			final BlockEvent.BreakEvent breakEvent = new BlockEvent.BreakEvent(eventX, eventY, eventZ, world,
 				world.getBlock(eventX, eventY, eventZ), world.getBlockMetadata(eventX, eventY, eventZ),
 				getFakePlayer(uuidPlayer, (WorldServer) world, sourceX + 0.5D, sourceY + 0.5D, sourceZ + 0.5D));
 			MinecraftForge.EVENT_BUS.post(breakEvent);
@@ -107,7 +106,8 @@ public class CommonProxy {
 	}
 	
 	public static boolean isBlockPlaceCanceled(final UUID uuidPlayer, final int sourceX, final int sourceY, final int sourceZ,
-	                                       World world, final int eventX, final int eventY, final int eventZ, final Block block, final int metadata) {
+	                                           final World world, final int eventX, final int eventY, final int eventZ,
+	                                           final Block block, final int metadata) {
 		if (world.isRemote || !(world instanceof WorldServer)) {
 			return false;
 		}
@@ -115,7 +115,7 @@ public class CommonProxy {
 			WarpDrive.logger.info("isBlockPlaceCanceled by " + uuidPlayer + " at " + sourceX + " " + sourceY + " " + sourceZ
 				+ " to " + world.provider.getDimensionName() + " " + eventX + " " + eventY + " " + eventZ + " of " + Block.blockRegistry.getNameForObject(block) + ":" + metadata);
 		}
-		BlockEvent.PlaceEvent placeEvent = new BlockEvent.PlaceEvent(
+		final BlockEvent.PlaceEvent placeEvent = new BlockEvent.PlaceEvent(
 			new BlockSnapshot(world, eventX, eventY, eventZ, block, metadata), Blocks.air,
 			getFakePlayer(uuidPlayer, (WorldServer) world, sourceX + 0.5D, sourceY + 0.5D, sourceZ + 0.5D) );
 		
