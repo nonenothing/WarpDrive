@@ -22,6 +22,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import net.minecraftforge.client.IRenderHandler;
 
 public class RenderSpaceSky extends IRenderHandler {
+	
 	private static RenderSpaceSky INSTANCE = null;
 	
 	public static RenderSpaceSky getInstance() {
@@ -285,16 +286,16 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double planetY = planetY_far * transitionApproaching;
 		
 		// render range is only used for Z-ordering
-		double renderRange = 180.0D + 10.0D * (distanceToCenter / Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ));
+		double renderRange = 90.0D + 5.0D * (distanceToCenter / Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ));
 		
 		// render size is 1 at space border range
 		// render size is 10 at approaching range
 		// render size is 90 at orbit range
 		// render size is min(1000, celestialObject border) at orbit range
-		final double renderSize = 100.0D / 1000.0D * Math.min(1000.0D, Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ)) * (1.0D - transitionOrbit)
-								+ 50.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
-								+ 5.0D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
-								+ 2.0D * transitionFar;
+		final double renderSize = 50.0D / 1000.0D * Math.min(1000.0D, Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ)) * (1.0D - transitionOrbit)
+								+ 25.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
+								+ 2.5D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
+								+ 1.0D * transitionFar;
 		
 		// angles
 		@SuppressWarnings("SuspiciousNameCombination")
@@ -363,7 +364,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			tessellator.draw();
 			
 			// slight offset to get volumetric illusion
-			renderRange -= 5.0D;
+			renderRange -= 2.5D;
 		}
 		
 		// restore settings
@@ -378,7 +379,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		final boolean hasMoreStars = rand.nextBoolean() || rand.nextBoolean();
 		final Tessellator tessellator = Tessellator.instance;
 		
-		final double renderRangeMax = 200.0D;
+		final double renderRangeMax = 100.0D;
 		for (int indexStars = 0; indexStars < (hasMoreStars ? 20000 : 2000); indexStars++) {
 			double randomX;
 			double randomY;
@@ -391,7 +392,7 @@ public class RenderSpaceSky extends IRenderHandler {
 				randomLength = randomX * randomX + randomY * randomY + randomZ * randomZ;
 			} while (randomLength >= 1.0D || randomLength <= 0.90D);
 			
-			final double renderSize = 0.4F + 0.05F * Math.log(1.1D - rand.nextDouble());
+			final double renderSize = 0.2F + 0.025F * Math.log(1.1D - rand.nextDouble());
 			
 			// forcing Z-order
 			randomLength = 1.0D / Math.sqrt(randomLength);
