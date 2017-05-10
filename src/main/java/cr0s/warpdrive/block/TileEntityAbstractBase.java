@@ -56,6 +56,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		super.markDirty();
 		if (hasWorldObj()) {
 			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+			WarpDrive.starMap.onBlockUpdated(worldObj, xCoord, yCoord, zCoord, getBlockType(), getBlockMetadata());
 		}
 	}
 	
