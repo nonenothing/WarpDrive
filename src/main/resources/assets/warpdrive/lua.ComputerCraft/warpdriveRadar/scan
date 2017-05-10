@@ -6,6 +6,7 @@ if not term.isColor() then
   exit()
 end
 
+local radar
 sides = peripheral.getNames()
 for key,side in pairs(sides) do
   if peripheral.getType(side) == "warpdriveRadar" then
@@ -68,8 +69,8 @@ function scanAndDraw()
   local energy, energyMax = radar.energy()
   local energyRequired = radar.getEnergyRequired(radius)
   if (energy < energyRequired) then
-    hh = math.floor(h / 2)
-    hw = math.floor(w / 2)
+    local hh = math.floor(h / 2)
+    local hw = math.floor(w / 2)
     
     paintutils.drawLine(hw - 5, hh - 1, hw + 5, hh - 1, colors.red)
     paintutils.drawLine(hw - 5, hh, hw + 5, hh, colors.red)
