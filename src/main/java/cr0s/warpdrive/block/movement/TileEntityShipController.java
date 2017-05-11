@@ -17,11 +17,15 @@ import java.util.Arrays;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.StatCollector;
 
 import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants.NBT;
 
 public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
@@ -46,7 +50,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	// Player attaching
 	public final ArrayList<String> players = new ArrayList<>();
-	public String playersString = "";
 	
 	private String beaconFrequency = "";
 	
@@ -74,7 +77,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				"getShipSize",
 				"beaconFrequency",
 				"getOrientation",
-				"coreFrequency",
+				"shipName",
 				"isInSpace",
 				"isInHyperspace",
 				"targetJumpgate",
@@ -176,6 +179,24 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
+		
+		players.clear();
+		if (tag.hasKey("players", NBT.TAG_STRING)) {// legacy up to 1.3.30
+			final String namePlayers_tag = tag.getString("players");
+			final String[] namePlayers_table = namePlayers_tag.split("\\|");
+			for (final String namePlayer : namePlayers_table) {
+				if (!namePlayer.isEmpty()) {
+					players.add(namePlayer);
+				}
+			}
+		} else {
+			final NBTTagList tagListPlayers = tag.getTagList("players", Constants.NBT.TAG_STRING);
+			for(int index = 0; index < tagListPlayers.tagCount(); index++) {
+				final String namePlayer = tagListPlayers.getStringTagAt(index);
+				players.add(namePlayer);
+			}
+		}
+		
 		setMode(tag.getInteger("mode"));
 		setFront(tag.getInteger("front"));
 		setRight(tag.getInteger("right"));
@@ -187,16 +208,20 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		setDirection(tag.getInteger("direction"));
 		setMovement(tag.getInteger("moveFront"), tag.getInteger("moveUp"), tag.getInteger("moveRight"));
 		setRotationSteps(tag.getByte("rotationSteps"));
-		playersString = tag.getString("players");
-		updatePlayersList();
 		setBeaconFrequency(tag.getString("bfreq"));
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
-		updatePlayersString();
-		tag.setString("players", playersString);
+		
+		final NBTTagList tagListPlayers = new NBTTagList();
+		for (final String namePlayer : players) {
+			NBTTagString tagStringPlayer = new NBTTagString(namePlayer);
+			tagListPlayers.appendTag(tagStringPlayer);
+		}
+		tag.setTag("players", tagListPlayers);
+		
 		tag.setInteger("mode", mode.getCode());
 		tag.setInteger("front", front);
 		tag.setInteger("right", right);
@@ -217,7 +242,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Override
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
 		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+		
 		nbtTagCompound.removeTag("players");
+		
 		nbtTagCompound.removeTag("mode");
 		nbtTagCompound.removeTag("front");
 		nbtTagCompound.removeTag("right");
@@ -251,7 +278,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		
 		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
 		players.add(entityPlayer.getDisplayName());
-		updatePlayersString();
 		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 					getBlockType().getLocalizedName())
 				+ StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
@@ -266,34 +292,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 						getAttachedPlayersList());
 	}
 	
-	public void updatePlayersString() {
-		String nick;
-		playersString = "";
-		
-		for (int i = 0; i < players.size(); i++) {
-			nick = players.get(i);
-			playersString += nick + "|";
-		}
-	}
-	
-	public void updatePlayersList() {
-		String[] playersArray = playersString.split("\\|");
-		
-		for (int i = 0; i < playersArray.length; i++) {
-			String nick = playersArray[i];
-			
-			if (!nick.isEmpty()) {
-				players.add(nick);
-			}
-		}
-	}
-	
 	public String getAttachedPlayersList() {
 		StringBuilder list = new StringBuilder("");
 		
 		for (int i = 0; i < players.size(); i++) {
-			String nick = players.get(i);
-			list.append(nick + ((i == players.size() - 1) ? "" : ", "));
+			final String nick = players.get(i);
+			list.append(nick).append(((i == players.size() - 1) ? "" : ", "));
 		}
 		
 		if (players.isEmpty()) {
@@ -575,7 +579,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] coreFrequency(Context context, Arguments arguments) {
+	public Object[] shipName(Context context, Arguments arguments) {
 		return shipName(argumentsOCtoCC(arguments));
 	}
 	
@@ -600,10 +604,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] isAttached(Context context, Arguments arguments) {
-		if (core != null) {
-			return new Object[] { core.controller != null };
-		}
-		return null;
+		return isAttached();
 	}
 	
 	// Common OC/CC methods
@@ -683,6 +684,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 		}
 		
 		return new Integer[] { getDirection() };
+	}
+	
+	private Object[] isAttached() {
+		if (core != null) {
+			return new Object[] { core.controller != null };
+		}
+		return new Object[] { false };
 	}
 	
 	private Object[] movement(Object[] arguments) {
@@ -863,7 +871,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				}
 				return null;
 			
-			case "coreFrequency":
+			case "shipName":
 				return shipName(arguments);
 			
 			case "isInSpace":
@@ -876,10 +884,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 				return targetJumpgate(arguments);
 			
 			case "isAttached":
-				if (core != null) {
-					return new Object[] { core.controller != null };
-				}
-				break;
+				return isAttached();
 			
 			case "movement":
 				return movement(arguments);
