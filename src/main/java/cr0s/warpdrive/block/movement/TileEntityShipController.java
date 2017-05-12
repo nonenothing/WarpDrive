@@ -121,12 +121,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	}
 	
 	private void setMode(final int mode) {
-		EnumShipCoreMode[] modes = EnumShipCoreMode.values();
-		if (mode >= 0 && mode <= modes.length) {
-			this.mode = modes[mode];
-			markDirty();
-			if (WarpDriveConfig.LOGGING_JUMP && hasWorldObj()) {
-				WarpDrive.logger.info(this + " Mode set to " + this.mode + " (" + this.mode.getCode() + ")");
+		for(EnumShipCoreMode enumShipCoreMode : EnumShipCoreMode.values()) {
+			if (enumShipCoreMode.getCode() == mode) {
+				this.mode = enumShipCoreMode;
+				markDirty();
+				if (WarpDriveConfig.LOGGING_JUMP && hasWorldObj()) {
+					WarpDrive.logger.info(this + " Mode set to " + this.mode + " (" + this.mode.getCode() + ")");
+				}
 			}
 		}
 	}
