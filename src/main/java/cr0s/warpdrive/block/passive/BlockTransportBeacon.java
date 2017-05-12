@@ -10,6 +10,9 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockTransportBeacon extends Block {
 	public BlockTransportBeacon() {
 		super(Material.iron);
@@ -23,10 +26,11 @@ public class BlockTransportBeacon extends Block {
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World par1World, int par2, int par3, int par4) {
 		return null;
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		blockIcon = par1IconRegister.registerIcon("warpdrive:passive/transportBeacon");
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		blockIcon = iconRegister.registerIcon("warpdrive:passive/transportBeacon");
 	}
 
 	@Override

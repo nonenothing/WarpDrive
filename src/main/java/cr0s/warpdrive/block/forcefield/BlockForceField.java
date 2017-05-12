@@ -39,8 +39,10 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockForceField extends BlockAbstractForceField implements IDamageReceiver {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
+	
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
 	public BlockForceField(final byte tier) {
@@ -60,8 +62,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return null;
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return icons[metadata % 16];
 	}
@@ -91,8 +93,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		/**/
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[16];
 		

@@ -27,6 +27,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class BlockForceFieldProjector extends BlockAbstractForceField {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
 	
@@ -37,6 +38,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		setBlockTextureName("warpdrive:forcefield/projector");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[11];
@@ -53,6 +55,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		icons[10] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_tunnel");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
@@ -74,6 +77,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		return icons[0];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return side == 3 ? icons[4] : icons[2];

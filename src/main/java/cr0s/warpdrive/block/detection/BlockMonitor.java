@@ -15,8 +15,14 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockMonitor extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon iconFront;
+	@SideOnly(Side.CLIENT)
 	private IIcon iconSide;
 	
 	public BlockMonitor() {
@@ -25,18 +31,21 @@ public class BlockMonitor extends BlockAbstractContainer {
 		setBlockName("warpdrive.detection.Monitor");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
 		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		return side == metadata ? iconFront : iconSide;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return side == 3 ? iconFront : iconSide;

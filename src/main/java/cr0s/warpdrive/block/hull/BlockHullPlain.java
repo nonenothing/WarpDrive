@@ -47,8 +47,8 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 		return 2;
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return icons[metadata % 16];
 	}
@@ -62,16 +62,16 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 		return ItemDye.field_150921_b[~metadata & 15];
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
 		for (int i = 0; i < 16; ++i) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[16];
 		

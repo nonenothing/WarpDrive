@@ -46,8 +46,8 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 		return 2;
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 16];
 	}
@@ -69,8 +69,8 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 		}
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[16];
 		

@@ -87,8 +87,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return super.getRenderColor(metadata);
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public IIcon getIcon(final int side, final int metadata) {
 		// plain slab => same texture all around
 		if (metadata < 6) {

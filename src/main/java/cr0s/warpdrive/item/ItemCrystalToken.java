@@ -14,8 +14,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class ItemCrystalToken extends Item {	
-	private final IIcon[] icons;
+	
+	@SideOnly(Side.CLIENT)
+	private IIcon[] icons;
+	
 	private static ItemStack[] itemStackCache;
 	private static final int COUNT = 6; 
 	
@@ -25,7 +31,6 @@ public class ItemCrystalToken extends Item {
 		setUnlocalizedName("warpdrive.tool.crystalToken");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
-		icons = new IIcon[COUNT];
 		itemStackCache = new ItemStack[COUNT];
 	}
 	
@@ -46,10 +51,12 @@ public class ItemCrystalToken extends Item {
 		return new ItemStack(WarpDrive.itemCrystalToken, amount, 0);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister iconRegister) {
+		icons = new IIcon[COUNT];
 		for(int damage = 0; damage < COUNT; damage++) {
-			icons[damage] = par1IconRegister.registerIcon("warpdrive:tool/crystal_token-" + damage);
+			icons[damage] = iconRegister.registerIcon("warpdrive:tool/crystal_token-" + damage);
 		}
 	}
 	
@@ -62,6 +69,7 @@ public class ItemCrystalToken extends Item {
 		return getUnlocalizedName();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIconFromDamage(final int damage) {
 		if (damage >= 0 && damage < COUNT) {

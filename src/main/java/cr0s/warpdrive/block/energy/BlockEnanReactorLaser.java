@@ -10,8 +10,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockEnanReactorLaser extends BlockAbstractContainer {
-	static IIcon[] iconBuffer = new IIcon[16];
+	
+	@SideOnly(Side.CLIENT)
+	static IIcon[] iconBuffer;
 	
 	public BlockEnanReactorLaser() {
 		super(Material.iron);
@@ -43,6 +48,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		return false;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -57,6 +63,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		return iconBuffer[1];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0 || side == 1) {
@@ -70,11 +77,13 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		return iconBuffer[1];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorLaserTopBottom");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorLaserSides");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorLaserActive");
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconBuffer = new IIcon[3];
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserTopBottom");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserSides");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserActive");
 	}
 	
 	@Override

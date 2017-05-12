@@ -18,8 +18,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-public class ItemForceFieldShape extends Item {	
-	private final IIcon[] icons;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public class ItemForceFieldShape extends Item {
+	
+	@SideOnly(Side.CLIENT)
+	private IIcon[] icons;
+	
 	private static ItemStack[] itemStackCache;
 	
 	public ItemForceFieldShape() {
@@ -28,7 +34,6 @@ public class ItemForceFieldShape extends Item {
 		setUnlocalizedName("warpdrive.forcefield.shape");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
-		icons = new IIcon[EnumForceFieldShape.length];
 		itemStackCache = new ItemStack[EnumForceFieldShape.length];
 	}
 	
@@ -47,10 +52,12 @@ public class ItemForceFieldShape extends Item {
 		return new ItemStack(WarpDrive.itemForceFieldShape, amount, enumForceFieldShape.ordinal());
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister iconRegister) {
+		icons = new IIcon[EnumForceFieldShape.length];
 		for(EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
-			icons[enumForceFieldShape.ordinal()] = par1IconRegister.registerIcon("warpdrive:forcefield/shape_" + enumForceFieldShape.unlocalizedName);
+			icons[enumForceFieldShape.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/shape_" + enumForceFieldShape.unlocalizedName);
 		}
 	}
 	

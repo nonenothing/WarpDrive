@@ -36,20 +36,22 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		setBlockName("warpdrive.collection.LaserTreeFarm");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
-		iconBuffer[ICON_FARMING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
-		iconBuffer[ICON_FARMING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
-		iconBuffer[ICON_SCANNING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
-		iconBuffer[ICON_SCANNING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
-		iconBuffer[ICON_PLANTING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
-		iconBuffer[ICON_PLANTING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
-		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
-		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
+		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
+		iconBuffer[ICON_FARMING_LOW_POWER ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
+		iconBuffer[ICON_FARMING_POWERED   ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
+		iconBuffer[ICON_SCANNING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
+		iconBuffer[ICON_SCANNING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
+		iconBuffer[ICON_PLANTING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
+		iconBuffer[ICON_PLANTING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
+		iconBuffer[ICON_BOTTOM            ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
+		iconBuffer[ICON_TOP               ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -65,6 +67,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		return null;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0) {

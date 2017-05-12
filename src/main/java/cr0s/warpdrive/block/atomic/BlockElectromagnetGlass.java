@@ -15,6 +15,7 @@ public class BlockElectromagnetGlass extends BlockElectromagnetPlain {
 		setBlockTextureName("warpdrive:atomic/electromagnet");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconSide = iconRegister.registerIcon("warpdrive:atomic/electromagnet" + tier + "_glass-side");

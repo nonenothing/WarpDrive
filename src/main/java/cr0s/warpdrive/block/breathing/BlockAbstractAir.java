@@ -67,6 +67,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		return 1;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
@@ -92,6 +93,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {

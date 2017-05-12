@@ -30,7 +30,6 @@ public class BlockDecorative extends Block {
 		setBlockName("warpdrive.decoration.decorative.plain");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
-		icons = new IIcon[EnumDecorativeType.length];
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
 	}
 	
@@ -41,13 +40,16 @@ public class BlockDecorative extends Block {
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
+		icons = new IIcon[EnumDecorativeType.length];
 		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:decoration/decorative-" + enumDecorativeType.unlocalizedName);
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int damage) {
 		if (damage >= 0 && damage < EnumDecorativeType.length) {

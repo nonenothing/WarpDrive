@@ -40,14 +40,16 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		setBlockName("warpdrive.breathing.air_generator" + tier);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
-		iconBuffer[ICON_INACTIVE_SIDE] = par1IconRegister.registerIcon("warpdrive:breathing/air_generator-side_inactive");
-		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:breathing/air_generator-connection");
-		iconBuffer[ICON_SIDE_ACTIVATED] = par1IconRegister.registerIcon("warpdrive:breathing/air_generator-side_active");
+		iconBuffer[ICON_INACTIVE_SIDE] = iconRegister.registerIcon("warpdrive:breathing/air_generator-side_inactive");
+		iconBuffer[ICON_BOTTOM] = iconRegister.registerIcon("warpdrive:breathing/air_generator-connection");
+		iconBuffer[ICON_SIDE_ACTIVATED] = iconRegister.registerIcon("warpdrive:breathing/air_generator-side_active");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
@@ -62,6 +64,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		return iconBuffer[ICON_BOTTOM];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 3) {

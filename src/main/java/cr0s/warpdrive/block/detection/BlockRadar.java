@@ -15,7 +15,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockRadar extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
 	private static final int ICON_SIDE_INACTIVE = 0;
@@ -29,16 +34,18 @@ public class BlockRadar extends BlockAbstractContainer {
 		setBlockName("warpdrive.detection.Radar");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_SIDE_INACTIVE] = par1IconRegister.registerIcon("warpdrive:detection/radarSideInactive");
-		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:detection/radarBottom");
-		iconBuffer[ICON_TOP] = par1IconRegister.registerIcon("warpdrive:detection/radarTop");
-		iconBuffer[ICON_SIDE_ACTIVATED] = par1IconRegister.registerIcon("warpdrive:detection/radarSideActive");
-		iconBuffer[ICON_SIDE_ACTIVATED_SCAN] = par1IconRegister.registerIcon("warpdrive:detection/radarSideActiveScan");
+		iconBuffer[ICON_SIDE_INACTIVE      ] = iconRegister.registerIcon("warpdrive:detection/radarSideInactive");
+		iconBuffer[ICON_BOTTOM             ] = iconRegister.registerIcon("warpdrive:detection/radarBottom");
+		iconBuffer[ICON_TOP                ] = iconRegister.registerIcon("warpdrive:detection/radarTop");
+		iconBuffer[ICON_SIDE_ACTIVATED     ] = iconRegister.registerIcon("warpdrive:detection/radarSideActive");
+		iconBuffer[ICON_SIDE_ACTIVATED_SCAN] = iconRegister.registerIcon("warpdrive:detection/radarSideActiveScan");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -59,6 +66,7 @@ public class BlockRadar extends BlockAbstractContainer {
 		return iconBuffer[ICON_SIDE_INACTIVE];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0) {

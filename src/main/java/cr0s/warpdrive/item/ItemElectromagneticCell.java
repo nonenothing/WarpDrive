@@ -38,8 +38,8 @@ public class ItemElectromagneticCell extends Item implements IParticleContainerI
 		setHasSubtypes(true);
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		icons = new IIcon[31];
 		icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");

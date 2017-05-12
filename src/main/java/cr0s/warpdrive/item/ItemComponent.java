@@ -18,8 +18,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
-public class ItemComponent extends Item implements IAirContainerItem {	
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+public class ItemComponent extends Item implements IAirContainerItem {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
+	
 	private static ItemStack[] itemStackCache;
 	
 	public ItemComponent() {
@@ -28,7 +34,6 @@ public class ItemComponent extends Item implements IAirContainerItem {
 		setUnlocalizedName("warpdrive.crafting.component");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
-		icons = new IIcon[EnumComponentType.length];
 		itemStackCache = new ItemStack[EnumComponentType.length];
 	}
 	
@@ -47,10 +52,12 @@ public class ItemComponent extends Item implements IAirContainerItem {
 		return new ItemStack(WarpDrive.itemComponent, amount, enumComponentType.ordinal());
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister iconRegister) {
+		icons = new IIcon[EnumComponentType.length];
 		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
-			icons[enumComponentType.ordinal()] = par1IconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
+			icons[enumComponentType.ordinal()] = iconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
 		}
 	}
 	

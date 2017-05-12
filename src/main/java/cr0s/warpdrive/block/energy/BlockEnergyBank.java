@@ -28,6 +28,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockEnergyBank extends BlockAbstractContainer {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
 	
@@ -64,6 +65,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[12];
@@ -81,6 +83,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		icons[11] = iconRegister.registerIcon("warpdrive:energy/energyBankSuperiorOutput");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
@@ -91,6 +94,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		return icons[3 * ((TileEntityEnergyBank) tileEntity).getTier() + ((TileEntityEnergyBank) tileEntity).getMode(EnumFacing.getFront(side))];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return icons[(metadata * 3 + (side == 1 ? 1 : 2)) % icons.length];

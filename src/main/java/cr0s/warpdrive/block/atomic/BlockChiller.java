@@ -30,8 +30,8 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		setBlockTextureName("warpdrive:atomic/chiller" + tier);
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[2];
 		
@@ -39,8 +39,8 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		icons[1] = iconRegister.registerIcon(getTextureName() + "-on");
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return icons[metadata % 2];
 	}

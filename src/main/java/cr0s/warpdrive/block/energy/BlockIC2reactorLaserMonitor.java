@@ -11,6 +11,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	static IIcon[] icons;
 	
@@ -24,14 +27,16 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		return new TileEntityIC2reactorLaserMonitor();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[3];
-		icons[0] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorNotConnected");
-		icons[1] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedNotPowered");
-		icons[2] = par1IconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedPowered");
+		icons[0] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorNotConnected");
+		icons[1] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedNotPowered");
+		icons[2] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedPowered");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
@@ -51,6 +56,7 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		return icons[0];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 4) {

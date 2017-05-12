@@ -19,8 +19,8 @@ public class BlockParticlesInjector extends BlockAcceleratorControlPoint {
 		setBlockTextureName("warpdrive:atomic/particles_injector");
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[2];
 		
@@ -28,8 +28,8 @@ public class BlockParticlesInjector extends BlockAcceleratorControlPoint {
 		icons[1] = iconRegister.registerIcon(getTextureName() + "-on");
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return icons[metadata % 2];
 	}

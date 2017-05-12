@@ -73,24 +73,26 @@ public class BlockGas extends Block {
 	public int getRenderBlockPass() {
 		return 1; // transparency enabled
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[12];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:decoration/gas-blue");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:decoration/gas-red");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:decoration/gas-green");
-		iconBuffer[3] = par1IconRegister.registerIcon("warpdrive:decoration/gas-yellow");
-		iconBuffer[4] = par1IconRegister.registerIcon("warpdrive:decoration/gas-dark");
-		iconBuffer[5] = par1IconRegister.registerIcon("warpdrive:decoration/gas-darkness");
-		iconBuffer[6] = par1IconRegister.registerIcon("warpdrive:decoration/gas-white");
-		iconBuffer[7] = par1IconRegister.registerIcon("warpdrive:decoration/gas-milk");
-		iconBuffer[8] = par1IconRegister.registerIcon("warpdrive:decoration/gas-orange");
-		iconBuffer[9] = par1IconRegister.registerIcon("warpdrive:decoration/gas-siren");
-		iconBuffer[10] = par1IconRegister.registerIcon("warpdrive:decoration/gas-gray");
-		iconBuffer[11] = par1IconRegister.registerIcon("warpdrive:decoration/gas-violet");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:decoration/gas-blue");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:decoration/gas-red");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:decoration/gas-green");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:decoration/gas-yellow");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:decoration/gas-dark");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:decoration/gas-darkness");
+		iconBuffer[6] = iconRegister.registerIcon("warpdrive:decoration/gas-white");
+		iconBuffer[7] = iconRegister.registerIcon("warpdrive:decoration/gas-milk");
+		iconBuffer[8] = iconRegister.registerIcon("warpdrive:decoration/gas-orange");
+		iconBuffer[9] = iconRegister.registerIcon("warpdrive:decoration/gas-siren");
+		iconBuffer[10] = iconRegister.registerIcon("warpdrive:decoration/gas-gray");
+		iconBuffer[11] = iconRegister.registerIcon("warpdrive:decoration/gas-violet");
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return iconBuffer[metadata % iconBuffer.length];

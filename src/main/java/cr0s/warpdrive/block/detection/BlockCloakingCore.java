@@ -17,7 +17,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockCloakingCore extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
 	public BlockCloakingCore() {
@@ -25,13 +30,15 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		setBlockName("warpdrive.detection.CloakingCore");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[2];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:detection/cloakingCoreInactive");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:detection/cloakingCoreActive");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/cloakingCoreInactive");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:detection/cloakingCoreActive");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -42,6 +49,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		return null;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return iconBuffer[1];

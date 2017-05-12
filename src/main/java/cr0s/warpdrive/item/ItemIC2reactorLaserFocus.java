@@ -10,6 +10,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import cpw.mods.fml.common.Optional;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "ic2.api.reactor.IReactorComponent", modid = "IC2")
@@ -25,9 +27,10 @@ public class ItemIC2reactorLaserFocus extends Item implements IReactorComponent 
 		setUnlocalizedName("warpdrive.energy.IC2reactorLaserFocus");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
-		itemIcon = par1IconRegister.registerIcon("warpdrive:reactorFocus");
+	public void registerIcons(IIconRegister iconRegister) {
+		itemIcon = iconRegister.registerIcon("warpdrive:reactorFocus");
 	}
 	
 	private static void damageComponent(ItemStack self, int damage) {

@@ -10,6 +10,9 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockLaserMedium extends BlockAbstractContainer {
 	private IIcon[] iconBuffer;
 	
@@ -18,23 +21,25 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 		setBlockName("warpdrive.machines.LaserMedium");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[9];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:laserMediumSide0");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:laserMediumSide1");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:laserMediumSide2");
-		iconBuffer[3] = par1IconRegister.registerIcon("warpdrive:laserMediumSide3");
-		iconBuffer[4] = par1IconRegister.registerIcon("warpdrive:laserMediumSide4");
-		iconBuffer[5] = par1IconRegister.registerIcon("warpdrive:laserMediumSide5");
-		iconBuffer[6] = par1IconRegister.registerIcon("warpdrive:laserMediumSide6");
-		iconBuffer[7] = par1IconRegister.registerIcon("warpdrive:laserMediumSide7");
-		iconBuffer[8] = par1IconRegister.registerIcon("warpdrive:laserMediumTopBottom");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:laserMediumSide0");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:laserMediumSide1");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:laserMediumSide2");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:laserMediumSide3");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:laserMediumSide4");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:laserMediumSide5");
+		iconBuffer[6] = iconRegister.registerIcon("warpdrive:laserMediumSide6");
+		iconBuffer[7] = iconRegister.registerIcon("warpdrive:laserMediumSide7");
+		iconBuffer[8] = iconRegister.registerIcon("warpdrive:laserMediumTopBottom");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		int metadata  = blockAccess.getBlockMetadata(x, y, z);
+		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[8];
 		}
@@ -42,6 +47,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 		return iconBuffer[Math.min(metadata, 7)];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0 || side == 1) {

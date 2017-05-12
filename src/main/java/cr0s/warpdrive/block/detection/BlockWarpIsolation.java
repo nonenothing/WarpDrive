@@ -10,7 +10,12 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.util.IIcon;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockWarpIsolation extends Block {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 
 	public BlockWarpIsolation() {
@@ -20,13 +25,15 @@ public class BlockWarpIsolation extends Block {
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.detection.WarpIsolation");
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:detection/warpIsolation");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/warpIsolation");
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return iconBuffer[0];

@@ -34,18 +34,20 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 		setBlockName("warpdrive.collection.MiningLaser");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_IDLE            ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_idle");
-		iconBuffer[ICON_MINING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningLowPower");
-		iconBuffer[ICON_MINING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
-		iconBuffer[ICON_SCANNING_LOW_POWER] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
-		iconBuffer[ICON_SCANNING_POWERED] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
-		iconBuffer[ICON_BOTTOM          ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserBottom");
-		iconBuffer[ICON_TOP             ] = par1IconRegister.registerIcon("warpdrive:collection/miningLaserTop");
+		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_idle");
+		iconBuffer[ICON_MINING_LOW_POWER  ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningLowPower");
+		iconBuffer[ICON_MINING_POWERED    ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
+		iconBuffer[ICON_SCANNING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
+		iconBuffer[ICON_SCANNING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
+		iconBuffer[ICON_BOTTOM            ] = iconRegister.registerIcon("warpdrive:collection/miningLaserBottom");
+		iconBuffer[ICON_TOP               ] = iconRegister.registerIcon("warpdrive:collection/miningLaserTop");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -61,6 +63,7 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 		return null;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0) {

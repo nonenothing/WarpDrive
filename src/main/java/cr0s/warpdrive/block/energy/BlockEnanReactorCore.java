@@ -11,8 +11,13 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockEnanReactorCore extends BlockAbstractContainer {
-	IIcon[] iconBuffer = new IIcon[17];
+	
+	@SideOnly(Side.CLIENT)
+	IIcon[] iconBuffer;
 	
 	public BlockEnanReactorCore() {
 		super(Material.iron);
@@ -38,6 +43,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -50,6 +56,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 		return iconBuffer[0];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0 || side == 1) {
@@ -58,25 +65,27 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 		return iconBuffer[7];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer[16] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreTopBottom");
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide00");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide01");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide02");
-		iconBuffer[3] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide03");
-		iconBuffer[4] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide10");
-		iconBuffer[5] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide11");
-		iconBuffer[6] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide12");
-		iconBuffer[7] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide13");
-		iconBuffer[8] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide20");
-		iconBuffer[9] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide21");
-		iconBuffer[10] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide22");
-		iconBuffer[11] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide23");
-		iconBuffer[12] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide30");
-		iconBuffer[13] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide31");
-		iconBuffer[14] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide32");
-		iconBuffer[15] = par1IconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide33");
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconBuffer = new IIcon[17];
+		iconBuffer[16] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreTopBottom");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide00");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide01");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide02");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide03");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide10");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide11");
+		iconBuffer[6] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide12");
+		iconBuffer[7] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide13");
+		iconBuffer[8] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide20");
+		iconBuffer[9] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide21");
+		iconBuffer[10] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide22");
+		iconBuffer[11] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide23");
+		iconBuffer[12] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide30");
+		iconBuffer[13] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide31");
+		iconBuffer[14] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide32");
+		iconBuffer[15] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide33");
 	}
 	
 	@Override

@@ -40,8 +40,8 @@ public class BlockSiren extends BlockAbstractContainer {
 		setBlockName("warpdrive.detection.Siren");
 	}
 	
-	@Override
 	@SideOnly(Side.CLIENT)
+	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[4];
 		// Solid textures
@@ -51,6 +51,7 @@ public class BlockSiren extends BlockAbstractContainer {
 		iconBuffer[ICON_RAID_SUPERIOR] = iconRegister.registerIcon("warpdrive:detection/siren_raid_superior");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (!getIsRaid(metadata)) {

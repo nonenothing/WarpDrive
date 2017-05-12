@@ -23,7 +23,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class ItemTuningFork extends Item implements IWarpTool {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon icons[];
 	
 	public ItemTuningFork() {
@@ -36,6 +41,7 @@ public class ItemTuningFork extends Item implements IWarpTool {
 		setHasSubtypes(true);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		icons = new IIcon[16];
@@ -48,7 +54,8 @@ public class ItemTuningFork extends Item implements IWarpTool {
 	public static String getDyeColorName(int metadata) {
 		return ItemDye.field_150921_b[metadata];
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIconFromDamage(int damage) {
 		if (damage < icons.length) {

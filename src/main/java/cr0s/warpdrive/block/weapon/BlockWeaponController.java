@@ -15,7 +15,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockWeaponController extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
 	private static final int ICON_TOP = 0;
@@ -29,14 +34,16 @@ public class BlockWeaponController extends BlockAbstractContainer {
 		setBlockName("warpdrive.weapon.WeaponController");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
-		iconBuffer[ICON_TOP] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerTop");
-		iconBuffer[ICON_BOTTOM] = par1IconRegister.registerIcon("warpdrive:movement/shipControllerBottom");
-		iconBuffer[ICON_SIDE] = par1IconRegister.registerIcon("warpdrive:weapon/weaponControllerSide");
+		iconBuffer[ICON_TOP] = iconRegister.registerIcon("warpdrive:movement/shipControllerTop");
+		iconBuffer[ICON_BOTTOM] = iconRegister.registerIcon("warpdrive:movement/shipControllerBottom");
+		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:weapon/weaponControllerSide");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0) {

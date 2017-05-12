@@ -26,11 +26,16 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class ItemTuningDriver extends Item implements IWarpTool {
+	
 	public static final int MODE_VIDEO_CHANNEL = 0;
 	public static final int MODE_BEAM_FREQUENCY = 1;
 	public static final int MODE_CONTROL_CHANNEL = 2;
 	
+	@SideOnly(Side.CLIENT)
 	private IIcon icons[];
 	
 	public ItemTuningDriver() {
@@ -42,6 +47,7 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 		setFull3D();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		icons = new IIcon[3];

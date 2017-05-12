@@ -14,7 +14,12 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockLift extends BlockAbstractContainer {
+
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
 	public BlockLift() {
@@ -22,17 +27,19 @@ public class BlockLift extends BlockAbstractContainer {
 		setBlockName("warpdrive.movement.Lift");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[6];
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:movement/liftSideOffline");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:movement/liftSideUp");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:movement/liftSideDown");
-		iconBuffer[3] = par1IconRegister.registerIcon("warpdrive:movement/liftUpInactive");
-		iconBuffer[4] = par1IconRegister.registerIcon("warpdrive:movement/liftUpOut");
-		iconBuffer[5] = par1IconRegister.registerIcon("warpdrive:movement/liftUpIn");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/liftSideOffline");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/liftSideUp");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/liftSideDown");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/liftUpInactive");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:movement/liftUpOut");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:movement/liftUpIn");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
@@ -52,6 +59,7 @@ public class BlockLift extends BlockAbstractContainer {
 		return iconBuffer[metadata];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (metadata > 2) {

@@ -10,8 +10,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
-public class BlockTransporter extends BlockAbstractContainer {
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
+public class BlockTransporter extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 
 	public BlockTransporter() {
@@ -23,16 +27,18 @@ public class BlockTransporter extends BlockAbstractContainer {
 	public TileEntity createNewTileEntity(World world, int i) {
 		return new TileEntityTransporter();
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
+	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
 		// Solid textures
-		iconBuffer[0] = par1IconRegister.registerIcon("warpdrive:movement/transporterBottom");
-		iconBuffer[1] = par1IconRegister.registerIcon("warpdrive:movement/transporterTop");
-		iconBuffer[2] = par1IconRegister.registerIcon("warpdrive:movement/transporterSide");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporterBottom");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/transporterTop");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/transporterSide");
 	}
-
+	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0 || side == 1) {

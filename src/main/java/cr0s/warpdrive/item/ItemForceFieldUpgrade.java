@@ -18,8 +18,14 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class ItemForceFieldUpgrade extends Item {
-	private final IIcon[] icons;
+	
+	@SideOnly(Side.CLIENT)
+	private IIcon[] icons;
+	
 	private static ItemStack[] itemStackCache;
 	
 	public ItemForceFieldUpgrade() {
@@ -28,7 +34,6 @@ public class ItemForceFieldUpgrade extends Item {
 		setUnlocalizedName("warpdrive.forcefield.upgrade");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
-		icons = new IIcon[EnumForceFieldUpgrade.length];
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];
 	}
 	
@@ -47,10 +52,12 @@ public class ItemForceFieldUpgrade extends Item {
 		return new ItemStack(WarpDrive.itemForceFieldUpgrade, amount, enumForceFieldUpgrade.ordinal());
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister iconRegister) {
+		icons = new IIcon[EnumForceFieldUpgrade.length];
 		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			icons[enumForceFieldUpgrade.ordinal()] = par1IconRegister.registerIcon("warpdrive:forcefield/upgrade_" + enumForceFieldUpgrade.unlocalizedName);
+			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade_" + enumForceFieldUpgrade.unlocalizedName);
 		}
 	}
 	

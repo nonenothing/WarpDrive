@@ -6,7 +6,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class BlockChunkLoader extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	IIcon iconBuffer;
 	
 	public BlockChunkLoader() {
@@ -19,11 +24,13 @@ public class BlockChunkLoader extends BlockAbstractContainer {
 		return new TileEntityChunkLoader();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister par1IconRegister) {
-		iconBuffer = par1IconRegister.registerIcon("warpdrive:chunkLoader");
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconBuffer = iconRegister.registerIcon("warpdrive:chunkLoader");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int damage) {
 		return iconBuffer;

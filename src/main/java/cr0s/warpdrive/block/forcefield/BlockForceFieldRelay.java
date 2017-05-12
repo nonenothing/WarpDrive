@@ -19,6 +19,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockForceFieldRelay extends BlockAbstractForceField {
+	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
 	
@@ -29,6 +30,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		setBlockTextureName("warpdrive:forcefield/relay");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldUpgrade.length + 1];
@@ -43,6 +45,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		icons[EnumForceFieldUpgrade.length] = iconRegister.registerIcon("warpdrive:forcefield/relay_top");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
@@ -56,6 +59,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		return icons[((TileEntityForceFieldRelay)tileEntity).getUpgrade().ordinal()];
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int damage) {
 		if (side == 0 || side == 1) {

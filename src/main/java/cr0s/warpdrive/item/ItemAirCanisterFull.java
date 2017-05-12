@@ -9,8 +9,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 public class ItemAirCanisterFull extends Item implements IAirContainerItem {
 	
+	@SideOnly(Side.CLIENT)
 	private IIcon icon;
 	
 	public ItemAirCanisterFull() {
@@ -21,11 +25,13 @@ public class ItemAirCanisterFull extends Item implements IAirContainerItem {
 		setUnlocalizedName("warpdrive.armor.AirCanisterFull");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		icon = iconRegister.registerIcon("warpdrive:AirCanisterFull");
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIconFromDamage(int damage) {
 		return icon;
