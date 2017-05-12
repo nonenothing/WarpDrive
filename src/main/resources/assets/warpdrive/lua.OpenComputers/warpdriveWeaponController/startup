@@ -1,7 +1,6 @@
 
-if warpdriveCommons then os.unloadAPI("warpdriveCommons") end
-if not os.loadAPI("warpdrive/warpdriveCommons") then error("missing warpdriveCommons") end
-local w = warpdriveCommons.w
+package.loaded.warpdriveCommons = nil 
+local w = require("warpdriveCommons")
 
 local data
 
@@ -29,7 +28,7 @@ function laser_save(parData)
     data.laser_stations[keyStation] = {
       name = laserstation.name,
       cameraAddress = laserstation.cameraAddress,
-      batteries = {} }
+      batteries = {}}
     for keyBattery, laserbattery in pairs(laser_stations[keyStation].batteries) do
       data.laser_stations[keyStation].batteries[keyBattery] = {
         name = laserbattery.name,
@@ -223,11 +222,11 @@ function laser_battery_page()
   end
   
   w.setColorNormal()
-  w.setCursorPos(1, 13)
-  w.write("  -----------------------------------------------")
   w.setCursorPos(1, 14)
+  w.write("  -----------------------------------------------")
+  w.setCursorPos(1, 16)
   w.write("   Firing mode: " .. data.laser_firingMode)
-  w.setCursorPos(30, 14)
+  w.setCursorPos(30, 16)
   w.write("Scatter mode: ")
   if data.laser_firingScatter then
     w.setColorSuccess()
@@ -238,7 +237,7 @@ function laser_battery_page()
   end
   
   w.setColorControl()
-  w.setCursorPos(1, 15)
+  w.setCursorPos(1, 19)
   w.writeFullLine(" Add/Remove/Configure selected battery (A/R/C)")
   w.writeFullLine(" select battery (Arrows), Link lasers (L)")
   w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
@@ -539,11 +538,11 @@ function laser_station_page()
   end
   
   w.setColorNormal()
-  w.setCursorPos(1, 13)
-  w.write("  -----------------------------------------------")
   w.setCursorPos(1, 14)
+  w.write("  -----------------------------------------------")
+  w.setCursorPos(1, 16)
   w.write("   Firing mode: " .. data.laser_firingMode)
-  w.setCursorPos(30, 14)
+  w.setCursorPos(30, 16)
   w.write("Scatter mode: ")
   if data.laser_firingScatter then
     w.setColorSuccess()
@@ -554,7 +553,7 @@ function laser_station_page()
   end
   
   w.setColorControl()
-  w.setCursorPos(1, 15)
+  w.setCursorPos(1, 19)
   w.writeFullLine(" Add/Remove/Configure laser station (A/R/C)")
   w.writeFullLine(" select station (Arrows), Link batteries (L)")
   w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
@@ -833,18 +832,6 @@ function connections_page(isBooting)
   w.page_begin(w.data_getName() .. " - Connections")
   
   w.writeLn("")
-  
-  local monitors = w.device_getMonitors()
-  if #monitors == 0 then
-    w.setColorDisabled()
-    w.writeLn("No Monitor detected")
-  elseif #monitors == 1 then
-    w.setColorSuccess()
-    w.writeLn("1 monitor detected")
-  else
-    w.setColorSuccess()
-    w.writeLn(#monitors .. " Monitors detected")
-  end
   
   if #laserAddresses == 0 then
     w.setColorDisabled()

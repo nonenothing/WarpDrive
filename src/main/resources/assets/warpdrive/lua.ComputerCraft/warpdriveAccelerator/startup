@@ -1,0 +1,406 @@
+
+if warpdriveCommons then os.unloadAPI("warpdriveCommons") end
+if not os.loadAPI("warpdrive/warpdriveCommons") then error("missing warpdriveCommons") end
+local w = warpdriveCommons.w
+
+----------- Accelerator support
+
+local lhc_isEnabled = false
+local lhc_controlPoints = {}
+local lhc_parameters = {}
+local accelerator = nil
+
+function lhc_boot(isDetailed)
+  if accelerator == nil then
+    return
+  end
+  
+  if isDetailed == nil then
+    isDetailed = true
+  end
+  
+  if isDetailed then
+    w.write("Booting Accelerator controller")
+    
+    w.writeLn("...")
+    w.sleep(0.1)
+  end
+  
+  -- getting control points
+  lhc_controlPoints = {}
+  local count = accelerator.getControlPointsCount()
+  lhc_controlChannels = { }
+  countParameters = 0
+  
+  if count ~= nil and count > 0 then
+    for i = 0, count - 1 do
+      local success, x, y, z, tier, type, isEnabled, controlChannel = accelerator.getControlPoint(i)
+      if success then
+        if isDetailed then
+          w.write(type .. " " .. tier .. " #" .. controlChannel .. " @ (" .. w.format_integer(x, 6) .. " " .. w.format_integer(y, 3) .. " " .. w.format_integer(z, 6) .. ") ")
+          if isEnabled then
+            w.writeLn("Enabled")
+          else
+            w.writeLn("Disabled")
+          end
+        end
+        lhc_controlPoints[i + 1] = { x, y, z, tier, type, isEnabled, controlChannel }
+        lhc_controlChannels[controlChannel] = "true"
+        countParameters = countParameters + 1
+     elseif isDetailed then
+        w.setColorWarning();
+        w.writeLn("Error " .. x)
+        w.setColorNormal();
+        w.sleep(0.5)
+      end
+    end
+  elseif isDetailed then
+    w.setColorWarning();
+    w.writeLn("No control point detected!")
+    w.sleep(0.5)
+  end
+
+  -- getting parameters
+  local controlChannels = { accelerator.getParametersControlChannels() }
+  if controlChannels ~= nil and #controlChannels > 0 then
+    for key, value in pairs(controlChannels) do lhc_controlChannels[value] = { } end
+    countParameters = countParameters + 1
+  end
+  lhc_parameters = {}
+  if isDetailed then w.sleep(0.1) end
+  
+  if countParameters ~= 0 then
+    local index = 1
+    for controlChannel, _ in pairs(lhc_controlChannels) do
+      local success, controlChannelCheck, isEnabled, threshold, description = accelerator.parameter(controlChannel)
+      if success ~= nil and success then
+        if isDetailed then
+          w.write("#" .. w.format_integer(controlChannelCheck, 9) .. " ")
+          if isEnabled then
+            w.write("Enabled")
+          else
+            w.write("Disabled")
+          end
+          w.writeLn(" " .. w.format_integer(threshold * 100, 3) .. "% '" .. description .. "'")
+        end
+        lhc_parameters[index] = { controlChannel, isEnabled, threshold, description }
+        index = index + 1
+      elseif isDetailed then
+        w.setColorWarning();
+        if controlChannelCheck ~= nil then
+          w.writeLn("Error " .. controlChannelCheck)
+        else
+          w.writeLn("Error nil?")
+        end
+        w.sleep(0.5)
+        w.setColorNormal();
+      end
+      if controlChannel ~= controlChannelCheck and isDetailed then
+        w.setColorWarning();
+        w.writeLn("Error: requested " .. controlChannel .. ", received " .. controlChannelCheck)
+        w.sleep(0.5)
+        w.setColorNormal();
+      end
+    end
+  elseif isDetailed then
+    w.setColorWarning();
+    w.writeLn("No control channel detected!")
+    w.sleep(0.5)
+  end
+end
+
+function lhc_page_parameter()
+  w.page_begin("<==== Change accelerator parameter ====>")
+  local _, indexSelected = lhc_parameter_getIndexes()
+  local controlChannel, isEnabled, threshold, description = lhc_parameter_get(indexSelected)
+  w.writeLn("Control channel #" .. w.format_integer(controlChannel, 9) .. " applies to:")
+  for key, controlPoint in ipairs(lhc_controlPoints) do
+    local cp_x, cp_y, cp_z, cp_tier, cp_type, cp_isEnabled, cp_controlChannel = unpack(controlPoint)
+    if cp_controlChannel == controlChannel then
+      w.write(string.format("%s %s @%s %s %s ",
+          w.format_string(cp_type, 10),
+          w.format_string(cp_tier, 1),
+          w.format_integer(cp_x, 7), w.format_integer(cp_y, 3), w.format_integer(cp_z, 7) ))
+      if isEnabled then
+        w.writeLn("Enabled")
+      else
+        w.writeLn("Disabled")
+      end
+    end
+  end
+  w.writeLn("")
+  w.writeLn("Current description is '" .. description .. "'")
+  w.write("Enter a description: ")
+  description = w.input_readText(description)
+  
+  w.writeLn("")
+  w.writeLn("Current theshold is " .. (threshold * 100) .. "%")
+  w.write("Enter parameter threshold: ")
+  local new_threshold = w.input_readNumber(threshold * 100) / 100
+  threshold = math.min(2.0, math.max(0.0, new_threshold))
+  lhc_parameters[indexSelected] = { controlChannel, isEnabled, threshold, description }
+  accelerator.parameter(controlChannel, isEnabled, threshold, description)
+end
+
+lhc_parameter_indexSelected = 1
+lhc_parameter_indexFirstLine = 1
+lhc_parameter_lines = 7
+function lhc_parameter_getIndexes()
+  if lhc_parameters ~= nil then
+    if lhc_parameter_indexSelected > #lhc_parameters then
+      lhc_parameter_indexSelected = 1
+    elseif lhc_parameter_indexSelected < 1 then
+      lhc_parameter_indexSelected = #lhc_parameters
+    end
+    if lhc_parameter_indexFirstLine > lhc_parameter_indexSelected then
+      lhc_parameter_indexFirstLine = lhc_parameter_indexSelected
+    elseif lhc_parameter_indexFirstLine + lhc_parameter_lines < lhc_parameter_indexSelected then
+      lhc_parameter_indexFirstLine = lhc_parameter_indexSelected - lhc_parameter_lines
+    end
+    return lhc_parameter_indexFirstLine, lhc_parameter_indexSelected
+  else
+    return 1, 1
+  end
+end
+
+function lhc_parameter_get(index)
+  local parameter = lhc_parameters[index]
+  local controlChannel, isEnabled, threshold, description = -1, false, 0, "-"
+  if parameter == nil or #parameter ~= 4 then
+    lhc_boot(false)
+    w.status_showWarning("Invalid parameter at index " .. index)
+  else
+    controlChannel, isEnabled, threshold, description = unpack(parameter)
+  end
+  return controlChannel, isEnabled, threshold, description
+end
+
+function lhc_parameter_updateThreshold(offset)
+  if lhc_parameters ~= nil and offset ~= nil then
+    local _, indexSelected = lhc_parameter_getIndexes()
+    local controlChannel, isEnabled, threshold, description = lhc_parameter_get(indexSelected)
+    threshold = math.min(2.0, math.max(0.0, threshold + offset / 100))
+    lhc_parameters[indexSelected] = { controlChannel, isEnabled, threshold, description }
+    accelerator.parameter(controlChannel, isEnabled, threshold, description)
+  end
+end
+
+function lhc_parameter_toggleEnable(forced)
+  if lhc_parameters ~= nil then
+    local _, index = lhc_parameter_getIndexes()
+    local controlChannel, isEnabled, threshold, description = lhc_parameter_get(index)
+    if forced == nil then
+      isEnabled = not isEnabled
+    else
+      isEnabled = forced
+    end
+    lhc_parameters[index] = { controlChannel, isEnabled, threshold, description }
+    accelerator.parameter(controlChannel, isEnabled, threshold, description)
+  end
+end
+
+function lhc_page()
+  w.page_begin(w.data_getName() .. " - Accelerator controller")
+  if accelerator ~= nil then
+    -- w.writeLn("")
+    local status, isEnabled, isPowered, energy, temperatureCurrent_K, temperatureTarget_K = accelerator.state()
+    if status == nil then
+      lhc_boot(false)
+      w.status_showWarning("Invalid accelerator status, rebooting...")
+      status, isEnabled, isPowered, energy, temperatureCurrent_K, temperatureTarget_K = "-", false, false, 0, 0, 0
+    end
+    w.writeLn("Accelerator status: " .. status)
+    
+    w.write(" Controller is ")
+    if isEnabled then
+      w.setColorGood();
+      w.writeLn("Enabled")
+    else
+      w.setColorBad();
+      w.writeLn("Disabled")
+    end
+    
+    local energy, energyMax = accelerator.energy()
+    if energy == nil then energy = 0 end
+    if energyMax == nil or energyMax == 0 then energyMax = 1 end
+    w.setColorNormal();
+    w.write(" Energy level is ")
+    if isPowered then
+      w.setColorGood();
+    elseif isEnabled then
+      w.setColorBad();
+    else
+      w.setColorDisabled();
+    end
+    w.writeLn(math.floor(energy / energyMax * 100) .. " % (" .. energy .. "EU)")
+    -- w.writeLn("")
+    
+    w.setColorNormal();
+    w.write(" Magnets temperature is ")
+    if temperatureCurrent_K <= temperatureTarget_K then
+      w.setColorGood();
+    elseif isEnabled then
+      w.setColorBad();
+    else
+      w.setColorDisabled();
+    end
+    w.write(string.format("%fK", math.floor(temperatureCurrent_K * 10) / 10))
+    w.setColorNormal();
+    w.writeLn(". Target is " .. temperatureTarget_K .. "K")
+    -- w.writeLn("")
+    
+    w.write("Parameters: ")
+    if #lhc_parameters == 0 then
+      w.setColorDisabled();
+      w.writeLn("")
+      w.writeCentered("   -no valid node detected-")
+    else
+      local indexFirstLine, indexSelected = lhc_parameter_getIndexes()
+      w.writeLn(indexSelected .. "/" .. #lhc_parameters)
+      local indexCurrent = indexFirstLine
+      local indexLastLine = math.min(indexFirstLine + lhc_parameter_lines, #lhc_parameters)
+      for indexCurrent = indexFirstLine, indexLastLine do
+        if indexCurrent == indexSelected then
+          w.setColorSelected()
+          w.clearLine()
+          w.write(">")
+        else
+          w.write(" ")
+        end
+        local controlChannel, isEnabled, threshold, description = lhc_parameter_get(indexCurrent)
+        if description == "-" then
+          description = "#" .. w.format_integer(controlChannel)
+        end
+        w.write(string.format("%s is ",
+            w.format_string(description, 25) ))
+        if isEnabled then
+          w.write("enabled ")
+        else
+          w.write("disabled")
+        end
+        w.writeLn(", set to " .. w.format_integer(threshold * 100, 3) .. "%")
+        w.setColorNormal()
+      end
+    end
+  else
+    w.status_showWarning("No accelerator controller detected")
+  end
+  
+  w.setCursorPos(1, 15)
+  w.setColorControl()
+  w.writeFullLine(" Start accelerator (S), Stop accelerator (P)")
+  w.writeFullLine(" Select parameter (Up, Down), Enable parameter (E)")
+  w.writeFullLine(" Change parameter (Enter), Adjust threshold (+, -)")
+end
+
+function lhc_key(character, keycode)
+  if character == 's' or character == 'S' then
+    if accelerator ~= nil then
+      accelerator.enable(true)
+    else
+      w.status_showWarning("No accelerator detected")
+    end
+    return true
+  elseif character == 'p' or character == 'P' then
+    if accelerator ~= nil then
+      accelerator.enable(false)
+    else
+      w.status_showWarning("No accelerator detected")
+    end
+    return true
+  elseif keycode == 200 or keycode == 203 then -- Up or Left arrow
+    lhc_parameter_indexSelected = lhc_parameter_indexSelected - 1
+    return true
+  elseif keycode == 208 or keycode == 205 then -- Down or Right arrow
+    lhc_parameter_indexSelected = lhc_parameter_indexSelected + 1
+    return true
+  elseif keycode == 28 or character == 'c' or character == 'C' then -- Return or Enter
+    lhc_page_parameter()
+    return true
+  elseif character == '-' then
+    lhc_parameter_updateThreshold(-1)
+    return true
+  elseif character == '+' then
+    lhc_parameter_updateThreshold(1)
+    return true
+  elseif character == 'e' or character == 'E' or character == ' ' then
+    lhc_parameter_toggleEnable()
+    lhc_parameter_indexSelected = lhc_parameter_indexSelected + 1
+    return true
+  elseif character == 'y' or character == 'Y' then
+    lhc_parameter_toggleEnable(true)
+    lhc_parameter_indexSelected = lhc_parameter_indexSelected + 1
+    return true
+  elseif character == 'n' or character == 'N' then
+    lhc_parameter_toggleEnable(false)
+    lhc_parameter_indexSelected = lhc_parameter_indexSelected + 1
+    return true
+  end
+  return false
+end
+
+function lhc_register()
+  w.device_register("warpdriveAccelerator",
+      function(deviceType, address, wrap) accelerator = wrap end,
+      function() end)
+  w.event_register("particleBunchCollided"  , function() w.status_showSuccess("Particle bunch have collided")                  return false end )
+  w.event_register("particleBunchInjected"  , function() w.status_showSuccess("Particle bunch injection done")                 return false end )
+  w.event_register("acceleratorCoolingReset", function() w.status_showWarning("Accelerator coolant has leaked! restarting...") return true end )
+  w.event_register("acceleratorCoolingDone" , function() w.status_showSuccess("Accelerator cooling completed")                 return true end )
+  w.event_register("acceleratorUpdated"     , function() w.status_showSuccess("Accelerator updated")           lhc_boot(false) return true end )
+end
+
+----------- connections status
+
+function connections_page(isBooting)
+  w.page_begin(w.data_getName() .. " - Connections")
+  
+  w.writeLn("")
+  
+  local monitors = w.device_getMonitors()
+  if #monitors == 0 then
+    w.setColorDisabled()
+    w.writeLn("No Monitor detected")
+  elseif #monitors == 1 then
+    w.setColorSuccess()
+    w.writeLn("1 monitor detected")
+  else
+    w.setColorSuccess()
+    w.writeLn(#monitors .. " Monitors detected")
+  end
+  
+  if accelerator == nil then
+    w.setColorDisabled()
+    w.writeLn("No accelerator controller detected")
+  else
+    w.setColorSuccess()
+    w.writeLn("Accelerator controller detected")
+    lhc_boot(isBooting)
+  end
+  
+  w.writeLn("")
+  w.setColorNormal()
+  w.writeLn("This is a keyboard controlled user interface.")
+  w.write("Key controls are written like so: ")
+  w.setColorControl()
+  w.write("Action (key)")
+  w.setColorNormal()
+  w.writeLn(".")
+  w.write("For example, typing ")
+  w.setColorControl()
+  w.write(" 1 ")
+  w.setColorNormal()
+  w.writeLn(" will open Accelerator")
+  w.writeLn("controls.")
+end
+
+----------- Boot sequence
+
+w.page_setEndText(" Home (0), Accelerator controls (1)")
+w.page_register('0', connections_page, nil)
+w.page_register('1', lhc_page, lhc_key)
+lhc_register()
+
+w.boot()
+w.run()
+w.close()

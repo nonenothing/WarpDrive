@@ -1,7 +1,8 @@
 
-if warpdriveCommons then os.unloadAPI("warpdriveCommons") end
-if not os.loadAPI("warpdrive/warpdriveCommons") then error("missing warpdriveCommons") end
-local w = warpdriveCommons.w
+package.loaded.warpdriveCommons = nil 
+local w = require("warpdriveCommons")
+
+local event = require("event")
 
 local data
 
@@ -217,7 +218,7 @@ end
 
 function ship_page_setMovement()
   w.page_begin("<==== Set ship movement ====>")
-  w.setCursorPos(1, 14)
+  w.setCursorPos(1, 18)
   w.setColorControl()
   w.writeFullLine(" Enter jump distance on each axis (0-9)")
   w.writeFullLine(" Enter 0 to keep position on that axis")
@@ -261,7 +262,7 @@ function ship_page_setRotation()
   local inputAbort = false
   local drun = true
   w.page_begin("<==== Set ship rotation ====>")
-  w.setCursorPos(1, 15)
+  w.setCursorPos(1, 19)
   w.setColorControl()
   w.writeFullLine(" Select ship rotation (Up, Down, Left, Right)")
   w.writeFullLine(" Select Front to keep current orientation")
@@ -270,12 +271,16 @@ function ship_page_setRotation()
     w.setCursorPos(1, 3)
     w.setColorNormal()
     ship_writeRotation()
-    local params = { os.pullEventRaw() }
+    local params = { event.pull() }
     local eventName = params[1]
     local address = params[2]
     if address == nil then address = "none" end
-    if eventName == "key" then
-      local keycode = params[2]
+    local firstParam = params[3]
+    if firstParam == nil then firstParam = "none" end
+    if eventName == "key_down" then
+      local character = string.char(params[3])
+      local keycode = params[4]
+      
       if keycode == 200 then
         ship_rotationSteps = 0
       elseif keycode == 203 then
@@ -289,7 +294,7 @@ function ship_page_setRotation()
       else
         w.status_showWarning("Key " .. keycode .. " is invalid")
       end
-    elseif eventName == "terminate" then
+    elseif eventName == "interrupted" then
       inputAbort = true
     elseif not w.event_handler(eventName, params[2]) then
       w.status_showWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
@@ -300,7 +305,7 @@ end
 
 function ship_page_setDimensions()
   w.page_begin("<==== Set ship dimensions ====>")
-  w.setCursorPos(1, 14)
+  w.setCursorPos(1, 18)
   w.setColorControl()
   w.writeFullLine(" Enter ship size in blocks (0-9)")
   w.writeFullLine(" First block next to Ship counts as 1")
@@ -330,8 +335,8 @@ end
 
 function ship_page_summon() -- no longer used
   w.page_begin("<==== Summon players ====>")
-  local stringPlayers = ship.getAttachedPlayers()
-  if stringPlayers == "" then
+  local stringPlayers, arrayPlayers = ship.getAttachedPlayers()
+  if stringPlayers == nil or #arrayPlayers == 0 then
     w.writeLn("~ no players registered ~")
     w.writeLn("")
     w.setColorControl()
@@ -340,7 +345,6 @@ function ship_page_summon() -- no longer used
     w.input_readNumber("")
     return
   end
-  local arrayPlayers = w.data_splitString(stringPlayers, ",")
   for i = 1, #arrayPlayers do
     w.writeLn(i .. ". " .. arrayPlayers[i])
   end
@@ -380,7 +384,7 @@ function ship_page_jumpToGate()
   w.writeLn("")
   w.writeLn("Your ship should be already inside a jumpgate")
   
-  w.setCursorPos(1, 16)
+  w.setCursorPos(1, 20)
   w.setColorControl()
   w.writeFullLine("Enter target jumpgate name (a-z, 0-9)")
   w.writeFullLine("Press enter to save jumpgate name")
@@ -433,7 +437,7 @@ function ship_page_controls()
     w.writeLn(" Target position  = " .. w.format_integer(dest.x) .. ", " .. w.format_integer(dest.y) .. ", " .. w.format_integer(dest.z))
   end
   
-  w.setCursorPos(1, 16)
+  w.setCursorPos(1, 20)
   w.setColorControl()
   w.writeFullLine(" set ship Name (N), Dimensions (D), Movement (M)")
   if ship_isInHyper then
@@ -521,7 +525,7 @@ function ship_page_crew()
 --    w.writeLn("Beacon jump: -admin only-")
   end
   
-  w.setCursorPos(1, 16)
+  w.setCursorPos(1, 20)
   w.setColorControl()
   w.writeFullLine(" Summon all crew (S), Toggle summon after jump (T)")
   w.writeFullLine(" select crew (arrows), summon selected crew (enter)")
@@ -546,6 +550,9 @@ function ship_key_crew(character, keycode)
     else
       w.status_showWarning("Failed to summon crew member")
     end
+    return true
+  elseif character == 'g' or character == 'G' then -- G
+    ship_page_jumpToGate()
     return true
   elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
     ship_indexPlayer = ship_indexPlayer - 1
@@ -577,7 +584,7 @@ function ship_page_navigation()
 --    w.writeLn("Beacon jump: -admin only-")
   end
   
-  w.setCursorPos(1, 16)
+  w.setCursorPos(1, 20)
   w.setColorControl()
   w.writeFullLine(" select target (arrows), register target (enter)")
   w.writeFullLine(" jump through Gate (G)")
@@ -622,18 +629,6 @@ function connections_page(isBooting)
   w.page_begin(w.data_getName() .. " - Connections")
   
   w.writeLn("")
-  
-  local monitors = w.device_getMonitors()
-  if #monitors == 0 then
-    w.setColorDisabled()
-    w.writeLn("No Monitor detected")
-  elseif #monitors == 1 then
-    w.setColorSuccess()
-    w.writeLn("1 monitor detected")
-  else
-    w.setColorSuccess()
-    w.writeLn(#monitors .. " Monitors detected")
-  end
   
   if ship == nil then
     w.setColorDisabled()

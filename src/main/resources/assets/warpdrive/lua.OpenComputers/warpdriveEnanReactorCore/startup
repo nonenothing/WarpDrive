@@ -1,7 +1,6 @@
 
-if warpdriveCommons then os.unloadAPI("warpdriveCommons") end
-if not os.loadAPI("warpdrive/warpdriveCommons") then error("missing warpdriveCommons") end
-local w = warpdriveCommons.w
+package.loaded.warpdriveCommons = nil 
+local w = require("warpdriveCommons")
 
 local data
 
@@ -187,7 +186,7 @@ function reactor_page()
   w.write("Laser amount: " .. data.reactor_laserAmount)
   
   w.setColorControl()
-  w.setCursorPos(1, 14)
+  w.setCursorPos(1, 18)
   w.writeFullLine(" Start/stoP reactor (S/P), Use lasers (L)")
   w.writeFullLine(" Output mode (O), Configuration (C)")
   w.writeFullLine(" Target stability (+/-), Laser amount (U/J)")
@@ -251,6 +250,7 @@ function reactor_laser(side)
 end
 
 local reactor_configPageLoaded = false
+local reactor_pulseStep = 0
 function reactor_pulse(output)
   reactor_output = output
   if reactor == nil then
@@ -263,51 +263,56 @@ function reactor_pulse(output)
       reactor_laser(key - 1)
     end
   end
+  reactor_pulseStep = (reactor_pulseStep + 1) % 6
   if w.page_getCallbackDisplay() == reactor_page and (not reactor_configPageLoaded) then
-    for key, instability in pairs(instabilities) do
-      w.setCursorPos(12, 2 + key)
-      stability = math.floor((100.0 - instability) * 10) / 10
-      if stability >= data.reactor_targetStability then
-        w.setColorSuccess()
-      else
-        w.setColorWarning()
+    if reactor_pulseStep == 0 then
+      for key, instability in pairs(instabilities) do
+        w.setCursorPos(12, 2 + key)
+        stability = math.floor((100.0 - instability) * 10) / 10
+        if stability >= data.reactor_targetStability then
+          w.setColorSuccess()
+        else
+          w.setColorWarning()
+        end
+        w.write(w.format_float(stability, 5) .. " %")
       end
-      w.write(w.format_float(stability, 5) .. " %")
-    end
     
-    w.setColorNormal()
-    local energy = { reactor.energy() }
-    w.setCursorPos(12, 7)
-    if energy[2] ~= nil then
-      w.write(w.format_integer(energy[1], 10))
-      w.setCursorPos(39, 7)
-      w.write(w.format_integer(reactor_output, 5))
-    else
-      w.write("???")
-    end
-    if energy[3] ~= nil then
-      w.setCursorPos(12, 8)
-      w.write(energy[3] .. " RF/t    ")
-    end
+    elseif reactor_pulseStep == 2 then
+      w.setColorNormal()
+      local energy = { reactor.energy() }
+      w.setCursorPos(12, 7)
+      if energy[2] ~= nil then
+        w.write(w.format_integer(energy[1], 10))
+        w.setCursorPos(39, 7)
+        w.write(w.format_integer(reactor_output, 5))
+      else
+        w.write("???")
+      end
+      if energy[3] ~= nil then
+        w.setCursorPos(12, 8)
+        w.write(energy[3] .. " RF/t    ")
+      end
     
-    if #reactorlasers ~= 0 then
-      for key, reactorlaser in pairs(reactorlasers) do
-        local side = reactorlaser.side
-        if side ~= nil and reactorlaser.wrap ~= nil then
-          side = side % 4
-          w.setCursorPos(30, 3 + side)
-          local energy = reactorlaser.wrap.energy()
-          if energy == nil then
-            energy = -1
+    elseif reactor_pulseStep == 4 then
+      if #reactorlasers ~= 0 then
+        for key, reactorlaser in pairs(reactorlasers) do
+          local side = reactorlaser.side
+          if side ~= nil and reactorlaser.wrap ~= nil then
+            side = side % 4
+            w.setCursorPos(30, 3 + side)
+            local energy = reactorlaser.wrap.energy()
+            if energy == nil then
+              energy = -1
+            end
+            if not reactorlaser.wrap.hasReactor() then
+              w.setColorDisabled()
+            elseif energy > 3 * data.reactor_laserAmount then
+              w.setColorSuccess()
+            else
+              w.setColorWarning()
+            end
+            w.write(w.format_integer(energy, 6))
           end
-          if not reactorlaser.wrap.hasReactor() then
-            w.setColorDisabled()
-          elseif energy > 3 * data.reactor_laserAmount then
-            w.setColorSuccess()
-          else
-            w.setColorWarning()
-          end
-          w.write(w.format_integer(energy, 6))
         end
       end
     end
@@ -367,18 +372,6 @@ function connections_page(isBooting)
   w.page_begin(w.data_getName() .. " - Connections")
   
   w.writeLn("")
-  
-  local monitors = w.device_getMonitors()
-  if #monitors == 0 then
-    w.setColorDisabled()
-    w.writeLn("No Monitor detected")
-  elseif #monitors == 1 then
-    w.setColorSuccess()
-    w.writeLn("1 monitor detected")
-  else
-    w.setColorSuccess()
-    w.writeLn(#monitors .. " Monitors detected")
-  end
   
   if reactor == nil then
     w.setColorDisabled()

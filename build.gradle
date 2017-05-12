@@ -49,7 +49,7 @@ dependencies {
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
     //compile "some.group:artifact:version"
-      
+    
     // real examples
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
@@ -60,8 +60,7 @@ dependencies {
 
 }
 
-processResources
-{
+processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -69,7 +68,7 @@ processResources
 	// skip source assets
     exclude '**/*.pdn'
     exclude '**/*.psd'
-
+    
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
@@ -77,14 +76,34 @@ processResources
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
-        
+    
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
 }
 
+//copies the commons folder to all instances
+task copyOpenComputersCommons1(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+	into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipController')
+}
+task copyOpenComputersCommons2(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveEnanReactorCore')
+}
+task copyOpenComputersCommons3(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveWeaponController')
+}
+task copyOpenComputersCommons4(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveAcceleratorController')
+}
+
 jar {
+    dependsOn copyOpenComputersCommons1, copyOpenComputersCommons2, copyOpenComputersCommons3, copyOpenComputersCommons4
+    
     manifest {
         attributes 'FMLAT': 'CoFH_at.cfg'
         attributes 'FMLCorePlugin': 'cr0s.warpdrive.core.FMLLoadingPlugin',
