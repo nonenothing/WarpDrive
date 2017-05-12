@@ -1,9 +1,17 @@
-radius = 500
-scale = 50
+local scale = 50
 
 if not term.isColor() then
   print("Advanced computer required")
   exit()
+end
+
+function error(message)
+  term.setBackgroundColor(colors.black)
+  term.setTextColor(colors.red)
+  term.write(message)
+  term.setBackgroundColor(colors.black)
+  term.setTextColor(colors.white)
+  print()
 end
 
 local radar
@@ -15,13 +23,19 @@ for key,side in pairs(sides) do
   end
 end
 if radar == nil then
-  term.setBackgroundColor(colors.red)
-  term.setTextColor(colors.white)
-  term.write("No radar detected")
-  return
+  error("No radar detected")
+  exit()
 end
 
-w, h = term.getSize()
+local argv = { ... }
+if #argv ~= 1 then
+  error("Usage: scan <scanRadius>")
+  exit()
+end
+
+local radius = tonumber(argv[1])
+
+local w, h = term.getSize()
 
 term.clear()
 
@@ -76,14 +90,14 @@ function scanAndDraw()
     paintutils.drawLine(hw - 5, hh, hw + 5, hh, colors.red)
     textOut(hw - 4, hh,"LOW POWER", colors.white, colors.red)
     paintutils.drawLine(hw - 5, hh + 1, hw + 5, hh + 1, colors.red)
-    sleep(1)
+    os.sleep(1)
     
     return 0
   end
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)
-  sleep(scanDuration)
+  os.sleep(scanDuration)
   
   redraw()
   
@@ -105,7 +119,7 @@ function redraw()
   
   paintutils.drawLine(1, 1, w, 1, colors.black)
   
-  textOut((w / 2) - 8, 1, "= Q-Radar v0.2 =", colors.white, colors.black)
+  textOut((w / 2) - 8, 1, "= Q-Radar v0.3 =", colors.white, colors.black)
   
   textOut(w - 3, 1, "[X]", colors.white, colors.red)
   
@@ -114,9 +128,9 @@ function redraw()
   textOut(4, h, "Energy: " .. energy .. " EU | Scan radius: " .. radius, colors.white, colors.black)
 end
 
-radarX, radarY, radarZ = radar.position()
-mrun = true
-while (mrun) do
+local radarX, radarY, radarZ = radar.position()
+local continue = true
+while continue do
   scanAndDraw()
 end
 

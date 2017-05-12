@@ -1,21 +1,44 @@
 local component = require("component")
 local computer = require("computer")
 local term = require("term")
-radius = 500
-scale = 50
+local radius = 500
+local scale = 50
 
 if not term.isAvailable() then
   computer.beep()
-  return
+  os.exit()
 end
+if not component.gpu.getDepth() < 4 then
+  print("Tier 2 GPU required")
+  os.exit()
+end
+
+function error(message)
+  component.gpu.setBackground(0x000000)
+  component.gpu.setForeground(0xFF0000)
+  local xt, yt = term.getCursor()
+  component.gpu.set(xt, yt, message)
+  component.gpu.setBackground(0x000000)
+  component.gpu.setForeground(0xFFFFFF)
+  print("")
+end
+
 if not component.isAvailable("warpdriveRadar") then
   computer.beep()
-  print("No radar detected")
-  return
+  error("No radar detected")
+  os.exit()
 end
-radar = component.warpdriveRadar
+local radar = component.warpdriveRadar
 
-w, h = component.gpu.getResolution()
+local argv = { ... }
+if #argv ~= 1 then
+  error("Usage: scan <scanRadius>")
+  os.exit()
+end
+
+local radius = tonumber(argv[1])
+
+local w, h = component.gpu.getResolution()
 
 term.clear()
 
@@ -69,8 +92,8 @@ function scanAndDraw()
   local energy, energyMax = radar.energy()
   local energyRequired = radar.getEnergyRequired(radius)
   if (energy < energyRequired) then
-    hh = math.floor(h / 2)
-    hw = math.floor(w / 2)
+    local hh = math.floor(h / 2)
+    local hw = math.floor(w / 2)
     
     drawBox(hw - 5, hh - 1, 11, 3, 0xFF0000)
     textOut(hw - 4, hh, "LOW POWER", 0xFFFFFF, 0xFF0000)
@@ -106,7 +129,7 @@ function redraw()
   drawBox(1, h, w, 1, 0x000000)
   drawBox(w, 1, w, h, 0x000000)
   
-  textOut((w / 2) - 8, 1, "= Q-Radar v0.2 =", 0xFFFFFF, 0x000000)
+  textOut((w / 2) - 8, 1, "= Q-Radar v0.3 =", 0xFFFFFF, 0x000000)
   
   textOut(w - 3, 1, "[X]", 0xFFFFFF, 0xFF0000)
   
@@ -114,9 +137,10 @@ function redraw()
   textOut(4, h, "Energy: " .. energy .. " EU | Scan radius: " .. radius, 0xFFFFFF, 0x000000)
 end
 
-radarX, radarY, radarZ = radar.position()
+local radarX, radarY, radarZ = radar.position()
 
-while component.isAvailable("warpdriveRadar") do
+local continue = true
+while component.isAvailable("warpdriveRadar") and continue do
   scanAndDraw()
 end
 
