@@ -1,13 +1,18 @@
 local component = require("component")
 local term = require("term")
 
+if not term.isAvailable() then
+  computer.beep()
+  os.exit()
+end
+
 if not component.isAvailable("warpdriveForceFieldProjector") then
   print("No force field projector detected")
 else
   local projector = component.warpdriveForceFieldProjector
   projector.enable(true)
   os.sleep(1)
-  status, isEnabled, isConnected, isPowered, shape, energy = projector.state()
+  local status, isEnabled, isConnected, isPowered, shape, energy = projector.state()
   if isConnected then
     if isPowered then
       print("Projector is enabled")
