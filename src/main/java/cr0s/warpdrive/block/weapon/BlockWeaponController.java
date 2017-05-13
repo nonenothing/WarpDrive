@@ -71,6 +71,10 @@ public class BlockWeaponController extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
+		
 		if (entityPlayer.getHeldItem() == null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityWeaponController) {
@@ -80,7 +84,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 						getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
 				WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 			}
-			return false;
+			return true;
 		}
 		
 		return false;
