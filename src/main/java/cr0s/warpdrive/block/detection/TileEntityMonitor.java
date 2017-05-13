@@ -56,8 +56,8 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	}
 	
 	@Override
-	public void setVideoChannel(int parVideoChannel) {
-		if (videoChannel != parVideoChannel) {
+	public void setVideoChannel(final int parVideoChannel) {
+		if (videoChannel != parVideoChannel && (parVideoChannel <= VIDEO_CHANNEL_MAX) && (parVideoChannel > VIDEO_CHANNEL_MIN)) {
 			videoChannel = parVideoChannel;
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Monitor video channel set to " + videoChannel);

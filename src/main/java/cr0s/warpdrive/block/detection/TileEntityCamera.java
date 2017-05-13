@@ -71,8 +71,8 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	}
 	
 	@Override
-	public void setVideoChannel(int parVideoChannel) {
-		if (videoChannel != parVideoChannel) {
+	public void setVideoChannel(final int parVideoChannel) {
+		if (videoChannel != parVideoChannel && (parVideoChannel <= VIDEO_CHANNEL_MAX) && (parVideoChannel > VIDEO_CHANNEL_MIN)) {
 			videoChannel = parVideoChannel;
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Video channel set to " + videoChannel);
