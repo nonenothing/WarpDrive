@@ -27,7 +27,6 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		WarpDrive.logger.info("isApplicable " + classTileEntityBase.isInstance(tileEntity));
 		return classTileEntityBase.isInstance(tileEntity);
 	}
 	
