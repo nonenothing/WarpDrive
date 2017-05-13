@@ -510,14 +510,14 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	}
 	
 	@Override
-	public void setBeamFrequency(int parBeamFrequency) {
-		if (beamFrequency != parBeamFrequency && (parBeamFrequency <= BEAM_FREQUENCY_MAX) && (parBeamFrequency > 0)) {
+	public void setBeamFrequency(final int parBeamFrequency) {
+		if (beamFrequency != parBeamFrequency && (parBeamFrequency <= BEAM_FREQUENCY_MAX) && (parBeamFrequency > BEAM_FREQUENCY_MIN)) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Beam frequency set from " + beamFrequency + " to " + parBeamFrequency);
 			}
 			beamFrequency = parBeamFrequency;
 		}
-		Vector3 vRGB = IBeamFrequency.getBeamColor(beamFrequency);
+		final Vector3 vRGB = IBeamFrequency.getBeamColor(beamFrequency);
 		r = (float)vRGB.x;
 		g = (float)vRGB.y;
 		b = (float)vRGB.z;
