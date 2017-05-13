@@ -36,7 +36,7 @@ public class RenderOverlayAir {
 		
 		// get celestial object
 		final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entityPlayer.dimension, x, z);
-		if (celestialObject.hasAtmosphere()) {// skip (no display) if environment is breathable
+		if (celestialObject == null || celestialObject.hasAtmosphere()) {// skip (no display) if environment is breathable
 			return;
 		}
 		
