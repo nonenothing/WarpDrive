@@ -141,7 +141,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		if (WarpDriveConfig.isOpenComputersLoaded) {
+		if ( WarpDriveConfig.isOpenComputersLoaded
+		  && (xCoord != 0 || yCoord != 0 || zCoord != 0) ) {// (0, 0, 0) is improbable as a block, it's probably a fake TileEntity used for tooltip computation
 			if (OC_node == null) {
 				OC_constructor();
 			}
@@ -272,11 +273,14 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		connectedComputers.put(id, computer);
 		if (CC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
 			try {
-				computer.mount("/" + peripheralName, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName));
-				computer.mount("/warpupdater", ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/common/updater"));
+				final String modid = WarpDrive.MODID.toLowerCase();
+				final String folderPeripheral = peripheralName.replace(modid, modid + "/");
+				computer.mount("/" + modid           , ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/common"));
+				computer.mount("/" + folderPeripheral, ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/" + peripheralName));
+				computer.mount("/warpupdater"        , ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/common/updater"));
 				if (WarpDriveConfig.G_LUA_SCRIPTS == WarpDriveConfig.LUA_SCRIPTS_ALL) {
 					for (String script : CC_scripts) {
-						computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, WarpDrive.MODID.toLowerCase(), "lua.ComputerCraft/" + peripheralName + "/" + script));
+						computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/" + peripheralName + "/" + script));
 					}
 				}
 			} catch (Exception exception) {
@@ -353,7 +357,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	private void OC_constructor() {
 		assert(OC_node == null);
 		if (WarpDriveConfig.isOpenComputersLoaded) {
-			String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
+			final String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
 			OC_hasResource = assetExist(OC_path);
 		}
 		OC_node = Network.newNode(this, Visibility.Network).withComponent(peripheralName).create();
