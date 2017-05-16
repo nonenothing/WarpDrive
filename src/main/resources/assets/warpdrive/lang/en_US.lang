@@ -119,7 +119,7 @@ item.warpdrive.upgrade.Energy.name=Energy Upgrade
 
 
 item.warpdrive.tool.crystalToken.name=Crystal token
-item.warpdrive.tool.crystalToken.tooltip=Crystal encapsulation of ship '%1$s'\n§bEnter the scanner field§7 to build your ship
+item.warpdrive.tool.crystalToken.tooltip=Crystal encapsulation of ship '%1$s'\n§bEnter the red builder's field§7 to claim a ship
 item.warpdrive.tool.crystalToken0.name=Crystal token #0
 item.warpdrive.tool.crystalToken1.name=Crystal token #1
 item.warpdrive.tool.crystalToken2.name=Crystal token #2

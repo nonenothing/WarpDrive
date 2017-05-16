@@ -119,7 +119,7 @@ item.warpdrive.upgrade.Energy.name=Amélioration d'énergie
 
 
 item.warpdrive.tool.crystalToken.name=Crystal jeton
-item.warpdrive.tool.crystalToken.tooltip=Vaisseau '%1$s' encapsulé dans un crystal\n§bEntre dans le champ du scanner§7 pour construire ton vaisseau
+item.warpdrive.tool.crystalToken.tooltip=Vaisseau '%1$s' encapsulé dans un crystal\n§bEntre dans le champ rouge du constructeur§7 pour réclamer ton vaisseau
 item.warpdrive.tool.crystalToken0.name=Crystal jeton #0
 item.warpdrive.tool.crystalToken1.name=Crystal jeton #1
 item.warpdrive.tool.crystalToken2.name=Crystal jeton #2
