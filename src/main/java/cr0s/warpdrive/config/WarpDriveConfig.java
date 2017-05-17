@@ -329,6 +329,7 @@ public class WarpDriveConfig {
 	public static int LIFT_MAX_ENERGY_STORED = 900;
 	public static int LIFT_ENERGY_PER_ENTITY = 150;
 	public static int LIFT_UPDATE_INTERVAL_TICKS = 10;
+	public static int LIFT_ENTITY_COOLDOWN_TICKS = 40;
 	
 	// Chunk loader
 	public static int CL_MAX_ENERGY = 1000000;
@@ -818,6 +819,8 @@ public class WarpDriveConfig {
 				config.get("lift", "energy_per_entity", LIFT_ENERGY_PER_ENTITY, "Energy consumed per entity moved").getInt());
 		LIFT_UPDATE_INTERVAL_TICKS = Commons.clamp(1, 60,
 				config.get("lift", "update_interval_ticks", LIFT_UPDATE_INTERVAL_TICKS, "Update speed of the check for entities").getInt());
+		LIFT_ENTITY_COOLDOWN_TICKS = Commons.clamp(1, 6000,
+				config.get("lift", "entity_cooldown_ticks", LIFT_ENTITY_COOLDOWN_TICKS, "Cooldown after moving an entity").getInt());
 		
 		// Dictionary
 		Dictionary.loadConfig(config);

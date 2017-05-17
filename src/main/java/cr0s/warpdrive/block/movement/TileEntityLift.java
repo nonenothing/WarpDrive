@@ -23,18 +23,23 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityLift extends TileEntityAbstractEnergy {
+	
 	private static final int MODE_REDSTONE = -1;
 	private static final int MODE_INACTIVE = 0;
 	private static final int MODE_UP = 1;
 	private static final int MODE_DOWN = 2;
 	
-	private int firstUncoveredY;
+	final double LIFT_GRAB_RADIUS = 0.4;
+	
+	// persistent properties
 	private int mode = MODE_INACTIVE;
-	private boolean isEnabled = false;
 	private boolean computerEnabled = true;
 	private int computerMode = MODE_REDSTONE;
 	
-	private int tickCount = 0;
+	// computed properties
+	private int updateTicks = 0;
+	private boolean isEnabled = false;
+	private int firstUncoveredY;
 	
 	public TileEntityLift() {
 		super();
@@ -55,9 +60,9 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			return;
 		}
 		
-		tickCount++;
-		if (tickCount >= WarpDriveConfig.LIFT_UPDATE_INTERVAL_TICKS) {
-			tickCount = 0;
+		updateTicks--;
+		if (updateTicks < 0) {
+			updateTicks = WarpDriveConfig.LIFT_UPDATE_INTERVAL_TICKS;
 			
 			// Switching mode
 			if (  computerMode == MODE_DOWN
@@ -106,7 +111,9 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 							0f, 1f, 40, 0, 100);
 				}
 				
-				liftEntity();
+				if (liftEntity()) {
+					updateTicks = WarpDriveConfig.LIFT_ENTITY_COOLDOWN_TICKS;
+				}
 			}
 		}
 	}
@@ -118,54 +125,59 @@ public class TileEntityLift extends TileEntityAbstractEnergy {
 			|| block.getCollisionBoundingBoxFromPool(worldObj, xCoord, yPosition, zCoord) == null;
 	}
 	
-	private void liftEntity() {
-		final double CUBE_RADIUS = 0.4;
-		double xMax, zMax;
-		double xMin, zMin;
-		
-		xMin = xCoord + 0.5 - CUBE_RADIUS;
-		xMax = xCoord + 0.5 + CUBE_RADIUS;
-		zMin = zCoord + 0.5 - CUBE_RADIUS;
-		zMax = zCoord + 0.5 + CUBE_RADIUS;
+	private boolean liftEntity() {
+		final double xMin = xCoord + 0.5 - LIFT_GRAB_RADIUS;
+		final double xMax = xCoord + 0.5 + LIFT_GRAB_RADIUS;
+		final double zMin = zCoord + 0.5 - LIFT_GRAB_RADIUS;
+		final double zMax = zCoord + 0.5 + LIFT_GRAB_RADIUS;
+		boolean isTransferDone = false; 
 		
 		// Lift up
 		if (mode == MODE_UP) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin, firstUncoveredY, zMin, xMax, yCoord, zMax);
-			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+			final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(
+					xMin, firstUncoveredY, zMin,
+					xMax, yCoord, zMax);
+			final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
-				for (Object o : list) {
-					if ( o != null
-					  && o instanceof EntityLivingBase
+				for (Object object : list) {
+					if ( object != null
+					  && object instanceof EntityLivingBase
 					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) o).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
+						((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
 								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D),
 								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
 								1F, 1F, 0F, 40, 0, 100);
 						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
 						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+						isTransferDone = true;
 					}
 				}
 			}
+			
 		} else if (mode == MODE_DOWN) {
-			AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(xMin,
-					Math.min(firstUncoveredY + 4.0D, yCoord), zMin, xMax, yCoord + 2.0D, zMax);
-			List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+			final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(
+					xMin, Math.min(firstUncoveredY + 4.0D, yCoord), zMin,
+					xMax, yCoord + 2.0D, zMax);
+			final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
-				for (Object o : list) {
-					if ( o != null
-					  && o instanceof EntityLivingBase
+				for (Object object : list) {
+					if ( object != null
+					  && object instanceof EntityLivingBase
 					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) o).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
+						((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
 								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
 								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D), 1F, 1F, 0F, 40, 0, 100);
 						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
 						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+						isTransferDone = true;
 					}
 				}
 			}
 		}
+		
+		return isTransferDone;
 	}
 	
 	@Override
