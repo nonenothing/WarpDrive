@@ -733,20 +733,21 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	
 	private Object[] summon(Object[] arguments) {
 		if (arguments.length != 1) {
-			return new Object[] { false };
+			return new Object[] { false, "Expecting 1 argument: Integer attached player index" };
 		}
 		int playerIndex;
 		try {
 			playerIndex = Commons.toInt(arguments[0]);
 		} catch (Exception exception) {
-			return new Object[] { false };
+			return new Object[] { false, "Integer expected for 1st argument" };
 		}
 		
 		if (playerIndex >= 0 && playerIndex < players.size()) {
-			setToSummon(players.get(playerIndex));
-			return new Object[] { true };
+			final String namePlayer = players.get(playerIndex);
+			setToSummon(namePlayer);
+			return new Object[] { true, namePlayer };
 		}
-		return new Object[] { false };
+		return new Object[] { false, "Index out of range" };
 	}
 	
 	private Object[] getEnergyRequired(Object[] arguments) {
