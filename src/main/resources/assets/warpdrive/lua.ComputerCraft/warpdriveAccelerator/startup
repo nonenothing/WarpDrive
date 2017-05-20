@@ -115,7 +115,7 @@ function lhc_page_parameter()
   local controlChannel, isEnabled, threshold, description = lhc_parameter_get(indexSelected)
   w.writeLn("Control channel #" .. w.format_integer(controlChannel, 9) .. " applies to:")
   for key, controlPoint in ipairs(lhc_controlPoints) do
-    local cp_x, cp_y, cp_z, cp_tier, cp_type, cp_isEnabled, cp_controlChannel = unpack(controlPoint)
+    local cp_x, cp_y, cp_z, cp_tier, cp_type, cp_isEnabled, cp_controlChannel = table.unpack(controlPoint)
     if cp_controlChannel == controlChannel then
       w.write(string.format("%s %s @%s %s %s ",
           w.format_string(cp_type, 10),
@@ -134,7 +134,7 @@ function lhc_page_parameter()
   description = w.input_readText(description)
   
   w.writeLn("")
-  w.writeLn("Current theshold is " .. (threshold * 100) .. "%")
+  w.writeLn("Current threshold is " .. (threshold * 100) .. "%")
   w.write("Enter parameter threshold: ")
   local new_threshold = w.input_readNumber(threshold * 100) / 100
   threshold = math.min(2.0, math.max(0.0, new_threshold))
@@ -170,7 +170,7 @@ function lhc_parameter_get(index)
     lhc_boot(false)
     w.status_showWarning("Invalid parameter at index " .. index)
   else
-    controlChannel, isEnabled, threshold, description = unpack(parameter)
+    controlChannel, isEnabled, threshold, description = table.unpack(parameter)
   end
   return controlChannel, isEnabled, threshold, description
 end
@@ -232,7 +232,7 @@ function lhc_page()
     else
       w.setColorDisabled();
     end
-    w.writeLn(math.floor(energy / energyMax * 100) .. " % (" .. energy .. "EU)")
+    w.writeLn(math.floor(energy / energyMax * 100) .. " % (" .. energy .. " EU)")
     -- w.writeLn("")
     
     w.setColorNormal();
@@ -244,9 +244,9 @@ function lhc_page()
     else
       w.setColorDisabled();
     end
-    w.write(string.format("%fK", math.floor(temperatureCurrent_K * 10) / 10))
+    w.write(string.format("%.1f K", math.floor(temperatureCurrent_K * 10) / 10))
     w.setColorNormal();
-    w.writeLn(". Target is " .. temperatureTarget_K .. "K")
+    w.writeLn(". Target is " .. temperatureTarget_K .. " K")
     -- w.writeLn("")
     
     w.write("Parameters: ")

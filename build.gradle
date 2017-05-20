@@ -37,7 +37,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version
     runDir = "eclipse"
-
+    
     // replacing
     replace "@version@", project.version
     replaceIn "WarpDrive.java"
@@ -53,19 +53,18 @@ dependencies {
     // real examples
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
+    
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
 }
 
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-	
-	// skip source assets
+    
+    // skip source assets
     exclude '**/*.pdn'
     exclude '**/*.psd'
     
@@ -86,7 +85,7 @@ processResources {
 //copies the commons folder to all instances
 task copyOpenComputersCommons1(type: Copy) {
     from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
-	into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipController')
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipController')
 }
 task copyOpenComputersCommons2(type: Copy) {
     from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
@@ -98,7 +97,7 @@ task copyOpenComputersCommons3(type: Copy) {
 }
 task copyOpenComputersCommons4(type: Copy) {
     from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
-    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveAcceleratorController')
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveAccelerator')
 }
 
 jar {
