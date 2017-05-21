@@ -51,20 +51,8 @@ public class GlobalPosition {
 		return getWorldServerIfLoaded() != null;
 	}
 	
-	public VectorI getSpaceCoordinates() {
-		CelestialObject celestialObject = StarMapRegistry.getCelestialObject(dimensionId, x, z);
-		if (celestialObject == null) {
-			// not a registered area
-			return null;
-		}
-		if (celestialObject.isHyperspace()) {
-			return new VectorI(x, y + 512, z);
-		}
-		if (celestialObject.isSpace()) {
-			return new VectorI(x, y + 256, z);
-		}
-		VectorI vEntry = celestialObject.getEntryOffset();
-		return new VectorI(x - vEntry.x, y, z - vEntry.z);
+	public Vector3 getUniversalCoordinates() {
+		return StarMapRegistry.getUniversalCoordinates(dimensionId, x, y, z);
 	}
 	
 	public boolean equals(final TileEntity tileEntity) {

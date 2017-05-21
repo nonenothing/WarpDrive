@@ -115,6 +115,24 @@
 			
 			<xs:element name="dimension" type="dimensionElement" minOccurs="0" maxOccurs="1" />
 			
+			<xs:element name="skybox" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							Sky rendering parameters
+						</xs:documentation>
+					</xs:annotation>
+					<xs:sequence>
+						<xs:element name="backgroundColor" type="colorElement" minOccurs="0" maxOccurs="1" />
+						<xs:element name="starBrightnessBase" type="xs:float" minOccurs="0" maxOccurs="1" />
+						<xs:element name="starBrightnessVanilla" type="xs:float" minOccurs="0" maxOccurs="1" />
+						<xs:element name="celestialObjectOpacity" type="xs:float" minOccurs="0" maxOccurs="1" />
+						<xs:element name="fogColor" type="colorElement" minOccurs="0" maxOccurs="1" />
+						<xs:element name="fogFactor" type="colorElement" minOccurs="0" maxOccurs="1" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
 			<xs:element name="render" type="renderElement" minOccurs="0" maxOccurs="unbounded" />
 			
 			<xs:choice minOccurs="0" maxOccurs="1">
@@ -165,6 +183,12 @@
 		<xs:attribute name="z" type="worldPositionType" use="required" />
 	</xs:complexType>
 	
+	<xs:complexType name="colorElement">
+		<xs:attribute name="red" type="xs:float" use="required" />
+		<xs:attribute name="green" type="xs:float" use="required" />
+		<xs:attribute name="blue" type="xs:float" use="required" />
+	</xs:complexType>
+	
 	<xs:complexType name="renderElement">
 		<xs:attribute name="red" type="xs:float" use="required" />
 		<xs:attribute name="green" type="xs:float" use="required" />
@@ -207,7 +231,7 @@
 				<xs:element name="for" type="forElement" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="fillerSet" type="fillerSetElement" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element name="structure" type="structureElement" minOccurs="0" maxOccurs="unbounded" />
-				<xs:element name="celestialObject" type="celestialObjectElement" minOccurs="0" maxOccurs="1" />
+				<xs:element name="celestialObject" type="celestialObjectElement" minOccurs="0" maxOccurs="unbounded" />
 			</xs:choice>
 			<xs:attribute name="version" type="xs:string" use="required" fixed="2" />
 			<xs:attribute name="mods" type="xs:string" use="optional" />

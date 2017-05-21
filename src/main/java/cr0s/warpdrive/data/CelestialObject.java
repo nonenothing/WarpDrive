@@ -49,6 +49,14 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	public boolean isBreathable;
 	
 	private final RandomCollection<StructureGroup> randomStructures = new RandomCollection<>();
+	
+	public ColorData backgroundColor;
+	public float baseStarBrightness;
+	public float vanillaStarBrightness;
+	public float opacityCelestialObjects;
+	public ColorData colorFog;
+	public ColorData factorFog;
+	
 	public LinkedHashSet<RenderData> setRenderData;
 	
 	public CelestialObject(final String location, final String parentElementGroup, final String parentElementName, Element elementCelestialObject) throws InvalidXmlException {
@@ -104,7 +112,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one parent element", getFullName()));
 		}
 		if (listParents.size() == 1) {
-			Element elementParent = listParents.get(0);
+			final Element elementParent = listParents.get(0);
 			
 			// save linked parent
 			final String parentGroupRead = elementParent.getAttribute("group");
@@ -188,19 +196,71 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			WarpDrive.logger.info("  loaded " + this);
 		}
 		
+		// get optional skybox element
+		final List<Element> listSkyboxes = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "skybox");
+		if (listSkyboxes.size() > 1) {
+			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one skybox element", getFullName()));
+		}
+		if (listSkyboxes.isEmpty()) {
+			backgroundColor = new ColorData(0.0F      , 0.0F       , 0.0F );
+			baseStarBrightness = 0.0F;
+			vanillaStarBrightness = 1.0F;
+			opacityCelestialObjects = 1.0F;
+			colorFog  = new ColorData(0.7529412F, 0.84705883F, 1.0F );
+			factorFog = new ColorData(0.94F     , 0.94F      , 0.91F);
+		} else {
+			final Element elementSkybox = listSkyboxes.get(0);
+			final String locationSkybox = String.format("Celestial object %s skybox 1/1", getFullName());
+			backgroundColor = getColorData(locationSkybox, elementSkybox, "backgroundColor" , 0.0F, 0.0F, 0.0F );
+			baseStarBrightness =  getFloat(locationSkybox, elementSkybox, "starBrightnessBase", 0.0F);
+			vanillaStarBrightness =  getFloat(locationSkybox, elementSkybox, "starBrightnessVanilla", 1.0F);
+			opacityCelestialObjects = getFloat(locationSkybox, elementSkybox, "celestialObjectOpacity", 1.0F);
+			colorFog  = getColorData(locationSkybox, elementSkybox, "fogColor" , 0.7529412F, 0.84705883F, 1.0F );
+			factorFog = getColorData(locationSkybox, elementSkybox, "fogFactor", 0.94F     , 0.94F      , 0.91F);
+		}
+		
 		// get optional render element(s)
 		final List<Element> listRenders = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "render");
 		setRenderData = new LinkedHashSet<>(listRenders.size());
 		if (!listRenders.isEmpty()) {
 			for (int indexElement = 0; indexElement < listRenders.size(); indexElement++) {
 				final Element elementRender = listRenders.get(indexElement);
-				final String locationRender = String.format("Celestial object %s generate %d/%d", getFullName(), indexElement + 1, listRenders.size());
+				final String locationRender = String.format("Celestial object %s render %d/%d", getFullName(), indexElement + 1, listRenders.size());
 				final RenderData renderData = new RenderData(locationRender, elementRender);
 				setRenderData.add(renderData);
 			}
 		}
 		
 		return true;
+	}
+	
+	private float getFloat(final String locationParent, final Element elementParent, final String tagName, final float value) throws InvalidXmlException {
+		final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementParent, tagName);
+		if (listElements.size() > 1) {
+			throw new InvalidXmlException(String.format("%s can only have up to one %s element", locationParent, tagName));
+		}
+		if (listElements.isEmpty()) {
+			return value;
+		} else {
+			final Element elementSub = listElements.get(0);
+			final String valueSub = elementSub.getTextContent();
+			// final String locationChild = String.format("%s %s 1/1", locationParent, tagName);
+			return Commons.clamp(0.0F, 1.0F, Float.parseFloat(valueSub));
+		}
+	}
+	
+	private ColorData getColorData(final String locationParent, final Element elementParent, final String tagName, final float red, final float green, final float blue) throws InvalidXmlException {
+		final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementParent, tagName);
+		if (listElements.size() > 1) {
+			throw new InvalidXmlException(String.format("%s can only have up to one %s element", locationParent, tagName));
+		}
+		if (listElements.isEmpty()) {
+			return new ColorData(red, green, blue);
+		} else {
+			final Element elementChild = listElements.get(0);
+			final String locationChild = String.format("%s %s 1/1", locationParent, tagName);
+			return new ColorData(locationChild, elementChild);
+		}
 	}
 	
 	private static double parseGravity(final String stringGravity) {
@@ -367,7 +427,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	 * @return square distance to transition borders, 0 if we're in orbit of the object
 	 */
 	public double getSquareDistanceInParent(final int dimensionId, final double x, final double z) {
-		// are in another dimension?
+		// are we in another dimension?
 		if (dimensionId != parentDimensionId) {
 			return Double.POSITIVE_INFINITY;
 		}
@@ -443,6 +503,33 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 				isProvidedByWarpDrive, gravity, isBreathable);
 	}
 	
+	
+	public class ColorData {
+		
+		public float red;
+		public float green;
+		public float blue;
+		
+		ColorData(final float red, final float green, final float blue) throws InvalidXmlException {
+			this.red = red;
+			this.green = green;
+			this.blue = blue;
+		}
+		
+		ColorData(final String location, final Element elementColor) throws InvalidXmlException {
+			try {
+				red = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("red")));
+				green = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("green")));
+				blue = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("blue")));
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				WarpDrive.logger.error("Exception while parsing Color element at " + location);
+				red = 0.5F;
+				green = 0.5F;
+				blue = 0.5F;
+			}
+		}
+	}
 	
 	public class RenderData {
 		

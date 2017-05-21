@@ -19,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -226,29 +227,40 @@ public class StarMapRegistry {
 		return 0;
 	}
 	
-	public ArrayList<StarMapRegistryItem> radarScan(final TileEntity tileEntity, final int radius) {
-		final ArrayList<StarMapRegistryItem> starMapRegistryItems = new ArrayList<>(registry.size());
+	public ArrayList<RadarEcho> getRadarEchos(final TileEntity tileEntity, final int radius) {
+		final ArrayList<RadarEcho> arrayListRadarEchos = new ArrayList<>(registry.size());
 		cleanup();
 		
+		final Vector3 vectorRadar = getUniversalCoordinates(
+			tileEntity.getWorldObj().provider.dimensionId,
+			tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 		// printRegistry();
 		int radius2 = radius * radius;
 		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
-			for (StarMapRegistryItem entry : entryDimension.getValue()) {
-				final double dX = entry.x - tileEntity.xCoord;
-				final double dY = entry.y - tileEntity.yCoord;
-				final double dZ = entry.z - tileEntity.zCoord;
-				final double distance2 = dX * dX + dY * dY + dZ * dZ;
-				
-				if ( distance2 <= radius2
-				  && (entry.isolationRate == 0.0D || tileEntity.getWorldObj().rand.nextDouble() >= entry.isolationRate)
-				  && (entry.getSpaceCoordinates() != null)
-				  && (entry.type != EnumStarMapEntryType.ACCELERATOR) ) {
-					starMapRegistryItems.add(entry);
+			for (StarMapRegistryItem starMapRegistryItem : entryDimension.getValue()) {
+				if (starMapRegistryItem.type == EnumStarMapEntryType.ACCELERATOR) {
+					continue;
 				}
+				final Vector3 vectorItem = starMapRegistryItem.getUniversalCoordinates();
+				if (vectorItem == null) {
+					continue;
+				}
+				final double dX = vectorItem.x - vectorRadar.x;
+				final double dY = vectorItem.y - vectorRadar.y;
+				final double dZ = vectorItem.z - vectorRadar.z;
+				final double distance2 = dX * dX + dY * dY + dZ * dZ;
+				if (distance2 > radius2) {
+					continue;
+				}
+				if ( starMapRegistryItem.isolationRate != 0.0D
+				  && tileEntity.getWorldObj().rand.nextDouble() < starMapRegistryItem.isolationRate) {
+					continue;
+				}
+				arrayListRadarEchos.add( new RadarEcho(starMapRegistryItem) );
 			}
 		}
 		
-		return starMapRegistryItems;
+		return arrayListRadarEchos;
 	}
 	
 	public boolean isInSpace(final World world, final int x, final int z) {
@@ -269,7 +281,28 @@ public class StarMapRegistry {
 	public boolean isPlanet(final World world, final int x, final int z) {
 		final CelestialObject celestialObject = getCelestialObject(world, x, z);
 		return celestialObject == null
-		       || (!celestialObject.isSpace() && !celestialObject.isHyperspace());
+		    || (!celestialObject.isSpace() && !celestialObject.isHyperspace());
+	}
+	
+	public static Vector3 getUniversalCoordinates(final int dimensionId, final double x, final double y, final double z) {
+		CelestialObject celestialObject = StarMapRegistry.getCelestialObject(dimensionId, MathHelper.floor_double(x), MathHelper.floor_double(z));
+		return getUniversalCoordinates(celestialObject, x, y, z);
+	}
+	
+	public static Vector3 getUniversalCoordinates(CelestialObject celestialObject, final double x, final double y, final double z) {
+		if (celestialObject == null) {
+			// not a registered area
+			return null;
+		}
+		final Vector3 vec3Result = new Vector3(x, y + 512.0D, z);
+		while (!celestialObject.isHyperspace()) {
+			final VectorI vEntry = celestialObject.getEntryOffset();
+			vec3Result.x -= vEntry.x;
+			vec3Result.y -= 256.0D;
+			vec3Result.z -= vEntry.z;
+			celestialObject = StarMapRegistry.getCelestialObject(celestialObject.parentDimensionId, celestialObject.parentCenterX, celestialObject.parentCenterZ);
+		}
+		return vec3Result;
 	}
 	
 	public void printRegistry(final String trigger) {

@@ -1,6 +1,8 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.render.RenderBlank;
 import cr0s.warpdrive.render.RenderSpaceSky;
@@ -9,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -34,12 +37,6 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	@Override
 	public boolean canRespawnHere() {
 		return true;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public float getStarBrightness(float partialTicks) {
-		return 0.2F;
 	}
 	
 	@Override
@@ -99,6 +96,11 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		return var3 != 0;
 	}
 	
+	// shared for getFogColor(), getStarBrightness()
+	@SideOnly(Side.CLIENT)
+	private static CelestialObject celestialObject = null;
+	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
 		if (getCloudRenderer() == null) {
@@ -107,12 +109,42 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 		if (getSkyRenderer() == null) {
 			setSkyRenderer(RenderSpaceSky.getInstance());
 		}
-		return Vec3.createVectorHelper(1.0D, 0.0D, 0.0D);
+		
+		celestialObject = cameraEntity.worldObj == null ? null : StarMapRegistry.getCelestialObject(
+				cameraEntity.worldObj.provider.dimensionId,
+				MathHelper.floor_double(cameraEntity.posX), MathHelper.floor_double(cameraEntity.posZ));
+		if (celestialObject == null) {
+			return Vec3.createVectorHelper(1.0D, 0.0D, 0.0D);
+		} else {
+			return Vec3.createVectorHelper(celestialObject.backgroundColor.red, celestialObject.backgroundColor.green, celestialObject.backgroundColor.blue);
+		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public Vec3 getFogColor(float par1, float par2) {
-		return Vec3.createVectorHelper(0.1D, 0.0D, 0.0D);
+	public Vec3 getFogColor(float celestialAngle, float par2) {
+		final float factor = Commons.clamp(0.0F, 1.0F, MathHelper.cos(celestialAngle * (float) Math.PI * 2.0F) * 2.0F + 0.5F);
+		
+		float red   = celestialObject == null ? 0.0F : celestialObject.colorFog.red;
+		float green = celestialObject == null ? 0.0F : celestialObject.colorFog.green;
+		float blue  = celestialObject == null ? 0.0F : celestialObject.colorFog.blue;
+		float factorRed   = celestialObject == null ? 0.0F : celestialObject.factorFog.red;
+		float factorGreen = celestialObject == null ? 0.0F : celestialObject.factorFog.green;
+		float factorBlue  = celestialObject == null ? 0.0F : celestialObject.factorFog.blue;
+		red   *= factor * factorRed   + (1.0F - factorRed  );
+		green *= factor * factorGreen + (1.0F - factorGreen);
+		blue  *= factor * factorBlue  + (1.0F - factorBlue );
+		return Vec3.createVectorHelper(red, green, blue);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public float getStarBrightness(float partialTicks) {
+		if (celestialObject == null) {
+			return 0.0F;
+		}
+		final float starBrightnessVanilla = super.getStarBrightness(partialTicks);
+		return celestialObject.baseStarBrightness + celestialObject.vanillaStarBrightness * starBrightnessVanilla;
 	}
 	
 	@SideOnly(Side.CLIENT)

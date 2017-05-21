@@ -4,8 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapRegistryItem;
-import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.data.RadarEcho;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -21,7 +20,8 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityRadar extends TileEntityAbstractEnergy {
-	private ArrayList<StarMapRegistryItem> results;
+	
+	private ArrayList<RadarEcho> results;
 	
 	// radius defined for next scan
 	private int radius = 0;
@@ -58,7 +58,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			if (getBlockMetadata() == 2) {
 				scanning_ticks++;
 				if (scanning_ticks > scanningDuration_ticks) {
-					results = WarpDrive.starMap.radarScan(this, scanningRadius);
+					results = WarpDrive.starMap.getRadarEchos(this, scanningRadius);
 					if (WarpDriveConfig.LOGGING_RADAR) {
 						WarpDrive.logger.info(this + " Scan found " + results.size() + " results in " + scanningRadius + " radius...");
 					}
@@ -209,13 +209,12 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		}
 		Object[] objectResults = new Object[results.size()];
 		int index = 0;
-		for (StarMapRegistryItem starMapRegistryItem : results) {
-			final VectorI spaceCoordinates = starMapRegistryItem.getSpaceCoordinates();
+		for (RadarEcho radarEcho : results) {
 			objectResults[index++] = new Object[] {
-					starMapRegistryItem.type.toString(),
-					starMapRegistryItem.name == null ? "" : starMapRegistryItem.name,
-					spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z,
-					starMapRegistryItem.mass };
+					radarEcho.type,
+					radarEcho.name == null ? "" : radarEcho.name,
+					radarEcho.x, radarEcho.y, radarEcho.z,
+					radarEcho.mass };
 		}
 		return objectResults;
 	}
@@ -236,15 +235,14 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}
 			if (index >= 0 && index < results.size()) {
-				StarMapRegistryItem starMapRegistryItem = results.get(index);
-				if (starMapRegistryItem != null) {
-					VectorI spaceCoordinates = starMapRegistryItem.getSpaceCoordinates();
+				RadarEcho radarEcho = results.get(index);
+				if (radarEcho != null) {
 					return new Object[] {
 							true,
-							starMapRegistryItem.type.toString(),
-							starMapRegistryItem.name == null ? "" : starMapRegistryItem.name,
-							spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z,
-							starMapRegistryItem.mass };
+							radarEcho.type,
+							radarEcho.name == null ? "" : radarEcho.name,
+							radarEcho.x, radarEcho.y, radarEcho.z,
+							radarEcho.mass };
 				}
 			}
 		}
