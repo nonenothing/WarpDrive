@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
-<worldGeneration version="2" xmlns="WarpDrive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="WarpDrive warpDrive.xsd">
+<worldGeneration version="2"
+				 xmlns="WarpDrive"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="WarpDrive warpDrive.xsd">
 
 	<!-- all possible overworld ores, mostly for reference purpose -->
 	<fillerSet group="overworld_allOres" name="stone">
@@ -216,6 +218,71 @@
 			<filler block="WarpDrive:blockGas" metadata="%gasMetadata%" weight="100" />
 		</fillerSet>
 	</for>
+	
+	
+	<!-- ship hull -->
+	<for variable="colorMetadata" in="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15">
+		<fillerSet group="hull_plain" name="clay_%colorMetadata%" weight="20">
+			<filler block="minecraft:stained_hardened_clay" metadata="%colorMetadata%" weight="100" />
+		</fillerSet>
+		<fillerSet group="hull_glass" name="clay_%colorMetadata%" weight="20">
+			<filler block="minecraft:stained_glass" metadata="%colorMetadata%" weight="100" />
+		</fillerSet>
+		<fillerSet group="hull_plain" name="basic_%colorMetadata%" weight="40">
+			<filler block="WarpDrive:blockHull1_plain" metadata="%colorMetadata%" weight="100" />
+		</fillerSet>
+		<fillerSet group="hull_glass" name="basic_%colorMetadata%" weight="40">
+			<filler block="WarpDrive:blockHull1_glass" metadata="%colorMetadata%" weight="100" />
+		</fillerSet>
+		<fillerSet group="hull_plain" name="advanced_%colorMetadata%" weight="10">
+			<filler block="WarpDrive:blockHull2_plain" metadata="%colorMetadata%" weight="100" />
+		</fillerSet>
+		<fillerSet group="hull_glass" name="advanced_%colorMetadata%" weight="10">
+			<filler block="WarpDrive:blockHull2_glass" metadata="%colorMetadata%" weight="100" />
+		</fillerSet>
+	</for>
+	<fillerSet group="hull_plain" name="ic2" weight="1" mods="IC2">
+		<filler block="IC2:blockAlloy" metadata="0" weight="100" />
+	</fillerSet>
+	<fillerSet group="hull_glass" name="ic2" weight="1" mods="IC2">
+		<filler block="IC2:blockAlloyGlass" metadata="0" weight="100" />
+	</fillerSet>
+	
+	
+	<!-- ship solar panel -->
+    <fillerSet group="solar" name="advancedSolarPanel" weight="20" mods="AdvancedSolarPanel">
+        <filler block="AdvancedSolarPanel:BlockAdvSolarPanel" metadata="0" weight="100" />
+    </fillerSet>
+    <fillerSet group="solar" name="advancedSolarPanel" weight="10" mods="AdvancedSolarPanel">
+        <filler block="AdvancedSolarPanel:BlockAdvSolarPanel" metadata="1" weight="100" />
+    </fillerSet>
+    <fillerSet group="solar" name="ic2" weight="10" mods="IC2">
+        <filler block="IC2:blockGenerator" metadata="3" weight="100" />
+    </fillerSet>
+    <fillerSet group="solar" name="enderIO" weight="10" mods="EnderIO">
+        <filler block="EnderIO:blockSolarPanel" metadata="0" weight="100" />
+    </fillerSet>
+    <fillerSet group="solar" name="vanilla" weight="1">
+        <filler block="minecraft:air" weight="100" />
+    </fillerSet>
+
+
+	<!-- ship wiring -->
+    <fillerSet group="cable" name="ic2" weight="10" mods="IC2">
+        <filler block="IC2:blockCable" metadata="0" weight="100" />
+    </fillerSet>
+    <fillerSet group="cable" name="ic2" weight="10" mods="IC2">
+        <filler block="IC2:blockCable" metadata="3" weight="100" />
+    </fillerSet>
+    <fillerSet group="cable" name="ic2" weight="10" mods="IC2">
+        <filler block="IC2:blockCable" metadata="6" weight="100" />
+    </fillerSet>
+    <fillerSet group="cable" name="ic2" weight="10" mods="IC2">
+        <filler block="IC2:blockCable" metadata="9" weight="100" />
+    </fillerSet>
+    <fillerSet group="cable" name="vanilla" weight="5">
+        <filler block="minecraft:air" weight="100" />
+    </fillerSet>
 
 
 

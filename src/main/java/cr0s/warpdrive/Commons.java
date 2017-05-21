@@ -7,12 +7,17 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -366,5 +371,45 @@ public class Commons {
 			stringBuilder.append("\n\n");
 		}
 		WarpDrive.logger.error(stringBuilder.toString());
+	}
+	
+	public static void writeNBTToFile(String fileName, NBTTagCompound nbttagcompound) {
+		WarpDrive.logger.info("writeNBTToFile " + fileName);
+		
+		try {
+			File file = new File(fileName);
+			if (!file.exists()) {
+				//noinspection ResultOfMethodCallIgnored
+				file.createNewFile();
+			}
+			
+			FileOutputStream fileoutputstream = new FileOutputStream(file);
+			
+			CompressedStreamTools.writeCompressed(nbttagcompound, fileoutputstream);
+			
+			fileoutputstream.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	public static NBTTagCompound readNBTFromFile(String fileName) {
+		try {
+			File file = new File(fileName);
+			if (!file.exists()) {
+				return null;
+			}
+			
+			FileInputStream fileinputstream = new FileInputStream(file);
+			NBTTagCompound nbttagcompound = CompressedStreamTools.readCompressed(fileinputstream);
+			
+			fileinputstream.close();
+			
+			return nbttagcompound;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
 	}
 }

@@ -164,7 +164,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		WarpDrive.logger.info("Generating small ship at " + x2 + " " + y2 + " " + z2);
-		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F).generate(world, world.rand, x2, y2, z2);
+		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F, false).generate(world, world.rand, x2, y2, z2);
 	}
 	
 	private static void generateStation(final World world, final int x, final int y, final int z, final int jitter) {

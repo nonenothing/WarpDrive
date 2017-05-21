@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <worldGeneration version="2"
-    xmlns="WarpDrive"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="WarpDrive warpDrive.xsd">
+				 xmlns="WarpDrive"
+				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="WarpDrive WarpDrive.xsd">
 
 	<structure group="star" name="red_dwarf" ratio="0.2">
 		<shell name="core" minThickness="40" maxThickness="50"><!-- legacy radius was 42 -->

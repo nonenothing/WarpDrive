@@ -1,16 +1,21 @@
 package cr0s.warpdrive.world;
 
-
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.JumpBlock;
+import cr0s.warpdrive.data.JumpShip;
+import cr0s.warpdrive.data.Transformation;
 
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
 public class WorldGenStructure {
+	
 	private Block hullPlain_block;
 	private int hullPlain_metadata;
 	private Block hullGlass_block;
@@ -19,6 +24,8 @@ public class WorldGenStructure {
 	private int solarPanel_metadata;
 	private Block cable_block;
 	private int cable_metadata;
+	private Block resource_block;
+	private int resource_metadata;
 	private final boolean corrupted;
 	private final Random rand;
 	
@@ -109,6 +116,33 @@ public class WorldGenStructure {
 				break;
 			}
 		}
+		
+		// choose a resource block
+		resource_block = Blocks.redstone_block;
+		resource_metadata = 0;
+		switch (rand.nextInt(10)) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+		case 5:
+			resource_block = Blocks.redstone_block;
+			break;
+		
+		case 6:
+		case 7:
+			resource_block = Blocks.lapis_block;
+			break;
+		
+		case 8:
+		case 9:
+			resource_block = Blocks.coal_block;
+			break;
+		
+		default:
+			break;
+		}
 	}
 	
 	public void setHullPlain(World world, final int x, final int y, final int z) {
@@ -129,6 +163,14 @@ public class WorldGenStructure {
 		}
 	}
 	
+	public void setSolarPanel(World world, final int x, final int y, final int z) {
+		if (corrupted && (rand.nextInt(3) == 1)) {
+			world.setBlock(x, y, z, Blocks.air, 0, 2);
+		} else {
+			world.setBlock(x, y, z, solarPanel_block, solarPanel_metadata, 2);
+		}
+	}
+	
 	public void setCable(World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(3) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
@@ -137,11 +179,55 @@ public class WorldGenStructure {
 		}
 	}
 	
-	public void setSolarPanel(World world, final int x, final int y, final int z) {
-		if (corrupted && (rand.nextInt(3) == 1)) {
-			world.setBlock(x, y, z, Blocks.air, 0, 2);
-		} else {
-			world.setBlock(x, y, z, solarPanel_block, solarPanel_metadata, 2);
+	public void setResource(World world, final int x, final int y, final int z) {
+		world.setBlock(x, y, z, resource_block, resource_metadata, 2);
+	}
+	
+	public void generateFromFile(final World world, final String filename, final int targetX, final int targetY, final int targetZ, final byte rotationSteps) {
+		StringBuilder reason = new StringBuilder();
+		final JumpShip jumpShip = JumpShip.createFromFile(filename, reason);
+		if (jumpShip == null) {
+			WarpDrive.logger.error(String.format("%s Failed to read schematic %s: %s", this, filename, reason.toString()));
+			return;
+		}
+		deployShip(world, jumpShip, targetX, targetY, targetZ, rotationSteps);
+	}
+	
+	public void deployShip(final World world, final JumpShip jumpShip, final int targetX, final int targetY, final int targetZ, final byte rotationSteps) {
+		
+		Transformation transformation = new Transformation(jumpShip, world, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
+		for (int index = 0; index < jumpShip.jumpBlocks.length; index++) {
+			// Deploy single block
+			JumpBlock jumpBlock = jumpShip.jumpBlocks[index];
+			
+			if (jumpBlock == null) {
+				if (WarpDriveConfig.LOGGING_BUILDING) {
+					WarpDrive.logger.info("At index " + index + ", skipping undefined block");
+				}
+			} else if (jumpBlock.block == Blocks.air) {
+				if (WarpDriveConfig.LOGGING_BUILDING) {
+					WarpDrive.logger.info("At index " + index + ", skipping air block");
+				}
+			} else if (Dictionary.BLOCKS_ANCHOR.contains(jumpBlock.block)) {
+				if (WarpDriveConfig.LOGGING_BUILDING) {
+					WarpDrive.logger.info("At index " + index + ", skipping anchor block " + jumpBlock.block);
+				}
+			} else {
+				index++;
+				if (WarpDriveConfig.LOGGING_WORLD_GENERATION && WarpDrive.isDev) {
+					WarpDrive.logger.info("At index " + index + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
+					                      + " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
+				}
+				ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+				Block blockAtTarget = world.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);
+				if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
+					jumpBlock.deploy(world, transformation);
+				} else {
+					if (WarpDriveConfig.LOGGING_WORLD_GENERATION && WarpDrive.isDev) {
+						WarpDrive.logger.info("Deployment collision detected at " + (targetX + jumpBlock.x) + " " + (targetY + jumpBlock.y) + " " + (targetZ + jumpBlock.z));
+					}
+				}
+			}
 		}
 	}
 }

@@ -46,6 +46,92 @@ public class JumpShip {
 	public JumpShip() {
 	}
 	
+	public static JumpShip createFromFile(String fileName, StringBuilder reason) {
+		NBTTagCompound schematic = Commons.readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
+		if (schematic == null) {
+			reason.append(String.format("Schematic not found or unknown error reading it: '%s'.", fileName));
+			return null;
+		}
+		
+		final JumpShip jumpShip = new JumpShip();
+		
+		// Compute geometry
+		// int shipMass = schematic.getInteger("shipMass");
+		// String shipName = schematic.getString("shipName");
+		// int shipVolume = schematic.getInteger("shipVolume");
+		if (schematic.hasKey("ship")) {
+			jumpShip.readFromNBT(schematic.getCompoundTag("ship"));
+			
+		} else {
+			// Set deployment variables
+			final short width = schematic.getShort("Width");
+			final short height = schematic.getShort("Height");
+			final short length = schematic.getShort("Length");
+			jumpShip.minX = 0;
+			jumpShip.maxX = width - 1;
+			jumpShip.minY = 0;
+			jumpShip.maxY = height - 1;
+			jumpShip.minZ = 0;
+			jumpShip.maxZ = length - 1;
+			jumpShip.coreX = 0;
+			jumpShip.coreY = 0;
+			jumpShip.coreZ = 0;
+			jumpShip.jumpBlocks = new JumpBlock[width * height * length];
+			
+			// Read blocks and TileEntities from NBT to internal storage array
+			final NBTTagList localBlocks = (NBTTagList) schematic.getTag("Blocks");
+			final byte localMetadata[] = schematic.getByteArray("Data");
+			
+			// Load Tile Entities
+			final NBTTagCompound[] tileEntities = new NBTTagCompound[jumpShip.jumpBlocks.length];
+			final NBTTagList tagListTileEntities = schematic.getTagList("TileEntities", Constants.NBT.TAG_COMPOUND);
+			
+			for (int i = 0; i < tagListTileEntities.tagCount(); i++) {
+				final NBTTagCompound tagTileEntity = tagListTileEntities.getCompoundTagAt(i);
+				final int teX = tagTileEntity.getInteger("x");
+				final int teY = tagTileEntity.getInteger("y");
+				final int teZ = tagTileEntity.getInteger("z");
+				
+				tileEntities[teX + (teY * length + teZ) * width] = tagTileEntity;
+			}
+			
+			// Create list of blocks to deploy
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					for (int z = 0; z < length; z++) {
+						final int index = x + (y * length + z) * width;
+						JumpBlock jumpBlock = new JumpBlock();
+						
+						jumpBlock.x = x;
+						jumpBlock.y = y;
+						jumpBlock.z = z;
+						jumpBlock.block = Block.getBlockFromName(localBlocks.getStringTagAt(index));
+						jumpBlock.blockMeta = (localMetadata[index]) & 0xFF;
+						jumpBlock.blockNBT = tileEntities[index];
+						
+						if (jumpBlock.block != null) {
+							if (WarpDriveConfig.LOGGING_BUILDING) {
+								if (tileEntities[index] == null) {
+									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
+										                      + " (no tile entity)");
+								} else {
+									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
+										                      + " with tile entity " + tileEntities[index].getString("id"));
+								}
+							}
+						} else {
+							jumpBlock = null;
+						}
+						jumpShip.jumpBlocks[index] = jumpBlock;
+					}
+				}
+			}
+		}
+		return jumpShip;
+	}
+	
 	public void messageToAllPlayersOnShip(String message) {
 		if (entitiesOnShip == null) {
 			shipCore.messageToAllPlayersOnShip(message);

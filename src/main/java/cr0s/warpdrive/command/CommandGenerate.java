@@ -69,7 +69,7 @@ public class CommandGenerate extends CommandBase {
 			switch (structure) {
 				case "ship":
 					WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
-					new WorldGenSmallShip(false).generate(world, world.rand, x, y, z);
+					new WorldGenSmallShip(false, true).generate(world, world.rand, x, y, z);
 					break;
 				case "station":
 					WarpDrive.logger.info("/generate: generating station at " + x + ", " + y + ", " + z);

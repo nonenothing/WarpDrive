@@ -47,13 +47,17 @@ import net.minecraft.block.BlockVine;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
+import net.minecraftforge.common.util.Constants;
+
 public class JumpBlock {
+	
 	public Block block;
 	public int blockMeta;
 	public TileEntity blockTileEntity;
@@ -65,7 +69,7 @@ public class JumpBlock {
 	
 	public JumpBlock() {
 	}
-
+	
 	public JumpBlock(Block block, int blockMeta, TileEntity tileEntity, int x, int y, int z) {
 		this.block = block;
 		this.blockMeta = blockMeta;
@@ -211,14 +215,14 @@ public class JumpBlock {
 		}
 		
 		switch (rotationSteps) {
-			case 1:
-				return mrot[blockMeta];
-			case 2:
-				return mrot[mrot[blockMeta]];
-			case 3:
-				return mrot[mrot[mrot[blockMeta]]];
-			default:
-				return blockMeta;
+		case 1:
+			return mrot[blockMeta];
+		case 2:
+			return mrot[mrot[blockMeta]];
+		case 3:
+			return mrot[mrot[mrot[blockMeta]]];
+		default:
+			return blockMeta;
 		}
 	}
 	
@@ -340,10 +344,10 @@ public class JumpBlock {
 		if (tileEntity != null) {
 			Class<?> teClass = tileEntity.getClass();
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info(String.format("Refreshing clients at %d %d %d with %s derived from %s", 
-				                                    x, y, z, 
-						                            teClass, 
-						                            teClass.getSuperclass()));
+				WarpDrive.logger.info(String.format("Refreshing clients at %d %d %d with %s derived from %s",
+				                                    x, y, z,
+				                                    teClass,
+				                                    teClass.getSuperclass()));
 			}
 			try {
 				String superClassName = teClass.getSuperclass().getName();
@@ -447,7 +451,7 @@ public class JumpBlock {
 	
 	public void writeToNBT(NBTTagCompound tag) {
 		tag.setString("block", Block.blockRegistry.getNameForObject(block));
-		tag.setByte("blockMeta", (byte)blockMeta);
+		tag.setByte("blockMeta", (byte) blockMeta);
 		if (blockTileEntity != null) {
 			NBTTagCompound tagCompound = new NBTTagCompound();
 			blockTileEntity.writeToNBT(tagCompound);
@@ -468,6 +472,87 @@ public class JumpBlock {
 				}
 			}
 			tag.setTag("externals", tagCompoundExternals);
+		}
+	}
+	
+	public void removeUniqueIDs() {
+		removeUniqueIDs(blockNBT);
+	}
+	
+	public static void removeUniqueIDs(NBTTagCompound nbtTagCompound) {
+		if (nbtTagCompound == null) {
+			return;
+		}
+		// ComputerCraft computer
+		if (nbtTagCompound.hasKey("computerID")) {
+			nbtTagCompound.removeTag("computerID");
+			nbtTagCompound.removeTag("label");
+		}
+		// WarpDrive any OC connected tile
+		if (nbtTagCompound.hasKey("oc:node")) {
+			nbtTagCompound.removeTag("oc:node");
+		}
+		// OpenComputers case
+		if (nbtTagCompound.hasKey("oc:computer")) {
+			NBTTagCompound tagComputer = nbtTagCompound.getCompoundTag("oc:computer");
+			tagComputer.removeTag("chunkX");
+			tagComputer.removeTag("chunkZ");
+			tagComputer.removeTag("components");
+			tagComputer.removeTag("dimension");
+			tagComputer.removeTag("node");
+			nbtTagCompound.setTag("oc:computer", tagComputer);
+		}
+		// OpenComputers case
+		if (nbtTagCompound.hasKey("oc:items")) {
+			NBTTagList tagListItems = nbtTagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
+			for (int indexItemSlot = 0; indexItemSlot < tagListItems.tagCount(); indexItemSlot++) {
+				NBTTagCompound tagCompoundItemSlot = tagListItems.getCompoundTagAt(indexItemSlot);
+				NBTTagCompound tagCompoundItem = tagCompoundItemSlot.getCompoundTag("item");
+				NBTTagCompound tagCompoundTag = tagCompoundItem.getCompoundTag("tag");
+				NBTTagCompound tagCompoundOCData = tagCompoundTag.getCompoundTag("oc:data");
+				NBTTagCompound tagCompoundNode = tagCompoundOCData.getCompoundTag("node");
+				if (tagCompoundNode.hasKey("address")) {
+					tagCompoundNode.removeTag("address");
+				}
+			}
+		}
+		
+		// OpenComputers keyboard
+		if (nbtTagCompound.hasKey("oc:keyboard")) {
+			NBTTagCompound tagCompoundKeyboard = nbtTagCompound.getCompoundTag("oc:keyboard");
+			tagCompoundKeyboard.removeTag("node");
+		}
+		
+		// OpenComputers screen
+		if (nbtTagCompound.hasKey("oc:hasPower")) {
+			nbtTagCompound.removeTag("node");
+		}
+	}
+	
+	public void emptyEnergyStorage() {
+		// IC2
+		if (blockNBT.hasKey("energy")) {
+			// energy_consume((int)Math.round(blockNBT.getDouble("energy")), true);
+			blockNBT.setDouble("energy", 0);
+		}
+		// Gregtech
+		if (blockNBT.hasKey("mStoredEnergy")) {
+			blockNBT.setInteger("mStoredEnergy", 0);
+		}
+		// Immersive Engineering & Thermal Expansion
+		if (blockNBT.hasKey("Energy")) {
+			// energy_consume(blockNBT.getInteger("Energy"), true);
+			blockNBT.setInteger("Energy", 0);
+		}
+		if (blockNBT.hasKey("Owner")) {
+			blockNBT.setString("Owner", "None");
+		}
+		// Mekanism
+		if (blockNBT.hasKey("electricityStored")) {
+			blockNBT.setDouble("electricityStored", 0);
+		}
+		if (blockNBT.hasKey("owner")) {
+			blockNBT.setString("owner", "None");
 		}
 	}
 	
