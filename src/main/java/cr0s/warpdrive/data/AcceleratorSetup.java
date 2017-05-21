@@ -378,6 +378,8 @@ public class AcceleratorSetup extends GlobalPosition {
 	
 	public boolean isMajorChange(final AcceleratorSetup acceleratorSetup) {
 		return acceleratorSetup == null
+			|| trajectoryAccelerator == null
+		    || acceleratorSetup.trajectoryAccelerator == null
 		    || trajectoryAccelerator.size() != acceleratorSetup.trajectoryAccelerator.size()
 		    || trajectoryTransfer.size() != acceleratorSetup.trajectoryTransfer.size()
 		    || countMagnets[0] != acceleratorSetup.countMagnets[0]
