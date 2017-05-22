@@ -5,8 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import defense.api.IEMPBlock;
-import defense.api.IExplosion;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -25,9 +23,10 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 @Optional.InterfaceList({
-    @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
+	@Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech"),
+	@Optional.Interface(iface = "resonant.api.explosion.IEMPBlock", modid = "icbmclassic")
 })
-public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
+public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, defense.api.IEMPBlock, resonant.api.explosion.IEMPBlock {
 	
 	protected boolean isRotating = false;
 	protected boolean hasSubBlocks = false;
@@ -124,9 +123,24 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	@Optional.Method(modid = "DefenseTech")
-	public void onEMP(World world, int x, int y, int z, IExplosion explosiveEMP) {
+	public void onEMP(World world, int x, int y, int z, defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info("EMP received at " + x + " " + y + " " + z + " from " + explosiveEMP + " with energy " + explosiveEMP.getEnergy() + " and radius " + explosiveEMP.getRadius());
+			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.dimensionId, x, y, z,
+			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+		}
+		// EMP tower = 3k Energy, 60 radius
+		// EMP explosive = 3k Energy, 50 radius
+		onEMP(world, x, y, z, explosiveEMP.getRadius() / 100.0F);
+	}
+	
+	@Override
+	@Optional.Method(modid = "icbmclassic")
+	public void onEMP(World world, int x, int y, int z, resonant.api.explosion.IExplosion explosiveEMP) {
+		if (WarpDriveConfig.LOGGING_WEAPON) {
+			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.dimensionId, x, y, z,
+			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
 		// EMP explosive = 3k Energy, 50 radius
