@@ -1,5 +1,6 @@
 package cr0s.warpdrive.event;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
@@ -37,10 +38,14 @@ public class ChunkHandler {
 			return;
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
-			WarpDrive.logger.info(String.format("World %s load", 
+			WarpDrive.logger.info(String.format("World %s load.", 
 			                                    event.world.provider.getDimensionName()));
 		}
-		// @TODO load star map
+		
+		// load star map
+		final String filename = String.format("%s/%s.dat", event.world.getSaveHandler().getWorldDirectory().getPath(), WarpDrive.MODID);
+		final NBTTagCompound tagCompound = Commons.readNBTFromFile(filename);
+		WarpDrive.starMap.readFromNBT(tagCompound);
 	}
 	
 	// (server side only)
@@ -52,7 +57,7 @@ public class ChunkHandler {
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
+		final ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
 		chunkData.load(event.getData());
 	}
 	
@@ -66,7 +71,7 @@ public class ChunkHandler {
 				                                    event.getChunk().getChunkCoordIntPair()));
 			}
 			
-			ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
+			final ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
 			chunkData.load(new NBTTagCompound());
 		}
 	}
@@ -91,7 +96,7 @@ public class ChunkHandler {
 			                                    event.world.provider.getDimensionName(),
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
-		ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
+		final ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
 		chunkData.save(event.getData());
 	}
 	
@@ -102,10 +107,15 @@ public class ChunkHandler {
 			return;
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
-			WarpDrive.logger.info(String.format("World %s saved",
+			WarpDrive.logger.info(String.format("World %s saved.",
 			                                    event.world.provider.getDimensionName()));
 		}
-		// @TODO save star map
+		
+		// save star map
+		final String filename = String.format("%s/%s.dat", event.world.getSaveHandler().getWorldDirectory().getPath(), WarpDrive.MODID);
+		final NBTTagCompound tagCompound = new NBTTagCompound();
+		WarpDrive.starMap.writeToNBT(tagCompound);
+		Commons.writeNBTToFile(filename, tagCompound);
 	}
 	
 	@SubscribeEvent
@@ -116,7 +126,7 @@ public class ChunkHandler {
 		}
 		
 		// get dimension data
-		Map<Long, ChunkData> mapRegistryItems = registry.get(event.world.provider.dimensionId);
+		final Map<Long, ChunkData> mapRegistryItems = registry.get(event.world.provider.dimensionId);
 		if (mapRegistryItems != null) {
 			// unload chunks during shutdown
 			for (ChunkData chunkData : mapRegistryItems.values()) {
@@ -129,6 +139,7 @@ public class ChunkHandler {
 		if (event.world.isRemote || event.world.provider.dimensionId != 0) {
 			return;
 		}
+		
 		// @TODO unload star map
 	}
 	
@@ -248,7 +259,7 @@ public class ChunkHandler {
 			return true;
 		}
 		chunkData.updateTick(world);
-		ChunkCoordIntPair chunkCoordIntPair = chunkData.getChunkCoords();
+		final ChunkCoordIntPair chunkCoordIntPair = chunkData.getChunkCoords();
 		// skip chunks with unloaded neighbours
 		if ( isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos + 1, chunkCoordIntPair.chunkZPos)
 		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos - 1, chunkCoordIntPair.chunkZPos)

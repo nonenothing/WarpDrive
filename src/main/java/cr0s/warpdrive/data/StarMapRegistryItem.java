@@ -6,6 +6,7 @@ import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
@@ -138,6 +139,47 @@ public class StarMapRegistryItem extends GlobalPosition {
 	
 	public boolean contains(final int x, final int y, final int z) {
 		return minX <= x && x <= maxX && minY <= y && y <= maxY && minZ <= z && z <= maxZ;
+	}
+	
+	
+	public StarMapRegistryItem(final NBTTagCompound tagCompound) {
+		super(tagCompound);
+		type = EnumStarMapEntryType.getByName(tagCompound.getString("type"));
+		UUID uuidLocal = new UUID(tagCompound.getLong("uuidMost"), tagCompound.getLong("uuidLeast"));
+		if (uuidLocal.getMostSignificantBits() == 0 && uuidLocal.getLeastSignificantBits() == 0) {
+			uuidLocal = UUID.randomUUID();
+		}
+		uuid = uuidLocal;
+		maxX = tagCompound.getInteger("maxX");
+		maxY = tagCompound.getInteger("maxY");
+		maxZ = tagCompound.getInteger("maxZ");
+		minX = tagCompound.getInteger("minX");
+		minY = tagCompound.getInteger("minY");
+		minZ = tagCompound.getInteger("minZ");
+		mass = tagCompound.getInteger("mass");
+		isolationRate = tagCompound.getDouble("isolationRate");
+		name = tagCompound.getString("name");
+	}
+	
+	@Override
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setString("type", type.getName());
+		if (uuid != null) {
+			tagCompound.setLong("uuidMost", uuid.getMostSignificantBits());
+			tagCompound.setLong("uuidLeast", uuid.getLeastSignificantBits());
+		}
+		tagCompound.setInteger("maxX", maxX);
+		tagCompound.setInteger("maxY", maxY);
+		tagCompound.setInteger("maxZ", maxZ);
+		tagCompound.setInteger("minX", minX);
+		tagCompound.setInteger("minY", minY);
+		tagCompound.setInteger("minZ", minZ);
+		tagCompound.setInteger("mass", mass);
+		tagCompound.setDouble("isolationRate", isolationRate);
+		if (name != null && !name.isEmpty()) {
+			tagCompound.setString("name", name);
+		}
 	}
 	
 	@Override

@@ -12,11 +12,14 @@ import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
@@ -26,6 +29,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.ChunkProviderServer;
 
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.util.Constants;
 
 /**
  * Registry of all known ships, jumpgates, etc. in the world
@@ -309,13 +313,15 @@ public class StarMapRegistry {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
 		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
-			String message = "";
+			StringBuilder message = new StringBuilder();
 			for (StarMapRegistryItem registryItem : entryDimension.getValue()) {
-				message += "\n- " + registryItem.type + " '" + registryItem.name + "' @ "
-						+ registryItem.dimensionId + ": " + registryItem.x + " " + registryItem.y + " " + registryItem.z
-						+ " with " + registryItem.isolationRate + " isolation rate";
+				message.append(String.format("\n- %s '%s' @ DIM%d (%d %d %d) with %.3f isolation rate",
+				                             registryItem.type, registryItem.name,
+				                             registryItem.dimensionId, registryItem.x, registryItem.y, registryItem.z,
+				                             registryItem.isolationRate));
 			}
-			WarpDrive.logger.info("- " + entryDimension.getValue().size() + " entries in dimension " + entryDimension.getKey() + ": " + message);
+			WarpDrive.logger.info(String.format("- %d entries in dimension %d: %s",
+			                                    entryDimension.getValue().size(), entryDimension.getKey(), message.toString()));
 		}
 	}
 	
@@ -442,5 +448,55 @@ public class StarMapRegistry {
 		}
 		
 		LocalProfiler.stop();
+	}
+	
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		if (tagCompound == null || !tagCompound.hasKey("starMapRegistryItems")) {
+			registry.clear();
+			return;
+		}
+		
+		// read all entries in a flat structure
+		final NBTTagList tagList = tagCompound.getTagList("starMapRegistryItems", Constants.NBT.TAG_COMPOUND);
+		final StarMapRegistryItem[] registryFlat = new StarMapRegistryItem[tagList.tagCount()];
+		final HashMap<Integer, Integer> sizeDimensions = new HashMap<>();
+		for(int index = 0; index < tagList.tagCount(); index++) {
+			final StarMapRegistryItem starMapRegistryItem = new StarMapRegistryItem(tagList.getCompoundTagAt(index));
+			registryFlat[index] = starMapRegistryItem;
+			
+			// update stats
+			Integer count = sizeDimensions.computeIfAbsent(starMapRegistryItem.dimensionId, k -> (Integer) 0);
+			count++;
+			sizeDimensions.put(starMapRegistryItem.dimensionId, count);
+		}
+		
+		// pre-build the local collections using known stats to avoid re-allocations
+		final HashMap<Integer, ArrayList<StarMapRegistryItem>> registryLocal = new HashMap<>();
+		for(Entry<Integer, Integer> entryDimension : sizeDimensions.entrySet()) {
+			registryLocal.put(entryDimension.getKey(), new ArrayList<>(entryDimension.getValue()));
+		}
+		
+		// fill the local collections
+		for(StarMapRegistryItem starMapRegistryItem : registryFlat) {
+			registryLocal.get(starMapRegistryItem.dimensionId).add(starMapRegistryItem);
+		}
+		
+		// transfer to main one
+		registry.clear();
+		for(Entry<Integer, ArrayList<StarMapRegistryItem>> entry : registryLocal.entrySet()) {
+			registry.put(entry.getKey(), new CopyOnWriteArraySet<>(entry.getValue()));
+		}
+	}
+	
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		final NBTTagList tagList = new NBTTagList();
+		for(CopyOnWriteArraySet<StarMapRegistryItem> starMapRegistryItems : registry.values()) {
+			for(StarMapRegistryItem starMapRegistryItem : starMapRegistryItems) {
+				final NBTTagCompound tagCompoundItem = new NBTTagCompound();
+				starMapRegistryItem.writeToNBT(tagCompoundItem);
+				tagList.appendTag(tagCompoundItem);
+			}
+		}
+		tagCompound.setTag("starMapRegistryItems", tagList);
 	}
 }
