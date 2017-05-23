@@ -371,20 +371,20 @@ public class JumpShip {
 		return true;
 	}
 	
-	public void readFromNBT(NBTTagCompound tag) {
-		coreX = tag.getInteger("coreX");
-		coreY = tag.getInteger("coreY");
-		coreZ = tag.getInteger("coreZ");
-		dx = tag.getInteger("dx");
-		dz = tag.getInteger("dz");
-		maxX = tag.getInteger("maxX");
-		maxZ = tag.getInteger("maxZ");
-		maxY = tag.getInteger("maxY");
-		minX = tag.getInteger("minX");
-		minZ = tag.getInteger("minZ");
-		minY = tag.getInteger("minY");
-		actualMass = tag.getInteger("actualMass");
-		NBTTagList tagList = tag.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		coreX = tagCompound.getInteger("coreX");
+		coreY = tagCompound.getInteger("coreY");
+		coreZ = tagCompound.getInteger("coreZ");
+		dx = tagCompound.getInteger("dx");
+		dz = tagCompound.getInteger("dz");
+		maxX = tagCompound.getInteger("maxX");
+		maxZ = tagCompound.getInteger("maxZ");
+		maxY = tagCompound.getInteger("maxY");
+		minX = tagCompound.getInteger("minX");
+		minZ = tagCompound.getInteger("minZ");
+		minY = tagCompound.getInteger("minY");
+		actualMass = tagCompound.getInteger("actualMass");
+		final NBTTagList tagList = tagCompound.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
 		jumpBlocks = new JumpBlock[tagList.tagCount()];
 		for(int index = 0; index < tagList.tagCount(); index++) {
 			jumpBlocks[index] = new JumpBlock();
@@ -392,25 +392,25 @@ public class JumpShip {
 		}
 	}
 	
-	public void writeToNBT(NBTTagCompound tag) {
-		tag.setInteger("coreX", coreX);
-		tag.setInteger("coreY", coreY);
-		tag.setInteger("coreZ", coreZ);
-		tag.setInteger("dx", dx);
-		tag.setInteger("dz", dz);
-		tag.setInteger("maxX", maxX);
-		tag.setInteger("maxZ", maxZ);
-		tag.setInteger("maxY", maxY);
-		tag.setInteger("minX", minX);
-		tag.setInteger("minZ", minZ);
-		tag.setInteger("minY", minY);
-		tag.setInteger("actualMass", actualMass);
-		NBTTagList tagListJumpBlocks = new NBTTagList();
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("coreX", coreX);
+		tagCompound.setInteger("coreY", coreY);
+		tagCompound.setInteger("coreZ", coreZ);
+		tagCompound.setInteger("dx", dx);
+		tagCompound.setInteger("dz", dz);
+		tagCompound.setInteger("maxX", maxX);
+		tagCompound.setInteger("maxZ", maxZ);
+		tagCompound.setInteger("maxY", maxY);
+		tagCompound.setInteger("minX", minX);
+		tagCompound.setInteger("minZ", minZ);
+		tagCompound.setInteger("minY", minY);
+		tagCompound.setInteger("actualMass", actualMass);
+		final NBTTagList tagListJumpBlocks = new NBTTagList();
 		for (JumpBlock jumpBlock : jumpBlocks) {
-			NBTTagCompound tagCompoundBlock = new NBTTagCompound();
+			final NBTTagCompound tagCompoundBlock = new NBTTagCompound();
 			jumpBlock.writeToNBT(tagCompoundBlock);
 			tagListJumpBlocks.appendTag(tagCompoundBlock);
 		}
-		tag.setTag("jumpBlocks", tagListJumpBlocks);
+		tagCompound.setTag("jumpBlocks", tagListJumpBlocks);
 	}
 }

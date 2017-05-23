@@ -67,13 +67,13 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 		/**/
 	}
 	
-	public void WriteToNBT(NBTTagCompound tag) {
-		tag.setString("wd_structureGroup", structure.group);
-		tag.setString("wd_structureName", structure.name);
-		NBTTagCompound tagVariables = new NBTTagCompound();
+	public void WriteToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setString("wd_structureGroup", structure.group);
+		tagCompound.setString("wd_structureName", structure.name);
+		final NBTTagCompound tagVariables = new NBTTagCompound();
 		for (Entry<String, Double> entry : variables.entrySet()) {
 			tagVariables.setDouble(entry.getKey(), entry.getValue());
 		}
-		tag.setTag("wd_variables", tagVariables);
+		tagCompound.setTag("wd_variables", tagVariables);
 	}
 }

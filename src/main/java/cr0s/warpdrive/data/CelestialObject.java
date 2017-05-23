@@ -78,8 +78,8 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		parentCenterZ = parParentCenterZ;
 	}
 	
-	public CelestialObject(NBTTagCompound nbt) {
-		readFromNBT(nbt);
+	public CelestialObject(final NBTTagCompound tagCompound) {
+		readFromNBT(tagCompound);
 	}
 	
 	@Override

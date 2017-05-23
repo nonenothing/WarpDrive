@@ -62,8 +62,8 @@ public class OrbInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public void WriteToNBT(NBTTagCompound tag) {
-		super.WriteToNBT(tag);
+	public void WriteToNBT(NBTTagCompound tagCompound) {
+		super.WriteToNBT(tagCompound);
 		// TODO not implemented
 	}
 	

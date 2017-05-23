@@ -23,8 +23,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public void WriteToNBT(final NBTTagCompound tag) {
-		super.WriteToNBT(tag);
+	public void WriteToNBT(final NBTTagCompound tagCompound) {
+		super.WriteToNBT(tagCompound);
 		// TODO not implemented
 	}
 	

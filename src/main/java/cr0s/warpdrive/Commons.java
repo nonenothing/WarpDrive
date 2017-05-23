@@ -373,19 +373,21 @@ public class Commons {
 		WarpDrive.logger.error(stringBuilder.toString());
 	}
 	
-	public static void writeNBTToFile(String fileName, NBTTagCompound nbttagcompound) {
-		WarpDrive.logger.info("writeNBTToFile " + fileName);
+	public static void writeNBTToFile(final String fileName, final NBTTagCompound tagCompound) {
+		if (WarpDrive.isDev) {
+			WarpDrive.logger.info("writeNBTToFile " + fileName);
+		}
 		
 		try {
-			File file = new File(fileName);
+			final File file = new File(fileName);
 			if (!file.exists()) {
 				//noinspection ResultOfMethodCallIgnored
 				file.createNewFile();
 			}
 			
-			FileOutputStream fileoutputstream = new FileOutputStream(file);
+			final FileOutputStream fileoutputstream = new FileOutputStream(file);
 			
-			CompressedStreamTools.writeCompressed(nbttagcompound, fileoutputstream);
+			CompressedStreamTools.writeCompressed(tagCompound, fileoutputstream);
 			
 			fileoutputstream.close();
 		} catch (Exception exception) {
@@ -393,19 +395,23 @@ public class Commons {
 		}
 	}
 	
-	public static NBTTagCompound readNBTFromFile(String fileName) {
+	public static NBTTagCompound readNBTFromFile(final String fileName) {
+		if (WarpDrive.isDev) {
+			WarpDrive.logger.info("readNBTFromFile " + fileName);
+		}
+		
 		try {
-			File file = new File(fileName);
+			final File file = new File(fileName);
 			if (!file.exists()) {
 				return null;
 			}
 			
-			FileInputStream fileinputstream = new FileInputStream(file);
-			NBTTagCompound nbttagcompound = CompressedStreamTools.readCompressed(fileinputstream);
+			final FileInputStream fileinputstream = new FileInputStream(file);
+			final NBTTagCompound tagCompound = CompressedStreamTools.readCompressed(fileinputstream);
 			
 			fileinputstream.close();
 			
-			return nbttagcompound;
+			return tagCompound;
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}

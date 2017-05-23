@@ -479,32 +479,32 @@ public class JumpBlock {
 		removeUniqueIDs(blockNBT);
 	}
 	
-	public static void removeUniqueIDs(NBTTagCompound nbtTagCompound) {
-		if (nbtTagCompound == null) {
+	public static void removeUniqueIDs(final NBTTagCompound tagCompound) {
+		if (tagCompound == null) {
 			return;
 		}
 		// ComputerCraft computer
-		if (nbtTagCompound.hasKey("computerID")) {
-			nbtTagCompound.removeTag("computerID");
-			nbtTagCompound.removeTag("label");
+		if (tagCompound.hasKey("computerID")) {
+			tagCompound.removeTag("computerID");
+			tagCompound.removeTag("label");
 		}
 		// WarpDrive any OC connected tile
-		if (nbtTagCompound.hasKey("oc:node")) {
-			nbtTagCompound.removeTag("oc:node");
+		if (tagCompound.hasKey("oc:node")) {
+			tagCompound.removeTag("oc:node");
 		}
 		// OpenComputers case
-		if (nbtTagCompound.hasKey("oc:computer")) {
-			NBTTagCompound tagComputer = nbtTagCompound.getCompoundTag("oc:computer");
+		if (tagCompound.hasKey("oc:computer")) {
+			NBTTagCompound tagComputer = tagCompound.getCompoundTag("oc:computer");
 			tagComputer.removeTag("chunkX");
 			tagComputer.removeTag("chunkZ");
 			tagComputer.removeTag("components");
 			tagComputer.removeTag("dimension");
 			tagComputer.removeTag("node");
-			nbtTagCompound.setTag("oc:computer", tagComputer);
+			tagCompound.setTag("oc:computer", tagComputer);
 		}
 		// OpenComputers case
-		if (nbtTagCompound.hasKey("oc:items")) {
-			NBTTagList tagListItems = nbtTagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
+		if (tagCompound.hasKey("oc:items")) {
+			NBTTagList tagListItems = tagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
 			for (int indexItemSlot = 0; indexItemSlot < tagListItems.tagCount(); indexItemSlot++) {
 				NBTTagCompound tagCompoundItemSlot = tagListItems.getCompoundTagAt(indexItemSlot);
 				NBTTagCompound tagCompoundItem = tagCompoundItemSlot.getCompoundTag("item");
@@ -518,41 +518,45 @@ public class JumpBlock {
 		}
 		
 		// OpenComputers keyboard
-		if (nbtTagCompound.hasKey("oc:keyboard")) {
-			NBTTagCompound tagCompoundKeyboard = nbtTagCompound.getCompoundTag("oc:keyboard");
+		if (tagCompound.hasKey("oc:keyboard")) {
+			NBTTagCompound tagCompoundKeyboard = tagCompound.getCompoundTag("oc:keyboard");
 			tagCompoundKeyboard.removeTag("node");
 		}
 		
 		// OpenComputers screen
-		if (nbtTagCompound.hasKey("oc:hasPower")) {
-			nbtTagCompound.removeTag("node");
+		if (tagCompound.hasKey("oc:hasPower")) {
+			tagCompound.removeTag("node");
+		}
+		
+		// Immersive Engineering & Thermal Expansion
+		if (tagCompound.hasKey("Owner")) {
+			tagCompound.setString("Owner", "None");
+		}
+		
+		// Mekanism
+		if (tagCompound.hasKey("owner")) {
+			tagCompound.setString("owner", "None");
 		}
 	}
 	
-	public void emptyEnergyStorage() {
+	public static void emptyEnergyStorage(final NBTTagCompound tagCompound) {
 		// IC2
-		if (blockNBT.hasKey("energy")) {
+		if (tagCompound.hasKey("energy")) {
 			// energy_consume((int)Math.round(blockNBT.getDouble("energy")), true);
-			blockNBT.setDouble("energy", 0);
+			tagCompound.setDouble("energy", 0);
 		}
 		// Gregtech
-		if (blockNBT.hasKey("mStoredEnergy")) {
-			blockNBT.setInteger("mStoredEnergy", 0);
+		if (tagCompound.hasKey("mStoredEnergy")) {
+			tagCompound.setInteger("mStoredEnergy", 0);
 		}
 		// Immersive Engineering & Thermal Expansion
-		if (blockNBT.hasKey("Energy")) {
+		if (tagCompound.hasKey("Energy")) {
 			// energy_consume(blockNBT.getInteger("Energy"), true);
-			blockNBT.setInteger("Energy", 0);
-		}
-		if (blockNBT.hasKey("Owner")) {
-			blockNBT.setString("Owner", "None");
+			tagCompound.setInteger("Energy", 0);
 		}
 		// Mekanism
-		if (blockNBT.hasKey("electricityStored")) {
-			blockNBT.setDouble("electricityStored", 0);
-		}
-		if (blockNBT.hasKey("owner")) {
-			blockNBT.setString("owner", "None");
+		if (tagCompound.hasKey("electricityStored")) {
+			tagCompound.setDouble("electricityStored", 0);
 		}
 	}
 	
