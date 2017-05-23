@@ -23,6 +23,7 @@ local ship_rotationSteps = 0
 local ship_indexPlayer = 0
 local ship_indexTarget = 0
 local ship = nil
+local ship_actualDistance
 
 function ship_read(parData)
   data = parData
@@ -57,6 +58,7 @@ function ship_boot()
   w.setColorNormal()
   w.write("- detecting Ship Core: ")
   local timeout = 10
+  local isAttached
   repeat
     isAttached = ship.isAttached()
     w.sleep(0.05)
@@ -80,6 +82,7 @@ function ship_boot()
   w.setColorNormal()
   w.write("- global position    : ")
   timeout = 10
+  local pos
   repeat
     pos = ship.position()
     w.sleep(0.05)
@@ -551,9 +554,6 @@ function ship_key_crew(character, keycode)
       w.status_showWarning("Failed to summon crew member")
     end
     return true
-  elseif character == 'g' or character == 'G' then -- G
-    ship_page_jumpToGate()
-    return true
   elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
     ship_indexPlayer = ship_indexPlayer - 1
     return true
@@ -574,7 +574,7 @@ function ship_page_navigation()
     local locationCurrent = "somewhere..."  -- @TODO ship.getLocation()
     w.writeLn("Current ship location        : " .. locationCurrent)
     w.writeLn("Jumpgates or beacons in range:")
-    local stringTargets, _ = "not implemented" -- ship.getTargets()
+    local stringTargets, _ = "not implemented", nil -- ship.getTargets()
     if stringTargets == nil or stringTargets == "" then
       stringTargets = "~ no beacon nor jumpgate in range ~"
     end

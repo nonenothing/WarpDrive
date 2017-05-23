@@ -1,14 +1,12 @@
 local component = require("component")
 local computer = require("computer")
 local term = require("term")
-local radius = 500
-local scale = 50
 
 if not term.isAvailable() then
   computer.beep()
   os.exit()
 end
-if not component.gpu.getDepth() < 4 then
+if component.gpu.getDepth() < 4 then
   print("Tier 2 GPU required")
   os.exit()
 end
@@ -37,14 +35,16 @@ if #argv ~= 1 then
 end
 
 local radius = tonumber(argv[1])
+local scale = 50
 
 local w, h = component.gpu.getResolution()
+local radarX, radarY, radarZ = radar.position()
 
 term.clear()
 
 function textOut(x, y, text, fg, bg)
   if term.isAvailable() then
-    local w, h = component.gpu.getResolution()
+    local w, _ = component.gpu.getResolution()
     if w then
       component.gpu.setBackground(bg)
       component.gpu.setForeground(fg)
@@ -56,7 +56,7 @@ end
 
 function drawBox(x, y, width, height, color)
   if term.isAvailable() then
-    local w, h = component.gpu.getResolution()
+    local w, _ = component.gpu.getResolution()
     if w then
       component.gpu.setBackground(color)
       component.gpu.fill(x, y, width, height, " ")
@@ -65,7 +65,7 @@ function drawBox(x, y, width, height, color)
   end
 end
 
-function translateXZ(oldX, oldZ, i)
+function translateXZ(oldX, oldZ)
   local x = radarX - oldX
   local z = radarZ - oldZ
   
@@ -78,10 +78,10 @@ function translateXZ(oldX, oldZ, i)
   x = math.floor(x)
   z = math.floor(z)
   
-  return x,z
+  return x, z
 end
 
-function drawContact(x, y, z, name, color)
+function drawContact(x, _, z, name, color)
   local newX, newZ = translateXZ(x, z)
   
   textOut(newX, newZ, " ", 0x000000, color)
@@ -90,8 +90,13 @@ end
 
 function scanAndDraw()
   local energy, energyMax = radar.energy()
+  if energy == nil then energy = 0 end
+  if energyMax == nil or energyMax == 0 then energyMax = 1 end
+  
   local energyRequired = radar.getEnergyRequired(radius)
-  if (energy < energyRequired) then
+  if energyRequired == nil then energyRequired = 0 end
+  
+  if (energyRequired <= 0 or energy < energyRequired) then
     local hh = math.floor(h / 2)
     local hw = math.floor(w / 2)
     
@@ -101,6 +106,7 @@ function scanAndDraw()
     
     return 0
   end
+  
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)
@@ -108,13 +114,14 @@ function scanAndDraw()
   
   redraw()
   
-  numResults = radar.getResultsCount()
+  local numResults = radar.getResultsCount()
   
   if (numResults ~= 0) then
     for i = 0, numResults-1 do
-      success, type, name, cx, cy, cz = radar.getResult(i)
-      
-      drawContact(cx, cy, cz, name, 0xFF0000)
+      local success, _, name, cx, cy, cz = radar.getResult(i)
+      if success then
+        drawContact(cx, cy, cz, name, 0xFF0000)
+      end
     end
   end
   
@@ -133,11 +140,10 @@ function redraw()
   
   textOut(w - 3, 1, "[X]", 0xFFFFFF, 0xFF0000)
   
-  local energy, energyMax = radar.energy()
+  local energy, _ = radar.energy()
+  if energy == nil then energy = 0 end
   textOut(4, h, "Energy: " .. energy .. " EU | Scan radius: " .. radius, 0xFFFFFF, 0x000000)
 end
-
-local radarX, radarY, radarZ = radar.position()
 
 local continue = true
 while component.isAvailable("warpdriveRadar") and continue do

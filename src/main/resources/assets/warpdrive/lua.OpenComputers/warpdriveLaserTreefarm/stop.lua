@@ -6,7 +6,7 @@ if not term.isAvailable() then
   computer.beep()
   os.exit()
 end
-if not component.gpu.getDepth() < 4 then
+if component.gpu.getDepth() < 4 then
   print("Tier 2 GPU required")
   os.exit()
 end

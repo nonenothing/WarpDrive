@@ -1,4 +1,3 @@
-local scale = 50
 
 if not term.isColor() then
   print("Advanced computer required")
@@ -15,8 +14,8 @@ function error(message)
 end
 
 local radar
-sides = peripheral.getNames()
-for key,side in pairs(sides) do
+local sides = peripheral.getNames()
+for _, side in pairs(sides) do
   if peripheral.getType(side) == "warpdriveRadar" then
     print("Radar found on " .. side)
     radar = peripheral.wrap(side)
@@ -34,14 +33,16 @@ if #argv ~= 1 then
 end
 
 local radius = tonumber(argv[1])
+local scale = 50
 
 local w, h = term.getSize()
+local radarX, radarY, radarZ = radar.position()
 
 term.clear()
 
 function colorScreen(color)
-  for a = 2,w-1 do
-    for b = 1,h do
+  for a = 2, w - 1 do
+    for b = 1, h do
       paintutils.drawPixel(a, b, color)
     end
   end
@@ -52,11 +53,11 @@ function textOut(x, y, text, fg, bg)
   term.setTextColor(fg)
   term.setBackgroundColor(bg)
   term.write(text)
-  local xt,yt = term.getCursorPos()
+  local _, yt = term.getCursorPos()
   term.setCursorPos(1, yt + 1)
 end	
 
-function translateXZ(oldX, oldZ, i)
+function translateXZ(oldX, oldZ)
   local x = radarX - oldX
   local z = radarZ - oldZ
   
@@ -69,10 +70,10 @@ function translateXZ(oldX, oldZ, i)
   x = math.floor(x)
   z = math.floor(z)
   
-  return x,z
+  return x, z
 end
 
-function drawContact(x, y, z, name, color)
+function drawContact(x, _, z, name, color)
   local newX, newZ = translateXZ(x, z)
   
   paintutils.drawPixel(newX, newZ, color)
@@ -81,8 +82,13 @@ end
 
 function scanAndDraw()
   local energy, energyMax = radar.energy()
+  if energy == nil then energy = 0 end
+  if energyMax == nil or energyMax == 0 then energyMax = 1 end
+    
   local energyRequired = radar.getEnergyRequired(radius)
-  if (energy < energyRequired) then
+  if energyRequired == nil then energyRequired = 0 end
+  
+  if (energyRequired <= 0 or energy < energyRequired) then
     local hh = math.floor(h / 2)
     local hw = math.floor(w / 2)
     
@@ -101,13 +107,15 @@ function scanAndDraw()
   
   redraw()
   
-  numResults = radar.getResultsCount()
+  local numResults = radar.getResultsCount()
   
   if (numResults ~= 0) then
     for i = 0, numResults-1 do
-      success, type, name, cx, cy, cz = radar.getResult(i)
+      local success, _, name, cx, cy, cz = radar.getResult(i)
       
-      drawContact(cx, cy, cz, name, colors.red)
+      if success then
+        drawContact(cx, cy, cz, name, colors.red)
+      end
     end
   end
   
@@ -124,11 +132,11 @@ function redraw()
   textOut(w - 3, 1, "[X]", colors.white, colors.red)
   
   paintutils.drawLine(1, h, w, h, colors.black)
-  local energy, energyMax = radar.energy()
+  local energy, _ = radar.energy()
+  if energy == nil then energy = 0 end
   textOut(4, h, "Energy: " .. energy .. " EU | Scan radius: " .. radius, colors.white, colors.black)
 end
 
-local radarX, radarY, radarZ = radar.position()
 local continue = true
 while continue do
   scanAndDraw()

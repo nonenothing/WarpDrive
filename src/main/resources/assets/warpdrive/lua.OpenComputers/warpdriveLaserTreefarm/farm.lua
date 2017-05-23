@@ -6,20 +6,20 @@ if not term.isAvailable() then
   computer.beep()
   os.exit()
 end
-if not component.gpu.getDepth() < 4 then
+if component.gpu.getDepth() < 4 then
   print("Tier 2 GPU required")
   os.exit()
 end
 
 treefarms = {}
-for address,type in component.list("warpdriveLaserTreeFarm", true) do
+for address, _ in component.list("warpdriveLaserTreeFarm", true) do
   print("Wrapping " .. address)
   table.insert(treefarms, component.proxy(address))
 end
 
 function textOut(x, y, text, fg, bg)
   if term.isAvailable() then
-    local w, h = component.gpu.getResolution()
+    local w, _ = component.gpu.getResolution()
     if w then
       component.gpu.setBackground(bg)
       component.gpu.setForeground(fg)
@@ -30,11 +30,11 @@ function textOut(x, y, text, fg, bg)
 end
 
 
-noExit = true
+local noExit = true
 breakLeaves = true
 tapTrees = true
 silktouch = false
-args = {...}
+local args = {... }
 if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
     print("Usage: farm <breakLeaves> <tapTrees> <silktouch>")
@@ -72,8 +72,8 @@ if #treefarms == 0 then
   noExit = false
 end
 if noExit then
-  for key,treefarm in pairs(treefarms) do
-    statusString, isActive = treefarm.state()
+  for _, treefarm in pairs(treefarms) do
+    local _, isActive = treefarm.state()
     if not isActive then
       treefarm.breakLeaves(breakLeaves)
       treefarm.tapTrees(tapTrees)
@@ -86,6 +86,7 @@ if noExit then
 end
 
 local file = io.open("/etc/hostname")
+local label
 if file then
   label = file:read("*l")
   file:close()
@@ -94,10 +95,11 @@ else
 end
 
 if noExit then
+  local areActive
   repeat
-    isActive = false
-    for key,treefarm in pairs(treefarms) do
-      status, isActive, energy, totalHarvested, currentValuable, totalValuables = treefarm.state()
+    areActive = false
+    for key, treefarm in pairs(treefarms) do
+      local status, isActive, energy, totalHarvested, currentValuable, totalValuables = treefarm.state()
       
       term.clear()
       textOut(1, 1, label .. " - Laser tree farm " .. key .. " of " .. #treefarms, 0x0000FF, 0x00FF00)
@@ -107,15 +109,24 @@ if noExit then
       textOut(1, 9, "Harvested " .. totalHarvested .. " items and counting...   ", 0xFFFFFF, 0x000000)
       
       if isActive then
+        areActive = true
         os.sleep(1)
       else
         os.sleep(0.1)
       end
     end
-  until not isActive
+  until not areActive
 end
 
-textOut(1, 1, "", 0xFFFFFF, 0x000000)
+textOut(1, 9, "", 0xFFFFFF, 0x000000)
 
-print("")
-print("")
+print()
+print()
+print()
+print()
+print()
+print()
+print()
+print()
+print()
+print("Program closed")
