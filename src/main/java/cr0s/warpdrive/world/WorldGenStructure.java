@@ -2,6 +2,7 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.Filler;
 import cr0s.warpdrive.config.GenericSet;
 import cr0s.warpdrive.config.Loot;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -21,171 +22,114 @@ import net.minecraft.world.World;
 
 public class WorldGenStructure {
 	
-	private Block hullPlain_block;
-	private int hullPlain_metadata;
-	private Block hullGlass_block;
-	private int hullGlass_metadata;
-	private Block solarPanel_block;
-	private int solarPanel_metadata;
-	private Block cable_block;
-	private int cable_metadata;
-	private Block resource_block;
-	private int resource_metadata;
 	private final boolean corrupted;
 	private final Random rand;
+	private final Filler fillerHullPlain;
+	private final Filler fillerHullGlass;
+	private final Filler fillerSolarPanel;
+	private final Filler fillerWiring;
+	private final Filler fillerPropulsion;
 	
-	public WorldGenStructure(final boolean corrupted, Random rand) {
+	public WorldGenStructure(final boolean corrupted, final Random rand) {
 		this.corrupted = corrupted;
 		this.rand = rand;
 		
-		// choose a hull block
-		switch (rand.nextInt(7)) {
-		default:
-		case 0:
-		case 1:
-			hullPlain_block = Blocks.stained_hardened_clay;
-			hullPlain_metadata = rand.nextInt(16);
-			hullGlass_block = Blocks.stained_glass;
-			hullGlass_metadata = hullPlain_metadata;
-			break;
-			
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-			hullPlain_block = WarpDrive.blockHulls_plain[0][0];
-			hullPlain_metadata = rand.nextInt(16);
-			hullGlass_block = WarpDrive.blockHulls_glass[0];
-			hullGlass_metadata = hullPlain_metadata;
-			break;
-			
-		case 6:
-			hullPlain_block = WarpDrive.blockHulls_plain[1][0];
-			hullPlain_metadata = rand.nextInt(16);
-			hullGlass_block = WarpDrive.blockHulls_glass[1];
-			hullGlass_metadata = hullPlain_metadata;
-			break;
-			
-		case 10:	// disabled since it's tier3
-			if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-				hullPlain_block = WarpDriveConfig.getModBlock("IC2", "blockAlloy");
-				hullPlain_metadata = 0;
-				hullGlass_block = WarpDriveConfig.getModBlock("IC2", "blockAlloyGlass");
-				hullGlass_metadata = 0;
-			}
-			break;
-		}
-		
-		// choose a solar panel
-		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			if (WarpDriveConfig.isAdvancedSolarPanelLoaded) {
-				solarPanel_block = WarpDriveConfig.getModBlock("AdvancedSolarPanel", "BlockAdvSolarPanel");
-				solarPanel_metadata = rand.nextInt(2);
-			} else {
-				solarPanel_block = WarpDriveConfig.getModBlock("IC2", "blockGenerator");
-				solarPanel_metadata = 3;
-			}
-		} else if (WarpDriveConfig.isEnderIOLoaded) {
-			solarPanel_block = WarpDriveConfig.getModBlock("EnderIO", "blockSolarPanel");
-			solarPanel_metadata = 0;
+		// hull plain and glass are linked by same name
+		final GenericSet<Filler> fillerSetHull_plain = WarpDriveConfig.FillerManager.getRandomSetFromGroup(rand, "hull_plain");
+		if (fillerSetHull_plain == null) {
+			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+			                                    "hull_plain"));
+			fillerHullPlain = new Filler();
+			fillerHullPlain.block = Blocks.stone;
+			fillerHullGlass = new Filler();
+			fillerHullGlass.block = Blocks.glass;
 		} else {
-			solarPanel_block = Blocks.air;
-			solarPanel_metadata = 0;
-		}
-		
-		// choose a wiring
-		cable_block = Blocks.air;
-		cable_metadata = 0;
-		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			cable_block = WarpDriveConfig.getModBlock("IC2", "blockCable");
-			cable_metadata = 0;
+			fillerHullPlain = fillerSetHull_plain.getRandomUnit(rand);
 			
-			switch (rand.nextInt(4)) {
-			case 0:
-				cable_metadata = 0;
-				break;
-			
-			case 1:
-				cable_metadata = 3;
-				break;
-			
-			case 2:
-				cable_metadata = 6;
-				break;
-			
-			case 3:
-				cable_metadata = 9;
-				break;
-			
-			default:
-				break;
+			final String nameFillerGlass = "hull_glass:" + fillerSetHull_plain.getName();
+			final GenericSet<Filler> fillerSetHull_glass = WarpDriveConfig.FillerManager.getGenericSet(nameFillerGlass);
+			if (fillerSetHull_glass == null) {
+				WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+				                                    nameFillerGlass));
+				fillerHullGlass = new Filler();
+				fillerHullGlass.block = Blocks.glass;
+			} else {
+				fillerHullGlass = fillerSetHull_glass.getRandomUnit(rand);
 			}
 		}
 		
-		// choose a resource block
-		resource_block = Blocks.redstone_block;
-		resource_metadata = 0;
-		switch (rand.nextInt(10)) {
-		case 0:
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
-			resource_block = Blocks.redstone_block;
-			break;
+		// solarPanel and wiring are linked by same name
+		final GenericSet<Filler> fillerSetSolarPanel = WarpDriveConfig.FillerManager.getRandomSetFromGroup(rand, "ship_solarPanel");
+		if (fillerSetSolarPanel == null) {
+			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+			                                    "ship_solarPanel"));
+			fillerSolarPanel = new Filler();
+			fillerSolarPanel.block = Blocks.sandstone;
+			fillerWiring = new Filler();
+			fillerWiring.block = Blocks.fence;
+		} else {
+			fillerSolarPanel = fillerSetSolarPanel.getRandomUnit(rand);
+			
+			final String nameFillerWiring = "ship_wiring:" + fillerSetSolarPanel.getName();
+			final GenericSet<Filler> fillerSetWiring = WarpDriveConfig.FillerManager.getGenericSet(nameFillerWiring);
+			if (fillerSetWiring == null) {
+				WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+				                                    nameFillerWiring));
+				fillerWiring = new Filler();
+				fillerWiring.block = Blocks.fence;
+			} else {
+				fillerWiring = fillerSetWiring.getRandomUnit(rand);
+			}
+		}
 		
-		case 6:
-		case 7:
-			resource_block = Blocks.lapis_block;
-			break;
-		
-		case 8:
-		case 9:
-			resource_block = Blocks.coal_block;
-			break;
-		
-		default:
-			break;
+		// propulsion is on it's own
+		final GenericSet<Filler> fillerSetPropulsion = WarpDriveConfig.FillerManager.getRandomSetFromGroup(rand, "ship_propulsion");
+		if (fillerSetPropulsion == null) {
+			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+			                                    "ship_propulsion"));
+			fillerPropulsion = new Filler();
+			fillerPropulsion.block = Blocks.log;
+		} else {
+			fillerPropulsion = fillerSetPropulsion.getRandomUnit(rand);
 		}
 	}
 	
-	public void setHullPlain(World world, final int x, final int y, final int z) {
+	public void setHullPlain(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(400) == 1)) {
 			world.newExplosion(null, x + 0.5D, y + 0.5D, z + 0.5D, 17, false, true);
 		} else if (corrupted && (rand.nextInt(10) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
-			world.setBlock(x, y, z, hullPlain_block, hullPlain_metadata, 2);
+			fillerHullPlain.setBlock(world, x, y, z);
 		}
 	}
 	
-	public void setHullGlass(World world, final int x, final int y, final int z) {
+	public void setHullGlass(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(5) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
-			world.setBlock(x, y, z, hullGlass_block, hullGlass_metadata, 2);
+			fillerHullGlass.setBlock(world, x, y, z);
 		}
 	}
 	
-	public void setSolarPanel(World world, final int x, final int y, final int z) {
+	public void setSolarPanel(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(3) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
-			world.setBlock(x, y, z, solarPanel_block, solarPanel_metadata, 2);
+			fillerSolarPanel.setBlock(world, x, y, z);
 		}
 	}
 	
-	public void setCable(World world, final int x, final int y, final int z) {
+	public void setWiring(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(3) == 1)) {
 			world.setBlock(x, y, z, Blocks.air, 0, 2);
 		} else {
-			world.setBlock(x, y, z, cable_block, cable_metadata, 2);
+			fillerWiring.setBlock(world, x, y, z);
 		}
 	}
 	
-	public void setResource(World world, final int x, final int y, final int z) {
-		world.setBlock(x, y, z, resource_block, resource_metadata, 2);
+	public void setPropulsion(final World world, final int x, final int y, final int z) {
+		fillerPropulsion.setBlock(world, x, y, z);
 	}
 	
 	public void fillInventoryWithLoot(final World worldObj, final Random rand, final int x, final int y, final int z, final String group) {
@@ -193,7 +137,7 @@ public class WorldGenStructure {
 		if (tileEntity instanceof IInventory) {
 			final IInventory inventory = (IInventory) tileEntity;
 			final int size = inventory.getSizeInventory();
-			final int countLoots = Math.min(3 + rand.nextInt(3), size);
+			final int countLoots = Math.min(rand.nextInt(3) + rand.nextInt(4), size);
 			
 			final GenericSet<Loot> lootSet = WarpDriveConfig.LootManager.getRandomSetFromGroup(rand, group);
 			if (lootSet == null) {

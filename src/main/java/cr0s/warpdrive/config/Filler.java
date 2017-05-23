@@ -84,14 +84,29 @@ public class Filler implements IXmlRepresentableUnit {
 
 	public void setBlock(World world, int x, int y, int z) {
 		JumpBlock.setBlockNoLight(world, x, y, z, block, metadata, 2);
+		
 		if (nbtTagCompound != null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity == null) {
 				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)", getName(), x, y, z);
 				return;
 			}
-			tileEntity.readFromNBT(nbtTagCompound);
+			
+			NBTTagCompound nbtTagCompoundTileEntity = new NBTTagCompound();
+			tileEntity.writeToNBT(nbtTagCompoundTileEntity);
+			
+			for (Object key : nbtTagCompound.func_150296_c()) {
+				if (key instanceof String) {
+					nbtTagCompoundTileEntity.setTag((String) key, nbtTagCompound.getTag((String) key));
+				}
+			}
+			
+			tileEntity.onChunkUnload();
+			tileEntity.readFromNBT(nbtTagCompoundTileEntity);
+			tileEntity.validate();
 			tileEntity.markDirty();
+			
+			JumpBlock.refreshBlockStateOnClient(world, x, y, z);
 		}
 	}
 	
