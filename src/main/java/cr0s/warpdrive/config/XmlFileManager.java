@@ -13,7 +13,7 @@ import java.util.List;
 
 public abstract class XmlFileManager {
 	
-	protected void load(final File dir, final String prefixFilename, final String elementName) {
+	protected void load(final File dir, final String prefixFilename, final String nameElement) {
 		
 		// (directory is created by caller, so it can copy default files if any)
 		
@@ -42,10 +42,10 @@ public abstract class XmlFileManager {
 				XmlPreprocessor.doLogicPreprocessing(document);
 				
 				// only add selected root elements
-				final List<Element> listElements = getChildrenElementByTagName(document.getDocumentElement(), elementName);
+				final List<Element> listElements = getChildrenElementByTagName(document.getDocumentElement(), nameElement);
 				for (int indexElement = 0; indexElement < listElements.size(); indexElement++) {
 					final Element element = listElements.get(indexElement);
-					final String location = String.format("%d/%d", indexElement + 1, listElements.size());
+					final String location = String.format("%s %d/%d", nameElement, indexElement + 1, listElements.size());
 					parseRootElement(location, element);
 				}
 			} catch (Exception exception) {
@@ -62,7 +62,7 @@ public abstract class XmlFileManager {
 		
 		for (Node nodeChild = parent.getFirstChild(); nodeChild != null; nodeChild = nodeChild.getNextSibling()) {
 			if ( nodeChild.getNodeType() == Node.ELEMENT_NODE
-			     && name.equals(nodeChild.getNodeName()) ) {
+			  && name.equals(nodeChild.getNodeName()) ) {
 				listElements.add((Element) nodeChild);
 			}
 		}

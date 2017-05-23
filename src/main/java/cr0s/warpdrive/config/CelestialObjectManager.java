@@ -62,6 +62,7 @@ public class CelestialObjectManager extends XmlFileManager {
 		
 		// check overlapping regions
 		for (CelestialObject celestialObject1 : celestialObjects) {
+			celestialObject1.lateUpdate();
 			for (CelestialObject celestialObject2 : celestialObjects) {
 				if (celestialObject1 == celestialObject2) {
 					continue;

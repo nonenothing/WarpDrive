@@ -91,8 +91,4 @@
 	<structure group="ship" name="legacy" ratio="0.2">
 	</structure>
 	
-	<lootSet group="ship" name="default" weight="1">
-		<loot item="" metadata="" weight="" minQuantity="" maxQuantity="" />
-	</lootSet>
-	
 </worldGeneration>

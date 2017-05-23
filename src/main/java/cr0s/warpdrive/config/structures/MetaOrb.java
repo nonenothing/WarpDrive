@@ -1,7 +1,7 @@
 package cr0s.warpdrive.config.structures;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.IXmlRepresentable;
+import cr0s.warpdrive.api.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
@@ -21,10 +21,10 @@ public class MetaOrb extends Orb {
 	}
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		super.loadFromXmlElement(element);
 		
-		List<Element> listMetaShells = XmlFileManager.getChildrenElementByTagName(element, "metaShell");
+		final List<Element> listMetaShells = XmlFileManager.getChildrenElementByTagName(element, "metaShell");
 		if (listMetaShells.size() > 1) {
 			throw new InvalidXmlException("Too many metaShell defined in structure " + getFullName() + ". Maximum is 1.");
 		}
@@ -65,7 +65,7 @@ public class MetaOrb extends Orb {
 		}
 		
 		@Override
-		public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+		public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 				WarpDrive.logger.info("  + found metashell");
 			}

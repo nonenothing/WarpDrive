@@ -1,11 +1,11 @@
 package cr0s.warpdrive.config.structures;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.config.GenericSet;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
-import cr0s.warpdrive.config.filler.FillerManager;
-import cr0s.warpdrive.config.filler.FillerSet;
+import cr0s.warpdrive.config.Filler;
 import org.w3c.dom.Element;
 
 import java.util.List;
@@ -64,13 +64,14 @@ public class Orb extends AbstractStructure {
 		return new OrbInstance(this, random);
 	}
 	
-	public class OrbShell extends FillerSet {
+	public class OrbShell extends GenericSet<Filler> {
+		
 		private final String parentFullName;
 		protected int minThickness;
 		protected int maxThickness;
 		
 		public OrbShell(final String parentFullName, final String name) {
-			super(null, name);
+			super(null, name, Filler.DEFAULT, "filler");
 			this.parentFullName = parentFullName;
 		}
 		
@@ -84,7 +85,7 @@ public class Orb extends AbstractStructure {
 			
 			// resolve static imports
 			for (String importGroupName : getImportGroupNames()) {
-				FillerSet fillerSet = FillerManager.getFillerSet(importGroupName);
+				GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getGenericSet(importGroupName);
 				if (fillerSet == null) {
 					WarpDrive.logger.warn("Skipping missing FillerSet " + importGroupName + " in shell " + parentFullName + ":" + name);
 				} else {
@@ -94,7 +95,7 @@ public class Orb extends AbstractStructure {
 			
 			// validate dynamic imports
 			for (String importGroup : getImportGroups()) {
-				if (!FillerManager.doesGroupExist(importGroup)) {
+				if (!WarpDriveConfig.FillerManager.doesGroupExist(importGroup)) {
 					WarpDrive.logger.warn("An invalid FillerSet group " + importGroup + " is referenced in shell " + parentFullName + ":" + name);
 				}
 			}
@@ -126,7 +127,7 @@ public class Orb extends AbstractStructure {
 			try {
 				orbShell.loadFrom(this);
 				for (String importGroup : getImportGroups()) {
-					FillerSet fillerSet = FillerManager.getRandomFillerSetFromGroup(random, importGroup);
+					GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getRandomSetFromGroup(random, importGroup);
 					if (fillerSet == null) {
 						WarpDrive.logger.info("Ignoring invalid group " + importGroup + " in shell " + name + " of structure " + parentFullName);
 						continue;

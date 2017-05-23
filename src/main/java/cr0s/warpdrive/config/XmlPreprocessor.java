@@ -39,7 +39,7 @@ public class XmlPreprocessor {
 		
 		for (String mod : element.getAttribute("mods").split(",")) {
 			
-			//TODO: add version check
+			// @TODO add version check
 			
 			if (mod.isEmpty()) {
 				continue;

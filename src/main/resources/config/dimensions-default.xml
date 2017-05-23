@@ -2,7 +2,7 @@
 <worldGeneration version="2"
                  xmlns="WarpDrive"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="WarpDrive warpDrive.xsd">
+                 xsi:schemaLocation="WarpDrive WarpDrive.xsd">
 
     <celestialBody group="milkyWay" name="sun" isVirtual="true">
         <dimension type="space" id="" centerX="" centerZ="" radiusX="" radiusZ="" />

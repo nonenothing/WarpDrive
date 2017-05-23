@@ -6,12 +6,12 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.Random;
 
+import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
@@ -148,15 +148,15 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, i + 6, j + 2, k + 11);
 		genStructure.setHullPlain(world, i + 6, j + 3, k + 2);
 		world.setBlock(i + 6, j + 3, k + 3, Blocks.chest, 3, 0);
-		fillChestWithBonuses(world, rand, i + 6, j + 3, k + 3);
+		genStructure.fillInventoryWithLoot(world, rand, i + 6, j + 3, k + 3, "ship");
 		world.setBlock(i + 6, j + 3, k + 11, Blocks.chest, 2, 0);
-		fillChestWithBonuses(world, rand, i + 6, j + 3, k + 11);
+		genStructure.fillInventoryWithLoot(world, rand, i + 6, j + 3, k + 11, "ship");
 		genStructure.setHullPlain(world, i + 6, j + 3, k + 12);
 		genStructure.setHullPlain(world, i + 6, j + 4, k + 2);
 		world.setBlock(i + 6, j + 4, k + 3, Blocks.chest, 3, 0);
-		fillChestWithBonuses(world, rand, i + 6, j + 4, k + 3);
+		genStructure.fillInventoryWithLoot(world, rand, i + 6, j + 4, k + 3, "ship");
 		world.setBlock(i + 6, j + 4, k + 11, Blocks.chest, 2, 0);
-		fillChestWithBonuses(world, rand, i + 6, j + 4, k + 11);
+		genStructure.fillInventoryWithLoot(world, rand, i + 6, j + 4, k + 11, "ship");
 		genStructure.setHullPlain(world, i + 6, j + 4, k + 12);
 		genStructure.setHullPlain(world, i + 6, j + 5, k + 2);
 		genStructure.setHullPlain(world, i + 6, j + 5, k + 12);
@@ -557,117 +557,18 @@ public class WorldGenSmallShip extends WorldGenerator {
 				entityVillager.setCurrentItemOrArmor(4, new ItemStack(WarpDrive.itemWarpArmor[0], 1, 1));
 				world.spawnEntityInWorld(entityVillager);
 			}
-		} else {// Zombies
+		} else if (world.rand.nextBoolean()) {// Zombies
 			for (int idx = 0; idx < countMobs; idx++) {
 				EntityZombie entityZombie = new EntityZombie(world);
 				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
 				world.spawnEntityInWorld(entityZombie);
 			}
-		}
-	}
-	
-	public void fillChestWithBonuses(final World worldObj, final Random rand, final int x, final int y, final int z) {
-		final TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
-		
-		if (tileEntity != null) {
-			final TileEntityChest chest = (TileEntityChest) tileEntity;
-			final int size = chest.getSizeInventory();
-			int numBonuses = rand.nextInt(size) / 2;
-			
-			for (int i = 0; i < size; i++) {
-				if (rand.nextInt(size) <= numBonuses) {
-					numBonuses--;
-					chest.setInventorySlotContents(i, getRandomBonus(rand));
-				}
+		} else {// Zombie pigmen
+			for (int idx = 0; idx < countMobs; idx++) {
+				EntityPigZombie entityZombie = new EntityPigZombie(world);
+				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
+				world.spawnEntityInWorld(entityZombie);
 			}
 		}
-	}
-	
-	private ItemStack getRandomBonus(final Random rand) {
-		ItemStack res = null;
-		boolean isDone = false;
-		
-		while (!isDone) {
-			switch (rand.nextInt(14)) {
-			case 0: // Mass fabricator
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "blockMachine", -1);
-					res.setItemDamage(14);
-					res.stackSize = 1; // + rand.nextInt(2);
-					isDone = true;
-				}
-				break;
-				
-			case 1:
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "blockNuke", -1);
-					res.stackSize = 1 + rand.nextInt(2);
-					isDone = true;
-				}
-				break;
-				
-			case 2: // Quantum armor bonuses
-			case 3:
-			case 4:
-			case 5:
-				isDone = true;
-				break;// skipped
-				
-			case 6:// Glass fiber cable item
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "itemCable", -1);
-					res.setItemDamage(9);
-					res.stackSize = 2 + rand.nextInt(12);
-					isDone = true;
-				}
-				break;
-			
-			case 7:// UU matter cell
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "itemCellEmpty", -1);
-					res.setItemDamage(3);
-					res.stackSize = 2 + rand.nextInt(14);
-					isDone = true;
-				}
-				break;
-			
-			case 8:
-				isDone = true;
-				break;// skipped
-			
-			case 9:
-			case 10:
-			case 11: // Rocket launcher platform Tier3
-				if (WarpDriveConfig.isICBMLoaded) {
-					// TODO: No 1.7 ICBM yet
-					// res = new ItemStack(WarpDriveConfig.ICBM_Machine, 1 +
-					// rand.nextInt(1), 2).copy();
-					isDone = true;
-				}
-				break;
-			
-			
-			case 12: // Missiles from conventional to hypersonic
-				if (WarpDriveConfig.isICBMLoaded) {
-					// TODO: No 1.7 ICBM yet
-					// res = new ItemStack(WarpDriveConfig.ICBM_Missile, 2 +
-					// rand.nextInt(1), rand.nextInt(10)).copy();
-					isDone = true;
-				}
-				break;
-			
-			case 13: // Advanced solar panels
-				if (WarpDriveConfig.isAdvancedSolarPanelLoaded) {
-					// TODO: res = new ItemStack(solarPanel_block, rand.nextInt(3), solarPanel_metadata);
-					isDone = true;
-				}
-				break;
-			
-			default:
-				break;
-			}
-		}
-		
-		return res;
 	}
 }

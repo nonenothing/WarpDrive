@@ -1,15 +1,11 @@
 package cr0s.warpdrive.world;
 
-import cr0s.warpdrive.LocalProfiler;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.filler.Filler;
-import cr0s.warpdrive.config.structures.AbstractStructure;
+import cr0s.warpdrive.config.Filler;
 import cr0s.warpdrive.config.structures.AbstractStructureInstance;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
-import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
 
@@ -81,7 +77,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 					// cheat by using axial symmetry so we don't create random numbers too frequently
 					
 					OrbShell orbShell = orbInstance.getShellForSqRadius(dSq);
-					Filler filler = orbShell.getRandomBlock(world.rand);
+					Filler filler = orbShell.getRandomUnit(world.rand);
 					filler.setBlock(world, xCoord + x, yCoord + y, zCoord + z);
 					filler.setBlock(world, xCoord - x, yCoord + y, zCoord + z);
 					filler.setBlock(world, xCoord + x, yCoord - y, zCoord + z);

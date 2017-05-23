@@ -43,6 +43,7 @@
 	<xs:complexType name="fillerElement">
 		<xs:attribute name="block" type="xs:string" use="required" />
 		<xs:attribute name="metadata" type="xs:string" use="optional" />
+		<xs:attribute name="nbt" type="xs:string" use="optional" />
 		<xs:attribute name="weight" type="xs:string" use="optional" />
 		<xs:attribute name="ratio" type="xs:string" use="optional" />
 		<xs:attribute name="mods" type="xs:string" use="optional" />
@@ -100,7 +101,8 @@
 	
 	<xs:complexType name="lootElement">
 		<xs:attribute name="item" type="xs:string" use="required" />
-		<xs:attribute name="metadata" type="xs:string" use="optional" />
+		<xs:attribute name="damage" type="xs:string" use="optional" />
+		<xs:attribute name="nbt" type="xs:string" use="optional" />
 		<xs:attribute name="minQuantity" type="xs:string" use="optional" />
 		<xs:attribute name="maxQuantity" type="xs:string" use="optional" />
 		<xs:attribute name="weight" type="xs:string" use="optional" />

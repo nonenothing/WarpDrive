@@ -29,7 +29,6 @@ import cr0s.warpdrive.compat.CompatThaumcraft;
 import cr0s.warpdrive.compat.CompatThermalDynamics;
 import cr0s.warpdrive.compat.CompatThermalExpansion;
 import cr0s.warpdrive.compat.CompatWarpDrive;
-import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -68,6 +67,9 @@ public class WarpDriveConfig {
 			"filler-netherores.xml",
 			"filler-undergroundbiomes.xml",
 	};
+	private static final String[] defaultXML_loots = {
+			"loot-default.xml",
+	};
 	private static final String[] defaultXML_structures = {
 			"structures-default.xml",
 			"structures-netherores.xml",
@@ -75,6 +77,9 @@ public class WarpDriveConfig {
 	private static final String[] defaultXML_celestialObjects = {
 			"celestialObjects-default.xml"
 	};
+	
+	public static GenericSetManager<Filler> FillerManager = new GenericSetManager<>("filler", "filler", "fillerSet", Filler.DEFAULT);
+	public static GenericSetManager<Loot> LootManager = new GenericSetManager<>("loot", "loot", "lootSet", Loot.DEFAULT);
 	
 	/*
 	 * The variables which store whether or not individual mods are loaded
@@ -391,6 +396,7 @@ public class WarpDriveConfig {
 		
 		// unpack default XML files if none are defined
 		unpackResourcesToFolder("filler", ".xml", defaultXML_fillers, "config", configDirectory);
+		unpackResourcesToFolder("loot", ".xml", defaultXML_loots, "config", configDirectory);
 		unpackResourcesToFolder("structures", ".xml", defaultXML_structures, "config", configDirectory);
 		unpackResourcesToFolder("celestialObjects", ".xml", defaultXML_celestialObjects, "config", configDirectory);
 		
@@ -964,6 +970,7 @@ public class WarpDriveConfig {
 	public static void onFMLPostInitialization() {
 		// load XML files
 		FillerManager.load(configDirectory);
+		LootManager.load(configDirectory);
 		StructureManager.load(configDirectory);
 		
 		Dictionary.apply();

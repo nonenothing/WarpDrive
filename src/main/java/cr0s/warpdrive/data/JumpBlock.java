@@ -6,7 +6,7 @@ import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.detection.BlockMonitor;
 import cr0s.warpdrive.compat.CompatForgeMultipart;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.config.filler.Filler;
+import cr0s.warpdrive.config.Filler;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -94,7 +94,7 @@ public class JumpBlock {
 		}
 		block = filler.block;
 		blockMeta = filler.metadata;
-		blockNBT = (filler.tag != null) ? (NBTTagCompound) filler.tag.copy() : null;
+		blockNBT = (filler.nbtTagCompound != null) ? (NBTTagCompound) filler.nbtTagCompound.copy() : null;
 		this.x = x;
 		this.y = y;
 		this.z = z;

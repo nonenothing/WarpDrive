@@ -45,6 +45,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	public int parentCenterX, parentCenterZ;
 	
 	public boolean isProvidedByWarpDrive;
+	private boolean isProvidedByWarpDrive_defined = false;
 	public double gravity;
 	public boolean isBreathable;
 	
@@ -169,8 +170,9 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			gravity = parseGravity(elementDimension.getAttribute("gravity"));
 			if (elementDimension.hasAttribute("isProvidedByWarpDrive")) {
 				isProvidedByWarpDrive = Boolean.parseBoolean(elementDimension.getAttribute("isProvidedByWarpDrive"));
+				isProvidedByWarpDrive_defined = true;
 			} else {
-				isProvidedByWarpDrive = isHyperspace() || isSpace();
+				isProvidedByWarpDrive_defined = false;
 			}
 			
 			// get required center element
@@ -315,13 +317,19 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		}
 	}
 	
+	public void lateUpdate() {
+		if (!isProvidedByWarpDrive_defined) {
+			isProvidedByWarpDrive = isHyperspace() || isSpace();
+		}
+	}
+	
 	@SuppressWarnings("CloneDoesntCallSuperClone")
 	@Override
 	public CelestialObject clone() {
 		return new CelestialObject(dimensionId, dimensionCenterX, dimensionCenterZ, borderRadiusX, borderRadiusZ, parentDimensionId, parentCenterX, parentCenterZ);
 	}
 	
-	public StructureGroup getRandomStructure(Random random, final int x, final int z) {
+	public StructureGroup getRandomStructure(final Random random, final int x, final int z) {
 		return randomStructures.getRandomEntry(random);
 	}
 	
@@ -551,7 +559,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 				alpha = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("alpha")));
 			} catch (Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error("Exception while parsing Render element at " + location);
+				WarpDrive.logger.error(String.format("Exception while parsing Render element RGBA attributes at %s", location));
 				red = 0.5F;
 				green = 0.5F;
 				blue = 0.5F;
@@ -561,13 +569,32 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			if (texture == null || texture.isEmpty()) {
 				texture = null;
 				resourceLocation = null;
-				periodU = 1.0F;
-				periodV = 1.0F;
+				periodU = 1.0D;
+				periodV = 1.0D;
 				isAdditive = false;
 			} else {
 				resourceLocation = new ResourceLocation(texture);
-				periodU = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(elementRender.getAttribute("periodU")));
-				periodV = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(elementRender.getAttribute("periodV")));
+				
+				periodU = 0.001D;
+				final String stringPeriodU = elementRender.getAttribute("periodU");
+				if (!stringPeriodU.isEmpty()) {
+					try {
+						periodU = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(stringPeriodU));
+					} catch (NumberFormatException exception) {
+						throw new InvalidXmlException(String.format("Invalid periodU attribute '%s' at %s", stringPeriodU, location));
+					}
+				}
+				
+				periodV = 0.001D;
+				final String stringPeriodV = elementRender.getAttribute("periodV");
+				if (!stringPeriodV.isEmpty()) {
+					try {
+						periodV = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(stringPeriodV));
+					} catch (NumberFormatException exception) {
+						throw new InvalidXmlException(String.format("Invalid periodV attribute '%s' at %s", stringPeriodV, location));
+					}
+				}
+				
 				isAdditive = Boolean.parseBoolean(elementRender.getAttribute("additive"));
 			}
 		}

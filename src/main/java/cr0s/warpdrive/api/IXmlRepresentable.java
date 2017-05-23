@@ -1,9 +1,10 @@
-package cr0s.warpdrive.config;
+package cr0s.warpdrive.api;
 
-import cr0s.warpdrive.api.IStringSerializable;
+import cr0s.warpdrive.config.InvalidXmlException;
 import org.w3c.dom.Element;
 
 public interface IXmlRepresentable extends IStringSerializable {
+	
 	// Load the XML element, return true if successful
 	boolean loadFromXmlElement(Element element) throws InvalidXmlException;
 }

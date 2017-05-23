@@ -2,7 +2,6 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.data.JumpBlock;
@@ -185,14 +184,14 @@ public final class EntitySphereGen extends Entity {
 					// Add blocks to memory
 					OrbShell orbShell = orbInstance.getShellForSqRadius(sqRange);
 					// WarpDrive.logger.info("sqRange " + sqRange + " sqRadius " + sqRadius);
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord + y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord + y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord - y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord + y, zCoord - z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord - y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord - y, zCoord - z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord + y, zCoord - z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord - y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord + y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord + y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord - y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord + y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord - y, zCoord + z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord - y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord + y, zCoord - z));
+					addBlock(new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord - y, zCoord - z));
 				}
 			}
 		}
