@@ -830,7 +830,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if (shipMass < WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE) {
 				Jumpgate nearestGate = null;
 				if (WarpDrive.jumpgates == null) {
-					WarpDrive.logger.warn(this + " WarpDrive.instance.jumpGates is NULL!");
+					WarpDrive.logger.warn(this + " WarpDrive.jumpGates is NULL!");
 				} else {
 					nearestGate = WarpDrive.jumpgates.findNearestGate(xCoord, yCoord, zCoord);
 				}
@@ -838,7 +838,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				StringBuilder reason = new StringBuilder();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
 					messageToAllPlayersOnShip("Ship is too small (" + shipMass + "/" + WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE
-							+ ").\nInsufficient ship mass to open hyperspace portal.\nUse a jumpgate to reach or exit hyperspace.");
+							+ ").\nInsufficient ship mass to engage alcubierre drive.\nUse a jumpgate to reach or exit hyperspace.");
 					controller.setJumpFlag(false);
 					return;
 				}
@@ -887,7 +887,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info(this + " Movement adjusted to (" + moveX + " " + moveY + " " + moveZ + ") blocks.");
 			}
-			JumpSequencer jump = new JumpSequencer(this, (currentMode == EnumShipCoreMode.HYPERSPACE),
+			final JumpSequencer jump = new JumpSequencer(this, (currentMode == EnumShipCoreMode.HYPERSPACE),
 					moveX, moveY, moveZ, controller.getRotationSteps(),
 					false, 0, 0, 0);
 			jump.enable();
