@@ -2,6 +2,9 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -35,7 +38,8 @@ import cpw.mods.fml.common.Optional;
 	@Optional.Interface(iface = "li.cil.oc.api.network.Environment", modid = "OpenComputers"),
 	@Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = "ComputerCraft")
 })
-public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBase implements IPeripheral, Environment {
+public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBase implements IPeripheral, Environment, cr0s.warpdrive.api.computer.IInterfaced {
+	
 	// Common computer properties
 	protected String peripheralName = null;
 	private String[] methodsArray = {};
@@ -208,16 +212,19 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	// Declare type
+	@Override
 	public Object[] interfaced() {
 		return new String[] { "I'm a WarpDrive computer interfaced tile entity." };
 	}
 	
 	// Return block coordinates
+	@Override
 	public Object[] position() {
-		return new Integer[] { xCoord, yCoord, zCoord };
+		return new Object[] { xCoord, yCoord, zCoord, "?", xCoord, yCoord, zCoord };
 	}
 	
 	// Return version
+	@Override
 	public Object[] version() {
 		if (WarpDriveConfig.LOGGING_LUA) {
 			WarpDrive.logger.info("Version is " + WarpDrive.VERSION + " isDev " + WarpDrive.isDev);

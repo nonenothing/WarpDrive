@@ -4,7 +4,10 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.RadarEcho;
+import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -141,6 +144,21 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	// Common OC/CC methods
+	@Override
+	public Object[] position() {
+		final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(worldObj.provider.dimensionId, xCoord, zCoord);
+		if (celestialObject != null) {
+			Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, xCoord, yCoord, zCoord);
+			return new Object[] { xCoord, yCoord, zCoord, celestialObject.getFullName(), vec3Position.x, vec3Position.y, vec3Position.z };
+		} else {
+			String name = worldObj.getWorldInfo().getWorldName();
+			if (name == null || name.isEmpty()) {
+				name = "DIM" + worldObj.provider.dimensionId;
+			}
+			return new Object[] { xCoord, yCoord, zCoord, name, xCoord, yCoord, zCoord };
+		}
+	}
+	
 	private Object[] radius(Object[] arguments) {
 		if (arguments.length == 1 && getBlockMetadata() != 2) {
 			int newRadius;

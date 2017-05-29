@@ -293,18 +293,19 @@ public class StarMapRegistry {
 		return getUniversalCoordinates(celestialObject, x, y, z);
 	}
 	
-	public static Vector3 getUniversalCoordinates(CelestialObject celestialObject, final double x, final double y, final double z) {
+	public static Vector3 getUniversalCoordinates(final CelestialObject celestialObject, final double x, final double y, final double z) {
 		if (celestialObject == null) {
 			// not a registered area
 			return null;
 		}
 		final Vector3 vec3Result = new Vector3(x, y + 512.0D, z);
-		while (!celestialObject.isHyperspace()) {
-			final VectorI vEntry = celestialObject.getEntryOffset();
+		CelestialObject celestialObjectNode = celestialObject;
+		while (!celestialObjectNode.isHyperspace()) {
+			final VectorI vEntry = celestialObjectNode.getEntryOffset();
 			vec3Result.x -= vEntry.x;
 			vec3Result.y -= 256.0D;
 			vec3Result.z -= vEntry.z;
-			celestialObject = StarMapRegistry.getCelestialObject(celestialObject.parentDimensionId, celestialObject.parentCenterX, celestialObject.parentCenterZ);
+			celestialObjectNode = StarMapRegistry.getCelestialObject(celestialObjectNode.parentDimensionId, celestialObjectNode.parentCenterX, celestialObjectNode.parentCenterZ);
 		}
 		return vec3Result;
 	}
