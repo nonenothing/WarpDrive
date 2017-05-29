@@ -17,6 +17,7 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
+	
 	private int cooldownTicks = 0;
 	private boolean isEnabled = true;
 	private static final int START_CONCENTRATION_VALUE = 15;
@@ -99,15 +100,15 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		isEnabled = tag.getBoolean("isEnabled");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		isEnabled = tagCompound.getBoolean("isEnabled");
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setBoolean("isEnabled", isEnabled);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setBoolean("isEnabled", isEnabled);
 	}
 	
 	@Override
@@ -128,6 +129,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		xCoord, yCoord, zCoord);
 	}
 	
+	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
 		if (arguments.length == 1) {
 			isEnabled = Commons.toBool(arguments[0]);
@@ -149,8 +151,8 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "enable": 
-				return enable(arguments);		
+		case "enable": 
+			return enable(arguments);		
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

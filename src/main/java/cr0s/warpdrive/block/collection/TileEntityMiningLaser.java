@@ -25,6 +25,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
 public class TileEntityMiningLaser extends TileEntityAbstractMiner {
+	
 	private final boolean canSilktouch = (WarpDriveConfig.MINING_LASER_SILKTOUCH_DEUTERIUM_L <= 0 || FluidRegistry.isFluidRegistered("deuterium"));
 	
 	private boolean isActive() {

@@ -47,7 +47,7 @@ public class CompatSGCraft implements IBlockTransformer {
 				Object object = methodSGBaseTE_sgStateDescription.invoke(tileEntity);
 				String state = (String)object;
 				if (!state.equalsIgnoreCase("Idle")) {
-					reason.append("Stargate is active (" + state + ")!");
+					reason.append(String.format("Stargate is active (%s)!", state));
 					return false;
 				}
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {

@@ -134,13 +134,13 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) {
-		super.writeToNBT(nbt);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
 	}
 	
 	// OpenComputers callback methods

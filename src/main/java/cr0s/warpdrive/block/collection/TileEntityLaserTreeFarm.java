@@ -29,6 +29,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
+	
 	private boolean breakLeaves = false;
 	private boolean tapTrees = false;
 	
