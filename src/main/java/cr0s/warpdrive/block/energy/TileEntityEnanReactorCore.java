@@ -48,8 +48,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	private float lasersReceived = 0;
 	private int lastGenerationRate = 0;
 	private int releasedThisTick = 0; // amount of energy released during current tick update
-	private int releasedThisCycle = 0; // amount of energy released during current cycle
-	private int releasedLastCycle = 0;
+	private long releasedThisCycle = 0; // amount of energy released during current cycle
+	private long releasedLastCycle = 0;
 	
 	private boolean hold = true; // hold updates and power output until reactor is controlled (i.e. don't explode on chunk-loading while computer is booting)
 	private boolean isEnabled = false;
@@ -89,7 +89,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			double amountToIncrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS
 					* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((worldObj.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.1));
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("InsInc" + amountToIncrease);
+				WarpDrive.logger.info(String.format("increaseInstability %.5f", amountToIncrease));
 			}
 			instabilityValues[side] += amountToIncrease * (isNatural ? 1.0D : 0.25D);
 		} else {
@@ -179,8 +179,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		if (WarpDriveConfig.LOGGING_ENERGY) {
-			WarpDrive.logger.info("tickCount " + tickCount + " releasedThisTick " + releasedThisTick + " lasersReceived " + lasersReceived
-				+ " releasedThisCycle " + releasedThisCycle + " containedEnergy " + containedEnergy);
+			WarpDrive.logger.info(String.format("tickCount %d releasedThisTick %6d lasersReceived %.5f releasedThisCycle %6d containedEnergy %8d",
+			                                    tickCount, releasedThisTick, lasersReceived, releasedThisCycle, containedEnergy));
 		}
 		releasedThisTick = 0;
 		

@@ -360,9 +360,9 @@ function reactor_register()
   w.device_register("warpdriveEnanReactorLaser",
       function(deviceType, address, wrap) table.insert(reactorlasers, { side = wrap.side(), wrap = wrap }) end,
       function() end)
-  w.event_register("reactorPulse"       , function() reactor_pulse(param)                        return false end )
-  w.event_register("reactorDeactivation", function() w.status_showWarning("Reactor deactivated") return false end )
-  w.event_register("reactorActivation"  , function() w.status_showWarning("Reactor activated")   return false end )
+  w.event_register("reactorPulse"       , function(eventName, param) reactor_pulse(param)                        return false end )
+  w.event_register("reactorDeactivation", function(                ) w.status_showWarning("Reactor deactivated") return false end )
+  w.event_register("reactorActivation"  , function(                ) w.status_showWarning("Reactor activated")   return false end )
   w.data_register("reactor", reactor_read, nil)
 end
 

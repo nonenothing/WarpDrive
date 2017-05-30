@@ -358,7 +358,11 @@ end
 local function format_float(value, nbchar)
   local str = "?"
   if value ~= nil then
-    str = string.format("%g", value)
+    if type(value) == "number" then
+      str = string.format("%g", value)
+    else
+      str = type(value)
+    end
   end
   if nbchar ~= nil then
     str = string.sub("               " .. str, -nbchar)
@@ -369,7 +373,11 @@ end
 local function format_integer(value, nbchar)
   local str = "?"
   if value ~= nil then
-    str = string.format("%d", value)
+    if type(value) == "number" then
+      str = string.format("%d", value)
+    else
+      str = type(value)
+    end
   end
   if nbchar ~= nil then
     str = string.sub("               " .. str, -nbchar)
@@ -379,10 +387,14 @@ end
 
 local function format_boolean(value, strTrue, strFalse)
   if value ~= nil then
-    if value then
-      return strTrue
+    if type(value) == "boolean" then
+      if value then
+        return strTrue
+      else
+        return strFalse
+      end
     else
-      return strFalse
+      return type(value)
     end
   end
   return "?"
@@ -497,7 +509,7 @@ local function input_readNumber(currentValue)
       inputAbort = true
       
     else
-      local isSupported, needRedraw = w.event_handler(eventName, params[2])
+      local isSupported, needRedraw = w.event_handler(eventName, firstParam)
       if not isSupported then
         w.status_showWarning("Event '" .. eventName .. "', " .. address .. " , " .. firstParam .. " is unsupported")
       end
@@ -536,6 +548,7 @@ local function input_readText(currentValue)
     if eventName == "key_down" then
       local character = string.char(params[3])
       local keycode = params[4]
+      
       if keycode == 14 then -- Backspace
         input = string.sub(input, 1, string.len(input) - 1)
         ignoreNextChar = true
@@ -563,7 +576,7 @@ local function input_readText(currentValue)
       inputAbort = true
       
     else
-      local isSupported, needRedraw = w.event_handler(eventName, params[2])
+      local isSupported, needRedraw = w.event_handler(eventName, firstParam)
       if not isSupported then
         w.status_showWarning("Event '" .. eventName .. "', " .. address .. ", " .. firstParam .. " is unsupported")
       end
@@ -593,6 +606,7 @@ local function input_readConfirmation(message)
     if eventName == "key_down" then
       local character = string.char(params[3])
       local keycode = params[4]
+      
       if keycode == 28 then -- Return or Enter
         w.status_clear()
         return true
@@ -609,9 +623,9 @@ local function input_readConfirmation(message)
       return false
       
     else
-      local isSupported, needRedraw = w.event_handler(eventName, params[2])
+      local isSupported, needRedraw = w.event_handler(eventName, firstParam)
       if not isSupported then
-        w.status_showWarning("Event '" .. eventName .. "', " .. params[2] .. " is unsupported")
+        w.status_showWarning("Event '" .. eventName .. "', " .. firstParam .. " is unsupported")
       end
     end
     if not w.status_isActive() then
@@ -676,6 +690,7 @@ local function input_readEnum(currentValue, list, toValue, toDescription, noValu
     if eventName == "key_down" then
       local character = string.char(params[3])
       local keycode = params[4]
+      
       if keycode == 14 or keycode == 211 then -- Backspace or Delete
         inputKey = nil
         ignoreNextChar = true
@@ -723,7 +738,7 @@ local function input_readEnum(currentValue, list, toValue, toDescription, noValu
     elseif eventName == "interrupted" then
       inputAbort = true
       
-    elseif not w.event_handler(eventName, params[2]) then
+    elseif not w.event_handler(eventName, firstParam) then
       w.status_showWarning("Event '" .. eventName .. "', " .. address .. ", " .. firstParam .. " is unsupported")
     end
   until inputAbort
@@ -793,6 +808,7 @@ local function event_handler(eventName, param)
   elseif eventName == "component_unavailable" then
   -- not supported: task_complete, rednet_message, modem_message
   elseif event_handlers[eventName] ~= nil then
+    w.status_showSuccess("param '" .. param .. "' of type " .. type(param))
     needRedraw = event_handlers[eventName](eventName, param)
   else
     return false, needRedraw
@@ -1044,6 +1060,7 @@ local function run()
     if eventName == "key_down" then
       local character = string.char(params[3])
       local keycode = params[4]
+      
       ignoreNextChar = false
       if keycode == 11 or keycode == 82 then -- 0
         if selectPage('0') then
@@ -1102,7 +1119,7 @@ local function run()
       abort = true
       
     else
-      local isSupported, needRedraw = w.event_handler(eventName, params[2])
+      local isSupported, needRedraw = w.event_handler(eventName, firstParam)
       if not isSupported then
         w.status_showWarning("Event '" .. eventName .. "', " .. firstParam .. " is unsupported")
       end
