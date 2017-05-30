@@ -636,7 +636,10 @@ warpdrive.video_channel.statusLine.invalid=§cLe canal vidéo %1$d est invalide.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cLe canal vidéo %1$d est invalide ou la caméra est trop loin!
 warpdrive.video_channel.statusLine.undefined=§7Le canal vidéo est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
 
-warpdrive.cloakingCore.invalidAssembly=§cL'assemblage est invalide!
+warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s, et bobine(s) de projection manquante(nt) en direction de %3$s
+warpdrive.cloakingCore.missingInner=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s
+warpdrive.cloakingCore.missingOuter=§cIntegrité réduite à %1$d%%: bobine(s) de projection manquante(nt) en direction de %2$s
+warpdrive.cloakingCore.valid=Le système est valide
 warpdrive.cloakingCore.disabled=Le champ d'invisibilité est désactivé
 warpdrive.cloakingCore.lowPower=§cLe champ d'invisibilité est en panne. Il nous faut plus d'énergie, Capitaine!
 warpdrive.cloakingCore.cloaking=Un champ de niveau %1$d couvre actuellement %2$d blocs!

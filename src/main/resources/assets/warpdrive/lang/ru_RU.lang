@@ -636,7 +636,10 @@ warpdrive.video_channel.statusLine.invalid=§cВидеоканал %1$d неде
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cВидеоканал %1$d недействителен или камера слишком далеко.
 warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
 
-warpdrive.cloakingCore.invalidAssembly=§cНеверная структура.
+warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloakingCore.valid=System is valid
 warpdrive.cloakingCore.disabled=Маскировка выключена
 warpdrive.cloakingCore.lowPower=§cМаскировка выключилась, нужно больше энергии, капитан!
 warpdrive.cloakingCore.cloaking=Маскировка %1$d уровня покрывает %2$d блоков.

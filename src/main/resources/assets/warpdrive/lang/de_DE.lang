@@ -638,7 +638,10 @@ warpdrive.video_channel.statusLine.invalid=§cVideokanal %1$d ist ungültig.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideokanal %1$d ist ungültig oder die Kamera ist zu weit weg!
 warpdrive.video_channel.statusLine.undefined=§7Nicht definierter Videokanal.\n§bNutze eine Stimmgabel§r um ihn einzustellen.
 
-warpdrive.cloakingCore.invalidAssembly=§Konstruktion ungültig!
+warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s !!!
+warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s !!!
+warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s !!!
+warpdrive.cloakingCore.valid=System is valid !!!
 warpdrive.cloakingCore.disabled=Tarnfeld ist deaktiviert!
 warpdrive.cloakingCore.lowPower=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
 warpdrive.cloakingCore.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Blöcke!

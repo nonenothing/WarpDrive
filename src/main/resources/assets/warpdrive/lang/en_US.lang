@@ -636,7 +636,10 @@ warpdrive.video_channel.statusLine.invalid=§cVideo channel %1$d is invalid.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideo channel %1$d is invalid or camera is too far away!
 warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
 
-warpdrive.cloakingCore.invalidAssembly=§cInvalid assembly!
+warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloakingCore.valid=System is valid
 warpdrive.cloakingCore.disabled=Cloak is disabled
 warpdrive.cloakingCore.lowPower=§cCloak is down, we need more power Captain!
 warpdrive.cloakingCore.cloaking=A tier %1$d cloak is currently covering %2$d blocks!
