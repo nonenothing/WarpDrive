@@ -275,26 +275,49 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		
 		if (entity != null) {
 			switch (entity.getClass().toString()) {
+			// Vanilla explosive
 			case "class net.minecraft.entity.item.EntityEnderCrystal": strength = 6.0D; break;
 			case "class net.minecraft.entity.item.EntityMinecartTNT": strength = 4.0D; break;
 			case "class net.minecraft.entity.item.EntityTNTPrimed": strength = 5.0D; break;
 			case "class net.minecraft.entity.monster.EntityCreeper": strength = 3.0D; break;  // *2 for powered ones
+			
+			// Applied Energistics Tiny TNT
 			case "class appeng.entity.EntityTinyTNTPrimed": strength = 0.2D; break;
+			
+			// Blood Arsenal Blood TNT
 			case "class com.arc.bloodarsenal.common.entity.EntityBloodTNT": strength = 1.0D; break;
+			
+			// IC2 explosives
 			case "class ic2.core.block.EntityItnt": strength = 5.5D; break; 
 			case "class ic2.core.block.EntityNuke": strength = 0.02D; break;
 			case "class ic2.core.block.EntityDynamite": strength = 1.0D; break;
 			case "class ic2.core.block.EntityStickyDynamite": strength = 1.0D; break;
 			
-			// S-mine (initial)
+			// ICBM Classic & DefenseTech S-mine (initial explosion)
 			case "class defense.common.entity.EntityExplosion": strength = 1.0D; break;
+			case "class icbm.classic.content.entity.EntityExplosion": strength = 1.0D; break;
 			
-			// Condensed, Incendiary, Repulsive, Attractive, Fragmentation, Sonic, Breaching, Thermobaric, Nuclear,
+			// ICBM Classic & DefenseTech Condensed, Incendiary, Repulsive, Attractive, Fragmentation, Sonic, Breaching, Thermobaric, Nuclear,
 			// Exothermic, Endothermic, Anti-gravitational, Hypersonic, (Antimatter?)
 			case "class defense.common.entity.EntityExplosive": strength = 15.0D; break;
+			case "class icbm.classic.content.entity.EntityExplosive": strength = 15.0D; break;
 			
-			// Fragmentation, S-mine
+			// ICBM Classic & DefenseTechFragmentation, S-mine fragments
 			case "class defense.common.entity.EntityFragments": strength = 0.02D; break;
+			case "class icbm.classic.content.entity.EntityFragments": strength = 0.02D; break;
+			
+			// ICBM Classic & DefenseTech Conventional, Attractive, Repulsive, Sonic, Breaching, Thermobaric, Nuclear, 
+			// Exothermic, Endothermic, Anti-Gravitational, Hypersonic missile, (Antimatter?), (Red matter?), (Homing?), (Anti-Ballistic?)
+			case "class defense.common.entity.EntityMissile": strength = 15.0D; break;
+			case "class icbm.classic.content.entity.EntityMissile": strength = 15.0D; break;
+			
+			// ICBM Classic & DefenseTech Conventional/Incendiary/Repulsive grenade
+			case "class defense.common.entity.EntityGrenade": strength = 3.0D; break;
+			case "class icbm.classic.content.entity.EntityGrenade": strength = 3.0D; break;
+			
+			// Tinker's Construct SDX explosives
+			case "class tconstruct.mechworks.entity.item.ExplosivePrimed": strength = 5.0D; break;
+			
 			default:
 				if (enableFirstHit) {
 					WarpDrive.logger.error("Unknown explosion source " + entity.getClass().toString() + " " + entity);
