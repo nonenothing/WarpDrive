@@ -21,14 +21,15 @@ if cloakingCore == nil then
 else
   cloakingCore.tier(2)
   cloakingCore.enable(true)
-  if cloakingCore.isAssemblyValid() then
+  local isValid, message = cloakingCore.isAssemblyValid()
+  if isValid then
     term.setBackgroundColor(colors.lime)
     term.setTextColor(colors.red)
     term.write("Tier 2 cloaking is enabled")
   else
     term.setBackgroundColor(colors.red)
     term.setTextColor(colors.white)
-    term.write("Invalid cloaking assembly!")
+    print(message)
     term.setBackgroundColor(colors.black)
     term.setTextColor(colors.white)
     print()

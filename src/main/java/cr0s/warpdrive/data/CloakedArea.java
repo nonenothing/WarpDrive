@@ -135,14 +135,11 @@ public class CloakedArea {
 				
 				if (Math.abs(dX) < RADIUS && Math.abs(dY) < RADIUS && Math.abs(dZ) < RADIUS) {
 					if (decloak) {
+						PacketHandler.sendCloakPacket(entityPlayerMP, this, true);
 						revealChunksToPlayer(entityPlayerMP);
 						revealEntitiesToPlayer(entityPlayerMP);
-					}
-					
-					if (!isEntityWithinArea(entityPlayerMP) && !decloak) {
+					} else if (!isEntityWithinArea(entityPlayerMP)) {
 						PacketHandler.sendCloakPacket(entityPlayerMP, this, false);
-					} else if (decloak) {
-						PacketHandler.sendCloakPacket(entityPlayerMP, this, true);
 					}
 				}
 			}
