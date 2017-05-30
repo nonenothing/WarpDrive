@@ -814,7 +814,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
 			case "dim_positive": // dim_positive (front, right, up)

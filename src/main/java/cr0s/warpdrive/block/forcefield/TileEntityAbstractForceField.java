@@ -187,20 +187,21 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		try {
 			switch (methodName) {
-				case "enable":
-					return enable(arguments);
+			case "enable":
+				return enable(arguments);
 				
-				case "beamFrequency":
-					if (arguments.length == 1) {
-						setBeamFrequency(Commons.toInt(arguments[0]));
-					}
-					return new Integer[]{ beamFrequency };
+			case "beamFrequency":
+				if (arguments.length == 1) {
+					setBeamFrequency(Commons.toInt(arguments[0]));
+				}
+				return new Integer[]{ beamFrequency };
 			}
 		} catch (Exception exception) {
+			exception.printStackTrace();
 			return new String[] { exception.getMessage() };
 		}
 		

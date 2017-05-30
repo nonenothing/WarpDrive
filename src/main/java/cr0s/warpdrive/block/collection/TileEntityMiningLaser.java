@@ -492,27 +492,27 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "start":
-				return start();
-
-			case "stop":
-				stop();
-				return null;
-
-			case "state":
-				return state();
-
-			case "offset":
-				return offset(arguments);
-
-			case "onlyOres":
-				return onlyOres(arguments);
-
-			case "silktouch":
-				return silktouch(arguments);
+		case "start":
+			return start();
+			
+		case "stop":
+			stop();
+			return null;
+			
+		case "state":
+			return state();
+			
+		case "offset":
+			return offset(arguments);
+			
+		case "onlyOres":
+			return onlyOres(arguments);
+			
+		case "silktouch":
+			return silktouch(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

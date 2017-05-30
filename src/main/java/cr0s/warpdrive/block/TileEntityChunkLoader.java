@@ -133,35 +133,38 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "radius":
-				if (arguments.length == 1) {
-					int dist = Commons.toInt(arguments[0]);
-					negDX = dist;
-					negDZ = dist;
-					posDX = dist;
-					posDZ = dist;
-					changedDistance();
-					return new Object[]{true};
-				}
-				return new Object[]{false};
-			case "bounds":
-				if (arguments.length == 4) {
-					negDX = Commons.toInt(arguments[0]);
-					posDX = Commons.toInt(arguments[1]);
-					negDZ = Commons.toInt(arguments[2]);
-					posDZ = Commons.toInt(arguments[3]);
-					changedDistance();
-				}
-				return new Object[]{negDX, posDX, negDZ, posDZ};
-			case "active":
-				if (arguments.length == 1)
-					shouldLoad = Commons.toBool(arguments[0]);
-				return new Object[]{shouldChunkLoad()};
-			case "upgrades":
-				return new Object[] { getUpgradesAsString() };
+		case "radius":
+			if (arguments.length == 1) {
+				int dist = Commons.toInt(arguments[0]);
+				negDX = dist;
+				negDZ = dist;
+				posDX = dist;
+				posDZ = dist;
+				changedDistance();
+				return new Object[]{true};
+			}
+			return new Object[]{false};
+			
+		case "bounds":
+			if (arguments.length == 4) {
+				negDX = Commons.toInt(arguments[0]);
+				posDX = Commons.toInt(arguments[1]);
+				negDZ = Commons.toInt(arguments[2]);
+				posDZ = Commons.toInt(arguments[3]);
+				changedDistance();
+			}
+			return new Object[]{negDX, posDX, negDZ, posDZ};
+			
+		case "active":
+			if (arguments.length == 1)
+				shouldLoad = Commons.toBool(arguments[0]);
+			return new Object[]{shouldChunkLoad()};
+			
+		case "upgrades":
+			return new Object[] { getUpgradesAsString() };
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

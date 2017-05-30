@@ -100,49 +100,6 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[3] * parRadius * parRadius * parRadius));
 	}
 	
-	// OpenComputer callback methods
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] radius(Context context, Arguments arguments) {
-		return radius(argumentsOCtoCC(arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getEnergyRequired(Context context, Arguments arguments) {
-		return getEnergyRequired(argumentsOCtoCC(arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getScanDuration(Context context, Arguments arguments) {
-		return getScanDuration(argumentsOCtoCC(arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] start(Context context, Arguments arguments) {
-		return start();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResults(Context context, Arguments arguments) {
-		return getResults();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResultsCount(Context context, Arguments arguments) {
-		return getResultsCount();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResult(Context context, Arguments arguments) {
-		return getResult(argumentsOCtoCC(arguments));
-	}
-	
 	// Common OC/CC methods
 	@Override
 	public Object[] position() {
@@ -267,6 +224,49 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 	}
 	
+	// OpenComputer callback methods
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] radius(Context context, Arguments arguments) {
+		return radius(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+		return getEnergyRequired(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getScanDuration(Context context, Arguments arguments) {
+		return getScanDuration(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] start(Context context, Arguments arguments) {
+		return start();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResults(Context context, Arguments arguments) {
+		return getResults();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResultsCount(Context context, Arguments arguments) {
+		return getResultsCount();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResult(Context context, Arguments arguments) {
+		return getResult(argumentsOCtoCC(arguments));
+	}
+	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
@@ -287,7 +287,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
 		case "radius":

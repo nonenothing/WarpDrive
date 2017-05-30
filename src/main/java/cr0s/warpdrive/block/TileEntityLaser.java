@@ -647,24 +647,23 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "emitBeam":  // emitBeam(yaw, pitch) or emitBeam(deltaX, deltaY, deltaZ)
-				return emitBeam(arguments);
-
-			case "position":
-				return new Integer[]{ xCoord, yCoord, zCoord };
-
-			case "beamFrequency":
-				if (arguments.length == 1) {
-					setBeamFrequency(Commons.toInt(arguments[0]));
-				}
-				return new Integer[]{ beamFrequency };
-
-			case "getScanResult":
-				return getScanResult();
+		case "emitBeam":  // emitBeam(yaw, pitch) or emitBeam(deltaX, deltaY, deltaZ)
+			return emitBeam(arguments);
 			
+		case "position":
+			return new Integer[]{ xCoord, yCoord, zCoord };
+			
+		case "beamFrequency":
+			if (arguments.length == 1) {
+				setBeamFrequency(Commons.toInt(arguments[0]));
+			}
+			return new Integer[]{ beamFrequency };
+			
+		case "getScanResult":
+			return getScanResult();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
