@@ -1,15 +1,5 @@
 package cr0s.warpdrive.data;
 
-import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
-
-import java.util.HashMap;
-import java.util.UUID;
-
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-
 public class RadarEcho extends Vector3 {
 	
 	public final String type;
@@ -55,7 +45,7 @@ public class RadarEcho extends Vector3 {
 	
 	@Override
 	public String toString() {
-		return String.format("%s %s @ (%d %d %d) %s %s", 
+		return String.format("%s %s @ (%.3f %.1f %.3f) %s %s", 
 		                     getClass().getSimpleName(),
 		                     type,
 		                     x, y, z,
