@@ -237,6 +237,7 @@ public class Dictionary {
 				config.get("entity_tags", "Creeper"                      , "LivingWithoutAir").getString();
 				config.get("entity_tags", "Skeleton"                     , "LivingWithoutAir").getString();
 				config.get("entity_tags", "Zombie"                       , "LivingWithoutAir").getString();
+				config.get("entity_tags", "testdummy.Dummy"              , "LivingWithoutAir").getString();
 				
 				taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			}
