@@ -312,7 +312,11 @@ local function status_show(isWarning, text)
       status_clockTarget = w.event_clock() + 0.5
     end
     status_isWarning = isWarning
-    status_text = text
+    if text ~= nil then
+      status_text = text
+    else
+      status_text = "???"
+    end
     w.status_refresh()
   end
 end
@@ -412,6 +416,15 @@ local function format_string(value, nbchar)
       str = string.sub(str .. "                                             ", 1, nbchar)
     end
   end
+  return str
+end
+
+local function format_address(value)
+  local str = "?"
+  if value ~= nil then
+    str = "" .. value
+  end
+  str = string.sub(str, 10, 100)
   return str
 end
 
@@ -1184,6 +1197,7 @@ w = {
   format_integer = format_integer,
   format_boolean = format_boolean,
   format_string = format_string,
+  format_address = format_address,
   input_readNumber = input_readNumber,
   input_readText = input_readText,
   input_readConfirmation = input_readConfirmation,
