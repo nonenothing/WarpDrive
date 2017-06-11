@@ -4,7 +4,6 @@ import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.block.movement.TileEntityShipCore.EnumShipCoreMode;
 import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
@@ -60,7 +59,7 @@ public class StarMapRegistry {
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
-		for (StarMapRegistryItem registryItem : setRegistryItems) {
+		for (final StarMapRegistryItem registryItem : setRegistryItems) {
 			if (registryItem.sameIdOrCoordinates(tileEntity)) {
 				// already registered
 				registryItem.update(tileEntity);    // @TODO probably not thread safe
@@ -87,7 +86,7 @@ public class StarMapRegistry {
 			return;
 		}
 		
-		for (StarMapRegistryItem registryItem : setRegistryItems) {
+		for (final StarMapRegistryItem registryItem : setRegistryItems) {
 			if (registryItem.isSameTileEntity(tileEntity)) {
 				// found it, remove and exit
 				countRemove++;
@@ -103,7 +102,7 @@ public class StarMapRegistry {
 		if (setStarMapRegistryItems == null) {
 			return;
 		}
-		for (StarMapRegistryItem registryItem : setStarMapRegistryItems) {
+		for (final StarMapRegistryItem registryItem : setStarMapRegistryItems) {
 			if (registryItem.contains(x, y, z)) {
 				final TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 				if (tileEntity instanceof IStarMapRegistryTileEntity) {
@@ -113,6 +112,10 @@ public class StarMapRegistry {
 		}
 	}
 	
+	public static CelestialObject getCelestialObject(final String group, final String name) {
+		return CelestialObjectManager.get(group, name);
+	}
+	
 	public static CelestialObject getCelestialObject(final World world, final int x, final int z) {
 		return getCelestialObject(world.provider.dimensionId, x, z);
 	}
@@ -120,7 +123,7 @@ public class StarMapRegistry {
 	public static CelestialObject getCelestialObject(final int dimensionId, final int x, final int z) {
 		double distanceClosest = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			if (dimensionId == celestialObject.dimensionId) {
 				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
 				if (distanceSquared <= 0) {
@@ -139,25 +142,17 @@ public class StarMapRegistry {
 		return celestialObject == null ? 1.0D : celestialObject.gravity;
 	}
 	
-	public static CelestialObject getClosestParentCelestialObject(final int dimensionId, final int x, final int z) {
-		double closestPlanetDistance = Double.POSITIVE_INFINITY;
-		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
-			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
-			if (distanceSquared <= 0) {
-				return celestialObject;
-			} else if (closestPlanetDistance > distanceSquared) {
-				closestPlanetDistance = distanceSquared;
-				celestialObjectClosest = celestialObject;
-			}
-		}
-		return celestialObjectClosest;
+	public static CelestialObject getParentCelestialObject(final CelestialObject celestialObject ) {
+		return getCelestialObject(celestialObject.parentGroup, celestialObject.parentName);
 	}
 	
 	public static CelestialObject getClosestChildCelestialObject(final int dimensionId, final int x, final int z) {
 		double closestPlanetDistance = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
-		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+			if (celestialObject.isHyperspace()) {
+				continue;
+			}
 			final double distanceSquared = celestialObject.getSquareDistanceInParent(dimensionId, x, z);
 			if (distanceSquared <= 0.0D) {
 				return celestialObject;
@@ -181,8 +176,10 @@ public class StarMapRegistry {
 			return celestialObject == null ? 0 : celestialObject.dimensionId;
 		}
 		// coming from a planet?
-		celestialObject = getClosestParentCelestialObject(world.provider.dimensionId, x, z);
-		return celestialObject == null ? 0 : (celestialObject.isSpace() ? celestialObject.dimensionId : celestialObject.parentDimensionId);
+		while (celestialObject != null && !celestialObject.isSpace()) {
+			celestialObject = getParentCelestialObject(celestialObject);
+		}
+		return celestialObject == null ? 0 : celestialObject.dimensionId;
 	}
 	
 	public static int getHyperspaceDimensionId(final World world, final int x, final int z) {
@@ -196,9 +193,8 @@ public class StarMapRegistry {
 			return celestialObject.parentDimensionId;
 		}
 		// coming from a planet?
-		celestialObject = getClosestParentCelestialObject(world.provider.dimensionId, x, z);
-		if (celestialObject != null && !celestialObject.isHyperspace()) {
-			celestialObject = getClosestParentCelestialObject(world.provider.dimensionId, x, z);
+		while (celestialObject != null && !celestialObject.isSpace()) {
+			celestialObject = getParentCelestialObject(celestialObject);
 		}
 		return celestialObject == null ? 0 : celestialObject.parentDimensionId;
 	}
@@ -358,8 +354,13 @@ public class StarMapRegistry {
 			}
 			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			
-			// Skip offline warp cores
-			if (shipCore.controller == null || shipCore.controller.getMode() == EnumShipCoreMode.IDLE || !shipCore.validateShipSpatialParameters(reason)) {
+			// Skip offline ship cores
+			if (shipCore.controller == null || shipCore.controller.getCommand() == EnumShipControllerCommand.OFFLINE) {
+				continue;
+			}
+			
+			// Skip invalid ships
+			if (!shipCore.validateShipSpatialParameters(reason)) {
 				continue;
 			}
 			

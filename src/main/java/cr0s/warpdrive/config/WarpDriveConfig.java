@@ -30,6 +30,7 @@ import cr0s.warpdrive.compat.CompatThermalDynamics;
 import cr0s.warpdrive.compat.CompatThermalExpansion;
 import cr0s.warpdrive.compat.CompatWarpDrive;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.data.EnumShipMovementType;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -167,28 +168,21 @@ public class WarpDriveConfig {
 	public static int SPACE_GENERATOR_Y_MIN_BORDER = 5;
 	public static int SPACE_GENERATOR_Y_MAX_BORDER = 200;
 	
+	// Ship movement costs
+	public static ShipMovementCosts.Factors[] SHIP_MOVEMENT_COSTS_FACTORS = null;
+	
 	// Ship
 	public static int SHIP_MAX_ENERGY_STORED = 100000000;
-	public static int SHIP_NORMALJUMP_ENERGY_PER_BLOCK = 10;
-	public static int SHIP_NORMALJUMP_ENERGY_PER_DISTANCE = 100;
-	public static int SHIP_HYPERJUMP_ENERGY_PER_BLOCK = 100;
-	public static int SHIP_HYPERJUMP_ENERGY_PER_DISTANCE = 1000;
 	public static int SHIP_TELEPORT_ENERGY_PER_ENTITY = 1000000;
-	public static int SHIP_MAX_JUMP_DISTANCE = 128;
-	public static int SHIP_HYPERSPACE_ACCELERATION = 100;
 	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 3000;
 	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 1200;
 	public static int SHIP_MAX_SIDE_SIZE = 127;
-	public static int SHIP_COOLDOWN_INTERVAL_SECONDS = 30;
 	public static int SHIP_COLLISION_TOLERANCE_BLOCKS = 3;
-	public static int SHIP_SHORTJUMP_THRESHOLD_BLOCKS = 50;
-	public static int SHIP_SHORTJUMP_WARMUP_SECONDS = 10;
-	public static int SHIP_LONGJUMP_WARMUP_SECONDS = 30;
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
 	public static int SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
 	public static int SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
+	public static int SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = 120;
 	public static String[] SHIP_VOLUME_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
-	public static boolean SHIP_WARMUP_SICKNESS = true;
 	public static int SHIP_SUMMON_MAX_RANGE = 500;
 	public static boolean SHIP_SUMMON_ACROSS_DIMENSIONS = false;
 	
@@ -377,6 +371,15 @@ public class WarpDriveConfig {
 		return new ItemStack(Blocks.fire);
 	}
 	
+	protected static double[] getDoubleList(final Configuration config, final String categoy, final String key, final String comment, final double[] valuesDefault) {
+		double[] valuesRead = config.get(categoy, key, valuesDefault, comment).getDoubleList();
+		if (valuesRead.length != valuesDefault.length) {
+			valuesRead = valuesDefault.clone();
+		}
+		
+		return valuesRead;
+	}
+	
 	public static void reload() {
 		CelestialObjectManager.clearForReload();
 		onFMLpreInitialization(stringConfigDirectory);
@@ -485,24 +488,26 @@ public class WarpDriveConfig {
 		STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS = 
 			config.get("starmap", "allow_overlapping_celestial_objects", STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS, "Enable to bypass the check at boot. Use at your own risk!").getBoolean();
 		
+		// Ship movement costs
+		SHIP_MOVEMENT_COSTS_FACTORS = new ShipMovementCosts.Factors[EnumShipMovementType.length];
+		for (EnumShipMovementType shipMovementType : EnumShipMovementType.values()) {
+			SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()] = new ShipMovementCosts.Factors(
+			        shipMovementType.warmupDefault,
+			        shipMovementType.energyRequiredDefault,
+			        shipMovementType.cooldownDefault,
+			        shipMovementType.sicknessDefault,
+			        shipMovementType.maximumDistanceDefault);
+			if (shipMovementType.hasConfiguration) {
+				SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()].load(config, "ship_movement_costs", shipMovementType.getName(), shipMovementType.getDescription());
+			}
+		}
+		
 		// Ship
 		SHIP_MAX_ENERGY_STORED = Commons.clamp(0, Integer.MAX_VALUE,
 				config.get("ship", "max_energy_stored", SHIP_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		SHIP_NORMALJUMP_ENERGY_PER_BLOCK = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "normaljump_energy_per_block", SHIP_NORMALJUMP_ENERGY_PER_BLOCK, "Energy cost per non-air block without warping").getInt());
-		SHIP_NORMALJUMP_ENERGY_PER_DISTANCE = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "normaljump_energy_per_distance", SHIP_NORMALJUMP_ENERGY_PER_DISTANCE, "Energy cost per non-air block without warping").getInt());
-		SHIP_HYPERJUMP_ENERGY_PER_DISTANCE = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "hyperjump_energy_per_distance", SHIP_HYPERJUMP_ENERGY_PER_DISTANCE, "Energy cost per non-air block while warping").getInt());
-		SHIP_HYPERJUMP_ENERGY_PER_BLOCK = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "hyperjump_energy_per_block", SHIP_HYPERJUMP_ENERGY_PER_BLOCK, "Energy cost per non-air block while warping").getInt());
+		
 		SHIP_TELEPORT_ENERGY_PER_ENTITY = Commons.clamp(0, Integer.MAX_VALUE,
 				config.get("ship", "teleport_energy_per_entity", SHIP_TELEPORT_ENERGY_PER_ENTITY, "Energy cost per entity").getInt());
-		
-		SHIP_MAX_JUMP_DISTANCE = Commons.clamp(0, 30000000,
-				config.get("ship", "max_jump_distance", SHIP_MAX_JUMP_DISTANCE, "Maximum jump length value in blocks").getInt());
-		SHIP_HYPERSPACE_ACCELERATION = Commons.clamp(1, 10000,
-				config.get("ship", "hyperspace_acceleration", SHIP_HYPERSPACE_ACCELERATION, "Acceleration gain from moving while in hyperspace").getInt());
 		
 		SHIP_VOLUME_MAX_ON_PLANET_SURFACE = Commons.clamp(0, 10000000,
 				config.get("ship", "volume_max_on_planet_surface", SHIP_VOLUME_MAX_ON_PLANET_SURFACE, "Maximum ship mass (in blocks) to jump on a planet").getInt());
@@ -515,24 +520,17 @@ public class WarpDriveConfig {
 				config.get("ship", "max_side_size", SHIP_MAX_SIDE_SIZE, "Maximum ship size on each axis in blocks").getInt());
 		SHIP_COLLISION_TOLERANCE_BLOCKS = Commons.clamp(0, 30000000,
 				config.get("ship", "collision_tolerance_blocks", SHIP_COLLISION_TOLERANCE_BLOCKS, "Tolerance in block in case of collision before causing damages...").getInt());
-		SHIP_COOLDOWN_INTERVAL_SECONDS = Commons.clamp(0, 3600,
-				config.get("ship", "cooldown_interval_seconds", SHIP_COOLDOWN_INTERVAL_SECONDS, "Cooldown seconds to wait after jumping").getInt());
 		
-		SHIP_SHORTJUMP_THRESHOLD_BLOCKS = Commons.clamp(0, 30000000,
-				config.get("ship", "shortjump_threshold_blocs", SHIP_SHORTJUMP_THRESHOLD_BLOCKS, "Short jump definition").getInt());
-		SHIP_SHORTJUMP_WARMUP_SECONDS = Commons.clamp(0, 3600,
-				config.get("ship", "shortjump_warmup_seconds", SHIP_SHORTJUMP_WARMUP_SECONDS, "(measured in seconds)").getInt());
-		SHIP_LONGJUMP_WARMUP_SECONDS = Commons.clamp(0, 3600,
-				config.get("ship", "longjump_warmup_seconds", SHIP_LONGJUMP_WARMUP_SECONDS, "(measured in seconds)").getInt());
 		SHIP_WARMUP_RANDOM_TICKS = Commons.clamp(10, 200,
 				config.get("ship", "warmup_random_ticks", SHIP_WARMUP_RANDOM_TICKS, "Random variation added to warmup (measured in ticks)").getInt());
-		SHIP_WARMUP_SICKNESS = config.get("ship", "warmup_sickness", true, "Enable warp sickness during warmup").getBoolean(true);
 		
 		SHIP_SUMMON_MAX_RANGE = config.get("ship", "summon_max_range", SHIP_SUMMON_MAX_RANGE, "Maximum range from which players can be summoned (measured in blocks), set to -1 for unlimited range").getInt();
 		SHIP_SUMMON_ACROSS_DIMENSIONS = config.get("ship", "summon_across_dimensions", false, "Enable summoning players from another dimension").getBoolean(false);
 		
 		SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
 				config.get("ship", "core_isolation_update_interval", SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
+		SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = Commons.clamp(0, 300,
+                config.get("ship", "volume_scan_age_tolerance", SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS, "Ship volume won't be refreshed unless it's older than that many seconds").getInt());
 		SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
 				config.get("ship", "controller_update_interval", SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		
@@ -855,6 +853,7 @@ public class WarpDriveConfig {
 		}
 		
 		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
+		isICBMLoaded = Loader.isModLoaded("icbm");
 		isICBMClassicLoaded = Loader.isModLoaded("icbmclassic");
 		
 		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");

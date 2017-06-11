@@ -9,6 +9,7 @@ import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.data.MovingEntity;
@@ -56,9 +57,10 @@ public class JumpSequencer extends AbstractSequencer {
 	// Jump vector
 	private Transformation transformation;
 	
+	private final EnumShipMovementType shipMovementType;
 	private int moveX, moveY, moveZ;
 	private final byte rotationSteps;
-	private final boolean isHyperspaceJump;
+	private String nameTarget;
 	
 	private final World sourceWorld;
 	private World targetWorld;
@@ -91,14 +93,13 @@ public class JumpSequencer extends AbstractSequencer {
 	private final int destX;
 	private final int destY;
 	private final int destZ;
-	private final boolean isCoordJump;
 	
 	private long msCounter = 0;
 	private int ticks = 0;
 	
-	public JumpSequencer(TileEntityShipCore shipCore, boolean isHyperspaceJump,
+	public JumpSequencer(final TileEntityShipCore shipCore, final EnumShipMovementType shipMovementType, final String nameTarget,
 	                     final int moveX, final int moveY, final int moveZ, final byte rotationSteps,
-	                     boolean isCoordJump, int destX, int destY, int destZ) {
+	                     final int destX, final int destY, final int destZ) {
 		this.sourceWorld = shipCore.getWorldObj();
 		this.ship = new JumpShip();
 		this.ship.worldObj = sourceWorld;
@@ -114,12 +115,12 @@ public class JumpSequencer extends AbstractSequencer {
 		this.ship.minZ = shipCore.minZ;
 		this.ship.maxZ = shipCore.maxZ;
 		this.ship.shipCore = shipCore;
-		this.isHyperspaceJump = isHyperspaceJump;
+		this.shipMovementType = shipMovementType;
 		this.moveX = moveX;
 		this.moveY = moveY;
 		this.moveZ = moveZ;
 		this.rotationSteps = rotationSteps;
-		this.isCoordJump = isCoordJump;
+		this.nameTarget = nameTarget;
 		this.destX = destX;
 		this.destY = destY;
 		this.destZ = destZ;
@@ -496,21 +497,18 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		StringBuilder reason = new StringBuilder();
 		
-		final CelestialObject celestialObjectSource = StarMapRegistry.getCelestialObject(
-			sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
-		final boolean isInSpace = celestialObjectSource.isSpace();
-		final boolean isInHyperSpace = celestialObjectSource.isHyperspace();
-		
-		final boolean toSpace = (moveY > 0) && (ship.maxY + moveY > 255) && (!isInSpace) && (!isInHyperSpace);
-		final boolean fromSpace = (moveY < 0) && (ship.minY + moveY < 0) && isInSpace;
-		betweenWorlds = fromSpace || toSpace || isHyperspaceJump;
+		betweenWorlds = shipMovementType == EnumShipMovementType.PLANET_TAKEOFF
+		             || shipMovementType == EnumShipMovementType.PLANET_LANDING
+		             || shipMovementType == EnumShipMovementType.HYPERSPACE_EXITING
+		             || shipMovementType == EnumShipMovementType.HYPERSPACE_ENTERING;
 		
 		{// compute targetWorld and movement vector (moveX, moveY, moveZ)
-			String message = computeTargetWorld(celestialObjectSource, isInSpace, isInHyperSpace, toSpace, fromSpace);
-			if (message != null) {
+			final CelestialObject celestialObjectSource = StarMapRegistry.getCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			final boolean isTargetWorldFound= computeTargetWorld(celestialObjectSource, shipMovementType, reason);
+			if (!isTargetWorldFound) {
 				LocalProfiler.stop();
-				ship.messageToAllPlayersOnShip(message);
-				disable(message);
+				ship.messageToAllPlayersOnShip(reason.toString());
+				disable(reason.toString());
 				return;
 			}
 		}
@@ -534,34 +532,51 @@ public class JumpSequencer extends AbstractSequencer {
 		// Calculate jump vector
 		Boolean isPluginCheckDone = false;
 		String firstAdjustmentReason = "";
-		if (isCoordJump) {
+		switch (shipMovementType) {
+		case GATE_ACTIVATING:
+		case CREATIVE:
 			moveX = destX - ship.coreX;
 			moveY = destY - ship.coreY;
 			moveZ = destZ - ship.coreZ;
-		} else if (!isHyperspaceJump) {
-			if (toSpace) {
-				// enter space at current altitude
-				moveY = 0;
-			} else if (fromSpace) {
-				// re-enter atmosphere at max altitude
-				moveY = 245 - ship.maxY;
-			} else {
-				if ((ship.maxY + moveY) > 255) {
-					moveY = 255 - ship.maxY;
-				}
-				
-				if ((ship.minY + moveY) < 5) {
-					moveY = 5 - ship.minY;
-				}
-				
-				// Do not check in long jumps
-				int rangeX = Math.abs(moveX) - (ship.maxX - ship.minX);
-				int rangeZ = Math.abs(moveZ) - (ship.maxZ - ship.minZ);
-				if (Math.max(rangeX, rangeZ) < 256) {
-					firstAdjustmentReason = getPossibleJumpDistance();
-					isPluginCheckDone = true;
-				}
+			break;
+			
+		case PLANET_TAKEOFF:
+			// enter space at current altitude
+			moveY = 0;
+			break;
+			
+		case PLANET_LANDING:
+			// re-enter atmosphere at max altitude
+			moveY = 245 - ship.maxY;
+			break;
+			
+		case PLANET_MOVING:
+		case SPACE_MOVING:
+		case HYPERSPACE_MOVING:
+			if ((ship.maxY + moveY) > 255) {
+				moveY = 255 - ship.maxY;
 			}
+			
+			if ((ship.minY + moveY) < 5) {
+				moveY = 5 - ship.minY;
+			}
+			
+			// Do not check in long jumps
+			int rangeX = Math.abs(moveX) - (ship.maxX - ship.minX);
+			int rangeZ = Math.abs(moveZ) - (ship.maxZ - ship.minZ);
+			if (Math.max(rangeX, rangeZ) < 256) {
+				firstAdjustmentReason = getPossibleJumpDistance();
+				isPluginCheckDone = true;
+			}
+			break;
+			
+		case HYPERSPACE_ENTERING:
+		case HYPERSPACE_EXITING:
+			break;
+			
+		default:
+			WarpDrive.logger.error(String.format("Invalid movement type %s in JumpSequence.", shipMovementType));
+			break;
 		}
 		transformation = new Transformation(ship, targetWorld, moveX, moveY, moveZ, rotationSteps);
 		
@@ -648,15 +663,28 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 		}
 		
-		if (isHyperspaceJump && isInSpace) {
-			ship.messageToAllPlayersOnShip("Entering HYPERSPACE...");
-		} else if (isHyperspaceJump && isInHyperSpace) {
-			ship.messageToAllPlayersOnShip("Leaving HYPERSPACE..");
-		} else if (isCoordJump) {
-			ship.messageToAllPlayersOnShip("Jumping to coordinates (" + destX + " " + destY + " " + destZ + ")!");
-		} else {
-			ship.messageToAllPlayersOnShip("Jumping of " + Math.round(Math.sqrt(moveX * moveX + moveY * moveY + moveZ * moveZ)) + " blocks (" + moveX + " " + moveY + " " + moveZ + ")");
+		switch (shipMovementType) {
+		case HYPERSPACE_ENTERING:
+			ship.messageToAllPlayersOnShip("Entering hyperspace...");
+			break;
+		case HYPERSPACE_EXITING:
+			ship.messageToAllPlayersOnShip("Leaving hyperspace..");
+			break;
+		case GATE_ACTIVATING:
+			ship.messageToAllPlayersOnShip(String.format("Engaging jumpgate towards %s!",
+			                                             nameTarget));
+			break;
+		// case GATE_ACTIVATING:
+		// 	ship.messageToAllPlayersOnShip(String.format("Jumping to coordinates (%d %d %d)!",
+		// 	                                             destX, destY, destZ));
+		// 	break;
+		default:
+			ship.messageToAllPlayersOnShip(String.format("Jumping of %d blocks (XYZ %d %d %d)", 
+			                                             (int) Math.ceil(Math.sqrt(moveX * moveX + moveY * moveY + moveZ * moveZ)),
+			                                             moveX, moveY, moveZ));
+			break;
 		}
+		
 		switch (rotationSteps) {
 			case 1:
 				ship.messageToAllPlayersOnShip("Turning to the right");
@@ -677,118 +705,160 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 	}
 	
-	private String computeTargetWorld(CelestialObject celestialObjectSource, boolean isInSpace, boolean isInHyperSpace, boolean toSpace, boolean fromSpace) {
-		if (isHyperspaceJump) {
-			if (isInHyperSpace) {
-				CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
-				// anything defined?
-				if (celestialObject == null) {
-					return String.format("Unable to reach space from this location!\nThere's no celestial object defined for current dimension %s (%d).",
-						sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId);
-				}
-				
-				// are we clear for transit?
-				final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
-				if (distanceSquared > 0.0D) {
-					AxisAlignedBB axisAlignedBB = celestialObject.getAreaInParent();
-					return String.format(
-						  "Ship is outside any solar system, unable to reach space!\n"
-						+ "Closest transition area is ~%d m away (%d %d %d) to (%d %d %d).",
-						(int) Math.sqrt(distanceSquared),
-						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
-						(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ );
-				}
-				
-				// is world available?
-				final int dimensionIdSpace = celestialObject.dimensionId;
-				targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
-				if (targetWorld == null) {
-					return String.format("Unable to load Space dimension %d, aborting jump.",
-						dimensionIdSpace);
-				}
-				
-			} else if (isInSpace) {
-				// (target world border is checked systematically after movement checks)
-				
-				// is world available?
-				final int dimensionIdHyperspace = celestialObjectSource.parentDimensionId;
-				targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdHyperspace);
-				if (targetWorld == null) {
-					return String.format("Unable to load Hyperspace dimension %d, aborting jump.",
-						dimensionIdHyperspace);
-				}
-				
-			} else {
-				return "Unable to reach hyperspace from a planet";
-			}
-			
-		} else if (toSpace) {
-			CelestialObject celestialObject = StarMapRegistry.getClosestParentCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
-			// anything defined?
-			if (celestialObject == null) {
-				return String.format("Unable to reach space!\nThere's no planet defined for current dimension %s (%d).",
-					sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId);
-			}
-			
-			// are we clear for transit?
-			final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
-			if (distanceSquared > 0) {
-				AxisAlignedBB axisAlignedBB = celestialObject.getAreaToReachParent();
-				return String.format(
-					  "Ship is outside planet border, unable to reach space!\n"
-					+ "Closest transition area is ~%d m away (%d %d %d) to (%d %d %d).",
-					(int) Math.sqrt(distanceSquared),
-					(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
-					(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ );
-			}
-			
-			// is world available?
-			final int dimensionIdSpace = celestialObject.parentDimensionId;
-			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
-			if (targetWorld == null) {
-				return "Unable to load Space dimension " + dimensionIdSpace + ", aborting jump.";
-			}
-			
-			// update movement vector
-			VectorI vEntry = celestialObject.getEntryOffset();
-			moveX = -vEntry.x;
-			moveZ = -vEntry.z;
-			
-		} else if (fromSpace) {
+	private boolean computeTargetWorld(final CelestialObject celestialObjectSource, final EnumShipMovementType shipMovementType, final StringBuilder reason) {
+		switch (shipMovementType) {
+		case HYPERSPACE_EXITING: {
 			CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
 			// anything defined?
 			if (celestialObject == null) {
-				return "No planet exists in this dimension, there's nowhere to land!";
+				reason.append(String.format("Unable to reach space from this location!\nThere's no celestial object defined for current dimension %s (%d).",
+				                            sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId));
+				return false;
+			}
+			
+			// are we clear for transit?
+			final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			if (distanceSquared > 0.0D) {
+				AxisAlignedBB axisAlignedBB = celestialObject.getAreaInParent();
+				reason.append(String.format(
+						"Ship is outside any solar system, unable to reach space!\n"
+						+ "Closest transition area is ~%d m away (%d %d %d) to (%d %d %d).",
+						(int) Math.sqrt(distanceSquared),
+						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
+						(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ));
+				return false;
+			}
+			
+			// is world available?
+			final int dimensionIdSpace = celestialObject.dimensionId;
+			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
+			if (targetWorld == null) {
+				reason.append(String.format("Unable to load Space dimension %d, aborting jump.",
+				                            dimensionIdSpace));
+				return false;
+			}
+			
+			// update movement vector
+			final VectorI vEntry = celestialObject.getEntryOffset();
+			moveX = vEntry.x;
+			moveZ = vEntry.z;
+		}
+		break;
+		
+		case HYPERSPACE_ENTERING: {
+			final CelestialObject celestialObjectParent = StarMapRegistry.getParentCelestialObject(celestialObjectSource);
+			// anything defined?
+			if (celestialObjectParent == null) {
+				reason.append(String.format("Unable to reach hyperspace!\nThere's no parent defined for current dimension %s (%d).",
+				                            sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId));
+				return false;
+			}
+			// (target world border is checked systematically after movement checks)
+			
+			// is world available?
+			final int dimensionIdHyperspace = celestialObjectParent.dimensionId;
+			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdHyperspace);
+			if (targetWorld == null) {
+				reason.append(String.format("Unable to load Hyperspace dimension %d, aborting jump.",
+				                            dimensionIdHyperspace));
+				return false;
+			}
+			
+			// update movement vector
+			final VectorI vEntry = celestialObjectSource.getEntryOffset();
+			moveX = -vEntry.x;
+			moveZ = -vEntry.z;
+		}
+		break;
+		
+		case PLANET_TAKEOFF: {
+			final CelestialObject celestialObjectParent = StarMapRegistry.getParentCelestialObject(celestialObjectSource);
+			// anything defined?
+			if (celestialObjectParent == null) {
+				reason.append(String.format("Unable to take off!\nThere's no parent defined for current dimension %s (%d).",
+				                            sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId));
+				return false;
+			}
+			
+			// are we clear for transit?
+			final double distanceSquared = celestialObjectSource.getSquareDistanceOutsideBorder(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			if (distanceSquared > 0) {
+				final AxisAlignedBB axisAlignedBB = celestialObjectSource.getAreaToReachParent();
+				reason.append(String.format(
+						"Ship is outside planet border, unable to reach space!\n"
+						+ "Closest transition area is ~%d m away (%d %d %d) to (%d %d %d).",
+						(int) Math.sqrt(distanceSquared),
+						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
+						(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ));
+				return false;
+			}
+			
+			// is world available?
+			final int dimensionIdSpace = celestialObjectParent.dimensionId;
+			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
+			if (targetWorld == null) {
+				reason.append(String.format("Unable to load Space dimension %d, aborting jump.",
+				                            dimensionIdSpace));
+				return false;
+			}
+			
+			// update movement vector
+			final VectorI vEntry = celestialObjectSource.getEntryOffset();
+			moveX = -vEntry.x;
+			moveZ = -vEntry.z;
+		}
+		break;
+		
+		case PLANET_LANDING: {
+			final CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			// anything defined?
+			if (celestialObject == null) {
+				reason.append("No planet exists in this dimension, there's nowhere to land!");
+				return false;
 			}
 			
 			// are we in orbit?
 			final double distanceSquared = celestialObject.getSquareDistanceInParent(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
 			if (distanceSquared > 0.0D) {
 				AxisAlignedBB axisAlignedBB = celestialObject.getAreaInParent();
-				return String.format(
-					  "No planet in range, unable to enter atmosphere!\n"
-					+ "Closest planet is %d m away (%d %d %d) to (%d %d %d).",
-					(int) Math.sqrt(distanceSquared),
-					(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
-					(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ );
+				reason.append(String.format(
+						"No planet in range, unable to enter atmosphere!\n"
+						+ "Closest planet is %d m away (%d %d %d) to (%d %d %d).",
+						(int) Math.sqrt(distanceSquared),
+						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
+						(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ));
+				return false;
 			}
 			
 			// validate world availability
 			targetWorld = MinecraftServer.getServer().worldServerForDimension(celestialObject.dimensionId);
 			if (targetWorld == null) {
-				return String.format("Sorry, we can't land here. Dimension %d isn't defined. It might be a decorative planet or a server misconfiguration",
-					celestialObject.dimensionId);
+				reason.append(String.format("Sorry, we can't land here. Dimension %d isn't defined. It might be a decorative planet or a server misconfiguration",
+				                            celestialObject.dimensionId));
+				return false;
 			}
 			
 			// update movement vector
-			VectorI vEntry = celestialObject.getEntryOffset();
+			final VectorI vEntry = celestialObject.getEntryOffset();
 			moveX = vEntry.x;
 			moveZ = vEntry.z;
-			
-		} else {
-			targetWorld = sourceWorld;
 		}
-		return null;
+		break;
+			
+		case SPACE_MOVING:
+		case HYPERSPACE_MOVING:
+		case PLANET_MOVING:
+			targetWorld = sourceWorld;
+			break;
+			
+		case GATE_ACTIVATING:
+			// @TODO Jumpgate reimplementation
+		default:
+			reason.append(String.format("Invalid movement type %s", shipMovementType));
+			return false;
+		}
+		
+		return true;
 	}
 	
 	private void state_moveBlocks() {
@@ -983,6 +1053,7 @@ public class JumpSequencer extends AbstractSequencer {
 	/**
 	 * Finishing jump: cleanup, collision effects and delete self
 	 **/
+	@SuppressWarnings("unchecked")
 	private void state_finishing() {
 		LocalProfiler.start("Jump.finishing()");
 		// FIXME TileEntity duplication workaround
@@ -1216,10 +1287,12 @@ public class JumpSequencer extends AbstractSequencer {
 					blockTarget = targetWorld.getBlock(coordTarget.posX, coordTarget.posY, coordTarget.posZ);
 					if (Dictionary.BLOCKS_ANCHOR.contains(blockTarget)) {
 						result.add(x, y, z,
-							coordTarget.posX + 0.5D - offset.x,
-							coordTarget.posY + 0.5D - offset.y,
-							coordTarget.posZ + 0.5D - offset.z,
-							true, "Impassable " + blockTarget.getLocalizedName() + " detected at destination (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
+						           coordTarget.posX + 0.5D - offset.x,
+						           coordTarget.posY + 0.5D - offset.y,
+						           coordTarget.posZ + 0.5D - offset.z,
+						           true,
+						           String.format("Impassable %s detected at destination (%d %d %d)", 
+						                         blockTarget.getLocalizedName(), coordTarget.posX, coordTarget.posY, coordTarget.posZ) );
 						if (!fullCollisionDetails) {
 							return result;
 						} else if (WarpDriveConfig.LOGGING_JUMP) {
@@ -1232,10 +1305,12 @@ public class JumpSequencer extends AbstractSequencer {
 					  && blockTarget != Blocks.air
 					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockTarget)) {
 						result.add(x, y, z,
-							coordTarget.posX + 0.5D + offset.x * 0.1D,
-							coordTarget.posY + 0.5D + offset.y * 0.1D,
-							coordTarget.posZ + 0.5D + offset.z * 0.1D,
-							true, "Obstacle " + blockTarget.getLocalizedName() + " detected at (" + coordTarget.posX + " " + coordTarget.posY + " " + coordTarget.posZ + ")");
+						           coordTarget.posX + 0.5D + offset.x * 0.1D,
+						           coordTarget.posY + 0.5D + offset.y * 0.1D,
+						           coordTarget.posZ + 0.5D + offset.z * 0.1D,
+						           true,
+						           String.format("Obstacle %s detected at (%d %d %d)",
+						                         blockTarget.getLocalizedName(), coordTarget.posX, coordTarget.posY, coordTarget.posZ) );
 						if (!fullCollisionDetails) {
 							return result;
 						} else if (WarpDriveConfig.LOGGING_JUMP) {
@@ -1246,10 +1321,12 @@ public class JumpSequencer extends AbstractSequencer {
 					if (blockSource != Blocks.air && CommonProxy.isBlockPlaceCanceled(null, coordCoreAtTarget.posX, coordCoreAtTarget.posY, coordCoreAtTarget.posZ,
 						targetWorld, coordTarget.posX, coordTarget.posY, coordTarget.posZ, blockSource, 0)) {
 						result.add(x, y, z,
-							coordTarget.posX,
-							coordTarget.posY,
-							coordTarget.posZ,
-							false, "Ship is entering a protected area");
+						           coordTarget.posX,
+						           coordTarget.posY,
+						           coordTarget.posZ,
+						           false,
+							       String.format("Ship is entering a protected area at (%d %d %d)",
+							                     coordTarget.posX, coordTarget.posY, coordTarget.posZ) );
 						return result;
 					}
 				}
