@@ -145,6 +145,23 @@ public class Commons {
 		return String.format("%,d", Math.round(value));
 	}
 	
+	public static String format(final Object[] arguments) {
+		final StringBuilder result = new StringBuilder();
+		if (arguments != null && arguments.length > 0) {
+			for (final Object argument : arguments) {
+				if (result.length() > 0) {
+					result.append(", ");
+				}
+				if (argument instanceof String) {
+					result.append("\"").append(argument).append("\"");
+				} else {
+					result.append(argument);
+				}
+			}
+		}
+		return result.toString();
+	}
+	
 	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
 		final ItemStack ret = itemStack.copy();
 		ret.stackSize = newSize;

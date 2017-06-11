@@ -1,10 +1,8 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.data.StarMapRegistry;
-import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -30,6 +28,7 @@ import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 
 // OpenComputer API: https://github.com/MightyPirates/OpenComputers/tree/master-MC1.7.10/src/main/java/li/cil/oc/api
@@ -86,6 +85,16 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	protected String getMethodName(final int methodIndex) {
 		return methodsArray[methodIndex];
+	}
+	
+	protected String getMethodName(final int methodIndex, final Object[] arguments) {
+		final String methodName = methodsArray[methodIndex];
+		
+		if (WarpDrive.isDev && WarpDriveConfig.LOGGING_LUA) {
+			WarpDrive.logger.info(String.format("LUA call to %s.%s(%s)", peripheralName, methodName, Commons.format(arguments)));
+		}
+		
+		return methodName;
 	}
 	
 	private boolean assetExist(final String resourcePath) {
@@ -146,16 +155,14 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		if ( WarpDriveConfig.isOpenComputersLoaded
-		  && (xCoord != 0 || yCoord != 0 || zCoord != 0) ) {// (0, 0, 0) is improbable as a block, it's probably a fake TileEntity used for tooltip computation
+		  && FMLCommonHandler.instance().getEffectiveSide().isServer() ) {
 			if (OC_node == null) {
 				OC_constructor();
 			}
 			if (OC_node != null && OC_node.host() == this) {
 				OC_node.load(tag.getCompoundTag("oc:node"));
-			} else {
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
-				}
+			} else if (tag.hasKey("oc:node")) {
+				WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
 				OC_fileSystem.node().load(tag.getCompoundTag("oc:fs"));
@@ -364,10 +371,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Optional.Method(modid = "OpenComputers")
 	private void OC_constructor() {
 		assert(OC_node == null);
-		if (WarpDriveConfig.isOpenComputersLoaded) {
-			final String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
-			OC_hasResource = assetExist(OC_path);
-		}
+		final String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
+		OC_hasResource = assetExist(OC_path);
 		OC_node = Network.newNode(this, Visibility.Network).withComponent(peripheralName).create();
 		if (OC_node != null && OC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
 			OC_fileSystem = FileSystem.asManagedEnvironment(FileSystem.fromClass(getClass(), WarpDrive.MODID.toLowerCase(), "lua.OpenComputers/" + peripheralName), peripheralName);
