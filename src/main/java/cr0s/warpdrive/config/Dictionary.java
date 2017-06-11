@@ -281,6 +281,7 @@ public class Dictionary {
 				
 				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();
+				config.get("item_tags", "IC2:itemArmorQuantumChestplate", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "GraviSuite:advJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "GraviSuite:advNanoChestPlate", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "GraviSuite:graviChestPlate", "FlyInSpace NoFallDamage").getString();
@@ -532,31 +533,31 @@ public class Dictionary {
 	}
 	
 	private static String getHashMessage(HashSet hashSet) {
-		String message = "";
+		final StringBuilder message = new StringBuilder();
 		for (Object object : hashSet) {
-			if (!message.isEmpty()) {
-				message += ", ";
+			if (message.length() > 0) {
+				message.append(", ");
 			}
 			if (object instanceof Block) {
-				message += GameRegistry.findUniqueIdentifierFor((Block) object);
+				message.append(GameRegistry.findUniqueIdentifierFor((Block) object));
 			} else if (object instanceof String) {
-				message += (String) object;
+				message.append((String) object);
 			} else {
-				message += object;
+				message.append(object);
 			}
 			
 		}
-		return message;
+		return message.toString();
 	}
 	
 	private static String getHashMessage(HashMap<Block, Integer> hashMap) {
-		String message = "";
+		final StringBuilder message = new StringBuilder();
 		for (Entry<Block, Integer> entry : hashMap.entrySet()) {
-			if (!message.isEmpty()) {
-				message += ", ";
+			if (message.length() > 0) {
+				message.append(", ");
 			}
-			message += GameRegistry.findUniqueIdentifierFor(entry.getKey()) + "=" + entry.getValue();
+			message.append(GameRegistry.findUniqueIdentifierFor(entry.getKey())).append("=").append(entry.getValue());
 		}
-		return message;
+		return message.toString();
 	}
 }
