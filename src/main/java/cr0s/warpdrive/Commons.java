@@ -338,6 +338,24 @@ public class Commons {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
 	}
 	
+	public static ForgeDirection getHorizontalDirectionFromEntity(final EntityLivingBase entityLiving) {
+		if (entityLiving != null) {
+			final int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+			switch (direction) {
+			default:
+			case 0:
+				return ForgeDirection.NORTH;
+			case 1:
+				return ForgeDirection.EAST;
+			case 2:
+				return ForgeDirection.SOUTH;
+			case 3:
+				return ForgeDirection.WEST;
+			}
+		}
+		return ForgeDirection.NORTH;
+	}
+	
 	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
 		if (entityLiving != null) {
 			int metadata;

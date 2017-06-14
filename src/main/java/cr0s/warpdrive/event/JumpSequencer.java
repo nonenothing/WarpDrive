@@ -106,8 +106,8 @@ public class JumpSequencer extends AbstractSequencer {
 		this.ship.coreX = shipCore.xCoord;
 		this.ship.coreY = shipCore.yCoord;
 		this.ship.coreZ = shipCore.zCoord;
-		this.ship.dx = shipCore.dx;
-		this.ship.dz = shipCore.dz;
+		this.ship.dx = shipCore.facing.offsetX;
+		this.ship.dz = shipCore.facing.offsetZ;
 		this.ship.minX = shipCore.minX;
 		this.ship.maxX = shipCore.maxX;
 		this.ship.minY = shipCore.minY;

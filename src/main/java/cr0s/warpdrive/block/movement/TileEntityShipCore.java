@@ -43,22 +43,26 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	private static final int LOG_INTERVAL_TICKS = 20 * 60;
 	
-	public int dx, dz;
+	// persistent properties
+	public ForgeDirection facing;
+	public UUID uuid = null;
+	public String shipName = "default";
+	public double isolationRate = 0.0D;
+	private int cooldownTime = 0;
+	protected int jumpCount = 0;
 	
+	// computed properties
 	public int maxX, maxY, maxZ;
 	public int minX, minY, minZ;
 	
 	private EnumShipCoreState stateCurrent = EnumShipCoreState.IDLE;
 	private EnumShipControllerCommand commandCurrent = EnumShipControllerCommand.IDLE;
 	
-	// computed properties
 	private long timeLastShipScanDone = -1;
 	public int shipMass;
 	public int shipVolume;
 	private EnumShipMovementType shipMovementType;
 	private ShipMovementCosts shipMovementCosts;
-	
-	private int cooldownTime = 0;
 	
 	private long distanceSquared = 0; 
 	private int warmupTime = 0;
@@ -71,14 +75,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	private int bootTicks = 20;
 	private int logTicks = 120;
 	
-	public UUID uuid = null;
-	public String shipName = "default";
-	
 	private int isolationBlocksCount = 0;
-	public double isolationRate = 0.0D;
 	private int isolationUpdateTicks = 0;
 	
-	public int jumpCount = 0;
 	
 	public TileEntityShipController controller;
 	
@@ -478,7 +477,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 	}
 	
-	private static final VectorI[] vSummonOffsets = { new VectorI(2, 0, 0), new VectorI(-1, 0, 0),
+	private static final VectorI[] SUMMON_OFFSETS = { new VectorI(2, 0, 0), new VectorI(-1, 0, 0),
 		new VectorI(2, 0, 1), new VectorI(2, 0, -1), new VectorI(-1, 0, 1), new VectorI(-1, 0, -1),
 		new VectorI(1, 0, 1), new VectorI(1, 0, -1), new VectorI( 0, 0, 1), new VectorI( 0, 0, -1) };
 	private void summonPlayer(final EntityPlayerMP entityPlayer) {
@@ -498,11 +497,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		// find a free spot
-		for (VectorI vOffset : vSummonOffsets) {
+		for (VectorI vOffset : SUMMON_OFFSETS) {
 			VectorI vPosition = new VectorI(
-				xCoord + dx * vOffset.x + dz * vOffset.z,
+				xCoord + facing.offsetX * vOffset.x + facing.offsetZ * vOffset.z,
 			    yCoord,
-			    zCoord + dz * vOffset.x + dx * vOffset.z);
+			    zCoord + facing.offsetZ * vOffset.x + facing.offsetX * vOffset.z);
 			if ( worldObj.isAirBlock(vPosition.x, vPosition.y    , vPosition.z)
 			  && worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)) {
 				summonPlayer(entityPlayer, vPosition.x, vPosition.y, vPosition.z);
@@ -547,30 +546,26 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		int x1 = 0, x2 = 0, z1 = 0, z2 = 0;
 		
-		if (Math.abs(dx) > 0) {
-			if (dx == 1) {
-				x1 = xCoord - shipBack;
-				x2 = xCoord + shipFront;
-				z1 = zCoord - shipLeft;
-				z2 = zCoord + shipRight;
-			} else {
-				x1 = xCoord - shipFront;
-				x2 = xCoord + shipBack;
-				z1 = zCoord - shipRight;
-				z2 = zCoord + shipLeft;
-			}
-		} else if (Math.abs(dz) > 0) {
-			if (dz == 1) {
-				z1 = zCoord - shipBack;
-				z2 = zCoord + shipFront;
-				x1 = xCoord - shipRight;
-				x2 = xCoord + shipLeft;
-			} else {
-				z1 = zCoord - shipFront;
-				z2 = zCoord + shipBack;
-				x1 = xCoord - shipLeft;
-				x2 = xCoord + shipRight;
-			}
+		if (facing.offsetX == 1) {
+			x1 = xCoord - shipBack;
+			x2 = xCoord + shipFront;
+			z1 = zCoord - shipLeft;
+			z2 = zCoord + shipRight;
+		} else if (facing.offsetX == -1) {
+			x1 = xCoord - shipFront;
+			x2 = xCoord + shipBack;
+			z1 = zCoord - shipRight;
+			z2 = zCoord + shipLeft;
+		} else if (facing.offsetZ == 1) {
+			z1 = zCoord - shipBack;
+			z2 = zCoord + shipFront;
+			x1 = xCoord - shipRight;
+			x2 = xCoord + shipLeft;
+		} else if (facing.offsetZ == -1) {
+			z1 = zCoord - shipFront;
+			z2 = zCoord + shipBack;
+			x1 = xCoord - shipLeft;
+			x2 = xCoord + shipRight;
 		}
 		
 		if (x1 < x2) {
@@ -898,9 +893,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if (Math.abs(movement.z) - shipSize.z > maxDistance) {
 				movement.z = (int) Math.signum(movement.z) * (shipSize.z + maxDistance);
 			}
-			moveX = dx * movement.x - dz * movement.z;
+			moveX = facing.offsetX * movement.x - facing.offsetZ * movement.z;
 			moveY = movement.y;
-			moveZ = dz * movement.x + dx * movement.z;
+			moveZ = facing.offsetZ * movement.x + facing.offsetX * movement.z;
 		}
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
@@ -960,32 +955,28 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		tileEntity = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			dx = 1;
-			dz = 0;
+			facing = ForgeDirection.EAST;
 			return (TileEntityShipController) tileEntity;
 		}
 		
 		tileEntity = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			dx = -1;
-			dz = 0;
+			facing = ForgeDirection.WEST;
 			return (TileEntityShipController) tileEntity;
 		}
 		
 		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			dx = 0;
-			dz = 1;
+			facing = ForgeDirection.SOUTH;
 			return (TileEntityShipController) tileEntity;
 		}
 		
 		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			dx = 0;
-			dz = -1;
+			facing = ForgeDirection.NORTH;
 			return (TileEntityShipController) tileEntity;
 		}
 		
@@ -1009,6 +1000,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
+		facing = ForgeDirection.getOrientation(tag.getInteger("facing"));
 		uuid = new UUID(tag.getLong("uuidMost"), tag.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			uuid = UUID.randomUUID();
@@ -1022,6 +1014,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
+		if (facing != null) {
+			tag.setInteger("facing", facing.ordinal());
+		}
 		if (uuid != null) {
 			tag.setLong("uuidMost", uuid.getMostSignificantBits());
 			tag.setLong("uuidLeast", uuid.getLeastSignificantBits());

@@ -395,7 +395,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public Object[] getOrientation() {
 		if (core != null) {
-			return new Object[] { core.dx, 0, core.dz };
+			return new Object[] { core.facing.offsetX, 0, core.facing.offsetZ };
 		}
 		return null;
 	}

@@ -335,8 +335,8 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		ship.coreX = shipCore.xCoord;
 		ship.coreY = shipCore.yCoord;
 		ship.coreZ = shipCore.zCoord;
-		ship.dx = shipCore.dx;
-		ship.dz = shipCore.dz;
+		ship.dx = shipCore.facing.offsetX;
+		ship.dz = shipCore.facing.offsetZ;
 		ship.minX = shipCore.minX;
 		ship.maxX = shipCore.maxX;
 		ship.minY = shipCore.minY;
