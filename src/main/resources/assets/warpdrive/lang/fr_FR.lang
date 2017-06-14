@@ -160,6 +160,7 @@ tile.warpdrive.decoration.decorative.energized.name=Block energisé
 tile.warpdrive.decoration.decorative.network.name=Bloc de réseau
 tile.warpdrive.decoration.decorative.plain.name=Bloc ordinaire
 tile.warpdrive.decoration.gas.name=Bloc de gaz
+tile.warpdrive.decoration.bedrock_glass.name=Vitre de bedrock
 
 tile.warpdrive.passive.IridiumBlock.name=Bloc d'iridium
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Bloc de machine hyper avancé

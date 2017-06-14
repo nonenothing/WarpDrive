@@ -160,6 +160,7 @@ tile.warpdrive.decoration.decorative.energized.name=Энергизированн
 tile.warpdrive.decoration.decorative.network.name=Сетевой блок
 tile.warpdrive.decoration.decorative.plain.name=Простой блок
 tile.warpdrive.decoration.gas.name=Газ
+tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 
 tile.warpdrive.passive.IridiumBlock.name=Блок иридия
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Высокотехнологичный корпус механизма

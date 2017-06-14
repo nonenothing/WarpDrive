@@ -102,11 +102,12 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:command_block"                         , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:end_portal_frame"                      , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:end_portal"                            , "Anchor StopMining").getString();
-				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
+				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
+				config.get("block_tags", "WarpDrive:bedrock_glass"                         , "Anchor SkipMining").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();

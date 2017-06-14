@@ -75,6 +75,7 @@ import cr0s.warpdrive.block.movement.TileEntityShipController;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.block.movement.TileEntityTransporter;
 import cr0s.warpdrive.block.breathing.BlockAir;
+import cr0s.warpdrive.block.passive.BlockBedrockGlass;
 import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.block.passive.BlockGas;
 import cr0s.warpdrive.block.passive.BlockHighlyAdvancedMachine;
@@ -181,7 +182,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.oredict.RecipeSorter;
 
-
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2;" + " after:CoFHCore;" + " after:ComputerCraft;"
 		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;" + " after:DefenseTech;" + " after:icbmclassic;")
 public class WarpDrive implements LoadingCallback {
@@ -217,6 +217,7 @@ public class WarpDrive implements LoadingCallback {
 	public static Block blockAirFlow;
 	public static Block blockAirSource;
 	public static Block blockAirShield;
+	public static Block blockBedrockGlass;
 	public static Block blockGas;
 	public static Block blockIridium;
 	public static Block blockHighlyAdvancedMachine;
@@ -372,6 +373,11 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockAirFlow, ItemBlockAbstractBase.class, "blockAirFlow");
 		GameRegistry.registerBlock(blockAirSource, ItemBlockAbstractBase.class, "blockAirSource");
 		GameRegistry.registerBlock(blockAirShield, ItemBlockAbstractBase.class, "blockAirShield");
+		
+		// BEDROCK GLASS
+		blockBedrockGlass = new BlockBedrockGlass();
+		
+		GameRegistry.registerBlock(blockBedrockGlass, ItemBlockAbstractBase.class, "blockBedrockGlass");
 		
 		// GAS BLOCK
 		blockGas = new BlockGas();
