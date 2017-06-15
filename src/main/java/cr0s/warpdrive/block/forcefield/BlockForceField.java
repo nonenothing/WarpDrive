@@ -118,12 +118,12 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		if (blockAccess.isAirBlock(x, y, z)) {
+		final Block blockSide = blockAccess.getBlock(x, y, z);
+		if (blockSide.isAir(blockAccess, x, y, z)) {
 			return true;
 		}
-		ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
-		Block sideBlock = blockAccess.getBlock(x, y, z);
-		if (sideBlock instanceof BlockGlass || sideBlock instanceof BlockHullGlass || sideBlock instanceof BlockForceField) {
+		final ForgeDirection direction = ForgeDirection.getOrientation(side).getOpposite();
+		if (blockSide instanceof BlockGlass || blockSide instanceof BlockHullGlass || blockSide instanceof BlockForceField) {
 			return blockAccess.getBlockMetadata(x, y, z)
 				!= blockAccess.getBlockMetadata(x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
 		}

@@ -116,8 +116,8 @@ public class BlockGas extends Block {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		Block sideBlock = blockAccess.getBlock(x, y, z);
-		if (sideBlock.isAssociatedBlock(this)) {
+		final Block blockSide = blockAccess.getBlock(x, y, z);
+		if (blockSide.isAssociatedBlock(this)) {
 			return false;
 		}
 		return blockAccess.isAirBlock(x, y, z);
