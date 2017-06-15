@@ -347,6 +347,7 @@ public class JumpSequencer extends AbstractSequencer {
 			z2 = ship.maxZ >> 4;
 			for (int x = x1; x <= x2; x++) {
 				for (int z = z1; z <= z2; z++) {
+					sourceWorld.getChunkFromChunkCoords(x, z).generateSkylightMap();
 					ForgeChunkManager.unforceChunk(sourceWorldTicket, new ChunkCoordIntPair(x, z));
 				}
 			}
@@ -363,6 +364,7 @@ public class JumpSequencer extends AbstractSequencer {
 			z2 = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
 			for (int x = x1; x <= x2; x++) {
 				for (int z = z1; z <= z2; z++) {
+					targetWorld.getChunkFromChunkCoords(x, z).generateSkylightMap();
 					ForgeChunkManager.unforceChunk(targetWorldTicket, new ChunkCoordIntPair(x, z));
 				}
 			}

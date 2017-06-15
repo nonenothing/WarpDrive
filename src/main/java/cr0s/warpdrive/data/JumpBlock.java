@@ -632,9 +632,11 @@ public class JumpBlock {
 				// Disable rollback on item use
 				// if (flag && blockSnapshot == null) {// Don't notify clients or update physics while capturing blockstates
 					// Modularize client and physic updates
-					w.markAndNotifyBlock(x, y, z, chunk, block1, block, par6);
+					// w.markAndNotifyBlock(x, y, z, chunk, block1, block, par6);
 				// }
-					
+				if (flag) {
+					w.markAndNotifyBlock(x, y, z, chunk, block1, block, par6);
+				}
 				return flag;
 			}
 		} else {
