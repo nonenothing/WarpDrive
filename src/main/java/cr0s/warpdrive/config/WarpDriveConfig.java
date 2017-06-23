@@ -8,6 +8,7 @@ import cr0s.warpdrive.compat.CompatAppliedEnergistics2;
 import cr0s.warpdrive.compat.CompatArsMagica2;
 import cr0s.warpdrive.compat.CompatBiblioCraft;
 import cr0s.warpdrive.compat.CompatBotania;
+import cr0s.warpdrive.compat.CompatBuildCraft;
 import cr0s.warpdrive.compat.CompatCarpentersBlocks;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatEnderIO;
@@ -915,6 +916,10 @@ public class WarpDriveConfig {
 		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
 		if (isCarpentersBlocksLoaded) {
 			CompatCarpentersBlocks.register();
+		}
+		boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
+		if (isBuildCraftLoaded) {
+			CompatBuildCraft.register();
 		}
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {

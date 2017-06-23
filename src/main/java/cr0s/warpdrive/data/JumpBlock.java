@@ -55,6 +55,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.Constants.NBT;
 
 public class JumpBlock {
 	
@@ -540,22 +541,29 @@ public class JumpBlock {
 	}
 	
 	public static void emptyEnergyStorage(final NBTTagCompound tagCompound) {
+		// BuildCraft
+		if (tagCompound.hasKey("battery", NBT.TAG_COMPOUND)) {
+			NBTTagCompound tagCompoundBattery = tagCompound.getCompoundTag("battery");
+			if (tagCompoundBattery.hasKey("energy", NBT.TAG_INT)) {
+				tagCompoundBattery.setInteger("energy", 0);
+			}
+		}
 		// IC2
-		if (tagCompound.hasKey("energy")) {
+		if (tagCompound.hasKey("energy", NBT.TAG_DOUBLE)) {
 			// energy_consume((int)Math.round(blockNBT.getDouble("energy")), true);
 			tagCompound.setDouble("energy", 0);
 		}
 		// Gregtech
-		if (tagCompound.hasKey("mStoredEnergy")) {
+		if (tagCompound.hasKey("mStoredEnergy", NBT.TAG_INT)) {
 			tagCompound.setInteger("mStoredEnergy", 0);
 		}
 		// Immersive Engineering & Thermal Expansion
-		if (tagCompound.hasKey("Energy")) {
+		if (tagCompound.hasKey("Energy", NBT.TAG_INT)) {
 			// energy_consume(blockNBT.getInteger("Energy"), true);
 			tagCompound.setInteger("Energy", 0);
 		}
 		// Mekanism
-		if (tagCompound.hasKey("electricityStored")) {
+		if (tagCompound.hasKey("electricityStored", NBT.TAG_DOUBLE)) {
 			tagCompound.setDouble("electricityStored", 0);
 		}
 	}
