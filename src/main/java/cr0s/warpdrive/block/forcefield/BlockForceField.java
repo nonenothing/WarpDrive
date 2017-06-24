@@ -249,7 +249,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	private double log_explosionX;
-	private double log_explosionY = -1;
+	private double log_explosionY = -1.0D;
 	private double log_explosionZ;
 	@Override
 	public float getExplosionResistance(Entity entity, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ) {
@@ -263,13 +263,13 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		// find explosion strength, defaults to no effect
 		double strength = 0.0D;
 		if (entity == null && (explosionX == Math.rint(explosionX)) && (explosionY == Math.rint(explosionY)) && (explosionZ == Math.rint(explosionZ)) ) {
-			// IC2 Reactor blowing up => bloc is already air
+			// IC2 Reactor blowing up => block is already air
 			Block block = world.getBlock((int)explosionX, (int)explosionY, (int)explosionZ);
 			TileEntity tileEntity = world.getTileEntity((int)explosionX, (int)explosionY, (int)explosionZ);
 			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
 				WarpDrive.logger.info("Block at location is " + block + " " + block.getUnlocalizedName() + " with tileEntity " + tileEntity);
 			}
-			// explosion with no entity and block removed, hence we can compute the energy impact => boosting explosion resistance
+			// explosion with no entity and block removed, hence we can't compute the energy impact => boosting explosion resistance
 			return 2.0F * super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
 		}
 		
