@@ -202,8 +202,7 @@ public class AirSpreader {
 					                                                     y - facingSource.offsetY, 
 					                                                     z - facingSource.offsetZ);
 					final ForgeDirection facingGenerator = ForgeDirection.getOrientation(metadataGenerator & 7);
-					final boolean isActiveGenerator = (metadataGenerator & 8) != 0;
-					if (isActiveGenerator && facingGenerator == facingSource) {
+					if (facingGenerator == facingSource) {
 						// all good
 						hasGenerator = true;
 					}
@@ -212,6 +211,8 @@ public class AirSpreader {
 					if (WarpDriveConfig.LOGGING_BREATHING) {
 						WarpDrive.logger.info(String.format("AirGenerator not found, removing air block at (%d %d %d)",
 						                                    x, y, z));
+						WarpDrive.logger.info(String.format("-> expecting AirGenerator block at (%d %d %d), found %s",
+						                                    x, y, z, block));
 					}
 					stateCenter.removeAirSource(world);
 				}

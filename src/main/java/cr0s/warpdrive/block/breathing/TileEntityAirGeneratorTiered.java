@@ -81,7 +81,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata & 7, 2); // set disabled texture
 				}
 			}
-			ForgeDirection direction = ForgeDirection.getOrientation(metadata & 7);
+			
+			final ForgeDirection direction = ForgeDirection.getOrientation(metadata & 7);
 			releaseAir(direction);
 			
 			cooldownTicks = 0;
@@ -101,17 +102,17 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
 				if (stateAir.setAirSource(worldObj, direction, range)) {
 					// (needs to renew air or was not maxed out)
-					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1], false);
+					energy_consume(energy_cost, false);
 				} else {
 					// (just maintaining)
-					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[tier - 1], false);
+					energy_consume(energy_cost, false);
 				}
 				
 			} else {// low energy => remove air block
 				if (stateAir.concentration > 4) {
 					stateAir.setConcentration(worldObj, (byte) (stateAir.concentration - 4));
 				} else if (stateAir.concentration > 1) {
-					stateAir.setConcentration(worldObj, (byte) 1);
+					stateAir.removeAirSource(worldObj);
 				}
 			}
 		}
