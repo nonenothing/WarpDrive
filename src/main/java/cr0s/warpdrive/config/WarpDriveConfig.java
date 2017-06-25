@@ -1012,19 +1012,26 @@ public class WarpDriveConfig {
 			ErrorHandler xmlErrorHandler = new ErrorHandler() {
 				@Override
 				public void warning(SAXParseException exception) throws SAXException {
-					WarpDrive.logger.warn("XML warning: " + exception.getLocalizedMessage());
+					WarpDrive.logger.warn(String.format("XML warning at line %d: %s",
+					                                    exception.getLineNumber(),
+					                                    exception.getLocalizedMessage() ));
 					// exception.printStackTrace();
 				}
 				
 				@Override
 				public void fatalError(SAXParseException exception) throws SAXException {
-					WarpDrive.logger.warn("XML fatal error: " + exception.getLocalizedMessage());
+					WarpDrive.logger.warn(String.format("XML fatal error at line %d: %s",
+					                      exception.getLineNumber(),
+					                      exception.getLocalizedMessage() ));
 					// exception.printStackTrace();
 				}
 				
 				@Override
 				public void error(SAXParseException exception) throws SAXException {
-					WarpDrive.logger.warn("XML error: " + exception.getLocalizedMessage());
+					WarpDrive.logger.warn(String.format("XML error at line %d: %s",
+					                                    exception.getLineNumber(),
+					                                    exception.getLocalizedMessage() ));
+					
 					// exception.printStackTrace();
 				}
 			};

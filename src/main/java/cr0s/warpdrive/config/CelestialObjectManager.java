@@ -61,8 +61,51 @@ public class CelestialObjectManager extends XmlFileManager {
 		}
 		
 		// check overlapping regions
+		int countErrors = 0;
 		for (CelestialObject celestialObject1 : celestialObjects) {
 			celestialObject1.lateUpdate();
+			
+			// validate coordinates
+			if (!celestialObject1.isVirtual) {
+				if (celestialObject1.parentDimensionId != celestialObject1.dimensionId) {// not hyperspace
+					final CelestialObject celestialObjectParent = get(celestialObject1.parentGroup, celestialObject1.parentName);
+					if (celestialObjectParent == null) {
+						countErrors++;
+						WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s refers to unknown parent %s:%s",
+						                                     countErrors,
+						                                     celestialObject1.getFullName(),
+						                                     celestialObject1.parentGroup, celestialObject1.parentName ));
+					} else if ( celestialObject1.parentCenterX - celestialObject1.borderRadiusX < celestialObjectParent.dimensionCenterX - celestialObjectParent.borderRadiusX 
+					         || celestialObject1.parentCenterZ - celestialObject1.borderRadiusZ < celestialObjectParent.dimensionCenterZ - celestialObjectParent.borderRadiusZ
+					         || celestialObject1.parentCenterX + celestialObject1.borderRadiusX > celestialObjectParent.dimensionCenterX + celestialObjectParent.borderRadiusX
+					         || celestialObject1.parentCenterZ + celestialObject1.borderRadiusZ > celestialObjectParent.dimensionCenterZ + celestialObjectParent.borderRadiusZ) {
+						countErrors++;
+						WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s is outside its parent border.\n%s\n%s\n%s's area in parent %s is outside %s's border %s",
+						                                     countErrors,
+						                                     celestialObject1.getFullName(),
+						                                     celestialObject1,
+						                                     celestialObjectParent,
+						                                     celestialObject1.getFullName(),
+						                                     celestialObject1.getAreaInParent(),
+						                                     celestialObjectParent.getFullName(),
+						                                     celestialObjectParent.getWorldBorderArea() ));
+					}
+				}
+				if ( celestialObject1.dimensionCenterX - celestialObject1.borderRadiusX < -30000000
+				  || celestialObject1.dimensionCenterZ - celestialObject1.borderRadiusZ < -30000000
+				  || celestialObject1.dimensionCenterX + celestialObject1.borderRadiusX >= 30000000
+				  || celestialObject1.dimensionCenterZ + celestialObject1.borderRadiusZ >= 30000000 ) {
+					countErrors++;
+					WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s is outside the game border +/-30000000.\n%s\n%s border is %s",
+					                                     countErrors,
+					                                     celestialObject1.getFullName(),
+					                                     celestialObject1,
+					                                     celestialObject1.getFullName(),
+					                                     celestialObject1.getWorldBorderArea() ));
+				}
+			}
+			
+			// validate against other celestial objects
 			for (CelestialObject celestialObject2 : celestialObjects) {
 				if (celestialObject1 == celestialObject2) {
 					continue;
@@ -72,29 +115,45 @@ public class CelestialObjectManager extends XmlFileManager {
 					final AxisAlignedBB areaInParent1 = celestialObject1.getAreaInParent();
 					final AxisAlignedBB areaInParent2 = celestialObject2.getAreaInParent();
 					if (areaInParent1.intersectsWith(areaInParent2)) {
-						WarpDrive.logger.error("Overlapping parent areas detected " + celestialObject1.parentDimensionId);
-						WarpDrive.logger.error("Celestial object 1 is " + celestialObject1 + " with area " + areaInParent1);
-						WarpDrive.logger.error("Celestial object 2 is " + celestialObject2 + " with area " + areaInParent2);
-						throw new RuntimeException(String.format(
-							"Invalid celestial objects definition:\n %s\nand\n %s\nare overlapping each others. Update your configuration to fix it.",
-							celestialObject1.toString(), celestialObject2.toString()));
+						countErrors++;
+						WarpDrive.logger.error(String.format("Validation error #%d\nOverlapping parent areas detected in dimension %d between %s and %s\nArea1 %s from %s\nArea2 %s from %s", 
+						                                     countErrors, 
+						                                     celestialObject1.parentDimensionId, 
+						                                     celestialObject1.getFullName(), 
+						                                     celestialObject2.getFullName(),
+						                                     areaInParent1,
+						                                     celestialObject1,
+						                                     areaInParent2,
+						                                     celestialObject2 ));
 					}
 				}
 				// are they in the same dimension?
 				if (!celestialObject1.isVirtual && !celestialObject2.isVirtual && celestialObject1.dimensionId == celestialObject2.dimensionId) {
-					final AxisAlignedBB areaToReachParent1 = celestialObject1.getAreaToReachParent();
-					final AxisAlignedBB areaToReachParent2 = celestialObject2.getAreaToReachParent();
-					if (areaToReachParent1.intersectsWith(areaToReachParent2)) {
-						WarpDrive.logger.error("Overlapping areas detected in dimension " + celestialObject1.dimensionId);
-						WarpDrive.logger.error("Celestial object 1 is " + celestialObject1 + " with area " + areaToReachParent1);
-						WarpDrive.logger.error("Celestial object 2 is " + celestialObject2 + " with area " + areaToReachParent2);
-						throw new RuntimeException(String.format(
-							"Invalid celestial objects definition:\n %s\nand\n %s\nare overlapping each others. Update your configuration to fix it.",
-							celestialObject1.toString(), celestialObject2.toString()));
+					final AxisAlignedBB worldBorderArea1 = celestialObject1.getWorldBorderArea();
+					final AxisAlignedBB worldBorderArea2 = celestialObject2.getWorldBorderArea();
+					if (worldBorderArea1.intersectsWith(worldBorderArea2)) {
+						countErrors++;
+						WarpDrive.logger.error(String.format("Validation error #%d\nOverlapping areas detected in dimension %d between %s and %s\nArea1 %s from %s\nArea2 %s from %s",
+						                                     countErrors,
+						                                     celestialObject1.dimensionId,
+						                                     celestialObject1.getFullName(),
+						                                     celestialObject2.getFullName(),
+						                                     worldBorderArea1,
+						                                     celestialObject1,
+						                                     worldBorderArea2,
+						                                     celestialObject2 ));
 					}
 				}
 			}
 		}
+		if (countErrors == 1) {
+			throw new RuntimeException("Invalid celestial objects definition: update your configuration to fix this validation error, see logs for details.");
+		} else if (countErrors > 0) {
+			throw new RuntimeException(String.format(
+				"Invalid celestial objects definition: update your configuration to fix those %d validation errors, see logs for details.",
+				countErrors));
+		}
+		
 		
 		// We're not checking invalid dimension id, so they can be pre-allocated (see MystCraft)
 	}

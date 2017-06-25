@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <worldGeneration version="2"
-				 xmlns="WarpDrive"
+				 xmlns="http://warpdrive.lemadec.org"
 				 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				 xsi:schemaLocation="WarpDrive WarpDrive.xsd">
+				 xsi:schemaLocation="http://warpdrive.lemadec.org WarpDrive.xsd">
 	
 	<!--
 	  An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
@@ -17,9 +17,9 @@
 	<!-- Top level is hyperspace, typically a galaxy. -->
 	<celestialObject group="milkyWay" name="hyperspace">
 		<!--
-		  side defines the world border size, measured in blocks. This is also the size of the orbit area in space, so don't go too big.
+		  size defines the world border size, measured in blocks. This is also the size of the orbit area in space, so don't go too big.
 		  -->
-		<size x="100000" z="100000" />
+		<size x="400000" z="400000" />
 		
 		<!--
 		  dimension defines an actual game world. If it's missing, that celestialObject remains visible but you can't "land" on it.  
@@ -61,7 +61,7 @@
 			  parent.center.x, parent.center.z: this is the center coordinates in the parent dimension, measured in blocks.
 			  -->
 			<parent>
-				<center x="0" z="0" />
+				<center x="50000" z="10000" />
 			</parent>
 			<size x="200000" z="200000" />
 			<dimension id="-2" isBreathable="false" gravity="legacySpace" isProvidedByWarpDrive="true">
