@@ -757,14 +757,12 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandReload());
 	}
 	
-	private Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading tileEntity, boolean refreshLoading) {
+	public Ticket registerChunkLoadTileEntity(TileEntityAbstractChunkLoading tileEntity) {
 		World worldObj = tileEntity.getWorldObj();
 		if (ForgeChunkManager.ticketCountAvailableFor(this, worldObj) > 0) {
 			Ticket ticket = ForgeChunkManager.requestTicket(this, worldObj, Type.NORMAL);
 			if (ticket != null) {
 				tileEntity.giveTicket(ticket); // FIXME calling the caller is a bad idea
-				if (refreshLoading)
-					tileEntity.refreshLoading();
 				return ticket;
 			} else {
 				WarpDrive.logger.error("Ticket not granted");
@@ -773,14 +771,6 @@ public class WarpDrive implements LoadingCallback {
 			WarpDrive.logger.error("No tickets left!");
 		}
 		return null;
-	}
-	
-	public Ticket registerChunkLoadTE(TileEntityAbstractChunkLoading te) {
-		return registerChunkLoadTE(te, true);
-	}
-	
-	public Ticket getTicket(TileEntityAbstractChunkLoading te) {
-		return registerChunkLoadTE(te, false);
 	}
 	
 	@Override
