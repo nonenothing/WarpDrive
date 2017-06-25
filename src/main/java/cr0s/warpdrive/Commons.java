@@ -42,7 +42,6 @@ public class Commons {
 		return message
 		       .replace("§", CHAR_FORMATTING)
 		       .replace("\\n", "\n")
-		       .replace("|", "\n")
 		       .replace(CHAR_FORMATTING + "r", CHAR_FORMATTING + "7")
 		       .replaceAll("\u00A0", " ");  // u00A0 is 'NO-BREAK SPACE'
 	}

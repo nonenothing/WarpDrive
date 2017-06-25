@@ -278,6 +278,7 @@ public class StateAir {
 		// update world as needed
 		// any air concentration?
 		assert(concentrationNew >= 0 && concentrationNew <= CONCENTRATION_MAX);
+		assert(concentrationNew == 0 || pressureGenerator != 0);
 		if (concentrationNew == 0) {
 			if (isAirFlow()) {// remove air block...
 				// confirm block state
@@ -445,7 +446,7 @@ public class StateAir {
 				message.append("\n");
 				for (int indexX = 0; indexX <= 2; indexX++) {
 					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%3d", 1000 + stateAir.concentration).substring(1);
+					final String stringValue = String.format("%2d", 100 + stateAir.concentration).substring(1);
 					message.append(String.format("§3%s ", stringValue));
 				}
 				message.append("§f| ");
