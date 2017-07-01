@@ -278,10 +278,10 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			case "normal"          : return GRAVITY_NORMAL;
 			default:
 				final double gravity = Double.parseDouble(stringGravity);
-				if (gravity < 0) {
+				if (gravity < 0.0D) {
 					throw new RuntimeException();
 				}
-				return gravity;
+				return Math.min(gravity, 1.0D);
 			}
 		} catch (Exception exception) {
 			WarpDrive.logger.error("Invalid gravity value, expecting none, legacySpace, legacyHyperspace, normal or a positive double. Found: " + stringGravity);
