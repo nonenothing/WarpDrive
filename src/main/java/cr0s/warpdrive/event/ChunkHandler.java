@@ -26,7 +26,8 @@ import net.minecraftforge.event.world.WorldEvent;
 public class ChunkHandler {
 	
 	// persistent properties
-	private static final Map<Integer, Map<Long, ChunkData>> registry = new ConcurrentHashMap<>(32);
+	private static final Map<Integer, Map<Long, ChunkData>> registryClient = new ConcurrentHashMap<>(32);
+	private static final Map<Integer, Map<Long, ChunkData>> registryServer = new ConcurrentHashMap<>(32);
 	
 	// computed properties
 	public static long delayLogging = 0;
@@ -57,7 +58,7 @@ public class ChunkHandler {
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		final ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
+		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
 		chunkData.load(event.getData());
 	}
 	
@@ -71,7 +72,7 @@ public class ChunkHandler {
 				                                    event.getChunk().getChunkCoordIntPair()));
 			}
 			
-			final ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
+			final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
 			chunkData.load(new NBTTagCompound());
 		}
 	}
@@ -96,7 +97,7 @@ public class ChunkHandler {
 			                                    event.world.provider.getDimensionName(),
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
-		final ChunkData chunkData = getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
+		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition);
 		chunkData.save(event.getData());
 	}
 	
@@ -126,6 +127,7 @@ public class ChunkHandler {
 		}
 		
 		// get dimension data
+		final Map<Integer, Map<Long, ChunkData>> registry = event.world.isRemote ? registryClient : registryServer;
 		final Map<Long, ChunkData> mapRegistryItems = registry.get(event.world.provider.dimensionId);
 		if (mapRegistryItems != null) {
 			// unload chunks during shutdown
@@ -153,7 +155,7 @@ public class ChunkHandler {
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		getChunkData(event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition).unload();
+		getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition).unload();
 	}
 	
 	// (not called when closing SSP game)
@@ -183,16 +185,17 @@ public class ChunkHandler {
 	
 	/* internal access */
 	public static ChunkData getChunkData(final World world, final int x, final int y, final int z) {
-		return getChunkData(world.provider.dimensionId, x, y, z);
+		return getChunkData(world.isRemote, world.provider.dimensionId, x, y, z);
 	}
 	
-	private static ChunkData getChunkData(final int dimensionId, final int x, final int y, final int z) {
+	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int x, final int y, final int z) {
 		assert (y >= 0 && y <= 255);
-		return getChunkData(dimensionId, x >> 4, z >> 4);
+		return getChunkData(isRemote, dimensionId, x >> 4, z >> 4);
 	}
 	
-	private static ChunkData getChunkData(final int dimensionId, final int xChunk, final int zChunk) {
+	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int xChunk, final int zChunk) {
 		// get dimension data
+		final Map<Integer, Map<Long, ChunkData>> registry = isRemote ? registryClient : registryServer;
 		Map<Long, ChunkData> mapRegistryItems = registry.get(dimensionId);
 		// (lambda expressions are forcing synchronisation, so we don't use them here)
 		if (mapRegistryItems == null) {
@@ -229,6 +232,7 @@ public class ChunkHandler {
 	
 	public static void updateTick(final World world) {
 		// get dimension data
+		final Map<Integer, Map<Long, ChunkData>> registry = world.isRemote ? registryClient : registryServer;
 		Map<Long, ChunkData> mapRegistryItems = registry.get(world.provider.dimensionId);
 		if (mapRegistryItems == null) {
 			return;

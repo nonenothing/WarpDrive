@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgradeEffector {
 	//            Upgrade         - Compatibility -  ----- Value -----  -- Scan speed --  -- Place speed --  --------- Energy costs ---------  comment
 	//            name            projector   relay    incr.       cap  minimum  maximum   minimum  maximum  startup   scan    place    entity  
-	NONE         ("none"         ,        0,      0,    0.0F,     0.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.000F,  0.000F,    0.0F, ""),
+	NONE         ("none"         ,        0,      0,    0.0F,     0.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.000F,  0.000F,    0.0F, "n/a"),
 	ATTRACTION   ("attraction"   ,        0,      1,    1.0F,     4.0F,  0.000F,  0.000F,   0.000F,  0.000F,   50.0F, 0.150F,  0.000F,    8.0F, "value is acceleration"),
 	BREAKING     ("breaking"     ,        0,      1,    1.0F,    25.0F,  0.400F,  0.500F,   0.020F,  0.150F,  700.0F, 0.080F,  4.000F,    0.0F, "value is hardness level"),
 	CAMOUFLAGE   ("camouflage"   ,        0,      1,    1.0F,     3.0F,  0.600F,  0.850F,   0.700F,  0.950F, 1000.0F, 3.000F,  7.000F,    0.0F, "value is boolean"),

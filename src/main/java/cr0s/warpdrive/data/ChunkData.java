@@ -235,7 +235,11 @@ public class ChunkData {
 	
 	public void unload() {
 		// check consistency
-		assert(!isLoaded);
+		if (!isLoaded) {
+			WarpDrive.logger.warn(String.format("Chunk is already unloaded at (%d %d %d)",
+			                                    getChunkPosition().chunkPosX, getChunkPosition().chunkPosY, getChunkPosition().chunkPosZ));
+			return;
+		}
 		
 		// detects fast unloading
 		final long time = System.currentTimeMillis();
