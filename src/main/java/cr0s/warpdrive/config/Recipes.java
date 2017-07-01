@@ -1083,10 +1083,20 @@ public class Recipes {
 		        'm', itemStackMachineCasings[3]));
 		
 		// Air shield is 4 glowstones, 4 omnipanels and 1 coil crystal 
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirShield, 4, 0), false, "gog", "oco", "gog",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirShield, 4, 4), false, "gog", "oco", "gog",
 				'g', Items.glowstone_dust,
 				'o', "blockHull1_omnipanel",
 				'c', ItemComponent.getItemStack(EnumComponentType.COIL_CRYSTAL) ));
+		for (int woolColor = 0; woolColor < 16; woolColor++) {
+			OreDictionary.registerOre("blockAirShield", new ItemStack(WarpDrive.blockAirShield, 1, woolColor));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockAirShield, 6, BlockColored.func_150031_c(woolColor)), false, "###", "gXg", "###",
+			                                           '#', "blockAirShield",
+			                                           'g', Items.gold_nugget,
+			                                           'X', oreDyes[woolColor] ));
+			GameRegistry.addRecipe(new ShapelessOreRecipe(new ItemStack(WarpDrive.blockAirShield, 1, BlockColored.func_150031_c(woolColor)),
+			                                           "blockAirShield",
+			                                           oreDyes[woolColor] ));
+		}
 		
 		// Laser cannon is 2 motors, 1 diffraction grating, 1 lens, 1 computer interface, 1 HV Machine casing, 1 redstone dust, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaser), false, "gtr", "ldm", "gtc",
@@ -1661,6 +1671,11 @@ public class Recipes {
 				GameRegistry.addRecipe(new RecipeParticleShapedOre(WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 22), "sss", "sas", "sss",
 						's', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.STRANGE_MATTER, 1000),
 						'a', WarpDriveConfig.getModItemStack("DefenseTech", "explosives", 21)));
+			}
+			
+			// ICBM
+			if (WarpDriveConfig.isICBMLoaded) {
+				// @TODO
 			}
 			
 			// ICBM classic

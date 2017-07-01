@@ -23,6 +23,7 @@ import cr0s.warpdrive.block.breathing.BlockAirGenerator;
 import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.block.breathing.BlockAirShield;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
+import cr0s.warpdrive.block.breathing.ItemBlockAirShield;
 import cr0s.warpdrive.block.breathing.TileEntityAirGenerator;
 import cr0s.warpdrive.block.breathing.TileEntityAirGeneratorTiered;
 import cr0s.warpdrive.block.building.BlockShipScanner;
@@ -189,7 +190,7 @@ public class WarpDrive implements LoadingCallback {
 	public static final String VERSION = "@version@";
 	public static final boolean isDev = VERSION.equals("@" + "version" + "@") || VERSION.contains("-dev");
 	public static GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes("[WarpDrive]".getBytes()), "[WarpDrive]");
-
+	
 	public static Block blockShipCore;
 	public static Block blockShipController;
 	public static Block blockRadar;
@@ -372,7 +373,7 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerBlock(blockAir, ItemBlockAbstractBase.class, "blockAir");
 		GameRegistry.registerBlock(blockAirFlow, ItemBlockAbstractBase.class, "blockAirFlow");
 		GameRegistry.registerBlock(blockAirSource, ItemBlockAbstractBase.class, "blockAirSource");
-		GameRegistry.registerBlock(blockAirShield, ItemBlockAbstractBase.class, "blockAirShield");
+		GameRegistry.registerBlock(blockAirShield, ItemBlockAirShield.class, "blockAirShield");
 		
 		// BEDROCK GLASS
 		blockBedrockGlass = new BlockBedrockGlass();
