@@ -16,8 +16,11 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
+
+import net.minecraftforge.common.util.Constants.NBT;
 
 /**
  * An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
@@ -34,20 +37,21 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	
 	public String group;
 	public String name;
-	public boolean isVirtual;
-	public int dimensionId;
-	public int dimensionCenterX, dimensionCenterZ;
-	public int borderRadiusX, borderRadiusZ;
 	
 	public String parentGroup;
 	public String parentName;
 	public int parentDimensionId;
 	public int parentCenterX, parentCenterZ;
 	
-	public boolean isProvidedByWarpDrive;
-	private boolean isProvidedByWarpDrive_defined = false;
+	public int borderRadiusX, borderRadiusZ;
+	
+	public boolean isVirtual;
+	public int dimensionId;
+	public int dimensionCenterX, dimensionCenterZ;
 	public double gravity;
 	public boolean isBreathable;
+	public boolean isProvidedByWarpDrive;
+	private boolean isProvidedByWarpDrive_defined = false;
 	
 	private final RandomCollection<StructureGroup> randomStructures = new RandomCollection<>();
 	
@@ -156,9 +160,9 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		if (listDimensions.size() == 0) {
 			isVirtual = true;
 			dimensionId = 0;
-			isProvidedByWarpDrive = false;
-			isBreathable = true;
 			gravity = GRAVITY_NORMAL;
+			isBreathable = true;
+			isProvidedByWarpDrive = false;
 			dimensionCenterX = 0;
 			dimensionCenterZ = 0;
 		} else {
@@ -166,8 +170,8 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			
 			final Element elementDimension = listDimensions.get(0);
 			dimensionId = Integer.parseInt(elementDimension.getAttribute("id"));
-			isBreathable = Boolean.parseBoolean(elementDimension.getAttribute("isBreathable"));
 			gravity = parseGravity(elementDimension.getAttribute("gravity"));
+			isBreathable = Boolean.parseBoolean(elementDimension.getAttribute("isBreathable"));
 			if (elementDimension.hasAttribute("isProvidedByWarpDrive")) {
 				isProvidedByWarpDrive = Boolean.parseBoolean(elementDimension.getAttribute("isProvidedByWarpDrive"));
 				isProvidedByWarpDrive_defined = true;
@@ -335,8 +339,8 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	
 	public AxisAlignedBB getWorldBorderArea() {
 		return AxisAlignedBB.getBoundingBox(
-		(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
-		(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
+			(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
+			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
 	public AxisAlignedBB getAreaToReachParent() {
@@ -373,40 +377,41 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	}
 	
 	/**
-	 * Compute distance from border to further point in an area.
+	 * Verify that the given area is fully contained within the border.
 	 * It's up to caller to verify if this celestial object is matched.
 	 *
 	 * @param aabb bounding box that should fit within border
-	 * @return distance to transition borders, 0 if take off is possible
+	 * @return true if we're fully inside the border
 	 */
-	public double getSquareDistanceOutsideBorder(final int dimensionId, final AxisAlignedBB aabb) {
-		if (dimensionId != this.dimensionId) {
-			return Double.POSITIVE_INFINITY;
-		}
+	public boolean isInsideBorder(final AxisAlignedBB aabb) {
 		final double rangeX = Math.max(Math.abs(aabb.minX - dimensionCenterX), Math.abs(aabb.maxX - dimensionCenterX));
 		final double rangeZ = Math.max(Math.abs(aabb.minZ - dimensionCenterZ), Math.abs(aabb.maxZ - dimensionCenterZ));
-		final double dX = rangeX - borderRadiusX;
-		final double dZ = rangeZ - borderRadiusZ;
-		if ((rangeX <= borderRadiusX) && (rangeZ <= borderRadiusZ)) {
-			return - (dX * dX + dZ * dZ);
-		}
-		return (dX * dX + dZ * dZ);
+		return (rangeX <= borderRadiusX) && (rangeZ <= borderRadiusZ);
+	}
+	
+	/**
+	 * Verify that the given position is within the border.
+	 * It's up to caller to verify if this celestial object is matched.
+	 *
+	 * @param x coordinates inside the celestial object
+	 * @param z coordinates inside the celestial object
+	 * @return true if we're fully inside the border
+	 */
+	public boolean isInsideBorder(final double x, final double z) {
+		final double rangeX = Math.abs(x - dimensionCenterX);
+		final double rangeZ = Math.abs(z - dimensionCenterZ);
+		return (rangeX <= borderRadiusX) && (rangeZ <= borderRadiusZ);
 	}
 	
 	/**
 	 * Compute distance to reach closest border, while inside the same dimension.
 	 *
-	 * @param dimensionId dimension id
 	 * @param x coordinates inside the celestial object
 	 * @param z coordinates inside the celestial object
 	 * @return 'square' distance to the closest border,
-	 *          <=0 if we're inside, > 0 if we're outside,
-	 *          +INF if we're in the wrong dimension
+	 *          <=0 if we're inside, > 0 if we're outside
 	 */
-	public double getSquareDistanceOutsideBorder(final int dimensionId, final double x, final double z) {
-		if (dimensionId != this.dimensionId) {
-			return Double.POSITIVE_INFINITY;
-		}
+	public double getSquareDistanceOutsideBorder(final double x, final double z) {
 		final double rangeX = Math.abs(x - dimensionCenterX);
 		final double rangeZ = Math.abs(z - dimensionCenterZ);
 		final double dX = rangeX - borderRadiusX;
@@ -450,34 +455,96 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		return dx * dx + dz * dz;
 	}
 	
-	public void readFromNBT(NBTTagCompound tag) {
-		dimensionId = tag.getInteger("dimensionId");
-		dimensionCenterX = tag.getInteger("dimensionCenterX");
-		dimensionCenterZ = tag.getInteger("dimensionCenterZ");
-		borderRadiusX = tag.getInteger("borderSizeX");
-		borderRadiusZ = tag.getInteger("borderSizeZ");
-		parentDimensionId = tag.getInteger("parentDimensionId");
-		parentCenterX = tag.getInteger("parentCenterX");
-		parentCenterZ = tag.getInteger("parentCenterZ");
-		isProvidedByWarpDrive = tag.getBoolean("isProvidedByWarpDrive");
-		gravity = tag.getDouble("gravity");
-		isBreathable = tag.getBoolean("isBreathable");
-		// @TODO: mapGenerationRatios
+	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+		group = nbtTagCompound.getString("group");
+		name = nbtTagCompound.getString("name");
+		
+		parentGroup = nbtTagCompound.getString("parentGroup");
+		parentName = nbtTagCompound.getString("parentName");
+		parentCenterX = nbtTagCompound.getInteger("parentCenterX");
+		parentCenterZ = nbtTagCompound.getInteger("parentCenterZ");
+		
+		borderRadiusX = nbtTagCompound.getInteger("borderRadiusX");
+		borderRadiusZ = nbtTagCompound.getInteger("borderRadiusZ");
+		
+		isVirtual = nbtTagCompound.getBoolean("isVirtual");
+		if (isVirtual) {
+			dimensionId = 0;
+			dimensionCenterX = 0;
+			dimensionCenterZ = 0;
+			gravity = GRAVITY_NORMAL;
+			isBreathable = true;
+			isProvidedByWarpDrive = false;
+		} else {
+			dimensionId = nbtTagCompound.getInteger("dimensionId");
+			dimensionCenterX = nbtTagCompound.getInteger("dimensionCenterX");
+			dimensionCenterZ = nbtTagCompound.getInteger("dimensionCenterZ");
+			gravity = nbtTagCompound.getDouble("gravity");
+			isBreathable = nbtTagCompound.getBoolean("isBreathable");
+			isProvidedByWarpDrive = nbtTagCompound.getBoolean("isProvidedByWarpDrive");
+		}
+		
+		// randomStructures are server side only
+		
+		backgroundColor = new ColorData(nbtTagCompound.getCompoundTag("backgroundColor"));
+		baseStarBrightness = nbtTagCompound.getFloat("baseStarBrightness");
+		vanillaStarBrightness = nbtTagCompound.getFloat("vanillaStarBrightness");
+		opacityCelestialObjects = nbtTagCompound.getFloat("opacityCelestialObjects");
+		colorFog = new ColorData(nbtTagCompound.getCompoundTag("colorFog"));
+		factorFog = new ColorData(nbtTagCompound.getCompoundTag("factorFog"));
+		
+		final NBTTagList nbtTagListRenderData = nbtTagCompound.getTagList("renderData", NBT.TAG_COMPOUND);
+		final int countRender = nbtTagListRenderData.tagCount();
+		setRenderData = new LinkedHashSet<>(countRender);
+		for(int indexRenderData = 0; indexRenderData < countRender; indexRenderData++) {
+			final NBTTagCompound tagCompoundRenderData = nbtTagListRenderData.getCompoundTagAt(indexRenderData);
+			setRenderData.add(new RenderData(tagCompoundRenderData));
+		}
 	}
 	
-	public void writeToNBT(NBTTagCompound tag) {
-		tag.setInteger("dimensionId", dimensionId);
-		tag.setInteger("dimensionCenterX", dimensionCenterX);
-		tag.setInteger("dimensionCenterZ", dimensionCenterZ);
-		tag.setInteger("borderRadiusX", borderRadiusX);
-		tag.setInteger("borderRadiusZ", borderRadiusZ);
-		tag.setInteger("parentDimensionId", parentDimensionId);
-		tag.setInteger("parentCenterX", parentCenterX);
-		tag.setInteger("parentCenterZ", parentCenterZ);
-		tag.setBoolean("isProvidedByWarpDrive", isProvidedByWarpDrive);
-		tag.setDouble("gravity", gravity);
-		tag.setBoolean("isBreathable", isBreathable);
-		// @TODO: mapGenerationRatios
+	public void writeToNBT(NBTTagCompound nbtTagCompound) {
+		nbtTagCompound.setString("group", group);
+		nbtTagCompound.setString("name", name);
+		
+		nbtTagCompound.setString("parentGroup", parentGroup);
+		nbtTagCompound.setString("parentName", parentName);
+		nbtTagCompound.setInteger("parentCenterX", parentCenterX);
+		nbtTagCompound.setInteger("parentCenterZ", parentCenterZ);
+		
+		nbtTagCompound.setInteger("borderRadiusX", borderRadiusX);
+		nbtTagCompound.setInteger("borderRadiusZ", borderRadiusZ);
+		
+		nbtTagCompound.setBoolean("isVirtual", isVirtual);
+		if (isVirtual) {
+			dimensionId = 0;
+			dimensionCenterX = 0;
+			dimensionCenterZ = 0;
+			gravity = GRAVITY_NORMAL;
+			isBreathable = true;
+			isProvidedByWarpDrive = false;
+		} else {
+			nbtTagCompound.setInteger("dimensionId", dimensionId);
+			nbtTagCompound.setInteger("dimensionCenterX", dimensionCenterX);
+			nbtTagCompound.setInteger("dimensionCenterZ", dimensionCenterZ);
+			nbtTagCompound.setDouble("gravity", gravity);
+			nbtTagCompound.setBoolean("isBreathable", isBreathable);
+			nbtTagCompound.setBoolean("isProvidedByWarpDrive", isProvidedByWarpDrive);
+		}
+		
+		// randomStructures are server side only
+		
+		nbtTagCompound.setTag("backgroundColor", backgroundColor.writeToNBT(new NBTTagCompound()));
+		nbtTagCompound.setFloat("baseStarBrightness", baseStarBrightness);
+		nbtTagCompound.setFloat("vanillaStarBrightness", vanillaStarBrightness);
+		nbtTagCompound.setFloat("opacityCelestialObjects", opacityCelestialObjects);
+		nbtTagCompound.setTag("colorFog", colorFog.writeToNBT(new NBTTagCompound()));
+		nbtTagCompound.setTag("factorFog", factorFog.writeToNBT(new NBTTagCompound()));
+		
+		final NBTTagList nbtTagListRenderData = new NBTTagList();
+		for(final RenderData renderData : setRenderData) {
+			nbtTagListRenderData.appendTag(renderData.writeToNBT(new NBTTagCompound()));
+		}
+		nbtTagCompound.setTag("renderData", nbtTagListRenderData);
 	}
 	
 	@Override
@@ -518,7 +585,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		public float green;
 		public float blue;
 		
-		ColorData(final float red, final float green, final float blue) throws InvalidXmlException {
+		ColorData(final float red, final float green, final float blue) {
 			this.red = red;
 			this.green = green;
 			this.blue = blue;
@@ -536,6 +603,23 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 				green = 0.5F;
 				blue = 0.5F;
 			}
+		}
+		
+		ColorData(final NBTTagCompound nbtTagCompound) {
+			readFromNBT(nbtTagCompound);
+		}
+		
+		public void readFromNBT(NBTTagCompound nbtTagCompound) {
+			red = nbtTagCompound.getFloat("red");
+			green = nbtTagCompound.getFloat("green");
+			blue = nbtTagCompound.getFloat("blue");
+		}
+		
+		public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+			nbtTagCompound.setFloat("red", red);
+			nbtTagCompound.setFloat("green", green);
+			nbtTagCompound.setFloat("blue", blue);
+			return nbtTagCompound;
 		}
 	}
 	
@@ -597,6 +681,43 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 				
 				isAdditive = Boolean.parseBoolean(elementRender.getAttribute("additive"));
 			}
+		}
+		
+		RenderData(final NBTTagCompound nbtTagCompound) {
+			readFromNBT(nbtTagCompound);
+		}
+		
+		public void readFromNBT(NBTTagCompound nbtTagCompound) {
+			red = nbtTagCompound.getFloat("red");
+			green = nbtTagCompound.getFloat("green");
+			blue = nbtTagCompound.getFloat("blue");
+			alpha = nbtTagCompound.getFloat("alpha");
+			texture = nbtTagCompound.getString("texture");
+			if (texture == null || texture.isEmpty()) {
+				texture = null;
+				resourceLocation = null;
+				periodU = 1.0D;
+				periodV = 1.0D;
+				isAdditive = false;
+			} else {
+				resourceLocation = new ResourceLocation(texture);
+				periodU = nbtTagCompound.getDouble("periodU");
+				periodV = nbtTagCompound.getDouble("periodV");
+				isAdditive = nbtTagCompound.getBoolean("isAdditive");
+			}
+		}
+		
+		public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+			nbtTagCompound.setFloat("red", red);
+			nbtTagCompound.setFloat("green", green);
+			nbtTagCompound.setFloat("blue", blue);
+			nbtTagCompound.setFloat("alpha", alpha);
+			if (texture != null) {
+				nbtTagCompound.setDouble("periodU", periodU);
+				nbtTagCompound.setDouble("periodV", periodV);
+				nbtTagCompound.setBoolean("isAdditive", isAdditive);
+			}
+			return nbtTagCompound;
 		}
 	}
 }

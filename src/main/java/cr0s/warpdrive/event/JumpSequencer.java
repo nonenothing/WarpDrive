@@ -618,10 +618,9 @@ public class JumpSequencer extends AbstractSequencer {
 				
 			} else {
 				// are we in range?
-				final double distanceSquared = celestialObjectTarget.getSquareDistanceOutsideBorder(targetWorld.provider.dimensionId, aabbTarget);
-				if (distanceSquared > 0) {
-					AxisAlignedBB axisAlignedBB = celestialObjectTarget.getWorldBorderArea();
-					String message = String.format(
+				if (!celestialObjectTarget.isInsideBorder(aabbTarget)) {
+					final AxisAlignedBB axisAlignedBB = celestialObjectTarget.getWorldBorderArea();
+					final String message = String.format(
 						  "Target ship position is outside planet border, unable to jump!\n"
 						+ "World borders are (%d %d %d) to (%d %d %d).",
 						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
@@ -783,7 +782,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			
 			// are we clear for transit?
-			final double distanceSquared = celestialObjectSource.getSquareDistanceOutsideBorder(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			final double distanceSquared = celestialObjectSource.getSquareDistanceOutsideBorder(ship.coreX, ship.coreZ);
 			if (distanceSquared > 0) {
 				final AxisAlignedBB axisAlignedBB = celestialObjectSource.getAreaToReachParent();
 				reason.append(String.format(

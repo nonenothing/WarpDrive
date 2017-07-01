@@ -125,7 +125,7 @@ public class StarMapRegistry {
 		CelestialObject celestialObjectClosest = null;
 		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			if (dimensionId == celestialObject.dimensionId) {
-				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(dimensionId, x, z);
+				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(x, z);
 				if (distanceSquared <= 0) {
 					return celestialObject;
 				} else if (distanceClosest > distanceSquared) {

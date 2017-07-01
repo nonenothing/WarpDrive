@@ -59,7 +59,7 @@ public class LivingHandler {
 			// unregistered dimension => exit
 			return;
 		}
-		final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(entity.worldObj.provider.dimensionId, x, z);
+		final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(x, z);
 		if (distanceSquared <= 0.0D) {
 			// are we close to the border?
 			if ( Math.abs(distanceSquared) <= BORDER_WARNING_RANGE_BLOCKS_SQUARED
