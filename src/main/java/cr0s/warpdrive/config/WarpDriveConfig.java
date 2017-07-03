@@ -109,7 +109,7 @@ public class WarpDriveConfig {
 	public static ItemStack IC2_Resin;
 	public static Block CC_Computer, CC_peripheral, CCT_Turtle, CCT_Expanded, CCT_Advanced;
 	
-	// Mod configuration (see loadWarpDriveConfig() for comments/definitions)
+	// Mod configuration (see loadConfig() for comments/definitions)
 	// General
 	public static int G_SPACE_BIOME_ID = 95;
 	public static int G_SPACE_PROVIDER_ID = 14;
@@ -341,12 +341,12 @@ public class WarpDriveConfig {
 	public static float[] HULL_BLAST_RESISTANCE = { 60.0F, 90.0F, 120.0F };
 	
 	// Block transformers library
-	public static HashMap<String, IBlockTransformer> blockTransformers = null;
+	public static HashMap<String, IBlockTransformer> blockTransformers = new HashMap<>(30);
 	
 	// Particles accelerator
 	public static boolean ACCELERATOR_ENABLE = false;
-	public static final double[]  ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
-	public static final double    ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
+	public static final double[] ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
+	public static final double ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
 	public static int ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
 	public static Block getModBlock(final String mod, final String id) {
@@ -407,13 +407,14 @@ public class WarpDriveConfig {
 		// always unpack the XML Schema
 		unpackResourceToFolder("WarpDrive.xsd", "config", configDirectory);
 		
-		// read configuration file
-		loadWarpDriveConfig(new File(configDirectory, WarpDrive.MODID + ".cfg"));
+		// read configuration files
+		loadConfig(new File(configDirectory, "config.yml"));
+		loadDictionary(new File(configDirectory, "dictionary.yml"));
 		CelestialObjectManager.load(configDirectory);
 	}
 	
-	public static void loadWarpDriveConfig(File file) {
-		Configuration config = new Configuration(file);
+	public static void loadConfig(final File file) {
+		final Configuration config = new Configuration(file);
 		config.load();
 		
 		// General
@@ -827,16 +828,20 @@ public class WarpDriveConfig {
 		LIFT_ENTITY_COOLDOWN_TICKS = Commons.clamp(1, 6000,
 				config.get("lift", "entity_cooldown_ticks", LIFT_ENTITY_COOLDOWN_TICKS, "Cooldown after moving an entity").getInt());
 		
-		// Dictionary
-		Dictionary.loadConfig(config);
-		
-		// Block transformers library
-		blockTransformers = new HashMap<>();
-		
 		// Particles accelerator
 		ACCELERATOR_MAX_PARTICLE_BUNCHES = Commons.clamp(2, 100,
-			config.get("accelerator", "max_particle_bunches", ACCELERATOR_MAX_PARTICLE_BUNCHES, "Maximum number of particle bunches per accelerator controller").getInt());
+				config.get("accelerator", "max_particle_bunches", ACCELERATOR_MAX_PARTICLE_BUNCHES, "Maximum number of particle bunches per accelerator controller").getInt());
 		
+		config.save();
+	}
+	
+	public static void loadDictionary(final File file) {
+		final Configuration config = new Configuration(file);
+		config.load();
+		
+		// Dictionary
+		Dictionary.loadConfig(config);
+	
 		config.save();
 	}
 	
