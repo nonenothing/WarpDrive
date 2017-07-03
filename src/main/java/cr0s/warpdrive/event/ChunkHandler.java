@@ -262,7 +262,6 @@ public class ChunkHandler {
 		if (!chunkData.isLoaded()) {
 			return true;
 		}
-		chunkData.updateTick(world);
 		final ChunkCoordIntPair chunkCoordIntPair = chunkData.getChunkCoords();
 		// skip chunks with unloaded neighbours
 		if ( isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos + 1, chunkCoordIntPair.chunkZPos)

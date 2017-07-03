@@ -25,7 +25,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 
 public class StateAir {
 	
-	static final int AIR_DEFAULT = 0x00000000;      // default is the unknown state
+	static final int AIR_DEFAULT = 0x060000C0;      // default is the unknown state
 	
 	// highest bit is unusable since Java only supports signed primitives (mostly)
 	static final int USED_MASK                 = 0b01110111111111111111111100001111;
@@ -61,13 +61,13 @@ public class StateAir {
 	private int x;
 	private int y;
 	private int z;
-	protected int dataAir;  // original air data provided
+	protected int dataAir;    // original air data provided
 	protected Block block;    // original block
 	public byte concentration;
 	public short pressureGenerator;
 	public short pressureVoid;
-	public ForgeDirection directionGenerator;
-	public ForgeDirection directionVoid;
+	public ForgeDirection directionGenerator;   // direction toward source
+	public ForgeDirection directionVoid;        // direction toward source
 	
 	public StateAir(final ChunkData chunkData) {
 		this.chunkData = chunkData;
@@ -101,6 +101,9 @@ public class StateAir {
 		// get actual data
 		block = null;
 		dataAir = chunkData.getDataAir(x, y, z);
+		if (dataAir == 0) {
+			dataAir = AIR_DEFAULT;
+		}
 		
 		// extract scalar values
 		concentration = (byte) (dataAir & CONCENTRATION_MASK);
@@ -113,7 +116,7 @@ public class StateAir {
 		if ((dataAir & BLOCK_MASK) == BLOCK_UNKNOWN) {
 			updateBlockCache(world);
 		}
-		updateVoidSource(world);
+		updateVoidSource();
 	}
 	
 	public void clearCache() {
@@ -132,19 +135,22 @@ public class StateAir {
 		updateBlockType(world);
 	}
 	
-	private void updateVoidSource(final World world) {
+	private void updateVoidSource() {
 		if (!isAir()) {// sealed blocks have no pressure
-			setGenerator((short) 0, ForgeDirection.DOWN);
-			setVoid(world, (short) 0, ForgeDirection.DOWN);
+			setGenerator((short) 0, ForgeDirection.UNKNOWN);
+			setVoid((short) 0, ForgeDirection.UNKNOWN);
 			
 		} else if (pressureGenerator == 0) {// no generator in range => clear to save resources
-			setVoid(world, (short) 0, ForgeDirection.DOWN);
+			setVoid((short) 0, ForgeDirection.UNKNOWN);
 			
 		} else if (pressureGenerator == 1) {// at generator range => this is a void source
-			setVoid(world, (short) VOID_PRESSURE_MAX, directionGenerator);
+			setVoid((short) VOID_PRESSURE_MAX, directionGenerator.getOpposite());
 			
-		} else if (y == 0 || y == 255) {// at top or bottom of map => this is a void source
-			setVoid(world, (short) VOID_PRESSURE_MAX, directionGenerator);
+		} else if (y == 0) {// at bottom of map => this is a void source
+			setVoid((short) VOID_PRESSURE_MAX, ForgeDirection.DOWN);
+			
+		} else if (y == 255) {// at top of map => this is a void source
+			setVoid((short) VOID_PRESSURE_MAX, ForgeDirection.UP);
 			
 		} else if (block != null) {// only check if block was updated
 			// check if sky is visible, which means we're in the void
@@ -153,9 +159,9 @@ public class StateAir {
 			final int highestBlock = chunk.getPrecipitationHeight(x & 15, z & 15);
 			final boolean isVoid = highestBlock < y;
 			if (isVoid) {
-				setVoid(world, (short) VOID_PRESSURE_MAX, ForgeDirection.DOWN);
+				setVoid((short) VOID_PRESSURE_MAX, ForgeDirection.UP);
 			} else if (pressureVoid == VOID_PRESSURE_MAX) {
-				setVoid(world, (short) 0, ForgeDirection.DOWN);
+				setVoid((short) 0, ForgeDirection.UNKNOWN);
 			}
 		}
 		// (propagation is done when spreading air itself)
@@ -183,10 +189,11 @@ public class StateAir {
 		         || concentration != CONCENTRATION_MAX;
 		
 		if (updateRequired && isPlaceable) {
+			// block metadata is direction going away from generator, while internal direction is towards the generator
 			world.setBlock(x, y, z, WarpDrive.blockAirSource, direction.ordinal(), 2);
 			block = WarpDrive.blockAirSource;
 			updateBlockType(world);
-			setGeneratorAndUpdateVoid(world, pressure, ForgeDirection.DOWN);
+			setGeneratorAndUpdateVoid(world, pressure, direction.getOpposite());
 			setConcentration(world, (byte) CONCENTRATION_MAX);
 		}
 		return updateRequired;
@@ -278,7 +285,6 @@ public class StateAir {
 		// update world as needed
 		// any air concentration?
 		assert(concentrationNew >= 0 && concentrationNew <= CONCENTRATION_MAX);
-		assert(concentrationNew == 0 || pressureGenerator != 0);
 		if (concentrationNew == 0) {
 			if (isAirFlow()) {// remove air block...
 				// confirm block state
@@ -326,8 +332,12 @@ public class StateAir {
 	}
 	
 	protected void setGeneratorAndUpdateVoid(final World world, final short pressureNew, final ForgeDirection directionNew) {
-		setGenerator(pressureNew, directionNew);
-		updateVoidSource(world);
+		if (pressureNew == 0 && pressureVoid > 0) {
+			removeGeneratorAndCascade(world);
+		} else {
+			setGenerator(pressureNew, directionNew);
+			updateVoidSource();
+		}
 	}
 	
 	private void setGenerator(final short pressureNew, final ForgeDirection directionNew) {
@@ -347,15 +357,34 @@ public class StateAir {
 		if (isUpdated) {
 			chunkData.setDataAir(x, y, z, dataAir);
 		}
+		assert (pressureGenerator != 0 || directionGenerator == ForgeDirection.UNKNOWN);
+		assert (pressureGenerator == 0 || pressureGenerator == GENERATOR_PRESSURE_MAX || directionGenerator != ForgeDirection.UNKNOWN);
+		assert (pressureGenerator == 0 || directionGenerator != ForgeDirection.UNKNOWN);
+	}
+	protected void removeGeneratorAndCascade(final World world) {
+		removeGeneratorAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
+	}
+	private void removeGeneratorAndCascade(final World world, final int depth) {
+		if (pressureGenerator != 0) {
+			assert (directionGenerator != ForgeDirection.UNKNOWN);
+			dataAir = (dataAir & ~(GENERATOR_PRESSURE_MASK | GENERATOR_DIRECTION_MASK)) | (ForgeDirection.UNKNOWN.ordinal() << GENERATOR_DIRECTION_SHIFT);
+			pressureGenerator = 0;
+			directionGenerator = ForgeDirection.UNKNOWN;
+			chunkData.setDataAir(x, y, z, dataAir);
+			if (depth > 0) {
+				final StateAir stateAir = new StateAir(chunkData);
+				for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+					stateAir.refresh(world, this, direction);
+					if ( stateAir.pressureGenerator > 0
+					  && stateAir.directionGenerator == direction.getOpposite() ) {
+						stateAir.removeGeneratorAndCascade(world, depth - 1);
+					}
+				}
+			}
+		}
 	}
 	
-	protected void setVoid(final World world, final short pressureNew, final ForgeDirection directionNew) {
-		setVoidAndCascade(world, pressureNew, directionNew, 0);
-	}
-	protected void setVoidAndCascade(final World world, final short pressureNew, final ForgeDirection directionNew) {
-		setVoidAndCascade(world, pressureNew, directionNew, WarpDriveConfig.BREATHING_REPRESSURIZATION_SPEED_BLOCKS);
-	}
-	private void setVoidAndCascade(final World world, final short pressureNew, final ForgeDirection directionNew, Integer depth) {
+	protected void setVoid(final short pressureNew, final ForgeDirection directionNew) {
 		boolean isUpdated = false;
 		if (pressureNew != pressureVoid) {
 			assert (pressureNew >= 0 && pressureNew <= VOID_PRESSURE_MAX);
@@ -363,16 +392,6 @@ public class StateAir {
 			dataAir = (dataAir & ~VOID_PRESSURE_MASK) | (pressureNew << VOID_PRESSURE_SHIFT);
 			pressureVoid = pressureNew;
 			isUpdated = true;
-			if (pressureNew == 0 && depth > 0) {
-				StateAir stateAir = new StateAir(chunkData);
-				for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-					stateAir.refresh(world, this, direction);
-					if (stateAir.pressureVoid > 0 && stateAir.directionVoid == direction.getOpposite()) {
-						depth--;
-						stateAir.setVoidAndCascade(world, (short) 0, ForgeDirection.DOWN, depth);
-					}
-				}
-			}
 		}
 		if (directionNew != directionVoid) {
 			dataAir = (dataAir & ~VOID_DIRECTION_MASK) | (directionNew.ordinal() << VOID_DIRECTION_SHIFT);
@@ -381,6 +400,30 @@ public class StateAir {
 		}
 		if (isUpdated) {
 			chunkData.setDataAir(x, y, z, dataAir);
+		}
+		assert (pressureVoid != 0 || directionVoid == ForgeDirection.UNKNOWN);
+		assert (pressureVoid == 0 || directionVoid != ForgeDirection.UNKNOWN);
+		assert (pressureVoid == 0 || pressureVoid == VOID_PRESSURE_MAX || directionVoid != ForgeDirection.UNKNOWN);
+	}
+	protected void removeVoidAndCascade(final World world) {
+		removeVoidAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
+	}
+	private void removeVoidAndCascade(final World world, final int depth) {
+		if (pressureVoid != 0) {
+			assert (directionVoid != ForgeDirection.UNKNOWN);
+			dataAir = (dataAir & ~(VOID_PRESSURE_MASK | VOID_DIRECTION_MASK)) | (ForgeDirection.UNKNOWN.ordinal() << VOID_DIRECTION_SHIFT);
+			pressureVoid = 0;
+			directionVoid = ForgeDirection.UNKNOWN;
+			chunkData.setDataAir(x, y, z, dataAir);
+			if (depth > 0) {
+				final StateAir stateAir = new StateAir(chunkData);
+				for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+					stateAir.refresh(world, this, direction);
+					if (stateAir.pressureVoid > 0 && stateAir.directionVoid == direction.getOpposite()) {
+						stateAir.removeVoidAndCascade(world, depth - 1);
+					}
+				}
+			}
 		}
 	}
 	
@@ -453,14 +496,14 @@ public class StateAir {
 				for (int indexX = 0; indexX <= 2; indexX++) {
 					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
 					final String stringValue = String.format("%X", 0x100 + stateAir.pressureGenerator).substring(1);
-					final String stringDirection = stateAir.directionGenerator.toString().substring(0, 1);
+					final String stringDirection = directionToChar(stateAir.directionGenerator);
 					message.append(String.format("§e%s §a%s ", stringValue, stringDirection));
 				}
 				message.append("§f| ");
 				for (int indexX = 0; indexX <= 2; indexX++) {
 					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
 					final String stringValue = String.format("%X", 0x100 + stateAir.pressureVoid).substring(1);
-					final String stringDirection = stateAir.directionVoid.toString().substring(0, 1);
+					final String stringDirection = directionToChar(stateAir.directionVoid);
 					message.append(String.format("§e%s §d%s ", stringValue, stringDirection));
 				}
 				if (indexZ == 2) message.append("§f\\");
@@ -469,6 +512,19 @@ public class StateAir {
 			}
 		}
 		Commons.addChatMessage(entityPlayer, message.toString());
+	}
+	
+	private static String directionToChar(final ForgeDirection direction) {
+		switch (direction) {
+		case UP     : return "U";
+		case DOWN   : return "D";
+		case NORTH  : return "N";
+		case SOUTH  : return "S";
+		case EAST   : return "E";
+		case WEST   : return "W";
+		case UNKNOWN: return "?";
+		default     : return "x";
+		}
 	}
 	
 	@Override

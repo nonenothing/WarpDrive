@@ -298,7 +298,7 @@ public class WarpDriveConfig {
 	public static int[] BREATHING_MAX_ENERGY_STORED = { 1400, 21000, 304500 };  // almost 6 mn of autonomy
 	public static int BREATHING_AIR_GENERATION_TICKS = 40;
 	public static int[] BREATHING_AIR_GENERATION_RANGE_BLOCKS = { 16, 48, 144 };
-	public static int BREATHING_REPRESSURIZATION_SPEED_BLOCKS = 512;
+	public static int BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS = 256;
 	public static int BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
 	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
 	public static boolean BREATHING_AIR_AT_ENTITY_DEBUG = false;
@@ -761,8 +761,8 @@ public class WarpDriveConfig {
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[1] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[0], BREATHING_AIR_GENERATION_RANGE_BLOCKS[2], BREATHING_AIR_GENERATION_RANGE_BLOCKS[1]);
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[2] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[1], 256                                , BREATHING_AIR_GENERATION_RANGE_BLOCKS[2]);
 		
-		BREATHING_REPRESSURIZATION_SPEED_BLOCKS = Commons.clamp(120, 4000,
-				config.get("breathing", "repressurization_speed_blocks", BREATHING_REPRESSURIZATION_SPEED_BLOCKS, "Maximum number of blocks to update when a volume has been re-sealed.\nHigher may cause TPS lag spikes, Lower will exponentially increase the repressurization time").getInt());
+		BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS = Commons.clamp(10, 256,
+		        config.get("breathing", "volume_update_depth_blocks", BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS, "Maximum depth of blocks to update when a volume has changed.\nHigher values may cause TPS lag spikes, Lower values will exponentially increase the repressurization time").getInt());
 		BREATHING_AIR_SIMULATION_DELAY_TICKS = Commons.clamp(1, 90,
 				config.get("breathing", "simulation_delay_ticks", BREATHING_AIR_SIMULATION_DELAY_TICKS, "Minimum delay between consecutive air propagation updates of the same block.").getInt());
 		BREATHING_AIR_AT_ENTITY_DEBUG = config.get("breathing", "enable_air_at_entity_debug", BREATHING_AIR_AT_ENTITY_DEBUG, "Spam creative players with air status around them, use at your own risk.").getBoolean(false);
