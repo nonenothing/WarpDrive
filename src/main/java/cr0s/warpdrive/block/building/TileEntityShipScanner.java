@@ -10,7 +10,7 @@ import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.data.Transformation;
 import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.item.ItemCrystalToken;
+import cr0s.warpdrive.item.ItemShipToken;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -721,22 +721,22 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		for (; slotIndex < entityPlayer.inventory.getSizeInventory(); slotIndex++) {
 			itemStack = entityPlayer.inventory.getStackInSlot(slotIndex);
 			if ( itemStack != null
-			  && itemStack.getItem() == WarpDrive.itemCrystalToken
+			  && itemStack.getItem() == WarpDrive.itemShipToken
 			  && itemStack.stackSize >= 1) {
 				break;
 			}
 		}
 		if (itemStack == null || slotIndex >= entityPlayer.inventory.getSizeInventory()) {
-			Commons.addChatMessage(entityPlayer, "Please come back once you've a Crystal token.");
+			Commons.addChatMessage(entityPlayer, "Please come back once you've a Ship token.");
 			cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
 			return;
 		}
 		
 		// short warmup so payer can cancel eventually
-		if (entityPlayer.getUniqueID() != warmupPlayerId || !warmupSchematicName.equals(ItemCrystalToken.getSchematicName(itemStack))) {
+		if (entityPlayer.getUniqueID() != warmupPlayerId || !warmupSchematicName.equals(ItemShipToken.getSchematicName(itemStack))) {
 			warmupPlayerId = entityPlayer.getUniqueID();
 			warmupPlayer = SS_SEARCH_WARMUP_INTERVALS + 1;
-			warmupSchematicName = ItemCrystalToken.getSchematicName(itemStack);
+			warmupSchematicName = ItemShipToken.getSchematicName(itemStack);
 			Commons.addChatMessage(entityPlayer, "§6" + String.format("Token '%1$s' detected!", warmupSchematicName, SS_SEARCH_WARMUP_INTERVALS));
 		}
 		warmupPlayer--;
@@ -750,7 +750,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// try deploying
 		StringBuilder reason = new StringBuilder();
-		deployShip(ItemCrystalToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, true, reason);
+		deployShip(ItemShipToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, true, reason);
 		if (!isActive) {
 			// failed
 			Commons.addChatMessage(entityPlayer, "§c" + reason.toString());

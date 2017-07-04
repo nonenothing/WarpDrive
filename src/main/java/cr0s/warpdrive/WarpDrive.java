@@ -9,6 +9,7 @@ import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetGlass;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
@@ -17,6 +18,7 @@ import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
@@ -118,7 +120,7 @@ import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
 import cr0s.warpdrive.item.ItemAirCanisterFull;
 import cr0s.warpdrive.item.ItemComponent;
-import cr0s.warpdrive.item.ItemCrystalToken;
+import cr0s.warpdrive.item.ItemShipToken;
 import cr0s.warpdrive.item.ItemElectromagneticCell;
 import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
@@ -246,7 +248,7 @@ public class WarpDrive implements LoadingCallback {
 	
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
-	public static ItemCrystalToken itemCrystalToken;
+	public static ItemShipToken itemShipToken;
 	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningFork;
 	public static ItemTuningDriver itemTuningDriver;
@@ -627,8 +629,8 @@ public class WarpDrive implements LoadingCallback {
 		itemComponent = new ItemComponent();
 		GameRegistry.registerItem(itemComponent, "itemComponent");
 		
-		itemCrystalToken = new ItemCrystalToken();
-		GameRegistry.registerItem(itemCrystalToken, "itemCrystalToken");
+		itemShipToken = new ItemShipToken();
+		GameRegistry.registerItem(itemShipToken, "itemShipToken");
 		
 		itemWarpArmor = new ItemArmor[4];
 		for (int armorPart = 0; armorPart < 4; armorPart++) {
@@ -910,6 +912,9 @@ public class WarpDrive implements LoadingCallback {
 						break;
 					case "WarpDrive:itemTuningRod":
 						mapping.remap(itemTuningFork);
+						break;
+					case "WarpDrive:itemCrystalToken":
+						mapping.remap(itemShipToken);
 						break;
 				}
 				

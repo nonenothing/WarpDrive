@@ -118,14 +118,38 @@ item.warpdrive.upgrade.Range.name=Amélioration de portée
 item.warpdrive.upgrade.Energy.name=Amélioration d'énergie
 
 
-item.warpdrive.tool.crystalToken.name=Crystal jeton
-item.warpdrive.tool.crystalToken.tooltip=Vaisseau '%1$s' encapsulé dans un crystal\n§bEntre dans le champ rouge du constructeur§7 pour réclamer ton vaisseau
-item.warpdrive.tool.crystalToken0.name=Crystal jeton #0
-item.warpdrive.tool.crystalToken1.name=Crystal jeton #1
-item.warpdrive.tool.crystalToken2.name=Crystal jeton #2
-item.warpdrive.tool.crystalToken3.name=Crystal jeton #3
-item.warpdrive.tool.crystalToken4.name=Crystal jeton #4
-item.warpdrive.tool.crystalToken5.name=Crystal jeton #5
+item.warpdrive.tool.ship_token.name=Jeton de vaisseau
+item.warpdrive.tool.ship_token.tooltip=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ rouge du constructeur§7 pour réclamer ton vaisseau
+item.warpdrive.tool.ship_token0.name=Jeton de vaisseau #0
+item.warpdrive.tool.ship_token1.name=Jeton de vaisseau #1
+item.warpdrive.tool.ship_token2.name=Jeton de vaisseau #2
+item.warpdrive.tool.ship_token3.name=Jeton de vaisseau #3
+item.warpdrive.tool.ship_token4.name=Jeton de vaisseau #4
+item.warpdrive.tool.ship_token5.name=Jeton de vaisseau #5
+item.warpdrive.tool.ship_token10.name=Jeton de vaisseau #10
+item.warpdrive.tool.ship_token11.name=Jeton de vaisseau #11
+item.warpdrive.tool.ship_token12.name=Jeton de vaisseau #12
+item.warpdrive.tool.ship_token13.name=Jeton de vaisseau #13
+item.warpdrive.tool.ship_token14.name=Jeton de vaisseau #14
+item.warpdrive.tool.ship_token15.name=Jeton de vaisseau #15
+item.warpdrive.tool.ship_token20.name=Jeton de vaisseau #20
+item.warpdrive.tool.ship_token21.name=Jeton de vaisseau #21
+item.warpdrive.tool.ship_token22.name=Jeton de vaisseau #22
+item.warpdrive.tool.ship_token23.name=Jeton de vaisseau #23
+item.warpdrive.tool.ship_token24.name=Jeton de vaisseau #24
+item.warpdrive.tool.ship_token25.name=Jeton de vaisseau #25
+item.warpdrive.tool.ship_token30.name=Jeton de vaisseau #30
+item.warpdrive.tool.ship_token31.name=Jeton de vaisseau #31
+item.warpdrive.tool.ship_token32.name=Jeton de vaisseau #32
+item.warpdrive.tool.ship_token33.name=Jeton de vaisseau #33
+item.warpdrive.tool.ship_token34.name=Jeton de vaisseau #34
+item.warpdrive.tool.ship_token35.name=Jeton de vaisseau #35
+item.warpdrive.tool.ship_token40.name=Jeton de vaisseau #40
+item.warpdrive.tool.ship_token41.name=Jeton de vaisseau #41
+item.warpdrive.tool.ship_token42.name=Jeton de vaisseau #42
+item.warpdrive.tool.ship_token43.name=Jeton de vaisseau #43
+item.warpdrive.tool.ship_token44.name=Jeton de vaisseau #44
+item.warpdrive.tool.ship_token45.name=Jeton de vaisseau #45
 
 
 item.warpdrive.tool.tuning_driver.video_channel.name=Ajusteur de canal vidéo
