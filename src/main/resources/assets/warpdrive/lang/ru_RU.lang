@@ -40,7 +40,6 @@ item.warpdrive.crafting.CoilCrystal.name=Coil Crystal
 item.warpdrive.crafting.ElectromagneticProjector.name=Electromagnetic Projector
 item.warpdrive.crafting.Superconductor.name=Superconductor
 
-item.warpdrive.armor.AirCanisterFull.name=Баллон с воздухом
 item.warpdrive.armor.helmet.name=Космический шлем
 item.warpdrive.armor.chestplate.name=Warp Chestplate
 item.warpdrive.armor.leggings.name=Warp Leggings
@@ -49,6 +48,11 @@ item.warpdrive.armor.boots.name=Warp Boots
 item.warpdrive.atomic.electromagnetic_cell.name=Electromagnetic cell
 item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Use a particle collider to fill me!
 item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Contains %1$s Å³ of %2$s
+
+item.warpdrive.breathing.air_tank0.name=Баллон с воздухом
+item.warpdrive.breathing.air_tank1.name=Basic Air Tank
+item.warpdrive.breathing.air_tank2.name=Advanced Air Tank
+item.warpdrive.breathing.air_tank3.name=Superior Air Tank
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=Фокусировщик лазера реактора IC2
 

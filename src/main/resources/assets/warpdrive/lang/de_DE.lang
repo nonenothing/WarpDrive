@@ -40,7 +40,6 @@ item.warpdrive.crafting.CoilCrystal.name=Spulenkristall
 item.warpdrive.crafting.ElectromagneticProjector.name=Elektromagnetischer Projektor
 item.warpdrive.crafting.Superconductor.name=Supraleiter
 
-item.warpdrive.armor.AirCanisterFull.name=Luftkanister
 item.warpdrive.armor.helmet.name=Warp Helm
 item.warpdrive.armor.chestplate.name=Warp Brustpanzer
 item.warpdrive.armor.leggings.name=Warp Beinschutz
@@ -49,6 +48,11 @@ item.warpdrive.armor.boots.name=Warp Stiefel
 item.warpdrive.atomic.electromagnetic_cell.name=Elektromagnetische Zelle
 item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Nutze einen Teilchenbeschleuniger, um mich zu füllen!
 item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Enthält %1$s Å³ %2$s
+
+item.warpdrive.breathing.air_tank0.name=Luftkanister
+item.warpdrive.breathing.air_tank1.name=Basic Air Tank !!!
+item.warpdrive.breathing.air_tank2.name=Advanced Air Tank !!!
+item.warpdrive.breathing.air_tank3.name=Superior Air Tank !!!
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 Reaktor-Laser-Fokus
 

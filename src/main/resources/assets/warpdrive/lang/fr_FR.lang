@@ -40,7 +40,6 @@ item.warpdrive.crafting.CoilCrystal.name=Cristal bobiné
 item.warpdrive.crafting.ElectromagneticProjector.name=Projecteur électromagnétique
 item.warpdrive.crafting.Superconductor.name=Superconducteur
 
-item.warpdrive.armor.AirCanisterFull.name=Cartouche d'air
 item.warpdrive.armor.helmet.name=Casque warp
 item.warpdrive.armor.chestplate.name=Plastron warp
 item.warpdrive.armor.leggings.name=Jambières warp
@@ -49,6 +48,11 @@ item.warpdrive.armor.boots.name=Bottes warp
 item.warpdrive.atomic.electromagnetic_cell.name=Cage électromagnétique
 item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Utilise un collisionneur de particules pour me remplir!
 item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Contient %1$s Å³ de %2$s
+
+item.warpdrive.breathing.air_tank0.name=Cartouche d'air
+item.warpdrive.breathing.air_tank1.name=Réservoir d'air élémentaire
+item.warpdrive.breathing.air_tank2.name=Réservoir d'air avancé
+item.warpdrive.breathing.air_tank3.name=Réservoir d'air supérieur
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=Focus laser pour réacteur IC2
 

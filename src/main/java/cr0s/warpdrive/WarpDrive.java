@@ -9,7 +9,6 @@ import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
-import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetGlass;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
@@ -18,7 +17,6 @@ import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
-import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
@@ -118,7 +116,7 @@ import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
-import cr0s.warpdrive.item.ItemAirCanisterFull;
+import cr0s.warpdrive.item.ItemAirTank;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemShipToken;
 import cr0s.warpdrive.item.ItemElectromagneticCell;
@@ -258,7 +256,7 @@ public class WarpDrive implements LoadingCallback {
 	
 	public static final ArmorMaterial armorMaterial = EnumHelper.addArmorMaterial("WARP", 18, new int[] { 2, 6, 5, 2 }, 9);
 	public static ItemArmor[] itemWarpArmor;
-	public static ItemAirCanisterFull itemAirCanisterFull;
+	public static ItemAirTank[] itemAirTanks;
 	
 	public static DamageAsphyxia damageAsphyxia;
 	public static DamageCold damageCold;
@@ -638,8 +636,11 @@ public class WarpDrive implements LoadingCallback {
 			GameRegistry.registerItem(itemWarpArmor[armorPart], "itemWarpArmor_" + ItemWarpArmor.suffixes[armorPart]);
 		}
 		
-		itemAirCanisterFull = new ItemAirCanisterFull();
-		GameRegistry.registerItem(itemAirCanisterFull, "itemAirCanisterFull");
+		itemAirTanks = new ItemAirTank[4];
+		for (int index = 0; index < 4; index++) {
+			itemAirTanks[index] = new ItemAirTank((byte) index);
+			GameRegistry.registerItem(itemAirTanks[index], "itemAirTank" + index);
+		}
 		
 		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
 			itemUpgrade = new ItemUpgrade();
@@ -697,6 +698,8 @@ public class WarpDrive implements LoadingCallback {
 				}
 			}
 		}
+		
+		// Recipes.patchOredictionary();
 	}
 	
 	@EventHandler
@@ -751,13 +754,13 @@ public class WarpDrive implements LoadingCallback {
 	
 	@EventHandler
 	public void onFMLServerStarting(FMLServerStartingEvent event) {
-		event.registerServerCommand(new CommandGenerate());
-		event.registerServerCommand(new CommandSpace());
-		event.registerServerCommand(new CommandInvisible());
-		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandDebug());
 		event.registerServerCommand(new CommandEntity());
+		event.registerServerCommand(new CommandGenerate());
+		event.registerServerCommand(new CommandInvisible());
+		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandReload());
+		event.registerServerCommand(new CommandSpace());
 	}
 	
 	public Ticket registerChunkLoadTileEntity(TileEntityAbstractChunkLoading tileEntity) {
@@ -814,7 +817,9 @@ public class WarpDrive implements LoadingCallback {
 						mapping.remap(Item.getItemFromBlock(blockAir));
 						break;
 					case "WarpDrive:airCanisterFull":
-						mapping.remap(itemAirCanisterFull);
+					case "WarpDrive:itemAirCanisterFull":
+					case "WarpDrive:itemAirTank":
+						mapping.remap(itemAirTanks[0]);
 						break;
 					case "WarpDrive:airgenBlock":
 						mapping.remap(Item.getItemFromBlock(blockAirGenerator));
