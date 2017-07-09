@@ -460,7 +460,7 @@ public class Dictionary {
 		WarpDrive.logger.info("Active items dictionary:");
 		WarpDrive.logger.info("- " + ITEMS_FLYINSPACE.size() + " allowing fly in space: " + getHashMessage(ITEMS_FLYINSPACE));
 		WarpDrive.logger.info("- " + ITEMS_NOFALLDAMAGE.size() + " absorbing fall damages: " + getHashMessage(ITEMS_NOFALLDAMAGE));
-		WarpDrive.logger.info("- " + ITEMS_BREATHING_HELMET.size() + " allowing breathing compressed air: " + getHashMessage(ITEMS_BREATHING_HELMET));
+		WarpDrive.logger.info("- " + ITEMS_BREATHING_HELMET.size() + " allowing breathing air: " + getHashMessage(ITEMS_BREATHING_HELMET));
 	}
 	
 	private static void adjustHardnessAndResistance() {

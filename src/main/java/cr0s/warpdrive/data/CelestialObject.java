@@ -571,11 +571,18 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	
 	@Override
 	public String toString() {
-		return String.format("CelestialObject %s:%s [Dimension %d @ %d %d Border(%d %d) Parent(%d @ %d %d) isProvidedByWarpDrive %s gravity %.3f isBreathable %s]",
-				group, name, dimensionId, dimensionCenterX, dimensionCenterZ,
-				borderRadiusX, borderRadiusZ,
-				parentDimensionId, parentCenterX, parentCenterZ,
-				isProvidedByWarpDrive, gravity, isBreathable);
+		if (isVirtual) {
+			return String.format("CelestialObject %s:%s [-Virtual- Border(%d %d) Parent(%d @ %d %d)]",
+			                     group, name,
+			                     borderRadiusX, borderRadiusZ,
+			                     parentDimensionId, parentCenterX, parentCenterZ);
+		} else {
+			return String.format("CelestialObject %s:%s [Dimension %d @ %d %d Border(%d %d) Parent(%d @ %d %d) isProvidedByWarpDrive %s gravity %.3f isBreathable %s]",
+			                     group, name, dimensionId, dimensionCenterX, dimensionCenterZ,
+			                     borderRadiusX, borderRadiusZ,
+			                     parentDimensionId, parentCenterX, parentCenterZ,
+			                     isProvidedByWarpDrive, gravity, isBreathable);
+		}
 	}
 	
 	
