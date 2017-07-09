@@ -166,6 +166,9 @@ public class StarMapRegistry {
 	
 	public static int getSpaceDimensionId(final World world, final int x, final int z) {
 		CelestialObject celestialObject = getCelestialObject(world, x, z);
+		if (celestialObject == null) {
+			return world.provider.dimensionId;
+		}
 		// already in space?
 		if (celestialObject.isSpace()) {
 			return celestialObject.dimensionId;
@@ -184,6 +187,9 @@ public class StarMapRegistry {
 	
 	public static int getHyperspaceDimensionId(final World world, final int x, final int z) {
 		CelestialObject celestialObject = getCelestialObject(world, x, z);
+		if (celestialObject == null) {
+			return world.provider.dimensionId;
+		}
 		// already in hyperspace?
 		if (celestialObject.isHyperspace()) {
 			return celestialObject.dimensionId;
