@@ -88,6 +88,7 @@ import cr0s.warpdrive.block.weapon.BlockWeaponController;
 import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.block.weapon.TileEntityWeaponController;
 import cr0s.warpdrive.command.CommandDebug;
+import cr0s.warpdrive.command.CommandDump;
 import cr0s.warpdrive.command.CommandEntity;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandInvisible;
@@ -755,6 +756,7 @@ public class WarpDrive implements LoadingCallback {
 	@EventHandler
 	public void onFMLServerStarting(FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandDebug());
+		event.registerServerCommand(new CommandDump());
 		event.registerServerCommand(new CommandEntity());
 		event.registerServerCommand(new CommandGenerate());
 		event.registerServerCommand(new CommandInvisible());
