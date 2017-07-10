@@ -26,6 +26,7 @@ import cr0s.warpdrive.compat.CompatRedstonePaste;
 import cr0s.warpdrive.compat.CompatSGCraft;
 import cr0s.warpdrive.compat.CompatStargateTech2;
 import cr0s.warpdrive.compat.CompatTConstruct;
+import cr0s.warpdrive.compat.CompatTechguns;
 import cr0s.warpdrive.compat.CompatThaumcraft;
 import cr0s.warpdrive.compat.CompatThermalDynamics;
 import cr0s.warpdrive.compat.CompatThermalExpansion;
@@ -965,6 +966,10 @@ public class WarpDriveConfig {
 		boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
 		if (isTConstructLoaded) {
 			CompatTConstruct.register();
+		}
+		boolean isTechgunsLoaded = Loader.isModLoaded("Techguns");
+		if (isTechgunsLoaded) {
+			CompatTechguns.register();
 		}
 		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
