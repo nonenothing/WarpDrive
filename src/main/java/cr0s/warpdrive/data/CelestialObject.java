@@ -41,6 +41,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	public String parentGroup;
 	public String parentName;
 	public int parentDimensionId;
+	public boolean isParentResolved;
 	public int parentCenterX, parentCenterZ;
 	
 	public int borderRadiusX, borderRadiusZ;
@@ -72,6 +73,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	                       final int parBorderRadiusX, final int parBorderRadiusZ,
 	                       final int parParentDimensionId, final int parParentCenterX, final int parParentCenterZ) {
 		isVirtual = false;
+		isParentResolved = false;
 		dimensionId = parDimensionId;
 		dimensionCenterX = parDimensionCenterX;
 		dimensionCenterZ = parDimensionCenterZ;
@@ -319,6 +321,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 				parentDimensionId = celestialObjectParent.dimensionId;
 			}
 		}
+		isParentResolved = true;
 	}
 	
 	public void lateUpdate() {
@@ -456,6 +459,8 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	}
 	
 	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+		isParentResolved = false;
+		
 		group = nbtTagCompound.getString("group");
 		name = nbtTagCompound.getString("name");
 		
@@ -475,6 +480,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			gravity = GRAVITY_NORMAL;
 			isBreathable = true;
 			isProvidedByWarpDrive = false;
+			isProvidedByWarpDrive_defined = false;
 		} else {
 			dimensionId = nbtTagCompound.getInteger("dimensionId");
 			dimensionCenterX = nbtTagCompound.getInteger("dimensionCenterX");
@@ -482,6 +488,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			gravity = nbtTagCompound.getDouble("gravity");
 			isBreathable = nbtTagCompound.getBoolean("isBreathable");
 			isProvidedByWarpDrive = nbtTagCompound.getBoolean("isProvidedByWarpDrive");
+			isProvidedByWarpDrive_defined = true;
 		}
 		
 		// randomStructures are server side only
@@ -571,16 +578,24 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	
 	@Override
 	public String toString() {
-		if (isVirtual) {
-			return String.format("CelestialObject %s:%s [-Virtual- Border(%d %d) Parent(%d @ %d %d)]",
-			                     group, name,
-			                     borderRadiusX, borderRadiusZ,
-			                     parentDimensionId, parentCenterX, parentCenterZ);
+		final String stringParent;
+		if (isParentResolved) {
+			stringParent = String.format("Parent(%d @ %d %d)",
+			                             parentDimensionId, parentCenterX, parentCenterZ);
 		} else {
-			return String.format("CelestialObject %s:%s [Dimension %d @ %d %d Border(%d %d) Parent(%d @ %d %d) isProvidedByWarpDrive %s gravity %.3f isBreathable %s]",
+			stringParent = String.format("Parent(%s:%s @ %d %d)",
+			                             parentGroup, parentName, parentCenterX, parentCenterZ);
+		}
+		if (isVirtual) {
+			return String.format("CelestialObject %s:%s [-Virtual- Border(%d %d) %s]",
+			                     group, name,
+			                     2 * borderRadiusX, 2 * borderRadiusZ,
+			                     stringParent);
+		} else {
+			return String.format("CelestialObject %s:%s [Dimension %d @ %d %d Border(%d %d) %s isProvidedByWarpDrive %s gravity %.3f isBreathable %s]",
 			                     group, name, dimensionId, dimensionCenterX, dimensionCenterZ,
-			                     borderRadiusX, borderRadiusZ,
-			                     parentDimensionId, parentCenterX, parentCenterZ,
+			                     2 * borderRadiusX, 2 * borderRadiusZ,
+			                     stringParent,
 			                     isProvidedByWarpDrive, gravity, isBreathable);
 		}
 	}
