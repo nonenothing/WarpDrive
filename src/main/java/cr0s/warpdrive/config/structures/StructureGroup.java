@@ -4,11 +4,8 @@ import cr0s.warpdrive.api.IStringSerializable;
 
 import java.util.Random;
 
-/**
- * @author Francesco, LemADEC
- *
- */
 public class StructureGroup implements IStringSerializable {
+	
 	protected String group;
 	protected String name;
 	
@@ -19,11 +16,7 @@ public class StructureGroup implements IStringSerializable {
 	
 	@Override
 	public String getName() {
-		return name;
-	}
-	
-	public String getFullName() {
-		return group + ":" + name;
+		return group + ":" + (name.isEmpty() || name.isEmpty() ? "*" : name);
 	}
 	
 	public AbstractStructureInstance instantiate(Random random) {
@@ -35,5 +28,10 @@ public class StructureGroup implements IStringSerializable {
 	
 	public String getGroup() {
 		return group;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("StructureGroup %s", getName());
 	}
 }

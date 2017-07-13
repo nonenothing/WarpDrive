@@ -15,12 +15,12 @@ import net.minecraft.util.AxisAlignedBB;
 public class CelestialObjectManager extends XmlFileManager {
 	
 	private static final CelestialObjectManager INSTANCE = new CelestialObjectManager();
-	private static HashMap<String, HashMap<String, CelestialObject>> celestialObjectsByGroup = new HashMap<>();
+	private static HashMap<String, CelestialObject> celestialObjectsById = new HashMap<>();
 	public static CelestialObject[] celestialObjects = null;
 	
 	public static void clearForReload() {
 		// create a new object instead of clearing, in case another thread is iterating through it
-		celestialObjectsByGroup = new HashMap<>();
+		celestialObjectsById = new HashMap<>();
 	}
 	
 	public static void load(final File dir) {
@@ -35,59 +35,53 @@ public class CelestialObjectManager extends XmlFileManager {
 	}
 	
 	private void addOrUpdateInRegistry(final CelestialObject celestialObject, final boolean isUpdating) {
-		final HashMap<String, CelestialObject> celestialObjectByName = celestialObjectsByGroup.computeIfAbsent(celestialObject.group, k -> new HashMap<>());
-		
-		final CelestialObject celestialObjectExisting = celestialObjectByName.get(celestialObject.name);
+		final CelestialObject celestialObjectExisting = celestialObjectsById.get(celestialObject.id);
 		if (celestialObjectExisting == null || isUpdating) {
-			celestialObjectByName.put(celestialObject.name, celestialObject);
+			celestialObjectsById.put(celestialObject.id, celestialObject);
 		} else {
-			WarpDrive.logger.warn(String.format("Celestial object %s is already defined, keeping original definition", celestialObject.getFullName()));
+			WarpDrive.logger.warn(String.format("Celestial object %s is already defined, keeping original definition", celestialObject.id));
 		}
 	}
 	
 	private void rebuildAndValidate() {
 		// optimize execution speed by flattening the data structure
-		int count = 0;
-		for(HashMap<String, CelestialObject> mapCelestialObjectByName : celestialObjectsByGroup.values()) {
-			count += mapCelestialObjectByName.size();
-		}
+		final int count = celestialObjectsById.size();
 		celestialObjects = new CelestialObject[count];
 		int index = 0;
-		for(HashMap<String, CelestialObject> mapCelestialObjectByName : celestialObjectsByGroup.values()) {
-			for (CelestialObject celestialObject : mapCelestialObjectByName.values()) {
-				celestialObjects[index++] = celestialObject;
-				celestialObject.resolveParent();
-			}
+		for (CelestialObject celestialObject : celestialObjectsById.values()) {
+			celestialObjects[index++] = celestialObject;
+			celestialObject.resolveParent();
 		}
 		
 		// check overlapping regions
 		int countErrors = 0;
-		for (CelestialObject celestialObject1 : celestialObjects) {
+		for (int indexCelestialObject1 = 0; indexCelestialObject1 < count; indexCelestialObject1++) {
+			final CelestialObject celestialObject1 = celestialObjects[indexCelestialObject1];
 			celestialObject1.lateUpdate();
 			
 			// validate coordinates
 			if (!celestialObject1.isVirtual) {
 				if (celestialObject1.parentDimensionId != celestialObject1.dimensionId) {// not hyperspace
-					final CelestialObject celestialObjectParent = get(celestialObject1.parentGroup, celestialObject1.parentName);
+					final CelestialObject celestialObjectParent = get(celestialObject1.parentId);
 					if (celestialObjectParent == null) {
 						countErrors++;
-						WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s refers to unknown parent %s:%s",
+						WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s refers to unknown parent %s",
 						                                     countErrors,
-						                                     celestialObject1.getFullName(),
-						                                     celestialObject1.parentGroup, celestialObject1.parentName ));
+						                                     celestialObject1.id,
+						                                     celestialObject1.parentId ));
 					} else if ( celestialObject1.parentCenterX - celestialObject1.borderRadiusX < celestialObjectParent.dimensionCenterX - celestialObjectParent.borderRadiusX 
 					         || celestialObject1.parentCenterZ - celestialObject1.borderRadiusZ < celestialObjectParent.dimensionCenterZ - celestialObjectParent.borderRadiusZ
 					         || celestialObject1.parentCenterX + celestialObject1.borderRadiusX > celestialObjectParent.dimensionCenterX + celestialObjectParent.borderRadiusX
-					         || celestialObject1.parentCenterZ + celestialObject1.borderRadiusZ > celestialObjectParent.dimensionCenterZ + celestialObjectParent.borderRadiusZ) {
+					         || celestialObject1.parentCenterZ + celestialObject1.borderRadiusZ > celestialObjectParent.dimensionCenterZ + celestialObjectParent.borderRadiusZ ) {
 						countErrors++;
 						WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s is outside its parent border.\n%s\n%s\n%s's area in parent %s is outside %s's border %s",
 						                                     countErrors,
-						                                     celestialObject1.getFullName(),
+						                                     celestialObject1.id,
 						                                     celestialObject1,
 						                                     celestialObjectParent,
-						                                     celestialObject1.getFullName(),
+						                                     celestialObject1.id,
 						                                     celestialObject1.getAreaInParent(),
-						                                     celestialObjectParent.getFullName(),
+						                                     celestialObjectParent.id,
 						                                     celestialObjectParent.getWorldBorderArea() ));
 					}
 				}
@@ -98,20 +92,20 @@ public class CelestialObjectManager extends XmlFileManager {
 					countErrors++;
 					WarpDrive.logger.error(String.format("Validation error #%d\nCelestial object %s is outside the game border +/-30000000.\n%s\n%s border is %s",
 					                                     countErrors,
-					                                     celestialObject1.getFullName(),
+					                                     celestialObject1.id,
 					                                     celestialObject1,
-					                                     celestialObject1.getFullName(),
+					                                     celestialObject1.id,
 					                                     celestialObject1.getWorldBorderArea() ));
 				}
 			}
 			
 			// validate against other celestial objects
-			for (CelestialObject celestialObject2 : celestialObjects) {
-				if (celestialObject1 == celestialObject2) {
-					continue;
-				}
+			for (int indexCelestialObject2 = indexCelestialObject1 + 1; indexCelestialObject2 < count; indexCelestialObject2++) {
+				final CelestialObject celestialObject2 = celestialObjects[indexCelestialObject2];
 				// are they overlapping in a common parent dimension?
-				if (!celestialObject1.isHyperspace() && !celestialObject2.isHyperspace() && celestialObject1.parentDimensionId == celestialObject2.parentDimensionId) {
+				if ( !celestialObject1.isHyperspace()
+				  && !celestialObject2.isHyperspace()
+				  && celestialObject1.parentDimensionId == celestialObject2.parentDimensionId ) {
 					final AxisAlignedBB areaInParent1 = celestialObject1.getAreaInParent();
 					final AxisAlignedBB areaInParent2 = celestialObject2.getAreaInParent();
 					if (areaInParent1.intersectsWith(areaInParent2)) {
@@ -119,8 +113,8 @@ public class CelestialObjectManager extends XmlFileManager {
 						WarpDrive.logger.error(String.format("Validation error #%d\nOverlapping parent areas detected in dimension %d between %s and %s\nArea1 %s from %s\nArea2 %s from %s", 
 						                                     countErrors, 
 						                                     celestialObject1.parentDimensionId, 
-						                                     celestialObject1.getFullName(), 
-						                                     celestialObject2.getFullName(),
+						                                     celestialObject1.id, 
+						                                     celestialObject2.id,
 						                                     areaInParent1,
 						                                     celestialObject1,
 						                                     areaInParent2,
@@ -128,7 +122,9 @@ public class CelestialObjectManager extends XmlFileManager {
 					}
 				}
 				// are they in the same dimension?
-				if (!celestialObject1.isVirtual && !celestialObject2.isVirtual && celestialObject1.dimensionId == celestialObject2.dimensionId) {
+				if ( !celestialObject1.isVirtual
+				  && !celestialObject2.isVirtual
+				  && celestialObject1.dimensionId == celestialObject2.dimensionId ) {
 					final AxisAlignedBB worldBorderArea1 = celestialObject1.getWorldBorderArea();
 					final AxisAlignedBB worldBorderArea2 = celestialObject2.getWorldBorderArea();
 					if (worldBorderArea1.intersectsWith(worldBorderArea2)) {
@@ -136,8 +132,8 @@ public class CelestialObjectManager extends XmlFileManager {
 						WarpDrive.logger.error(String.format("Validation error #%d\nOverlapping areas detected in dimension %d between %s and %s\nArea1 %s from %s\nArea2 %s from %s",
 						                                     countErrors,
 						                                     celestialObject1.dimensionId,
-						                                     celestialObject1.getFullName(),
-						                                     celestialObject2.getFullName(),
+						                                     celestialObject1.id,
+						                                     celestialObject2.id,
 						                                     worldBorderArea1,
 						                                     celestialObject1,
 						                                     worldBorderArea2,
@@ -160,11 +156,11 @@ public class CelestialObjectManager extends XmlFileManager {
 	
 	@Override
 	protected void parseRootElement(final String location, final Element elementCelestialObject) throws InvalidXmlException, SAXException, IOException {
-		parseCelestiaObjectElement(location, elementCelestialObject, "", "");
+		parseCelestiaObjectElement(location, elementCelestialObject, "");
 	}
 	
-	private void parseCelestiaObjectElement(final String location, final Element elementCelestialObject, final String groupParent, final String nameParent) throws InvalidXmlException, SAXException, IOException {
-		final CelestialObject celestialObjectRead = new CelestialObject(location, groupParent, nameParent, elementCelestialObject);
+	private void parseCelestiaObjectElement(final String location, final Element elementCelestialObject, final String parentId) throws InvalidXmlException, SAXException, IOException {
+		final CelestialObject celestialObjectRead = new CelestialObject(location, parentId, elementCelestialObject);
 		
 		addOrUpdateInRegistry(celestialObjectRead, false);
 		
@@ -173,17 +169,14 @@ public class CelestialObjectManager extends XmlFileManager {
 		if (!listChildren.isEmpty()) {
 			for (int indexElement = 0; indexElement < listChildren.size(); indexElement++) {
 				final Element elementChild = listChildren.get(indexElement);
-				final String locationChild = String.format("%s Celestial object %s > child %d/%d", location, celestialObjectRead.getFullName(), indexElement + 1, listChildren.size());
-				parseCelestiaObjectElement(locationChild, elementChild, celestialObjectRead.group, celestialObjectRead.name);
+				final String locationChild = String.format("%s Celestial object %s > child %d/%d",
+				                                           location, celestialObjectRead.id, indexElement + 1, listChildren.size());
+				parseCelestiaObjectElement(locationChild, elementChild, celestialObjectRead.id);
 			}
 		}
 	}
 	
-	public static CelestialObject get(final String group, final String name) {
-		final HashMap<String, CelestialObject> celestialObjectByName = celestialObjectsByGroup.get(group);
-		if (celestialObjectByName == null) {
-			return null;
-		}
-		return celestialObjectByName.get(name);
+	public static CelestialObject get(final String id) {
+		return celestialObjectsById.get(id);
 	}	
 }

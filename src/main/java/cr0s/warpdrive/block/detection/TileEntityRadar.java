@@ -106,7 +106,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(worldObj.provider.dimensionId, xCoord, zCoord);
 		if (celestialObject != null) {
 			Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, xCoord, yCoord, zCoord);
-			return new Object[] { xCoord, yCoord, zCoord, celestialObject.getFullName(), vec3Position.x, vec3Position.y, vec3Position.z };
+			return new Object[] { xCoord, yCoord, zCoord, celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
 		} else {
 			String name = worldObj.getWorldInfo().getWorldName();
 			if (name == null || name.isEmpty()) {

@@ -180,10 +180,13 @@ public class RenderSpaceSky extends IRenderHandler {
 		/**/
 		
 		// Planets
-		if (celestialObject != null) {
+		if (celestialObject != null && celestialObject.opacityCelestialObjects > 0.0F) {
 			final Vector3 vectorPlayer = StarMapRegistry.getUniversalCoordinates(celestialObject, vec3Player.xCoord, vec3Player.yCoord, vec3Player.zCoord);
 			for (CelestialObject celestialObjectChild : CelestialObjectManager.celestialObjects) {
 				if (celestialObject == celestialObjectChild) {
+					continue;
+				}
+				if (!celestialObject.id.equals(celestialObjectChild.parentId)) {
 					continue;
 				}
 				renderCelestialObject(tessellator,
@@ -260,9 +263,6 @@ public class RenderSpaceSky extends IRenderHandler {
 	private static void renderCelestialObject(final Tessellator tessellator, final CelestialObject celestialObject,
 	                                          final float alphaSky, final Vector3 vectorPlayer) {
 		// @TODO compute relative coordinates for rendering on celestialObject
-		if (celestialObject.isHyperspace() || celestialObject.isSpace()) {
-			return;
-		}
 		
 		// get universal coordinates
 		final Vector3 vectorCenter = StarMapRegistry.getUniversalCoordinates(celestialObject,
@@ -273,6 +273,9 @@ public class RenderSpaceSky extends IRenderHandler {
 				celestialObject.dimensionCenterX + celestialObject.borderRadiusX,
 				64,
 				celestialObject.dimensionCenterZ + celestialObject.borderRadiusZ);
+		if (vectorCenter == null || vectorBorderPos == null) {// probably an invalid celestial object tree
+			return;
+		}
 		final double borderRadiusX = vectorBorderPos.x - vectorCenter.x;
 		final double borderRadiusZ = vectorBorderPos.z - vectorCenter.z;
 		
@@ -312,7 +315,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double offsetZ = (1.0 - transitionOrbit) * (distanceToCenterZ / borderRadiusZ);
 		
 		// simulating a non-planar universe...
-		final double planetY_far = (celestialObject.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 4.0D;
+		final double planetY_far = (celestialObject.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 1.0D;
 		final double planetY = planetY_far * transitionApproaching;
 		
 		// render range is only used for Z-ordering

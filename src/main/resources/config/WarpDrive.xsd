@@ -148,7 +148,7 @@
 					<xs:sequence>
 						<xs:element name="center" type="wd:elementPosition" minOccurs="1" maxOccurs="1" />
 					</xs:sequence>
-					<xs:attribute name="name" type="xs:string" use="optional" />
+					<xs:attribute name="id" type="xs:string" use="optional" />
 				</xs:complexType>
 			</xs:element>
 			
@@ -158,6 +158,11 @@
 					<xs:attribute name="z" type="wd:typeWorldSize" use="required" />
 				</xs:complexType>
 			</xs:element>
+			
+			<xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1" />
+			<xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1" />
+			
+			<xs:element name="nbt" type="xs:string" minOccurs="0" maxOccurs="1" />
 			
 			<xs:element name="dimension" type="wd:elementDimension" minOccurs="0" maxOccurs="1" />
 			
@@ -187,8 +192,7 @@
 			</xs:choice>
 		</xs:sequence>
 		
-		<xs:attribute name="group" type="xs:string" use="required" />
-		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="id" type="xs:string" use="required" />
 		<xs:attribute name="mods" type="xs:string" use="optional" />
 	</xs:complexType>
 	
@@ -200,12 +204,29 @@
 		</xs:annotation>
 		<xs:sequence minOccurs="1" maxOccurs="1">
 			<xs:element name="center" type="wd:elementPosition" minOccurs="1" maxOccurs="1" />
+			<xs:element name="provider" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="type" use="required">
+						<xs:simpleType>
+							<xs:union memberTypes="xs:double">
+								<xs:simpleType>
+									<xs:restriction base="xs:NMTOKEN">
+										<xs:enumeration value="auto" />
+										<xs:enumeration value="WarpDriveSpace" />
+										<xs:enumeration value="WarpDriveHyperspace" />
+										<xs:enumeration value="other" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:union>
+						</xs:simpleType>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
 			<xs:element name="generate" type="wd:elementGenerate" minOccurs="0" maxOccurs="unbounded" />
 			<!-- <xs:element name="effects" type="wd:effectElement" minOccurs="0" maxOccurs="unbounded" /> @TODO Not implemented -->
 		</xs:sequence>
 		
 		<xs:attribute name="id" type="xs:int" use="required" />		
-		<xs:attribute name="isProvidedByWarpDrive" type="xs:boolean" use="optional" default="false" />
 		<xs:attribute name="isBreathable" type="xs:boolean" use="required" />
 		<xs:attribute name="gravity" use="required">
 			<xs:simpleType>

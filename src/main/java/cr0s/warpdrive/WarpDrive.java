@@ -688,11 +688,16 @@ public class WarpDrive implements LoadingCallback {
 		
 		// only create dimensions if we own them
 		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
-			if (!celestialObject.isVirtual && celestialObject.isProvidedByWarpDrive) {
-				if (celestialObject.isSpace()) {
+			if ( !celestialObject.isVirtual
+			  && !celestialObject.provider.equals(CelestialObject.PROVIDER_OTHER)) {
+				if ( celestialObject.isSpace()
+				  && celestialObject.provider.equals(CelestialObject.PROVIDER_SPACE) ) {
 					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_SPACE_PROVIDER_ID);
-				} else if (celestialObject.isHyperspace()) {
+					
+				} else if ( celestialObject.isHyperspace()
+				         && celestialObject.provider.equals(CelestialObject.PROVIDER_HYPERSPACE) ) {
 					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID);
+					
 				} else {
 					WarpDrive.logger.error(String.format("Only space and hyperspace dimensions can be provided by WarpDrive. Dimension %d is not what of those.", 
 					                                     celestialObject.dimensionId));
@@ -705,12 +710,14 @@ public class WarpDrive implements LoadingCallback {
 	
 	@EventHandler
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
+		/* @TODO not sure why it would be needed, disabling for now
 		// load all owned dimensions at boot
 		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
-			if (celestialObject.isProvidedByWarpDrive) {
+			if (celestialObject.provider.equals(CelestialObject.PROVIDER_OTHER)) {
 				DimensionManager.getWorld(celestialObject.dimensionId);
 			}
 		}
+		/**/
 		
 		WarpDriveConfig.onFMLPostInitialization();
 		

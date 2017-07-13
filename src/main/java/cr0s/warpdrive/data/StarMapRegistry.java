@@ -112,8 +112,8 @@ public class StarMapRegistry {
 		}
 	}
 	
-	public static CelestialObject getCelestialObject(final String group, final String name) {
-		return CelestialObjectManager.get(group, name);
+	public static CelestialObject getCelestialObject(final String id) {
+		return CelestialObjectManager.get(id);
 	}
 	
 	public static CelestialObject getCelestialObject(final World world, final int x, final int z) {
@@ -124,7 +124,8 @@ public class StarMapRegistry {
 		double distanceClosest = Double.POSITIVE_INFINITY;
 		CelestialObject celestialObjectClosest = null;
 		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
-			if (dimensionId == celestialObject.dimensionId) {
+			if ( !celestialObject.isVirtual
+			  && dimensionId == celestialObject.dimensionId ) {
 				final double distanceSquared = celestialObject.getSquareDistanceOutsideBorder(x, z);
 				if (distanceSquared <= 0) {
 					return celestialObject;
@@ -143,7 +144,7 @@ public class StarMapRegistry {
 	}
 	
 	public static CelestialObject getParentCelestialObject(final CelestialObject celestialObject ) {
-		return getCelestialObject(celestialObject.parentGroup, celestialObject.parentName);
+		return getCelestialObject(celestialObject.parentId);
 	}
 	
 	public static CelestialObject getClosestChildCelestialObject(final int dimensionId, final int x, final int z) {
@@ -308,6 +309,9 @@ public class StarMapRegistry {
 			vec3Result.y -= 256.0D;
 			vec3Result.z -= vEntry.z;
 			celestialObjectNode = StarMapRegistry.getCelestialObject(celestialObjectNode.parentDimensionId, celestialObjectNode.parentCenterX, celestialObjectNode.parentCenterZ);
+			if (celestialObjectNode == null) {
+				return null;
+			}
 		}
 		return vec3Result;
 	}

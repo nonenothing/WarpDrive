@@ -9,17 +9,25 @@
 	  They can be a planet, a more abstract construct like solar system (space dimension) or the all mighty hyperspace.
 	  Hyperspace is a dimension which is its own parent. In other words, hyperspace.dimensionId = hyperspace.parentDimensionId.
 	  Space is a dimension with Hyperspace as its parent.
-	  In theory, multiple planets can exists in the same minecraft world.
+	  In theory, multiple planets can exists in the same minecraft world (for example: The Twilight Forest exist on multiple planets in different star systems).
 	  In theory, multiple hyperspaces can be defined.
+	  
+	  celestialObject.id should be unique for each Celestial object.
 	  -->
 	
 	
 	<!-- Top level is hyperspace, typically a galaxy. -->
-	<celestialObject group="milkyWay" name="hyperspace">
+	<celestialObject id="hyperspace">
 		<!--
 		  size defines the world border size, measured in blocks. This is also the size of the orbit area in space, so don't go too big.
+		  name defines an optional display name for the player HUD. It defaults to the celestialObject's id. 
+		  description defines an optional text displayed on the player HUD.
+		  name and description support colors with § or & as the escape code. '\n' is also supported.
+		  nbt defines a JSON string for custom tags. It's used by WarpDrive extensions.
 		  -->
 		<size x="400000" z="400000" />
+		<name>§lHyperspace</name>
+		<description>Your ship warp bubble is your\nonly protection.</description>
 		
 		<!--
 		  dimension defines an actual game world. If it's missing, that celestialObject remains visible but you can't "land" on it.  
@@ -27,11 +35,15 @@
 		  dimension.isBreathable: this is a boolean flag defining if ambient atmosphere is breathable.
 		  dimension.gravity: this is the gravity simulation type. Valid keywords are none (0.0), legacySpace, legacyHyperspace, normal (1.0).
 		  dimension.center.x, dimension.center.z: those are the center coordinate of that dimension world border, measured in blocks. For convenience, it's usually 0, 0.
-		  dimension.isProvidedByWarpDrive (optional): this is a boolean flag defining if WarpDrive provides this dimension or not.
-		  Currently only Space and Hyperspace can be provided: use other mods to generate planet world.
 		  -->
-		<dimension id="-3" isBreathable="false" gravity="legacyHyperspace" isProvidedByWarpDrive="true">
+		<dimension id="-3" isBreathable="false" gravity="legacyHyperspace">
 			<center x="0" z="0" />
+			<!--
+              provider defines how the world biomes are generated. If it's missing, the mod tries to self-assign space and hyperspace dimensions.
+              provider.type: this is the provider type. Valid keywords are "auto", "WarpDriveSpace", "WarpDriveHyperspace", "other".
+              Currently only Space and Hyperspace can be provided: use other mods to generate planet world.
+              -->
+			<provider type="WarpDriveHyperspace" />
 		</dimension>
 		
 		<!--
@@ -54,7 +66,7 @@
 		</skybox>
 		
 		<!-- Second level is space, typically a star system. -->
-		<celestialObject group="milkyWay" name="solarSystem">
+		<celestialObject id="solarSystem">
 			<!--
 			  parent defines the relation with a bigger enveloping celestial object.
 			  parent.group, parent.name (optional): when using multiple files, you can attach to a parent by its group and name.
@@ -64,8 +76,9 @@
 				<center x="50000" z="10000" />
 			</parent>
 			<size x="200000" z="200000" />
-			<dimension id="-2" isBreathable="false" gravity="legacySpace" isProvidedByWarpDrive="true">
+			<dimension id="-2" isBreathable="false" gravity="legacySpace">
 				<center x="0" z="0" />
+				<provider type="WarpDriveSpace" />
 				<!--
 					generate defines the chance of different structures to generate
 					generate.group, generate.name: identify the structure from the related XML files
@@ -86,7 +99,7 @@
 			</skybox>
 			
 			<!-- Sun is just displayed, there's no actual game dimension -->
-			<celestialObject group="solarSystem" name="sun">
+			<celestialObject id="sun">
 				<parent>
 					<!-- sun is at the center of the solarSystem -->
 					<center x="0" z="0" />
@@ -110,7 +123,7 @@
 			</celestialObject>
 			
 			<!-- Earth is the overworld (dimension.id is 0) -->
-			<celestialObject group="solarSystem" name="earth">
+			<celestialObject id="earth">
 				<parent>
 					<!-- coordinates in the solar system, measured in blocks -->
 					<center x="-40000" z="20000" />
@@ -128,7 +141,7 @@
 				<render red="0.50" green="0.50" blue="1.00" alpha="0.08" />
 				
 				<!-- Hell is the nether. It's located below earth. In other words, falling below bedrock will drop you to the nether... -->
-				<celestialObject group="solarSystem" name="hell">
+				<celestialObject id="hell">
 					<parent>
 						<center x="0" z="0" />
 					</parent>
@@ -140,7 +153,7 @@
 			</celestialObject>
 			
 			<!-- Pluto is The End. It's a far planet. --> 
-			<celestialObject group="solarSystem" name="pluto">
+			<celestialObject id="pluto">
 				<parent>
 					<center x="90000" z="70000" />
 				</parent>

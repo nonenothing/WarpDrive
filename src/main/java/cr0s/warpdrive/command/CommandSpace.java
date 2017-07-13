@@ -92,19 +92,20 @@ public class CommandSpace extends CommandBase {
 			if (dimensionIdTarget == Integer.MAX_VALUE) {
 				if (celestialObjectCurrent == null) {
 					Commons.addChatMessage(commandSender, 
-						String.format("§c/space: player %s is in unknown dimension %d.\n§cTry specifying an explicit target dimension instead.",
+						String.format("§c/space: player %s is in unknown dimension %d.\n§bTry specifying an explicit target dimension instead.",
 							    entityPlayerMP.getCommandSenderName(), entityPlayerMP.worldObj.provider.dimensionId));
 					continue;
 				}
-				if (celestialObjectCurrent.isSpace() || celestialObjectCurrent.isHyperspace()) {
+				if ( celestialObjectCurrent.isSpace()
+				  || celestialObjectCurrent.isHyperspace() ) {
 					// in space or hyperspace => move to closest child
 					final CelestialObject celestialObjectChild = StarMapRegistry.getClosestChildCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 					if (celestialObjectChild == null) {
 						dimensionIdTarget = 0;
 					} else if (celestialObjectChild.isVirtual) {
 						Commons.addChatMessage(commandSender,
-							String.format("§c/space: player %s can't go to %s.\n§cThis is a virtual celestial object. Try specifying an explicit target dimension instead.",
-								entityPlayerMP.getCommandSenderName(), celestialObjectChild.getFullName()));
+							String.format("§c/space: player %s can't go to %s.\n§cThis is a virtual celestial object.\n§bTry specifying an explicit target dimension instead.",
+								entityPlayerMP.getCommandSenderName(), celestialObjectChild.getDisplayName()));
 						continue;
 					} else {
 						dimensionIdTarget = celestialObjectChild.dimensionId;
@@ -116,7 +117,8 @@ public class CommandSpace extends CommandBase {
 				} else {
 					// on a planet => move to space
 					final CelestialObject celestialObjectParent = StarMapRegistry.getParentCelestialObject(celestialObjectCurrent);
-					if (celestialObjectParent == null) {
+					if ( celestialObjectParent == null
+					  || celestialObjectParent.isVirtual ) {
 						dimensionIdTarget = 0;
 						
 					} else {
@@ -138,7 +140,8 @@ public class CommandSpace extends CommandBase {
 					zTarget -= vEntry.z;
 				} else {
 					final CelestialObject celestialObjectChild = StarMapRegistry.getClosestChildCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
-					if (celestialObjectChild != null && celestialObjectChild.dimensionId == dimensionIdTarget) {// moving to child explicitly
+					if ( celestialObjectChild != null
+					  && celestialObjectChild.dimensionId == dimensionIdTarget ) {// moving to child explicitly
 						final VectorI vEntry = celestialObjectChild.getEntryOffset();
 						xTarget += vEntry.x;
 						yTarget += vEntry.y;
@@ -152,14 +155,14 @@ public class CommandSpace extends CommandBase {
 			
 			// force to center if we're outside the border
 			if ( celestialObjectTarget != null
-			  && celestialObjectTarget.isInsideBorder(xTarget, zTarget) ) {
+			  && !celestialObjectTarget.isInsideBorder(xTarget, zTarget) ) {
 				// outside 
 				xTarget = celestialObjectTarget.dimensionCenterX;
 				zTarget = celestialObjectTarget.dimensionCenterZ;
 			}
 			
 			// get target world
-			WorldServer worldTarget = server.worldServerForDimension(dimensionIdTarget);
+			final WorldServer worldTarget = server.worldServerForDimension(dimensionIdTarget);
 			if (worldTarget == null) {
 				Commons.addChatMessage(commandSender, "§c/space: undefined dimension '" + dimensionIdTarget + "'");
 				continue;
