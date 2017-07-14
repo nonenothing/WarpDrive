@@ -23,14 +23,22 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class SpaceWorldProvider extends WorldProvider {
 	
+	private CelestialObject celestialObjectDimension = null;
+	
 	public SpaceWorldProvider() {
 		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
 		hasNoSky = false;
 	}
 	
 	@Override
+	public void setDimension(final int dimensionId) {
+		super.setDimension(dimensionId);
+		celestialObjectDimension = StarMapRegistry.getCelestialObject(dimensionId, 0, 0);
+	}
+	
+	@Override
 	public String getDimensionName() {
-		return "Space";
+		return celestialObjectDimension == null ? "Space" : celestialObjectDimension.id;
 	}
 	
 	@Override
@@ -83,19 +91,16 @@ public class SpaceWorldProvider extends WorldProvider {
 		}
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
 	public String getSaveFolder() {
-		return (dimensionId == 0 ? null : "WarpDriveSpace" + dimensionId);
+		return dimensionId == 0 ? null : (celestialObjectDimension == null ? "WarpDriveSpace" + dimensionId : celestialObjectDimension.id);
 	}
 	
-	/*
 	@Override
-	public boolean canCoordinateBeSpawn(int par1, int par2) {
-		int var3 = worldObj.getTopSolidOrLiquidBlock(par1, par2);
-		return var3 != 0;
+	public boolean canCoordinateBeSpawn(int x, int z) {
+		int y = worldObj.getTopSolidOrLiquidBlock(x, z);
+		return y != 0;
 	}
-	/**/
 	
 	// shared for getFogColor(), getStarBrightness()
 	@SideOnly(Side.CLIENT)
