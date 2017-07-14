@@ -246,10 +246,10 @@ public class ChunkHandler {
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			if (world.provider.dimensionId == 0) {
-				delayLogging = (delayLogging + 1) % 600;
+				delayLogging = (delayLogging + 1) % 6000;
 			}
 			if (delayLogging == 1) {
-				WarpDrive.logger.info(String.format("Dimension %d as %d / %d chunks loaded",
+				WarpDrive.logger.info(String.format("Dimension %d has %d / %d chunks loaded",
 				                                    world.provider.dimensionId,
 				                                    countLoaded,
 				                                    mapRegistryItems.size()));
