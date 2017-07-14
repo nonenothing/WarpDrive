@@ -2,7 +2,6 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.Filler;
-import cr0s.warpdrive.config.structures.AbstractStructureInstance;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
@@ -23,7 +22,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 		try {
 			final int x = (chunkX * 16) + (5 - random.nextInt(10));
 			final int z = (chunkZ * 16) + (5 - random.nextInt(10));
-			CelestialObject celestialObject = StarMapRegistry.getCelestialObject(world, x, z);
+			final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(world, x, z);
 			if (celestialObject == null) {
 				// as observed on 1.7.10: during world transition, the generator from the previous world is still called
 				return;
@@ -33,15 +32,14 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 			    || Math.abs(z - celestialObject.dimensionCenterZ) > celestialObject.borderRadiusZ ) ) {
 				return;
 			}
-			int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER
-			      + random.nextInt(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_CENTER - WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER);
+			final int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER
+			            + random.nextInt(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_CENTER - WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER);
 			
-			StructureGroup structureGroup = celestialObject.getRandomStructure(random, x, z);
+			final StructureGroup structureGroup = celestialObject.getRandomStructure(random, x, z);
 			if (structureGroup == null) {
 				return;
 			}
-			AbstractStructureInstance abstractStructureInstance = structureGroup.instantiate(random);
-			abstractStructureInstance.generate(world, random, x, y, z);
+			structureGroup.generate(world, random, x, y, z);
 			
 		} catch (Exception exception) {
 			exception.printStackTrace();

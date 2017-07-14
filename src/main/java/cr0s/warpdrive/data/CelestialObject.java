@@ -244,6 +244,9 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			dimensionCenterZ = Integer.parseInt(elementCenter.getAttribute("z"));
 			
 			// get optional generate element(s)
+			final StructureGroup structureGroup = new StructureGroup(null, null);
+			randomStructures.add(structureGroup, "", "100");
+			
 			final List<Element> listGenerates = XmlFileManager.getChildrenElementByTagName(elementDimension, "generate");
 			for (int indexElement = 0; indexElement < listGenerates.size(); indexElement++) {
 				final Element elementGenerate = listGenerates.get(indexElement);

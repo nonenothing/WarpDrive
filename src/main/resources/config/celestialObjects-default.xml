@@ -13,11 +13,12 @@
 	  In theory, multiple hyperspaces can be defined.
 	  
 	  celestialObject.id should be unique for each Celestial object.
+	  When provided by WarpDrive, this is the world folder name instead of DIMxxx or WarpDriveHyperspace and WarpDriveSpace.
 	  -->
 	
 	
 	<!-- Top level is hyperspace, typically a galaxy. -->
-	<celestialObject id="hyperspace">
+	<celestialObject id="Hyperspace">
 		<!--
 		  size defines the world border size, measured in blocks. This is also the size of the orbit area in space, so don't go too big.
 		  name defines an optional display name for the player HUD. It defaults to the celestialObject's id. 
@@ -86,7 +87,7 @@
 				  -->
 				<generate group="moon" ratio="0.008" />
 				<generate group="asteroid" ratio="0.0015" />
-				<generate group="asteroidField" ratio="0.006" />
+				<generate group="asteroids_field" ratio="0.006" />
 			</dimension>
 			
 			<skybox>
