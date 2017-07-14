@@ -1,8 +1,10 @@
 package cr0s.warpdrive.config;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
-import cr0s.warpdrive.block.hull.BlockHullPlain;
+import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
 
 import java.util.ArrayList;
@@ -105,6 +107,7 @@ public class Dictionary {
 				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
+				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
 				config.get("block_tags", "WarpDrive:bedrock_glass"                         , "Anchor SkipMining").getString();
@@ -508,11 +511,22 @@ public class Dictionary {
 					if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
 						WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
 					} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
-					         && !(block instanceof BlockHullPlain || block instanceof BlockHullGlass || block instanceof BlockHullStairs || BLOCKS_ANCHOR.contains(block)) ) {
+					         && !( block instanceof BlockAbstractBase
+					            || block instanceof BlockAbstractContainer
+					            || block instanceof BlockHullGlass
+					            || block instanceof BlockHullSlab
+					            || block instanceof BlockHullStairs
+					            || BLOCKS_ANCHOR.contains(block) ) ) {
 						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
 					}
 				}
-				if (blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0] && !((block instanceof BlockHullPlain) || (block instanceof BlockHullGlass) || BLOCKS_ANCHOR.contains(block))) {
+				if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
+				   && !( block instanceof BlockAbstractBase
+				      || block instanceof BlockAbstractContainer
+				      || block instanceof BlockHullGlass
+				      || block instanceof BlockHullSlab
+				      || block instanceof BlockHullStairs
+				      || BLOCKS_ANCHOR.contains(block) ) ) {
 					block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
 					WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
 					if (adjustResistance) {// TODO: not implemented
