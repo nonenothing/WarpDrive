@@ -290,8 +290,9 @@ public class JumpSequencer extends AbstractSequencer {
 			for (int z = z1; z <= z2; z++) {
 				chunkCount++;
 				if (chunkCount > sourceWorldTicket.getMaxChunkListDepth()) {
-					reason.append(String.format("Ship is extending over too many chunks in source world. Max is currently set to %d in forgeChunkLoading.cfg. Aborting.",
-						sourceWorldTicket.getMaxChunkListDepth()));
+					reason.append(String.format("Ship is extending over %d chunks in source world, this is too much! Max is currently set to %d in config/forgeChunkLoading.cfg. Aborting.",
+					                            (x2 - x1 + 1) * (z2 - z1 + 1),
+					                            sourceWorldTicket.getMaxChunkListDepth()));
 					return false;
 				}
 				ForgeChunkManager.forceChunk(sourceWorldTicket, new ChunkCoordIntPair(x, z));
@@ -323,8 +324,9 @@ public class JumpSequencer extends AbstractSequencer {
 			for (int z = z1; z <= z2; z++) {
 				chunkCount++;
 				if (chunkCount > targetWorldTicket.getMaxChunkListDepth()) {
-					reason.append(String.format("Ship is extending over too many chunks in target world. Max is currently set to %d in forgeChunkLoading.cfg. Aborting.",
-						targetWorldTicket.getMaxChunkListDepth()));
+					reason.append(String.format("Ship is extending over %d chunks in target world, this is too much! Max is currently set to %d in config/forgeChunkLoading.cfg. Aborting.",
+					                            (x2 - x1 + 1) * (z2 - z1 + 1),
+					                            targetWorldTicket.getMaxChunkListDepth()));
 					return false;
 				}
 				ForgeChunkManager.forceChunk(targetWorldTicket, new ChunkCoordIntPair(x, z));
