@@ -2,6 +2,8 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.render.RenderBlank;
@@ -34,12 +36,17 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	@Override
 	public void setDimension(final int dimensionId) {
 		super.setDimension(dimensionId);
-		celestialObjectDimension = StarMapRegistry.getCelestialObject(dimensionId, 0, 0);
+		celestialObjectDimension = CelestialObjectManager.get(WarpDrive.proxy instanceof ClientProxy, dimensionId, 0, 0);
+	}
+	
+	@Override
+	public String getSaveFolder() {
+		return dimensionId == 0 ? null : (celestialObjectDimension == null ? "WarpDriveHyperSpace" + dimensionId : celestialObjectDimension.id);
 	}
 	
 	@Override
 	public String getDimensionName() {
-		return celestialObjectDimension == null ? "Hyperspace" : celestialObjectDimension.id;
+		return celestialObjectDimension == null ? "Hyperspace" + dimensionId : celestialObjectDimension.id;
 	}
 	
 	@Override
@@ -93,18 +100,13 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 	}
 	
 	@Override
-	public String getSaveFolder() {
-		return dimensionId == 0 ? null : (celestialObjectDimension == null ? "WarpDriveHyperSpace" + dimensionId : celestialObjectDimension.id);
-	}
-	
-	@Override
 	public boolean canCoordinateBeSpawn(int x, int z) {
 		int y = worldObj.getTopSolidOrLiquidBlock(x, z);
 		return y != 0;
 	}
 	
 	// shared for getFogColor(), getStarBrightness()
-	@SideOnly(Side.CLIENT)
+	// @SideOnly(Side.CLIENT)
 	private static CelestialObject celestialObject = null;
 	
 	@SideOnly(Side.CLIENT)
@@ -117,8 +119,8 @@ public class HyperSpaceWorldProvider extends WorldProvider {
 			setSkyRenderer(RenderSpaceSky.getInstance());
 		}
 		
-		celestialObject = cameraEntity.worldObj == null ? null : StarMapRegistry.getCelestialObject(
-				cameraEntity.worldObj.provider.dimensionId,
+		celestialObject = cameraEntity.worldObj == null ? null : CelestialObjectManager.get(
+				cameraEntity.worldObj,
 				MathHelper.floor_double(cameraEntity.posX), MathHelper.floor_double(cameraEntity.posZ));
 		if (celestialObject == null) {
 			return Vec3.createVectorHelper(1.0D, 0.0D, 0.0D);

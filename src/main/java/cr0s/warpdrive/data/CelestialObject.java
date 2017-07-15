@@ -2,8 +2,8 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.ICelestialObject;
 import cr0s.warpdrive.api.IStringSerializable;
-import cr0s.warpdrive.config.CelestialObjectManager;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.RandomCollection;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -30,7 +30,7 @@ import net.minecraftforge.common.util.Constants.NBT;
  *
  * @author LemADEC
  */
-public class CelestialObject implements Cloneable, IStringSerializable {
+public class CelestialObject implements Cloneable, IStringSerializable, ICelestialObject {
 	
 	public static final double GRAVITY_NONE = 0.0D;
 	public static final double GRAVITY_LEGACY_SPACE = -1.0D;
@@ -46,22 +46,23 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	public String id;
 	
 	public String parentId;
-	public int parentDimensionId;
-	public boolean isParentResolved;
-	public int parentCenterX, parentCenterZ;
+	public CelestialObject parent;
+	private boolean isParentResolved;
+	protected int parentCenterX, parentCenterZ;
 	
 	public int borderRadiusX, borderRadiusZ;
 	
-	public String displayName;
-	public String description;
-	public NBTTagCompound nbtTagCompound;
+	private String displayName;
+	private String description;
+	private NBTTagCompound nbtTagCompound;
 	
-	public boolean isVirtual;
+	private boolean isVirtual;
 	public int dimensionId;
 	public int dimensionCenterX, dimensionCenterZ;
-	public double gravity;
-	public boolean isBreathable;
-	public String provider;
+	private double gravity;
+	private boolean isBreathable;
+	protected String provider;
+	private boolean isHyperspace;
 	
 	private final RandomCollection<StructureGroup> randomStructures = new RandomCollection<>();
 	
@@ -80,7 +81,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	
 	public CelestialObject(final int parDimensionId, final int parDimensionCenterX, final int parDimensionCenterZ,
 	                       final int parBorderRadiusX, final int parBorderRadiusZ,
-	                       final int parParentDimensionId, final int parParentCenterX, final int parParentCenterZ) {
+	                       final String parParentId, final int parParentCenterX, final int parParentCenterZ) {
 		isVirtual = false;
 		isParentResolved = false;
 		dimensionId = parDimensionId;
@@ -88,7 +89,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		dimensionCenterZ = parDimensionCenterZ;
 		borderRadiusX = parBorderRadiusX;
 		borderRadiusZ = parBorderRadiusZ;
-		parentDimensionId = parParentDimensionId;
+		parentId = parParentId;
 		parentCenterX = parParentCenterX;
 		parentCenterZ = parParentCenterZ;
 	}
@@ -102,11 +103,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		return id;
 	}
 	
-	public String getDisplayName() {
-		return displayName;
-	}
-	
-	public boolean loadFromXmlElement(final String location, final String parentElementId, final Element elementCelestialObject) throws InvalidXmlException {
+	protected boolean loadFromXmlElement(final String location, final String parentElementId, final Element elementCelestialObject) throws InvalidXmlException {
 		// get identity
 		id = elementCelestialObject.getAttribute("id");
 		if (id.isEmpty()) {
@@ -210,6 +207,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			gravity = GRAVITY_NORMAL;
 			isBreathable = true;
 			provider = PROVIDER_NONE;
+			isHyperspace = false;
 			dimensionCenterX = 0;
 			dimensionCenterZ = 0;
 		} else {
@@ -219,6 +217,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			dimensionId = Integer.parseInt(elementDimension.getAttribute("id"));
 			gravity = parseGravity(elementDimension.getAttribute("gravity"));
 			isBreathable = Boolean.parseBoolean(elementDimension.getAttribute("isBreathable"));
+			isHyperspace = Boolean.parseBoolean(elementDimension.getAttribute("isHyperspace"));
 			
 			// get optional provider element
 			{
@@ -369,21 +368,12 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		randomStructures.add(structureGroup, stringRatio, stringWeight);
 	}
 	
-	public void resolveParent() {
-		// is it an hyperspace/top level dimension?
-		if (parentId.isEmpty()) {
-			parentDimensionId = dimensionId;
-		} else {
-			final CelestialObject celestialObjectParent = CelestialObjectManager.get(parentId);
-			if (celestialObjectParent != null) {
-				parentDimensionId = celestialObjectParent.dimensionId;
-			}
-			// (failure will be detected during validation)
-		}
+	protected void resolveParent(final CelestialObject celestialObjectParent) {
+		parent = celestialObjectParent;
 		isParentResolved = true;
 	}
 	
-	public void lateUpdate() {
+	protected void lateUpdate() {
 		if (provider.equals(PROVIDER_AUTO)) {
 			if (isHyperspace()) {
 				provider = PROVIDER_HYPERSPACE;
@@ -398,29 +388,51 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	@SuppressWarnings("CloneDoesntCallSuperClone")
 	@Override
 	public CelestialObject clone() {
-		return new CelestialObject(dimensionId, dimensionCenterX, dimensionCenterZ, borderRadiusX, borderRadiusZ, parentDimensionId, parentCenterX, parentCenterZ);
+		return new CelestialObject(dimensionId, dimensionCenterX, dimensionCenterZ, borderRadiusX, borderRadiusZ, parentId, parentCenterX, parentCenterZ);
 	}
 	
 	public StructureGroup getRandomStructure(final Random random, final int x, final int z) {
 		return randomStructures.getRandomEntry(random);
 	}
 	
-	public AxisAlignedBB getWorldBorderArea() {
-		return AxisAlignedBB.getBoundingBox(
-			(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
-			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
+	@Override
+	public String getDisplayName() {
+		return displayName;
 	}
 	
-	public AxisAlignedBB getAreaToReachParent() {
-		return AxisAlignedBB.getBoundingBox(
-			(dimensionCenterX - borderRadiusX), 250, (dimensionCenterZ - borderRadiusZ),
-			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
+	@Override
+	public String getDescription() {
+		return description;
 	}
 	
-	public AxisAlignedBB getAreaInParent() {
-		return AxisAlignedBB.getBoundingBox(
-			(parentCenterX - borderRadiusX), 0, (parentCenterZ - borderRadiusZ),
-			(parentCenterX + borderRadiusX), 8, (parentCenterZ + borderRadiusZ) );
+	@Override
+	public NBTTagCompound getTag() {
+		return nbtTagCompound;
+	}
+	
+	@Override
+	public boolean isVirtual() {
+		return isVirtual;
+	}
+	
+	@Override
+	public boolean isHyperspace() {
+		return isHyperspace;
+	}
+	
+	@Override
+	public boolean isSpace() {
+		return !isHyperspace() && parent != null && parent.isHyperspace();
+	}
+	
+	@Override
+	public double getGravity() {
+		return gravity;
+	}
+	
+	@Override
+	public boolean hasAtmosphere() {
+		return isBreathable && !isHyperspace() && !isSpace();
 	}
 	
 	// offset vector when moving from parent to this dimension
@@ -428,20 +440,25 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		return new VectorI(dimensionCenterX - parentCenterX, 0, dimensionCenterZ - parentCenterZ);
 	}
 	
-	public boolean isSpace() {
-		if (isHyperspace()) {
-			return false;
-		}
-		final CelestialObject celestialObjectParent = StarMapRegistry.getCelestialObject(parentDimensionId, parentCenterX, parentCenterZ);
-		return celestialObjectParent != null && celestialObjectParent.isHyperspace();
+	@Override
+	public AxisAlignedBB getWorldBorderArea() {
+		return AxisAlignedBB.getBoundingBox(
+			(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
+			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
-	public boolean isHyperspace() {
-		return parentDimensionId == dimensionId;
+	@Override
+	public AxisAlignedBB getAreaToReachParent() {
+		return AxisAlignedBB.getBoundingBox(
+			(dimensionCenterX - borderRadiusX), 250, (dimensionCenterZ - borderRadiusZ),
+			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
-	public boolean hasAtmosphere() {
-		return isBreathable && !isHyperspace() && !isSpace();
+	@Override
+	public AxisAlignedBB getAreaInParent() {
+		return AxisAlignedBB.getBoundingBox(
+			(parentCenterX - borderRadiusX), 0, (parentCenterZ - borderRadiusZ),
+			(parentCenterX + borderRadiusX), 8, (parentCenterZ + borderRadiusZ) );
 	}
 	
 	/**
@@ -451,6 +468,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	 * @param aabb bounding box that should fit within border
 	 * @return true if we're fully inside the border
 	 */
+	@Override
 	public boolean isInsideBorder(final AxisAlignedBB aabb) {
 		final double rangeX = Math.max(Math.abs(aabb.minX - dimensionCenterX), Math.abs(aabb.maxX - dimensionCenterX));
 		final double rangeZ = Math.max(Math.abs(aabb.minZ - dimensionCenterZ), Math.abs(aabb.maxZ - dimensionCenterZ));
@@ -465,6 +483,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	 * @param z coordinates inside the celestial object
 	 * @return true if we're fully inside the border
 	 */
+	@Override
 	public boolean isInsideBorder(final double x, final double z) {
 		final double rangeX = Math.abs(x - dimensionCenterX);
 		final double rangeZ = Math.abs(z - dimensionCenterZ);
@@ -509,7 +528,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	 */
 	public double getSquareDistanceInParent(final int dimensionId, final double x, final double z) {
 		// are we in another dimension?
-		if (dimensionId != parentDimensionId) {
+		if (!isParentResolved || parent == null || dimensionId != parent.dimensionId) {
 			return Double.POSITIVE_INFINITY;
 		}
 		// are we in orbit?
@@ -542,6 +561,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			dimensionCenterZ = 0;
 			gravity = GRAVITY_NORMAL;
 			isBreathable = true;
+			isHyperspace = false;
 			provider = PROVIDER_NONE;
 		} else {
 			dimensionId = nbtTagCompound.getInteger("dimensionId");
@@ -549,6 +569,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			dimensionCenterZ = nbtTagCompound.getInteger("dimensionCenterZ");
 			gravity = nbtTagCompound.getDouble("gravity");
 			isBreathable = nbtTagCompound.getBoolean("isBreathable");
+			isHyperspace = nbtTagCompound.getBoolean("isHyperspace");
 			provider = nbtTagCompound.getString("provider");
 		}
 		
@@ -570,7 +591,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 		}
 	}
 	
-	public void writeToNBT(NBTTagCompound nbtTagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
 		nbtTagCompound.setString("id", id);
 		
 		nbtTagCompound.setString("parentId", parentId);
@@ -587,6 +608,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			nbtTagCompound.setInteger("dimensionCenterZ", dimensionCenterZ);
 			nbtTagCompound.setDouble("gravity", gravity);
 			nbtTagCompound.setBoolean("isBreathable", isBreathable);
+			nbtTagCompound.setBoolean("isHyperspace", isHyperspace);
 			nbtTagCompound.setString("provider", provider);
 		}
 		
@@ -604,6 +626,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			nbtTagListRenderData.appendTag(renderData.writeToNBT(new NBTTagCompound()));
 		}
 		nbtTagCompound.setTag("renderData", nbtTagListRenderData);
+		return nbtTagCompound;
 	}
 	
 	@Override
@@ -620,7 +643,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 				&& dimensionCenterZ == celestialObject.dimensionCenterZ
 				&& borderRadiusX == celestialObject.borderRadiusX
 				&& borderRadiusZ == celestialObject.borderRadiusZ
-				&& parentDimensionId == celestialObject.parentDimensionId
+				&& parentId.equals(celestialObject.parentId)
 				&& parentCenterX == celestialObject.parentCenterX
 				&& parentCenterZ == celestialObject.parentCenterZ;
 		}
@@ -631,9 +654,9 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 	@Override
 	public String toString() {
 		final String stringParent;
-		if (isParentResolved) {
+		if (isParentResolved && parent != null) {
 			stringParent = String.format("Parent(%d @ %d %d)",
-			                             parentDimensionId, parentCenterX, parentCenterZ);
+			                             parent.dimensionId, parentCenterX, parentCenterZ);
 		} else {
 			stringParent = String.format("Parent(%s @ %d %d)",
 			                             parentId, parentCenterX, parentCenterZ);
@@ -787,6 +810,7 @@ public class CelestialObject implements Cloneable, IStringSerializable {
 			nbtTagCompound.setFloat("blue", blue);
 			nbtTagCompound.setFloat("alpha", alpha);
 			if (texture != null) {
+				nbtTagCompound.setString("texture", texture);
 				nbtTagCompound.setDouble("periodU", periodU);
 				nbtTagCompound.setDouble("periodV", periodV);
 				nbtTagCompound.setBoolean("isAdditive", isAdditive);

@@ -146,29 +146,29 @@ public class CloakedArea {
 		}
 	}
 	
-	public void updatePlayer(final EntityPlayer player) {
-		if (isEntityWithinArea(player)) {
-			if (!isPlayerListedInArea(player.getCommandSenderName())) {
+	public void updatePlayer(final EntityPlayerMP EntityPlayerMP) {
+		if (isEntityWithinArea(EntityPlayerMP)) {
+			if (!isPlayerListedInArea(EntityPlayerMP.getCommandSenderName())) {
 				if (WarpDriveConfig.LOGGING_CLOAKING) {
-					WarpDrive.logger.info(this + " Player " + player.getCommandSenderName() + " has entered");
+					WarpDrive.logger.info(this + " Player " + EntityPlayerMP.getCommandSenderName() + " has entered");
 				}
-				addPlayer(player.getCommandSenderName());
-				revealChunksToPlayer(player);
-				revealEntitiesToPlayer(player);
-				PacketHandler.sendCloakPacket(player, this, false);
+				addPlayer(EntityPlayerMP.getCommandSenderName());
+				revealChunksToPlayer(EntityPlayerMP);
+				revealEntitiesToPlayer(EntityPlayerMP);
+				PacketHandler.sendCloakPacket(EntityPlayerMP, this, false);
 			}
 		} else {
-			if (isPlayerListedInArea(player.getCommandSenderName())) {
+			if (isPlayerListedInArea(EntityPlayerMP.getCommandSenderName())) {
 				if (WarpDriveConfig.LOGGING_CLOAKING) {
-					WarpDrive.logger.info(this + " Player " + player.getCommandSenderName() + " has left");
+					WarpDrive.logger.info(this + " Player " + EntityPlayerMP.getCommandSenderName() + " has left");
 				}
-				removePlayer(player.getCommandSenderName());
+				removePlayer(EntityPlayerMP.getCommandSenderName());
 				MinecraftServer
 						.getServer()
 						.getConfigurationManager()
-						.sendToAllNearExcept(player, player.posX, player.posY, player.posZ, 100, player.worldObj.provider.dimensionId,
-								PacketHandler.getPacketForThisEntity(player));
-				PacketHandler.sendCloakPacket(player, this, false);
+						.sendToAllNearExcept(EntityPlayerMP, EntityPlayerMP.posX, EntityPlayerMP.posY, EntityPlayerMP.posZ, 100, EntityPlayerMP.worldObj.provider.dimensionId,
+								PacketHandler.getPacketForThisEntity(EntityPlayerMP));
+				PacketHandler.sendCloakPacket(EntityPlayerMP, this, false);
 			}
 		}
 	}

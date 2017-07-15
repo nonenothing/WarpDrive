@@ -2,6 +2,7 @@ package cr0s.warpdrive.command;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.data.VectorI;
@@ -88,7 +89,7 @@ public class CommandSpace extends CommandBase {
 			int xTarget = MathHelper.floor_double(entityPlayerMP.posX);
 			int yTarget = Math.min(255, Math.max(0, MathHelper.floor_double(entityPlayerMP.posY)));
 			int zTarget = MathHelper.floor_double(entityPlayerMP.posZ);
-			final CelestialObject celestialObjectCurrent = StarMapRegistry.getCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+			final CelestialObject celestialObjectCurrent = CelestialObjectManager.get(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 			if (dimensionIdTarget == Integer.MAX_VALUE) {
 				if (celestialObjectCurrent == null) {
 					Commons.addChatMessage(commandSender, 
@@ -99,10 +100,10 @@ public class CommandSpace extends CommandBase {
 				if ( celestialObjectCurrent.isSpace()
 				  || celestialObjectCurrent.isHyperspace() ) {
 					// in space or hyperspace => move to closest child
-					final CelestialObject celestialObjectChild = StarMapRegistry.getClosestChildCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+					final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 					if (celestialObjectChild == null) {
 						dimensionIdTarget = 0;
-					} else if (celestialObjectChild.isVirtual) {
+					} else if (celestialObjectChild.isVirtual()) {
 						Commons.addChatMessage(commandSender,
 							String.format("§c/space: player %s can't go to %s.\n§cThis is a virtual celestial object.\n§bTry specifying an explicit target dimension instead.",
 								entityPlayerMP.getCommandSenderName(), celestialObjectChild.getDisplayName()));
@@ -116,13 +117,12 @@ public class CommandSpace extends CommandBase {
 					}
 				} else {
 					// on a planet => move to space
-					final CelestialObject celestialObjectParent = StarMapRegistry.getParentCelestialObject(celestialObjectCurrent);
-					if ( celestialObjectParent == null
-					  || celestialObjectParent.isVirtual ) {
+					if ( celestialObjectCurrent.parent == null
+					  || celestialObjectCurrent.parent.isVirtual() ) {
 						dimensionIdTarget = 0;
 						
 					} else {
-						dimensionIdTarget = celestialObjectParent.dimensionId;
+						dimensionIdTarget = celestialObjectCurrent.parent.dimensionId;
 						final VectorI vEntry = celestialObjectCurrent.getEntryOffset();
 						xTarget -= vEntry.x;
 						yTarget -= vEntry.y;
@@ -133,13 +133,14 @@ public class CommandSpace extends CommandBase {
 			} else {
 				// adjust offset when it's directly above or below us
 				if ( celestialObjectCurrent != null
-				  && celestialObjectCurrent.parentDimensionId == dimensionIdTarget ) {// moving to parent explicitly
+				  && celestialObjectCurrent.parent != null
+				  && celestialObjectCurrent.parent.dimensionId == dimensionIdTarget ) {// moving to parent explicitly
 					final VectorI vEntry = celestialObjectCurrent.getEntryOffset();
 					xTarget -= vEntry.x;
 					yTarget -= vEntry.y;
 					zTarget -= vEntry.z;
 				} else {
-					final CelestialObject celestialObjectChild = StarMapRegistry.getClosestChildCelestialObject(entityPlayerMP.worldObj.provider.dimensionId, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+					final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 					if ( celestialObjectChild != null
 					  && celestialObjectChild.dimensionId == dimensionIdTarget ) {// moving to child explicitly
 						final VectorI vEntry = celestialObjectChild.getEntryOffset();
@@ -151,7 +152,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 			// get target celestial object
-			final CelestialObject celestialObjectTarget = StarMapRegistry.getCelestialObject(dimensionIdTarget, xTarget, zTarget);
+			final CelestialObject celestialObjectTarget = CelestialObjectManager.get(false, dimensionIdTarget, xTarget, zTarget);
 			
 			// force to center if we're outside the border
 			if ( celestialObjectTarget != null

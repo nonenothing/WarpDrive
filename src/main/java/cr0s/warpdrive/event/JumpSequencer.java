@@ -6,6 +6,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
@@ -13,7 +14,6 @@ import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.data.MovingEntity;
-import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.data.Transformation;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
@@ -505,8 +505,8 @@ public class JumpSequencer extends AbstractSequencer {
 		             || shipMovementType == EnumShipMovementType.HYPERSPACE_ENTERING;
 		
 		{// compute targetWorld and movement vector (moveX, moveY, moveZ)
-			final CelestialObject celestialObjectSource = StarMapRegistry.getCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
-			final boolean isTargetWorldFound= computeTargetWorld(celestialObjectSource, shipMovementType, reason);
+			final CelestialObject celestialObjectSource = CelestialObjectManager.get(sourceWorld, ship.coreX, ship.coreZ);
+			final boolean isTargetWorldFound = computeTargetWorld(celestialObjectSource, shipMovementType, reason);
 			if (!isTargetWorldFound) {
 				LocalProfiler.stop();
 				ship.messageToAllPlayersOnShip(reason.toString());
@@ -516,8 +516,8 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		// Check mass constrains
-		if ( WarpDrive.starMap.isPlanet(sourceWorld, ship.coreX, ship.coreZ)
-		  || WarpDrive.starMap.isPlanet(targetWorld, ship.coreX + moveX, ship.coreZ + moveZ) ) {
+		if ( CelestialObjectManager.isPlanet(sourceWorld, ship.coreX, ship.coreZ)
+		  || CelestialObjectManager.isPlanet(targetWorld, ship.coreX + moveX, ship.coreZ + moveZ) ) {
 			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE) {
 				LocalProfiler.stop();
 				String msg = "Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)";
@@ -609,7 +609,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			
 			// Check world border
-			CelestialObject celestialObjectTarget = StarMapRegistry.getCelestialObject(targetWorld.provider.dimensionId, (int) aabbTarget.minX, (int) aabbTarget.minZ);
+			CelestialObject celestialObjectTarget = CelestialObjectManager.get(targetWorld, (int) aabbTarget.minX, (int) aabbTarget.minZ);
 			if (celestialObjectTarget == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.error(String.format("There's no world border defined for dimension %s (%d)",
@@ -709,7 +709,7 @@ public class JumpSequencer extends AbstractSequencer {
 	private boolean computeTargetWorld(final CelestialObject celestialObjectSource, final EnumShipMovementType shipMovementType, final StringBuilder reason) {
 		switch (shipMovementType) {
 		case HYPERSPACE_EXITING: {
-			CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			CelestialObject celestialObject = CelestialObjectManager.getClosestChild(sourceWorld, ship.coreX, ship.coreZ);
 			// anything defined?
 			if (celestialObject == null) {
 				reason.append(String.format("Unable to reach space from this location!\nThere's no celestial object defined for current dimension %s (%d).",
@@ -747,9 +747,8 @@ public class JumpSequencer extends AbstractSequencer {
 		break;
 		
 		case HYPERSPACE_ENTERING: {
-			final CelestialObject celestialObjectParent = StarMapRegistry.getParentCelestialObject(celestialObjectSource);
 			// anything defined?
-			if (celestialObjectParent == null) {
+			if (celestialObjectSource.parent == null) {
 				reason.append(String.format("Unable to reach hyperspace!\nThere's no parent defined for current dimension %s (%d).",
 				                            sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId));
 				return false;
@@ -757,7 +756,7 @@ public class JumpSequencer extends AbstractSequencer {
 			// (target world border is checked systematically after movement checks)
 			
 			// is world available?
-			final int dimensionIdHyperspace = celestialObjectParent.dimensionId;
+			final int dimensionIdHyperspace = celestialObjectSource.parent.dimensionId;
 			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdHyperspace);
 			if (targetWorld == null) {
 				reason.append(String.format("Unable to load Hyperspace dimension %d, aborting jump.",
@@ -773,9 +772,8 @@ public class JumpSequencer extends AbstractSequencer {
 		break;
 		
 		case PLANET_TAKEOFF: {
-			final CelestialObject celestialObjectParent = StarMapRegistry.getParentCelestialObject(celestialObjectSource);
 			// anything defined?
-			if (celestialObjectParent == null) {
+			if (celestialObjectSource.parent == null) {
 				reason.append(String.format("Unable to take off!\nThere's no parent defined for current dimension %s (%d).",
 				                            sourceWorld.provider.getDimensionName(), sourceWorld.provider.dimensionId));
 				return false;
@@ -795,7 +793,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			
 			// is world available?
-			final int dimensionIdSpace = celestialObjectParent.dimensionId;
+			final int dimensionIdSpace = celestialObjectSource.parent.dimensionId;
 			targetWorld = MinecraftServer.getServer().worldServerForDimension(dimensionIdSpace);
 			if (targetWorld == null) {
 				reason.append(String.format("Unable to load Space dimension %d, aborting jump.",
@@ -811,7 +809,7 @@ public class JumpSequencer extends AbstractSequencer {
 		break;
 		
 		case PLANET_LANDING: {
-			final CelestialObject celestialObject = StarMapRegistry.getClosestChildCelestialObject(sourceWorld.provider.dimensionId, ship.coreX, ship.coreZ);
+			final CelestialObject celestialObject = CelestialObjectManager.getClosestChild(sourceWorld, ship.coreX, ship.coreZ);
 			// anything defined?
 			if (celestialObject == null) {
 				reason.append("No planet exists in this dimension, there's nowhere to land!");

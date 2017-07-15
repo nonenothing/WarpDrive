@@ -28,13 +28,6 @@ public class RadarEcho extends Vector3 {
 		this.name = name;
 	}
 	
-	public RadarEcho(final StarMapRegistryItem starMapRegistryItem) {
-		this(starMapRegistryItem.type.getName(),
-		     starMapRegistryItem.getUniversalCoordinates(),
-		     starMapRegistryItem.mass,
-		     starMapRegistryItem.name );
-	}
-	
 	// public RadarEcho(final EntityLivingBase entityLivingBase) {
 	// 	this("entity",
 	// 	     entityLivingBase.worldObj.provider.dimensionId,

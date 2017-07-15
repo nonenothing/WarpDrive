@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.computer.IShipController;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipControllerCommand;
 import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -402,12 +403,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] isInSpace() {
-		return new Boolean[] { WarpDrive.starMap.isInSpace(worldObj, xCoord, zCoord) };
+		return new Boolean[] { CelestialObjectManager.isInSpace(worldObj, xCoord, zCoord) };
 	}
 	
 	@Override
 	public Object[] isInHyperspace() {
-		return new Boolean[] { WarpDrive.starMap.isInHyperspace(worldObj, xCoord, zCoord) };
+		return new Boolean[] { CelestialObjectManager.isInHyperspace(worldObj, xCoord, zCoord) };
 	}
 	
 	@Override

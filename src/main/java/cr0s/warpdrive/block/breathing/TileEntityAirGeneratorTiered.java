@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -63,7 +64,7 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		
 		// Air generator works only in space & hyperspace
 		final int metadata = getBlockMetadata();
-		if (WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord)) {
+		if (CelestialObjectManager.hasAtmosphere(worldObj, xCoord, zCoord)) {
 			if ((metadata & 8) != 0) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata & 7, 2); // set disabled texture
 			}

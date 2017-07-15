@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
@@ -88,7 +89,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		boolean isOnPlanet = WarpDrive.starMap.hasAtmosphere(worldObj, xCoord, zCoord);
+		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(worldObj, xCoord, zCoord);
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {

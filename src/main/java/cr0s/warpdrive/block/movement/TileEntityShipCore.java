@@ -7,6 +7,7 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.ShipMovementCosts;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipControllerCommand;
 import cr0s.warpdrive.data.EnumShipCoreState;
 import cr0s.warpdrive.data.EnumShipMovementType;
@@ -613,7 +614,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		updateShipMassAndVolume();
 		if ( !isUnlimited
 		  && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE
-		  && WarpDrive.starMap.isPlanet(worldObj, xCoord, zCoord) ) {
+		  && CelestialObjectManager.isPlanet(worldObj, xCoord, zCoord) ) {
 			reason.append(String.format("Ship is too big for a planet (max is %d blocks)",
 				WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE));
 			return false;

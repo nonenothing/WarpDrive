@@ -32,6 +32,7 @@ import cr0s.warpdrive.compat.CompatThermalDynamics;
 import cr0s.warpdrive.compat.CompatThermalExpansion;
 import cr0s.warpdrive.compat.CompatWarpDrive;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -159,6 +160,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_XML_PREPROCESSOR = false;
 	public static boolean LOGGING_RENDERING = false;
 	public static boolean LOGGING_CHUNK_HANDLER = false;
+	public static boolean LOGGING_CLIENT_SYNCHRONIZATION = false;
 	
 	// Starmap
 	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
@@ -383,7 +385,7 @@ public class WarpDriveConfig {
 	}
 	
 	public static void reload() {
-		CelestialObjectManager.clearForReload();
+		CelestialObjectManager.clearForReload(false);
 		onFMLpreInitialization(stringConfigDirectory);
 		onFMLPostInitialization();
 	}
@@ -459,11 +461,13 @@ public class WarpDriveConfig {
 			LOGGING_CLOAKING = config.get("logging", "enable_cloaking_logs", LOGGING_CLOAKING, "Detailed cloaking logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_videoChannel_logs", LOGGING_VIDEO_CHANNEL, "Detailed video channel logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_TARGETING = config.get("logging", "enable_targeting_logs", LOGGING_TARGETING, "Detailed targeting logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_CLIENT_SYNCHRONIZATION = config.get("logging", "enable_client_synchronization_logs", LOGGING_CLIENT_SYNCHRONIZATION, "Detailed client synchronization logs to help debug the mod.").getBoolean(false);
 		} else {
 			LOGGING_EFFECTS = false;
 			LOGGING_CLOAKING = false;
 			LOGGING_VIDEO_CHANNEL = false;
 			LOGGING_TARGETING = false;
+			LOGGING_CLIENT_SYNCHRONIZATION = false;
 		}
 		LOGGING_WEAPON = config.get("logging", "enable_weapon_logs", LOGGING_WEAPON, "Detailed weapon logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_CAMERA = config.get("logging", "enable_camera_logs", LOGGING_CAMERA, "Detailed camera logs to help debug the mod, enable it before reporting a bug").getBoolean(false);

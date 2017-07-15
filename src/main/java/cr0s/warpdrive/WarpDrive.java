@@ -9,6 +9,7 @@ import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetGlass;
 import cr0s.warpdrive.block.atomic.BlockElectromagnetPlain;
@@ -17,6 +18,7 @@ import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
+import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
@@ -95,7 +97,7 @@ import cr0s.warpdrive.command.CommandInvisible;
 import cr0s.warpdrive.command.CommandJumpgates;
 import cr0s.warpdrive.command.CommandReload;
 import cr0s.warpdrive.command.CommandSpace;
-import cr0s.warpdrive.config.CelestialObjectManager;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.RecipeParticleShapedOre;
 import cr0s.warpdrive.config.RecipeTuningDriver;
 import cr0s.warpdrive.config.Recipes;
@@ -108,7 +110,6 @@ import cr0s.warpdrive.damage.DamageShock;
 import cr0s.warpdrive.damage.DamageTeleportation;
 import cr0s.warpdrive.damage.DamageWarm;
 import cr0s.warpdrive.data.CamerasRegistry;
-import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CloakManager;
 import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.JumpgatesRegistry;
@@ -538,12 +539,11 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
 		
 		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
-			/*
 			// ACCELERATOR CONTROLLER
 			blockAcceleratorController = new BlockAcceleratorController();
 			GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
 			GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
-			/**/
+			
 			// ACCELERATOR CONTROL POINT 
 			blockAcceleratorControlPoint = new BlockAcceleratorControlPoint();
 			GameRegistry.registerBlock(blockAcceleratorControlPoint, ItemBlockAbstractBase.class, "blockAcceleratorControlPoint");
@@ -686,26 +686,11 @@ public class WarpDrive implements LoadingCallback {
 		
 		DimensionManager.registerProviderType(WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
 		
-		// only create dimensions if we own them
-		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
-			if ( !celestialObject.isVirtual
-			  && !celestialObject.provider.equals(CelestialObject.PROVIDER_OTHER)) {
-				if ( celestialObject.isSpace()
-				  && celestialObject.provider.equals(CelestialObject.PROVIDER_SPACE) ) {
-					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_SPACE_PROVIDER_ID);
-					
-				} else if ( celestialObject.isHyperspace()
-				         && celestialObject.provider.equals(CelestialObject.PROVIDER_HYPERSPACE) ) {
-					DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID);
-					
-				} else {
-					WarpDrive.logger.error(String.format("Only space and hyperspace dimensions can be provided by WarpDrive. Dimension %d is not what of those.", 
-					                                     celestialObject.dimensionId));
-				}
-			}
-		}
+		CelestialObjectManager.onFMLInitialization();
 		
-		// Recipes.patchOredictionary();
+		if (getClass().desiredAssertionStatus()) {
+			Recipes.patchOredictionary();
+		}
 	}
 	
 	@EventHandler

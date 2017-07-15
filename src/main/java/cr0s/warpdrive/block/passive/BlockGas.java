@@ -1,8 +1,8 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.CelestialObjectManager;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Random;
 
@@ -131,7 +131,7 @@ public class BlockGas extends Block {
 	@Override
 	public void onBlockAdded(World world, int x, int y, int z) {
 		// Gas blocks are only allowed in space
-		if (WarpDrive.starMap.hasAtmosphere(world, x, z)) {
+		if (CelestialObjectManager.hasAtmosphere(world, x, z)) {
 			world.setBlockToAir(x, y, z);
 		}
 	}

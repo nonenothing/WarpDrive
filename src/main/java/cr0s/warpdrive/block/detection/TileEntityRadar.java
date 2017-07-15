@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.detection;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.RadarEcho;
@@ -103,7 +104,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	// Common OC/CC methods
 	@Override
 	public Object[] position() {
-		final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(worldObj.provider.dimensionId, xCoord, zCoord);
+		final CelestialObject celestialObject = CelestialObjectManager.get(worldObj, xCoord, zCoord);
 		if (celestialObject != null) {
 			Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, xCoord, yCoord, zCoord);
 			return new Object[] { xCoord, yCoord, zCoord, celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };

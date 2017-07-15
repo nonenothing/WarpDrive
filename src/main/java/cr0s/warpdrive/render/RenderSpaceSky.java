@@ -1,7 +1,7 @@
 package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.CelestialObjectManager;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObject.RenderData;
@@ -80,7 +80,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
 		final Vec3 vec3Player = mc.thePlayer.getPosition(partialTicks);
 		final CelestialObject celestialObject = world.provider == null ? null
-				: StarMapRegistry.getCelestialObject(world.provider.dimensionId, (int) vec3Player.xCoord, (int) vec3Player.zCoord);
+				: CelestialObjectManager.get(world, (int) vec3Player.xCoord, (int) vec3Player.zCoord);
 		
 		final Tessellator tessellator = Tessellator.instance;
 		
@@ -182,7 +182,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		// Planets
 		if (celestialObject != null && celestialObject.opacityCelestialObjects > 0.0F) {
 			final Vector3 vectorPlayer = StarMapRegistry.getUniversalCoordinates(celestialObject, vec3Player.xCoord, vec3Player.yCoord, vec3Player.zCoord);
-			for (CelestialObject celestialObjectChild : CelestialObjectManager.celestialObjects) {
+			for (CelestialObject celestialObjectChild : CelestialObjectManager.getRenderStack()) {
 				if (celestialObject == celestialObjectChild) {
 					continue;
 				}

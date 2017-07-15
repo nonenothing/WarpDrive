@@ -1,8 +1,8 @@
 package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.BreathingManager;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.data.StarMapRegistry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -35,7 +35,7 @@ public class RenderOverlayAir {
 		final int z = MathHelper.floor_double(entityPlayer.posZ);
 		
 		// get celestial object
-		final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entityPlayer.dimension, x, z);
+		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj, x, z);
 		if (celestialObject == null || celestialObject.hasAtmosphere()) {// skip (no display) if environment is breathable
 			return;
 		}

@@ -7,10 +7,10 @@
 	<!--
 	  An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
 	  They can be a planet, a more abstract construct like solar system (space dimension) or the all mighty hyperspace.
-	  Hyperspace is a dimension which is its own parent. In other words, hyperspace.dimensionId = hyperspace.parentDimensionId.
+	  Hyperspace is a root dimension. It's not supposed to have a parent celestial object.
 	  Space is a dimension with Hyperspace as its parent.
 	  In theory, multiple planets can exists in the same minecraft world (for example: The Twilight Forest exist on multiple planets in different star systems).
-	  In theory, multiple hyperspaces can be defined.
+	  Multiple hyperspaces can be defined.
 	  
 	  celestialObject.id should be unique for each Celestial object.
 	  When provided by WarpDrive, this is the world folder name instead of DIMxxx or WarpDriveHyperspace and WarpDriveSpace.
@@ -34,10 +34,11 @@
 		  dimension defines an actual game world. If it's missing, that celestialObject remains visible but you can't "land" on it.  
 		  dimension.id: this is the id of the dimension. 0 is the Overworld, -1 is the Nether, 1 is the End.
 		  dimension.isBreathable: this is a boolean flag defining if ambient atmosphere is breathable.
+		  dimension.isHyperspace: this is a boolean flag defining if this an hyperspace dimension. 
 		  dimension.gravity: this is the gravity simulation type. Valid keywords are none (0.0), legacySpace, legacyHyperspace, normal (1.0).
 		  dimension.center.x, dimension.center.z: those are the center coordinate of that dimension world border, measured in blocks. For convenience, it's usually 0, 0.
 		  -->
-		<dimension id="-3" isBreathable="false" gravity="legacyHyperspace">
+		<dimension id="-3" isBreathable="false" isHyperspace="true" gravity="legacyHyperspace">
 			<center x="0" z="0" />
 			<!--
               provider defines how the world biomes are generated. If it's missing, the mod tries to self-assign space and hyperspace dimensions.

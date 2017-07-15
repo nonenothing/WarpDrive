@@ -3,10 +3,10 @@ package cr0s.warpdrive.event;
 import cr0s.warpdrive.BreathingManager;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -54,7 +54,7 @@ public class LivingHandler {
 		
 		// *** world border handling
 		// Instant kill if entity exceeds world's limit
-		final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entity.worldObj, x, z);
+		final CelestialObject celestialObject = CelestialObjectManager.get(entity.worldObj, x, z);
 		if (celestialObject == null) {
 			// unregistered dimension => exit
 			return;
@@ -100,8 +100,7 @@ public class LivingHandler {
 			
 			// spam chat if it's a player
 			if (entity instanceof EntityPlayer && !entity.isDead && entity.deathTime <= 0) {
-				Commons.addChatMessage((EntityPlayer) entity,
-					String.format("§4You've reached the world border..."));
+				Commons.addChatMessage((EntityPlayer) entity, "§4You've reached the world border...");
 			}
 			
 			// delay damage for 'fast moving' players
@@ -144,8 +143,7 @@ public class LivingHandler {
 		// *** world transition handling
 		// If player falling down, teleport to child celestial object
 		if (entity.posY < -10.0D) {
-			final CelestialObject celestialObjectChild = StarMapRegistry.getClosestChildCelestialObject(
-					entity.worldObj.provider.dimensionId, x, z);
+			final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entity.worldObj, x, z);
 			// are we actually in orbit?
 			if ( celestialObjectChild != null
 			  && !celestialObject.isHyperspace()

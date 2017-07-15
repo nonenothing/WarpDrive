@@ -1,12 +1,12 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.Filler;
 import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
 import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.data.StarMapRegistry;
 
 import java.util.Random;
 
@@ -22,7 +22,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 		try {
 			final int x = (chunkX * 16) + (5 - random.nextInt(10));
 			final int z = (chunkZ * 16) + (5 - random.nextInt(10));
-			final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(world, x, z);
+			final CelestialObject celestialObject = CelestialObjectManager.get(world, x, z);
 			if (celestialObject == null) {
 				// as observed on 1.7.10: during world transition, the generator from the previous world is still called
 				return;
