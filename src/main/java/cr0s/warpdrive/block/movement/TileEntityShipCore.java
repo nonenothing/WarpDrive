@@ -456,26 +456,31 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 	}
 	
-	public void summonOwnerOnDeploy(final String playerName) {
-		final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+	public boolean summonOwnerOnDeploy(final EntityPlayerMP entityPlayerMP) {
+		if (entityPlayerMP == null) {
+			WarpDrive.logger.warn(this + " No player given to summonOwnerOnDeploy()");
+			return false;
+		}
 		final StringBuilder reason = new StringBuilder();
 		if (!validateShipSpatialParameters(reason)) {
 			Commons.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString());
-			return;
+			return false;
 		}
-		
-		final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
 		
 		controller = findControllerBlock();
 		if (controller != null) {
 			controller.players.clear();
-			controller.players.add(playerName);
+			controller.players.add(entityPlayerMP.getCommandSenderName());
+		} else {
+			WarpDrive.logger.warn(this + " Failed to find controller block");
+			return false;
 		}
 		
-		if ( entityPlayerMP != null
-		  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
+		final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		if (isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ))) {
 			summonPlayer(entityPlayerMP);
 		}
+		return true;
 	}
 	
 	private static final VectorI[] SUMMON_OFFSETS = { new VectorI(2, 0, 0), new VectorI(-1, 0, 0),
@@ -503,13 +508,30 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				xCoord + facing.offsetX * vOffset.x + facing.offsetZ * vOffset.z,
 			    yCoord,
 			    zCoord + facing.offsetZ * vOffset.x + facing.offsetX * vOffset.z);
-			if ( worldObj.isAirBlock(vPosition.x, vPosition.y    , vPosition.z)
-			  && worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)) {
-				summonPlayer(entityPlayer, vPosition.x, vPosition.y, vPosition.z);
+			if (worldObj.isAirBlock(vPosition.x, vPosition.y, vPosition.z)) {
+				if (worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)) {
+					summonPlayer(entityPlayer, vPosition.x, vPosition.y, vPosition.z);
+					return;
+				}
+				if (worldObj.isAirBlock(vPosition.x, vPosition.y - 1, vPosition.z)) {
+					summonPlayer(entityPlayer, vPosition.x, vPosition.y - 1, vPosition.z);
+					return;
+				}
+			} else if ( worldObj.isAirBlock(vPosition.x, vPosition.y - 1, vPosition.z)
+			         && worldObj.isAirBlock(vPosition.x, vPosition.y - 2, vPosition.z)
+			         && !worldObj.isAirBlock(vPosition.x, vPosition.y - 3, vPosition.z)  ) {
+				summonPlayer(entityPlayer, vPosition.x, vPosition.y - 2, vPosition.z);
+				return;
+			} else if ( worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)
+			         && worldObj.isAirBlock(vPosition.x, vPosition.y + 2, vPosition.z)
+			         && !worldObj.isAirBlock(vPosition.x, vPosition.y, vPosition.z)  ) {
+				summonPlayer(entityPlayer, vPosition.x, vPosition.y + 1, vPosition.z);
 				return;
 			}
 		}
-		messageToAllPlayersOnShip("§c" + String.format("No safe spot found to summon player %1$s", entityPlayer.getDisplayName()));
+		final String message = "§c" + String.format("No safe spot found to summon player %1$s", entityPlayer.getDisplayName());
+		messageToAllPlayersOnShip(message);
+		Commons.addChatMessage(entityPlayer, message);
 	}
 	
 	private void summonPlayer(EntityPlayerMP player, final int x, final int y, final int z) {

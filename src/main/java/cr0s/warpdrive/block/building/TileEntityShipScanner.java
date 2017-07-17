@@ -43,12 +43,16 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityShipScanner extends TileEntityAbstractEnergy {
+	
+	private static final int SHIP_TOKEN_MAX_RETRY_COUNT = 5;
+	
 	private boolean isActive = false;
 	private TileEntityShipCore shipCore = null;
 	
 	private int laserTicks = 0;
 	private int scanTicks = 0;
 	private int deployDelayTicks = 0;
+	private int deployRetryCounts = 0;
 	
 	private int searchTicks = 0;
 	
@@ -91,7 +95,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		// Trigger deployment by player
 		if (!isActive) {
-			checkPlayerToken();
+			checkPlayerForShipToken();
 		}
 		
 		// Ship core is not found
@@ -108,7 +112,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			return;
 		}
 		
-		if (!isActive) {// inactive
+		if (!isActive) {// inactive and ship core found
 			laserTicks++;
 			if (laserTicks > 20) {
 				PacketHandler.sendBeamPacket(worldObj,
@@ -117,6 +121,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					0.0F, 1.0F, 0.2F, 40, 0, 100);
 				laserTicks = 0;
 			}
+			
 		} else if (!isDeploying) {// active and scanning
 			laserTicks++;
 			if (laserTicks > 5) {
@@ -165,11 +170,29 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				
 				// deployment done?
 				if (blocksToDeployCurrentTick == 0) {
-					TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
-					if (tileEntity instanceof TileEntityShipCore) {
-						((TileEntityShipCore)tileEntity).summonOwnerOnDeploy(playerName);
-						if (entityPlayerMP != null) {
-							Commons.addChatMessage(entityPlayerMP, "§6" + "Welcome aboard captain. Use the computer to get moving...");
+					if (playerName != null && !playerName.isEmpty()) {
+						final TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
+						if (tileEntity instanceof TileEntityShipCore) {
+							final boolean isSuccess = ((TileEntityShipCore) tileEntity).summonOwnerOnDeploy(entityPlayerMP);
+							if (isSuccess) {
+								if (entityPlayerMP != null) {
+									Commons.addChatMessage(entityPlayerMP, "§6" + "Welcome aboard captain. Use the computer to get moving...");
+								}
+							} else {
+								deployRetryCounts--;
+								WarpDrive.logger.warn(String.format("Ship scanner failed to assign new captain, %d retries left",
+								                                    deployRetryCounts));
+								if (deployRetryCounts > 0) {
+									return;
+								}
+							}
+						} else {
+							WarpDrive.logger.warn(String.format("Ship scanner unable to detect ship core after deployment, found %s",
+							                                    tileEntity));
+							deployRetryCounts--;
+							if (deployRetryCounts > 0) {
+								return;
+							}
 						}
 					}
 					
@@ -178,7 +201,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 					if (WarpDriveConfig.LOGGING_BUILDING) {
 						WarpDrive.logger.info(this + " Deployment done");
 					}
-					cooldownPlayerDetection = SS_SEARCH_INTERVAL_TICKS * 3;
+					shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_PERIOD_TICKS * 3;
 					return;
 				}
 				
@@ -439,7 +462,8 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	// Returns error code and reason string
-	private int deployShip(final String fileName, final int offsetX, final int offsetY, final int offsetZ, final byte rotationSteps, final boolean isForced, final StringBuilder reason) {
+	private int deployShip(final String fileName, final int offsetX, final int offsetY, final int offsetZ,
+	                       final byte rotationSteps, final boolean isForced, final StringBuilder reason) {
 		targetX = xCoord + offsetX;
 		targetY = yCoord + offsetY;
 		targetZ = zCoord + offsetZ;
@@ -492,9 +516,11 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				if (!worldObj.isAirBlock(targetX, targetY, targetZ)) {
 					worldObj.newExplosion(null, targetX, targetY, targetZ, 1, false, false);
 					if (WarpDriveConfig.LOGGING_BUILDING) {
-						WarpDrive.logger.info("Deployment collision detected at " + targetX + " " + targetY + " " + targetZ);
+						WarpDrive.logger.info(String.format("Deployment collision detected at %d %d %d",
+						                                    targetX, targetY, targetZ));
 					}
-					reason.append(String.format("Deployment area occupied with existing ship. Can't deploy new ship at " + targetX + " " + targetY + " " + targetZ));
+					reason.append(String.format("Deployment area occupied with existing ship.\nCan't deploy new ship at %d %d %d",
+					                            targetX, targetY, targetZ));
 					return 2;
 				}
 				
@@ -537,6 +563,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		// initiate deployment sequencer
 		isDeploying = true;
 		currentDeployIndex = 0;
+		deployRetryCounts = SHIP_TOKEN_MAX_RETRY_COUNT;
 		
 		setActive(true);
 		reason.append(String.format("Deploying ship '%s'...", fileName));
@@ -673,19 +700,21 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		return super.callMethod(computer, context, method, arguments);
 	}
 	
-	private static final int SS_SEARCH_INTERVAL_TICKS = 20;
-	private int cooldownPlayerDetection = 5;
-	private static final int SS_SEARCH_WARMUP_INTERVALS = 5;
-	private UUID warmupPlayerId = null;
-	private int warmupPlayer = SS_SEARCH_WARMUP_INTERVALS;
-	private String warmupSchematicName = "";
-	private void checkPlayerToken() {
+	private static final int SHIP_TOKEN_UPDATE_PERIOD_TICKS = 20;
+	private static final int SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS = 3 * 20;
+	private static final int SHIP_TOKEN_UPDATE_DELAY_FAILED_DEPLOY_TICKS = 5 * 20;
+	private int shipToken_nextUpdate_ticks = 5;
+	private static final int SHIP_TOKEN_PLAYER_WARMUP_PERIODS = 5;
+	private UUID shipToken_idPlayer = null;
+	private int shipToken_countWarmup = SHIP_TOKEN_PLAYER_WARMUP_PERIODS;
+	private String shipToken_nameSchematic = "";
+	private void checkPlayerForShipToken() {
 		// cooldown to prevent player chat spam and server lag
-		cooldownPlayerDetection--;
-		if (cooldownPlayerDetection > 0) {
+		shipToken_nextUpdate_ticks--;
+		if (shipToken_nextUpdate_ticks > 0) {
 			return;
 		}
-		cooldownPlayerDetection = SS_SEARCH_INTERVAL_TICKS;
+		shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_PERIOD_TICKS;
 		
 		// skip unless setup is done
 		if (targetX == 0 && targetY == 0 && targetZ == 0) {
@@ -693,27 +722,28 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		}
 		
 		// find a unique player in range
-		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 1.0D, yCoord + 1.0D, zCoord - 1.0D, xCoord + 1.99D, yCoord + 5.0D, zCoord + 1.99D);
-		List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-		List<EntityPlayer> entityPlayers = new ArrayList<>(10);
+		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 1.0D, yCoord + 1.0D, zCoord - 1.0D, 
+		                                                                 xCoord + 1.99D, yCoord + 5.0D, zCoord + 1.99D);
+		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final List<EntityPlayer> entityPlayers = new ArrayList<>(10);
 		for (Object object : list) {
 			if (object instanceof EntityPlayer) {
 				entityPlayers.add((EntityPlayer) object);
 			}
 		}
 		if (entityPlayers.isEmpty()) {
-			warmupPlayerId = null;
+			shipToken_idPlayer = null;
 			return;
 		}
 		if (entityPlayers.size() > 1) {
 			for (EntityPlayer entityPlayer : entityPlayers) {
 				Commons.addChatMessage(entityPlayer, "§c" + "Too many players detected: please stand in the beam one at a time.");
-				cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
+				shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS;
 			}
-			warmupPlayerId = null;
+			shipToken_idPlayer = null;
 			return;
 		}
-		EntityPlayer entityPlayer = entityPlayers.get(0);
+		final EntityPlayer entityPlayer = entityPlayers.get(0);
 		
 		// check inventory
 		int slotIndex = 0;
@@ -726,35 +756,39 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 				break;
 			}
 		}
-		if (itemStack == null || slotIndex >= entityPlayer.inventory.getSizeInventory()) {
+		if ( itemStack == null
+		  || slotIndex >= entityPlayer.inventory.getSizeInventory() ) {
 			Commons.addChatMessage(entityPlayer, "Please come back once you've a Ship token.");
-			cooldownPlayerDetection = 3 * SS_SEARCH_INTERVAL_TICKS;
+			shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS;
+			shipToken_idPlayer = null;
 			return;
 		}
 		
 		// short warmup so payer can cancel eventually
-		if (entityPlayer.getUniqueID() != warmupPlayerId || !warmupSchematicName.equals(ItemShipToken.getSchematicName(itemStack))) {
-			warmupPlayerId = entityPlayer.getUniqueID();
-			warmupPlayer = SS_SEARCH_WARMUP_INTERVALS + 1;
-			warmupSchematicName = ItemShipToken.getSchematicName(itemStack);
-			Commons.addChatMessage(entityPlayer, "§6" + String.format("Token '%1$s' detected!", warmupSchematicName, SS_SEARCH_WARMUP_INTERVALS));
+		if ( entityPlayer.getUniqueID() != shipToken_idPlayer
+		  || !shipToken_nameSchematic.equals(ItemShipToken.getSchematicName(itemStack)) ) {
+			shipToken_idPlayer = entityPlayer.getUniqueID();
+			shipToken_countWarmup = SHIP_TOKEN_PLAYER_WARMUP_PERIODS + 1;
+			shipToken_nameSchematic = ItemShipToken.getSchematicName(itemStack);
+			Commons.addChatMessage(entityPlayer, "§6" + String.format("Ship token '%1$s' detected!", shipToken_nameSchematic));
 		}
-		warmupPlayer--;
-		if (warmupPlayer > 0) {
-			Commons.addChatMessage(entityPlayer, String.format("Stand by for ship materialization in %2$d...", warmupSchematicName, warmupPlayer));
+		shipToken_countWarmup--;
+		if (shipToken_countWarmup > 0) {
+			Commons.addChatMessage(entityPlayer, String.format("Stand by for ship materialization in %2$d...",
+			                                                   shipToken_nameSchematic, shipToken_countWarmup));
 			return;
 		}
 		// warmup done
-		warmupPlayerId = null;
+		shipToken_idPlayer = null;
 		playerName = entityPlayer.getCommandSenderName();
 		
 		// try deploying
-		StringBuilder reason = new StringBuilder();
+		final StringBuilder reason = new StringBuilder();
 		deployShip(ItemShipToken.getSchematicName(itemStack), targetX - xCoord, targetY - yCoord, targetZ - zCoord, rotationSteps, true, reason);
 		if (!isActive) {
 			// failed
 			Commons.addChatMessage(entityPlayer, "§c" + reason.toString());
-			cooldownPlayerDetection = 5 * SS_SEARCH_INTERVAL_TICKS;
+			shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_DEPLOY_TICKS;
 			return;
 		}
 		Commons.addChatMessage(entityPlayer, "§6" + reason.toString());
