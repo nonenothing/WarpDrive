@@ -211,7 +211,7 @@ public class Dictionary {
 					+ "- NoMass: this entity doesn't count when calculating ship volume/mass (default: Galacticraft air bubble).\n"
 					+ "- LeftBehind: this entity won't move with your ship (default: Galacticraft air bubble).\n"
 					+ "- NonLivingTarget: this non-living entity can be targeted/removed by weapons (default: ItemFrame, Painting).\n"
-					+ "- LivingWithoutAir: this living entity doesn't need air to live (default: vanilla zombies and skeletons.");
+					+ "- LivingWithoutAir: this living entity doesn't need air to live (default: vanilla zombies and skeletons).");
 			
 			ConfigCategory categoryEntityTags = config.getCategory("entity_tags");
 			String[] taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);

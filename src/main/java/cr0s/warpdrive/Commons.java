@@ -51,14 +51,14 @@ public class Commons {
 		       .replaceAll("(" + CHAR_FORMATTING + ".)", "");
 	}
 	
-	public static void addChatMessage(final ICommandSender sender, final String message) {
-		if (sender == null) {
-			WarpDrive.logger.error("Unable to send message to NULL sender: " + message);
+	public static void addChatMessage(final ICommandSender commandSender, final String message) {
+		if (commandSender == null) {
+			WarpDrive.logger.error("Unable to send message to NULL commandSender: " + message);
 			return;
 		}
 		final String[] lines = updateEscapeCodes(message).split("\n");
 		for (String line : lines) {
-			sender.addChatMessage(new ChatComponentText(line));
+			commandSender.addChatMessage(new ChatComponentText(line));
 		}
 		
 		// logger.info(message);

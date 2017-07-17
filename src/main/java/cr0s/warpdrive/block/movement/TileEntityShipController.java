@@ -579,7 +579,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (arguments.length == 1) {
 			this.nameTarget = (String) arguments[0];
 		}
-		return new Object[] {nameTarget};
+		return new Object[] { nameTarget };
 	}
 	
 	@Override

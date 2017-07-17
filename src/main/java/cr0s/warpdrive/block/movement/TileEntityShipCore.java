@@ -432,11 +432,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		for (int i = 0; i < controller.players.size(); i++) {
 			final String playerName = controller.players.get(i);
-			final EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
 			
-			if ( player != null
-			  && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
-				summonPlayer(player);
+			if ( entityPlayerMP != null
+			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
+				summonPlayer(entityPlayerMP);
 			}
 		}
 	}
@@ -446,11 +446,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		for (int i = 0; i < controller.players.size(); i++) {
 			final String playerName = controller.players.get(i);
-			final EntityPlayerMP player = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
 			
-			if ( player != null && playerName.equals(nickname)
-			  && isOutsideBB(aabb, MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ))) {
-				summonPlayer(player);
+			if ( entityPlayerMP != null && playerName.equals(nickname)
+			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
+				summonPlayer(entityPlayerMP);
 				return;
 			}
 		}
