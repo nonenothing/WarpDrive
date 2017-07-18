@@ -6,6 +6,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,8 +27,8 @@ import net.minecraftforge.event.world.WorldEvent;
 public class ChunkHandler {
 	
 	// persistent properties
-	private static final Map<Integer, Map<Long, ChunkData>> registryClient = new ConcurrentHashMap<>(32);
-	private static final Map<Integer, Map<Long, ChunkData>> registryServer = new ConcurrentHashMap<>(32);
+	private static final Map<Integer, Map<Long, ChunkData>> registryClient = new HashMap<>(32);
+	private static final Map<Integer, Map<Long, ChunkData>> registryServer = new HashMap<>(32);
 	
 	// computed properties
 	public static long delayLogging = 0;
