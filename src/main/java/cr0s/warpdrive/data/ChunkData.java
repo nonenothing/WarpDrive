@@ -251,13 +251,15 @@ public class ChunkData {
 	public void unload() {
 		// check consistency
 		if ( !isLoaded
-		  && timeUnloaded != 0 ) {
-			WarpDrive.logger.warn(String.format("Chunk %s (%d %d %d) is already unloaded, timings are loaded %d saved %d unloaded %d",
-			                                    chunkCoordIntPair,
-			                                    getChunkPosition().chunkPosX, getChunkPosition().chunkPosY, getChunkPosition().chunkPosZ,
-			                                    timeLoaded,
-			                                    timeSaved,
-			                                    timeUnloaded));
+		  && timeUnloaded != 0L ) {
+			if (timeLoaded != 0L) {
+				WarpDrive.logger.warn(String.format("Chunk %s (%d %d %d) is already unloaded, timings are loaded %d saved %d unloaded %d",
+				                                    chunkCoordIntPair,
+				                                    getChunkPosition().chunkPosX, getChunkPosition().chunkPosY, getChunkPosition().chunkPosZ,
+				                                    timeLoaded,
+				                                    timeSaved,
+				                                    timeUnloaded));
+			}
 			return;
 		}
 		
