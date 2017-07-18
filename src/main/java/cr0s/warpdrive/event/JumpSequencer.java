@@ -703,8 +703,9 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		LocalProfiler.stop();
-		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info("Removing TE duplicates: tileEntities in target world before jump: " + targetWorld.loadedTileEntityList.size());
+		if (WarpDrive.isDev && WarpDriveConfig.LOGGING_JUMP) {
+			WarpDrive.logger.info(String.format("Removing TE duplicates: tileEntities in target world before jump: %d",
+			                                    targetWorld.loadedTileEntityList.size()));
 		}
 	}
 	
@@ -1377,7 +1378,16 @@ public class JumpSequencer extends AbstractSequencer {
 			public int compare(TileEntity o1, TileEntity o2) {
 				if (o1.xCoord == o2.xCoord && o1.yCoord == o2.yCoord && o1.zCoord == o2.zCoord) {
 					if (WarpDriveConfig.LOGGING_JUMP) {
-						WarpDrive.logger.warn("Removed duplicated TE: " + o1 + " vs " + o2);
+						WarpDrive.logger.warn(String.format("Removing TE duplicates: detected duplicate in %s @ %d %d %d: %s vs %s",
+						                                    o1.getWorldObj().provider.getDimensionName(),
+						                                    o1.xCoord, o1.yCoord, o1.zCoord,
+						                                    o1, o2));
+						final NBTTagCompound nbtTagCompound1 = new NBTTagCompound();
+						o1.writeToNBT(nbtTagCompound1);
+						final NBTTagCompound nbtTagCompound2 = new NBTTagCompound();
+						o2.writeToNBT(nbtTagCompound2);
+						WarpDrive.logger.warn(String.format("First  NBT is %s", nbtTagCompound1));
+						WarpDrive.logger.warn(String.format("Second NBT is %s", nbtTagCompound2));
 					}
 					return 0;
 				} else {
