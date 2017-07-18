@@ -23,6 +23,7 @@ local ship_shipSize = 0
 local ship_movement = { 0, 0, 0 }
 local ship_rotationSteps = 0
 local ship_indexPlayer = 0
+local ship_arrayPlayers = { }
 local ship_indexTarget = 0
 
 function ship_read(parData)
@@ -533,8 +534,8 @@ function ship_page_crew()
       if stringPlayers == nil or stringPlayers == "" then
         stringPlayers = "~ no registered player ~"
       end
-      local arrayPlayers = w.data_splitString(stringPlayers, ",")
-      ship_indexPlayer = ship_writeArray(arrayPlayers, ship_indexPlayer)
+      ship_arrayPlayers = w.data_splitString(stringPlayers, ",")
+      ship_indexPlayer = ship_writeArray(ship_arrayPlayers, ship_indexPlayer)
       w.writeLn("")
       w.writeLn("Summon crew after short jump = " .. w.format_boolean(data.ship_summon, "YES", "no"))
     end
@@ -561,10 +562,11 @@ function ship_key_crew(character, keycode)
     ship.enable(true)
     return true
   elseif keycode == 28 then -- Enter
-    ship.targetName(ship_indexPlayer) -- @TODO fixme
+    local namePlayer = ship_arrayPlayers[ship_indexPlayer + 1]
+    ship.targetName(namePlayer)
     ship.command("SUMMON")
     ship.enable(true)
-    w.status_showSuccess("Engaging teleportation for " .. namePlayer .. "...") -- @TODO fixme
+    w.status_showSuccess("Engaging teleportation for " .. namePlayer .. "...")
     return true
   elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
     ship_indexPlayer = ship_indexPlayer - 1
