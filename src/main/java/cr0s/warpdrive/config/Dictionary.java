@@ -282,6 +282,11 @@ public class Dictionary {
 				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
+				config.get("item_tags", "Techguns:t3_exo_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "Techguns:t3_miner_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "Techguns:t3_power_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "Techguns:steam,_helmet", "BreathingHelmet").getString();
+				config.get("item_tags", "Techguns:tacticalMask", "BreathingHelmet").getString();
 				
 				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
 				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();
