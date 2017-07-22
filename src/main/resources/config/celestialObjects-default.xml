@@ -112,8 +112,14 @@
 				  red, green, blue: color mixing from 0.00 (black) to 1.00 (white)
 				  alpha: transparency factor from 0.00 (invisible) to 1.00 (opaque)
 				  texture: optional texture to use, can come from resource pack, vanilla or the mod itself
-				  periodU, periodV: optional rotation period, measured in seconds, defaults to 0 (disabled)
+				  periodU, periodV: optional texture rotation period over the planet, measured in seconds, defaults to 0 (disabled)
+				  		Texture coordinates are defined along U and V axis (you can see them as X and Y axs in the context of the texture pixels).
+				  		A periodU of 40 means the texture will do progressively shift along U axis, doing a full rotation in 40s.
+				  		A periodU of -80 means the texture will shift twice slower in the opposite direction. 
 				  additive: optional blending function, defaults to false (multiplicative)
+				  		Blending is the mathematical operation to mix existing pixel (previous layer or sky background) with the new one.
+				  
+				  In most cases, you want the first layer to be alpha="1.00", or the players will see the sky through the planet.
 				  -->
 				<render red="0.80" green="0.50" blue="0.20" alpha="1.00" texture="" />
 				<render red="0.80" green="0.70" blue="0.30" alpha="0.40" texture="warpdrive:textures/celestial/planet_icy.png" periodU="-20" periodV="104" additive="true" />
