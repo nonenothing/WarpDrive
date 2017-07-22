@@ -11,11 +11,13 @@ import net.minecraft.tileentity.TileEntity;
 
 public class CompatTechguns implements IBlockTransformer {
 	
+	private static Class<?> classBlockLadder;
 	private static Class<?> classBlockLamp;
 	private static Class<?> classBlockBasicMachine;
 	
 	public static void register() {
 		try {
+			classBlockLadder = Class.forName("techguns.blocks.BlockTGLadder");
 			classBlockLamp = Class.forName("techguns.blocks.BlockTGLamp");
 			classBlockBasicMachine = Class.forName("techguns.blocks.machines.BasicMachine");
 			WarpDriveConfig.registerBlockTransformer("Techguns", new CompatTechguns());
@@ -26,7 +28,8 @@ public class CompatTechguns implements IBlockTransformer {
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		return classBlockLamp.isInstance(block)
+		return classBlockLadder.isInstance(block)
+		    || classBlockLamp.isInstance(block)
 			|| classBlockBasicMachine.isInstance(block);
 	}
 	
@@ -47,7 +50,8 @@ public class CompatTechguns implements IBlockTransformer {
 	}
 	
 	// Transformation handling required:
-	// Tile lamp: (metadata) 0 / 1 / 2 / 3 6 4 5 / 7 / 8 / 9 / 10 / 11 14 12 13 / 15    mrotLamp            techguns.blocks.BlockTGLamp
+	// Block ladder: (metadata) 0 3 1 2 / 4 7 5 6 / 8 11 9 10 / 12 15 13 14             mrotLadder          techguns.blocks.BlockTGLadder
+	// Block lamp: (metadata) 0 / 1 / 2 / 3 6 4 5 / 7 / 8 / 9 / 10 / 11 14 12 13 / 15   mrotLamp            techguns.blocks.BlockTGLamp
 	// Tile basic machine: (metadata 0/1/4/9), rotation (byte) 0 1 2 3                  rotBasicMachine 	techguns.blocks.machines.BasicMachine:0/1/4/9
 	// Tile basic machine: (metadata 2)                                                 -none-              techguns.blocks.machines.BasicMachine:2
 	// Tile basic machine: (metadata 3 or 5), rotation (byte) 0 -1 -2 1                 rotRepairCamoBench  techguns.blocks.machines.BasicMachine:3/5
@@ -57,6 +61,7 @@ public class CompatTechguns implements IBlockTransformer {
 	
 	
 	// -----------------------------------------          {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+	private static final int[]   mrotLadder             = {  3,  2,  0,  1,  7,  6,  4,  5, 11, 10,  8,  9, 15, 14, 12, 13 };
 	private static final int[]   mrotLamp               = {  0,  1,  2,  6,  5,  3,  4,  7,  8,  9, 10, 14, 13, 11, 12, 15 };
 	private static final byte[]  rotBasicMachine        = {  1,  2,  3,  0,  5,  3,  4,  7,  8,  9, 10, 14, 13, 11, 12, 15 };
 	private static final byte[]  orientExplosiveCharge  = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
@@ -79,6 +84,19 @@ public class CompatTechguns implements IBlockTransformer {
 			return metadata;
 		}
 		
+		if (classBlockLadder.isInstance(block)) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotLadder[metadata];
+			case 2:
+				return mrotLadder[mrotLadder[metadata]];
+			case 3:
+				return mrotLadder[mrotLadder[mrotLadder[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
 		if (classBlockLamp.isInstance(block)) {
 			switch (rotationSteps) {
 			case 1:
@@ -91,6 +109,7 @@ public class CompatTechguns implements IBlockTransformer {
 				return metadata;
 			}
 		}
+		
 		if (classBlockBasicMachine.isInstance(block)) {
 			switch(metadata) {
 			case 0:
