@@ -11,6 +11,7 @@ import cr0s.warpdrive.compat.CompatBotania;
 import cr0s.warpdrive.compat.CompatBuildCraft;
 import cr0s.warpdrive.compat.CompatCarpentersBlocks;
 import cr0s.warpdrive.compat.CompatComputerCraft;
+import cr0s.warpdrive.compat.CompatCustomNpcs;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatEvilCraft;
 import cr0s.warpdrive.compat.CompatForgeMultipart;
@@ -32,6 +33,7 @@ import cr0s.warpdrive.compat.CompatThermalDynamics;
 import cr0s.warpdrive.compat.CompatThermalExpansion;
 import cr0s.warpdrive.compat.CompatWarpDrive;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import org.xml.sax.ErrorHandler;
@@ -48,16 +50,22 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.MathHelper;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.FakePlayer;
 
 public class WarpDriveConfig {
 	
@@ -388,6 +396,18 @@ public class WarpDriveConfig {
 		CelestialObjectManager.clearForReload(false);
 		onFMLpreInitialization(stringConfigDirectory);
 		onFMLPostInitialization();
+		
+		@SuppressWarnings("unchecked")
+		List<EntityPlayer> entityPlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		for (EntityPlayer entityPlayer : entityPlayers) {
+			if ( entityPlayer instanceof EntityPlayerMP
+			  && !(entityPlayer instanceof FakePlayer) ) {
+				final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj,
+				                                                                   MathHelper.floor_double(entityPlayer.posX),
+				                                                                   MathHelper.floor_double(entityPlayer.posZ));
+				CelestialObjectManager.onPlayerJoinWorld((EntityPlayerMP) entityPlayer, celestialObject);
+			}
+		}
 	}
 	
 	public static void onFMLpreInitialization(final String stringConfigDirectory) {
@@ -923,13 +943,17 @@ public class WarpDriveConfig {
 		if (isBiblioCraftLoaded) {
 			CompatBiblioCraft.register();
 		}
+		boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
+		if (isBuildCraftLoaded) {
+			CompatBuildCraft.register();
+		}
 		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
 		if (isCarpentersBlocksLoaded) {
 			CompatCarpentersBlocks.register();
 		}
-		boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
-		if (isBuildCraftLoaded) {
-			CompatBuildCraft.register();
+		boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
+		if (isCustomNpcsLoaded) {
+			CompatCustomNpcs.register();
 		}
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
