@@ -42,7 +42,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
-	private static final int LOG_INTERVAL_TICKS = 20 * 60;
+	private static final int LOG_INTERVAL_TICKS = 20 * 180;
 	
 	// persistent properties
 	public ForgeDirection facing;
