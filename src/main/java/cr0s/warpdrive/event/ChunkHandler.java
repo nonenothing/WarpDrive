@@ -5,11 +5,18 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
+import gnu.trove.TCollections;
+import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -25,6 +32,8 @@ import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
 public class ChunkHandler {
+	
+	private static final long CHUNK_HANDLER_UNLOADED_CHUNK_MAX_AGE_MS = 30000L;
 	
 	// persistent properties
 	private static final Map<Integer, Map<Long, ChunkData>> registryClient = new HashMap<>(32);
@@ -199,14 +208,18 @@ public class ChunkHandler {
 		final Map<Integer, Map<Long, ChunkData>> registry = isRemote ? registryClient : registryServer;
 		Map<Long, ChunkData> mapRegistryItems = registry.get(dimensionId);
 		// (lambda expressions are forcing synchronisation, so we don't use them here)
+		//noinspection Java8MapApi
 		if (mapRegistryItems == null) {
-			mapRegistryItems = new ConcurrentHashMap<>(4096);
+			// TLongObjectMap<ChunkData> m = TCollections.synchronizedMap(new TLongObjectHashMap<ChunkData>(2048) );
+			// @TODO: http://trove4j.sourceforge.net/javadocs/gnu/trove/TCollections.html#synchronizedMap(gnu.trove.map.TLongObjectMap)
+			mapRegistryItems = Collections.synchronizedMap(new LinkedHashMap<>(2048));
 			registry.put(dimensionId, mapRegistryItems);
 		}
 		// get chunk data
 		final long index = ChunkCoordIntPair.chunkXZ2Int(xChunk, zChunk);
 		ChunkData chunkData = mapRegistryItems.get(index);
 		// (lambda expressions are forcing synchronisation, so we don't use them here)
+		//noinspection Java8MapApi
 		if (chunkData == null) {
 			chunkData = new ChunkData(xChunk, zChunk);
 			mapRegistryItems.put(index, chunkData);
@@ -217,7 +230,7 @@ public class ChunkHandler {
 	private static boolean isLoaded(final Map<Long, ChunkData> mapRegistryItems, final int xChunk, final int zChunk) {
 		// get chunk data
 		final long index = ChunkCoordIntPair.chunkXZ2Int(xChunk, zChunk);
-		ChunkData chunkData = mapRegistryItems.get(index);
+		final ChunkData chunkData = mapRegistryItems.get(index);
 		return chunkData != null && chunkData.isLoaded();
 	}
 	
@@ -234,16 +247,22 @@ public class ChunkHandler {
 	public static void updateTick(final World world) {
 		// get dimension data
 		final Map<Integer, Map<Long, ChunkData>> registry = world.isRemote ? registryClient : registryServer;
-		Map<Long, ChunkData> mapRegistryItems = registry.get(world.provider.dimensionId);
+		final Map<Long, ChunkData> mapRegistryItems = registry.get(world.provider.dimensionId);
 		if (mapRegistryItems == null) {
 			return;
 		}
 		int countLoaded = 0;
-		for (Entry<Long, ChunkData> entryChunkData : mapRegistryItems.entrySet()) {
-			if (updateTickLoopStep(world, mapRegistryItems, entryChunkData.getValue())) {
-				continue;
+		final long time = System.currentTimeMillis() - CHUNK_HANDLER_UNLOADED_CHUNK_MAX_AGE_MS;
+		for(Iterator<Entry<Long, ChunkData>> entryIterator = mapRegistryItems.entrySet().iterator(); entryIterator.hasNext(); ) {
+			final Map.Entry<Long, ChunkData> entryChunkData = entryIterator.next();
+			final ChunkData chunkData = entryChunkData.getValue();
+			// update loaded chunks, remove old unloaded chunks
+			if (chunkData.isLoaded()) {
+				updateTickLoopStep(world, mapRegistryItems, entryChunkData.getValue());
+				countLoaded++;
+			} else if (chunkData.timeUnloaded < time) {
+				entryIterator.remove();
 			}
-			countLoaded++;
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			if (world.provider.dimensionId == 0) {
@@ -258,19 +277,16 @@ public class ChunkHandler {
 		}
 	}
 	
-	public static boolean updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
-		// skip unloaded chunks
-		if (!chunkData.isLoaded()) {
-			return true;
-		}
+	public static void updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
 		final ChunkCoordIntPair chunkCoordIntPair = chunkData.getChunkCoords();
-		// skip chunks with unloaded neighbours
-		if ( isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos + 1, chunkCoordIntPair.chunkZPos)
+		// skip empty chunks (faster and more frequent)
+		// ship chunk with unloaded neighbours
+		if ( chunkData.isNotEmpty()
+		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos + 1, chunkCoordIntPair.chunkZPos)
 		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos - 1, chunkCoordIntPair.chunkZPos)
 		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos + 1)
 		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos - 1) ) {
 			chunkData.updateTick(world);
 		}
-		return false;
 	}
 }
