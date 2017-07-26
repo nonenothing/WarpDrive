@@ -8,18 +8,21 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 
 public class CompatTechguns implements IBlockTransformer {
 	
 	private static Class<?> classBlockLadder;
 	private static Class<?> classBlockLamp;
 	private static Class<?> classBlockBasicMachine;
+	private static Class<?> classBlockMultiBlockMachineBlock;
 	
 	public static void register() {
 		try {
 			classBlockLadder = Class.forName("techguns.blocks.BlockTGLadder");
 			classBlockLamp = Class.forName("techguns.blocks.BlockTGLamp");
 			classBlockBasicMachine = Class.forName("techguns.blocks.machines.BasicMachine");
+			classBlockMultiBlockMachineBlock = Class.forName("techguns.blocks.machines.MultiBlockMachineBlock");
 			WarpDriveConfig.registerBlockTransformer("Techguns", new CompatTechguns());
 		} catch(ClassNotFoundException exception) {
 			exception.printStackTrace();
@@ -30,7 +33,8 @@ public class CompatTechguns implements IBlockTransformer {
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
 		return classBlockLadder.isInstance(block)
 		    || classBlockLamp.isInstance(block)
-			|| classBlockBasicMachine.isInstance(block);
+		    || classBlockBasicMachine.isInstance(block)
+		    || classBlockMultiBlockMachineBlock.isInstance(block);
 	}
 	
 	@Override
@@ -80,9 +84,6 @@ public class CompatTechguns implements IBlockTransformer {
 	@Override
 	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
-		if (rotationSteps == 0) {
-			return metadata;
-		}
 		
 		if (classBlockLadder.isInstance(block)) {
 			switch (rotationSteps) {
@@ -195,6 +196,18 @@ public class CompatTechguns implements IBlockTransformer {
 			default:
 				return metadata;
 			}
+		}
+		
+		if ( classBlockMultiBlockMachineBlock.isInstance(block)
+		  && nbtTileEntity.hasKey("hasMaster")
+		  && nbtTileEntity.getBoolean("hasMaster") ) {
+			final int xMaster = nbtTileEntity.getInteger("masterX");
+			final int yMaster = nbtTileEntity.getShort("masterY");
+			final int zMaster = nbtTileEntity.getInteger("masterZ");
+			final ChunkCoordinates chunkCoordinatesMaster = transformation.apply(xMaster, yMaster, zMaster);
+			nbtTileEntity.setInteger("masterX", chunkCoordinatesMaster.posX);
+			nbtTileEntity.setInteger("masterY", chunkCoordinatesMaster.posY);
+			nbtTileEntity.setInteger("masterZ", chunkCoordinatesMaster.posZ);
 		}
 		
 		return metadata;
