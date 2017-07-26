@@ -80,6 +80,9 @@ public class WorldHandler {
 						event.setCanceled(true);
 					}
 				}
+				if (!celestialObject.isInsideBorder(event.entity.posX, event.entity.posZ)) {
+					event.setCanceled(true);
+				}
 			}
 		}
 	}
