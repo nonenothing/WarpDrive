@@ -371,13 +371,18 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	protected void resolveParent(final CelestialObject celestialObjectParent) {
 		parent = celestialObjectParent;
 		isParentResolved = true;
+		if ( parent == null
+		  && provider.equals(PROVIDER_HYPERSPACE) ) {
+			isHyperspace = true;
+		}
 	}
 	
 	protected void lateUpdate() {
 		if (provider.equals(PROVIDER_AUTO)) {
-			if (isHyperspace()) {
+			/* if (isHyperspace()) {
 				provider = PROVIDER_HYPERSPACE;
-			} else if (isSpace()) {
+			} else /* @TODO need to define a key for Hyperspace */
+			if (isSpace()) {
 				provider = PROVIDER_SPACE;
 			} else {
 				provider = PROVIDER_OTHER;

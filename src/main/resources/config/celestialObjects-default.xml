@@ -7,7 +7,7 @@
 	<!--
 	  An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
 	  They can be a planet, a more abstract construct like solar system (space dimension) or the all mighty hyperspace.
-	  Hyperspace is a root dimension. It's not supposed to have a parent celestial object.
+	  Hyperspace is defined by it's WarpDriveHyperspace dimension provider. It may a virtual parent celestial object (i.e. one with no dimension defined).
 	  Space is a dimension with Hyperspace as its parent.
 	  In theory, multiple planets can exists in the same minecraft world (for example: The Twilight Forest exist on multiple planets in different star systems).
 	  Multiple hyperspaces can be defined.
