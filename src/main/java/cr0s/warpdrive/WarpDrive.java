@@ -92,6 +92,7 @@ import cr0s.warpdrive.block.weapon.TileEntityWeaponController;
 import cr0s.warpdrive.command.CommandDebug;
 import cr0s.warpdrive.command.CommandDump;
 import cr0s.warpdrive.command.CommandEntity;
+import cr0s.warpdrive.command.CommandFind;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandInvisible;
 import cr0s.warpdrive.command.CommandJumpgates;
@@ -750,6 +751,7 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandDebug());
 		event.registerServerCommand(new CommandDump());
 		event.registerServerCommand(new CommandEntity());
+		event.registerServerCommand(new CommandFind());
 		event.registerServerCommand(new CommandGenerate());
 		event.registerServerCommand(new CommandInvisible());
 		event.registerServerCommand(new CommandJumpgates());

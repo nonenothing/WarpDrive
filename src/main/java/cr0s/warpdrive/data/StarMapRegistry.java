@@ -95,6 +95,72 @@ public class StarMapRegistry {
 		// not found => ignore it
 	}
 	
+	public String find(final String nameShip) {
+		final int MAX_LENGTH = 2000;
+		final StringBuilder resultMatch = new StringBuilder();
+		final StringBuilder resultCaseInsensitive = new StringBuilder();
+		final StringBuilder resultContains = new StringBuilder();
+		for (final Integer dimensionId : registry.keySet()) {
+			final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(dimensionId);
+			if (setStarMapRegistryItems == null) {
+				continue;
+			}
+			
+			for (final StarMapRegistryItem starMapRegistryItem : setStarMapRegistryItems) {
+				if (starMapRegistryItem.type == EnumStarMapEntryType.SHIP) {
+					if (starMapRegistryItem.name.equals(nameShip)) {
+						if (resultMatch.length() < MAX_LENGTH) {
+							if (resultMatch.length() > 0) {
+								resultMatch.append("\n");
+							}
+							resultMatch.append(String.format("Ship '%s' found in DIM%d @ (%d %d %d)",
+							                                 starMapRegistryItem.name,
+							                                 starMapRegistryItem.dimensionId,
+							                                 starMapRegistryItem.x, starMapRegistryItem.y, starMapRegistryItem.z));
+						} else {
+							resultMatch.append(".");
+						}
+					} else if (starMapRegistryItem.name.equalsIgnoreCase(nameShip)) {
+						if (resultMatch.length() < MAX_LENGTH) {
+							if (resultCaseInsensitive.length() > 0) {
+								resultCaseInsensitive.append("\n");
+							}
+							resultCaseInsensitive.append(String.format("Ship '%s' found in DIM%d @ (%d %d %d)",
+							                                           starMapRegistryItem.name,
+							                                           starMapRegistryItem.dimensionId,
+							                                           starMapRegistryItem.x, starMapRegistryItem.y, starMapRegistryItem.z));
+						} else {
+							resultCaseInsensitive.append(".");
+						}
+					} else if (starMapRegistryItem.name.contains(nameShip)) {
+						if (resultMatch.length() < MAX_LENGTH) {
+							if (resultContains.length() > 0) {
+								resultContains.append("\n");
+							}
+							resultContains.append(String.format("Ship '%s' found in DIM%d @ (%d %d %d)",
+							                                    starMapRegistryItem.name,
+							                                    starMapRegistryItem.dimensionId,
+							                                    starMapRegistryItem.x, starMapRegistryItem.y, starMapRegistryItem.z));
+						} else {
+							resultContains.append(".");
+						}
+					}
+				}
+			}
+		}
+		
+		if (resultMatch.length() > 0) {
+			return resultMatch.toString();
+		}
+		if (resultCaseInsensitive.length() > 0) {
+			return resultCaseInsensitive.toString();
+		}
+		if (resultContains.length() > 0) {
+			return resultMatch.toString();
+		}
+		return String.format("No ship found with name '%s'", nameShip);
+	}
+	
 	public void onBlockUpdated(final World world, final int x, final int y, final int z, final Block block, final int metadata) {
 		final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.dimensionId);
 		if (setStarMapRegistryItems == null) {
