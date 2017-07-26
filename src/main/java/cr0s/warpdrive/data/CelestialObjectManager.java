@@ -118,7 +118,7 @@ public class CelestialObjectManager extends XmlFileManager {
 						                                     celestialObject.dimensionId));
 					}
 					break;
-				
+					
 				case CelestialObject.PROVIDER_OTHER:
 					// nothing
 					break;

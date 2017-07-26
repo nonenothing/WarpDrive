@@ -580,7 +580,7 @@ public class JumpBlock {
 			// This code is an IC2 hack to fix an issue on 1.7.10 up to industrialcraft-2-2.2.763-experimental, see http://bt.industrial-craft.net/view.php?id=1704
 			if (!NetworkManager_instance.getClass().getName().contains("NetworkManager")) {
 				NetworkManager_instance = Class.forName("ic2.core.util.SideGateway").getMethod("get").invoke(NetworkManager_instance);
-				WarpDrive.logger.error("Patched IC2 API, new instance is '" + NetworkManager_instance + "'");
+				WarpDrive.logger.info("Patched IC2 API, new instance is '" + NetworkManager_instance + "'");
 			}
 			// IC2 hack ends here
 		} catch (Exception exception) {

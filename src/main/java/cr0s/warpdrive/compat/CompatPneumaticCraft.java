@@ -1,6 +1,5 @@
 package cr0s.warpdrive.compat;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -128,7 +127,6 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// pressure chamber wall, pressure chamber window, pressure chamber interface
 		if (nbtTileEntity.hasKey("valveX")) {
-			WarpDrive.logger.info("hasKey valveX");
 			ChunkCoordinates target = transformation.apply(
 				nbtTileEntity.getInteger("valveX"),
 				nbtTileEntity.getInteger("valveY"),
