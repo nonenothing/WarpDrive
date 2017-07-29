@@ -489,6 +489,11 @@ public class JumpBlock {
 			tagCompound.removeTag("computerID");
 			tagCompound.removeTag("label");
 		}
+		// WarpDrive UUID
+		if (tagCompound.hasKey("uuidMost")) {
+			tagCompound.removeTag("uuidMost");
+			tagCompound.removeTag("uuidLeast");
+		}
 		// WarpDrive any OC connected tile
 		if (tagCompound.hasKey("oc:node")) {
 			tagCompound.removeTag("oc:node");
