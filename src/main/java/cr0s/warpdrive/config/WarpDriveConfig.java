@@ -36,6 +36,7 @@ import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipMovementType;
+import cr0s.warpdrive.data.EnumDisplayAlignment;
 import cr0s.warpdrive.network.PacketHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -141,6 +142,17 @@ public class WarpDriveConfig {
 	public static boolean RECIPES_ENABLE_IC2 = false;
 	public static boolean RECIPES_ENABLE_HARD_IC2 = false;
 	public static boolean RECIPES_ENABLE_VANILLA = false;
+	
+	// Client
+	public static String CLIENT_LOCATION_FORMAT = "§l";
+	public static int CLIENT_LOCATION_COLOR = Commons.colorARGBtoInt(230, 192, 192, 240);
+	public static boolean CLIENT_LOCATION_HAS_SHADOW = true;
+	public static EnumDisplayAlignment CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.MIDDLE_RIGHT;
+	public static int CLIENT_LOCATION_SCREEN_OFFSET_X = -50;
+	public static int CLIENT_LOCATION_SCREEN_OFFSET_Y = 0;
+	public static EnumDisplayAlignment CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.TOP_CENTER;
+	public static float CLIENT_LOCATION_WIDTH_RATIO = 0.0F;
+	public static int CLIENT_LOCATION_WIDTH_MIN = 90;
 	
 	// Logging
 	public static boolean LOGGING_JUMP = false;
@@ -472,6 +484,27 @@ public class WarpDriveConfig {
 		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
 		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCraft2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
 		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
+		
+		// Client
+		CLIENT_LOCATION_FORMAT = config.get("client", "location_format", CLIENT_LOCATION_FORMAT,
+		                                    "Format prefix for location title").getString();
+		String stringValue = config.get("client", "location_color", String.format("0x%6X", CLIENT_LOCATION_COLOR),
+		                                "Hexadecimal color code for location tile and description (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
+		CLIENT_LOCATION_COLOR = (int) ( Long.decode( stringValue ) & 0xFFFFFFFFL );
+		CLIENT_LOCATION_HAS_SHADOW = config.get("client", "location_has_shadow", CLIENT_LOCATION_HAS_SHADOW,
+		                                        "Shadow casting option for current celestial object name").getBoolean(CLIENT_LOCATION_HAS_SHADOW);
+		CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.valueOf(config.get("client", "location_screen_alignment", CLIENT_LOCATION_SCREEN_ALIGNMENT.name(),
+		                                              "Alignment on screen: TOP_LEFT, TOP_CENTER, TOP_RIGHT, MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER or BOTTOM_RIGHT").getString());
+		CLIENT_LOCATION_SCREEN_OFFSET_X = config.get("client", "location_offset_x", CLIENT_LOCATION_SCREEN_OFFSET_X,
+		                                             "Horizontal offset on screen, increase to move to the right").getInt();
+		CLIENT_LOCATION_SCREEN_OFFSET_Y = config.get("client", "location_offset_y", CLIENT_LOCATION_SCREEN_OFFSET_Y,
+		                                             "Vertical offset on screen, increase to move down").getInt();
+		CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.valueOf(config.get("client", "location_text_alignment", CLIENT_LOCATION_TEXT_ALIGNMENT.name(),
+		                                            "Text alignment: TOP_LEFT, TOP_CENTER, TOP_RIGHT, MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER or BOTTOM_RIGHT").getString());
+		CLIENT_LOCATION_WIDTH_RATIO = (float) config.get("client", "location_width_ratio", CLIENT_LOCATION_WIDTH_RATIO,
+		                                         "Text width as a ratio of full screen width").getDouble();
+		CLIENT_LOCATION_WIDTH_MIN = config.get("client", "location_width_min", CLIENT_LOCATION_WIDTH_MIN,
+		                                       "Text width as a minimum 'pixel' count").getInt();
 		
 		// Logging
 		LOGGING_JUMP = config.get("logging", "enable_jump_logs", LOGGING_JUMP, "Basic jump logs, should always be enabled").getBoolean(true);

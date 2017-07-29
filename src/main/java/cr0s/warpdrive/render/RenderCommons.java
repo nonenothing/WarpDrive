@@ -1,6 +1,7 @@
 package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.data.EnumDisplayAlignment;
 
 import java.util.List;
 
@@ -20,13 +21,6 @@ public class RenderCommons {
 	
 	protected static int colorGradient(final float gradient, final int start, final int end) {
 		return Math.max(0, Math.min(255, start + Math.round(gradient * (end - start))));
-	}
-	
-	protected static int colorARGBtoInt(final int alpha, final int red, final int green, final int blue) {
-		return (Commons.clamp(0, 255, alpha) << 24)
-		     + (Commons.clamp(0, 255, red  ) << 16)
-			 + (Commons.clamp(0, 255, green) <<  8)
-			 +  Commons.clamp(0, 255, blue );
 	}
 	
 	// from net.minecraft.client.gui.Gui
@@ -56,7 +50,7 @@ public class RenderCommons {
 		minecraft.fontRenderer.drawString(textTitle,
 		                                  scaledWidth / 4 - minecraft.fontRenderer.getStringWidth(textTitle) / 2,
 		                                  y - minecraft.fontRenderer.FONT_HEIGHT,
-		                                  colorARGBtoInt(230, 255, 32, 24),
+		                                  Commons.colorARGBtoInt(230, 255, 32, 24),
 		                                  true);
 		
 		// normal message, multi-lines, centered, without shadows
@@ -69,7 +63,7 @@ public class RenderCommons {
 			minecraft.fontRenderer.drawString(textLine,
 			                                  scaledWidth / 4 - minecraft.fontRenderer.getStringWidth(textLine) / 2,
 			                                  y,
-			                                  colorARGBtoInt(alpha, 192, 64, 48),
+			                                  Commons.colorARGBtoInt(alpha, 192, 64, 48),
 			                                  false);
 			y += minecraft.fontRenderer.FONT_HEIGHT;
 		}
@@ -77,5 +71,36 @@ public class RenderCommons {
 		// close rendering
 		GL11.glPopMatrix();
 		return alpha;
+	}
+		
+	public static int drawText(final int scaledWidth, final int scaledHeight, final String text,
+	                           final String formatPrefix, final int colorText, final boolean hasShadow,
+	                           final EnumDisplayAlignment enumScreenAnchor, final int xOffset, final int yOffset,
+	                           final EnumDisplayAlignment enumTextAlignment, final float widthTextRatio, final int widthTextMin) {
+		// prepare the string box content and dimensions
+		final String textMessage = Commons.updateEscapeCodes(formatPrefix + StatCollector.translateToLocal(text));
+		final int widthText = Math.max(widthTextMin, Math.round(widthTextRatio * scaledWidth));
+		
+		@SuppressWarnings("unchecked")
+		final List<String> listMessages = minecraft.fontRenderer.listFormattedStringToWidth(textMessage, widthText);
+		final int heightText = listMessages.size() * minecraft.fontRenderer.FONT_HEIGHT;
+		
+		// compute the position
+		int x = Math.round(scaledWidth  * enumScreenAnchor.xRatio + xOffset - enumTextAlignment.xRatio * widthText );
+		int y = Math.round(scaledHeight * enumScreenAnchor.yRatio + yOffset - enumTextAlignment.yRatio * heightText); 
+		
+		// start rendering
+		GL11.glPushMatrix();
+		GL11.glScalef(1.0F, 1.0F, 0.0F);
+		
+		for (final String textLine : listMessages) {
+			minecraft.fontRenderer.drawString(textLine, x, y, colorText, hasShadow);
+			y += minecraft.fontRenderer.FONT_HEIGHT;
+		}
+		
+		// close rendering
+		GL11.glPopMatrix();
+		
+		return heightText;
 	}
 }

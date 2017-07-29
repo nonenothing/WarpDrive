@@ -156,7 +156,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			}
 			if (listElements.size() == 1) {
 				final Element elementName = listElements.get(0);
-				displayName = elementName.getNodeValue();
+				displayName = elementName.getTextContent();
 			} else {
 				displayName = id;
 			}
@@ -170,7 +170,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			}
 			if (listElements.size() == 1) {
 				final Element elementName = listElements.get(0);
-				description = elementName.getNodeValue();
+				description = elementName.getTextContent();
 			} else {
 				description = "";
 			}
@@ -185,7 +185,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			nbtTagCompound = null;
 			if (listElements.size() == 1) {
 				final Element elementName = listElements.get(0);
-				final String stringNBT = elementName.getNodeValue();
+				final String stringNBT = elementName.getTextContent();
 				if (!stringNBT.isEmpty()) {
 					try {
 						nbtTagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
@@ -402,12 +402,12 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	
 	@Override
 	public String getDisplayName() {
-		return displayName;
+		return displayName == null ? "" : displayName;
 	}
 	
 	@Override
 	public String getDescription() {
-		return description;
+		return description == null ? "" : description;
 	}
 	
 	@Override
@@ -559,6 +559,9 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		borderRadiusX = nbtTagCompound.getInteger("borderRadiusX");
 		borderRadiusZ = nbtTagCompound.getInteger("borderRadiusZ");
 		
+		displayName = nbtTagCompound.getString("displayName");
+		description = nbtTagCompound.getString("description");
+		
 		isVirtual = nbtTagCompound.getBoolean("isVirtual");
 		if (isVirtual) {
 			dimensionId = 0;
@@ -605,6 +608,13 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		
 		nbtTagCompound.setInteger("borderRadiusX", borderRadiusX);
 		nbtTagCompound.setInteger("borderRadiusZ", borderRadiusZ);
+		
+		if (displayName != null && !displayName.isEmpty()) {
+			nbtTagCompound.setString("displayName", displayName);
+		}
+		if (description != null && !description.isEmpty()) {
+			nbtTagCompound.setString("description", description);
+		}
 		
 		nbtTagCompound.setBoolean("isVirtual", isVirtual);
 		if (!isVirtual) {

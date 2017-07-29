@@ -138,6 +138,7 @@ import cr0s.warpdrive.render.RenderBlockOmnipanel;
 import cr0s.warpdrive.render.RenderBlockStandard;
 import cr0s.warpdrive.render.RenderOverlayAir;
 import cr0s.warpdrive.render.RenderOverlayCamera;
+import cr0s.warpdrive.render.RenderOverlayLocation;
 import cr0s.warpdrive.world.BiomeSpace;
 import cr0s.warpdrive.world.HyperSpaceWorldGenerator;
 import cr0s.warpdrive.world.HyperSpaceWorldProvider;
@@ -308,6 +309,7 @@ public class WarpDrive implements LoadingCallback {
 		if (event.getSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
 			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayLocation());
 			
 			FMLCommonHandler.instance().bus().register(new ClientCameraHandler());
 			

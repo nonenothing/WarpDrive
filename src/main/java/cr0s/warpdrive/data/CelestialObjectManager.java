@@ -169,9 +169,8 @@ public class CelestialObjectManager extends XmlFileManager {
 	// *** client side only ***
 	
 	@SideOnly(Side.CLIENT)
-	public static void readClientSync(final NBTTagCompound nbtTagCompound) {
+	public static void readClientSync(final NBTTagList nbtTagList) {
 		clearForReload(true);
-		final NBTTagList nbtTagList = nbtTagCompound.getTagList("celestialObjects", NBT.TAG_COMPOUND);
 		if (nbtTagList != null && nbtTagList.tagCount() > 0) {
 			for (int index = 0; index < nbtTagList.tagCount(); index++) {
 				final CelestialObject celestialObject = new CelestialObject(nbtTagList.getCompoundTagAt(index));

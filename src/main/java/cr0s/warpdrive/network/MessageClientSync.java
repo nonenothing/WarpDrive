@@ -60,7 +60,7 @@ public class MessageClientSync implements IMessage, IMessageHandler<MessageClien
 		}
 		
 		try {
-			CelestialObjectManager.readClientSync(messageClientSync.nbtTagCompound.getCompoundTag("celestiaObjects"));
+			CelestialObjectManager.readClientSync(messageClientSync.nbtTagCompound.getTagList("celestialObjects", NBT.TAG_COMPOUND));
 			Dictionary.ITEMS_BREATHING_HELMET = Dictionary.readItemsFromNBT(messageClientSync.nbtTagCompound.getTagList("items_breathingHelmet", NBT.TAG_STRING));
 			Dictionary.ITEMS_FLYINSPACE       = Dictionary.readItemsFromNBT(messageClientSync.nbtTagCompound.getTagList("items_flyInSpace"     , NBT.TAG_STRING));
 			Dictionary.ITEMS_NOFALLDAMAGE     = Dictionary.readItemsFromNBT(messageClientSync.nbtTagCompound.getTagList("items_noFallDamage"   , NBT.TAG_STRING));

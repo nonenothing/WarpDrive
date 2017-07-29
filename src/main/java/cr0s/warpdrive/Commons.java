@@ -473,4 +473,11 @@ public class Commons {
 		
 		return null;
 	}
+	
+	public static int colorARGBtoInt(final int alpha, final int red, final int green, final int blue) {
+		return (clamp(0, 255, alpha) << 24)
+		     + (clamp(0, 255, red  ) << 16)
+			 + (clamp(0, 255, green) <<  8)
+			 +  clamp(0, 255, blue );
+	}
 }
