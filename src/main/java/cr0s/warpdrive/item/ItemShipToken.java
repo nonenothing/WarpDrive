@@ -93,13 +93,21 @@ public class ItemShipToken extends Item {
 		}
 	}
 	
-	public static String getSchematicName(ItemStack itemStack) {
+	public static String getSchematicName(final ItemStack itemStack) {
 		String schematicName = "" + itemStack.getItemDamage();
 		final NBTTagCompound tagCompound = itemStack.getTagCompound();
 		if (tagCompound != null && tagCompound.hasKey("shipName")) {
 			schematicName = tagCompound.getString("shipName");
 		}
 		return schematicName;
+	}
+	
+	public static void setSchematicName(final ItemStack itemStack, final String schematicName) {
+		if (!itemStack.hasTagCompound()) {
+			itemStack.setTagCompound(new NBTTagCompound());
+		}
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		tagCompound.setString("shipName", schematicName);
 	}
 	
 	@Override

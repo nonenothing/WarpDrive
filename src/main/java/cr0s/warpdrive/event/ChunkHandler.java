@@ -5,11 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
-import gnu.trove.TCollections;
-import gnu.trove.impl.sync.TSynchronizedLongObjectMap;
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.map.hash.TLongObjectHashMap;
 
 import java.util.Collections;
 import java.util.HashMap;
