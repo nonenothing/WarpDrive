@@ -4,7 +4,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
-import cr0s.warpdrive.network.PacketHandler;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -14,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.AxisAlignedBB;
@@ -144,15 +144,9 @@ public class CelestialObjectManager extends XmlFileManager {
 		SERVER.rebuildAndValidate(true);
 	}
 	
-	public static void onPlayerJoinWorld(final EntityPlayerMP entityPlayerMP, final CelestialObject celestialObject) {
-		if (WarpDriveConfig.LOGGING_CLIENT_SYNCHRONIZATION) {
-			WarpDrive.logger.info(String.format("CelestialObjectManager.onPlayerJoinWorld %s", entityPlayerMP));
-		}
-		final NBTTagCompound nbtTagCompound = new NBTTagCompound();
+	public static NBTBase writeClientSync(final EntityPlayerMP entityPlayerMP, final CelestialObject celestialObject) {
 		final NBTTagList nbtTagList = new NBTTagList();
 		if (celestialObject != null) {
-			nbtTagCompound.setTag("celestialObjects", nbtTagList);
-			
 			// add current with all direct parents
 			CelestialObject celestialObjectParent = celestialObject;
 			while (celestialObjectParent != null) {
@@ -160,7 +154,7 @@ public class CelestialObjectManager extends XmlFileManager {
 				celestialObjectParent = celestialObjectParent.parent;
 			}
 			
-			// add all childs
+			// add all children
 			for (final CelestialObject celestialObjectChild : SERVER.celestialObjects) {
 				// keep only direct children
 				if (!celestialObjectChild.parentId.equals(celestialObject.id)) {
@@ -169,13 +163,13 @@ public class CelestialObjectManager extends XmlFileManager {
 				nbtTagList.appendTag(celestialObjectChild.writeToNBT(new NBTTagCompound()));
 			}
 		}
-		PacketHandler.sendClientSync(entityPlayerMP, nbtTagCompound);
+		return nbtTagList;
 	}
 	
 	// *** client side only ***
 	
 	@SideOnly(Side.CLIENT)
-	public static void onClientSync(final NBTTagCompound nbtTagCompound) {
+	public static void readClientSync(final NBTTagCompound nbtTagCompound) {
 		clearForReload(true);
 		final NBTTagList nbtTagList = nbtTagCompound.getTagList("celestialObjects", NBT.TAG_COMPOUND);
 		if (nbtTagList != null && nbtTagList.tagCount() > 0) {

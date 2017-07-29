@@ -16,6 +16,9 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -579,5 +582,38 @@ public class Dictionary {
 			message.append(GameRegistry.findUniqueIdentifierFor(entry.getKey())).append("=").append(entry.getValue());
 		}
 		return message.toString();
+	}
+	
+	public static NBTBase writeItemsToNBT(final HashSet<Item> hashSetItem) {
+		if ( hashSetItem != null
+		  && !hashSetItem.isEmpty() ) {
+			final NBTTagList nbtTagList = new NBTTagList();
+			
+			for (final Item item : hashSetItem) {
+				final String registryName = Item.itemRegistry.getNameForObject(item);
+				nbtTagList.appendTag(new NBTTagString(registryName));
+			}
+			
+			return nbtTagList;
+		}
+		return null;
+	}
+	
+	public static HashSet<Item> readItemsFromNBT(final NBTTagList nbtTagList) {
+		final HashSet<Item> hashSetItem = new HashSet<>(nbtTagList == null ? 8 : nbtTagList.tagCount());
+		
+		if ( nbtTagList != null
+		   && nbtTagList.tagCount() > 0 ) {
+			for (int index = 0; index < nbtTagList.tagCount(); index++) {
+				final String registryName = nbtTagList.getStringTagAt(index);
+				final Item item = GameData.getItemRegistry().getObject(registryName);
+				if (item != null) {
+					hashSetItem.add(item);
+				} else {
+					WarpDrive.logger.warn(String.format("Ignoring unknown item %s", registryName));
+				}
+			}
+		}
+		return hashSetItem;
 	}
 }

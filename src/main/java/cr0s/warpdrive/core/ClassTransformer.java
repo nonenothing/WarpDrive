@@ -21,11 +21,19 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
+import java.security.MessageDigest;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class ClassTransformer implements net.minecraft.launchwrapper.IClassTransformer {
-	private HashMap<String, String> nodeMap = new HashMap<>();
+	
+	private static HashMap<String, String> nodeMap = new HashMap<>();
+	public static ConcurrentSkipListMap<String, Integer> countClass = new ConcurrentSkipListMap<>();
+	public static ConcurrentHashMap<String, Long> sizeClass = new ConcurrentHashMap<>(8192);
 	
 	private static final String GRAVITY_MANAGER_CLASS = "cr0s/warpdrive/GravityManager";
 	private static final String CLOAK_MANAGER_CLASS = "cr0s/warpdrive/data/CloakManager";
@@ -70,29 +78,76 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			bytes = transformMinecraftEntityLivingBase(bytes);
 			saveClassToFile(true, transformedName, bytes);
 			break;
+			
 		case "net.minecraft.entity.item.EntityItem":
 			bytes = transformMinecraftEntityItem(bytes);
 			saveClassToFile(true, transformedName, bytes);
 			break;
+			
 		case "com.creativemd.itemphysic.physics.ServerPhysic":
 			bytes = transformItemPhysicEntityItem(bytes);
 			saveClassToFile(true, transformedName, bytes);
 			break;
+			
 		case "micdoodle8.mods.galacticraft.core.util.WorldUtil":
 			bytes = transformGalacticraftWorldUtil(bytes);
 			saveClassToFile(true, transformedName, bytes);
 			break;
+			
 		case "net.minecraft.client.multiplayer.WorldClient":
 			bytes = transformMinecraftWorldClient(bytes);
 			saveClassToFile(true, transformedName, bytes);
 			break;
+			
 		case "net.minecraft.world.chunk.Chunk":
 			bytes = transformMinecraftChunk(bytes);
 			saveClassToFile(true, transformedName, bytes);
 			break;
 		}
 		
+		try {
+			collectClientValidation(transformedName, bytes);
+		} catch (Exception exception) {
+			// nop
+		}
+		
 		return bytes;
+	}
+	
+	private static void collectClientValidation(final String transformedName, final byte[] bytes) {
+		final String[] names = transformedName.split("[.$]");
+		final String shortName = names[0] + "." + (names.length > 1 ? names[1] : "");
+		Integer count = countClass.get(shortName);
+		Long size = sizeClass.get(shortName);
+		if (count == null) {
+			count = 0;
+			size = 0L;
+		}
+		countClass.put(shortName, count + 1);
+		sizeClass.put(shortName, size + bytes.length);
+	}
+	
+	public static String getClientValidation() {
+		StringBuilder result = new StringBuilder().append(new Date().toString());
+		for (final String key : countClass.keySet()) {
+			result.append("\n").append(key)
+			      .append("\t").append(countClass.get(key))
+			      .append("\t").append(sizeClass.get(key));
+		}
+		return result.toString();
+	}
+	
+	private static String SHA1(final byte[] bytes) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("SHA-1");
+			Formatter formatter = new Formatter();
+			for (byte byteValue : md.digest(bytes)) {
+				formatter.format("%02x", byteValue);
+			}
+			return formatter.toString();
+		} catch (Exception exception) {
+			return exception.getMessage();
+		}
 	}
 	
 	private byte[] transformMinecraftEntityLivingBase(byte[] bytes) {

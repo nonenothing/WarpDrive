@@ -36,6 +36,7 @@ import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipMovementType;
+import cr0s.warpdrive.network.PacketHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -405,7 +406,7 @@ public class WarpDriveConfig {
 				final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj,
 				                                                                   MathHelper.floor_double(entityPlayer.posX),
 				                                                                   MathHelper.floor_double(entityPlayer.posZ));
-				CelestialObjectManager.onPlayerJoinWorld((EntityPlayerMP) entityPlayer, celestialObject);
+				PacketHandler.sendClientSync((EntityPlayerMP) entityPlayer, celestialObject);
 			}
 		}
 	}

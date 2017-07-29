@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.network.PacketHandler;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -63,7 +64,7 @@ public class WorldHandler {
 			
 			if (event.entity instanceof EntityPlayerMP) {
 				WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.entity, event.world);
-				CelestialObjectManager.onPlayerJoinWorld((EntityPlayerMP) event.entity, celestialObject);
+				PacketHandler.sendClientSync((EntityPlayerMP) event.entity, celestialObject);
 				
 			} else {
 				if (celestialObject == null) {
