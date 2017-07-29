@@ -4,11 +4,15 @@ import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.command.PlayerSelector;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChatComponentText;
@@ -448,6 +452,23 @@ public class Commons {
 			return tagCompound;
 		} catch (Exception exception) {
 			exception.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
+		@SuppressWarnings("unchecked")
+		List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		for (EntityPlayer onlinePlayer : onlinePlayers) {
+			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
+				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
+			}
+		}
+		
+		EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, playerNameOrSelector);
+		if (entityPlayerMPs_found != null && entityPlayerMPs_found.length > 0) {
+			return entityPlayerMPs_found.clone();
 		}
 		
 		return null;

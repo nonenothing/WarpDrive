@@ -8,11 +8,8 @@ import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
-import java.util.List;
-
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.PlayerSelector;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -53,7 +50,7 @@ public class CommandSpace extends CommandBase {
 				Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 				return;
 			}
-			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(commandSender, params[0]);
+			EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, params[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else if (commandSender instanceof EntityPlayer) {
@@ -64,7 +61,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 		} else if (params.length == 2) {
-			EntityPlayerMP[] entityPlayerMPs_found = getOnlinePlayerByNameOrSelector(commandSender, params[0]);
+			EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, params[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
@@ -210,20 +207,4 @@ public class CommandSpace extends CommandBase {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";
 	}
 	
-	private EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
-		@SuppressWarnings("unchecked")
-		List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		for (EntityPlayer onlinePlayer : onlinePlayers) {
-			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
-				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
-			}
-		}
-		
-		EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, playerNameOrSelector);
-		if (entityPlayerMPs_found != null && entityPlayerMPs_found.length > 0) {
-			return entityPlayerMPs_found.clone();
-		}
-		
-		return null;
-	}
 }
