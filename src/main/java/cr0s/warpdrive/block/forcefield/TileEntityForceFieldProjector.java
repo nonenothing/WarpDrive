@@ -51,6 +51,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 
 public class TileEntityForceFieldProjector extends TileEntityAbstractForceField {
+	
 	private static final int PROJECTOR_MAX_ENERGY_STORED = 30000;
 	private static final int PROJECTOR_COOLDOWN_TICKS = 300;
 	public static final int PROJECTOR_PROJECTION_UPDATE_TICKS = 8;

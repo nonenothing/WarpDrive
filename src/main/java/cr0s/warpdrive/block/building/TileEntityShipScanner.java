@@ -285,16 +285,15 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	private TileEntityShipCore searchShipCore() {
 		StringBuilder reason = new StringBuilder();
-		TileEntityShipCore result = null;
+		TileEntityShipCore tileEntityShipCore = null;
 		
 		// Search for ship cores above
 		for (int newY = yCoord + 1; newY <= 255; newY++) {
 			if (worldObj.getBlock(xCoord, newY, zCoord).isAssociatedBlock(WarpDrive.blockShipCore)) { // found ship core above
-				result = (TileEntityShipCore) worldObj.getTileEntity(xCoord, newY, zCoord);
-				
-				if (result != null) {
-					if (!result.validateShipSpatialParameters(reason)) { // If we can't refresh ship's spatial parameters
-						result = null;
+				tileEntityShipCore = (TileEntityShipCore) worldObj.getTileEntity(xCoord, newY, zCoord);
+				if (tileEntityShipCore != null) {
+					if (!tileEntityShipCore.validateShipSpatialParameters(reason)) { // If we can't refresh ship's spatial parameters
+						tileEntityShipCore = null;
 					}
 				}
 				
@@ -302,7 +301,7 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 		}
 		
-		return result;
+		return tileEntityShipCore;
 	}
 	
 	private int getScanningEnergyCost(int size) {
