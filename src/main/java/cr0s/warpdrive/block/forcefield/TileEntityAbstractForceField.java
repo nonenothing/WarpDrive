@@ -120,11 +120,11 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		tier = tag.getByte("tier");
-		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
-		isEnabled = tag.getBoolean("isEnabled");
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		tier = tagCompound.getByte("tier");
+		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
+		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 	}
 	
 	@Override
