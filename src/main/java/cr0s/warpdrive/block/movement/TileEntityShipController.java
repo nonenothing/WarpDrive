@@ -131,7 +131,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			}
 		}
 		
-		isEnabled = tagCompound.getBoolean("isEnabled");
+		isEnabled = tagCompound.hasKey("isEnabled") && tagCompound.getBoolean("isEnabled");
 		setCommand(tagCompound.getString("command"));
 		setFront(tagCompound.getInteger("front"));
 		setRight(tagCompound.getInteger("right"));
@@ -417,7 +417,15 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			return null;
 		}
 		if (arguments.length == 1) {
+			final String shipNamePrevious = core.shipName;
 			core.shipName = ((String) arguments[0]).replace("/", "").replace(".", "").replace("\\", ".");
+			if ( core.shipName == null
+			  || !core.shipName.equals(shipNamePrevious) ) {
+				WarpDrive.logger.info(String.format("Ship renamed from '%s' to '%s' with player(s) %s",
+				                                    shipNamePrevious == null ? "-null-" : shipNamePrevious,
+				                                    core.shipName,
+				                                    core.getAllPlayersOnShip()));
+			}
 		}
 		return new Object[] { core.shipName };
 	}

@@ -370,6 +370,26 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 	}
 	
+	public String getAllPlayersOnShip() {
+		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final StringBuilder stringBuilderResult = new StringBuilder();
+		
+		boolean isFirst = true;
+		for (Object object : list) {
+			if (!(object instanceof EntityPlayer)) {
+				continue;
+			}
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				stringBuilderResult.append(", ");
+			}
+			stringBuilderResult.append(((EntityPlayer) object).getCommandSenderName());
+		}
+		return stringBuilderResult.toString();
+	}
+	
 	private void updateIsolationState() {
 		// Search block in cube around core
 		int xMax, yMax, zMax;
