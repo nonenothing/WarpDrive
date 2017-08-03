@@ -14,6 +14,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -43,6 +44,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	// Dimensions
 	private int front, right, up;
 	private int back, left, down;
+	private boolean isPendingScan = false;
 	
 	// Player attaching
 	public final ArrayList<String> players = new ArrayList<>();
@@ -52,7 +54,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	private int updateTicks = updateInterval_ticks;
 	private int bootTicks = 20;
 	
-	private TileEntityShipCore core = null;
+	private WeakReference<TileEntityShipCore> tileEntityShipCoreWeakReference = null;
 	
 	public TileEntityShipController() {
 		super();
@@ -91,7 +93,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		// accelerate update ticks during boot
 		if (bootTicks > 0) {
 			bootTicks--;
-			if (core == null) {
+			if (tileEntityShipCoreWeakReference == null) {
 				updateTicks = 1;
 			}
 		}
@@ -99,10 +101,28 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (updateTicks <= 0) {
 			updateTicks = updateInterval_ticks;
 			
-			core = findCoreBlock();
-			if (core != null) {
+			final TileEntityShipCore tileEntityShipCore = findCoreBlock();
+			if (tileEntityShipCore != null) {
+				if ( tileEntityShipCoreWeakReference == null
+				  || tileEntityShipCore != tileEntityShipCoreWeakReference.get() ) {
+					tileEntityShipCoreWeakReference = new WeakReference<>(tileEntityShipCore);
+				}
+				
 				if (command.getCode() != getBlockMetadata()) {
 					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, command.getCode(), 1 + 2);  // Activated
+				}
+				if ( isPendingScan
+				  && tileEntityShipCore.isAttached(this) ) {
+					isPendingScan = false;
+					final StringBuilder reason = new StringBuilder();
+					try {
+						if (!tileEntityShipCore.validateShipSpatialParameters(this, reason)) {
+							tileEntityShipCore.messageToAllPlayersOnShip(reason.toString());
+						}
+					} catch (Exception exception) {
+						exception.printStackTrace();
+						WarpDrive.logger.info(this + " Exception in validateShipSpatialParameters, reason: " + reason.toString());
+					}
 				}
 			} else if (getBlockMetadata() != 0) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);  // Inactive
@@ -233,6 +253,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	protected String attachPlayer(final EntityPlayer entityPlayer) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		for (int i = 0; i < players.size(); i++) {
 			final String name = players.get(i);
 			
@@ -241,7 +262,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 				                                               getBlockType().getLocalizedName())
 				       + StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
-				                                                 core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+				                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
 				                                                 getAttachedPlayersList());
 			}
 		}
@@ -251,7 +272,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 		                                               getBlockType().getLocalizedName())
 		       + StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
-		                                                 core != null && !core.shipName.isEmpty() ? core.shipName : "-",
+		                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
 		                                                 getAttachedPlayersList());
 	}
 	
@@ -276,6 +297,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	private void setFront(int front) {
 		this.front = front;
+		isPendingScan = true;
 	}
 	
 	protected int getRight() {
@@ -284,6 +306,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	private void setRight(int right) {
 		this.right = right;
+		isPendingScan = true;
 	}
 	
 	protected int getUp() {
@@ -292,6 +315,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	private void setUp(int up) {
 		this.up = up;
+		isPendingScan = true;
 	}
 	
 	protected int getBack() {
@@ -300,6 +324,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	private void setBack(int back) {
 		this.back = back;
+		isPendingScan = true;
 	}
 	
 	protected int getLeft() {
@@ -308,6 +333,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	private void setLeft(int left) {
 		this.left = left;
+		isPendingScan = true;
 	}
 	
 	protected int getDown() {
@@ -316,6 +342,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	private void setDown(int down) {
 		this.down = down;
+		isPendingScan = true;
 	}
 	
 	public EnumShipControllerCommand getCommand() {
@@ -339,7 +366,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		isEnabled = false;
 		command = EnumShipControllerCommand.IDLE;
 		if (!success) {
-			core.messageToAllPlayersOnShip(reason);
+			final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+			if (tileEntityShipCore != null) {
+				tileEntityShipCore.messageToAllPlayersOnShip(reason);
+			}
 		}
 	}
 	
@@ -378,16 +408,18 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	// Common OC/CC methods
 	@Override
 	public Object[] position() {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return null;
 		}
 		
-		return new Object[] { core.xCoord, core.yCoord, core.zCoord, "?", core.xCoord, core.yCoord, core.zCoord };
+		return new Object[] { tileEntityShipCore.xCoord, tileEntityShipCore.yCoord, tileEntityShipCore.zCoord, "?", tileEntityShipCore.xCoord, tileEntityShipCore.yCoord, tileEntityShipCore.zCoord };
 	}
 	
 	@Override
 	public Object[] isAssemblyValid() {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return new Object[] { false, "No core detected" };
 		}
 		return new Object[] { true, "ok" };
@@ -395,8 +427,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] getOrientation() {
-		if (core != null) {
-			return new Object[] { core.facing.offsetX, 0, core.facing.offsetZ };
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore != null) {
+			return new Object[] { tileEntityShipCore.facing.offsetX, 0, tileEntityShipCore.facing.offsetZ };
 		}
 		return null;
 	}
@@ -413,21 +446,22 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] shipName(Object[] arguments) {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? findCoreBlock() : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return null;
 		}
 		if (arguments.length == 1) {
-			final String shipNamePrevious = core.shipName;
-			core.shipName = ((String) arguments[0]).replace("/", "").replace(".", "").replace("\\", ".");
-			if ( core.shipName == null
-			  || !core.shipName.equals(shipNamePrevious) ) {
+			final String shipNamePrevious = tileEntityShipCore.shipName;
+			tileEntityShipCore.shipName = ((String) arguments[0]).replace("/", "").replace(".", "").replace("\\", ".");
+			if ( tileEntityShipCore.shipName == null
+			  || !tileEntityShipCore.shipName.equals(shipNamePrevious) ) {
 				WarpDrive.logger.info(String.format("Ship renamed from '%s' to '%s' with player(s) %s",
 				                                    shipNamePrevious == null ? "-null-" : shipNamePrevious,
-				                                    core.shipName,
-				                                    core.getAllPlayersOnShip()));
+				                                    tileEntityShipCore.shipName,
+				                                    tileEntityShipCore.getAllPlayersOnShip()));
 			}
 		}
-		return new Object[] { core.shipName };
+		return new Object[] { tileEntityShipCore.shipName };
 	}
 	
 	@Override
@@ -490,10 +524,11 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] energy() {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return null;
 		}
-		return core.energy();
+		return tileEntityShipCore.energy();
 	}
 	
 	@Override
@@ -522,24 +557,11 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] getShipSize() {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return null;
 		}
-		final StringBuilder reason = new StringBuilder();
-		try {
-			if (!core.validateShipSpatialParameters(reason)) {
-				core.messageToAllPlayersOnShip(reason.toString());
-				if (core.controller == null) {
-					return null;
-				}
-			}
-			return new Object[] { core.shipMass, core.shipVolume };
-		} catch (Exception exception) {
-			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {// disabled by default to avoid console spam as ship size is checked quite frequently
-				exception.printStackTrace();
-			}
-			return null;
-		}
+		return new Object[] { tileEntityShipCore.shipMass, tileEntityShipCore.shipVolume };
 	}
 	
 	@Override
@@ -557,12 +579,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] getMaxJumpDistance() {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return new Object[] { false, "No ship core detected" };
 		}
 		
 		final StringBuilder reason = new StringBuilder();
-		final int maximumDistance_blocks = core.getMaxJumpDistance(command, reason);
+		final int maximumDistance_blocks = tileEntityShipCore.getMaxJumpDistance(this, command, reason);
 		if (maximumDistance_blocks < 0) {
 			return new Object[] { false, reason.toString() };
 		}
@@ -592,12 +615,13 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] getEnergyRequired() {
-		if (core == null) {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
+		if (tileEntityShipCore == null) {
 			return new Object[] { false, "No ship core detected" };
 		}
 		
 		final StringBuilder reason = new StringBuilder();
-		final int energyRequired = core.getEnergyRequired(command, reason);
+		final int energyRequired = tileEntityShipCore.getEnergyRequired(this, command, reason);
 		if (energyRequired < 0) {
 			return new Object[] { false, reason.toString() };
 		}
@@ -771,9 +795,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public String toString() {
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			core == null ? "-NULL-" : core.shipName,
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			xCoord, yCoord, zCoord);
+		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName, 
+		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     xCoord, yCoord, zCoord);
 	}
 }

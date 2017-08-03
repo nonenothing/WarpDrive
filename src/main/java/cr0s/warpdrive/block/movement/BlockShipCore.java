@@ -193,15 +193,25 @@ public class BlockShipCore extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
 		if (entityPlayer.getHeldItem() == null) {
 			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipCore) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityShipCore) tileEntity).getStatus());
-				return true;
+				final TileEntityShipCore tileEntityShipCore = (TileEntityShipCore) tileEntity;
+				if ( world.isRemote
+				  && entityPlayer.isSneaking() ) {
+					tileEntityShipCore.showBoundingBox = !tileEntityShipCore.showBoundingBox;
+					if (tileEntityShipCore.showBoundingBox) {
+						world.playSound(x + 0.5D, y + 0.5D, z + 0.5D, "warpdrive:lowlaser", 4.0F, 2.0F, false);
+					} else {
+						world.playSound(x + 0.5D, y + 0.5D, z + 0.5D, "warpdrive:lowlaser", 4.0F, 1.4F, false);
+					}
+					Commons.addChatMessage(entityPlayer, tileEntityShipCore.getBoundingBoxStatus());
+					return true;
+				} else if ( !world.isRemote
+				         && !entityPlayer.isSneaking() ) {
+					Commons.addChatMessage(entityPlayer, tileEntityShipCore.getStatus());
+					return true;
+				}
 			}
 		}
 		

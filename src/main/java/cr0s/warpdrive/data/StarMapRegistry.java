@@ -359,7 +359,7 @@ public class StarMapRegistry {
 			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			
 			// Skip offline ship cores
-			if (shipCore.controller == null || shipCore.controller.getCommand() == EnumShipControllerCommand.OFFLINE) {
+			if (shipCore.isOffline()) {
 				continue;
 			}
 			
