@@ -144,8 +144,10 @@ public class WarpDriveConfig {
 	public static boolean RECIPES_ENABLE_VANILLA = false;
 	
 	// Client
+	public static float CLIENT_LOCATION_SCALE = 0.5F;
 	public static String CLIENT_LOCATION_FORMAT = "§l";
-	public static int CLIENT_LOCATION_COLOR = Commons.colorARGBtoInt(230, 192, 192, 240);
+	public static int CLIENT_LOCATION_BACKGROUND_COLOR = Commons.colorARGBtoInt(64, 48, 48, 48);
+	public static int CLIENT_LOCATION_TEXT_COLOR = Commons.colorARGBtoInt(230, 180, 180, 240);
 	public static boolean CLIENT_LOCATION_HAS_SHADOW = true;
 	public static EnumDisplayAlignment CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.MIDDLE_RIGHT;
 	public static int CLIENT_LOCATION_SCREEN_OFFSET_X = -50;
@@ -171,7 +173,8 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_RADAR = false;
 	public static boolean LOGGING_BREATHING = false;
 	public static boolean LOGGING_WORLD_GENERATION = false;
-	public static boolean LOGGING_PROFILING = true;
+	public static boolean LOGGING_PROFILING_CPU_USAGE = true;
+	public static boolean LOGGING_PROFILING_THREAD_SAFETY = false;
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
 	public static boolean LOGGING_BREAK_PLACE = false;
@@ -486,11 +489,20 @@ public class WarpDriveConfig {
 		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
 		
 		// Client
+		CLIENT_LOCATION_SCALE = Commons.clamp(0.25F, 4.0F, (float) config.get("client", "location_scale", CLIENT_LOCATION_SCALE,
+		                                   "Scale for location text font").getDouble() );
+		
 		CLIENT_LOCATION_FORMAT = config.get("client", "location_format", CLIENT_LOCATION_FORMAT,
 		                                    "Format prefix for location title").getString();
-		String stringValue = config.get("client", "location_color", String.format("0x%6X", CLIENT_LOCATION_COLOR),
-		                                "Hexadecimal color code for location tile and description (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
-		CLIENT_LOCATION_COLOR = (int) ( Long.decode( stringValue ) & 0xFFFFFFFFL );
+		{
+			String stringValue = config.get("client", "location_background_color", String.format("0x%6X", CLIENT_LOCATION_BACKGROUND_COLOR),
+			                                      "Hexadecimal color code for location tile and description background (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
+			CLIENT_LOCATION_BACKGROUND_COLOR = (int) (Long.decode(stringValue) & 0xFFFFFFFFL);
+			
+			stringValue = config.get("client", "location_text_color", String.format("0x%6X", CLIENT_LOCATION_TEXT_COLOR),
+			                         "Hexadecimal color code for location tile and description foreground (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
+			CLIENT_LOCATION_TEXT_COLOR = (int) (Long.decode(stringValue) & 0xFFFFFFFFL);
+		}
 		CLIENT_LOCATION_HAS_SHADOW = config.get("client", "location_has_shadow", CLIENT_LOCATION_HAS_SHADOW,
 		                                        "Shadow casting option for current celestial object name").getBoolean(CLIENT_LOCATION_HAS_SHADOW);
 		CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.valueOf(config.get("client", "location_screen_alignment", CLIENT_LOCATION_SCREEN_ALIGNMENT.name(),
@@ -532,7 +544,8 @@ public class WarpDriveConfig {
 		LOGGING_RADAR = config.get("logging", "enable_radar_logs", LOGGING_RADAR, "Detailed radar logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_WORLD_GENERATION = config.get("logging", "enable_world_generation_logs", LOGGING_WORLD_GENERATION, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
+		LOGGING_PROFILING_CPU_USAGE = config.get("logging", "enable_profiling_CPU_time", LOGGING_PROFILING_CPU_USAGE, "Profiling logs for CPU time, enable it to check for lag").getBoolean(true);
+		LOGGING_PROFILING_THREAD_SAFETY = config.get("logging", "enable_profiling_thread_safety", LOGGING_PROFILING_THREAD_SAFETY, "Profiling logs for multi-threading, enable it to check for ConcurrentModificationException").getBoolean(false);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
 		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);

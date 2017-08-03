@@ -1,12 +1,12 @@
 package cr0s.warpdrive.event;
 
 import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -132,6 +132,7 @@ public class ChunkHandler {
 		}
 		
 		// get dimension data
+		LocalProfiler.updateCallStat("onUnloadWorld");
 		final Map<Integer, Map<Long, ChunkData>> registry = event.world.isRemote ? registryClient : registryServer;
 		final Map<Long, ChunkData> mapRegistryItems = registry.get(event.world.provider.dimensionId);
 		if (mapRegistryItems != null) {
@@ -179,6 +180,7 @@ public class ChunkHandler {
 		if (event.side != Side.SERVER || event.phase != Phase.END) {
 			return;
 		}
+		// @TODO: add workaround for other mods doing bad multi-threading
 		updateTick(event.world);
 	}
 	
@@ -200,6 +202,7 @@ public class ChunkHandler {
 	
 	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int xChunk, final int zChunk) {
 		// get dimension data
+		LocalProfiler.updateCallStat("getChunkData");
 		final Map<Integer, Map<Long, ChunkData>> registry = isRemote ? registryClient : registryServer;
 		Map<Long, ChunkData> mapRegistryItems = registry.get(dimensionId);
 		// (lambda expressions are forcing synchronisation, so we don't use them here)
@@ -207,7 +210,7 @@ public class ChunkHandler {
 		if (mapRegistryItems == null) {
 			// TLongObjectMap<ChunkData> m = TCollections.synchronizedMap(new TLongObjectHashMap<ChunkData>(2048) );
 			// @TODO: http://trove4j.sourceforge.net/javadocs/gnu/trove/TCollections.html#synchronizedMap(gnu.trove.map.TLongObjectMap)
-			mapRegistryItems = Collections.synchronizedMap(new LinkedHashMap<>(2048));
+			mapRegistryItems = new LinkedHashMap<>(2048); // Collections.synchronizedMap(new LinkedHashMap<>(2048));
 			registry.put(dimensionId, mapRegistryItems);
 		}
 		// get chunk data
@@ -241,6 +244,7 @@ public class ChunkHandler {
 	
 	public static void updateTick(final World world) {
 		// get dimension data
+		LocalProfiler.updateCallStat("updateTick");
 		final Map<Integer, Map<Long, ChunkData>> registry = world.isRemote ? registryClient : registryServer;
 		final Map<Long, ChunkData> mapRegistryItems = registry.get(world.provider.dimensionId);
 		if (mapRegistryItems == null) {
@@ -261,7 +265,7 @@ public class ChunkHandler {
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			if (world.provider.dimensionId == 0) {
-				delayLogging = (delayLogging + 1) % 6000;
+				delayLogging = (delayLogging + 1) % 4096;
 			}
 			if (delayLogging == 1) {
 				WarpDrive.logger.info(String.format("Dimension %d has %d / %d chunks loaded",
