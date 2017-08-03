@@ -391,6 +391,11 @@ public class Commons {
 		return 0;
 	}
 	
+	public static boolean isSafeThread() {
+		final String name = Thread.currentThread().getName();
+		return name.equals("Server thread") || name.equals("Client thread");
+	}
+	
 	// loosely inspired by crunchify
 	public static void dumpAllThreads() {
 		final StringBuilder stringBuilder = new StringBuilder();
