@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Улучшение - Хранилище эн�
 
 
 item.warpdrive.tool.ship_token.name=Ship token
-item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter red builder's field§7 to claim it
+item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
 item.warpdrive.tool.ship_token0.name=Ship token #0
 item.warpdrive.tool.ship_token1.name=Ship token #1
 item.warpdrive.tool.ship_token2.name=Ship token #2
@@ -672,8 +672,10 @@ warpdrive.cloakingCore.valid=System is valid
 warpdrive.cloakingCore.disabled=Маскировка выключена
 warpdrive.cloakingCore.lowPower=§cМаскировка выключилась, нужно больше энергии, капитан!
 warpdrive.cloakingCore.cloaking=Маскировка %1$d уровня покрывает %2$d блоков.
+
 warpdrive.IC2reactorLaserMonitor.noReactor=Реактор не найден!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d реактор(ов) подключено.
+
 warpdrive.transporter.status=Из %1$.0f %2$.0f %3$.0f в %4$.0f %5$.0f %6$.0f
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.

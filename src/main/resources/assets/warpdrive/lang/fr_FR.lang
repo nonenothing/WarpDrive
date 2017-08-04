@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Amélioration d'énergie
 
 
 item.warpdrive.tool.ship_token.name=Jeton de vaisseau
-item.warpdrive.tool.ship_token.tooltip=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ rouge du constructeur§7 pour réclamer ton vaisseau
+item.warpdrive.tool.ship_token.tooltip=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ d'un constructeur§7 pour réclamer ton vaisseau
 item.warpdrive.tool.ship_token0.name=Jeton de vaisseau #0
 item.warpdrive.tool.ship_token1.name=Jeton de vaisseau #1
 item.warpdrive.tool.ship_token2.name=Jeton de vaisseau #2
@@ -672,8 +672,10 @@ warpdrive.cloakingCore.valid=Le système est valide
 warpdrive.cloakingCore.disabled=Le champ d'invisibilité est désactivé
 warpdrive.cloakingCore.lowPower=§cLe champ d'invisibilité est en panne. Il nous faut plus d'énergie, Capitaine!
 warpdrive.cloakingCore.cloaking=Un champ de niveau %1$d couvre actuellement %2$d blocs!
+
 warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
+
 warpdrive.transporter.status=De %1$.0f %2$.0f %3$.0f à %4$.0f %5$.0f %6$.0f
 
 warpdrive.tooltip.itemTag.breathingHelmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.

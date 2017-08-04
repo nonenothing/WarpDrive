@@ -124,8 +124,7 @@ item.warpdrive.upgrade.Energy.name=Energie Upgrade
 
 item.warpdrive.tool.crystalToken.tooltip_new=Crystal encapsulation of ship '%1$s'\n§bEnter the red builder's field§7 to claim a ship
 
-item.warpdrive.tool.ship_token.name=Schiffes token
-item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter red builder's field§7 to claim it
+item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
 item.warpdrive.tool.ship_token.tooltip_legacyTranslation=Kristall Kapsel des Schiffes '%1$s'\n§bBetritt das Scanner Feld§7 um das Schiff zu bauen.
 item.warpdrive.tool.ship_token0.name=Schiffes token #0
 item.warpdrive.tool.ship_token1.name=Schiffes token #1
@@ -296,6 +295,8 @@ tile.warpdrive.movement.ShipController.name=Raumschiff Steuerung
 tile.warpdrive.movement.ShipController.tooltip=Definiert dein Schiff relativ zum Kern. Schließe einen Computer an, um das Interface zu öffnen.\nSollte horizontal neben dem Kern plaziert werden.
 tile.warpdrive.movement.ShipCore.name=Raumschiff Kern
 tile.warpdrive.movement.ShipCore.tooltip=Definiert dein Schiff relativ zur Steuerung. Schließe eine Energiequelle an, um den Kern zu laden.\nSollte horizontal neben der Steuerung plaziert werden.
+tile.warpdrive.movement.ShipCore.bounding_box.disabled=Bounding box display have been disabled.
+tile.warpdrive.movement.ShipCore.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
 tile.warpdrive.movement.Transporter.name=Transporter
 
 tile.warpdrive.weapon.LaserCamera.name=Laser und Kamera
@@ -676,8 +677,10 @@ warpdrive.cloakingCore.valid=System is valid !!!
 warpdrive.cloakingCore.disabled=Tarnfeld ist deaktiviert!
 warpdrive.cloakingCore.lowPower=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
 warpdrive.cloakingCore.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Blöcke!
+
 warpdrive.IC2reactorLaserMonitor.noReactor=Kein Reaktor gefunden!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d Reaktor(en) verbunden.
+
 warpdrive.transporter.status=Von %1$.0f %2$.0f %3$.0f zu %4$.0f %5$.0f %6$.0f
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bRaumatmung§r verbraucht Luftkanister oder IC2 Druckluftzellen.
