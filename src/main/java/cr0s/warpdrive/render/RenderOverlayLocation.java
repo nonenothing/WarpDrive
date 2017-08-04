@@ -45,27 +45,16 @@ public class RenderOverlayLocation {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
-		int yOffset = 0;
-		// show current location name in bold
-		yOffset += RenderCommons.drawText(widthScreen, heightScreen, name,
+		// show current location name & description
+		RenderCommons.drawText(widthScreen, heightScreen, name, description,
+		                                  WarpDriveConfig.CLIENT_LOCATION_SCALE,
 		                                  WarpDriveConfig.CLIENT_LOCATION_FORMAT,
-		                                  WarpDriveConfig.CLIENT_LOCATION_COLOR,
+		                                  WarpDriveConfig.CLIENT_LOCATION_BACKGROUND_COLOR,
+		                                  WarpDriveConfig.CLIENT_LOCATION_TEXT_COLOR,
 		                                  WarpDriveConfig.CLIENT_LOCATION_HAS_SHADOW,
 		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_ALIGNMENT,
 		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_OFFSET_X,
-		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_OFFSET_Y + yOffset,
-		                                  WarpDriveConfig.CLIENT_LOCATION_TEXT_ALIGNMENT,
-		                                  WarpDriveConfig.CLIENT_LOCATION_WIDTH_RATIO,
-		                                  WarpDriveConfig.CLIENT_LOCATION_WIDTH_MIN);
-		
-		// show current location description
-		yOffset += RenderCommons.drawText(widthScreen, heightScreen, description,
-		                                  "",
-		                                  WarpDriveConfig.CLIENT_LOCATION_COLOR,
-		                                  false,
-		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_ALIGNMENT,
-		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_OFFSET_X,
-		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_OFFSET_Y + yOffset,
+		                                  WarpDriveConfig.CLIENT_LOCATION_SCREEN_OFFSET_Y,
 		                                  WarpDriveConfig.CLIENT_LOCATION_TEXT_ALIGNMENT,
 		                                  WarpDriveConfig.CLIENT_LOCATION_WIDTH_RATIO,
 		                                  WarpDriveConfig.CLIENT_LOCATION_WIDTH_MIN);

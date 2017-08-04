@@ -72,35 +72,121 @@ public class RenderCommons {
 		GL11.glPopMatrix();
 		return alpha;
 	}
-		
-	public static int drawText(final int scaledWidth, final int scaledHeight, final String text,
-	                           final String formatPrefix, final int colorText, final boolean hasShadow,
+	
+	private static final int TEXT_BORDER = 2;
+	public static void drawText(final int screen_width, final int screen_height, final String text,
+	                           final float scale, final String formatPrefix, final int colorBackground, final int colorText, final boolean hasShadow,
 	                           final EnumDisplayAlignment enumScreenAnchor, final int xOffset, final int yOffset,
 	                           final EnumDisplayAlignment enumTextAlignment, final float widthTextRatio, final int widthTextMin) {
 		// prepare the string box content and dimensions
-		final String textMessage = Commons.updateEscapeCodes(formatPrefix + StatCollector.translateToLocal(text));
-		final int widthText = Math.max(widthTextMin, Math.round(widthTextRatio * scaledWidth));
+		final String text_formatted = Commons.updateEscapeCodes(formatPrefix + StatCollector.translateToLocal(text));
+		final int scaled_box_width = Math.max(widthTextMin, Math.round(widthTextRatio * screen_width)) + 2 * TEXT_BORDER;
 		
 		@SuppressWarnings("unchecked")
-		final List<String> listMessages = minecraft.fontRenderer.listFormattedStringToWidth(textMessage, widthText);
-		final int heightText = listMessages.size() * minecraft.fontRenderer.FONT_HEIGHT;
+		final List<String> listLines = minecraft.fontRenderer.listFormattedStringToWidth(text_formatted, scaled_box_width - 2 * TEXT_BORDER);
+		final int scaled_box_height = listLines.size() * minecraft.fontRenderer.FONT_HEIGHT + 2 * TEXT_BORDER;
 		
 		// compute the position
-		int x = Math.round(scaledWidth  * enumScreenAnchor.xRatio + xOffset - enumTextAlignment.xRatio * widthText );
-		int y = Math.round(scaledHeight * enumScreenAnchor.yRatio + yOffset - enumTextAlignment.yRatio * heightText); 
+		final int screen_text_x = Math.round(screen_width  * enumScreenAnchor.xRatio + xOffset - enumTextAlignment.xRatio * scaled_box_width  * scale);
+		final int screen_text_y = Math.round(screen_height * enumScreenAnchor.yRatio + yOffset - enumTextAlignment.yRatio * scaled_box_height * scale);
 		
 		// start rendering
 		GL11.glPushMatrix();
-		GL11.glScalef(1.0F, 1.0F, 0.0F);
+		GL11.glScalef(scale, scale, 0.0F);
+		final int scaled_box_x  = Math.round(screen_text_x / scale - TEXT_BORDER);
+		final int scaled_box_y  = Math.round(screen_text_y / scale - TEXT_BORDER);
+		final int scaled_text_x = Math.round(screen_text_x / scale);
+		int scaled_text_y       = Math.round(screen_text_y / scale);
 		
-		for (final String textLine : listMessages) {
-			minecraft.fontRenderer.drawString(textLine, x, y, colorText, hasShadow);
-			y += minecraft.fontRenderer.FONT_HEIGHT;
+		// draw background box
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		final byte red   = (byte) (colorBackground >> 16 & 255);
+		final byte blue  = (byte) (colorBackground >> 8 & 255);
+		final byte green = (byte) (colorBackground & 255);
+		final byte alpha = (byte) (colorBackground >> 24 & 255);
+		GL11.glColor4b(red, blue, green, alpha);
+		
+		Tessellator tessellator = Tessellator.instance;
+		tessellator.startDrawingQuads();
+		tessellator.addVertex(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D);
+		tessellator.addVertex(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D);
+		tessellator.addVertex(scaled_box_x + scaled_box_width, scaled_box_y                    , -90.0D);
+		tessellator.addVertex(scaled_box_x                   , scaled_box_y                    , -90.0D);
+		tessellator.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		
+		// draw text
+		for (final String textLine : listLines) {
+			minecraft.fontRenderer.drawString(textLine, scaled_text_x, scaled_text_y, colorText, hasShadow);
+			scaled_text_y += minecraft.fontRenderer.FONT_HEIGHT;
 		}
 		
 		// close rendering
 		GL11.glPopMatrix();
+	}
+	
+	public static void drawText(final int screen_width, final int screen_height, final String textHeader, final String textContent,
+	                           final float scale, final String formatHeaderPrefix, final int colorBackground, final int colorText, final boolean hasHeaderShadow,
+	                           final EnumDisplayAlignment enumScreenAnchor, final int xOffset, final int yOffset,
+	                           final EnumDisplayAlignment enumTextAlignment, final float widthTextRatio, final int widthTextMin) {
+		// prepare the string box content and dimensions
+		final String header_formatted  = Commons.updateEscapeCodes(formatHeaderPrefix + StatCollector.translateToLocal(textHeader));
+		final String content_formatted = Commons.updateEscapeCodes(StatCollector.translateToLocal(textContent));
+		final int scaled_box_width = Math.max(widthTextMin, Math.round(widthTextRatio * screen_width)) + 2 * TEXT_BORDER;
 		
-		return heightText;
+		@SuppressWarnings("unchecked")
+		final List<String> listHeaderLines = minecraft.fontRenderer.listFormattedStringToWidth(header_formatted, scaled_box_width - 2 * TEXT_BORDER);
+		@SuppressWarnings("unchecked")
+		final List<String> listContentLines = minecraft.fontRenderer.listFormattedStringToWidth(content_formatted, scaled_box_width - 2 * TEXT_BORDER);
+		final int scaled_box_height = (listHeaderLines.size() + listContentLines.size()) * minecraft.fontRenderer.FONT_HEIGHT + 3 * TEXT_BORDER;
+		
+		// compute the position
+		final int screen_text_x = Math.round(screen_width  * enumScreenAnchor.xRatio + xOffset - enumTextAlignment.xRatio * scaled_box_width  * scale);
+		final int screen_text_y = Math.round(screen_height * enumScreenAnchor.yRatio + yOffset - enumTextAlignment.yRatio * scaled_box_height * scale);
+		
+		// start rendering
+		GL11.glPushMatrix();
+		GL11.glScalef(scale, scale, 0.0F);
+		final int scaled_box_x  = Math.round(screen_text_x / scale - TEXT_BORDER);
+		final int scaled_box_y  = Math.round(screen_text_y / scale - TEXT_BORDER);
+		final int scaled_text_x = Math.round(screen_text_x / scale);
+		int scaled_text_y       = Math.round(screen_text_y / scale);
+		
+		// draw background box
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		final byte red   = (byte) (colorBackground >> 16 & 255);
+		final byte blue  = (byte) (colorBackground >> 8 & 255);
+		final byte green = (byte) (colorBackground & 255);
+		final byte alpha = (byte) (colorBackground >> 24 & 255);
+		GL11.glColor4b(red, blue, green, alpha);
+		
+		Tessellator tessellator = Tessellator.instance;
+		tessellator.startDrawingQuads();
+		tessellator.addVertex(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D);
+		tessellator.addVertex(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D);
+		tessellator.addVertex(scaled_box_x + scaled_box_width, scaled_box_y                    , -90.0D);
+		tessellator.addVertex(scaled_box_x                   , scaled_box_y                    , -90.0D);
+		tessellator.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+		
+		// draw text
+		for (final String textLine : listHeaderLines) {
+			minecraft.fontRenderer.drawString(textLine, scaled_text_x, scaled_text_y, colorText, hasHeaderShadow);
+			scaled_text_y += minecraft.fontRenderer.FONT_HEIGHT;
+		}
+		scaled_text_y += TEXT_BORDER;
+		for (final String textLine : listContentLines) {
+			minecraft.fontRenderer.drawString(textLine, scaled_text_x, scaled_text_y, colorText, false);
+			scaled_text_y += minecraft.fontRenderer.FONT_HEIGHT;
+		}
+		
+		// close rendering
+		GL11.glPopMatrix();
 	}
 }

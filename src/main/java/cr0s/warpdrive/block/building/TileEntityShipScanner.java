@@ -101,6 +101,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		// Ship core is not found
 		if (!isDeploying && shipCore == null) {
 			setActive(false); // disable scanner
+			if (isSetupDone) {
+				return;
+			}
 			laserTicks++;
 			if (laserTicks > 20) {
 				PacketHandler.sendBeamPacket(worldObj,
