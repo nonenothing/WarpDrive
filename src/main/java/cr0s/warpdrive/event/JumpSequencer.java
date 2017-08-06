@@ -918,7 +918,8 @@ public class JumpSequencer extends AbstractSequencer {
 						
 						ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
 						TileEntity newTileEntity = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
-						blockTransformer.restoreExternals(newTileEntity, transformation, external.getValue());
+						blockTransformer.restoreExternals(targetWorld, target.posX, target.posY, target.posZ,
+						                                  jumpBlock.block, jumpBlock.blockMeta, newTileEntity, transformation, external.getValue());
 					}
 				}
 				index++;

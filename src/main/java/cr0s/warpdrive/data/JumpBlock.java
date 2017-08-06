@@ -71,7 +71,7 @@ public class JumpBlock {
 	public JumpBlock() {
 	}
 	
-	public JumpBlock(Block block, int blockMeta, TileEntity tileEntity, int x, int y, int z) {
+	public JumpBlock(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
 		this.block = block;
 		this.blockMeta = blockMeta;
 		blockTileEntity = tileEntity;
@@ -82,7 +82,7 @@ public class JumpBlock {
 		// save externals
 		for (Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
 			if (entryBlockTransformer.getValue().isApplicable(block, blockMeta, tileEntity)) {
-				NBTBase nbtBase = entryBlockTransformer.getValue().saveExternals(tileEntity);
+				NBTBase nbtBase = entryBlockTransformer.getValue().saveExternals(world, x, y, z, block, blockMeta, tileEntity);
 				setExternal(entryBlockTransformer.getKey(), nbtBase);
 			}
 		}
@@ -137,7 +137,7 @@ public class JumpBlock {
 	private static final byte[] mrotStair          = {  2,  3,  1,  0,  6,  7,  5,  4,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final byte[] mrotSign           = {  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,  0,  1,  2,  3 };	// Sign, Skull
 	private static final byte[] mrotTrapDoor       = {  3,  2,  0,  1,  7,  6,  4,  5, 11, 10,  8,  9, 15, 14, 12, 13 };
-	private static final byte[] mrotLever          = {  7,  2,  3,  4,  1,  6,  5,  0, 15, 11, 12, 10,  9, 14, 13,  8 };
+	private static final byte[] mrotLever          = {  7,  3,  4,  2,  1,  6,  5,  0, 15, 11, 12, 10,  9, 14, 13,  8 };
 	private static final byte[] mrotNetherPortal   = {  0,  2,  1,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final byte[] mrotVine           = {  0,  2,  4,  6,  8, 10, 12, 14,  1,  3,  5,  7,  9, 11, 13, 15 };
 	private static final byte[] mrotButton         = {  0,  3,  4,  2,  1,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };	// Button, torch (normal, redstone lit/unlit)

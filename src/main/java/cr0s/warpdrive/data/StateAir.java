@@ -25,7 +25,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 
 public class StateAir {
 	
-	static final int AIR_DEFAULT = 0x060000C0;      // default is the unknown state
+	public static final int AIR_DEFAULT = 0x060000C0;      // default is the unknown state
 	
 	// highest bit is unusable since Java only supports signed primitives (mostly)
 	static final int USED_MASK                 = 0b01110111111111111111111100001111;

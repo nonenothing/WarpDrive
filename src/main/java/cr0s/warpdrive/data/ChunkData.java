@@ -339,7 +339,7 @@ public class ChunkData {
 		return dataAirSegment[indexData & 0xFFF];
 	}
 	
-	protected void setDataAir(final int x, final int y, final int z, final int dataAirBlock) {
+	public void setDataAir(final int x, final int y, final int z, final int dataAirBlock) {
 		final int indexData = getDataIndex(x, y, z);
 		
 		// get segment

@@ -3,14 +3,20 @@ package cr0s.warpdrive.compat;
 
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.block.breathing.BlockAirFlow;
+import cr0s.warpdrive.block.breathing.BlockAirSource;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.StateAir;
+import cr0s.warpdrive.event.ChunkHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IWorldAccess;
+import net.minecraft.world.World;
 
 public class CompatWarpDrive implements IBlockTransformer {
 	
@@ -30,8 +36,17 @@ public class CompatWarpDrive implements IBlockTransformer {
 	}
 	
 	@Override
-	public NBTBase saveExternals(final TileEntity tileEntity) {
-		// nothing to do
+	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
+		if (block instanceof BlockAirFlow || block instanceof BlockAirSource) {
+			final int dataAir = ChunkHandler.getChunkData(world, x, y, z).getDataAir(x, y, z);
+			if (dataAir == StateAir.AIR_DEFAULT) {
+				return null;
+			}
+			final NBTTagCompound tagCompound = new NBTTagCompound();
+			tagCompound.setInteger("dataAir", dataAir);
+			return tagCompound;
+		}
 		return null;
 	}
 	
@@ -89,7 +104,18 @@ public class CompatWarpDrive implements IBlockTransformer {
 	}
 	
 	@Override
-	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
-		// nothing to do
+	public void restoreExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity,
+	                             final ITransformation transformation, final NBTBase nbtBase) {
+		if (nbtBase == null) {
+			return;
+		}
+		if (!(nbtBase instanceof NBTTagCompound)) {
+			return;
+		}
+		if (((NBTTagCompound) nbtBase).hasKey("dataAir")) {
+			final int dataAir = ((NBTTagCompound) nbtBase).getInteger("dataAir");
+			ChunkHandler.getChunkData(world, x, y, z).setDataAir(x, y, z, dataAir);
+		}
 	}
 }
