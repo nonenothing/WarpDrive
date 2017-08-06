@@ -50,6 +50,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		setStepSound(Block.soundTypeCloth);
 		setBlockName("warpdrive.forcefield.block" + tier);
 		setBlockTextureName("warpdrive:forcefield/forcefield");
+		setBlockUnbreakable();
 	}
 	
 	@Override
@@ -148,6 +149,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer entityPlayer) {
+		if (world.isRemote) {
+			return;
+		}
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			forceFieldSetup.onEntityEffect(world, x, y, z, entityPlayer);
@@ -360,8 +364,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		super.onBlockExploded(world, x, y, z, explosion);
 	}
 	
+	@Override
 	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
-		if (efficiency > 0.0F) {
+		if (efficiency * (1.0F - 0.20F * (tier - 1)) > world.rand.nextFloat()) {
 			downgrade(world, x, y, z);
 		}
 		// already handled => no ancestor call

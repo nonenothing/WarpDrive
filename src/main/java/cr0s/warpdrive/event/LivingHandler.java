@@ -3,6 +3,7 @@ package cr0s.warpdrive.event;
 import cr0s.warpdrive.BreathingManager;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.forcefield.BlockForceField;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -13,16 +14,19 @@ import cr0s.warpdrive.world.SpaceTeleporter;
 
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 
@@ -281,6 +285,34 @@ public class LivingHandler {
 		if (WarpDrive.isDev && entityLivingBase instanceof EntityPlayerMP) {
 			WarpDrive.logger.warn(String.format("(full damage   ) Entity fall damage at motionY %.3f from distance %.3f of %s, isCancelled %s",
 			                                    motionY, event.distance, entityLivingBase, event.isCanceled()));
+		}
+	}
+	
+	@SubscribeEvent
+	public void onEnderTeleport(final EnderTeleportEvent event) {
+		if ( event.entityLiving == null
+		  || event.entityLiving.worldObj.isRemote ) {
+			return;
+		}
+		
+		final World world = event.entityLiving.worldObj;
+		final int x = MathHelper.floor_double(event.targetX);
+		final int y = MathHelper.floor_double(event.targetY);
+		final int z = MathHelper.floor_double(event.targetZ);
+		
+		for (int xLoop = x - 1; xLoop <= x + 1; xLoop++) {
+			for (int zLoop = z - 1; zLoop <= z + 1; zLoop++) {
+				for (int yLoop = y - 1; yLoop <= y + 1; yLoop++) {
+					if (yLoop <= 0 || yLoop > 255) {
+						continue;
+					}
+					Block block = world.getBlock(xLoop, yLoop, zLoop);
+					if (block instanceof BlockForceField) {
+						event.setCanceled(true);
+						return;
+					}
+				}
+			}
 		}
 	}
 }
