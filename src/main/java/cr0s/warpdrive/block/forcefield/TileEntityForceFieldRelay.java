@@ -71,6 +71,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
+		tagCompound.setBoolean("isConnected", isConnected);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
 	}
 	
@@ -78,6 +79,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
+		isConnected = tagCompound.getBoolean("isConnected");
 	}
 	
 	@Override

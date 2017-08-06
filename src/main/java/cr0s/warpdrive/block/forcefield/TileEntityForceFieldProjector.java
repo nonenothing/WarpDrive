@@ -945,6 +945,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
+		tagCompound.setBoolean("isConnected", isConnected);
 		tagCompound.setBoolean("isPowered", isPowered);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
 	}
@@ -954,6 +955,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 		isPowered = tagCompound.getBoolean("isPowered");
+		isConnected = tagCompound.getBoolean("isConnected");
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {
