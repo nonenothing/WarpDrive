@@ -133,6 +133,7 @@ import cr0s.warpdrive.item.ItemUpgrade;
 import cr0s.warpdrive.item.ItemWarpArmor;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
+import cr0s.warpdrive.render.RenderBlockShipScanner;
 import cr0s.warpdrive.render.RenderBlockForceField;
 import cr0s.warpdrive.render.RenderBlockOmnipanel;
 import cr0s.warpdrive.render.RenderBlockStandard;
@@ -321,6 +322,9 @@ public class WarpDrive implements LoadingCallback {
 			
 			RenderBlockOmnipanel.renderId = RenderingRegistry.getNextAvailableRenderId();
 			RenderingRegistry.registerBlockHandler(RenderBlockOmnipanel.instance);
+			
+			RenderBlockShipScanner.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockShipScanner.instance);
 		}
 	}
 	

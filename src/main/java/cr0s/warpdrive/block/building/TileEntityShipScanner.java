@@ -33,6 +33,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -46,6 +49,16 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	private static final int SHIP_TOKEN_MAX_RETRY_COUNT = 5;
 	
+	// persistent properties
+	private String schematicFileName = "";
+	private int targetX, targetY, targetZ;
+	private byte rotationSteps;
+	public Block blockCamouflage;
+	public int metadataCamouflage;
+	protected int colorMultiplierCamouflage;
+	protected int lightCamouflage;
+	
+	// computed properties
 	private boolean isActive = false;
 	private TileEntityShipCore shipCore = null;
 	
@@ -56,16 +69,12 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	
 	private int searchTicks = 0;
 	
-	private String schematicFileName = "";
 	private String playerName = "";
 	
 	private JumpShip jumpShip;
 	private int currentDeployIndex;
 	private int blocksToDeployCount;
 	private boolean isDeploying = false;
-	
-	private int targetX, targetY, targetZ;
-	private byte rotationSteps;
 	
 	public TileEntityShipScanner() {
 		super();
@@ -93,8 +102,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			shipCore = searchShipCore();
 		}
 		
-		// Trigger deployment by player
-		if (!isActive) {
+		// Trigger deployment by player, provided setup is done
+		final boolean isSetupDone = targetX != 0 || targetY != 0 || targetZ != 0;
+		if (!isActive && isSetupDone) {
 			checkPlayerForShipToken();
 		}
 		
@@ -279,10 +289,16 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	private void setActive(boolean newState) {
-		isActive = newState;
-		if ((getBlockMetadata() == 1) == newState) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, isActive ? 1 : 0, 2);
+	private void setActive(final boolean newState) {
+		if (blockCamouflage == null) {
+			isActive = newState;
+			if ((getBlockMetadata() == 1) == newState) {
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, isActive ? 1 : 0, 2);
+			}
+		} else {
+			if (getBlockMetadata() != metadataCamouflage) {
+				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadataCamouflage, 2);
+			}
 		}
 	}
 	
@@ -573,23 +589,64 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		schematicFileName = tag.getString("schematic");
-		targetX = tag.getInteger("targetX");
-		targetY = tag.getInteger("targetY");
-		targetZ = tag.getInteger("targetZ");
-		rotationSteps = tag.getByte("rotationSteps");
+	public void readFromNBT(NBTTagCompound tatagCompound) {
+		super.readFromNBT(tatagCompound);
+		schematicFileName = tatagCompound.getString("schematic");
+		targetX = tatagCompound.getInteger("targetX");
+		targetY = tatagCompound.getInteger("targetY");
+		targetZ = tatagCompound.getInteger("targetZ");
+		rotationSteps = tatagCompound.getByte("rotationSteps");
+		if (tatagCompound.hasKey("camouflageBlock")) {
+			try {
+				blockCamouflage = Block.getBlockFromName(tatagCompound.getString("camouflageBlock"));
+				metadataCamouflage = tatagCompound.getByte("camouflageMeta");
+				colorMultiplierCamouflage = tatagCompound.getInteger("camouflageColorMultiplier");
+				lightCamouflage = tatagCompound.getByte("camouflageLight");
+				if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockCamouflage)) {
+					blockCamouflage = null;
+					metadataCamouflage = 0;
+					colorMultiplierCamouflage = 0;
+					lightCamouflage = 0;
+				}
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+		} else {
+			blockCamouflage = null;
+			metadataCamouflage = 0;
+			colorMultiplierCamouflage = 0;
+			lightCamouflage = 0;
+		}
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setString("schematic", schematicFileName);
-		tag.setInteger("targetX", targetX);
-		tag.setInteger("targetY", targetY);
-		tag.setInteger("targetZ", targetZ);
-		tag.setByte("rotationSteps", rotationSteps);
+	public void writeToNBT(NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setString("schematic", schematicFileName);
+		tagCompound.setInteger("targetX", targetX);
+		tagCompound.setInteger("targetY", targetY);
+		tagCompound.setInteger("targetZ", targetZ);
+		tagCompound.setByte("rotationSteps", rotationSteps);
+		if (blockCamouflage != null) {
+			tagCompound.setString("camouflageBlock", Block.blockRegistry.getNameForObject( blockCamouflage));
+			tagCompound.setByte("camouflageMeta", (byte) metadataCamouflage);
+			tagCompound.setInteger("camouflageColorMultiplier",  colorMultiplierCamouflage);
+			tagCompound.setByte("camouflageLight", (byte) lightCamouflage);
+		}
+	}
+	
+	@Override
+	public Packet getDescriptionPacket() {
+		NBTTagCompound tagCompound = new NBTTagCompound();
+		writeToNBT(tagCompound);
+		
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.func_148857_g();
+		readFromNBT(tagCompound);
 	}
 	
 	// OpenComputer callback methods
@@ -717,11 +774,6 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			return;
 		}
 		shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_PERIOD_TICKS;
-		
-		// skip unless setup is done
-		if (targetX == 0 && targetY == 0 && targetZ == 0) {
-			return;
-		}
 		
 		// find a unique player in range
 		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 1.0D, yCoord + 1.0D, zCoord - 1.0D, 
