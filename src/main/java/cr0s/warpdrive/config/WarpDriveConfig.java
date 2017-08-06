@@ -144,15 +144,15 @@ public class WarpDriveConfig {
 	public static boolean RECIPES_ENABLE_VANILLA = false;
 	
 	// Client
-	public static float CLIENT_LOCATION_SCALE = 0.5F;
-	public static String CLIENT_LOCATION_FORMAT = "§l";
+	public static float CLIENT_LOCATION_SCALE = 1.0F;
+	public static String CLIENT_LOCATION_FORMAT_TITLE = "§l%1$s";
 	public static int CLIENT_LOCATION_BACKGROUND_COLOR = Commons.colorARGBtoInt(64, 48, 48, 48);
 	public static int CLIENT_LOCATION_TEXT_COLOR = Commons.colorARGBtoInt(230, 180, 180, 240);
 	public static boolean CLIENT_LOCATION_HAS_SHADOW = true;
 	public static EnumDisplayAlignment CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.MIDDLE_RIGHT;
-	public static int CLIENT_LOCATION_SCREEN_OFFSET_X = -50;
-	public static int CLIENT_LOCATION_SCREEN_OFFSET_Y = 0;
-	public static EnumDisplayAlignment CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.TOP_CENTER;
+	public static int CLIENT_LOCATION_SCREEN_OFFSET_X = 0;
+	public static int CLIENT_LOCATION_SCREEN_OFFSET_Y = -20;
+	public static EnumDisplayAlignment CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.TOP_RIGHT;
 	public static float CLIENT_LOCATION_WIDTH_RATIO = 0.0F;
 	public static int CLIENT_LOCATION_WIDTH_MIN = 90;
 	
@@ -492,8 +492,8 @@ public class WarpDriveConfig {
 		CLIENT_LOCATION_SCALE = Commons.clamp(0.25F, 4.0F, (float) config.get("client", "location_scale", CLIENT_LOCATION_SCALE,
 		                                   "Scale for location text font").getDouble() );
 		
-		CLIENT_LOCATION_FORMAT = config.get("client", "location_format", CLIENT_LOCATION_FORMAT,
-		                                    "Format prefix for location title").getString();
+		CLIENT_LOCATION_FORMAT_TITLE = config.get("client", "location_prefix", CLIENT_LOCATION_FORMAT_TITLE, 
+		                                          "Format for location title").getString();
 		{
 			String stringValue = config.get("client", "location_background_color", String.format("0x%6X", CLIENT_LOCATION_BACKGROUND_COLOR),
 			                                      "Hexadecimal color code for location tile and description background (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
@@ -901,6 +901,8 @@ public class WarpDriveConfig {
 				config.get("lift", "entity_cooldown_ticks", LIFT_ENTITY_COOLDOWN_TICKS, "Cooldown after moving an entity").getInt());
 		
 		// Particles accelerator
+		ACCELERATOR_ENABLE = config.get("accelerator", "enable", ACCELERATOR_ENABLE, "Enable accelerator blocks. Requires a compatible server, as it won't work in single player").getBoolean(false);
+		
 		ACCELERATOR_MAX_PARTICLE_BUNCHES = Commons.clamp(2, 100,
 				config.get("accelerator", "max_particle_bunches", ACCELERATOR_MAX_PARTICLE_BUNCHES, "Maximum number of particle bunches per accelerator controller").getInt());
 		

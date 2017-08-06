@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.data.EnumDisplayAlignment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -152,19 +153,25 @@ public class RenderCommons {
 	}
 	
 	public static void drawText(final int screen_width, final int screen_height, final String textHeader, final String textContent,
-	                           final float scale, final String formatHeaderPrefix, final int colorBackground, final int colorText, final boolean hasHeaderShadow,
+	                           final float scale, final String formatHeader, final int colorBackground, final int colorText, final boolean hasHeaderShadow,
 	                           final EnumDisplayAlignment enumScreenAnchor, final int xOffset, final int yOffset,
 	                           final EnumDisplayAlignment enumTextAlignment, final float widthTextRatio, final int widthTextMin) {
 		// prepare the string box content and dimensions
-		final String header_formatted  = Commons.updateEscapeCodes(formatHeaderPrefix + StatCollector.translateToLocal(textHeader));
+		final String header_formatted  = Commons.updateEscapeCodes(String.format(StatCollector.translateToLocal(textHeader), formatHeader));
 		final String content_formatted = Commons.updateEscapeCodes(StatCollector.translateToLocal(textContent));
 		final int scaled_box_width = Math.max(widthTextMin, Math.round(widthTextRatio * screen_width)) + 2 * TEXT_BORDER;
 		
 		@SuppressWarnings("unchecked")
-		final List<String> listHeaderLines = minecraft.fontRenderer.listFormattedStringToWidth(header_formatted, scaled_box_width - 2 * TEXT_BORDER);
+		final List<String> listHeaderLines = 
+			header_formatted.isEmpty() ? new ArrayList<>(0)
+			                           : minecraft.fontRenderer.listFormattedStringToWidth(header_formatted, scaled_box_width - 2 * TEXT_BORDER);
 		@SuppressWarnings("unchecked")
-		final List<String> listContentLines = minecraft.fontRenderer.listFormattedStringToWidth(content_formatted, scaled_box_width - 2 * TEXT_BORDER);
-		final int scaled_box_height = (listHeaderLines.size() + listContentLines.size()) * minecraft.fontRenderer.FONT_HEIGHT + 3 * TEXT_BORDER;
+		final List<String> listContentLines =
+			content_formatted.isEmpty() ? new ArrayList<>(0)
+		                                : minecraft.fontRenderer.listFormattedStringToWidth(content_formatted, scaled_box_width - 2 * TEXT_BORDER);
+		final boolean hasTileAndContent = listHeaderLines.size() > 0 && listContentLines.size() > 0;
+		final int scaled_box_height = (listHeaderLines.size() + listContentLines.size()) * minecraft.fontRenderer.FONT_HEIGHT
+		                            + (hasTileAndContent ? 3 : 1) * TEXT_BORDER;
 		
 		// compute the position
 		final int screen_text_x = Math.round(screen_width  * enumScreenAnchor.xRatio + xOffset - enumTextAlignment.xRatio * scaled_box_width  * scale);
@@ -203,7 +210,9 @@ public class RenderCommons {
 			minecraft.fontRenderer.drawString(textLine, scaled_text_x, scaled_text_y, colorText, hasHeaderShadow);
 			scaled_text_y += minecraft.fontRenderer.FONT_HEIGHT;
 		}
-		scaled_text_y += TEXT_BORDER;
+		if (hasTileAndContent) {
+			scaled_text_y += TEXT_BORDER;
+		}
 		for (final String textLine : listContentLines) {
 			minecraft.fontRenderer.drawString(textLine, scaled_text_x, scaled_text_y, colorText, false);
 			scaled_text_y += minecraft.fontRenderer.FONT_HEIGHT;

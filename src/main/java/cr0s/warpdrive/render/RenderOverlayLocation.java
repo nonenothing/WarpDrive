@@ -48,7 +48,7 @@ public class RenderOverlayLocation {
 		// show current location name & description
 		RenderCommons.drawText(widthScreen, heightScreen, name, description,
 		                                  WarpDriveConfig.CLIENT_LOCATION_SCALE,
-		                                  WarpDriveConfig.CLIENT_LOCATION_FORMAT,
+		                                  WarpDriveConfig.CLIENT_LOCATION_FORMAT_TITLE,
 		                                  WarpDriveConfig.CLIENT_LOCATION_BACKGROUND_COLOR,
 		                                  WarpDriveConfig.CLIENT_LOCATION_TEXT_COLOR,
 		                                  WarpDriveConfig.CLIENT_LOCATION_HAS_SHADOW,
