@@ -139,7 +139,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
 			                                    world.provider.dimensionId, x, y, z,
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
-			onEMP(world, x, y, z, explosiveEMP.getRadius() / 100.0F);
+			onEMP(world, x, y, z, 0.02F);
 		}
 	}
 	
@@ -161,7 +161,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
 			                                    world.provider.dimensionId, x, y, z,
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
-			onEMP(world, x, y, z, explosiveEMP.getRadius() / 100.0F);
+			onEMP(world, x, y, z, 0.02F);
 		}
 	}
 	
