@@ -113,34 +113,31 @@ public class StarMapRegistry {
 							if (resultMatch.length() > 0) {
 								resultMatch.append("\n");
 							}
-							resultMatch.append(String.format("Ship '%s' found in DIM%d @ (%d %d %d)",
-							                                 starMapRegistryItem.name,
-							                                 starMapRegistryItem.dimensionId,
-							                                 starMapRegistryItem.x, starMapRegistryItem.y, starMapRegistryItem.z));
+							resultContains.append(String.format("Ship '%s' found in %s",
+							                                    starMapRegistryItem.name,
+							                                    starMapRegistryItem.getFormattedLocation()));
 						} else {
 							resultMatch.append(".");
 						}
 					} else if (starMapRegistryItem.name.equalsIgnoreCase(nameShip)) {
-						if (resultMatch.length() < MAX_LENGTH) {
+						if (resultCaseInsensitive.length() < MAX_LENGTH) {
 							if (resultCaseInsensitive.length() > 0) {
 								resultCaseInsensitive.append("\n");
 							}
-							resultCaseInsensitive.append(String.format("Ship '%s' found in DIM%d @ (%d %d %d)",
-							                                           starMapRegistryItem.name,
-							                                           starMapRegistryItem.dimensionId,
-							                                           starMapRegistryItem.x, starMapRegistryItem.y, starMapRegistryItem.z));
+							resultContains.append(String.format("Ship '%s' found in %s",
+							                                    starMapRegistryItem.name,
+							                                    starMapRegistryItem.getFormattedLocation()));
 						} else {
 							resultCaseInsensitive.append(".");
 						}
 					} else if (starMapRegistryItem.name.contains(nameShip)) {
-						if (resultMatch.length() < MAX_LENGTH) {
+						if (resultContains.length() < MAX_LENGTH) {
 							if (resultContains.length() > 0) {
 								resultContains.append("\n");
 							}
-							resultContains.append(String.format("Ship '%s' found in DIM%d @ (%d %d %d)",
+							resultContains.append(String.format("Ship '%s' found in %s",
 							                                    starMapRegistryItem.name,
-							                                    starMapRegistryItem.dimensionId,
-							                                    starMapRegistryItem.x, starMapRegistryItem.y, starMapRegistryItem.z));
+							                                    starMapRegistryItem.getFormattedLocation()));
 						} else {
 							resultContains.append(".");
 						}
@@ -156,7 +153,7 @@ public class StarMapRegistry {
 			return resultCaseInsensitive.toString();
 		}
 		if (resultContains.length() > 0) {
-			return resultMatch.toString();
+			return resultContains.toString();
 		}
 		return String.format("No ship found with name '%s'", nameShip);
 	}

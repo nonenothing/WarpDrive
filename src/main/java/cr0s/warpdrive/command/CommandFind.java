@@ -34,6 +34,15 @@ public class CommandFind extends CommandBase {
 				return;
 			}
 			nameToken = params[0];
+		} else {
+			final StringBuilder nameBuilder = new StringBuilder();
+			for (final String param : params) {
+				if (nameBuilder.length() > 0) {
+					nameBuilder.append(" ");
+				}
+				nameBuilder.append(param);
+			}
+			nameToken = nameBuilder.toString();
 		}
 		
 		final String result = WarpDrive.starMap.find(nameToken);
