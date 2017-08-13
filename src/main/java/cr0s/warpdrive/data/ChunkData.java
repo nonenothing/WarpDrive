@@ -62,21 +62,21 @@ public class ChunkData {
 		  && timeUnloaded != 0L
 		  && time - timeUnloaded < RELOAD_DELAY_MIN_MS ) {
 			WarpDrive.logger.warn(String.format("Chunk %s (%d %d %d) is reloading after only %d ms", 
-			                                    chunkCoordIntPair,
-					                            getChunkPosition().chunkPosX, getChunkPosition().chunkPosY, getChunkPosition().chunkPosZ, 
-					                            time - timeUnloaded));
+			                                    chunkCoordIntPair, 
+			                                    getChunkPosition().chunkPosX, getChunkPosition().chunkPosY, getChunkPosition().chunkPosZ, 
+			                                    time - timeUnloaded));
 		}
+		
+		// load defaults
+		Arrays.fill(dataAirSegments, null);
+		Arrays.fill(tickAirSegments, null);
+		isModified = false;
 		
 		// check version
 		if (nbtTagCompoundChunk.hasKey(TAG_CHUNK_MOD_DATA)) {
 			final NBTTagCompound nbtTagCompound = nbtTagCompoundChunk.getCompoundTag(TAG_CHUNK_MOD_DATA);
 			final int version = nbtTagCompound.getInteger(TAG_VERSION);
 			assert (version == 0 || version == 1);
-			
-			// load defaults
-			Arrays.fill(dataAirSegments, null);
-			Arrays.fill(tickAirSegments, null);
-			isModified = false;
 			
 			// load from NBT data
 			if (version == 1) {
@@ -142,7 +142,7 @@ public class ChunkData {
 		// mark as loaded
 		timeLoaded = time;
 		isLoaded = true;
-		if (WarpDrive.isDev && WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
+		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("Chunk %s (%d %d %d) is now loaded",
 			                                    chunkCoordIntPair,
 			                                    getChunkPosition().chunkPosX, getChunkPosition().chunkPosY, getChunkPosition().chunkPosZ));
@@ -496,10 +496,10 @@ public class ChunkData {
 	@Override
 	public String toString() {
 		final ChunkPosition chunkPosition = getChunkPosition();
-		return String.format("%s (%d %d @ %d %d %d) hasAir %s isNotEmpty %s )", 
+		return String.format("%s (%d %d @ %d %d %d) isLoaded %s hasAir %s isNotEmpty %s )", 
 		                     getClass().getSimpleName(),
 		                     chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos,
 		                     chunkPosition.chunkPosX, chunkPosition.chunkPosY, chunkPosition.chunkPosZ, 
-		                     hasAir(), isNotEmpty());
+		                     isLoaded, hasAir(), isNotEmpty());
 	}
 }

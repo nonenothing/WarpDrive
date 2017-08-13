@@ -118,6 +118,7 @@ import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.event.ClientHandler;
+import cr0s.warpdrive.event.CommonWorldGenerator;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
 import cr0s.warpdrive.item.ItemAirTank;
@@ -141,9 +142,7 @@ import cr0s.warpdrive.render.RenderOverlayAir;
 import cr0s.warpdrive.render.RenderOverlayCamera;
 import cr0s.warpdrive.render.RenderOverlayLocation;
 import cr0s.warpdrive.world.BiomeSpace;
-import cr0s.warpdrive.world.HyperSpaceWorldGenerator;
 import cr0s.warpdrive.world.HyperSpaceWorldProvider;
-import cr0s.warpdrive.world.SpaceWorldGenerator;
 import cr0s.warpdrive.world.SpaceWorldProvider;
 import org.apache.logging.log4j.Logger;
 
@@ -274,9 +273,7 @@ public class WarpDrive implements LoadingCallback {
 	
 	public static BiomeGenBase spaceBiome;
 	@SuppressWarnings("FieldCanBeLocal")
-	private SpaceWorldGenerator spaceWorldGenerator;
-	@SuppressWarnings("FieldCanBeLocal")
-	private HyperSpaceWorldGenerator hyperSpaceWorldGenerator;
+	private CommonWorldGenerator commonWorldGenerator;
 	
 	public static Field fieldBlockHardness = null;
 	
@@ -683,10 +680,8 @@ public class WarpDrive implements LoadingCallback {
 		
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, instance);
 		
-		spaceWorldGenerator = new SpaceWorldGenerator();
-		GameRegistry.registerWorldGenerator(spaceWorldGenerator, 0);
-		hyperSpaceWorldGenerator = new HyperSpaceWorldGenerator();
-		GameRegistry.registerWorldGenerator(hyperSpaceWorldGenerator, 0);
+		commonWorldGenerator = new CommonWorldGenerator();
+		GameRegistry.registerWorldGenerator(commonWorldGenerator, 0);
 		
 		spaceBiome = (new BiomeSpace(WarpDriveConfig.G_SPACE_BIOME_ID)).setColor(0).setDisableRain().setBiomeName("Space");
 		BiomeDictionary.registerBiomeType(spaceBiome, BiomeDictionary.Type.DEAD, BiomeDictionary.Type.WASTELAND);

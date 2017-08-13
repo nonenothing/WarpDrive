@@ -1,6 +1,7 @@
 package cr0s.warpdrive.compat;
 
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
@@ -8,6 +9,7 @@ import cr0s.warpdrive.block.breathing.BlockAirSource;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
 
@@ -15,7 +17,6 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IWorldAccess;
 import net.minecraft.world.World;
 
 public class CompatWarpDrive implements IBlockTransformer {
@@ -39,7 +40,14 @@ public class CompatWarpDrive implements IBlockTransformer {
 	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
 	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (block instanceof BlockAirFlow || block instanceof BlockAirSource) {
-			final int dataAir = ChunkHandler.getChunkData(world, x, y, z).getDataAir(x, y, z);
+			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			if (chunkData == null) {
+				WarpDrive.logger.error(String.format("CompatWarpDrive trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
+				                                     world.provider.getDimensionName(), x, y, z));
+				assert(false);
+				return null;
+			}
+			final int dataAir = chunkData.getDataAir(x, y, z);
 			if (dataAir == StateAir.AIR_DEFAULT) {
 				return null;
 			}
@@ -115,7 +123,14 @@ public class CompatWarpDrive implements IBlockTransformer {
 		}
 		if (((NBTTagCompound) nbtBase).hasKey("dataAir")) {
 			final int dataAir = ((NBTTagCompound) nbtBase).getInteger("dataAir");
-			ChunkHandler.getChunkData(world, x, y, z).setDataAir(x, y, z, dataAir);
+			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			if (chunkData == null) {
+				WarpDrive.logger.error(String.format("CompatWarpDrive trying to set data from an non-loaded chunk in %s @ (%d %d %d)",
+				                                     world.provider.getDimensionName(), x, y, z));
+				assert(false);
+				return;
+			}
+			chunkData.setDataAir(x, y, z, dataAir);
 		}
 	}
 }

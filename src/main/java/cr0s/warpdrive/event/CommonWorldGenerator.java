@@ -1,4 +1,4 @@
-package cr0s.warpdrive.world;
+package cr0s.warpdrive.event;
 
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -7,6 +7,7 @@ import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
 import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.event.ChunkHandler;
 
 import java.util.Random;
 
@@ -15,10 +16,14 @@ import net.minecraft.world.chunk.IChunkProvider;
 
 import cpw.mods.fml.common.IWorldGenerator;
 
-public class SpaceWorldGenerator implements IWorldGenerator {
+public class CommonWorldGenerator implements IWorldGenerator {
 
 	@Override
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+		// chunk data creation
+		ChunkHandler.onGenerated(world, chunkX, chunkZ);
+		
+		// actual structure generation
 		try {
 			final int x = (chunkX * 16) + (5 - random.nextInt(10));
 			final int z = (chunkZ * 16) + (5 - random.nextInt(10));
@@ -45,6 +50,7 @@ public class SpaceWorldGenerator implements IWorldGenerator {
 			exception.printStackTrace();
 		}
 	}
+	
 	/**
 	 * 
 	 * @deprecated reference design for EntitySphereGenerator
