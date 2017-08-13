@@ -2,12 +2,14 @@ package cr0s.warpdrive.command;
 
 import cr0s.warpdrive.Commons;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockBed;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
 
-public class CommandHome extends CommandBase {
+public class CommandBed extends CommandBase {
 	
 	@Override
 	public int getRequiredPermissionLevel() {
@@ -16,7 +18,7 @@ public class CommandHome extends CommandBase {
 	
 	@Override
 	public String getCommandName() {
-		return "whome";
+		return "bed";
 	}
 	
 	@Override
@@ -63,26 +65,39 @@ public class CommandHome extends CommandBase {
 		
 		assert (entityPlayerMPs != null);
 		for (final EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
-			ChunkCoordinates bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.worldObj.provider.dimensionId);
-			if (bedLocation != null) {
-				entityPlayerMP.setPositionAndUpdate(bedLocation.posX + 0.5D, bedLocation.posY + 0.5D, bedLocation.posZ + 0.5D);
-				
-				Commons.addChatMessage(entityPlayerMP, String.format("Teleporting to (%d %d %d)",
-				                                                     bedLocation.posX, bedLocation.posY, bedLocation.posZ));
+			final ChunkCoordinates bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.worldObj.provider.dimensionId);
+			if (bedLocation == null) {
+				Commons.addChatMessage(entityPlayerMP, String.format("§cTeleportation failed:\nyou need to set your bed location in %s",
+				                                                     entityPlayerMP.worldObj.provider.getDimensionName()));
 				if (params.length != 0) {
-					Commons.addChatMessage(commandSender, String.format("Teleporting player %s to DIM%d @ (%d %d %d)",
+					Commons.addChatMessage(commandSender, String.format("§cTeleportation failed for player %s:\nplayer needs to set his/her bed location in %s",
 					                                                    entityPlayerMP.getCommandSenderName(),
-					                                                    entityPlayerMP.worldObj.provider.dimensionId,
-					                                                    bedLocation.posX, bedLocation.posY, bedLocation.posZ));
+					                                                    entityPlayerMP.worldObj.provider.getDimensionName()));
 				}
-			} else {
-				Commons.addChatMessage(entityPlayerMP, String.format("&cTeleportation failed, no bed location in DIM%d",
-				                                                     entityPlayerMP.worldObj.provider.dimensionId));
+				continue;
+			}
+			
+			final Block block = entityPlayerMP.worldObj.getBlock(bedLocation.posX, bedLocation.posY, bedLocation.posZ);
+			if (!(block instanceof BlockBed)) {
+				Commons.addChatMessage(entityPlayerMP, String.format("§cTeleportation failed:\nyour bed is no longer there in %s",
+				                                                     entityPlayerMP.worldObj.provider.getDimensionName()));
 				if (params.length != 0) {
-					Commons.addChatMessage(commandSender, String.format("&cTeleportation failed, no bed location for player %s in DIM%d",
+					Commons.addChatMessage(commandSender, String.format("§cTeleportation failed for player %s:\nbed is no longer there in %s",
 					                                                    entityPlayerMP.getCommandSenderName(),
-					                                                    entityPlayerMP.worldObj.provider.dimensionId));
+					                                                    entityPlayerMP.worldObj.provider.getDimensionName()));
 				}
+				continue;
+			}
+			
+			entityPlayerMP.setPositionAndUpdate(bedLocation.posX + 0.5D, bedLocation.posY + 0.5D, bedLocation.posZ + 0.5D);
+			
+			Commons.addChatMessage(entityPlayerMP, String.format("Teleporting to (%d %d %d)",
+			                                                     bedLocation.posX, bedLocation.posY, bedLocation.posZ));
+			if (params.length != 0) {
+				Commons.addChatMessage(commandSender, String.format("Teleporting player %s to %s @ (%d %d %d)",
+				                                                    entityPlayerMP.getCommandSenderName(),
+				                                                    entityPlayerMP.worldObj.provider.getDimensionName(),
+				                                                    bedLocation.posX, bedLocation.posY, bedLocation.posZ));
 			}
 		}
 	}

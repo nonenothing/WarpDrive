@@ -94,7 +94,7 @@ import cr0s.warpdrive.command.CommandDump;
 import cr0s.warpdrive.command.CommandEntity;
 import cr0s.warpdrive.command.CommandFind;
 import cr0s.warpdrive.command.CommandGenerate;
-import cr0s.warpdrive.command.CommandHome;
+import cr0s.warpdrive.command.CommandBed;
 import cr0s.warpdrive.command.CommandInvisible;
 import cr0s.warpdrive.command.CommandJumpgates;
 import cr0s.warpdrive.command.CommandReload;
@@ -760,7 +760,7 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandEntity());
 		event.registerServerCommand(new CommandFind());
 		event.registerServerCommand(new CommandGenerate());
-		event.registerServerCommand(new CommandHome());
+		event.registerServerCommand(new CommandBed());
 		event.registerServerCommand(new CommandInvisible());
 		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandReload());
