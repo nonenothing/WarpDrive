@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
 public class CompatIndustrialCraft2 implements IBlockTransformer {
@@ -45,9 +46,23 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
-		if (rotationSteps == 0 || !nbtTileEntity.hasKey("facing")) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
+		
+		if (nbtTileEntity.getBoolean("targetSet")) {
+			final int targetX = nbtTileEntity.getInteger("targetX");
+			final int targetY = nbtTileEntity.getInteger("targetY");
+			final int targetZ = nbtTileEntity.getInteger("targetZ");
+			if (transformation.isInside(targetX, targetY, targetZ)) {
+				final ChunkCoordinates chunkCoordinates = transformation.apply(targetX, targetY, targetZ);
+				nbtTileEntity.setInteger("targetX", chunkCoordinates.posX);
+				nbtTileEntity.setInteger("targetY", chunkCoordinates.posY);
+				nbtTileEntity.setInteger("targetZ", chunkCoordinates.posZ);
+			}
+		}
+		
+		if ( rotationSteps == 0
+		  || !nbtTileEntity.hasKey("facing")) {
 			return metadata;
 		}
 		
