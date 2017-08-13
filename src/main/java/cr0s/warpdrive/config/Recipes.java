@@ -34,6 +34,7 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
  * Hold the different recipe sets
  */
 public class Recipes {
+	
 	public static final String[] oreDyes = {
 		"dyeBlack",
 		"dyeRed",
@@ -709,32 +710,22 @@ public class Recipes {
 				'r', Items.redstone,
 				'i', Items.iron_ingot));
 		
-		// Capacitive crystal is 3 redstone block, 3 paper, 3 lapis block or 1 HV capacitor from IE or 1 MFE from IC2
+		// Capacitive crystal is 2 redstone block, 4 paper, 1 regeneration potion, 2 (lithium dust or electrum dust or electrical steel ingot or gold ingot)
+		Object lithiumOrElectrum = "ingotGold";
 		if (OreDictionary.doesOreNameExist("dustLithium") && !OreDictionary.getOres("dustLithium").isEmpty()) {// comes with GregTech, Industrial Craft 2 and Mekanism
 			// (Lithium is processed from nether quartz)
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "plp", "lRl", "plp",
-					'R', new ItemStack(Items.potionitem, 1, 8225),  // Regeneration II (ghast tear + glowstone)
-					'l', "dustLithium",
-					'p', Items.paper));
+			// (IC2 Experimental is 1 Lithium dust from 18 nether quartz)
+			lithiumOrElectrum = "dustLithium";
 		} else if (OreDictionary.doesOreNameExist("dustElectrum") && !OreDictionary.getOres("dustElectrum").isEmpty()) {// comes with ImmersiveEngineering, ThermalFoundation, Metallurgy
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "eRe", "prp",
-			        'R', new ItemStack(Items.potionitem, 1, 8225),	// Regeneration II (ghast tear + glowstone)
-			        'r', "blockRedstone",
-					'e', "dustElectrum",
-			        'p', Items.paper));
+			lithiumOrElectrum = "dustElectrum";
 		} else if (OreDictionary.doesOreNameExist("ingotElectricalSteel") && !OreDictionary.getOres("ingotElectricalSteel").isEmpty()) {// comes with EnderIO
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "eRe", "prp",
-			        'R', new ItemStack(Items.potionitem, 1, 8225),	// Regeneration II (ghast tear + glowstone)
-			        'r', "blockRedstone",
-			        'e', "ingotElectricalSteel",
-			        'p', Items.paper));
-		} else {// Vanilla
-			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "gSg", "prp",
-					'S', new ItemStack(Items.potionitem, 1, 8265),	// Strength I long (blaze powder + redstone)
-					'r', "blockRedstone",
-					'p', Items.paper,
-					'g', "ingotGold"));
+			lithiumOrElectrum = "ingotElectricalSteel";
 		}
+		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 2), false, "prp", "lRl", "prp",
+				'R', new ItemStack(Items.potionitem, 1, 8225),  // Regeneration II (ghast tear + glowstone)
+				'r', "blockRedstone",
+				'l', lithiumOrElectrum,
+				'p', Items.paper));
 		
 		// Air canister is 4 iron bars, 2 leather/rubber, 2 yellow wool, 1 tank
 		Object rubberOrLeather = Items.leather;
@@ -1154,7 +1145,7 @@ public class Recipes {
 		ItemStack itemStackDiamondPick = new ItemStack(Items.diamond_pickaxe);
 		if (WarpDriveConfig.isGregTech5Loaded) {
 			itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "itemToolMiningLaser", 1); // Mining laser
-		} else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+		// } else if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			// itemStackDiamondPick = WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 11); // Advanced Miner
 		}
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockMiningLaser), false, "cmr", "tdt", "glg",
