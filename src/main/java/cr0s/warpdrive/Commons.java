@@ -55,14 +55,51 @@ public class Commons {
 		       .replaceAll("(" + CHAR_FORMATTING + ".)", "");
 	}
 	
+	private static boolean isFormatColor(char chr) {
+		return chr >= 48 && chr <= 57
+		    || chr >= 97 && chr <= 102
+		    || chr >= 65 && chr <= 70;
+	}
+	
+	private static boolean isFormatSpecial(char chr) {
+		return chr >= 107 && chr <= 111
+		    || chr >= 75 && chr <= 79
+		    || chr == 114
+		    || chr == 82;
+	}
+	
+	// inspired by FontRender.getFormatFromString
+	private static String getFormatFromString(final String message) {
+		final int indexLastChar = message.length() - 1;
+		StringBuilder result = new StringBuilder();
+		int indexEscapeCode = -1;
+		while ((indexEscapeCode = message.indexOf(167, indexEscapeCode + 1)) != -1) {
+			if (indexEscapeCode < indexLastChar) {
+				final char chr = message.charAt(indexEscapeCode + 1);
+				
+				if (isFormatColor(chr)) {
+					result = new StringBuilder("\u00a7" + chr);
+				} else if (isFormatSpecial(chr)) {
+					result.append("\u00a7").append(chr);
+				}
+			}
+		}
+		
+		return result.toString();
+	}
+	
 	public static void addChatMessage(final ICommandSender commandSender, final String message) {
 		if (commandSender == null) {
 			WarpDrive.logger.error("Unable to send message to NULL commandSender: " + message);
 			return;
 		}
 		final String[] lines = updateEscapeCodes(message).split("\n");
+		String format = "";
+		getFormatFromString(lines[0]);
 		for (String line : lines) {
-			commandSender.addChatMessage(new ChatComponentText(line));
+			final String formattedLine = format + line;
+			commandSender.addChatMessage(new ChatComponentText(formattedLine));
+			format = getFormatFromString(formattedLine);
 		}
 		
 		// logger.info(message);
