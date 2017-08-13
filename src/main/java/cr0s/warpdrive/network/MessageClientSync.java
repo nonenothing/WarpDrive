@@ -50,7 +50,7 @@ public class MessageClientSync implements IMessage, IMessageHandler<MessageClien
 	public IMessage onMessage(MessageClientSync messageClientSync, MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
-			WarpDrive.logger.error("WorldObj is null, ignoring video channel packet");
+			WarpDrive.logger.error("WorldObj is null, ignoring client synchronization packet");
 			return null;
 		}
 		

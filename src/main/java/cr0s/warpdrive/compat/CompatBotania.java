@@ -86,17 +86,21 @@ public class CompatBotania implements IBlockTransformer {
 			}
 		}
 		
-		if (nbtTileEntity.hasKey("bindX") && nbtTileEntity.hasKey("bindY") && nbtTileEntity.hasKey("bindZ")) {
-			ChunkCoordinates targetBind = transformation.apply(nbtTileEntity.getInteger("bindX"), nbtTileEntity.getInteger("bindY"), nbtTileEntity.getInteger("bindZ"));
+		if ( nbtTileEntity.hasKey("bindX")
+		  && nbtTileEntity.hasKey("bindY") 
+		  && nbtTileEntity.hasKey("bindZ") ) {
+			final ChunkCoordinates targetBind = transformation.apply(nbtTileEntity.getInteger("bindX"), nbtTileEntity.getInteger("bindY"), nbtTileEntity.getInteger("bindZ"));
 			nbtTileEntity.setInteger("bindX", targetBind.posX);
 			nbtTileEntity.setInteger("bindY", targetBind.posY);
 			nbtTileEntity.setInteger("bindZ", targetBind.posZ);
 		}
 		
 		if (nbtTileEntity.hasKey("subTileCmp")) {
-			NBTTagCompound nbtSubTileCmp = nbtTileEntity.getCompoundTag("subTileCmp");
-			if (nbtSubTileCmp.hasKey("collectorX") && nbtSubTileCmp.hasKey("collectorY") && nbtSubTileCmp.hasKey("collectorZ")) {
-				ChunkCoordinates targetCollector = transformation.apply(nbtSubTileCmp.getInteger("collectorX"), nbtSubTileCmp.getInteger("collectorY"), nbtSubTileCmp.getInteger("collectorZ"));
+			final NBTTagCompound nbtSubTileCmp = nbtTileEntity.getCompoundTag("subTileCmp");
+			if ( nbtSubTileCmp.hasKey("collectorX")
+			  && nbtSubTileCmp.hasKey("collectorY")
+			  && nbtSubTileCmp.hasKey("collectorZ") ) {
+				final ChunkCoordinates targetCollector = transformation.apply(nbtSubTileCmp.getInteger("collectorX"), nbtSubTileCmp.getInteger("collectorY"), nbtSubTileCmp.getInteger("collectorZ"));
 				nbtSubTileCmp.setInteger("collectorX", targetCollector.posX);
 				nbtSubTileCmp.setInteger("collectorY", targetCollector.posY);
 				nbtSubTileCmp.setInteger("collectorZ", targetCollector.posZ);
@@ -104,7 +108,7 @@ public class CompatBotania implements IBlockTransformer {
 		}
 		
 		if (nbtTileEntity.hasKey("rotationX")) {
-			float rotationX = nbtTileEntity.getInteger("rotationX");
+			final float rotationX = nbtTileEntity.getInteger("rotationX");
 			nbtTileEntity.setFloat("rotationX", (rotationX + 270.0F * rotationSteps) % 360.0F);
 		}
 		

@@ -166,7 +166,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	public IMessage onMessage(MessageSpawnParticle messageSpawnParticle, MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
-			WarpDrive.logger.error("WorldObj is null, ignoring beam packet");
+			WarpDrive.logger.error("WorldObj is null, ignoring particle packet");
 			return null;
 		}
 		
