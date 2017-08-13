@@ -585,25 +585,21 @@ public class Dictionary {
 	}
 	
 	public static NBTBase writeItemsToNBT(final HashSet<Item> hashSetItem) {
-		if ( hashSetItem != null
-		  && !hashSetItem.isEmpty() ) {
-			final NBTTagList nbtTagList = new NBTTagList();
-			
-			for (final Item item : hashSetItem) {
-				final String registryName = Item.itemRegistry.getNameForObject(item);
-				nbtTagList.appendTag(new NBTTagString(registryName));
-			}
-			
-			return nbtTagList;
+		final NBTTagList nbtTagList = new NBTTagList();
+		assert(hashSetItem != null);
+		for (final Item item : hashSetItem) {
+			final String registryName = Item.itemRegistry.getNameForObject(item);
+			nbtTagList.appendTag(new NBTTagString(registryName));
 		}
-		return null;
+		return nbtTagList;
 	}
 	
 	public static HashSet<Item> readItemsFromNBT(final NBTTagList nbtTagList) {
-		final HashSet<Item> hashSetItem = new HashSet<>(nbtTagList == null ? 8 : nbtTagList.tagCount());
+		assert(nbtTagList != null);
+		final int size = nbtTagList.tagCount();
+		final HashSet<Item> hashSetItem = new HashSet<>(Math.max(8, size));
 		
-		if ( nbtTagList != null
-		   && nbtTagList.tagCount() > 0 ) {
+		if (size > 0) {
 			for (int index = 0; index < nbtTagList.tagCount(); index++) {
 				final String registryName = nbtTagList.getStringTagAt(index);
 				final Item item = GameData.getItemRegistry().getObject(registryName);
