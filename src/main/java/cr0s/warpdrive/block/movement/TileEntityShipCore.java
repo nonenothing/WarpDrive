@@ -56,7 +56,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	public UUID uuid = null;
 	public String shipName = "default";
 	public double isolationRate = 0.0D;
-	private int cooldownTime = 0;
+	private int cooldownTime_ticks = 0;
+	private int warmupTime_ticks = 0;
 	protected int jumpCount = 0;
 	
 	// computed properties
@@ -74,11 +75,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	private EnumShipMovementType shipMovementType;
 	private ShipMovementCosts shipMovementCosts;
 	
-	private long distanceSquared = 0; 
-	private int warmupTime = 0;
+	private long distanceSquared = 0;
+	private boolean isCooldownReported = false;
 	private boolean isMotionSicknessApplied = false;
 	private boolean isSoundPlayed = false;
-	private boolean isCooldownReported = false;
+	private boolean isWarmupReported = false;
 	protected int randomWarmupAddition_ticks = 0;
 	
 	private int registryUpdateTicks = 0;
@@ -129,16 +130,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference == null ? null : tileEntityShipControllerWeakReference.get();
 		
 		// Always cooldown
-		if (cooldownTime > 0) {
-			cooldownTime--;
-			warmupTime = 0;
-			if (cooldownTime == 0 && tileEntityShipController != null) {
+		if (cooldownTime_ticks > 0) {
+			cooldownTime_ticks--;
+			if (cooldownTime_ticks == 0 && tileEntityShipController != null) {
 				tileEntityShipController.cooldownDone();
 			}
 		}
 		
 		// Enforce priority states
-		if (cooldownTime > 0) {
+		if (cooldownTime_ticks > 0) {
 			if (stateCurrent != EnumShipCoreState.COOLING_DOWN) {
 				stateCurrent = EnumShipCoreState.COOLING_DOWN;
 				isCooldownReported = false;
@@ -155,15 +155,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if (timeLastShipScanDone <= 0L) {
 				stateCurrent = EnumShipCoreState.SCANNING;
 			}
-		}
-		
-		// Clear properties
-		if ( stateCurrent == EnumShipCoreState.COOLING_DOWN
-		  || stateCurrent == EnumShipCoreState.DISCONNECTED
-		  || stateCurrent == EnumShipCoreState.IDLE ) {
-			warmupTime = 0;
-			isMotionSicknessApplied = false;
-			isSoundPlayed = false;
 		}
 			
 		// Refresh rendering
@@ -201,8 +192,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		if (logTicks <= 0) {
 			logTicks = LOG_INTERVAL_TICKS;
 			if (WarpDriveConfig.LOGGING_JUMP) {
-				WarpDrive.logger.info(this + " controller is " + tileEntityShipController + ", warmupTime " + warmupTime + ", stateCurrent " + stateCurrent + ", jumpFlag "
-						+ (tileEntityShipController == null ? "NA" : tileEntityShipController.isEnabled) + ", cooldownTime " + cooldownTime);
+				WarpDrive.logger.info(this + " controller is " + tileEntityShipController + ", warmupTime " + warmupTime_ticks + ", stateCurrent " + stateCurrent + ", jumpFlag "
+						+ (tileEntityShipController == null ? "NA" : tileEntityShipController.isEnabled) + ", cooldownTime " + cooldownTime_ticks);
 			}
 		}
 		
@@ -240,16 +231,17 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if ( tileEntityShipController.isEnabled
 			  && commandController != EnumShipControllerCommand.IDLE
 			  && commandController != EnumShipControllerCommand.MAINTENANCE ) {
-				if (cooldownTime % 20 == 0) {
-					int seconds = cooldownTime / 20;
+				if (cooldownTime_ticks % 20 == 0) {
+					final int seconds = cooldownTime_ticks / 20;
 					if (!isCooldownReported || (seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
 						isCooldownReported = true;
-						messageToAllPlayersOnShip("Warp core is cooling down... " + seconds + "s to go...");
+						messageToAllPlayersOnShip(String.format("Warp core is cooling down... %ds to go...", seconds));
 					}
 				}
 			}
-			if (cooldownTime <= 0) {
+			if (cooldownTime_ticks <= 0) {
 				stateCurrent = EnumShipCoreState.IDLE;
+				isCooldownReported = false;
 			}
 			break;
 		
@@ -283,8 +275,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			case GATE:
 				// initiating jump
 				
-				// compute random ticks to warmup so it's harder to 'dup' items
-				randomWarmupAddition_ticks = worldObj.rand.nextInt(WarpDriveConfig.SHIP_WARMUP_RANDOM_TICKS);
 				// compute distance
 				distanceSquared = tileEntityShipController.getMovement().getMagnitudeSquared();
 				// rescan ship mass/volume if it's too old
@@ -307,8 +297,14 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 					return;
 				}
 				
+				// compute random ticks to warmup so it's harder to 'dup' items
+				randomWarmupAddition_ticks = worldObj.rand.nextInt(WarpDriveConfig.SHIP_WARMUP_RANDOM_TICKS);
+				
 				stateCurrent = EnumShipCoreState.WARMING_UP;
-				warmupTime = 0;
+				warmupTime_ticks = shipMovementCosts.warmup_seconds * 20 + randomWarmupAddition_ticks;
+				isMotionSicknessApplied = false;
+				isSoundPlayed = false;
+				isWarmupReported = false;
 				break;
 			
 			default:
@@ -318,17 +314,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			break;
 			
 		case WARMING_UP:
-			// Compute actual warm-up time
-			final int targetWarmup_ticks = shipMovementCosts.warmup_seconds * 20 + randomWarmupAddition_ticks;
-			
 			// Apply motion sickness as applicable
 			if (shipMovementCosts.sickness_seconds > 0) {
-				final int motionSicknessThreshold_ticks = targetWarmup_ticks - shipMovementCosts.sickness_seconds * 20 + randomWarmupAddition_ticks / 4; 
-				if (!isMotionSicknessApplied && motionSicknessThreshold_ticks <= warmupTime) {
+				final int motionSicknessThreshold_ticks = shipMovementCosts.sickness_seconds * 20 - randomWarmupAddition_ticks / 4; 
+				if ( !isMotionSicknessApplied
+				   && motionSicknessThreshold_ticks >= warmupTime_ticks ) {
 					if (WarpDriveConfig.LOGGING_JUMP) {
 						WarpDrive.logger.info(this + " Giving warp sickness to on-board players");
 					}
-					makePlayersOnShipDrunk(targetWarmup_ticks + WarpDriveConfig.SHIP_WARMUP_RANDOM_TICKS);
+					makePlayersOnShipDrunk(shipMovementCosts.sickness_seconds * 20 + WarpDriveConfig.SHIP_WARMUP_RANDOM_TICKS);
 					isMotionSicknessApplied = true;
 				}
 			}
@@ -336,34 +330,46 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			// Select best sound file and adjust offset
 			final int soundThreshold;
 			final String soundFile;
-			if (targetWarmup_ticks < 10 * 20) {
-				soundThreshold = targetWarmup_ticks - 4 * 20 + randomWarmupAddition_ticks;
+			if (shipMovementCosts.warmup_seconds < 10) {
+				soundThreshold =  4 * 20 - randomWarmupAddition_ticks;
 				soundFile = "warpdrive:warp_4s";
-			} else if (targetWarmup_ticks > 29 * 20) {
-				soundThreshold = targetWarmup_ticks - 30 * 20 + randomWarmupAddition_ticks;
+			} else if (shipMovementCosts.warmup_seconds > 29) {
+				soundThreshold = 30 * 20 - randomWarmupAddition_ticks;
 				soundFile = "warpdrive:warp_30s";
 			} else {
-				soundThreshold = targetWarmup_ticks - 10 * 20 + randomWarmupAddition_ticks;
+				soundThreshold = 10 * 20 - randomWarmupAddition_ticks;
 				soundFile = "warpdrive:warp_10s";
 			}
 			
-			if (!isSoundPlayed && (soundThreshold > warmupTime)) {
+			if ( !isSoundPlayed
+			  && soundThreshold >= warmupTime_ticks ) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info(this + " Playing sound effect '" + soundFile + "' soundThreshold " + soundThreshold + " warmupTime " + warmupTime);
+					WarpDrive.logger.info(this + " Playing sound effect '" + soundFile + "' soundThreshold " + soundThreshold + " warmupTime " + warmupTime_ticks);
 				}
 				worldObj.playSoundEffect(xCoord + 0.5f, yCoord + 0.5f, zCoord + 0.5f, soundFile, 4F, 1F);
 				isSoundPlayed = true;
 			}
 			
+			if (warmupTime_ticks % 20 == 0) {
+				final int seconds = warmupTime_ticks / 20;
+				if ( !isWarmupReported
+				  || (seconds >= 60 && (seconds % 15 == 0))
+				  || (seconds <  60 && seconds > 30 && (seconds % 10 == 0)) ) {
+					isWarmupReported = true;
+					messageToAllPlayersOnShip(String.format("Warp core is warming up... %ds to go...", seconds));
+				}
+			}
+			
 			// Awaiting warm-up time
-			if (warmupTime < targetWarmup_ticks) {
-				warmupTime++;
+			if (warmupTime_ticks > 0) {
+				warmupTime_ticks--;
 				break;
 			}
 			
-			warmupTime = 0;
+			warmupTime_ticks = 0;
 			isMotionSicknessApplied = false;
 			isSoundPlayed = false;
+			isWarmupReported = false;
 			
 			if (!validateShipSpatialParameters(tileEntityShipController, reason)) {
 				tileEntityShipController.commandDone(false, reason.toString());
@@ -381,7 +387,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			}
 			
 			doJump(tileEntityShipController);
-			cooldownTime = Math.max(1, shipMovementCosts.cooldown_seconds * 20);
+			cooldownTime_ticks = Math.max(1, shipMovementCosts.cooldown_seconds * 20);
 			tileEntityShipController.commandDone(true, "Ok");
 			jumpCount++;
 			stateCurrent = EnumShipCoreState.COOLING_DOWN;
@@ -1023,7 +1029,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public String getStatus() {
 		return super.getStatus()
-			+ ((cooldownTime > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.cooling", cooldownTime / 20) : "")
+			+ ((cooldownTime_ticks > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.cooling", cooldownTime_ticks / 20) : "")
 			+ ((isolationBlocksCount > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
 	}
 	
@@ -1096,7 +1102,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	public int getCooldown() {
-		return cooldownTime;
+		return cooldownTime_ticks;
 	}
 	
 	@Override
@@ -1112,14 +1118,15 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		facing = ForgeDirection.getOrientation(tag.getInteger("facing"));
+		facing = ForgeDirection.getOrientation(tag.getByte("facing"));
 		uuid = new UUID(tag.getLong("uuidMost"), tag.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			uuid = UUID.randomUUID();
 		}
 		shipName = tag.getString("corefrequency") + tag.getString("shipName");	// coreFrequency is the legacy tag name
 		isolationRate = tag.getDouble("isolationRate");
-		cooldownTime = tag.getInteger("cooldownTime");
+		cooldownTime_ticks = tag.getInteger("cooldownTime");
+		warmupTime_ticks = tag.getInteger("warmupTime");
 		jumpCount = tag.getInteger("jumpCount");
 	}
 	
@@ -1127,7 +1134,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	public void writeToNBT(NBTTagCompound tag) {
 		super.writeToNBT(tag);
 		if (facing != null) {
-			tag.setInteger("facing", facing.ordinal());
+			tag.setByte("facing", (byte) facing.ordinal());
 		}
 		if (uuid != null) {
 			tag.setLong("uuidMost", uuid.getMostSignificantBits());
@@ -1135,7 +1142,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		tag.setString("shipName", shipName);
 		tag.setDouble("isolationRate", isolationRate);
-		tag.setInteger("cooldownTime", cooldownTime);
+		tag.setInteger("cooldownTime", cooldownTime_ticks);
+		tag.setInteger("warmupTime", warmupTime_ticks);
 		tag.setInteger("jumpCount", jumpCount);
 	}
 	

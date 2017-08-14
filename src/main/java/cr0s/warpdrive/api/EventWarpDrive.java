@@ -49,19 +49,19 @@ public abstract class EventWarpDrive extends Event {
 			public final int maximumDistance_blocks_initial;
 			
 			// applied values
-			private int warmup_seconds;
-			private int energyRequired;
-			private int cooldown_seconds;
-			private int sickness_seconds;
 			private int maximumDistance_blocks;
+			private int energyRequired;
+			private int warmup_seconds;
+			private int sickness_seconds;
+			private int cooldown_seconds;
 			
 			public MovementCosts(final World world, final int x, final int y, final int z,
 			                     final int mass, final String jumpType, final int distance,
-			                     final int warmup_seconds,
+			                     final int maximumDistance_blocks,
 			                     final int energyRequired,
-			                     final int cooldown_seconds,
+			                     final int warmup_seconds,
 			                     final int sickness_seconds,
-			                     final int maximumDistance_blocks) {
+			                     final int cooldown_seconds) {
 				super(world, x, y, z, mass, jumpType, distance);
 				
 				this.warmup_seconds_initial = warmup_seconds;
@@ -76,12 +76,12 @@ public abstract class EventWarpDrive extends Event {
 				this.maximumDistance_blocks = maximumDistance_blocks;
 			}
 			
-			public int getWarmup_seconds() {
-				return warmup_seconds;
+			public int getMaximumDistance_blocks() {
+				return maximumDistance_blocks;
 			}
 			
-			public void setWarmup_seconds(final int warmup_seconds) {
-				this.warmup_seconds = warmup_seconds;
+			public void setMaximumDistance_blocks(final int maximumDistance_blocks) {
+				this.maximumDistance_blocks = maximumDistance_blocks;
 			}
 			
 			public int getEnergyRequired() {
@@ -92,12 +92,12 @@ public abstract class EventWarpDrive extends Event {
 				this.energyRequired = energyRequired;
 			}
 			
-			public int getCooldown_seconds() {
-				return cooldown_seconds;
+			public int getWarmup_seconds() {
+				return warmup_seconds;
 			}
 			
-			public void setCooldown_seconds(final int cooldown_seconds) {
-				this.cooldown_seconds = cooldown_seconds;
+			public void setWarmup_seconds(final int warmup_seconds) {
+				this.warmup_seconds = warmup_seconds;
 			}
 			
 			public int getSickness_seconds() {
@@ -108,12 +108,12 @@ public abstract class EventWarpDrive extends Event {
 				this.sickness_seconds = sickness_seconds;
 			}
 			
-			public int getMaximumDistance_blocks() {
-				return maximumDistance_blocks;
+			public int getCooldown_seconds() {
+				return cooldown_seconds;
 			}
 			
-			public void setMaximumDistance_blocks(final int maximumDistance_blocks) {
-				this.maximumDistance_blocks = maximumDistance_blocks;
+			public void setCooldown_seconds(final int cooldown_seconds) {
+				this.cooldown_seconds = cooldown_seconds;
 			}
 		}
 		
