@@ -31,7 +31,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	// computed properties
 	protected Vector3 vRGB;
-	protected boolean isConnected = true;
+	protected boolean isConnected = false;
 	
 	public TileEntityAbstractForceField() {
 		super();
@@ -64,7 +64,11 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		}
 		
 		// Frequency is not set
-		isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
+		final boolean new_isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
+		if (isConnected != new_isConnected) {
+			isConnected = new_isConnected;
+			markDirty();
+		}
 	}
 	
 	@Override
@@ -125,21 +129,22 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		tier = tagCompound.getByte("tier");
 		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
+		isConnected = tagCompound.getBoolean("isConnected");
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setByte("tier", tier);
-		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
-		tag.setBoolean("isEnabled", isEnabled);
+	public void writeToNBT(NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setByte("tier", tier);
+		tagCompound.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setBoolean("isConnected", isConnected);
 	}
 	
 	@Override
 	public Packet getDescriptionPacket() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		tagCompound.setBoolean("isConnected", isConnected);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
 	}
 	
@@ -147,7 +152,6 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
-		isConnected = tagCompound.getBoolean("isConnected");
 	}
 	
 	// OpenComputer callback methods
