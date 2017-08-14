@@ -66,7 +66,8 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	
 	@Override
 	@Optional.Method(modid = "arsmagica2")
-	public void remove(TileEntity tileEntity) {
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (tileEntity instanceof IPowerNode) {
 			PowerNodeRegistry.For(tileEntity.getWorldObj()).removePowerNode((IPowerNode) tileEntity);
 		}
@@ -127,7 +128,9 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	
 	@Override
 	@Optional.Method(modid = "arsmagica2")
-	public void restoreExternals(final World world, final int x, final int y, final int z,	                             final Block block, final int blockMeta, final TileEntity tileEntity,	                             final ITransformation transformation, final NBTBase nbtBase) {
+	public void restoreExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity,
+	                             final ITransformation transformation, final NBTBase nbtBase) {
 		if (!(tileEntity instanceof IPowerNode) || nbtBase == null) {
 			return;
 		}

@@ -41,9 +41,12 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public void remove(TileEntity tileEntity) {
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 	}
+	
+	private static final short[] mrotFacing    = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
 	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
@@ -66,17 +69,16 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 			return metadata;
 		}
 		
-		short facing = nbtTileEntity.getShort("facing");
-		final short[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+		final short facing = nbtTileEntity.getShort("facing");
 		switch (rotationSteps) {
 		case 1:
-			nbtTileEntity.setShort("facing", mrot[facing]);
+			nbtTileEntity.setShort("facing", mrotFacing[facing]);
 			return metadata;
 		case 2:
-			nbtTileEntity.setShort("facing", mrot[mrot[facing]]);
+			nbtTileEntity.setShort("facing", mrotFacing[mrotFacing[facing]]);
 			return metadata;
 		case 3:
-			nbtTileEntity.setShort("facing", mrot[mrot[mrot[facing]]]);
+			nbtTileEntity.setShort("facing", mrotFacing[mrotFacing[mrotFacing[facing]]]);
 			return metadata;
 		default:
 			return metadata;

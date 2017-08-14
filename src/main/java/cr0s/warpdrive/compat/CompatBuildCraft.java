@@ -66,7 +66,8 @@ public class CompatBuildCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public void remove(TileEntity tileEntity) {
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 	}
 	
@@ -241,7 +242,9 @@ public class CompatBuildCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public void restoreExternals(final World world, final int x, final int y, final int z,	                             final Block block, final int blockMeta, final TileEntity tileEntity,	                             final ITransformation transformation, final NBTBase nbtBase) {
+	public void restoreExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity,
+	                             final ITransformation transformation, final NBTBase nbtBase) {
 		// nothing to do
 	}
 }

@@ -28,6 +28,8 @@ public class CompatWarpDrive implements IBlockTransformer {
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
 		return block instanceof BlockHullSlab
+			|| block instanceof BlockAirFlow
+		    || block instanceof BlockAirSource
 		    || tileEntity instanceof TileEntityEnergyBank;
 	}
 	
@@ -59,8 +61,18 @@ public class CompatWarpDrive implements IBlockTransformer {
 	}
 	
 	@Override
-	public void remove(TileEntity tileEntity) {
-		// nothing to do
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
+		if (block instanceof BlockAirFlow || block instanceof BlockAirSource) {
+			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			if (chunkData == null) {
+				WarpDrive.logger.error(String.format("CompatWarpDrive trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
+				                                     world.provider.getDimensionName(), x, y, z));
+				assert(false);
+				return;
+			}
+			chunkData.setDataAir(x, y, z, StateAir.AIR_DEFAULT);
+		}
 	}
 	
 	private static final short[] mrotDirection = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };

@@ -21,11 +21,12 @@ public interface IBlockTransformer {
 	NBTBase saveExternals(final World world, final int x, final int y, final int z,
 	                      final Block block, final int blockMeta, final TileEntity tileEntity);
 	
-	// Called when removing the original ship structure.
+	// Called when removing the original ship structure, if saveExternals() returned non-null for that block.
 	// Use this to prevents drops, clear energy networks, etc.
 	// Block and TileEntity will be removed right after this call. 
 	// When moving, the new ship is placed first.
-	void remove(final TileEntity tileEntity);
+	void removeExternals(final World world, final int x, final int y, final int z,
+	                     final Block block, final int blockMeta, final TileEntity tileEntity);
 	
 	// Called when restoring a ship in the world.
 	// Use this to apply metadata & NBT rotation, right before block & tile entity placement.
@@ -33,7 +34,7 @@ public interface IBlockTransformer {
 	// Warning: do NOT place the block or tile entity!
 	int rotate(final Block block, int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation);
 	
-	// Called when placing back a ship in the world.
+	// Called when placing back a ship in the world, if saveExternals() returned non-null for that block.
 	// Use this to restore external data from the ship schematic, right after block & tile entity placement.
 	// Use priority placement to ensure dependent blocks are placed first.
 	// This is will be called whether saveExternals returned null or not.

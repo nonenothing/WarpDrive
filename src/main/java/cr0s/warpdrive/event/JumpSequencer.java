@@ -898,7 +898,7 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		int index = 0;
 		while (index < blocksToMove && actualIndexInShip < ship.jumpBlocks.length) {
-			JumpBlock jumpBlock = ship.jumpBlocks[ship.jumpBlocks.length - actualIndexInShip - 1];
+			final JumpBlock jumpBlock = ship.jumpBlocks[ship.jumpBlocks.length - actualIndexInShip - 1];
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.info(this + " Moving ship externals: unexpected null found at ship[" + actualIndexInShip + "]");
@@ -907,17 +907,18 @@ public class JumpSequencer extends AbstractSequencer {
 				continue;
 			}
 			
-			if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
+			if (jumpBlock.externals != null) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Moving externals for block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				}
 				for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
-					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
+					final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
-						blockTransformer.remove(jumpBlock.blockTileEntity);
+						blockTransformer.removeExternals(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z,
+						                                 jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity);
 						
-						ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-						TileEntity newTileEntity = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
+						final ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+						final TileEntity newTileEntity = jumpBlock.blockTileEntity == null ? null : targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
 						blockTransformer.restoreExternals(targetWorld, target.posX, target.posY, target.posZ,
 						                                  jumpBlock.block, jumpBlock.blockMeta, newTileEntity, transformation, external.getValue());
 					}

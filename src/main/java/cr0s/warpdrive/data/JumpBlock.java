@@ -82,7 +82,8 @@ public class JumpBlock {
 		// save externals
 		for (Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
 			if (entryBlockTransformer.getValue().isApplicable(block, blockMeta, tileEntity)) {
-				NBTBase nbtBase = entryBlockTransformer.getValue().saveExternals(world, x, y, z, block, blockMeta, tileEntity);
+				final NBTBase nbtBase = entryBlockTransformer.getValue().saveExternals(world, x, y, z, block, blockMeta, tileEntity);
+				// (we always save, even if null as a reminder on which transformer applies to this block)
 				setExternal(entryBlockTransformer.getKey(), nbtBase);
 			}
 		}
@@ -107,7 +108,7 @@ public class JumpBlock {
 		}
 		NBTBase nbtExternal = externals.get(modId);
 		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Restoring " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
+			WarpDrive.logger.info("Returning " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
 		}
 		if (nbtExternal == null) {
 			return null;
