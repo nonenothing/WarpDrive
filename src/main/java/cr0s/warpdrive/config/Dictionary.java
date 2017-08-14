@@ -165,6 +165,8 @@ public class Dictionary {
 				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
 				config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
 				config.get("block_tags", "WarpDrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "WarpDrive:blockAirFlow"                          , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "WarpDrive:blockAirSource"                        , "NoMass Expandable PlaceLatest").getString();
 				
 				// mining a mineshaft...
 				config.get("block_tags", "minecraft:web"                                   , "Mining").getString();

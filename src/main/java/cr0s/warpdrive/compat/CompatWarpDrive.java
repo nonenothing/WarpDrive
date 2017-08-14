@@ -1,12 +1,16 @@
 package cr0s.warpdrive.compat;
 
-
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
+import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
+import cr0s.warpdrive.block.detection.BlockMonitor;
 import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
@@ -28,8 +32,8 @@ public class CompatWarpDrive implements IBlockTransformer {
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
 		return block instanceof BlockHullSlab
-			|| block instanceof BlockAirFlow
-		    || block instanceof BlockAirSource
+		    || block instanceof BlockAbstractBase
+		    || block instanceof BlockAbstractContainer
 		    || tileEntity instanceof TileEntityEnergyBank;
 	}
 	
@@ -77,6 +81,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	
 	private static final short[] mrotDirection = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final short[] mrotHullSlab  = {  0,  1,  5,  4,  2,  3,  6,  7, 11, 10,  8,  9, 12, 13, 15, 14 };
+	private static final byte[]  rotFacing     = {  0,  1,  5,  4,  2,  3,  6,  7 };
 	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
 		byte[] newData = data.clone();
@@ -100,7 +105,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	
 	@Override
 	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+		final byte rotationSteps = transformation.getRotationSteps();
 		
 		// Hull slabs
 		if (block instanceof BlockHullSlab) {
@@ -111,6 +116,53 @@ public class CompatWarpDrive implements IBlockTransformer {
 				return mrotHullSlab[mrotHullSlab[metadata]];
 			case 3:
 				return mrotHullSlab[mrotHullSlab[mrotHullSlab[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
+		// Monitor and Air generator tiered
+		if (block instanceof BlockMonitor) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotDirection[metadata];
+			case 2:
+				return mrotDirection[mrotDirection[metadata]];
+			case 3:
+				return mrotDirection[mrotDirection[mrotDirection[metadata]]];
+			default:
+				return metadata;
+			}
+		}
+		
+		// Force field projector
+		if ( block instanceof BlockAirGeneratorTiered
+		  || block instanceof BlockForceFieldProjector ) {
+			switch (rotationSteps) {
+			case 1:
+				return mrotDirection[metadata & 7] | (metadata & 8);
+			case 2:
+				return mrotDirection[mrotDirection[metadata & 7]] | (metadata & 8);
+			case 3:
+				return mrotDirection[mrotDirection[mrotDirection[metadata & 7]]] | (metadata & 8);
+			default:
+				return metadata;
+			}
+		}
+		
+		// Ship core
+		if (nbtTileEntity != null && nbtTileEntity.hasKey("facing")) {
+			final short facing = nbtTileEntity.getByte("facing");
+			switch (rotationSteps) {
+			case 1:
+				nbtTileEntity.setByte("facing", rotFacing[facing]);
+				return metadata;
+			case 2:
+				nbtTileEntity.setByte("facing", rotFacing[rotFacing[facing]]);
+				return metadata;
+			case 3:
+				nbtTileEntity.setByte("facing", rotFacing[rotFacing[rotFacing[facing]]]);
+				return metadata;
 			default:
 				return metadata;
 			}
@@ -134,6 +186,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 			return;
 		}
 		if (((NBTTagCompound) nbtBase).hasKey("dataAir")) {
+			final byte rotationSteps = transformation.getRotationSteps();
 			final int dataAir = ((NBTTagCompound) nbtBase).getInteger("dataAir");
 			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
 			if (chunkData == null) {
@@ -142,7 +195,8 @@ public class CompatWarpDrive implements IBlockTransformer {
 				assert(false);
 				return;
 			}
-			chunkData.setDataAir(x, y, z, dataAir);
+			final int dataAirRotated = StateAir.rotate(dataAir, rotationSteps);
+			chunkData.setDataAir(x, y, z, dataAirRotated);
 		}
 	}
 }

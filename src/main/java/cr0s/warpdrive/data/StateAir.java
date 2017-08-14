@@ -474,6 +474,27 @@ public class StateAir {
 		    && (dataAir & StateAir.BLOCK_MASK) != StateAir.BLOCK_AIR_FLOW;
 	}
 	
+	private static final short[] rotDirection = {  0,  1,  5,  4,  2,  3,  6,  7 };
+	private static int rotateDirection(final int direction, final byte rotationSteps) {
+		switch (rotationSteps) {
+		case 1:
+			return rotDirection[direction];
+		case 2:
+			return rotDirection[rotDirection[direction]];
+		case 3:
+			return rotDirection[rotDirection[rotDirection[direction]]];
+		default:
+			return direction;
+		}
+	}
+	
+	public static int rotate(final int dataAir, final byte rotationSteps) {
+		final int dataNoDirection = dataAir & ~(GENERATOR_DIRECTION_MASK | VOID_DIRECTION_MASK);
+		final int directionGenerator = rotateDirection((dataAir & GENERATOR_DIRECTION_MASK) >> GENERATOR_DIRECTION_SHIFT, rotationSteps);
+		final int directionVoid = rotateDirection((dataAir & VOID_DIRECTION_MASK) >> VOID_DIRECTION_SHIFT, rotationSteps);
+		return dataNoDirection | (directionGenerator << GENERATOR_DIRECTION_SHIFT) | (directionVoid << VOID_DIRECTION_SHIFT);
+	}
+	
 	public static void dumpAroundEntity(final EntityPlayer entityPlayer) {
 		StateAir stateAirs[][][] = new StateAir[3][3][3];
 		for (int dy = -1; dy <= 1; dy++) {

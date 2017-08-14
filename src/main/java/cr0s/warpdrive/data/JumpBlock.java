@@ -3,7 +3,6 @@ package cr0s.warpdrive.data;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
-import cr0s.warpdrive.block.detection.BlockMonitor;
 import cr0s.warpdrive.compat.CompatForgeMultipart;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.Filler;
@@ -191,8 +190,7 @@ public class JumpBlock {
 		} else if (block instanceof BlockHugeMushroom) {
 			mrot = mrotMushroom;
 		} else if (block instanceof BlockFurnace || block instanceof BlockDispenser || block instanceof BlockHopper
-				|| block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockLadder
-				|| block instanceof BlockMonitor) {
+				|| block instanceof BlockChest || block instanceof BlockEnderChest || block instanceof BlockLadder) {
 			mrot = mrotForgeDirection;
 		} else if (block instanceof BlockPistonBase || block instanceof BlockPistonExtension || block instanceof BlockPistonMoving) {
 			mrot = mrotPiston;
