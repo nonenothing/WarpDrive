@@ -1658,7 +1658,7 @@ public class Recipes {
 			}
 			
 			// Normal electromagnets
-			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetPlain[0], 4), "ctc", "cmc", "cCc",
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockElectromagnetPlain[0], 4), "   ", "ccc", "Cmt",
 			        'c', ironIngotOrCopperIngotOrCoil,
 			        't', ItemComponent.getItemStack(EnumComponentType.GLASS_TANK),
 			        'm', itemStackMotorLV,
