@@ -129,7 +129,7 @@ public class ChunkHandler {
 		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, false);
 		if (chunkData != null) {
 			chunkData.save(event.getData());
-		} else {
+		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is saving data without loading it first!",
 			                                     event.world.isRemote ? "Client" : "Server",
 			                                     event.world.provider.getDimensionName(),
@@ -198,7 +198,7 @@ public class ChunkHandler {
 		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, false);
 		if (chunkData != null) {
 			chunkData.unload();
-		} else {
+		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is unloading without loading it first!", 
 			                                     event.world.isRemote ? "Client" : "Server",
 			                                     event.world.provider.getDimensionName(),
