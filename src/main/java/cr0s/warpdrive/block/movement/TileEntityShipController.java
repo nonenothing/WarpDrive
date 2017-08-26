@@ -362,7 +362,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		}
 	}
 	
-	protected void commandDone(final boolean success, final String reason) {
+	void commandDone(final boolean success, final String reason) {
 		isEnabled = false;
 		command = EnumShipControllerCommand.IDLE;
 		if (!success) {
@@ -401,7 +401,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		}
 	}
 	
-	protected String getTargetName() {
+	String getTargetName() {
 		return nameTarget;
 	}
 	

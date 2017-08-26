@@ -55,7 +55,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	public ForgeDirection facing;
 	public UUID uuid = null;
 	public String shipName = "default";
-	public double isolationRate = 0.0D;
+	private double isolationRate = 0.0D;
 	private int cooldownTime_ticks = 0;
 	private int warmupTime_ticks = 0;
 	protected int jumpCount = 0;
@@ -90,7 +90,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	private int isolationUpdateTicks = 0;
 	
 	
-	public WeakReference<TileEntityShipController> tileEntityShipControllerWeakReference;
+	private WeakReference<TileEntityShipController> tileEntityShipControllerWeakReference;
 	
 	
 	public TileEntityShipCore() {
@@ -156,12 +156,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				stateCurrent = EnumShipCoreState.SCANNING;
 			}
 		}
-			
+		
 		// Refresh rendering
 		if (getBlockMetadata() != stateCurrent.getMetadata()) {
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, stateCurrent.getMetadata(), 1 + 2);
 		}
-				
+		
 		// accelerate update ticks during boot
 		if (bootTicks > 0) {
 			bootTicks--;
@@ -262,7 +262,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			case SUMMON:
 				final String targetName = tileEntityShipController.getTargetName();
 				if ( targetName == null
-				   || targetName.isEmpty()) {
+				  || targetName.isEmpty()) {
 					summonPlayers(tileEntityShipController);
 				} else {
 					summonSinglePlayer(tileEntityShipController, targetName);
