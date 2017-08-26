@@ -286,7 +286,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			addToBoundingBox(trajectoryPoint, 2);
 			
 			// count main magnets
-			final int indexTier = trajectoryPoint.type & TrajectoryPoint.MASK_TIERS - 1;
+			final int indexTier = (trajectoryPoint.type & TrajectoryPoint.MASK_TIERS) - 1;
 			if ((trajectoryPoint.type & TrajectoryPoint.MAGNETS_HORIZONTAL) != 0) {
 				countMagnets[indexTier] += 2;
 			}
