@@ -2,9 +2,10 @@ package cr0s.warpdrive;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import javax.annotation.Nonnull;
 
 public class CreativeTabWarpDrive extends CreativeTabs {
 	
@@ -12,6 +13,7 @@ public class CreativeTabWarpDrive extends CreativeTabs {
 		super(label);
 	}
 	
+	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Item getTabIconItem() {

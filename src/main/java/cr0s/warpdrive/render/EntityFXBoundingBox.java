@@ -2,18 +2,21 @@ package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.data.Vector3;
 
-import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 @SideOnly(Side.CLIENT)
-public class EntityFXBoundingBox extends EntityFX {
+public class EntityFXBoundingBox extends Particle {
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/particle/bounding_box.png");
 	
@@ -24,7 +27,7 @@ public class EntityFXBoundingBox extends EntityFX {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		this.setRBGColorF(red, green, blue);
 		this.setSize(0.02F, 0.02F);
-		this.noClip = true;
+		this.isCollided = false;
 		this.motionX = 0.0D;
 		this.motionY = 0.0D;
 		this.motionZ = 0.0D;
@@ -54,13 +57,13 @@ public class EntityFXBoundingBox extends EntityFX {
 		prevPosZ = posZ;
 		
 		if (particleAge++ >= particleMaxAge) {
-			setDead();
+			setExpired();
 		}
 	}
 	
 	@Override
-	public void renderParticle(Tessellator tessellator, float partialTick, float f1, float f2, float f3, float f4, float f5) {
-		tessellator.draw();
+	public void renderParticle(final VertexBuffer vertexBuffer, final Entity entityIn, final float partialTick,
+	                           final float rotationX, final float rotationZ, final float rotationYZ, final float rotationXY, final float rotationXZ) {
 		GL11.glPushMatrix();
 		
 		// final float rot = (worldObj.provider.getWorldTime() % (360 / rotationSpeed) + partialTick) * rotationSpeed;
@@ -111,61 +114,63 @@ public class EntityFXBoundingBox extends EntityFX {
 		GL11.glTranslated(xx, yy, zz);
 		final int brightness = 200;
 		
+		final Tessellator tessellator = Tessellator.getInstance();
+		
 		// x planes
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(brightness);
-		tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, alpha);
-		tessellator.addVertexWithUV(xMin, yMin, zMin, uv_yMin, uv_zMin);
-		tessellator.addVertexWithUV(xMin, yMin, zMax, uv_yMin, uv_zMax);
-		tessellator.addVertexWithUV(xMin, yMax, zMax, uv_yMax, uv_zMax);
-		tessellator.addVertexWithUV(xMin, yMax, zMin, uv_yMax, uv_zMin);
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		// @TODO MC1.10 tessellator.setBrightness(brightness);
+		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_yMin, uv_zMin).endVertex();
+		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_yMin, uv_zMax).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_yMax, uv_zMax).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_yMax, uv_zMin).endVertex();
 		tessellator.draw();
 		
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(brightness);
-		tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, alpha);
-		tessellator.addVertexWithUV(xMax, yMin, zMin, uv_yMin, uv_zMin);
-		tessellator.addVertexWithUV(xMax, yMin, zMax, uv_yMin, uv_zMax);
-		tessellator.addVertexWithUV(xMax, yMax, zMax, uv_yMax, uv_zMax);
-		tessellator.addVertexWithUV(xMax, yMax, zMin, uv_yMax, uv_zMin);
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		// @TODO MC1.10 tessellator.setBrightness(brightness);
+		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.pos(xMax, yMin, zMin).tex( uv_yMin, uv_zMin).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMax).tex( uv_yMin, uv_zMax).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMax).tex( uv_yMax, uv_zMax).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMin).tex( uv_yMax, uv_zMin).endVertex();
 		tessellator.draw();
 		
 		// y planes
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(brightness);
-		tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, alpha);
-		tessellator.addVertexWithUV(xMin, yMin, zMin, uv_xMin, uv_zMin);
-		tessellator.addVertexWithUV(xMin, yMin, zMax, uv_xMin, uv_zMax);
-		tessellator.addVertexWithUV(xMax, yMin, zMax, uv_xMax, uv_zMax);
-		tessellator.addVertexWithUV(xMax, yMin, zMin, uv_xMax, uv_zMin);
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		// @TODO MC1.10 tessellator.setBrightness(brightness);
+		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_xMin, uv_zMin).endVertex();
+		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_xMin, uv_zMax).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMax).tex(uv_xMax, uv_zMax).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMin).tex(uv_xMax, uv_zMin).endVertex();
 		tessellator.draw();
 		
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(brightness);
-		tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, alpha);
-		tessellator.addVertexWithUV(xMin, yMax, zMin, uv_xMin, uv_zMin);
-		tessellator.addVertexWithUV(xMin, yMax, zMax, uv_xMin, uv_zMax);
-		tessellator.addVertexWithUV(xMax, yMax, zMax, uv_xMax, uv_zMax);
-		tessellator.addVertexWithUV(xMax, yMax, zMin, uv_xMax, uv_zMin);
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		// @TODO MC1.10 tessellator.setBrightness(brightness);
+		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_xMin, uv_zMin).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_xMin, uv_zMax).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMax).tex(uv_xMax, uv_zMax).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMin).tex(uv_xMax, uv_zMin).endVertex();
 		tessellator.draw();
 		
 		// z planes
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(brightness);
-		tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, alpha);
-		tessellator.addVertexWithUV(xMin, yMin, zMin, uv_xMin, uv_yMin);
-		tessellator.addVertexWithUV(xMin, yMax, zMin, uv_xMin, uv_yMax);
-		tessellator.addVertexWithUV(xMax, yMax, zMin, uv_xMax, uv_yMax);
-		tessellator.addVertexWithUV(xMax, yMin, zMin, uv_xMax, uv_yMin);
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		// @TODO MC1.10 tessellator.setBrightness(brightness);
+		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_xMin, uv_yMin).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_xMin, uv_yMax).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMin).tex(uv_xMax, uv_yMax).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMin).tex(uv_xMax, uv_yMin).endVertex();
 		tessellator.draw();
 		
-		tessellator.startDrawingQuads();
-		tessellator.setBrightness(brightness);
-		tessellator.setColorRGBA_F(particleRed, particleGreen, particleBlue, alpha);
-		tessellator.addVertexWithUV(xMin, yMin, zMax, uv_xMin, uv_yMin);
-		tessellator.addVertexWithUV(xMin, yMax, zMax, uv_xMin, uv_yMax);
-		tessellator.addVertexWithUV(xMax, yMax, zMax, uv_xMax, uv_yMax);
-		tessellator.addVertexWithUV(xMax, yMin, zMax, uv_xMax, uv_yMin);
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+		// @TODO MC1.10 tessellator.setBrightness(brightness);
+		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_xMin, uv_yMin).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_xMin, uv_yMax).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMax).tex(uv_xMax, uv_yMax).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMax).tex(uv_xMax, uv_yMin).endVertex();
 		tessellator.draw();
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -173,7 +178,6 @@ public class EntityFXBoundingBox extends EntityFX {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
-		tessellator.startDrawingQuads();
 		FMLClientHandler.instance().getClient().renderEngine.bindTexture(new ResourceLocation("textures/particle/particles.png"));
 	}
 }

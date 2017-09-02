@@ -17,7 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WorldGenStructure {
@@ -40,9 +40,9 @@ public class WorldGenStructure {
 			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
 			                                    "hull_plain"));
 			fillerHullPlain = new Filler();
-			fillerHullPlain.block = Blocks.stone;
+			fillerHullPlain.block = Blocks.STONE;
 			fillerHullGlass = new Filler();
-			fillerHullGlass.block = Blocks.glass;
+			fillerHullGlass.block = Blocks.GLASS;
 		} else {
 			fillerHullPlain = fillerSetHull_plain.getRandomUnit(rand);
 			
@@ -52,7 +52,7 @@ public class WorldGenStructure {
 				WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
 				                                    nameFillerGlass));
 				fillerHullGlass = new Filler();
-				fillerHullGlass.block = Blocks.glass;
+				fillerHullGlass.block = Blocks.GLASS;
 			} else {
 				fillerHullGlass = fillerSetHull_glass.getRandomUnit(rand);
 			}
@@ -64,9 +64,9 @@ public class WorldGenStructure {
 			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
 			                                    "ship_solarPanel"));
 			fillerSolarPanel = new Filler();
-			fillerSolarPanel.block = Blocks.sandstone;
+			fillerSolarPanel.block = Blocks.SANDSTONE;
 			fillerWiring = new Filler();
-			fillerWiring.block = Blocks.fence;
+			fillerWiring.block = Blocks.OAK_FENCE;
 		} else {
 			fillerSolarPanel = fillerSetSolarPanel.getRandomUnit(rand);
 			
@@ -76,7 +76,7 @@ public class WorldGenStructure {
 				WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
 				                                    nameFillerWiring));
 				fillerWiring = new Filler();
-				fillerWiring.block = Blocks.fence;
+				fillerWiring.block = Blocks.OAK_FENCE;
 			} else {
 				fillerWiring = fillerSetWiring.getRandomUnit(rand);
 			}
@@ -88,7 +88,7 @@ public class WorldGenStructure {
 			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
 			                                    "ship_propulsion"));
 			fillerPropulsion = new Filler();
-			fillerPropulsion.block = Blocks.log;
+			fillerPropulsion.block = Blocks.LOG;
 		} else {
 			fillerPropulsion = fillerSetPropulsion.getRandomUnit(rand);
 		}
@@ -98,42 +98,42 @@ public class WorldGenStructure {
 		if (corrupted && (rand.nextInt(400) == 1)) {
 			world.newExplosion(null, x + 0.5D, y + 0.5D, z + 0.5D, 17, false, true);
 		} else if (corrupted && (rand.nextInt(10) == 1)) {
-			world.setBlock(x, y, z, Blocks.air, 0, 2);
+			world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
 		} else {
-			fillerHullPlain.setBlock(world, x, y, z);
+			fillerHullPlain.setBlock(world, new BlockPos(x, y, z));
 		}
 	}
 	
 	public void setHullGlass(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(5) == 1)) {
-			world.setBlock(x, y, z, Blocks.air, 0, 2);
+			world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
 		} else {
-			fillerHullGlass.setBlock(world, x, y, z);
+			fillerHullGlass.setBlock(world, new BlockPos(x, y, z));
 		}
 	}
 	
 	public void setSolarPanel(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(3) == 1)) {
-			world.setBlock(x, y, z, Blocks.air, 0, 2);
+			world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
 		} else {
-			fillerSolarPanel.setBlock(world, x, y, z);
+			fillerSolarPanel.setBlock(world, new BlockPos(x, y, z));
 		}
 	}
 	
 	public void setWiring(final World world, final int x, final int y, final int z) {
 		if (corrupted && (rand.nextInt(3) == 1)) {
-			world.setBlock(x, y, z, Blocks.air, 0, 2);
+			world.setBlockState(new BlockPos(x, y, z), Blocks.AIR.getDefaultState(), 2);
 		} else {
-			fillerWiring.setBlock(world, x, y, z);
+			fillerWiring.setBlock(world, new BlockPos(x, y, z));
 		}
 	}
 	
 	public void setPropulsion(final World world, final int x, final int y, final int z) {
-		fillerPropulsion.setBlock(world, x, y, z);
+		fillerPropulsion.setBlock(world, new BlockPos(x, y, z));
 	}
 	
 	public void fillInventoryWithLoot(final World worldObj, final Random rand, final int x, final int y, final int z, final String group) {
-		final TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
+		final TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof IInventory) {
 			final IInventory inventory = (IInventory) tileEntity;
 			final int size = inventory.getSizeInventory();
@@ -142,7 +142,7 @@ public class WorldGenStructure {
 			final GenericSet<Loot> lootSet = WarpDriveConfig.LootManager.getRandomSetFromGroup(rand, group);
 			if (lootSet == null) {
 				WarpDrive.logger.warn(String.format("No LootSet found with group %s for inventory @ DIM%d (%d %d %d): check your configuration",
-				                                    group, worldObj.provider.dimensionId, x, y, z));
+				                                    group, worldObj.provider.getDimension(), x, y, z));
 				return;
 			}
 			
@@ -168,8 +168,8 @@ public class WorldGenStructure {
 				if (!isAdded) {
 					WarpDrive.logger.info(String.format("Unable to find a valid loot from LootSet %s for inventory %s in @ DIM%d (%d %d %d): check your configuration",
 					                                    lootSet.getFullName(),
-					                                    inventory.getInventoryName() == null ? "-null name-" : inventory.getInventoryName(),
-					                                    worldObj.provider.dimensionId, x, y, z));
+					                                    inventory.hasCustomName() ? inventory.getName() : "-null name-",
+					                                    worldObj.provider.getDimension(), x, y, z));
 				}
 			}
 		}
@@ -187,7 +187,11 @@ public class WorldGenStructure {
 	
 	public void deployShip(final World world, final JumpShip jumpShip, final int targetX, final int targetY, final int targetZ, final byte rotationSteps) {
 		
-		Transformation transformation = new Transformation(jumpShip, world, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
+		Transformation transformation = new Transformation(jumpShip, world,
+			targetX - jumpShip.core.getX(),
+			targetY - jumpShip.core.getY(),
+			targetZ - jumpShip.core.getZ(),
+			rotationSteps);
 		for (int index = 0; index < jumpShip.jumpBlocks.length; index++) {
 			// Deploy single block
 			JumpBlock jumpBlock = jumpShip.jumpBlocks[index];
@@ -196,7 +200,7 @@ public class WorldGenStructure {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
 					WarpDrive.logger.info("At index " + index + ", skipping undefined block");
 				}
-			} else if (jumpBlock.block == Blocks.air) {
+			} else if (jumpBlock.block == Blocks.AIR) {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
 					WarpDrive.logger.info("At index " + index + ", skipping air block");
 				}
@@ -207,12 +211,12 @@ public class WorldGenStructure {
 			} else {
 				index++;
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION && WarpDrive.isDev) {
-					WarpDrive.logger.info("At index " + index + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
+					WarpDrive.logger.info("At index " + index + ", deploying block " + jumpBlock.block.getRegistryName() + ":" + jumpBlock.blockMeta
 					                      + " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
 				}
-				ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-				Block blockAtTarget = world.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);
-				if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
+				final BlockPos targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+				final Block blockAtTarget = world.getBlockState(targetLocation).getBlock();
+				if (blockAtTarget == Blocks.AIR || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
 					jumpBlock.deploy(world, transformation);
 				} else {
 					if (WarpDriveConfig.LOGGING_WORLD_GENERATION && WarpDrive.isDev) {

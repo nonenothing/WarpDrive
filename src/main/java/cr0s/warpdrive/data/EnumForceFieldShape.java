@@ -3,11 +3,13 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldShape;
+import net.minecraft.util.IStringSerializable;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum EnumForceFieldShape implements IForceFieldShape {
+public enum EnumForceFieldShape implements IStringSerializable, IForceFieldShape {
 	NONE               ("none"),
 	SPHERE             ("sphere"),
 	CYLINDER_H         ("cylinder_h"),
@@ -17,7 +19,7 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 	TUBE               ("tube"),
 	TUNNEL             ("tunnel");
 	
-	public final String unlocalizedName;
+	private final String name;
 	
 	// cached values
 	public static final int length;
@@ -30,8 +32,14 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 		}
 	}
 	
-	EnumForceFieldShape(String unlocalizedName) {
-		this.unlocalizedName = unlocalizedName;
+	EnumForceFieldShape(String name) {
+		this.name = name;
+	}
+	
+	@Nonnull
+	@Override
+	public String getName() {
+		return name;
 	}
 	
 	public static EnumForceFieldShape get(final int damage) {
@@ -229,7 +237,7 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 		if (mapVertexes.size() > sizeEstimation) {
 			WarpDrive.logger.warn(String.format("Underestimated memory location lag %d > %d for shape %s with size %s, isFusionOrInverted %s. Please report this to the mod author",
 			                                    mapVertexes.size(), sizeEstimation,
-			                                    unlocalizedName,
+			                                    name,
 			                                    vScale,
 			                                    isFusionOrInverted));
 		}

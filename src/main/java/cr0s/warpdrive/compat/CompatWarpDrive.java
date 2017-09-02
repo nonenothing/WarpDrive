@@ -49,7 +49,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
 			if (chunkData == null) {
 				WarpDrive.logger.error(String.format("CompatWarpDrive trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionName(), x, y, z));
+				                                     world.provider.getDimensionType().getName(), x, y, z));
 				assert(false);
 				return null;
 			}
@@ -71,7 +71,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
 			if (chunkData == null) {
 				WarpDrive.logger.error(String.format("CompatWarpDrive trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionName(), x, y, z));
+				                                     world.provider.getDimensionType().getName(), x, y, z));
 				assert(false);
 				return;
 			}
@@ -191,7 +191,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
 			if (chunkData == null) {
 				WarpDrive.logger.error(String.format("CompatWarpDrive trying to set data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionName(), x, y, z));
+				                                     world.provider.getDimensionType().getName(), x, y, z));
 				assert(false);
 				return;
 			}

@@ -14,16 +14,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.WorldTickEvent;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 public class ChunkHandler {
 	
@@ -39,18 +39,18 @@ public class ChunkHandler {
 	/* event catchers */
 	@SubscribeEvent
 	public void onLoadWorld(WorldEvent.Load event) {
-		if (event.world.isRemote || event.world.provider.dimensionId == 0) {
+		if (event.getWorld().isRemote || event.getWorld().provider.getDimension() == 0) {
 			if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 				WarpDrive.logger.info(String.format("%s world %s load.",
-				                                    event.world.isRemote ? "Client" : "Server",
-				                                    event.world.provider.getDimensionName()));
+				                                    event.getWorld().isRemote ? "Client" : "Server",
+				                                    event.getWorld().provider.getDimensionType().getName()));
 			}
 		}
 		
-		if ( !event.world.isRemote
-		  && event.world.provider.dimensionId == 0 ) {
+		if ( !event.getWorld().isRemote
+		  && event.getWorld().provider.getDimension() == 0 ) {
 			// load star map
-			final String filename = String.format("%s/%s.dat", event.world.getSaveHandler().getWorldDirectory().getPath(), WarpDrive.MODID);
+			final String filename = String.format("%s/%s.dat", event.getWorld().getSaveHandler().getWorldDirectory().getPath(), WarpDrive.MODID);
 			final NBTTagCompound tagCompound = Commons.readNBTFromFile(filename);
 			WarpDrive.starMap.readFromNBT(tagCompound);
 		}
@@ -61,11 +61,11 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk [%d, %d] generating",
 			                                    world.isRemote ? "Client" : "Server",
-			                                    world.provider.getDimensionName(),
+			                                    world.provider.getDimensionType().getName(),
 			                                    chunkX, chunkZ));
 		}
 		
-		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.dimensionId, chunkX, chunkZ, true);
+		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.getDimension(), chunkX, chunkZ, true);
 		assert(chunkData != null);
 		// (world can load a non-generated chunk, or the chunk be regenerated, so we reset only as needed)
 		if (!chunkData.isLoaded()) {
@@ -78,12 +78,12 @@ public class ChunkHandler {
 	public void onLoadChunkData(ChunkDataEvent.Load event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loading data (1)", 
-			                                    event.world.isRemote ? "Client" : "Server",
-			                                    event.world.provider.getDimensionName(),
+			                                    event.getWorld().isRemote ? "Client" : "Server",
+			                                    event.getWorld().provider.getDimensionType().getName(),
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, true);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, true);
 		assert(chunkData != null);
 		chunkData.load(event.getData());
 	}
@@ -93,13 +93,13 @@ public class ChunkHandler {
 	public void onLoadChunk(ChunkEvent.Load event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loaded (2)",
-			                                    event.world.isRemote ? "Client" : "Server",
-			                                    event.world.provider.getDimensionName(),
+			                                    event.getWorld().isRemote ? "Client" : "Server",
+			                                    event.getWorld().provider.getDimensionType().getName(),
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		if (event.world.isRemote) {
-			final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, true);
+		if (event.getWorld().isRemote) {
+			final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, true);
 			assert(chunkData != null);
 			chunkData.load(new NBTTagCompound());
 		}
@@ -110,9 +110,9 @@ public class ChunkHandler {
 	public void onWatchChunk(ChunkWatchEvent.Watch event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("World %s chunk %s watch by %s",
-			                                    event.player.worldObj.provider.getDimensionName(),
-			                                    event.chunk,
-			                                    event.player));
+			                                    event.getPlayer().worldObj.getWorldInfo().getWorldName(),
+			                                    event.getChunk(),
+			                                    event.getPlayer()));
 		}
 	}
 	/**/
@@ -122,17 +122,17 @@ public class ChunkHandler {
 	public void onSaveChunkData(ChunkDataEvent.Save event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s save data",
-			                                    event.world.isRemote ? "Client" : "Server",
-			                                    event.world.provider.getDimensionName(),
+			                                    event.getWorld().isRemote ? "Client" : "Server",
+			                                    event.getWorld().provider.getDimensionType().getName(),
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
-		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, false);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, false);
 		if (chunkData != null) {
 			chunkData.save(event.getData());
 		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is saving data without loading it first!",
-			                                     event.world.isRemote ? "Client" : "Server",
-			                                     event.world.provider.getDimensionName(),
+			                                     event.getWorld().isRemote ? "Client" : "Server",
+			                                     event.getWorld().provider.getDimensionType().getName(),
 			                                     event.getChunk().getChunkCoordIntPair()));
 		}
 	}
@@ -140,21 +140,21 @@ public class ChunkHandler {
 	// (server side only)
 	@SubscribeEvent
 	public void onSaveWorld(WorldEvent.Save event) {
-		if (event.world.provider.dimensionId != 0) {
+		if (event.getWorld().provider.getDimension() != 0) {
 			return;
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s saved.",
-			                                    event.world.isRemote ? "Client" : "Server",
-			                                    event.world.provider.getDimensionName()));
+			                                    event.getWorld().isRemote ? "Client" : "Server",
+			                                    event.getWorld().provider.getDimensionType().getName()));
 		}
 		
-		if (event.world.isRemote) {
+		if (event.getWorld().isRemote) {
 			return;
 		}
 		
 		// save star map
-		final String filename = String.format("%s/%s.dat", event.world.getSaveHandler().getWorldDirectory().getPath(), WarpDrive.MODID);
+		final String filename = String.format("%s/%s.dat", event.getWorld().getSaveHandler().getWorldDirectory().getPath(), WarpDrive.MODID);
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		WarpDrive.starMap.writeToNBT(tagCompound);
 		Commons.writeNBTToFile(filename, tagCompound);
@@ -164,14 +164,14 @@ public class ChunkHandler {
 	public void onUnloadWorld(WorldEvent.Unload event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s unload",
-			                                    event.world.isRemote ? "Client" : "Server",
-			                                    event.world.provider.getDimensionName()));
+			                                    event.getWorld().isRemote ? "Client" : "Server",
+			                                    event.getWorld().provider.getDimensionType().getName()));
 		}
 		
 		// get dimension data
 		LocalProfiler.updateCallStat("onUnloadWorld");
-		final Map<Integer, Map<Long, ChunkData>> registry = event.world.isRemote ? registryClient : registryServer;
-		final Map<Long, ChunkData> mapRegistryItems = registry.get(event.world.provider.dimensionId);
+		final Map<Integer, Map<Long, ChunkData>> registry = event.getWorld().isRemote ? registryClient : registryServer;
+		final Map<Long, ChunkData> mapRegistryItems = registry.get(event.getWorld().provider.getDimension());
 		if (mapRegistryItems != null) {
 			// unload chunks during shutdown
 			for (ChunkData chunkData : mapRegistryItems.values()) {
@@ -190,18 +190,18 @@ public class ChunkHandler {
 	public void onUnloadChunk(ChunkEvent.Unload event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unload",
-			                                    event.world.isRemote ? "Client" : "Server",
-			                                    event.world.provider.getDimensionName(),
+			                                    event.getWorld().isRemote ? "Client" : "Server",
+			                                    event.getWorld().provider.getDimensionType().getName(),
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, false);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, false);
 		if (chunkData != null) {
 			chunkData.unload();
 		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is unloading without loading it first!", 
-			                                     event.world.isRemote ? "Client" : "Server",
-			                                     event.world.provider.getDimensionName(),
+			                                     event.getWorld().isRemote ? "Client" : "Server",
+			                                     event.getWorld().provider.getDimensionType().getName(),
 			                                     event.getChunk().getChunkCoordIntPair()));
 		}
 	}
@@ -236,7 +236,7 @@ public class ChunkHandler {
 			} else {
 				WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
 				                                     world.isRemote ? "Client" : "Server",
-				                                     world.provider.getDimensionName(),
+				                                     world.provider.getDimensionType().getName(),
 				                                     x, y, z));
 			}
 		}
@@ -244,7 +244,7 @@ public class ChunkHandler {
 	
 	/* internal access */
 	public static ChunkData getChunkData(final World world, final int x, final int y, final int z, final boolean doCreate) {
-		return getChunkData(world.isRemote, world.provider.dimensionId, x, y, z, doCreate);
+		return getChunkData(world.isRemote, world.provider.getDimension(), x, y, z, doCreate);
 	}
 	
 	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int x, final int y, final int z, final boolean doCreate) {
@@ -269,7 +269,7 @@ public class ChunkHandler {
 			registry.put(dimensionId, mapRegistryItems);
 		}
 		// get chunk data
-		final long index = ChunkCoordIntPair.chunkXZ2Int(xChunk, zChunk);
+		final long index = ChunkPos.chunkXZ2Int(xChunk, zChunk);
 		ChunkData chunkData = mapRegistryItems.get(index);
 		// (lambda expressions are forcing synchronisation, so we don't use them here)
 		//noinspection Java8MapApi
@@ -291,7 +291,7 @@ public class ChunkHandler {
 	
 	private static boolean isLoaded(final Map<Long, ChunkData> mapRegistryItems, final int xChunk, final int zChunk) {
 		// get chunk data
-		final long index = ChunkCoordIntPair.chunkXZ2Int(xChunk, zChunk);
+		final long index = ChunkPos.chunkXZ2Int(xChunk, zChunk);
 		final ChunkData chunkData = mapRegistryItems.get(index);
 		return chunkData != null && chunkData.isLoaded();
 	}
@@ -311,7 +311,7 @@ public class ChunkHandler {
 		// get dimension data
 		LocalProfiler.updateCallStat("updateTick");
 		final Map<Integer, Map<Long, ChunkData>> registry = world.isRemote ? registryClient : registryServer;
-		final Map<Long, ChunkData> mapRegistryItems = registry.get(world.provider.dimensionId);
+		final Map<Long, ChunkData> mapRegistryItems = registry.get(world.provider.getDimension());
 		if (mapRegistryItems == null) {
 			return;
 		}
@@ -331,7 +331,7 @@ public class ChunkHandler {
 				if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 					WarpDrive.logger.info(String.format("%s world %s chunk %s is being removed from updateTick (size is %d)", 
 					                                    world.isRemote ? "Client" : "Server",
-					                                    world.provider.getDimensionName(),
+					                                    world.provider.getDimensionType().getName(),
 					                                    chunkData.getChunkCoords(),
 					                                    mapRegistryItems.size()));
 				}
@@ -339,12 +339,12 @@ public class ChunkHandler {
 			}
 		}
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
-			if (world.provider.dimensionId == 0) {
+			if (world.provider.getDimension() == 0) {
 				delayLogging = (delayLogging + 1) % 4096;
 			}
 			if (delayLogging == 1) {
 				WarpDrive.logger.info(String.format("Dimension %d has %d / %d chunks loaded",
-				                                    world.provider.dimensionId,
+				                                    world.provider.getDimension(),
 				                                    countLoaded,
 				                                    mapRegistryItems.size()));
 			}
@@ -352,7 +352,7 @@ public class ChunkHandler {
 	}
 	
 	public static void updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
-		final ChunkCoordIntPair chunkCoordIntPair = chunkData.getChunkCoords();
+		final ChunkPos chunkCoordIntPair = chunkData.getChunkCoords();
 		// skip empty chunks (faster and more frequent)
 		// ship chunk with unloaded neighbours
 		if ( chunkData.isNotEmpty()

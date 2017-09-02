@@ -3,44 +3,64 @@ package cr0s.warpdrive.block.hull;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockColored;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.EnumDyeColor;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBlockHull extends ItemBlockAbstractBase {
 	
-	public ItemBlockHull(Block block) {
-		super(block);	// sets field_150939_a to block
+	ItemBlockHull(Block block) {
+		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.hull");
 	}
 	
+	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
-		if (itemstack == null || field_150939_a instanceof BlockHullStairs) {
+	@SideOnly(Side.CLIENT)
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		int damage = itemStack.getItemDamage();
+		if (damage < 0 || damage > 15) {
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
+		}
+		ResourceLocation resourceLocation = getRegistryName();
+		String variant = String.format("color=%s", EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName());
+		return new ModelResourceLocation(resourceLocation, variant);
+	}
+	
+	@Nonnull
+	@Override
+	public String getUnlocalizedName(ItemStack itemStack) {
+		if (itemStack == null || block instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}
-		return getUnlocalizedName() + ItemDye.field_150923_a[BlockColored.func_150031_c(itemstack.getItemDamage())];
+		return getUnlocalizedName() + EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName();
 	}
 	
 	private byte getTier(final ItemStack itemStack) {
-		if (field_150939_a instanceof IBlockBase) {
-			return ((IBlockBase)field_150939_a).getTier(itemStack);
+		if (block instanceof IBlockBase) {
+			return ((IBlockBase) block).getTier(itemStack);
 		}
 		return 1;
 	}
 	
+	@Nonnull
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack) {
+	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
 		switch (getTier(itemStack)) {
-			case 0:	return EnumRarity.epic;
-			case 1:	return EnumRarity.common;
-			case 2:	return EnumRarity.uncommon;
-			case 3:	return EnumRarity.rare;
-			default: return EnumRarity.common;
+			case 0:	return EnumRarity.EPIC;
+			case 1:	return EnumRarity.COMMON;
+			case 2:	return EnumRarity.UNCOMMON;
+			case 3:	return EnumRarity.RARE;
+			default: return EnumRarity.COMMON;
 		}
 	}
 }

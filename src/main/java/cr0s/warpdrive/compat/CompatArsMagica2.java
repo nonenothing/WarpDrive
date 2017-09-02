@@ -12,12 +12,12 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.common.Optional;
 
 public class CompatArsMagica2 implements IBlockTransformer {
 	
@@ -59,7 +59,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	@Optional.Method(modid = "arsmagica2")
 	public NBTBase saveExternals(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (tileEntity instanceof IPowerNode) {
-			return PowerNodeRegistry.For(tileEntity.getWorldObj()).getDataCompoundForNode((IPowerNode) tileEntity);
+			return PowerNodeRegistry.For(tileEntity.getWorld()).getDataCompoundForNode((IPowerNode) tileEntity);
 		}
 		return null;
 	}
@@ -69,7 +69,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 	public void removeExternals(final World world, final int x, final int y, final int z,
 	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (tileEntity instanceof IPowerNode) {
-			PowerNodeRegistry.For(tileEntity.getWorldObj()).removePowerNode((IPowerNode) tileEntity);
+			PowerNodeRegistry.For(tileEntity.getWorld()).removePowerNode((IPowerNode) tileEntity);
 		}
 	}
 	
@@ -158,7 +158,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 							for (int nodeIndex = 0; nodeIndex < nodeList.tagCount(); nodeIndex++) {
 								NBTTagCompound node = (NBTTagCompound) nodeList.removeTag(0);
 								// read coordinates
-								Vec3 target = transformation.apply(node.getFloat("Vec3_x"), node.getFloat("Vec3_y"), node.getFloat("Vec3_z"));
+								Vec3d target = transformation.apply(node.getFloat("Vec3_x"), node.getFloat("Vec3_y"), node.getFloat("Vec3_z"));
 								node.setFloat("Vec3_x", (float)target.xCoord);
 								node.setFloat("Vec3_y", (float)target.yCoord);
 								node.setFloat("Vec3_z", (float)target.zCoord);
@@ -176,8 +176,8 @@ public class CompatArsMagica2 implements IBlockTransformer {
 		}
 		
 		World targetWorld = transformation.getTargetWorld();
-		ChunkCoordinates target = transformation.apply(tileEntity);
-		TileEntity tileEntityTarget = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
+		BlockPos target = transformation.apply(tileEntity);
+		TileEntity tileEntityTarget = targetWorld.getTileEntity(target);
 		if (tileEntityTarget == null) {
 			WarpDrive.logger.error("ArsMagica2 compat: No tile entity found at target location " + target + ". We might loose mana network " + nbtBase + ".");
 		} else if (!(tileEntityTarget instanceof IPowerNode)) {

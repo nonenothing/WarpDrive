@@ -3,21 +3,22 @@ package cr0s.warpdrive;
 import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.PlayerSelector;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -88,18 +89,14 @@ public class Commons {
 		return result.toString();
 	}
 	
-	public static void addChatMessage(final ICommandSender commandSender, final String message) {
+	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {
 		if (commandSender == null) {
-			WarpDrive.logger.error("Unable to send message to NULL commandSender: " + message);
+			WarpDrive.logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
 			return;
 		}
-		final String[] lines = updateEscapeCodes(message).split("\n");
-		String format = "";
-		getFormatFromString(lines[0]);
+		final String[] lines = updateEscapeCodes(textComponent.getFormattedText()).split("\n");
 		for (String line : lines) {
-			final String formattedLine = format + line;
-			commandSender.addChatMessage(new ChatComponentText(formattedLine));
-			format = getFormatFromString(formattedLine);
+			commandSender.addChatMessage(new TextComponentString(line));
 		}
 		
 		// logger.info(message);
@@ -211,9 +208,9 @@ public class Commons {
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
 		final Collection<IInventory> result = new ArrayList<>(6);
 		
-		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-			final TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
-				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
+		for(EnumFacing side : EnumFacing.VALUES) {
+			final TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
+				tileEntityConnection.getPos().offset(side));
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
 				result.add((IInventory) tileEntity);
 				
@@ -232,45 +229,46 @@ public class Commons {
 				}
 			}
 		}
+		
 		return result;
 	}
 	
 	
 	// searching methods
 	
-	public static final ForgeDirection[] UP_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
-	public static final ForgeDirection[] HORIZONTAL_DIRECTIONS = { ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
-	public static final ForgeDirection[] VERTICAL_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.DOWN };
+	public static final EnumFacing[] UP_DIRECTIONS = { EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
+	public static final EnumFacing[] VERTICAL_DIRECTIONS = { EnumFacing.UP, EnumFacing.DOWN };
 	
-	public static Set<VectorI> getConnectedBlocks(World world, final VectorI start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
+	public static Set<BlockPos> getConnectedBlocks(World world, final BlockPos start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
 	}
 	
-	public static Set<VectorI> getConnectedBlocks(World world, final Collection<VectorI> start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
-		final Set<VectorI> toIgnore = new HashSet<>();
+	public static Set<BlockPos> getConnectedBlocks(final World world, final Collection<BlockPos> start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
+		final Set<BlockPos> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
 		
-		Set<VectorI> toIterate = new HashSet<>();
+		Set<BlockPos> toIterate = new HashSet<>();
 		toIterate.addAll(start);
 		
-		Set<VectorI> toIterateNext;
+		Set<BlockPos> toIterateNext;
 		
-		final Set<VectorI> iterated = new HashSet<>();
+		final Set<BlockPos> iterated = new HashSet<>();
 		
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
 			toIterateNext = new HashSet<>();
-			for (VectorI current : toIterate) {
-				if (whitelist.contains(current.getBlock_noChunkLoading(world))) {
+			for (BlockPos current : toIterate) {
+				if (whitelist.contains(new VectorI(current).getBlockState_noChunkLoading(world).getBlock())) {
 					iterated.add(current);
 				}
 				
-				for(ForgeDirection direction : directions) {
-					VectorI next = current.clone(direction);
+				for(EnumFacing direction : directions) {
+					BlockPos next = current.offset(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
-						if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
+						if (whitelist.contains(new VectorI(next).getBlockState_noChunkLoading(world).getBlock())) {
 							toIterateNext.add(next);
 						}
 					}
@@ -282,7 +280,6 @@ public class Commons {
 		
 		return iterated;
 	}
-	
 	
 	// data manipulation methods
 	
@@ -378,22 +375,22 @@ public class Commons {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
 	}
 	
-	public static ForgeDirection getHorizontalDirectionFromEntity(final EntityLivingBase entityLiving) {
+	public static EnumFacing getHorizontalDirectionFromEntity(final EntityLivingBase entityLiving) {
 		if (entityLiving != null) {
 			final int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
 			switch (direction) {
 			default:
 			case 0:
-				return ForgeDirection.NORTH;
+				return EnumFacing.NORTH;
 			case 1:
-				return ForgeDirection.EAST;
+				return EnumFacing.EAST;
 			case 2:
-				return ForgeDirection.SOUTH;
+				return EnumFacing.SOUTH;
 			case 3:
-				return ForgeDirection.WEST;
+				return EnumFacing.WEST;
 			}
 		}
-		return ForgeDirection.NORTH;
+		return EnumFacing.NORTH;
 	}
 	
 	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
@@ -500,17 +497,16 @@ public class Commons {
 	}
 	
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
-		@SuppressWarnings("unchecked")
-		List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		for (EntityPlayer onlinePlayer : onlinePlayers) {
-			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
-				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
+		final List<EntityPlayerMP> onlinePlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
+		for (EntityPlayerMP onlinePlayer : onlinePlayers) {
+			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
+				return new EntityPlayerMP[] { onlinePlayer };
 			}
 		}
 		
-		EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, playerNameOrSelector);
-		if (entityPlayerMPs_found != null && entityPlayerMPs_found.length > 0) {
-			return entityPlayerMPs_found.clone();
+		final List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(sender, playerNameOrSelector, EntityPlayerMP.class);
+		if (entityPlayerMPs_found != null && !entityPlayerMPs_found.isEmpty()) {
+			return entityPlayerMPs_found.toArray(new EntityPlayerMP[0]);
 		}
 		
 		return null;
@@ -521,5 +517,19 @@ public class Commons {
 		     + (clamp(0, 255, red  ) << 16)
 			 + (clamp(0, 255, green) <<  8)
 			 +  clamp(0, 255, blue );
+	}
+	
+	public static EnumFacing getDirection(final int index) {
+		if (index < 0 || index > 5) {
+			return null;
+		}
+		return EnumFacing.getFront(index);
+	}
+	
+	public static int getOrdinal(final EnumFacing direction) {
+		if (direction == null) {
+			return 6;
+		}
+		return direction.ordinal();
 	}
 }

@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IStringSerializable;
 
 import java.util.Random;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class StructureGroup implements IStringSerializable {
@@ -30,11 +31,11 @@ public class StructureGroup implements IStringSerializable {
 		final AbstractStructure abstractStructure = StructureManager.getStructure(random, group, name);
 		if (abstractStructure == null) {
 			WarpDrive.logger.warn(String.format("Dimension %d @ %d %d %d refers to unknown structure %s. Probably a bad configuration. Skipping for now.",
-			                                    world.provider.dimensionId, x, y, z, getName()));
+			                                    world.provider.getDimension(), x, y, z, getName()));
 			return;
 		}
 		final AbstractStructureInstance abstractStructureInstance = abstractStructure.instantiate(random);
-		abstractStructureInstance.generate(world, random, x, y, z);
+		abstractStructureInstance.generate(world, random, new BlockPos(x, y, z));
 	}
 	
 	public String getGroup() {

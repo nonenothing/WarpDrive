@@ -11,22 +11,22 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
+	
 	private boolean isActive = false;
 	private boolean isEnabled = false;
-
 	private boolean initialised = false;
-	private ChunkCoordIntPair myChunk;
-
-	int negDX, posDX, negDZ, posDZ;
-	int area = 1;
-
+	private ChunkPos myChunk;
+	
+	private int negDX, posDX, negDZ, posDZ;
+	private int area = 1;
+	
 	public TileEntityChunkLoader() {
 		super();
 		IC2_sinkTier = 2;
@@ -54,7 +54,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
@@ -69,23 +69,18 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	@Override
-	public void updateEntity()
-	{
-		super.updateEntity();
-
-		if(!initialised)
-		{
+	public void update() {
+		super.update();
+		
+		if (!initialised) {
 			initialised = true;
-			myChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord).getChunkCoordIntPair();
+			myChunk = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
 			changedDistance();
 		}
-
-		if(isEnabled)
-		{
+		
+		if (isEnabled) {
 			isActive = energy_consume(energy_getEnergyRequired(), false);
-		}
-		else
-		{
+		} else {
 			isActive = energy_consume(energy_getEnergyRequired(), true);
 		}
 	}
@@ -97,22 +92,17 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		posDZ =   Commons.clamp(0, WarpDriveConfig.CL_MAX_DISTANCE, Math.abs(posZ));
 	}
 		
-	private void changedDistance()
-	{
-		if(worldObj == null) {
+	private void changedDistance() {
+		if (worldObj == null) {
 			return;
 		}
 		if (myChunk == null) {
-			Chunk aChunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
-			if (aChunk != null) {
-				myChunk = aChunk.getChunkCoordIntPair();
-			} else {
-				return;
-			}
+			Chunk aChunk = worldObj.getChunkFromBlockCoords(pos);
+			myChunk = aChunk.getChunkCoordIntPair();
 		}
-
-		minChunk = new ChunkCoordIntPair(myChunk.chunkXPos + negDX, myChunk.chunkZPos + negDZ);
-		maxChunk = new ChunkCoordIntPair(myChunk.chunkXPos + posDX, myChunk.chunkZPos + posDZ);
+		
+		minChunk = new ChunkPos(myChunk.chunkXPos + negDX,myChunk.chunkZPos + negDZ);
+		maxChunk = new ChunkPos(myChunk.chunkXPos + posDX,myChunk.chunkZPos + posDZ);
 		area = (posDX - negDX + 1) * (posDZ - negDZ + 1);
 		refreshLoading(true);
 	}
@@ -126,13 +116,13 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt)
-	{
-		super.writeToNBT(nbt);
-		nbt.setInteger("negDX", negDX);
-		nbt.setInteger("negDZ", negDZ);
-		nbt.setInteger("posDX", posDX);
-		nbt.setInteger("posDZ", posDZ);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
+		tag.setInteger("negDX", negDX);
+		tag.setInteger("negDZ", negDZ);
+		tag.setInteger("posDX", posDX);
+		tag.setInteger("posDZ", posDZ);
+		return tag;
 	}
 	
 	//Common LUA functions
@@ -147,7 +137,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 			setBounds(Commons.toInt(arguments[0]), Commons.toInt(arguments[1]), Commons.toInt(arguments[2]), Commons.toInt(arguments[3]));
 			changedDistance();
 		}
-		return new Object[]{negDX, posDX, negDZ, posDZ};
+		return new Object[] { negDX, posDX, negDZ, posDZ };
 	}
 	
 	public Object[] radius(Object[] arguments) {

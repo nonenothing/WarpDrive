@@ -7,19 +7,19 @@ import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
 import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.event.ChunkHandler;
 
 import java.util.Random;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.IChunkGenerator;
 import net.minecraft.world.chunk.IChunkProvider;
-
-import cpw.mods.fml.common.IWorldGenerator;
+import net.minecraftforge.fml.common.IWorldGenerator;
 
 public class CommonWorldGenerator implements IWorldGenerator {
-
+	
 	@Override
-	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
 		// chunk data creation
 		ChunkHandler.onGenerated(world, chunkX, chunkZ);
 		
@@ -64,6 +64,7 @@ public class CommonWorldGenerator implements IWorldGenerator {
 		int ceilRadius = (int) Math.ceil(radiusC);
 		
 		// Pass the cube and check points for sphere equation x^2 + y^2 + z^2 = r^2
+		final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(xCoord, yCoord, zCoord);
 		for (int x = 0; x <= ceilRadius; x++) {
 			double dX2 = (x + 0.5D) * (x + 0.5D);
 			for (int y = 0; y <= ceilRadius; y++) {
@@ -82,14 +83,14 @@ public class CommonWorldGenerator implements IWorldGenerator {
 					
 					OrbShell orbShell = orbInstance.getShellForSqRadius(dSq);
 					Filler filler = orbShell.getRandomUnit(world.rand);
-					filler.setBlock(world, xCoord + x, yCoord + y, zCoord + z);
-					filler.setBlock(world, xCoord - x, yCoord + y, zCoord + z);
-					filler.setBlock(world, xCoord + x, yCoord - y, zCoord + z);
-					filler.setBlock(world, xCoord + x, yCoord + y, zCoord - z);
-					filler.setBlock(world, xCoord - x, yCoord - y, zCoord + z);
-					filler.setBlock(world, xCoord + x, yCoord - y, zCoord - z);
-					filler.setBlock(world, xCoord - x, yCoord + y, zCoord - z);
-					filler.setBlock(world, xCoord - x, yCoord - y, zCoord - z);
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord + x, yCoord + y, zCoord + z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord - x, yCoord + y, zCoord + z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord + x, yCoord - y, zCoord + z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord + x, yCoord + y, zCoord - z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord - x, yCoord - y, zCoord + z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord + x, yCoord - y, zCoord - z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord - x, yCoord + y, zCoord - z));
+					filler.setBlock(world, mutableBlockPos.setPos(xCoord - x, yCoord - y, zCoord - z));
 				}
 			}
 		}

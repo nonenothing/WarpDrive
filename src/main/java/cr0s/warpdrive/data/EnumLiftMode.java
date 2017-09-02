@@ -1,6 +1,6 @@
 package cr0s.warpdrive.data;
 
-import cr0s.warpdrive.api.IStringSerializable;
+import net.minecraft.util.IStringSerializable;
 
 import javax.annotation.Nonnull;
 import java.util.HashMap;

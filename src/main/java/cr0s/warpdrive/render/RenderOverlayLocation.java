@@ -7,12 +7,12 @@ import cr0s.warpdrive.data.CelestialObjectManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 
@@ -31,7 +31,7 @@ public class RenderOverlayLocation {
 		final int z = MathHelper.floor_double(entityPlayer.posZ);
 		
 		// get celestial object
-		String name = entityPlayer.worldObj.provider.getDimensionName();
+		String name = entityPlayer.worldObj.provider.getDimensionType().getName();
 		String description = "";
 		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj, x, z);
 		if (celestialObject != null) {
@@ -62,15 +62,15 @@ public class RenderOverlayLocation {
 		// @TODO: show orbiting planet?
 		
 		// close rendering
-		minecraft.getTextureManager().bindTexture(Gui.icons);
+		minecraft.getTextureManager().bindTexture(Gui.ICONS);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 	
 	@SubscribeEvent
 	public void onRender(RenderGameOverlayEvent.Pre event) {
-		if (event.type == ElementType.HOTBAR) {
-			renderLocation(event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
+		if (event.getType() == ElementType.HOTBAR) {
+			renderLocation(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
 		}
 	}
 }

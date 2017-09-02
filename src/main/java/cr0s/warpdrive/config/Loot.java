@@ -22,7 +22,7 @@ public class Loot implements IXmlRepresentableUnit {
 	static {
 		DEFAULT = new Loot();
 		DEFAULT.name           = "-default-";
-		DEFAULT.item           = Items.stick;
+		DEFAULT.item           = Items.STICK;
 		DEFAULT.damage         = 0;
 		DEFAULT.nbtTagCompound = null;
 		DEFAULT.quantityMin    = 0;
@@ -53,7 +53,7 @@ public class Loot implements IXmlRepresentableUnit {
 		}
 		
 		final String nameItem = element.getAttribute("item");
-		item = (Item) Item.itemRegistry.getObject(nameItem);
+		item = Item.getByNameOrId(nameItem);
 		if (item == null) {
 			WarpDrive.logger.warn("Skipping missing item " + nameItem);
 			return false;
@@ -75,7 +75,7 @@ public class Loot implements IXmlRepresentableUnit {
 		final String stringNBT = element.getAttribute("nbt");
 		if (!stringNBT.isEmpty()) {
 			try {
-				nbtTagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
+				nbtTagCompound = JsonToNBT.getTagFromJson(stringNBT);
 			} catch (NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for item " + nameItem);
 			}
@@ -112,7 +112,7 @@ public class Loot implements IXmlRepresentableUnit {
 		final int quantity = quantityMin + (quantityMax > quantityMin ? rand.nextInt(quantityMax - quantityMin) : 0);
 		final ItemStack itemStack = new ItemStack(item, quantity, damage);
 		if (nbtTagCompound != null) {
-			NBTTagCompound nbtTagCompoundNew = (NBTTagCompound) nbtTagCompound.copy();
+			NBTTagCompound nbtTagCompoundNew = nbtTagCompound.copy();
 			itemStack.setTagCompound(nbtTagCompoundNew);
 		}
 		return itemStack;

@@ -3,16 +3,15 @@ package cr0s.warpdrive.network;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.core.ClassTransformer;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 
 public class MessageClientValidation implements IMessage, IMessageHandler<MessageClientValidation, IMessage> {
 	
@@ -63,10 +62,10 @@ public class MessageClientValidation implements IMessage, IMessageHandler<Messag
 	public IMessage onMessage(MessageClientValidation targetingMessage, MessageContext context) {
 		if (WarpDrive.isDev) {
 			WarpDrive.logger.info("Received client validation packet from %s",
-			                      context.getServerHandler().playerEntity.getCommandSenderName());
+			                      context.getServerHandler().playerEntity.getName());
 		}
 		
-		targetingMessage.handle(context.getServerHandler().playerEntity.getCommandSenderName());
+		targetingMessage.handle(context.getServerHandler().playerEntity.getName());
         
 		return null;	// no response
 	}

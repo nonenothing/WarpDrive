@@ -1,66 +1,87 @@
 package cr0s.warpdrive.block;
 
-import cr0s.warpdrive.render.RenderBlockOmnipanel;
-
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockPane;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 	
 	public static final float CENTER_MIN = 7.0F / 16.0F;
 	public static final float CENTER_MAX = 9.0F / 16.0F;
 	
-	public BlockAbstractOmnipanel(Material material) {
-		super(material);
+	protected static AxisAlignedBB AABB_XN_YN = new AxisAlignedBB(0.0F, 0.0F, CENTER_MIN, CENTER_MAX, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_XP_YN = new AxisAlignedBB(CENTER_MIN, 0.0F, CENTER_MIN, 1.0F, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_XN_YP = new AxisAlignedBB(0.0F, CENTER_MIN, CENTER_MIN, CENTER_MAX, 1.0F, CENTER_MAX);
+	protected static AxisAlignedBB AABB_XP_YP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, 1.0F, CENTER_MAX);
+	 
+	protected static AxisAlignedBB AABB_ZN_YN = new AxisAlignedBB(CENTER_MIN, 0.0F, 0.0F, CENTER_MAX, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_ZP_YN = new AxisAlignedBB(CENTER_MIN, 0.0F, CENTER_MIN, CENTER_MAX, CENTER_MAX, 1.0F);
+	protected static AxisAlignedBB AABB_ZN_YP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, 0.0F, CENTER_MAX, 1.0F, CENTER_MAX);
+	protected static AxisAlignedBB AABB_ZP_YP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, CENTER_MAX, 1.0F, 1.0F);
+	 
+	protected static AxisAlignedBB AABB_XN_ZN = new AxisAlignedBB(0.0F, CENTER_MIN, 0.0F, CENTER_MAX, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_XP_ZN = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, 0.0F, 1.0F, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_XN_ZP = new AxisAlignedBB(0.0F, CENTER_MIN, CENTER_MIN, CENTER_MAX, CENTER_MAX, 1.0F);
+	protected static AxisAlignedBB AABB_XP_ZP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, CENTER_MAX, 1.0F);
+	
+	protected static AxisAlignedBB AABB_YN = new AxisAlignedBB(CENTER_MIN, 0.0F, CENTER_MIN, CENTER_MAX, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_YP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, CENTER_MAX, 1.0F, CENTER_MAX);
+	protected static AxisAlignedBB AABB_ZN = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, 0.0F, CENTER_MAX, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_ZP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, CENTER_MAX, CENTER_MAX, 1.0F);
+	protected static AxisAlignedBB AABB_XN = new AxisAlignedBB(0.0F, CENTER_MIN, CENTER_MIN, CENTER_MAX, CENTER_MAX, CENTER_MAX);
+	protected static AxisAlignedBB AABB_XP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, CENTER_MAX, CENTER_MAX);
+	
+	
+	public BlockAbstractOmnipanel(final String registryName, final Material material) {
+		super(registryName, material);
 	}
 	
 	@Override
-	public boolean isOpaqueCube() {
+	public int damageDropped(final IBlockState blockState) {
+		return getMetaFromState(blockState);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return false;
 	}
 	
-	@Override
-	public boolean renderAsNormalBlock() {
-		return false;
-	}
-	
-	@Override
-	public int getRenderType() {
-		return RenderBlockOmnipanel.renderId;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
-		return 1;
-	}
-	
+	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		return blockAccess.getBlock(x, y, z) != this && super.shouldSideBeRendered(blockAccess, x, y, z, side);
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+		return blockAccess.getBlockState(blockPos).getBlock() != this && super.shouldSideBeRendered(blockState, blockAccess, blockPos, facing);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axisAlignedBB, List list, Entity entity) {
+	public void addCollisionBoxToList(final IBlockState state, final @Nonnull World world, final @Nonnull BlockPos blockPos,
+	                                  final @Nonnull AxisAlignedBB entityBox, final @Nonnull List<AxisAlignedBB> collidingBoxes,
+	                                  final @Nullable Entity entity) {
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos(blockPos);
+		
 		// get direct connections
-		final int maskConnectY_neg = getConnectionMask(world, x, y - 1, z, ForgeDirection.DOWN);
-		final int maskConnectY_pos = getConnectionMask(world, x, y + 1, z, ForgeDirection.UP);
-		final int maskConnectZ_neg = getConnectionMask(world, x, y, z - 1, ForgeDirection.NORTH);
-		final int maskConnectZ_pos = getConnectionMask(world, x, y, z + 1, ForgeDirection.SOUTH);
-		final int maskConnectX_neg = getConnectionMask(world, x - 1, y, z, ForgeDirection.WEST);
-		final int maskConnectX_pos = getConnectionMask(world, x + 1, y, z, ForgeDirection.EAST);
+		final int maskConnectY_neg = getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() - 1, blockPos.getZ()    ), EnumFacing.DOWN);
+		final int maskConnectY_pos = getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() + 1, blockPos.getZ()    ), EnumFacing.UP);
+		final int maskConnectZ_neg = getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY()    , blockPos.getZ() - 1), EnumFacing.NORTH);
+		final int maskConnectZ_pos = getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY()    , blockPos.getZ() + 1), EnumFacing.SOUTH);
+		final int maskConnectX_neg = getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() - 1, blockPos.getY()    , blockPos.getZ()    ), EnumFacing.WEST);
+		final int maskConnectX_pos = getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() + 1, blockPos.getY()    , blockPos.getZ()    ), EnumFacing.EAST);
 		
 		final boolean canConnectY_neg = maskConnectY_neg > 0;
 		final boolean canConnectY_pos = maskConnectY_pos > 0;
@@ -71,19 +92,19 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 		final boolean canConnectNone = !canConnectY_neg && !canConnectY_pos && !canConnectZ_neg && !canConnectZ_pos && !canConnectX_neg && !canConnectX_pos;
 		
 		// get diagonal connections
-		final boolean canConnectXn_Y_neg = (maskConnectX_neg > 1 && maskConnectY_neg > 1) || getConnectionMask(world, x - 1, y - 1, z, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectXn_Y_pos = (maskConnectX_neg > 1 && maskConnectY_pos > 1) || getConnectionMask(world, x - 1, y + 1, z, ForgeDirection.UP   ) > 0;
-		final boolean canConnectXn_Z_neg = (maskConnectX_neg > 1 && maskConnectZ_neg > 1) || getConnectionMask(world, x - 1, y, z - 1, ForgeDirection.NORTH) > 0;
-		final boolean canConnectXn_Z_pos = (maskConnectX_neg > 1 && maskConnectZ_pos > 1) || getConnectionMask(world, x - 1, y, z + 1, ForgeDirection.SOUTH) > 0;
-		final boolean canConnectZn_Y_neg = (maskConnectZ_neg > 1 && maskConnectY_neg > 1) || getConnectionMask(world, x, y - 1, z - 1, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectZn_Y_pos = (maskConnectZ_neg > 1 && maskConnectY_pos > 1) || getConnectionMask(world, x, y + 1, z - 1, ForgeDirection.UP   ) > 0;
+		final boolean canConnectXn_Y_neg = (maskConnectX_neg > 1 && maskConnectY_neg > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() - 1, blockPos.getY() - 1, blockPos.getZ()    ), EnumFacing.DOWN ) > 0;
+		final boolean canConnectXn_Y_pos = (maskConnectX_neg > 1 && maskConnectY_pos > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() - 1, blockPos.getY() + 1, blockPos.getZ()    ), EnumFacing.UP   ) > 0;
+		final boolean canConnectXn_Z_neg = (maskConnectX_neg > 1 && maskConnectZ_neg > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() - 1, blockPos.getY()    , blockPos.getZ() - 1), EnumFacing.NORTH) > 0;
+		final boolean canConnectXn_Z_pos = (maskConnectX_neg > 1 && maskConnectZ_pos > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() - 1, blockPos.getY()    , blockPos.getZ() + 1), EnumFacing.SOUTH) > 0;
+		final boolean canConnectZn_Y_neg = (maskConnectZ_neg > 1 && maskConnectY_neg > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() - 1, blockPos.getZ() - 1), EnumFacing.DOWN ) > 0;
+		final boolean canConnectZn_Y_pos = (maskConnectZ_neg > 1 && maskConnectY_pos > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() + 1, blockPos.getZ() - 1), EnumFacing.UP   ) > 0;
 		
-		final boolean canConnectXp_Y_neg = (maskConnectX_pos > 1 && maskConnectY_neg > 1) || getConnectionMask(world, x + 1, y - 1, z, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectXp_Y_pos = (maskConnectX_pos > 1 && maskConnectY_pos > 1) || getConnectionMask(world, x + 1, y + 1, z, ForgeDirection.UP   ) > 0;
-		final boolean canConnectXp_Z_neg = (maskConnectX_pos > 1 && maskConnectZ_neg > 1) || getConnectionMask(world, x + 1, y, z - 1, ForgeDirection.NORTH) > 0;
-		final boolean canConnectXp_Z_pos = (maskConnectX_pos > 1 && maskConnectZ_pos > 1) || getConnectionMask(world, x + 1, y, z + 1, ForgeDirection.SOUTH) > 0;
-		final boolean canConnectZp_Y_neg = (maskConnectZ_pos > 1 && maskConnectY_neg > 1) || getConnectionMask(world, x, y - 1, z + 1, ForgeDirection.DOWN ) > 0;
-		final boolean canConnectZp_Y_pos = (maskConnectZ_pos > 1 && maskConnectY_pos > 1) || getConnectionMask(world, x, y + 1, z + 1, ForgeDirection.UP   ) > 0;
+		final boolean canConnectXp_Y_neg = (maskConnectX_pos > 1 && maskConnectY_neg > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() + 1, blockPos.getY() - 1, blockPos.getZ()    ), EnumFacing.DOWN ) > 0;
+		final boolean canConnectXp_Y_pos = (maskConnectX_pos > 1 && maskConnectY_pos > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() + 1, blockPos.getY() + 1, blockPos.getZ()    ), EnumFacing.UP   ) > 0;
+		final boolean canConnectXp_Z_neg = (maskConnectX_pos > 1 && maskConnectZ_neg > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() + 1, blockPos.getY()    , blockPos.getZ() - 1), EnumFacing.NORTH) > 0;
+		final boolean canConnectXp_Z_pos = (maskConnectX_pos > 1 && maskConnectZ_pos > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX() + 1, blockPos.getY()    , blockPos.getZ() + 1), EnumFacing.SOUTH) > 0;
+		final boolean canConnectZp_Y_neg = (maskConnectZ_pos > 1 && maskConnectY_neg > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() - 1, blockPos.getZ() + 1), EnumFacing.DOWN ) > 0;
+		final boolean canConnectZp_Y_pos = (maskConnectZ_pos > 1 && maskConnectY_pos > 1) || getConnectionMask(world, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() + 1, blockPos.getZ() + 1), EnumFacing.UP   ) > 0;
 		
 		// get panels
 		final boolean hasXnYn = canConnectNone || (canConnectX_neg && canConnectY_neg && canConnectXn_Y_neg);
@@ -103,111 +124,92 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 		
 		{// z plane
 			if (hasXnYn) {
-				setBlockBounds(0.0F, 0.0F, CENTER_MIN, CENTER_MAX, CENTER_MAX, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XN_YN);
 			}
 			
 			if (hasXpYn) {
-				setBlockBounds(CENTER_MIN, 0.0F, CENTER_MIN, 1.0F, CENTER_MAX, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XP_YN);
 			}
 			
 			if (hasXnYp) {
-				setBlockBounds(0.0F, CENTER_MIN, CENTER_MIN, CENTER_MAX, 1.0F, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XN_YP);
 			}
 			
 			if (hasXpYp) {
-				setBlockBounds(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, 1.0F, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XP_YP);
 			}
 		}
 		
 		{// x plane
 			if (hasZnYn) {
-				setBlockBounds(CENTER_MIN, 0.0F, 0.0F, CENTER_MAX, CENTER_MAX, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_ZN_YN);
 			}
 			
 			if (hasZpYn) {
-				setBlockBounds(CENTER_MIN, 0.0F, CENTER_MIN, CENTER_MAX, CENTER_MAX, 1.0F);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_ZP_YN);
 			}
 			
 			if (hasZnYp) {
-				setBlockBounds(CENTER_MIN, CENTER_MIN, 0.0F, CENTER_MAX, 1.0F, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_ZN_YP);
 			}
 			
 			if (hasZpYp) {
-				setBlockBounds(CENTER_MIN, CENTER_MIN, CENTER_MIN, CENTER_MAX, 1.0F, 1.0F);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_ZP_YP);
 			}
 		}
 		
 		{// z plane
 			if (hasXnZn) {
-				setBlockBounds(0.0F, CENTER_MIN, 0.0F, CENTER_MAX, CENTER_MAX, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XN_ZN);
 			}
 			
 			if (hasXpZn) {
-				setBlockBounds(CENTER_MIN, CENTER_MIN, 0.0F, 1.0F, CENTER_MAX, CENTER_MAX);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XP_ZN);
 			}
 			
 			if (hasXnZp) {
-				setBlockBounds(0.0F, CENTER_MIN, CENTER_MIN, CENTER_MAX, CENTER_MAX, 1.0F);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XN_ZP);
 			}
 			
 			if (hasXpZp) {
-				setBlockBounds(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, CENTER_MAX, 1.0F);
-				super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+				addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XP_ZP);
 			}
 		}
 		
 		// central nodes
 		if (canConnectY_neg && !hasXnYn && !hasXpYn && !hasZnYn && !hasZpYn) {
-			setBlockBounds(CENTER_MIN, 0.0F, CENTER_MIN, CENTER_MAX, CENTER_MAX, CENTER_MAX);
-			super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+			addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_YN);
 		}
 		if (canConnectY_pos && !hasXnYp && !hasXpYp && !hasZnYp && !hasZpYp) {
-			setBlockBounds(CENTER_MIN, CENTER_MIN, CENTER_MIN, CENTER_MAX, 1.0F, CENTER_MAX);
-			super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+			addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_YP);
 		}
 		if (canConnectZ_neg && !hasXnZn && !hasXpZn && !hasZnYn && !hasZnYp) {
-			setBlockBounds(CENTER_MIN, CENTER_MIN, 0.0F, CENTER_MAX, CENTER_MAX, CENTER_MAX);
-			super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+			addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_ZN);
 		}
 		if (canConnectZ_pos && !hasXnZp && !hasXpZp && !hasZpYn && !hasZpYp) {
-			setBlockBounds(CENTER_MIN, CENTER_MIN, CENTER_MIN, CENTER_MAX, CENTER_MAX, 1.0F);
-			super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+			addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_ZP);
 		}
 		if (canConnectX_neg && !hasXnYn && !hasXnYp && !hasXnZn && !hasXnZp) {
-			setBlockBounds(0.0F, CENTER_MIN, CENTER_MIN, CENTER_MAX, CENTER_MAX, CENTER_MAX);
-			super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+			addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XN);
 		}
 		if (canConnectX_pos && !hasXpYn && !hasXpYp && !hasXpZn && !hasXpZp) {
-			setBlockBounds(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, CENTER_MAX, CENTER_MAX);
-			super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
+			addCollisionBoxToList(blockPos, entityBox, collidingBoxes, AABB_XP);
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Nonnull
 	@Override
-	public void setBlockBoundsForItemRender() {
-		setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-	}
-	
-	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+	public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess blockAccess, final BlockPos blockPos) {
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos(blockPos);
+		
 		// get direct connections
-		final int maskConnectY_neg = getConnectionMask(blockAccess, x, y - 1, z, ForgeDirection.DOWN);
-		final int maskConnectY_pos = getConnectionMask(blockAccess, x, y + 1, z, ForgeDirection.UP);
-		final int maskConnectZ_neg = getConnectionMask(blockAccess, x, y, z - 1, ForgeDirection.NORTH);
-		final int maskConnectZ_pos = getConnectionMask(blockAccess, x, y, z + 1, ForgeDirection.SOUTH);
-		final int maskConnectX_neg = getConnectionMask(blockAccess, x - 1, y, z, ForgeDirection.WEST);
-		final int maskConnectX_pos = getConnectionMask(blockAccess, x + 1, y, z, ForgeDirection.EAST);
+		final int maskConnectY_neg = getConnectionMask(blockAccess, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() - 1, blockPos.getZ()    ), EnumFacing.DOWN);
+		final int maskConnectY_pos = getConnectionMask(blockAccess, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY() + 1, blockPos.getZ()    ), EnumFacing.UP);
+		final int maskConnectZ_neg = getConnectionMask(blockAccess, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY()    , blockPos.getZ() - 1), EnumFacing.NORTH);
+		final int maskConnectZ_pos = getConnectionMask(blockAccess, mutableBlockPos.setPos(blockPos.getX()    , blockPos.getY()    , blockPos.getZ() + 1), EnumFacing.SOUTH);
+		final int maskConnectX_neg = getConnectionMask(blockAccess, mutableBlockPos.setPos(blockPos.getX() - 1, blockPos.getY()    , blockPos.getZ()    ), EnumFacing.WEST);
+		final int maskConnectX_pos = getConnectionMask(blockAccess, mutableBlockPos.setPos(blockPos.getX() + 1, blockPos.getY()    , blockPos.getZ()    ), EnumFacing.EAST);
 		
 		final boolean canConnectY_neg = maskConnectY_neg > 0;
 		final boolean canConnectY_pos = maskConnectY_pos > 0;
@@ -229,18 +231,22 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 		final float zMin = canConnectNone || canConnectZ_neg ? 0.0F : CENTER_MIN;
 		final float zMax = canConnectNone || canConnectZ_pos ? 1.0F : CENTER_MAX;
 		
-		setBlockBounds(xMin, yMin, zMin, xMax, yMax, zMax);
+		return new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected boolean canSilkHarvest()
 	{
 		return true;
 	}
 	
-	public int getConnectionMask(IBlockAccess blockAccess, int x, int y, int z, ForgeDirection forgeDirection) {
-		final Block block = blockAccess.getBlock(x, y, z);
-		return (block.func_149730_j() || block == this || block.getMaterial() == Material.glass || block instanceof BlockPane ? 1 : 0)
-		     + (block.isSideSolid(blockAccess, x, y, z, forgeDirection.getOpposite()) ? 2 : 0);
+	public int getConnectionMask(final IBlockAccess blockAccess, final BlockPos blockPos, final EnumFacing facing) {
+		final IBlockState blockState = blockAccess.getBlockState(blockPos);
+		return ( blockState.isFullCube()
+		      || blockState.getBlock() == this
+		      || blockState.getMaterial() == Material.GLASS
+		      || blockState.getBlock() instanceof BlockPane ? 1 : 0 )
+		     + (blockState.isSideSolid(blockAccess, blockPos, facing.getOpposite()) ? 2 : 0);
 	}
 }

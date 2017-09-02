@@ -16,23 +16,32 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector {
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector, ITickable {
 	
 	private boolean isFirstTick = true;
 	private boolean isDirty = false;
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
 		if (isFirstTick) {
 			isFirstTick = false;
 			onFirstUpdateTick();
@@ -51,9 +60,26 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	public void updatedNeighbours() {
 	}
 	
-	protected void updateMetadata(int metadata) {
+	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, IProperty<T> property, V value) {
+		IBlockState blockState = blockState_in;
+		if (blockState == null) {
+			blockState = worldObj.getBlockState(pos);
+		}
+		try {
+			blockState = blockState.withProperty(property, value);
+			if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
+				worldObj.setBlockState(pos, blockState, 2);
+			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			WarpDrive.logger.error("Exception in " + this);
+		}
+	}
+	
+	@Deprecated
+	protected void updateMetadata(final int metadata) {
 		if (getBlockMetadata() != metadata) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 2);
+			worldObj.setBlockState(pos, getBlockType().getStateFromMeta(metadata), 2);
 		}
 	}
 	
@@ -63,15 +89,20 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		  && Commons.isSafeThread() ) {
 			super.markDirty();
 			isDirty = false;
-			worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
-			WarpDrive.starMap.onBlockUpdated(worldObj, xCoord, yCoord, zCoord, getBlockType(), getBlockMetadata());
+			final IBlockState blockState = worldObj.getBlockState(pos);
+			worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
+			WarpDrive.starMap.onBlockUpdated(worldObj, pos, blockState);
 		} else {
 			isDirty = true;
 		}
 	}
 	
-	// Inventory management methods
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState blockStateOld, @Nonnull IBlockState blockStateNew) {
+		return blockStateOld.getBlock() != blockStateNew.getBlock();
+	}
 	
+	// Inventory management methods
 	protected boolean addToConnectedInventories(final ItemStack itemStack) {
 		List<ItemStack> itemStacks = new ArrayList<>(1);
 		itemStacks.add(itemStack);
@@ -109,7 +140,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, itemStackLeft.getMaxStackSize());
 						ItemStack itemStackDrop = Commons.copyWithSize(itemStackLeft, transfer);
-						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, itemStackDrop);
+						EntityItem entityItem = new EntityItem(worldObj, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, itemStackDrop);
 						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
 					}
@@ -174,12 +205,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// area protection
-	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, World world, final int eventX, final int eventY, final int eventZ) {
-		return CommonProxy.isBlockBreakCanceled(uuidPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ);
+	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, World world, BlockPos blockPosEvent) {
+		return CommonProxy.isBlockBreakCanceled(uuidPlayer, pos, world, blockPosEvent);
 	}
 	
-	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, World world, final int eventX, final int eventY, final int eventZ, final Block block, final int metadata) {
-		return CommonProxy.isBlockPlaceCanceled(uuidPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ, block, metadata);
+	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, World world, BlockPos blockPosEvent, IBlockState blockState) {
+		return CommonProxy.isBlockPlaceCanceled(uuidPlayer, pos, world, blockPosEvent, blockState);
 	}
 	
 	// saved properties
@@ -188,7 +219,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		super.readFromNBT(tag);
 		if (tag.hasKey("upgrades")) {
 			NBTTagCompound nbtTagCompoundUpgrades = tag.getCompoundTag("upgrades");
-			Set<String> keys = nbtTagCompoundUpgrades.func_150296_c();
+			Set<String> keys = nbtTagCompoundUpgrades.getKeySet();
 			for (String key : keys) {
 				Object object = getUpgradeFromString(key);
 				int value = nbtTagCompoundUpgrades.getByte(key);
@@ -202,7 +233,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		if (!installedUpgrades.isEmpty()) {
 			NBTTagCompound nbtTagCompoundUpgrades = new NBTTagCompound();
@@ -212,6 +243,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			}
 			tagCompound.setTag("upgrades", nbtTagCompoundUpgrades);
 		}
+		return tagCompound;
 	}
 	
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
@@ -222,38 +254,45 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return nbtTagCompound;
 	}
 	
+	@Nullable
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket() {
+		return new SPacketUpdateTileEntity(pos, getBlockMetadata(), getUpdateTag());
+	}
+	
 	// status
-	protected String getUpgradeStatus() {
+	protected ITextComponent getUpgradeStatus() {
 		String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
-			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.none",
+			return new TextComponentTranslation("warpdrive.upgrade.statusLine.none",
 				strUpgrades);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.valid",
+			return new TextComponentTranslation("warpdrive.upgrade.statusLine.valid",
 				strUpgrades);
 		}
 	}
 	
-	protected String getStatusPrefix() {
-		if (worldObj == null) {
-			return "";
-		} else {
-			ItemStack itemStack = new ItemStack(Item.getItemFromBlock(getBlockType()), 1, getBlockMetadata());
-			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"));
+	protected ITextComponent getStatusPrefix() {
+		if (worldObj != null) {
+			Item item = Item.getItemFromBlock(getBlockType());
+			if (item != null) {
+				ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
+				return new TextComponentTranslation("warpdrive.guide.prefix", new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"));
+			}
 		}
+		return new TextComponentString("");
 	}
 	
-	public String getStatusHeader() {
-		return "";
+	public ITextComponent getStatusHeader() {
+		return new TextComponentString("");
 	}
 	
-	public String getStatus() {
-		return getStatusPrefix()
-		     + getStatusHeader();
+	public ITextComponent getStatus() {
+		return getStatusPrefix().appendSibling( getStatusHeader() );
 	}
 	
 	public String getStatusHeaderInPureText() {
-		return Commons.removeFormatting( getStatusHeader() );
+		return Commons.removeFormatting( getStatusHeader().getUnformattedText() );
 	}
 	
 	// upgrade system
@@ -265,11 +304,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	private String getUpgradeAsString(Object object) {
 		if (object instanceof Item) {
-			return Item.itemRegistry.getNameForObject(object);
+			return Item.REGISTRY.getNameForObject((Item)object).toString();
 		} else if (object instanceof Block) {
-			return Block.blockRegistry.getNameForObject(object);
+			return Block.REGISTRY.getNameForObject((Block)object).toString();
 		} else if (object instanceof ItemStack) {
-			return Item.itemRegistry.getNameForObject(((ItemStack) object).getItem()) + ":" + ((ItemStack) object).getItemDamage();
+			return Item.REGISTRY.getNameForObject(((ItemStack) object).getItem()) + ":" + ((ItemStack) object).getItemDamage();
 		} else {
 			return object.toString();
 		}

@@ -1,13 +1,17 @@
 package cr0s.warpdrive.data;
 
+import net.minecraft.util.IStringSerializable;
+
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 
-public enum EnumDecorativeType {
+public enum EnumDecorativeType implements IStringSerializable {
+	
 	PLAIN              ("plain"),
 	ENERGIZED          ("energized"),
 	NETWORK            ("network");
 	
-	public final String unlocalizedName;
+	private final String unlocalizedName;
 	
 	// cached values
 	public static final int length;
@@ -27,4 +31,12 @@ public enum EnumDecorativeType {
 	public static EnumDecorativeType get(final int damage) {
 		return ID_MAP.get(damage);
 	}
+
+	public String getUnlocalizedName() {
+		return unlocalizedName;
+	}
+	
+	@Nonnull
+	@Override
+	public String getName() { return unlocalizedName; }
 }

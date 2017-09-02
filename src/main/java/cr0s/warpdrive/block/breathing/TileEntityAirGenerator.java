@@ -5,17 +5,19 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.BlockProperties;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
@@ -28,13 +30,13 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		
 		peripheralName = "warpdriveAirGenerator";
 		addMethods(new String[] {
-				"enable"
+			"enable"
 		});
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -45,55 +47,58 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (CelestialObjectManager.hasAtmosphere(worldObj, xCoord, zCoord)) {
-			if (getBlockMetadata() != 0) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
+		if (CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
+			final IBlockState blockState = worldObj.getBlockState(pos);
+			if (blockState.getValue(BlockProperties.ACTIVE)) {
+				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 			}
 			return;
 		}
 		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS) {
+			IBlockState blockState = worldObj.getBlockState(pos);
 			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], true)) {
-				if (getBlockMetadata() != 1) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 1, 2); // set enabled texture
+				if (!blockState.getValue(BlockProperties.ACTIVE)) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, true)); // set enabled texture
 				}
 			} else {
-				if (getBlockMetadata() != 0) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 2); // set disabled texture
+				if (blockState.getValue(BlockProperties.ACTIVE)) {
+					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 				}
 			}
-			releaseAir(1, 0, 0);
-			releaseAir(-1, 0, 0);
-			releaseAir(0, 1, 0);
-			releaseAir(0, -1, 0);
-			releaseAir(0, 0, 1);
-			releaseAir(0, 0, -1);
+			releaseAir(pos.north());
+			releaseAir(pos.south());
+			releaseAir(pos.east());
+			releaseAir(pos.west());
+			releaseAir(pos.up());
+			releaseAir(pos.down());
+			
 			
 			cooldownTicks = 0;
 		}
 	}
 	
-	private void releaseAir(int xOffset, int yOffset, int zOffset) {
-		Block block = worldObj.getBlock(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset);
-		if (block.isAir(worldObj, xCoord + xOffset, yCoord + yOffset, zCoord + zOffset)) {// can be air
-			int energy_cost = (!block.isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0];
+	private void releaseAir(BlockPos blockPos) {
+		IBlockState blockState = worldObj.getBlockState(blockPos);
+		if (blockState.getBlock().isAir(blockState, worldObj, blockPos)) {// can be air
+			int energy_cost = (!blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0];
 			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
-				if (worldObj.setBlock(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, WarpDrive.blockAir, START_CONCENTRATION_VALUE, 2)) {
+				if (worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(START_CONCENTRATION_VALUE), 2)) {
 					// (needs to renew air or was not maxed out)
 					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], false);
 				} else {
 					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0], false);
 				}
 			} else {// low energy => remove air block
-				if (block.isAssociatedBlock(WarpDrive.blockAir)) {
-					int metadata = worldObj.getBlockMetadata(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset);
+				if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
+					int metadata = blockState.getBlock().getMetaFromState(blockState);
 					if (metadata > 4) {
-						worldObj.setBlockMetadataWithNotify(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, metadata - 4, 2);
+						worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(metadata - 4), 2);
 					} else if (metadata > 1) {
-						worldObj.setBlockMetadataWithNotify(xCoord + xOffset, yCoord + yOffset, zCoord + zOffset, 1, 2);
-					} else {
-						// worldObj.setBlockMetadataWithNotify(xCoord + xOffset, yCoord + yOffset,  zCoord + zOffset, 0, 0, 2);
+						worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(1), 2);
+					// } else {
+						// worldObj.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
 					}
 				}
 			}
@@ -107,9 +112,9 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void writeToNBT(final NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound.setBoolean("isEnabled", isEnabled);
+		return super.writeToNBT(tagCompound);
 	}
 	
 	@Override
@@ -118,16 +123,16 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)",
-		getClass().getSimpleName(),
-		worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-		xCoord, yCoord, zCoord);
+			getClass().getSimpleName(),
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			pos.getX(), pos.getY(), pos.getZ());
 	}
 	
 	// Common OC/CC methods
@@ -135,14 +140,14 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		if (arguments.length == 1) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
-		return new Object[] { isEnabled };
+		return new Object[]{isEnabled};
 	}
 	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] enable(Context context, Arguments arguments) {
-			return enable(argumentsOCtoCC(arguments));
+		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation

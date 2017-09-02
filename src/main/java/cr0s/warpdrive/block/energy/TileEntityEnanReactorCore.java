@@ -17,9 +17,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implements IEnanReactorCore {
 	
@@ -79,7 +79,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		CC_scripts = Arrays.asList("startup");
 	}
 	
-	private void increaseInstability(ForgeDirection from, boolean isNatural) {
+	private void increaseInstability(EnumFacing from, boolean isNatural) {
 		if (energy_canOutput(from)) {
 			return;
 		}
@@ -99,13 +99,13 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private void increaseInstability(final boolean isNatural) {
-		increaseInstability(ForgeDirection.NORTH, isNatural);
-		increaseInstability(ForgeDirection.SOUTH, isNatural);
-		increaseInstability(ForgeDirection.EAST, isNatural);
-		increaseInstability(ForgeDirection.WEST, isNatural);
+		increaseInstability(EnumFacing.NORTH, isNatural);
+		increaseInstability(EnumFacing.SOUTH, isNatural);
+		increaseInstability(EnumFacing.EAST, isNatural);
+		increaseInstability(EnumFacing.WEST, isNatural);
 	}
 	
-	public void decreaseInstability(final ForgeDirection from, final int energy) {
+	public void decreaseInstability(final EnumFacing from, final int energy) {
 		if (energy_canOutput(from)) {
 			return;
 		}
@@ -122,7 +122,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		double nospamFactor = 1.0;
 		if (lasersReceived > 1.0F) {
 			nospamFactor = 0.5;
-			worldObj.newExplosion((Entity) null, xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ, 1, false, false);
+			worldObj.newExplosion(null, pos.getX() + from.getFrontOffsetX(), pos.getY() + from.getFrontOffsetY(), pos.getZ() + from.getFrontOffsetZ(), 1, false, false);
 			// increaseInstability(from, false);
 			// increaseInstability(false);
 		}
@@ -171,8 +171,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -222,14 +222,15 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			WarpDrive.logger.info(this + " Explosion radius is " + radius + ", Chance of removal is " + chanceOfRemoval);
 		}
 		if (radius > 1) {
-			float bedrockExplosionResistance = Blocks.bedrock.getExplosionResistance(null);
-			for (int x = xCoord - radius; x <= xCoord + radius; x++) {
-				for (int y = yCoord - radius; y <= yCoord + radius; y++) {
-					for (int z = zCoord - radius; z <= zCoord + radius; z++) {
-						if (z != zCoord || y != yCoord || x != xCoord) {
+			float bedrockExplosionResistance = Blocks.BEDROCK.getExplosionResistance(null);
+			for (int x = pos.getX() - radius; x <= pos.getX() + radius; x++) {
+				for (int y = pos.getY() - radius; y <= pos.getY() + radius; y++) {
+					for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; z++) {
+						if (z != pos.getZ() || y != pos.getY() || x != pos.getX()) {
 							if (worldObj.rand.nextDouble() < chanceOfRemoval) {
-								if (worldObj.getBlock(x, y, z).getExplosionResistance(null) >= bedrockExplosionResistance) {
-									worldObj.setBlockToAir(x, y, z);
+								BlockPos blockPos = new BlockPos(x, y, z);
+								if (worldObj.getBlockState(blockPos).getBlock().getExplosionResistance(null) >= bedrockExplosionResistance) {
+									worldObj.setBlockToAir(blockPos);
 								}
 							}
 						}
@@ -239,14 +240,14 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// remove reactor
-		worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+		worldObj.setBlockToAir(pos);
 		
 		// set a few augmented TnT around reactor core
 		for (int i = 0; i < 3; i++) {
 			worldObj.newExplosion((Entity) null,
-				xCoord + worldObj.rand.nextInt(3) - 0.5D,
-				yCoord + worldObj.rand.nextInt(3) - 0.5D,
-				zCoord + worldObj.rand.nextInt(3) - 0.5D,
+				pos.getX() + worldObj.rand.nextInt(3) - 0.5D,
+				pos.getY() + worldObj.rand.nextInt(3) - 0.5D,
+				pos.getZ() + worldObj.rand.nextInt(3) - 0.5D,
 				4.0F + worldObj.rand.nextInt(3), true, true);
 		}
 	}
@@ -263,7 +264,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		int metadata = 4 * instabilityNibble + energyNibble;
 		if (getBlockMetadata() != metadata) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 3);
+			updateMetadata(metadata);
 		}
 	}
 	
@@ -293,7 +294,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		TileEntity tileEntity;
 		for (int i = 0; i < 4; i++) {
-			tileEntity = worldObj.getTileEntity(xCoord + offsetsX[i], yCoord, zCoord + offsetsZ[i]);
+			tileEntity = worldObj.getTileEntity(pos.add(offsetsX[i], 0, offsetsZ[i]));
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
 				((TileEntityEnanReactorLaser) tileEntity).scanForReactor();
 			}
@@ -520,8 +521,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public boolean energy_canOutput(ForgeDirection from) {
-		return from.equals(ForgeDirection.UP) || from.equals(ForgeDirection.DOWN);
+	public boolean energy_canOutput(EnumFacing from) {
+		return from.equals(EnumFacing.UP) || from.equals(EnumFacing.DOWN);
 	}
 	
 	@Override
@@ -550,8 +551,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	// Forge overrides
 	@Override
-	public void writeToNBT(final NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setInteger("energy", containedEnergy);
 		tagCompound.setInteger("releaseMode", releaseMode);
 		tagCompound.setInteger("releaseRate", releaseRate);
@@ -561,6 +562,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		tagCompound.setDouble("i2", instabilityValues[2]);
 		tagCompound.setDouble("i3", instabilityValues[3]);
 		tagCompound.setBoolean("isEnabled", isEnabled);
+		return tagCompound;
 	}
 	
 	@Override
@@ -599,6 +601,6 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			getClass().getSimpleName(),
 			connectedComputers == null ? "~NULL~" : connectedComputers,
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			xCoord, yCoord, zCoord);
+			pos.getX(), pos.getY(), pos.getZ());
 	}
 }

@@ -3,15 +3,17 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -20,10 +22,10 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 
-import cpw.mods.fml.common.registry.GameData;
-import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.registry.GameData;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class Dictionary {
@@ -123,6 +125,7 @@ public class Dictionary {
 				config.get("block_tags", "WarpDrive:blockHull1_glass"                      , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "WarpDrive:blockHull2_glass"                      , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "WarpDrive:blockHull3_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "WarpDrive:blockLamp"                             , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "WarpDrive:blockForceField1"                      , "PlaceLatest StopMining NoMass").getString();
 				config.get("block_tags", "WarpDrive:blockForceField2"                      , "PlaceLatest StopMining NoMass").getString();
 				config.get("block_tags", "WarpDrive:blockForceField3"                      , "PlaceLatest StopMining NoMass").getString();
@@ -324,21 +327,21 @@ public class Dictionary {
 		for (String oreName : oreNames) {
 			String lowerOreName = oreName.toLowerCase();
 			if (oreName.length() > 4 && oreName.substring(0, 3).equals("ore")) {
-				ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
+				List<ItemStack> itemStacks = OreDictionary.getOres(oreName);
 				for (ItemStack itemStack : itemStacks) {
 					BLOCKS_ORES.add(Block.getBlockFromItem(itemStack.getItem()));
 					// WarpDrive.logger.info("- added " + oreName + " to ores as " + itemStack);
 				}
 			}
 			if (lowerOreName.startsWith("log") || lowerOreName.endsWith("log") || lowerOreName.endsWith("logs")) {
-				ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
+				List<ItemStack> itemStacks = OreDictionary.getOres(oreName);
 				for (ItemStack itemStack : itemStacks) {
 					BLOCKS_LOGS.add(Block.getBlockFromItem(itemStack.getItem()));
 					// WarpDrive.logger.info("- added " + oreName + " to logs as " + itemStack);
 				}
 			}
 			if (lowerOreName.startsWith("leave") || lowerOreName.endsWith("leave") || lowerOreName.endsWith("leaves")) {
-				ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
+				List<ItemStack> itemStacks = OreDictionary.getOres(oreName);
 				for (ItemStack itemStack : itemStacks) {
 					BLOCKS_LEAVES.add(Block.getBlockFromItem(itemStack.getItem()));
 					// WarpDrive.logger.info("- added " + oreName + " to leaves as " + itemStack);
@@ -424,7 +427,7 @@ public class Dictionary {
 		ITEMS_BREATHING_HELMET = new HashSet<>(taggedItems.size());
 		for (Entry<String, String> taggedItem : taggedItems.entrySet()) {
 			String itemId = taggedItem.getKey();
-			Item item = GameData.getItemRegistry().getObject(itemId);
+			Item item = GameData.getItemRegistry().getObject(new ResourceLocation(itemId));
 			if (item == null) {
 				WarpDrive.logger.info("Ignoring missing item " + itemId);
 				continue;
@@ -478,14 +481,14 @@ public class Dictionary {
 	
 	private static void adjustHardnessAndResistance() {
 		// Apply explosion resistance adjustments
-		Blocks.obsidian.setResistance(60.0F);
-		Blocks.enchanting_table.setResistance(60.0F);
-		Blocks.ender_chest.setResistance(60.0F);
-		Blocks.anvil.setResistance(60.0F);
-		Blocks.water.setResistance(30.0F);
-		Blocks.flowing_water.setResistance(30.0F);
-		Blocks.lava.setResistance(30.0F);
-		Blocks.flowing_lava.setResistance(30.0F);
+		Blocks.OBSIDIAN.setResistance(60.0F);
+		Blocks.ENCHANTING_TABLE.setResistance(60.0F);
+		Blocks.ENDER_CHEST.setResistance(60.0F);
+		Blocks.ANVIL.setResistance(60.0F);
+		Blocks.WATER.setResistance(30.0F);
+		Blocks.FLOWING_WATER.setResistance(30.0F);
+		Blocks.LAVA.setResistance(30.0F);
+		Blocks.FLOWING_LAVA.setResistance(30.0F);
 		
 		// keep IC2 Reinforced stone stats 'as is'
 		/*
@@ -495,64 +498,59 @@ public class Dictionary {
 		/**/
 		
 		// scan blocks registry
-		for(Object blockKey : Block.blockRegistry.getKeys()) {
-			Object object = Block.blockRegistry.getObject(blockKey);
-			WarpDrive.logger.debug("Checking block registry for '" + blockKey + "': " + object);
-			if (!(object instanceof Block)) {
-				WarpDrive.logger.error("Block registry for '" + blockKey + "': this is not a block? " + object);
-			} else {
-				Block block = (Block) object;
-				// get hardness and blast resistance
-				float hardness = -2.0F;
-				if (WarpDrive.fieldBlockHardness != null) {
-					// WarpDrive.fieldBlockHardness.setAccessible(true);
-					try {
-						hardness = (float)WarpDrive.fieldBlockHardness.get(block);
-					} catch (IllegalArgumentException | IllegalAccessException exception) {
-						exception.printStackTrace();
-						WarpDrive.logger.error("Unable to access block hardness value '" + blockKey + "' " + block);
+		for(ResourceLocation resourceLocation : Block.REGISTRY.getKeys()) {
+			final Block block = Block.REGISTRY.getObject(resourceLocation);
+			WarpDrive.logger.debug("Checking block registry for '" + resourceLocation + "': " + block);
+			// get hardness and blast resistance
+			float hardness = -2.0F;
+			if (WarpDrive.fieldBlockHardness != null) {
+				// WarpDrive.fieldBlockHardness.setAccessible(true);
+				try {
+					hardness = (float)WarpDrive.fieldBlockHardness.get(block);
+				} catch (IllegalArgumentException | IllegalAccessException exception) {
+					exception.printStackTrace();
+					WarpDrive.logger.error("Unable to access block hardness value '" + resourceLocation + "' " + block);
+				}
+			}
+			
+			float blastResistance = block.getExplosionResistance(null);
+			
+			// check actual values
+			if (hardness != -2.0F) {
+				if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
+					WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + resourceLocation + "' " + block + " (" + hardness + ")");
+				} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
+				         && !( block instanceof BlockAbstractBase
+				            || block instanceof BlockAbstractContainer
+				            || block instanceof BlockHullGlass
+				            || block instanceof BlockHullSlab
+				            || block instanceof BlockHullStairs
+				            || BLOCKS_ANCHOR.contains(block) ) ) {
+					WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + resourceLocation + "' " + block + " (" + hardness + ")");
+				}
+			}
+			if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
+			   && !( block instanceof BlockAbstractBase
+			      || block instanceof BlockAbstractContainer
+			      || block instanceof BlockHullGlass
+			      || block instanceof BlockHullSlab
+			      || block instanceof BlockHullStairs
+			      || BLOCKS_ANCHOR.contains(block) ) ) {
+				block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
+				WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + resourceLocation + "' " + block + " (" + hardness + ")");
+				if (adjustResistance) {// TODO: not implemented
+					WarpDrive.logger.warn("Adjusting blast resistance of '" + resourceLocation + "' " + block + " from " + blastResistance + " to " + block.getExplosionResistance(null));
+					if (block.getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
+						WarpDrive.logger.error("Blacklisting block with high blast resistance '" + resourceLocation + "' " + block + " (" + blastResistance + ")");
+						BLOCKS_ANCHOR.add(block);
+						BLOCKS_STOPMINING.add(block);
 					}
 				}
-				
-				float blastResistance = block.getExplosionResistance(null);
-				
-				// check actual values
-				if (hardness != -2.0F) {
-					if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
-						WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-					} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
-					         && !( block instanceof BlockAbstractBase
-					            || block instanceof BlockAbstractContainer
-					            || block instanceof BlockHullGlass
-					            || block instanceof BlockHullSlab
-					            || block instanceof BlockHullStairs
-					            || BLOCKS_ANCHOR.contains(block) ) ) {
-						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-					}
-				}
-				if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
-				   && !( block instanceof BlockAbstractBase
-				      || block instanceof BlockAbstractContainer
-				      || block instanceof BlockHullGlass
-				      || block instanceof BlockHullSlab
-				      || block instanceof BlockHullStairs
-				      || BLOCKS_ANCHOR.contains(block) ) ) {
-					block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
-					WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
-					if (adjustResistance) {// TODO: not implemented
-						WarpDrive.logger.warn("Adjusting blast resistance of '" + blockKey + "' " + block + " from " + blastResistance + " to " + block.getExplosionResistance(null));
-						if (block.getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
-							WarpDrive.logger.error("Blacklisting block with high blast resistance '" + blockKey + "' " + block + " (" + blastResistance + ")");
-							BLOCKS_ANCHOR.add(block);
-							BLOCKS_STOPMINING.add(block);
-						}
-					}
-				}
-				
-				if (WarpDriveConfig.LOGGING_DICTIONARY) {
-					WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
-						+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + block.getExplosionResistance(null));
-				}
+			}
+			
+			if (WarpDriveConfig.LOGGING_DICTIONARY) {
+				WarpDrive.logger.info("Block registry for '" + resourceLocation + "': Block " + block
+					+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + block.getExplosionResistance(null));
 			}
 		}
 	}
@@ -564,13 +562,12 @@ public class Dictionary {
 				message.append(", ");
 			}
 			if (object instanceof Block) {
-				message.append(GameRegistry.findUniqueIdentifierFor((Block) object));
+				message.append(((Block) object).getRegistryName());
 			} else if (object instanceof String) {
 				message.append((String) object);
 			} else {
 				message.append(object);
 			}
-			
 		}
 		return message.toString();
 	}
@@ -581,7 +578,7 @@ public class Dictionary {
 			if (message.length() > 0) {
 				message.append(", ");
 			}
-			message.append(GameRegistry.findUniqueIdentifierFor(entry.getKey())).append("=").append(entry.getValue());
+			message.append(entry.getKey().getRegistryName()).append("=").append(entry.getValue());
 		}
 		return message.toString();
 	}
@@ -590,7 +587,7 @@ public class Dictionary {
 		final NBTTagList nbtTagList = new NBTTagList();
 		assert(hashSetItem != null);
 		for (final Item item : hashSetItem) {
-			final String registryName = Item.itemRegistry.getNameForObject(item);
+			final String registryName = item.getRegistryName().toString();
 			nbtTagList.appendTag(new NBTTagString(registryName));
 		}
 		return nbtTagList;
@@ -604,7 +601,7 @@ public class Dictionary {
 		if (size > 0) {
 			for (int index = 0; index < nbtTagList.tagCount(); index++) {
 				final String registryName = nbtTagList.getStringTagAt(index);
-				final Item item = GameData.getItemRegistry().getObject(registryName);
+				final Item item = GameData.getItemRegistry().getObject(new ResourceLocation(registryName));
 				if (item != null) {
 					hashSetItem.add(item);
 				} else {

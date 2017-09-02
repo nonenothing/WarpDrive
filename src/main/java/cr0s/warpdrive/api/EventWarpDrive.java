@@ -1,9 +1,9 @@
 package cr0s.warpdrive.api;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import cpw.mods.fml.common.eventhandler.Cancelable;
-import cpw.mods.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.Cancelable;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 public abstract class EventWarpDrive extends Event {
 	
@@ -15,9 +15,7 @@ public abstract class EventWarpDrive extends Event {
 		
 		// ship core location
 		public final World worldCurrent;
-		public final int xCurrent;
-		public final int yCurrent;
-		public final int zCurrent;
+		public final BlockPos posCurrent;
 		
 		// ship stats
 		public final int mass;
@@ -26,14 +24,12 @@ public abstract class EventWarpDrive extends Event {
 		public final String jumpType;
 		public final int distance;
 		
-		public Ship(final World world, final int x, final int y, final int z,
+		public Ship(final World world, final BlockPos blockPos,
 		            final int mass, final String jumpType, final int distance) {
 			super();
 			
 			this.worldCurrent = world;
-			this.xCurrent = x;
-			this.yCurrent = y;
-			this.zCurrent = z;
+			this.posCurrent = blockPos;
 			this.mass = mass;
 			this.jumpType = jumpType;
 			this.distance = distance;
@@ -55,14 +51,14 @@ public abstract class EventWarpDrive extends Event {
 			private int sickness_seconds;
 			private int cooldown_seconds;
 			
-			public MovementCosts(final World world, final int x, final int y, final int z,
+			public MovementCosts(final World world, final BlockPos blockPos,
 			                     final int mass, final String jumpType, final int distance,
 			                     final int maximumDistance_blocks,
 			                     final int energyRequired,
 			                     final int warmup_seconds,
 			                     final int sickness_seconds,
 			                     final int cooldown_seconds) {
-				super(world, x, y, z, mass, jumpType, distance);
+				super(world, blockPos, mass, jumpType, distance);
 				
 				this.warmup_seconds_initial = warmup_seconds;
 				this.warmup_seconds = warmup_seconds;
@@ -123,9 +119,9 @@ public abstract class EventWarpDrive extends Event {
 			// cancellation message
 			private final StringBuilder reason;
 			
-			public PreJump(final World world, final int x, final int y, final int z,
+			public PreJump(final World world, final BlockPos blockPos,
 			               final int mass, final String jumpType, final int distance) {
-				super(world, x, y, z, mass, jumpType, distance);
+				super(world, blockPos, mass, jumpType, distance);
 				
 				this.reason = new StringBuilder();
 			}
@@ -144,9 +140,9 @@ public abstract class EventWarpDrive extends Event {
 		
 		public static class PostJump extends Ship {
 			
-			public PostJump(final World world, final int x, final int y, final int z, 
+			public PostJump(final World world, final BlockPos blockPos, 
 			                final int mass, final String jumpType, final int distance) {
-				super(world, x, y, z, mass, jumpType, distance);
+				super(world, blockPos, mass, jumpType, distance);
 			}
 		}
 	}

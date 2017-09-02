@@ -7,9 +7,12 @@ import cr0s.warpdrive.data.ForceFieldSetup;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import javax.annotation.Nonnull;
 
 public class TileEntityForceFieldRelay extends TileEntityAbstractForceField implements IForceFieldUpgrade {
 
@@ -23,7 +26,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	// onFirstUpdateTick
-	// updateEntity
+	// update
 	
 	protected EnumForceFieldUpgrade getUpgrade() {
 		if (upgrade == null) {
@@ -38,21 +41,21 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public String getUpgradeStatus() {
+	protected ITextComponent getUpgradeStatus() {
 		EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
-		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
+		ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.getName());
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
-			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.none",
+			return new TextComponentTranslation("warpdrive.upgrade.statusLine.none",
 				strDisplayName);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.valid",
+			return new TextComponentTranslation("warpdrive.upgrade.statusLine.valid",
 				strDisplayName);
 		}
 	}
 	
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-			       + "\n" + getUpgradeStatus();
+		    .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
 	}
 	
 	@Override
@@ -62,21 +65,23 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setByte("upgrade", (byte) getUpgrade().ordinal());
+		return tagCompound;
 	}
 	
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
+	public NBTTagCompound getUpdateTag() {
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		final NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	

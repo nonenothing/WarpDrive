@@ -16,7 +16,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CompatStargateTech2 implements IBlockTransformer {
@@ -78,16 +78,16 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	}
 	
 	private static NBTTagCompound rotateVector(ITransformation transformation, NBTTagCompound tag) {
-		ChunkCoordinates target = transformation.apply(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
-		tag.setInteger("x", target.posX);
-		tag.setInteger("y", target.posY);
-		tag.setInteger("z", target.posZ);
+		BlockPos target = transformation.apply(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
+		tag.setInteger("x", target.getX());
+		tag.setInteger("y", target.getY());
+		tag.setInteger("z", target.getZ());
 		return tag;
 	}
 	
 	private static NBTTagCompound rotateFacingColors(final Byte rotationSteps, final NBTTagCompound tag) {
 		NBTTagCompound newFacing = new NBTTagCompound();
-		Set<String> keys = tag.func_150296_c();
+		Set<String> keys = tag.getKeySet();
 		for (String key : keys) {
 			NBTBase base = tag.getTag(key);
 			if (base instanceof NBTTagByte && rotFacingcolors.containsKey(key)) {

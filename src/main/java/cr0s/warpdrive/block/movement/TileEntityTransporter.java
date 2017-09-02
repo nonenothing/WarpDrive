@@ -16,16 +16,21 @@ import li.cil.oc.api.machine.Context;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
-import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityTransporter extends TileEntityAbstractEnergy {
+	
 	private double scanRange = 2;
 
 	private int scanDist = 4;
@@ -65,8 +70,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 
 		if (isLocked) {
 			if (lockStrengthMul > 0.8) {
@@ -78,11 +83,12 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-				+ "\n" + StatCollector.translateToLocalFormatted("warpdrive.transporter.status",
-						sourceVec.x, sourceVec.y, sourceVec.z,
-						destVec.x, destVec.y, destVec.z);
+			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
+			.appendSibling(new TextComponentString("\n")).appendSibling(new TextComponentTranslation("warpdrive.transporter.status",
+				sourceVec.x, sourceVec.y, sourceVec.z,
+				destVec.x, destVec.y, destVec.z));
 	}
 	
 	
@@ -220,9 +226,9 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 					vec.y = centreOnMe.y;
 					vec.z = centreOnMe.z;
 				} else {
-					vec.x = xCoord + centreOnMe.x;
-					vec.y = yCoord + centreOnMe.y;
-					vec.z = zCoord + centreOnMe.z;
+					vec.x = pos.getX() + centreOnMe.x;
+					vec.y = pos.getY() + centreOnMe.y;
+					vec.z = pos.getZ() + centreOnMe.z;
 				}
 			}
 		} catch (NumberFormatException e) {
@@ -326,13 +332,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 		if (ent instanceof EntityLivingBase) {
 			EntityLivingBase livingEnt = (EntityLivingBase) ent;
 			if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
-				livingEnt.setPositionAndUpdate(xCoord + dest.x, yCoord + dest.y, zCoord + dest.z);
+				livingEnt.setPositionAndUpdate(pos.getX() + dest.x, pos.getY() + dest.y, pos.getZ() + dest.z);
 			} else {
 				livingEnt.setPositionAndUpdate(dest.x, dest.y, dest.z);
 			}
 		} else {
 			if (WarpDriveConfig.TRANSPORTER_USE_RELATIVE_COORDS) {
-				ent.setPosition(xCoord + dest.x, yCoord + dest.y, zCoord + dest.z);
+				ent.setPosition(pos.getX() + dest.x, pos.getY() + dest.y, pos.getZ() + dest.z);
 			} else {
 				ent.setPosition(dest.x, dest.y, dest.z);
 			}
@@ -378,12 +384,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 				}
 
 				for (int z = zL; z <= zU; z++) {
-					if (!worldObj.getBlock(x, y, z).isAssociatedBlock(WarpDrive.blockTransportBeacon)) {
+					IBlockState blockState = worldObj.getBlockState(new BlockPos(x, y, z));
+					if (!blockState.getBlock().isAssociatedBlock(WarpDrive.blockTransportBeacon)) {
 						continue;
 					}
 					double dist = 1 + Math.abs(x - xV) + Math.abs(y - yV) + Math.abs(z - zV);
 					beaconCount++;
-					if (worldObj.getBlockMetadata(x, y, z) == 0) {
+					if (blockState.getBlock().getMetaFromState(blockState) == 0) {
 						beacon += 1 / dist;
 					} else {
 						beacon -= 1 / dist;
@@ -474,7 +481,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 			tS = sourceVec.clone().translate(scanPos);
 			bS = sourceVec.clone().translate(scanNeg);
 		}
-		return AxisAlignedBB.getBoundingBox(bS.x, bS.y, bS.z, tS.x, tS.y, tS.z);
+		return new AxisAlignedBB(bS.x, bS.y, bS.z, tS.x, tS.y, tS.z);
 	}
 
 	private ArrayList<Entity> findEntities(Vector3 source, double lockStrength) {
@@ -509,17 +516,18 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 	}
 
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
-		if (from == ForgeDirection.UP) {
+	public boolean energy_canInput(EnumFacing from) {
+		if (from == EnumFacing.UP) {
 			return false;
 		}
 		return true;
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setDouble("powerBoost", powerBoost);
+		return tag;
 	}
 
 	@Override

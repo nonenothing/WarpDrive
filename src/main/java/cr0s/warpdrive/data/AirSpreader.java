@@ -6,10 +6,10 @@ import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.common.util.ForgeDirection;
 
 public class AirSpreader {
 	
@@ -36,7 +36,7 @@ public class AirSpreader {
 		}
 		
 		// identify leaking directions
-		ForgeDirection[] directions = ForgeDirection.VALID_DIRECTIONS;
+		EnumFacing[] directions = EnumFacing.VALUES;
 		if (stateCenter.isLeakingHorizontally()) {
 			directions = Commons.HORIZONTAL_DIRECTIONS;
 		} else if (stateCenter.isLeakingVertically()) {
@@ -46,9 +46,9 @@ public class AirSpreader {
 		// collect air state in adjacent blocks
 		// - biggest generator/void pressure around (excluding center block)
 		int max_pressureGenerator = 0;
-		ForgeDirection max_directionGenerator = null;
+		EnumFacing max_directionGenerator = null;
 		int max_pressureVoid = 0;
-		ForgeDirection max_directionVoid = null;
+		EnumFacing max_directionVoid = null;
 		// - accumulated air concentration including center block
 		final int concentration = stateCenter.concentration;
 		int sum_concentration = concentration;
@@ -58,12 +58,12 @@ public class AirSpreader {
 		int air_count = 1;
 		int empty_count = 0;
 		
-		for (ForgeDirection forgeDirection : directions) {
+		for (EnumFacing forgeDirection : directions) {
 			final StateAir stateAir = stateAround[forgeDirection.ordinal()];
 			stateAir.refresh(world,
-			                 x + forgeDirection.offsetX,
-			                 y + forgeDirection.offsetY,
-			                 z + forgeDirection.offsetZ);
+			                 x + forgeDirection.getFrontOffsetX(),
+			                 y + forgeDirection.getFrontOffsetY(),
+			                 z + forgeDirection.getFrontOffsetZ());
 			if (stateAir.isAir(forgeDirection)) {
 				air_count++;
 				if (stateAir.concentration > 0) {// (note1)
@@ -76,7 +76,7 @@ public class AirSpreader {
 				// keep highest generator pressure that's going towards us
 				if (max_pressureGenerator < stateAir.pressureGenerator) {
 					if ( stateAir.isAirSource()
-					  || stateAir.directionGenerator != ForgeDirection.UNKNOWN ) {
+					  || stateAir.directionGenerator != null ) {
 						max_pressureGenerator = stateAir.pressureGenerator;
 						max_directionGenerator = forgeDirection;
 					}
@@ -84,7 +84,7 @@ public class AirSpreader {
 				// keep highest void pressure that's going towards us
 				if (max_pressureVoid < stateAir.pressureVoid) {
 					if ( stateAir.isVoidSource()
-					  || stateAir.directionVoid != ForgeDirection.UNKNOWN ) {
+					  || stateAir.directionVoid != null ) {
 						max_pressureVoid = stateAir.pressureVoid;
 						max_directionVoid = forgeDirection;
 					}
@@ -102,12 +102,12 @@ public class AirSpreader {
 				stateCenter.removeGeneratorAndCascade(world);
 				
 				// invalidate cache
-				for (ForgeDirection forgeDirection : directions) {
-					final StateAir stateAir = stateAround[forgeDirection.ordinal()];
+				for (final EnumFacing direction : directions) {
+					final StateAir stateAir = stateAround[direction.ordinal()];
 					stateAir.refresh(world,
-					                 x + forgeDirection.offsetX,
-					                 y + forgeDirection.offsetY,
-					                 z + forgeDirection.offsetZ);
+					                 x + direction.getFrontOffsetX(),
+					                 y + direction.getFrontOffsetY(),
+					                 z + direction.getFrontOffsetZ());
 				}
 			}
 		}
@@ -121,12 +121,12 @@ public class AirSpreader {
 				stateCenter.removeVoidAndCascade(world);
 				
 				// invalidate cache
-				for (ForgeDirection forgeDirection : directions) {
-					final StateAir stateAir = stateAround[forgeDirection.ordinal()];
+				for (final EnumFacing direction : directions) {
+					final StateAir stateAir = stateAround[direction.ordinal()];
 					stateAir.refresh(world,
-					                 x + forgeDirection.offsetX,
-					                 y + forgeDirection.offsetY,
-					                 z + forgeDirection.offsetZ);
+					                 x + direction.getFrontOffsetX(),
+					                 y + direction.getFrontOffsetY(),
+					                 z + direction.getFrontOffsetZ());
 				}
 			}
 		}
@@ -206,7 +206,7 @@ public class AirSpreader {
 			assert (mid_concentration <= StateAir.CONCENTRATION_MAX);
 			if (WarpDriveConfig.LOGGING_BREATHING) {
 				StringBuilder debugConcentrations = new StringBuilder();
-				for (ForgeDirection forgeDirection : directions) {
+				for (EnumFacing forgeDirection : directions) {
 					debugConcentrations.append(String.format(" %3d", stateAround[forgeDirection.ordinal()].concentration));
 				}
 				WarpDrive.logger.info(String.format("Updating air 0x%8x @ %6d %3d %6d %s from %3d near %s total %3d, empty %d/%d -> %3d + %d * %3d",
@@ -222,9 +222,10 @@ public class AirSpreader {
 		}
 		
 		// protect air generator
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos();
 		if (concentration != new_concentration) {
 			if (!stateCenter.isAirSource()) {
-				if ( stateCenter.directionGenerator != ForgeDirection.UNKNOWN
+				if ( stateCenter.directionGenerator != null
 				  || concentration > new_concentration ) {
 					stateCenter.setConcentration(world, (byte) new_concentration);
 				} else if (WarpDriveConfig.LOGGING_BREATHING) {
@@ -233,27 +234,27 @@ public class AirSpreader {
 				}
 			} else {
 				boolean hasGenerator = false;
-				final int metadataSource = world.getBlockMetadata(x, y, z);
-				final ForgeDirection facingSource = ForgeDirection.getOrientation(metadataSource & 7);
-				final Block block = world.getBlock(x - facingSource.offsetX, 
-				                                   y - facingSource.offsetY, 
-				                                   z - facingSource.offsetZ);
-				if (block instanceof BlockAirGeneratorTiered) {
-					final int metadataGenerator = world.getBlockMetadata(x - facingSource.offsetX, 
-					                                                     y - facingSource.offsetY, 
-					                                                     z - facingSource.offsetZ);
-					final ForgeDirection facingGenerator = ForgeDirection.getOrientation(metadataGenerator & 7);
-					if (facingGenerator == facingSource) {
-						// all good
-						hasGenerator = true;
+				final IBlockState blockStateSource = stateCenter.getBlockState(world);
+				if (stateCenter.isAirSource()) {
+					final EnumFacing facingSource = blockStateSource.getValue(BlockProperties.FACING);
+					final IBlockState blockStateGenerator = world.getBlockState(mutableBlockPos.setPos(
+							x - facingSource.getFrontOffsetX(),
+							y - facingSource.getFrontOffsetY(),
+							z - facingSource.getFrontOffsetZ()));
+					if (blockStateGenerator.getBlock() instanceof BlockAirGeneratorTiered) {
+						final EnumFacing facingGenerator = blockStateGenerator.getValue(BlockProperties.FACING);
+						if (facingGenerator == facingSource) {
+							// all good
+							hasGenerator = true;
+						}
 					}
-				}
-				if (!hasGenerator) {
-					if (WarpDriveConfig.LOGGING_BREATHING) {
-						WarpDrive.logger.info(String.format("AirGenerator not found, removing AirSource block at (%d %d %d) -> expecting BlockAirGeneratorTiered, found %s",
-						                                    x, y, z, block));
+					if (!hasGenerator) {
+						if (WarpDriveConfig.LOGGING_BREATHING) {
+							WarpDrive.logger.info(String.format("AirGenerator not found, removing AirSource block at (%d %d %d) -> expecting BlockAirGeneratorTiered, found %s",
+							                                    x, y, z, blockStateGenerator.getBlock()));
+						}
+						stateCenter.removeAirSource(world);
 					}
-					stateCenter.removeAirSource(world);
 				}
 			}
 		} else if (stateCenter.isAirFlow() && new_concentration == 0) {// invalid state detected => report and clear
@@ -263,7 +264,7 @@ public class AirSpreader {
 		
 		// Check and update air to adjacent blocks
 		// (do not overwrite source block, do not decrease neighbors if we're growing)
-		for (ForgeDirection forgeDirection : directions) {
+		for (EnumFacing forgeDirection : directions) {
 			StateAir stateAir = stateAround[forgeDirection.ordinal()];
 			if ( stateAir.isAirFlow()
 			  || (stateAir.isAir(forgeDirection) && !stateAir.isAirSource()) ) {

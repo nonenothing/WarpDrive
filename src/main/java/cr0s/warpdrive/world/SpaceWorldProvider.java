@@ -9,26 +9,28 @@ import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.render.RenderBlank;
 import cr0s.warpdrive.render.RenderSpaceSky;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.WorldChunkManagerHell;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SpaceWorldProvider extends WorldProvider {
 	
 	private CelestialObject celestialObjectDimension = null;
 	
 	public SpaceWorldProvider() {
-		worldChunkMgr = new WorldChunkManagerHell(WarpDrive.spaceBiome, 0.0F);
+		biomeProvider = new BiomeProviderSingle(WarpDrive.spaceBiome);
 		hasNoSky = false;
 	}
 	
@@ -38,14 +40,16 @@ public class SpaceWorldProvider extends WorldProvider {
 		celestialObjectDimension = CelestialObjectManager.get(WarpDrive.proxy instanceof ClientProxy, dimensionId, 0, 0);
 	}
 	
+	@Nonnull 
 	@Override
-	public String getSaveFolder() {
-		return celestialObjectDimension == null ? "WarpDriveSpace" + dimensionId : celestialObjectDimension.id;
+	public DimensionType getDimensionType() {
+		return WarpDrive.dimensionTypeSpace;
 	}
 	
+	@Nonnull
 	@Override
-	public String getDimensionName() {
-		return celestialObjectDimension == null ? "Space" + dimensionId : celestialObjectDimension.id;
+	public String getSaveFolder() {
+		return celestialObjectDimension == null ? "WarpDriveSpace" + getDimension() : celestialObjectDimension.id;
 	}
 	
 	@Override
@@ -73,8 +77,9 @@ public class SpaceWorldProvider extends WorldProvider {
 		super.resetRainAndThunder();
 	}
 	
+	@Nonnull
 	@Override
-	public BiomeGenBase getBiomeGenForCoords(int x, int z) {
+	public Biome getBiomeForCoords(@Nonnull BlockPos blockPos) {
 		return WarpDrive.spaceBiome;
 	}
 	
@@ -100,8 +105,8 @@ public class SpaceWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean canCoordinateBeSpawn(int x, int z) {
-		int y = worldObj.getTopSolidOrLiquidBlock(x, z);
-		return y != 0;
+		final BlockPos blockPos = worldObj.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z));
+		return blockPos.getY() != 0;
 	}
 	
 	// shared for getFogColor(), getStarBrightness()
@@ -109,8 +114,9 @@ public class SpaceWorldProvider extends WorldProvider {
 	private static CelestialObject celestialObject = null;
 	
 	@SideOnly(Side.CLIENT)
+	@Nonnull
 	@Override
-	public Vec3 getSkyColor(Entity cameraEntity, float partialTicks) {
+	public Vec3d getSkyColor(@Nonnull Entity cameraEntity, float partialTicks) {
 		if (getCloudRenderer() == null) {
 			setCloudRenderer(RenderBlank.getInstance());
 		}
@@ -122,15 +128,16 @@ public class SpaceWorldProvider extends WorldProvider {
 				cameraEntity.worldObj,
 				MathHelper.floor_double(cameraEntity.posX), MathHelper.floor_double(cameraEntity.posZ));
 		if (celestialObject == null) {
-			return Vec3.createVectorHelper(0.0D, 0.0D, 0.0D);
+			return new Vec3d(0.0D, 0.0D, 0.0D);
 		} else {
-			return Vec3.createVectorHelper(celestialObject.backgroundColor.red, celestialObject.backgroundColor.green, celestialObject.backgroundColor.blue);
+			return new Vec3d(celestialObject.backgroundColor.red, celestialObject.backgroundColor.green, celestialObject.backgroundColor.blue);
 		}
 	}
 	
+	@Nonnull
 	@SideOnly(Side.CLIENT)
 	@Override
-	public Vec3 getFogColor(float celestialAngle, float par2) {
+	public Vec3d getFogColor(float celestialAngle, float par2) {
 		final float factor = Commons.clamp(0.0F, 1.0F, MathHelper.cos(celestialAngle * (float) Math.PI * 2.0F) * 2.0F + 0.5F);
 		
 		float red   = celestialObject == null ? 0.0F : celestialObject.colorFog.red;
@@ -142,7 +149,7 @@ public class SpaceWorldProvider extends WorldProvider {
 		red   *= factor * factorRed   + (1.0F - factorRed  );
 		green *= factor * factorGreen + (1.0F - factorGreen);
 		blue  *= factor * factorBlue  + (1.0F - factorBlue );
-		return Vec3.createVectorHelper(red, green, blue);
+		return new Vec3d(red, green, blue);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -160,12 +167,7 @@ public class SpaceWorldProvider extends WorldProvider {
 	public boolean isSkyColored() {
 		return false;
 	}
-	
-	@Override
-	public ChunkCoordinates getEntrancePortalLocation() {
-		return null;
-	}
-	
+		
 	@Override
 	public int getRespawnDimension(EntityPlayerMP player) {
 		if (player == null || player.worldObj == null) {
@@ -175,20 +177,21 @@ public class SpaceWorldProvider extends WorldProvider {
 		return StarMapRegistry.getSpaceDimensionId(player.worldObj, (int) player.posX, (int) player.posZ);
 	}
 	
+	@Nonnull
 	@Override
-	public IChunkProvider createChunkGenerator() {
+	public IChunkGenerator createChunkGenerator() {
 		return new SpaceChunkProvider(worldObj, 45);
 	}
 	
 	@Override
-	public boolean canBlockFreeze(int x, int y, int z, boolean byWater) {
+	public boolean canBlockFreeze(@Nonnull BlockPos blockPos, boolean byWater) {
 		return false;
 	}
 	
 	/*
 	@Override
-	public ChunkCoordinates getRandomizedSpawnPoint() {
-		ChunkCoordinates var5 = new ChunkCoordinates(worldObj.getSpawnPoint());
+	public BlockPos getRandomizedSpawnPoint() {
+		BlockPos var5 = new BlockPos(worldObj.getSpawnPoint());
 		
 		//boolean isAdventure = worldObj.getWorldInfo().getGameType() == EnumGameType.ADVENTURE;
 		int spawnFuzz = 1000;
@@ -220,11 +223,6 @@ public class SpaceWorldProvider extends WorldProvider {
 		return var5;
 	}
 	/**/
-	
-	@Override
-	public boolean getWorldHasVoidParticles() {
-		return false;
-	}
 	
 	@Override
 	public boolean isDaytime() {

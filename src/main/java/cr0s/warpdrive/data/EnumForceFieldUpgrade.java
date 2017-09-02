@@ -24,9 +24,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgradeEffector {
+public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpgrade, IForceFieldUpgradeEffector {
 	//            Upgrade         - Compatibility -  ----- Value -----  -- Scan speed --  -- Place speed --  --------- Energy costs ---------  comment
 	//            name            projector   relay    incr.       cap  minimum  maximum   minimum  maximum  startup   scan    place    entity  
 	NONE         ("none"         ,        0,      0,    0.0F,     0.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.000F,  0.000F,    0.0F, "n/a"),
@@ -50,7 +52,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	TRANSLATION  ("translation"  ,        1,      0,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,  100.0F, 0.000F,  0.000F,    0.0F, "value is boolean"),
 	;
 	
-	public final String unlocalizedName;
+	private final String name;
 	public final int maxCountOnProjector;
 	public final int maxCountOnRelay;
 	private final float upgradeValue;
@@ -75,12 +77,12 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 		}
 	}
 	
-	EnumForceFieldUpgrade(final String unlocalizedName, final int allowOnProjector, final int maxCountOnRelay,
+	EnumForceFieldUpgrade(final String name, final int allowOnProjector, final int maxCountOnRelay,
 	                      final float upgradeValue, final float upgradeValueMax,
 	                      final float scanSpeedMinimum, final float scanSpeedMaximum, final float placeSpeedMinimum, final float placeSpeedMaximum,
 	                      final float startupEnergyCost, final float scanEnergyCost, final float placeEnergyCost, final float entityEffectEnergyCost,
 	                      final String comment) {
-		this.unlocalizedName = unlocalizedName;
+		this.name = name;
 		this.maxCountOnProjector = allowOnProjector;
 		this.maxCountOnRelay = maxCountOnRelay;
 		
@@ -99,9 +101,10 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 		assert(!comment.isEmpty());
 	}
 	
+	@Nonnull
 	@Override
-	public String toString() {
-		return name();
+	public String getName() {
+		return name;
 	}
 	
 	@Nonnull
@@ -156,14 +159,14 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	
 	@Override
 	public int onEntityEffect(final float scaledValue, World world, final int projectorX, final int projectorY, final int projectorZ,
-	                          final int blockX, final int blockY, final int blockZ, Entity entity) {
+							  final BlockPos blockPos, Entity entity) {
 		if (scaledValue == 0.0F) {
 			return 0;
 		}
 		
 		// common particle effects properties
 		Vector3 v3Projector = new Vector3(projectorX + 0.5D, projectorY + 0.5D, projectorZ + 0.5D);
-		double distanceCollision = v3Projector.distanceTo_square(new Vector3(blockX + 0.5D, blockY + 0.5D, blockZ + 0.5D));
+		double distanceCollision = v3Projector.distanceTo_square(new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D));
 		double distanceEntity = v3Projector.distanceTo_square(entity);
 		Vector3 v3Entity = new Vector3(entity);
 		Vector3 v3Direction = new Vector3(entity).subtract(v3Projector).normalize();
@@ -216,7 +219,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			// pass through forcefield
 			if (distanceCollision <= distanceEntity) {
 				if (entity instanceof EntityLivingBase) {
-					((EntityLivingBase)entity).setPositionAndUpdate(
+					entity.setPositionAndUpdate(
 						entity.posX - v3Direction.x * 2.0D,
 						entity.posY - v3Direction.y * 2.0D,
 						entity.posZ - v3Direction.z * 2.0D);
@@ -228,7 +231,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 				}
 				v3Entity.translateFactor(v3Direction, 2.0D);
 			} else if (entity instanceof EntityPlayer) {
-				((EntityLivingBase)entity).setPositionAndUpdate(
+				entity.setPositionAndUpdate(
 					entity.posX - v3Direction.x * 0.4D,
 					entity.posY - v3Direction.y * 0.4D,
 					entity.posZ - v3Direction.z * 0.4D);
@@ -249,7 +252,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 			// pass through forcefield
 			if (distanceCollision >= distanceEntity) {
 				if (entity instanceof EntityLivingBase) {
-					((EntityLivingBase)entity).setPositionAndUpdate(
+					entity.setPositionAndUpdate(
 						entity.posX + v3Direction.x * 2.0D,
 						entity.posY + v3Direction.y * 2.0D,
 						entity.posZ + v3Direction.z * 2.0D);
@@ -261,7 +264,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 				}
 				v3Entity.translateFactor(v3Direction, 2.0D);
 			} else if (entity instanceof EntityPlayer) {
-				((EntityLivingBase)entity).setPositionAndUpdate(
+				entity.setPositionAndUpdate(
 					entity.posX + v3Direction.x * 0.4D,
 					entity.posY + v3Direction.y * 0.4D,
 					entity.posZ + v3Direction.z * 0.4D);

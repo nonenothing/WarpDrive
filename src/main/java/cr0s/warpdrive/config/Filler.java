@@ -3,6 +3,7 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IXmlRepresentableUnit;
 import cr0s.warpdrive.data.JumpBlock;
+import net.minecraft.util.math.BlockPos;
 import org.w3c.dom.Element;
 
 import net.minecraft.block.Block;
@@ -22,7 +23,7 @@ public class Filler implements IXmlRepresentableUnit {
 	static {
 		DEFAULT = new Filler();
 		DEFAULT.name           = "-default-";
-		DEFAULT.block          = Blocks.air;
+		DEFAULT.block          = Blocks.AIR;
 		DEFAULT.metadata       = 0;
 		DEFAULT.nbtTagCompound = null;
 	}
@@ -71,7 +72,7 @@ public class Filler implements IXmlRepresentableUnit {
 		String stringNBT = element.getAttribute("nbt");
 		if (!stringNBT.isEmpty()) {
 			try {
-				nbtTagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
+				nbtTagCompound = JsonToNBT.getTagFromJson(stringNBT);
 			} catch (NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for block " + nameBlock);
 			}
@@ -81,21 +82,22 @@ public class Filler implements IXmlRepresentableUnit {
 		
 		return true;
 	}
-
-	public void setBlock(World world, int x, int y, int z) {
-		JumpBlock.setBlockNoLight(world, x, y, z, block, metadata, 2);
+	
+	public void setBlock(World world, final BlockPos blockPos) {
+		JumpBlock.setBlockNoLight(world, blockPos, block.getStateFromMeta(metadata), 2);
 		
 		if (nbtTagCompound != null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity == null) {
-				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)", getName(), x, y, z);
+				WarpDrive.logger.error(String.format("No TileEntity found for Filler %s at (%d %d %d)",
+				                                     getName(), blockPos.getX(), blockPos.getY(), blockPos.getZ() ));
 				return;
 			}
 			
 			NBTTagCompound nbtTagCompoundTileEntity = new NBTTagCompound();
 			tileEntity.writeToNBT(nbtTagCompoundTileEntity);
 			
-			for (Object key : nbtTagCompound.func_150296_c()) {
+			for (Object key : nbtTagCompound.getKeySet()) {
 				if (key instanceof String) {
 					nbtTagCompoundTileEntity.setTag((String) key, nbtTagCompound.getTag((String) key));
 				}
@@ -106,7 +108,7 @@ public class Filler implements IXmlRepresentableUnit {
 			tileEntity.validate();
 			tileEntity.markDirty();
 			
-			JumpBlock.refreshBlockStateOnClient(world, x, y, z);
+			JumpBlock.refreshBlockStateOnClient(world, blockPos);
 		}
 	}
 	

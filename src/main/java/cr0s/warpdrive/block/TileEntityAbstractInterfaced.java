@@ -28,8 +28,8 @@ import java.util.Map;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Optional;
 
 // OpenComputer API: https://github.com/MightyPirates/OpenComputers/tree/master-MC1.7.10/src/main/java/li/cil/oc/api
 
@@ -102,10 +102,9 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		return (url != null);
 	}
 	
-	// TileEntity overrides, notably for OpenComputer
 	@Override
- 	public void updateEntity() {
-		super.updateEntity();
+ 	public void update() {
+		super.update();
 		
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (!OC_addedToNetwork && OC_enable) {
@@ -173,8 +172,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (OC_node != null && OC_node.host() == this) {
 				final NBTTagCompound nbtNode = new NBTTagCompound();
@@ -187,6 +186,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				tag.setTag("oc:fs", nbtFileSystem);
 			}
 		}
+		return tag;
 	}
 	
 	@Override
@@ -199,7 +199,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	public int hashCode() {
-		return (((((super.hashCode() + (worldObj == null ? 0 : worldObj.provider.dimensionId) << 4) + xCoord) << 4) + yCoord) << 4) + zCoord;
+		return (((((super.hashCode() + (worldObj == null ? 0 : worldObj.provider.getDimension()) << 4) + pos.getX()) << 4) + pos.getY()) << 4) + pos.getZ();
 	}
 	
 	// Dirty cheap conversion methods
@@ -227,7 +227,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	// Return block coordinates
 	@Override
 	public Object[] position() {
-		return new Object[] { xCoord, yCoord, zCoord, "?", xCoord, yCoord, zCoord };
+		return new Object[] { pos.getX(), pos.getY(), pos.getZ(), "?", pos.getX(), pos.getY(), pos.getZ() };
 	}
 	
 	// Return version

@@ -179,8 +179,7 @@ public class CompatBuildCraft implements IBlockTransformer {
 			
 		case "net.minecraft.src.buildcraft.transport.GenericPipe" :
 			final NBTTagCompound tagsNew = new NBTTagCompound();
-			@SuppressWarnings("unchecked")
-			final Object[] objectKeys = ((Set<Object>) nbtTileEntity.func_150296_c()).toArray();
+			final Object[] objectKeys = nbtTileEntity.getKeySet().toArray();
 			for (final Object objectKey : objectKeys) {
 				if (!(objectKey instanceof String)) {
 					continue;
@@ -213,7 +212,7 @@ public class CompatBuildCraft implements IBlockTransformer {
 				}
 			}
 			@SuppressWarnings("unchecked")
-			final Set<String> keysNew = tagsNew.func_150296_c();
+			final Set<String> keysNew = tagsNew.getKeySet();
 			for (final String keyNew : keysNew) {
 				nbtTileEntity.setTag(keyNew, tagsNew.getTag(keyNew));
 			}

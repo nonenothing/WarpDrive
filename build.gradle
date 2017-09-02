@@ -1,21 +1,18 @@
+
+
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
-
-apply plugin: 'forge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 // define the properties file
 ext.configFile = file "build.properties"
@@ -38,10 +35,45 @@ minecraft {
     version = config.minecraft_version + "-" + config.forge_version
     runDir = "run"
     
+    // the mappings can be changed at any time, and must be in the following format.
+    // snapshot_YYYYMMDD   snapshot are built nightly.
+    // stable_#            stables are built at the discretion of the MCP team.
+    // Use non-default mappings at your own risk. they may not allways work.
+    // simply re-run your setup task after changing the mappings to update your workspace.
+    mappings = "snapshot_20160717"
+    // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+
     // replacing
     replace "@version@", project.version
     replaceIn "WarpDrive.java"
     replaceIn "MyDummyModContainer.java"
+}
+
+repositories {
+    maven { // JEI & Tinkers
+        name 'DVS1 Maven FS'
+        url 'http://dvs1.progwml6.com/files/maven'
+    }
+    maven { // WAILA
+        name "ProfMobius Maven FS"
+        url "http://mobiusstrip.eu/maven"
+    }
+    maven { // OpenComputers
+        name "OpenComputers"
+        url "http://maven.cil.li/"
+    }
+    maven { // TOP
+        name 'tterrag maven'
+        url "http://maven.tterrag.com/"
+    }
+    maven { // CraftTweaker (aka MineTweaker3), Immersive Engineering
+        name 'jared maven'
+        url "http://blamejared.com/maven"
+    }
+    maven { // MCMultiPart
+        name 'amadornes maven'
+        url "http://maven.amadornes.com/"
+    }
 }
 
 dependencies {
@@ -57,6 +89,16 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    compileOnly "blusunrize:ImmersiveEngineering:0.10-+:deobf"
+//  compileOnly "mezz.jei:jei_1.10.2:3.13.+"
+//  compileOnly "mcp.mobius.waila:Waila:1.7.0-B3_1.9.4"
+//  compileOnly "slimeknights.mantle:Mantle:1.10.2-1.+"
+//  compileOnly "slimeknights:TConstruct:1.10.2-2.5.6.+"
+    deobfCompile "li.cil.oc:OpenComputers:MC1.10.2-1.6.0.+"
+//  compileOnly "mcjty.theoneprobe:TheOneProbe:1.10-1.0.13-26"
+//  compileOnly "MineTweaker3:MineTweaker3-API:3.0.14.59"
+    compileOnly "MCMultiPart:MCMultiPart:1.3.0+:universal"
 }
 
 processResources {
@@ -104,9 +146,9 @@ jar {
     dependsOn copyOpenComputersCommons1, copyOpenComputersCommons2, copyOpenComputersCommons3, copyOpenComputersCommons4
     
     manifest {
-        attributes 'FMLAT': 'WarpDrive_at.cfg'
-        attributes 'FMLCorePlugin': 'cr0s.warpdrive.core.FMLLoadingPlugin',
-                        'FMLCorePluginContainsFMLMod': 'true'
+        attributes FMLAT: "warpdrive_at.cfg"
+        attributes FMLCorePlugin: "cr0s.warpdrive.core.FMLLoadingPlugin"
+        attributes FMLCorePluginContainsFMLMod: "true"
     }
     classifier = ''
     destinationDir = file 'output'

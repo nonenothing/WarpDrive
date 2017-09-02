@@ -1,44 +1,30 @@
 package cr0s.warpdrive.block.atomic;
 
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import javax.annotation.Nonnull;
 
 public class BlockElectromagnetGlass extends BlockElectromagnetPlain {
 	
-	public BlockElectromagnetGlass(final byte tier) {
-		super(tier);
-		setBlockName("warpdrive.atomic.electromagnet" + tier + ".glass");
-		setBlockTextureName("warpdrive:atomic/electromagnet");
+	
+	public BlockElectromagnetGlass(final String registryName, final byte tier) {
+		super(registryName, tier);
+		setUnlocalizedName("warpdrive.atomic.electromagnet" + tier + ".glass");
 	}
 	
+	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconSide = iconRegister.registerIcon("warpdrive:atomic/electromagnet" + tier + "_glass-side");
-		iconTop = iconRegister.registerIcon("warpdrive:atomic/electromagnet" + tier + "_glass-top");
-	}
-	
-	@Override
-	public boolean isOpaqueCube() {
-		return false;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
-		return 1;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		final Block blockSide = blockAccess.getBlock(x, y, z);
-		if (blockSide.isAir(blockAccess, x, y, z)) {
+	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+		final IBlockState blockStateSide = blockAccess.getBlockState(blockPos);
+		if (blockStateSide.getBlock().isAir(blockStateSide, blockAccess, blockPos)) {
 			return true;
 		}
-		return !(blockSide instanceof BlockElectromagnetGlass);
+		return !(blockStateSide.getBlock() instanceof BlockElectromagnetGlass);
 	}
 }

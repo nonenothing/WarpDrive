@@ -24,11 +24,13 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
-import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.Constants.NBT;
+import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityShipController extends TileEntityAbstractInterfaced implements IShipController {
 	
@@ -83,8 +85,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
     
     @Override
-    public void updateEntity() {
-		super.updateEntity();
+    public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -109,7 +111,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				}
 				
 				if (command.getCode() != getBlockMetadata()) {
-					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, command.getCode(), 1 + 2);  // Activated
+					updateMetadata(command.getCode());  // Activated
 				}
 				if ( isPendingScan
 				  && tileEntityShipCore.isAttached(this) ) {
@@ -117,7 +119,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 					final StringBuilder reason = new StringBuilder();
 					try {
 						if (!tileEntityShipCore.validateShipSpatialParameters(this, reason)) {
-							tileEntityShipCore.messageToAllPlayersOnShip(reason.toString());
+							tileEntityShipCore.messageToAllPlayersOnShip(new TextComponentString(reason.toString()));
 						}
 					} catch (Exception exception) {
 						exception.printStackTrace();
@@ -125,7 +127,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 					}
 				}
 			} else if (getBlockMetadata() != 0) {
-				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 1 + 2);  // Inactive
+				updateMetadata(0);  // Inactive
 			}
 		}
 	}
@@ -168,7 +170,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public void writeToNBT(final NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		
 		final NBTTagList tagListPlayers = new NBTTagList();
@@ -191,6 +193,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		tagCompound.setInteger("moveRight", moveRight);
 		tagCompound.setByte("rotationSteps", rotationSteps);
 		tagCompound.setString("nameTarget", nameTarget);
+		return tagCompound;
 	}
 	
 	@Override
@@ -216,31 +219,31 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
-						getAttachedPlayersList());
+			.appendSibling(new TextComponentTranslation("warpdrive.ship.attachedPlayers",
+				getAttachedPlayersList()));
 	}
 	
 	private TileEntityShipCore findCoreBlock() {
 		TileEntity tileEntity;
 		
-		tileEntity = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
+		tileEntity = worldObj.getTileEntity(pos.add(1, 0, 0));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
+		tileEntity = worldObj.getTileEntity(pos.add(-1, 0, 0));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
+		tileEntity = worldObj.getTileEntity(pos.add(0, 0, 1));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
+		tileEntity = worldObj.getTileEntity(pos.add(0, 0, -1));
 		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
@@ -252,28 +255,28 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		sendEvent("shipCoreCooldownDone");
 	}
 	
-	protected String attachPlayer(final EntityPlayer entityPlayer) {
+	protected ITextComponent attachPlayer(final EntityPlayer entityPlayer) {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		for (int i = 0; i < players.size(); i++) {
 			final String name = players.get(i);
 			
-			if (entityPlayer.getDisplayName().equals(name)) {
+			if (entityPlayer.getName().equals(name)) {
 				players.remove(i);
-				return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-				                                               getBlockType().getLocalizedName())
-				       + StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
+				return new TextComponentTranslation("warpdrive.guide.prefix",
+				        getBlockType().getLocalizedName())
+						.appendSibling(new TextComponentTranslation("warpdrive.ship.playerDetached",
 				                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
-				                                                 getAttachedPlayersList());
+				                                                 getAttachedPlayersList()));
 			}
 		}
 		
 		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
-		players.add(entityPlayer.getDisplayName());
-		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-		                                               getBlockType().getLocalizedName())
-		       + StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
+		players.add(entityPlayer.getName());
+		return new TextComponentTranslation("warpdrive.guide.prefix",
+		        getBlockType().getLocalizedName())
+				.appendSibling(new TextComponentTranslation("warpdrive.ship.playerAttached",
 		                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
-		                                                 getAttachedPlayersList());
+		                                                 getAttachedPlayersList()));
 	}
 	
 	protected String getAttachedPlayersList() {
@@ -368,7 +371,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (!success) {
 			final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 			if (tileEntityShipCore != null) {
-				tileEntityShipCore.messageToAllPlayersOnShip(reason);
+				tileEntityShipCore.messageToAllPlayersOnShip(new TextComponentString(reason.toString()));
 			}
 		}
 	}
@@ -413,7 +416,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			return null;
 		}
 		
-		return new Object[] { tileEntityShipCore.xCoord, tileEntityShipCore.yCoord, tileEntityShipCore.zCoord, "?", tileEntityShipCore.xCoord, tileEntityShipCore.yCoord, tileEntityShipCore.zCoord };
+		return new Object[] { tileEntityShipCore.getPos().getX(), tileEntityShipCore.getPos().getY(), tileEntityShipCore.getPos().getZ(), "?", tileEntityShipCore.getPos().getX(), tileEntityShipCore.getPos().getY(), tileEntityShipCore.getPos().getZ() };
 	}
 	
 	@Override
@@ -429,19 +432,19 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	public Object[] getOrientation() {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		if (tileEntityShipCore != null) {
-			return new Object[] { tileEntityShipCore.facing.offsetX, 0, tileEntityShipCore.facing.offsetZ };
+			return new Object[] { tileEntityShipCore.facing.getFrontOffsetX(), 0, tileEntityShipCore.facing.getFrontOffsetZ() };
 		}
 		return null;
 	}
 	
 	@Override
 	public Object[] isInSpace() {
-		return new Boolean[] { CelestialObjectManager.isInSpace(worldObj, xCoord, zCoord) };
+		return new Boolean[] { CelestialObjectManager.isInSpace(worldObj, pos.getX(), pos.getZ()) };
 	}
 	
 	@Override
 	public Object[] isInHyperspace() {
-		return new Boolean[] { CelestialObjectManager.isInHyperspace(worldObj, xCoord, zCoord) };
+		return new Boolean[] { CelestialObjectManager.isInHyperspace(worldObj, pos.getX(), pos.getZ()) };
 	}
 	
 	@Override
@@ -477,7 +480,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				}
 				setFront(argInt0);
 				setRight(argInt1);
-				setUp(Math.min(255 - yCoord, argInt2));
+				setUp(Math.min(255 - pos.getY(), argInt2));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { getFront(), getRight(), getUp() };
@@ -499,7 +502,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				}
 				setBack(argInt0);
 				setLeft(argInt1);
-				setDown(Math.min(yCoord, argInt2));
+				setDown(Math.min(pos.getY(), argInt2));
 			}
 		} catch (Exception exception) {
 			return new Integer[] { getBack(), getLeft(), getDown() };
@@ -799,6 +802,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
 		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName, 
 		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-		                     xCoord, yCoord, zCoord);
+		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

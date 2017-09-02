@@ -8,9 +8,11 @@ import cr0s.warpdrive.data.JumpBlock;
 
 import java.util.ArrayList;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /*
@@ -98,8 +100,10 @@ public final class EntitySphereGen extends Entity {
 		for (int x = xCoord - radius; x <= xCoord + radius; x++) {
 			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
 				for (int y = minY_clamped; y <= maxY_clamped; y++) {
-					if (worldObj.getBlock(x, y, z) != Blocks.air) {
-						worldObj.markBlockForUpdate(x, y, z);
+					BlockPos blockPos = new BlockPos(x, y, z);
+					IBlockState blockState = worldObj.getBlockState(blockPos);
+					if (blockState.getBlock() != Blocks.AIR) {
+						worldObj.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 					}
 				}
 			}
@@ -146,17 +150,15 @@ public final class EntitySphereGen extends Entity {
 	private void tickPlaceBlocks() {
 		int blocksToMove = Math.min(BLOCKS_PER_TICK, blocks.size() - currentIndex);
 		LocalProfiler.start("[EntitySphereGen] Placing blocks from " + currentIndex + " to " + (currentIndex + blocksToMove) + "/" + blocks.size());
-		int notifyFlag;
 		
 		for (int index = 0; index < blocksToMove; index++) {
 			if (currentIndex >= blocks.size())
 				break;
-			notifyFlag = (currentIndex % 1024 == 0 ? 2 : 2);
 			final JumpBlock jumpBlock = blocks.get(currentIndex);
 			if (isSurfaces.get(currentIndex)) {
-				worldObj.setBlock(jumpBlock.x, jumpBlock.y, jumpBlock.z, jumpBlock.block, jumpBlock.blockMeta, notifyFlag);
+				worldObj.setBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
 			} else {
-				JumpBlock.setBlockNoLight(worldObj, jumpBlock.x, jumpBlock.y, jumpBlock.z, jumpBlock.block, jumpBlock.blockMeta, notifyFlag);
+				JumpBlock.setBlockNoLight(worldObj, new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
 			}
 			currentIndex++;
 		}
@@ -213,7 +215,7 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Replace water with random gas (ship in moon)
-		if (worldObj.getBlock(jumpBlock.x, jumpBlock.y, jumpBlock.z).isAssociatedBlock(Blocks.water)) {
+		if (worldObj.getBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z)).getBlock().isAssociatedBlock(Blocks.WATER)) {
 			if (worldObj.rand.nextInt(50) != 1) {
 				jumpBlock.block = WarpDrive.blockGas;
 				jumpBlock.blockMeta = gasColor;
@@ -223,7 +225,7 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Do not replace existing blocks if fillingSphere is true
-		if (!replace && !worldObj.isAirBlock(jumpBlock.x, jumpBlock.y, jumpBlock.z)) {
+		if (!replace && !worldObj.isAirBlock(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z))) {
 			return;
 		}
 		blocks.add(jumpBlock);
@@ -242,8 +244,8 @@ public final class EntitySphereGen extends Entity {
 	
 	// override to skip the block bounding override on client side
 	@Override
-	public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int p_70056_9_) {
-		//	super.setPositionAndRotation2(x, y, z, yaw, pitch, p_70056_9_);
+	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
 	}

@@ -1,9 +1,7 @@
 package cr0s.warpdrive.api;
 
-import cr0s.warpdrive.data.VectorI;
-
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public interface ICelestialObject {
 	

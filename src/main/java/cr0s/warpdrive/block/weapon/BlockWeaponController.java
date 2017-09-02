@@ -4,58 +4,37 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Random;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockWeaponController extends BlockAbstractContainer {
 	
-	@SideOnly(Side.CLIENT)
-	private IIcon[] iconBuffer;
-	
-	private static final int ICON_TOP = 0;
-	private static final int ICON_BOTTOM = 1;
-	private static final int ICON_SIDE = 2;
-	
-	public BlockWeaponController() {
-		super(Material.iron);
+	public BlockWeaponController(final String registryName) {
+		super(registryName, Material.IRON);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setBlockName("warpdrive.weapon.WeaponController");
+		setUnlocalizedName("warpdrive.weapon.WeaponController");
+		GameRegistry.registerTileEntity(TileEntityWeaponController.class, WarpDrive.PREFIX + registryName);
 	}
-	
-	@SideOnly(Side.CLIENT)
+
+	@Nonnull
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconBuffer = new IIcon[3];
-		iconBuffer[ICON_TOP] = iconRegister.registerIcon("warpdrive:movement/ship_controller-top");
-		iconBuffer[ICON_BOTTOM] = iconRegister.registerIcon("warpdrive:movement/ship_controller-bottom");
-		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:weapon/weapon_controller-side");
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (side == 0) {
-			return iconBuffer[ICON_BOTTOM];
-		} else if (side == 1) {
-			return iconBuffer[ICON_TOP];
-		}
-		return iconBuffer[ICON_SIDE];
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(World parWorld, int i) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityWeaponController();
 	}
 	
@@ -64,24 +43,19 @@ public class BlockWeaponController extends BlockAbstractContainer {
 		return 1;
 	}
 	
-	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
-		return Item.getItemFromBlock(this);
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (itemStackHeld == null) {
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityWeaponController) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
 			} else {
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-						getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
+						getLocalizedName())
+				    .appendSibling(new TextComponentTranslation("warpdrive.error.badTileEntity")));
 				WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 			}
 			return true;

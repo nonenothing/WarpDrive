@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CompatIndustrialCraft2 implements IBlockTransformer {
@@ -57,10 +57,10 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 			final int targetY = nbtTileEntity.getInteger("targetY");
 			final int targetZ = nbtTileEntity.getInteger("targetZ");
 			if (transformation.isInside(targetX, targetY, targetZ)) {
-				final ChunkCoordinates chunkCoordinates = transformation.apply(targetX, targetY, targetZ);
-				nbtTileEntity.setInteger("targetX", chunkCoordinates.posX);
-				nbtTileEntity.setInteger("targetY", chunkCoordinates.posY);
-				nbtTileEntity.setInteger("targetZ", chunkCoordinates.posZ);
+				final BlockPos chunkCoordinates = transformation.apply(targetX, targetY, targetZ);
+				nbtTileEntity.setInteger("targetX", chunkCoordinates.getX());
+				nbtTileEntity.setInteger("targetY", chunkCoordinates.getY());
+				nbtTileEntity.setInteger("targetZ", chunkCoordinates.getZ());
 			}
 		}
 		

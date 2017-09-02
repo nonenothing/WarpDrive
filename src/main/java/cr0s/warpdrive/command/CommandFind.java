@@ -4,7 +4,12 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.text.TextComponentString;
+
+import javax.annotation.Nonnull;
 
 public class CommandFind extends CommandBase {
 	
@@ -13,30 +18,31 @@ public class CommandFind extends CommandBase {
 		return 2;
 	}
 	
+	@Nonnull
 	@Override
 	public String getCommandName() {
 		return "wfind";
 	}
 	
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
 		if (commandSender == null) { return; }
 		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
 		String nameToken = "";
-		if (params.length == 0) {
-			Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
+		if (args.length == 0) {
+			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
-		} else if (params.length == 1) {
-			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
-				Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
+		} else if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
-			nameToken = params[0];
+			nameToken = args[0];
 		} else {
 			final StringBuilder nameBuilder = new StringBuilder();
-			for (final String param : params) {
+			for (final String param : args) {
 				if (nameBuilder.length() > 0) {
 					nameBuilder.append(" ");
 				}
@@ -46,11 +52,12 @@ public class CommandFind extends CommandBase {
 		}
 		
 		final String result = WarpDrive.starMap.find(nameToken);
-		Commons.addChatMessage(commandSender, result);
+		Commons.addChatMessage(commandSender, new TextComponentString(result));
 	}
 	
+	@Nonnull
 	@Override
-	public String getCommandUsage(final ICommandSender commandSender) {
+	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
 		return getCommandName() + " (<shipName>)"
 		       + "\nshipName: name of the ship to find. Exact casing is preferred.";
 	}

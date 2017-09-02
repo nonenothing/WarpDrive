@@ -7,8 +7,8 @@ import cr0s.warpdrive.data.VectorI;
 
 import java.util.UUID;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.math.AxisAlignedBB;
 
 public class TileEntityAcceleratorController extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
@@ -17,8 +17,8 @@ public class TileEntityAcceleratorController extends TileEntityAbstractEnergy im
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 	}
 	
 	// IStarMapRegistryTileEntity overrides
@@ -53,12 +53,13 @@ public class TileEntityAcceleratorController extends TileEntityAbstractEnergy im
 	}
 	
 	@Override
-	public void onBlockUpdatedInArea(final VectorI vector, final Block block, final int metadata) {
+	public void onBlockUpdatedInArea(final VectorI vector, final IBlockState blockState) {
+		
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ());
 	}
 }

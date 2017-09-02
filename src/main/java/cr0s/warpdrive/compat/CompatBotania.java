@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CompatBotania implements IBlockTransformer {
@@ -43,7 +43,8 @@ public class CompatBotania implements IBlockTransformer {
 	}
 	
 	@Override
-	public NBTBase saveExternals(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
+	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 		return null;
 	}
@@ -90,10 +91,10 @@ public class CompatBotania implements IBlockTransformer {
 		if ( nbtTileEntity.hasKey("bindX")
 		  && nbtTileEntity.hasKey("bindY") 
 		  && nbtTileEntity.hasKey("bindZ") ) {
-			final ChunkCoordinates targetBind = transformation.apply(nbtTileEntity.getInteger("bindX"), nbtTileEntity.getInteger("bindY"), nbtTileEntity.getInteger("bindZ"));
-			nbtTileEntity.setInteger("bindX", targetBind.posX);
-			nbtTileEntity.setInteger("bindY", targetBind.posY);
-			nbtTileEntity.setInteger("bindZ", targetBind.posZ);
+			final BlockPos targetBind = transformation.apply(nbtTileEntity.getInteger("bindX"), nbtTileEntity.getInteger("bindY"), nbtTileEntity.getInteger("bindZ"));
+			nbtTileEntity.setInteger("bindX", targetBind.getX());
+			nbtTileEntity.setInteger("bindY", targetBind.getY());
+			nbtTileEntity.setInteger("bindZ", targetBind.getZ());
 		}
 		
 		if (nbtTileEntity.hasKey("subTileCmp")) {
@@ -101,10 +102,10 @@ public class CompatBotania implements IBlockTransformer {
 			if ( nbtSubTileCmp.hasKey("collectorX")
 			  && nbtSubTileCmp.hasKey("collectorY")
 			  && nbtSubTileCmp.hasKey("collectorZ") ) {
-				final ChunkCoordinates targetCollector = transformation.apply(nbtSubTileCmp.getInteger("collectorX"), nbtSubTileCmp.getInteger("collectorY"), nbtSubTileCmp.getInteger("collectorZ"));
-				nbtSubTileCmp.setInteger("collectorX", targetCollector.posX);
-				nbtSubTileCmp.setInteger("collectorY", targetCollector.posY);
-				nbtSubTileCmp.setInteger("collectorZ", targetCollector.posZ);
+				final BlockPos targetCollector = transformation.apply(nbtSubTileCmp.getInteger("collectorX"), nbtSubTileCmp.getInteger("collectorY"), nbtSubTileCmp.getInteger("collectorZ"));
+				nbtSubTileCmp.setInteger("collectorX", targetCollector.getX());
+				nbtSubTileCmp.setInteger("collectorY", targetCollector.getY());
+				nbtSubTileCmp.setInteger("collectorZ", targetCollector.getZ());
 			}
 		}
 		

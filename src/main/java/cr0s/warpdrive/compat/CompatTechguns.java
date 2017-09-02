@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CompatTechguns implements IBlockTransformer {
@@ -206,10 +206,10 @@ public class CompatTechguns implements IBlockTransformer {
 			final int xMaster = nbtTileEntity.getInteger("masterX");
 			final int yMaster = nbtTileEntity.getShort("masterY");
 			final int zMaster = nbtTileEntity.getInteger("masterZ");
-			final ChunkCoordinates chunkCoordinatesMaster = transformation.apply(xMaster, yMaster, zMaster);
-			nbtTileEntity.setInteger("masterX", chunkCoordinatesMaster.posX);
-			nbtTileEntity.setInteger("masterY", chunkCoordinatesMaster.posY);
-			nbtTileEntity.setInteger("masterZ", chunkCoordinatesMaster.posZ);
+			final BlockPos chunkCoordinatesMaster = transformation.apply(xMaster, yMaster, zMaster);
+			nbtTileEntity.setInteger("masterX", chunkCoordinatesMaster.getX());
+			nbtTileEntity.setInteger("masterY", chunkCoordinatesMaster.getY());
+			nbtTileEntity.setInteger("masterZ", chunkCoordinatesMaster.getZ());
 		}
 		
 		return metadata;

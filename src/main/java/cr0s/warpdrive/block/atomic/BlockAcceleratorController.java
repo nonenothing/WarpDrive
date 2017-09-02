@@ -1,58 +1,43 @@
 package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockAcceleratorController extends BlockAbstractContainer {
 	
-	@SideOnly(Side.CLIENT)
-	private IIcon[] icons;
-	
-	public BlockAcceleratorController() {
-		super(Material.iron);
-		isRotating = true;
-		setBlockName("warpdrive.atomic.accelerator_controller");
-		setBlockTextureName("warpdrive:atomic/accelerator_controller");
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons = new IIcon[2];
+	public BlockAcceleratorController(final String registryName) {
+		super(registryName, Material.IRON);
+		setUnlocalizedName("warpdrive.atomic.accelerator_controller");
 		
-		icons[0] = iconRegister.registerIcon(getTextureName() + "-off");
-		icons[1] = iconRegister.registerIcon(getTextureName() + "-on");
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		return icons[metadata % 2];
+		GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, WarpDrive.PREFIX + registryName);
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityAcceleratorController)) {
 			return false;
 		}
-		TileEntityAcceleratorController tileEntityAcceleratorController = (TileEntityAcceleratorController) tileEntity;
-		ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		final TileEntityAcceleratorController tileEntityAcceleratorController = (TileEntityAcceleratorController) tileEntity;
 		
 		if (itemStackHeld == null) {// no sneaking and no item in hand => show status
 			Commons.addChatMessage(entityPlayer, tileEntityAcceleratorController.getStatus());
@@ -63,8 +48,9 @@ public class BlockAcceleratorController extends BlockAbstractContainer {
 		return false;
 	}
 	
+	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityAcceleratorController();
 	}
 }

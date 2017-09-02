@@ -33,7 +33,7 @@ public class RadarEcho extends Vector3 {
 	// 	     entityLivingBase.worldObj.provider.dimensionId,
 	// 	     starMapRegistryItem.getUniversalCoordinates(),
 	// 	     entityLivingBase.width * entityLivingBase.height * 4,
-	// 	     entityLivingBase.getCommandSenderName() );
+	// 	     entityLivingBase.getName() );
 	// }
 	
 	@Override

@@ -4,35 +4,34 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
+import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
-import net.minecraft.world.World;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.IBlockAccess;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-public class ItemForceFieldUpgrade extends Item {
-	
-	@SideOnly(Side.CLIENT)
-	private IIcon[] icons;
+public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	
 	private static ItemStack[] itemStackCache;
 	
-	public ItemForceFieldUpgrade() {
-		super();
+	public ItemForceFieldUpgrade(final String registryName) {
+		super(registryName);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.forcefield.upgrade");
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];
 	}
@@ -51,71 +50,67 @@ public class ItemForceFieldUpgrade extends Item {
 	public static ItemStack getItemStackNoCache(EnumForceFieldUpgrade enumForceFieldUpgrade, int amount) {
 		return new ItemStack(WarpDrive.itemForceFieldUpgrade, amount, enumForceFieldUpgrade.ordinal());
 	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerIcons(IIconRegister iconRegister) {
-		icons = new IIcon[EnumForceFieldUpgrade.length];
-		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade_" + enumForceFieldUpgrade.unlocalizedName);
-		}
-	}
-	
+
+	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
-			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).unlocalizedName;
+			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).getName();
 		}
 		return getUnlocalizedName();
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
-		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
-			return icons[damage];
-		}
-		return icons[0];
-	}
-	
-	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
 		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
-				list.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
+				subItems.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
 			}
 		}
 	}
 	
+	@Nonnull
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
-		return block instanceof BlockForceFieldRelay || block instanceof BlockForceFieldProjector || super.doesSneakBypassUse(world, x, y, z, player);
+	@SideOnly(Side.CLIENT)
+	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+		int damage = itemStack.getItemDamage();
+		ResourceLocation resourceLocation = getRegistryName();
+		if (damage >= 0 && damage < EnumComponentType.length) {
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldUpgrade.get(damage).getName());
+		}
+		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess blockAccess, BlockPos blockPos, EntityPlayer player) {
+		Block block = blockAccess.getBlockState(blockPos).getBlock();
+		return block instanceof BlockForceFieldRelay || block instanceof BlockForceFieldProjector || super.doesSneakBypassUse(itemStack, blockAccess, blockPos, player);
+	}
+	
+	@Override
+	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (StatCollector.canTranslate(tooltipName1)) {
-			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
+		if (I18n.canTranslate(tooltipName1)) {
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
 		String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
+		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
 		
 		Commons.addTooltip(list, "\n");
 		
 		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
 		if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
-			Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.projector"));
+			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.projector").getFormattedText());
 		}
 		if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
-			Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.relay"));
+			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.relay").getFormattedText());
 		}
-		Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount"));
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount").getFormattedText());
 	}
 }

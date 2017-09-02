@@ -8,9 +8,8 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
 import net.minecraftforge.common.util.Constants;
 
 public class CompatThaumcraft implements IBlockTransformer {
@@ -61,7 +60,8 @@ public class CompatThaumcraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public NBTBase saveExternals(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
+	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 		return null;
 	}
@@ -218,10 +218,10 @@ public class CompatThaumcraft implements IBlockTransformer {
 		}
 		if (classBlockMirror.isInstance(block)) {
 			if (nbtTileEntity.hasKey("linkX") && nbtTileEntity.hasKey("linkY") && nbtTileEntity.hasKey("linkZ")) {
-				ChunkCoordinates targetLink = transformation.apply(nbtTileEntity.getInteger("linkX"), nbtTileEntity.getInteger("linkY"), nbtTileEntity.getInteger("linkZ"));
-				nbtTileEntity.setInteger("linkX", targetLink.posX);
-				nbtTileEntity.setInteger("linkY", targetLink.posY);
-				nbtTileEntity.setInteger("linkZ", targetLink.posZ);
+				BlockPos targetLink = transformation.apply(nbtTileEntity.getInteger("linkX"), nbtTileEntity.getInteger("linkY"), nbtTileEntity.getInteger("linkZ"));
+				nbtTileEntity.setInteger("linkX", targetLink.getX());
+				nbtTileEntity.setInteger("linkY", targetLink.getY());
+				nbtTileEntity.setInteger("linkZ", targetLink.getZ());
 			}
 			
 			switch (rotationSteps) {

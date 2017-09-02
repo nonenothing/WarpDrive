@@ -1,79 +1,49 @@
 package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
-	static IIcon[] icons;
 	
-	public BlockIC2reactorLaserMonitor() {
-		super(Material.iron);
-		setBlockName("warpdrive.energy.IC2ReactorLaserMonitor");
+	public BlockIC2reactorLaserMonitor(final String registryName) {
+		super(registryName, Material.IRON);
+		setUnlocalizedName("warpdrive.energy.IC2ReactorLaserMonitor");
+		GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, WarpDrive.PREFIX + registryName);
 	}
-	
+
+	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityIC2reactorLaserMonitor();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons = new IIcon[3];
-		icons[0] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorNotConnected");
-		icons[1] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedNotPowered");
-		icons[2] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedPowered");
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		final int metadata = blockAccess.getBlockMetadata(x, y, z);
-		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-		if (tileEntity == null || !(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
-			return icons[0];
-		}
-		
-		if (((TileEntityIC2reactorLaserMonitor)tileEntity).isSideActive(side)) {
-			if ((metadata & 8) == 0) {
-				return icons[1];
-			} else {
-				return icons[2];
-			}
-		}
-		
-		return icons[0];
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		if (side == 4) {
-			return icons[1];
-		} else {
-			return icons[0];
-		}
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (itemStackHeld == null) {
+			TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityIC2reactorLaserMonitor) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityIC2reactorLaserMonitor) tileEntity).getStatus());
 				return true;

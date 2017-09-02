@@ -19,8 +19,8 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import net.minecraftforge.common.util.Constants.NBT;
 
@@ -188,7 +188,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				final String stringNBT = elementName.getTextContent();
 				if (!stringNBT.isEmpty()) {
 					try {
-						nbtTagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
+						nbtTagCompound = (NBTTagCompound) JsonToNBT.getTagFromJson(stringNBT);
 					} catch (NBTException exception) {
 						throw new InvalidXmlException(String.format("Invalid nbt for Celestial object %s", id));
 					}
@@ -447,21 +447,21 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	
 	@Override
 	public AxisAlignedBB getWorldBorderArea() {
-		return AxisAlignedBB.getBoundingBox(
+		return new AxisAlignedBB(
 			(dimensionCenterX - borderRadiusX),   0, (dimensionCenterZ - borderRadiusZ),
 			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
 	@Override
 	public AxisAlignedBB getAreaToReachParent() {
-		return AxisAlignedBB.getBoundingBox(
+		return new AxisAlignedBB(
 			(dimensionCenterX - borderRadiusX), 250, (dimensionCenterZ - borderRadiusZ),
 			(dimensionCenterX + borderRadiusX), 255, (dimensionCenterZ + borderRadiusZ) );
 	}
 	
 	@Override
 	public AxisAlignedBB getAreaInParent() {
-		return AxisAlignedBB.getBoundingBox(
+		return new AxisAlignedBB(
 			(parentCenterX - borderRadiusX), 0, (parentCenterZ - borderRadiusZ),
 			(parentCenterX + borderRadiusX), 8, (parentCenterZ + borderRadiusZ) );
 	}

@@ -1,41 +1,34 @@
 package cr0s.warpdrive.block.passive;
 
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 
+import javax.annotation.Nonnull;
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.item.Item;
+import net.minecraft.item.EnumRarity;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-public class BlockIridium extends Block {
+public class BlockIridium extends BlockAbstractBase {
 	
-	public BlockIridium() {
-		super(Material.iron);
+	public BlockIridium(final String registryName) {
+		super(registryName, Material.IRON);
 		setHardness(3.4F);
 		setResistance(360.0F * 5 / 3);
-		setStepSound(Block.soundTypeMetal);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.passive.IridiumBlock");
+		setUnlocalizedName("warpdrive.passive.IridiumBlock");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		blockIcon = iconRegister.registerIcon("warpdrive:passive/iridiumSide");
-	}
-	
-	@Override
-	public Item getItemDropped(int var1, Random var2, int var3) {
-		return Item.getItemFromBlock(this);
-	}
-	
-	@Override
 	public int quantityDropped(Random par1Random) {
 		return 1;
+	}
+	
+	@Nonnull
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.RARE;
 	}
 }

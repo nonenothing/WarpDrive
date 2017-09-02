@@ -7,44 +7,45 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.ShipMovementCosts;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CelestialObjectManager;
-import cr0s.warpdrive.data.EnumShipControllerCommand;
-import cr0s.warpdrive.data.EnumShipCoreState;
-import cr0s.warpdrive.data.EnumShipMovementType;
-import cr0s.warpdrive.data.Jumpgate;
+import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
-import cr0s.warpdrive.data.Vector3;
-import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
 import cr0s.warpdrive.render.EntityFXBoundingBox;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.MobEffects;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.potion.Potion;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.StatCollector;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
 	
@@ -52,7 +53,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	private static final int BOUNDING_BOX_INTERVAL_TICKS = 60;
 	
 	// persistent properties
-	public ForgeDirection facing;
+	public EnumFacing facing;
 	public UUID uuid = null;
 	public String shipName = "default";
 	public double isolationRate = 0.0D;
@@ -96,7 +97,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	public TileEntityShipCore() {
 		super();
 		peripheralName = "warpdriveShipCore";
-		// methodsArray = Arrays.asList("", "");;
+		// methodsArray = Arrays.asList("", "");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -118,8 +119,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			if (showBoundingBox) {
@@ -156,12 +157,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				stateCurrent = EnumShipCoreState.SCANNING;
 			}
 		}
-			
+		
 		// Refresh rendering
 		if (getBlockMetadata() != stateCurrent.getMetadata()) {
-			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, stateCurrent.getMetadata(), 1 + 2);
+			updateMetadata(stateCurrent.getMetadata());
 		}
-				
+		
 		// accelerate update ticks during boot
 		if (bootTicks > 0) {
 			bootTicks--;
@@ -329,24 +330,24 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			
 			// Select best sound file and adjust offset
 			final int soundThreshold;
-			final String soundFile;
+			final SoundEvent soundEvent;
 			if (shipMovementCosts.warmup_seconds < 10) {
 				soundThreshold =  4 * 20 - randomWarmupAddition_ticks;
-				soundFile = "warpdrive:warp_4s";
+				soundEvent = SoundEvents.WARP_4_SECONDS;
 			} else if (shipMovementCosts.warmup_seconds > 29) {
 				soundThreshold = 30 * 20 - randomWarmupAddition_ticks;
-				soundFile = "warpdrive:warp_30s";
+				soundEvent = SoundEvents.WARP_30_SECONDS;
 			} else {
 				soundThreshold = 10 * 20 - randomWarmupAddition_ticks;
-				soundFile = "warpdrive:warp_10s";
+				soundEvent = SoundEvents.WARP_10_SECONDS;
 			}
 			
 			if ( !isSoundPlayed
 			  && soundThreshold >= warmupTime_ticks ) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info(this + " Playing sound effect '" + soundFile + "' soundThreshold " + soundThreshold + " warmupTime " + warmupTime_ticks);
+					WarpDrive.logger.info(this + " Playing sound effect '" + soundEvent + "' soundThreshold " + soundThreshold + " warmupTime " + warmupTime_ticks);
 				}
-				worldObj.playSoundEffect(xCoord + 0.5f, yCoord + 0.5f, zCoord + 0.5f, soundFile, 4F, 1F);
+				worldObj.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 4.0F, 1.0F);
 				isSoundPlayed = true;
 			}
 			
@@ -381,7 +382,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				return;
 			}
 			
-			if (WarpDrive.cloaks.isCloaked(worldObj.provider.dimensionId, xCoord, yCoord, zCoord)) {
+			if (WarpDrive.cloaks.isCloaked(worldObj.provider.getDimension(), pos)) {
 				tileEntityShipController.commandDone(false, "Core is inside a cloaking field. Aborting. Disable cloaking field to jump!");
 				return;
 			}
@@ -412,22 +413,26 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		    && tileEntityShipControllerExpected == tileEntityShipControllerWeakReference.get();
 	}
 	
-	public void messageToAllPlayersOnShip(final String message) {
-		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
-		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+	@Deprecated
+	private void messageToAllPlayersOnShip(String string) {
+		messageToAllPlayersOnShip(new TextComponentString(string));
+	}
+	public void messageToAllPlayersOnShip(ITextComponent textComponent) {
+		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
-		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + message);
-		for (Object object : list) {
-			if (!(object instanceof EntityPlayer)) {
+		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent.getFormattedText());
+		for (final Entity entity : list) {
+			if (!(entity instanceof EntityPlayer)) {
 				continue;
 			}
 			
-			Commons.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + message);
+			Commons.addChatMessage(entity, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ").appendSibling(textComponent));
 		}
 	}
 	
 	public String getAllPlayersOnShip() {
-		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		final StringBuilder stringBuilderResult = new StringBuilder();
 		
@@ -441,7 +446,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			} else {
 				stringBuilderResult.append(", ");
 			}
-			stringBuilderResult.append(((EntityPlayer) object).getCommandSenderName());
+			stringBuilderResult.append(((EntityPlayer) object).getName());
 		}
 		return stringBuilderResult.toString();
 	}
@@ -450,16 +455,16 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		// Search block in cube around core
 		int xMax, yMax, zMax;
 		int xMin, yMin, zMin;
-		xMin = xCoord - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
-		xMax = xCoord + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
+		xMin = pos.getX() - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
+		xMax = pos.getX() + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
 		
-		zMin = zCoord - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
-		zMax = zCoord + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
+		zMin = pos.getZ() - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
+		zMax = pos.getZ() + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE;
 		
 		// scan 1 block higher to encourage putting isolation block on both
 		// ground and ceiling
-		yMin = Math.max(0, yCoord - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE + 1);
-		yMax = Math.min(255, yCoord + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE + 1);
+		yMin = Math.max(  0, pos.getY() - WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE + 1);
+		yMax = Math.min(255, pos.getY() + WarpDriveConfig.RADAR_MAX_ISOLATION_RANGE + 1);
 		
 		int newCount = 0;
 		
@@ -467,7 +472,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		for (int y = yMin; y <= yMax; y++) {
 			for (int x = xMin; x <= xMax; x++) {
 				for (int z = zMin; z <= zMax; z++) {
-					if (worldObj.getBlock(x, y, z).isAssociatedBlock(WarpDrive.blockWarpIsolation)) {
+					if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() == WarpDrive.blockWarpIsolation) {
 						newCount++;
 					}
 				}
@@ -490,25 +495,28 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	private void makePlayersOnShipDrunk(final int tickDuration) {
-		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
-		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+		final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
-		for (Object object : list) {
-			if (object == null || !(object instanceof EntityPlayer)) {
+		for (Entity entity : list) {
+			if (!(entity instanceof EntityPlayer)) {
 				continue;
 			}
 			
 			// Set "drunk" effect
-			((EntityPlayer) object).addPotionEffect(new PotionEffect(Potion.confusion.id, tickDuration, 0, true));
+			((EntityPlayer) entity).addPotionEffect(
+					new PotionEffect(MobEffects.NAUSEA, tickDuration, 0, true, true));
 		}
 	}
 	
 	private void summonPlayers(final TileEntityShipController tileEntityShipController) {
-		final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		final AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+		final MinecraftServer server = worldObj.getMinecraftServer();
+		assert(server != null);
 		
 		for (int i = 0; i < tileEntityShipController.players.size(); i++) {
 			final String playerName = tileEntityShipController.players.get(i);
-			final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			final EntityPlayerMP entityPlayerMP = server.getPlayerList().getPlayerByUsername(playerName);
 			
 			if ( entityPlayerMP != null
 			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
@@ -518,11 +526,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	private void summonSinglePlayer(final TileEntityShipController tileEntityShipController, final String nickname) {
-		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		final AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+		final MinecraftServer server = worldObj.getMinecraftServer();
+		assert(server != null);
 		
 		for (int i = 0; i < tileEntityShipController.players.size(); i++) {
 			final String playerName = tileEntityShipController.players.get(i);
-			final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			final EntityPlayerMP entityPlayerMP = server.getPlayerList().getPlayerByUsername(playerName);
 			
 			if ( entityPlayerMP != null && playerName.equals(nickname)
 			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
@@ -540,19 +550,19 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		final StringBuilder reason = new StringBuilder();
 		final TileEntityShipController tileEntityShipController = findControllerBlock();
 		if (!validateShipSpatialParameters(tileEntityShipController, reason)) {
-			Commons.addChatMessage(entityPlayerMP, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString());
+			Commons.addChatMessage(entityPlayerMP, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] §c" + reason.toString()));
 			return false;
 		}
 		
 		if (tileEntityShipController != null) {
 			tileEntityShipController.players.clear();
-			tileEntityShipController.players.add(entityPlayerMP.getCommandSenderName());
+			tileEntityShipController.players.add(entityPlayerMP.getName());
 		} else {
 			WarpDrive.logger.warn(this + " Failed to find controller block");
 			return false;
 		}
 		
-		final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		final AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
 		if (isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ))) {
 			summonPlayer(entityPlayerMP);
 		}
@@ -574,56 +584,58 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
 			messageToAllPlayersOnShip("§c" + String.format("%1$s is too far away to be summoned (max. is %2$d m)", entityPlayer.getDisplayName(), WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
-			Commons.addChatMessage(entityPlayer, "§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE));
+			Commons.addChatMessage(entityPlayer, new TextComponentString("§c" + String.format("You are to far away to be summoned aboard '%1$s' (max. is %2$d m)", shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE)));
 			return;
 		}
 		
 		// find a free spot
+		BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(pos);
 		for (VectorI vOffset : SUMMON_OFFSETS) {
-			VectorI vPosition = new VectorI(
-				xCoord + facing.offsetX * vOffset.x + facing.offsetZ * vOffset.z,
-			    yCoord,
-			    zCoord + facing.offsetZ * vOffset.x + facing.offsetX * vOffset.z);
-			if (worldObj.isAirBlock(vPosition.x, vPosition.y, vPosition.z)) {
-				if (worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)) {
-					summonPlayer(entityPlayer, vPosition.x, vPosition.y, vPosition.z);
+			mutableBlockPos.setPos(
+				pos.getX() + facing.getFrontOffsetX() * vOffset.x + facing.getFrontOffsetZ() * vOffset.z,
+			    pos.getY(),
+				pos.getZ() + facing.getFrontOffsetZ() * vOffset.x + facing.getFrontOffsetX() * vOffset.z);
+			if (worldObj.isAirBlock(mutableBlockPos)) {
+				if (worldObj.isAirBlock(mutableBlockPos.add(0, 1, 0))) {
+					summonPlayer(entityPlayer, mutableBlockPos);
 					return;
 				}
-				if (worldObj.isAirBlock(vPosition.x, vPosition.y - 1, vPosition.z)) {
-					summonPlayer(entityPlayer, vPosition.x, vPosition.y - 1, vPosition.z);
+				mutableBlockPos.move(EnumFacing.DOWN);
+				if (worldObj.isAirBlock(mutableBlockPos)) {
+					summonPlayer(entityPlayer, mutableBlockPos);
 					return;
 				}
-			} else if ( worldObj.isAirBlock(vPosition.x, vPosition.y - 1, vPosition.z)
-			         && worldObj.isAirBlock(vPosition.x, vPosition.y - 2, vPosition.z)
-			         && !worldObj.isAirBlock(vPosition.x, vPosition.y - 3, vPosition.z)  ) {
-				summonPlayer(entityPlayer, vPosition.x, vPosition.y - 2, vPosition.z);
+			} else if ( worldObj.isAirBlock(mutableBlockPos.add(0, -1, 0))
+			         && worldObj.isAirBlock(mutableBlockPos.add(0, -2, 0))
+			         && !worldObj.isAirBlock(mutableBlockPos.add(0, -3, 0)) ) {
+				summonPlayer(entityPlayer, mutableBlockPos.add(0, -2, 0));
 				return;
-			} else if ( worldObj.isAirBlock(vPosition.x, vPosition.y + 1, vPosition.z)
-			         && worldObj.isAirBlock(vPosition.x, vPosition.y + 2, vPosition.z)
-			         && !worldObj.isAirBlock(vPosition.x, vPosition.y, vPosition.z)  ) {
-				summonPlayer(entityPlayer, vPosition.x, vPosition.y + 1, vPosition.z);
+			} else if ( worldObj.isAirBlock(mutableBlockPos.add(0, 1, 0))
+			         && worldObj.isAirBlock(mutableBlockPos.add(0, 2, 0))
+			         && !worldObj.isAirBlock(mutableBlockPos) ) {
+				summonPlayer(entityPlayer, mutableBlockPos.add(0, 1, 0));
 				return;
 			}
 		}
 		final String message = "§c" + String.format("No safe spot found to summon player %1$s", entityPlayer.getDisplayName());
 		messageToAllPlayersOnShip(message);
-		Commons.addChatMessage(entityPlayer, message);
+		Commons.addChatMessage(entityPlayer, new TextComponentString(message));
 	}
 	
-	private void summonPlayer(EntityPlayerMP player, final int x, final int y, final int z) {
+	private void summonPlayer(EntityPlayerMP player, BlockPos blockPos) {
 		if (energy_consume(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
-			if (player.dimension != worldObj.provider.dimensionId) {
-				player.mcServer.getConfigurationManager().transferPlayerToDimension(
+			if (player.dimension != worldObj.provider.getDimension()) {
+				player.mcServer.getPlayerList().transferPlayerToDimension(
 					player,
-					worldObj.provider.dimensionId,
+					worldObj.provider.getDimension(),
 					new SpaceTeleporter(
-						DimensionManager.getWorld(worldObj.provider.dimensionId),
+						DimensionManager.getWorld(worldObj.provider.getDimension()),
 						0,
 						MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ)));
-				player.setPositionAndUpdate(x + 0.5d, y, z + 0.5d);
+				player.setPositionAndUpdate(blockPos.getX() + 0.5d, blockPos.getY(), blockPos.getZ() + 0.5d);
 				player.sendPlayerAbilities();
 			} else {
-				player.setPositionAndUpdate(x + 0.5d, y, z + 0.5d);
+				player.setPositionAndUpdate(blockPos.getX() + 0.5d, blockPos.getY(), blockPos.getZ() + 0.5d);
 			}
 		}
 	}
@@ -650,26 +662,26 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		int x1 = 0, x2 = 0, z1 = 0, z2 = 0;
 		
-		if (facing.offsetX == 1) {
-			x1 = xCoord - shipBack;
-			x2 = xCoord + shipFront;
-			z1 = zCoord - shipLeft;
-			z2 = zCoord + shipRight;
-		} else if (facing.offsetX == -1) {
-			x1 = xCoord - shipFront;
-			x2 = xCoord + shipBack;
-			z1 = zCoord - shipRight;
-			z2 = zCoord + shipLeft;
-		} else if (facing.offsetZ == 1) {
-			z1 = zCoord - shipBack;
-			z2 = zCoord + shipFront;
-			x1 = xCoord - shipRight;
-			x2 = xCoord + shipLeft;
-		} else if (facing.offsetZ == -1) {
-			z1 = zCoord - shipFront;
-			z2 = zCoord + shipBack;
-			x1 = xCoord - shipLeft;
-			x2 = xCoord + shipRight;
+		if (facing.getFrontOffsetX() == 1) {
+			x1 = pos.getX() - shipBack;
+			x2 = pos.getX() + shipFront;
+			z1 = pos.getZ() - shipLeft;
+			z2 = pos.getZ() + shipRight;
+		} else if (facing.getFrontOffsetX() == -1) {
+			x1 = pos.getX() - shipFront;
+			x2 = pos.getX() + shipBack;
+			z1 = pos.getZ() - shipRight;
+			z2 = pos.getZ() + shipLeft;
+		} else if (facing.getFrontOffsetZ() == 1) {
+			z1 = pos.getX() - shipBack;
+			z2 = pos.getX() + shipFront;
+			x1 = pos.getZ() - shipRight;
+			x2 = pos.getZ() + shipLeft;
+		} else if (facing.getFrontOffsetZ() == -1) {
+			z1 = pos.getX() - shipFront;
+			z2 = pos.getX() + shipBack;
+			x1 = pos.getZ() - shipLeft;
+			x2 = pos.getZ() + shipRight;
 		}
 		
 		if (x1 < x2) {
@@ -688,8 +700,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			maxZ = z1;
 		}
 		
-		minY = yCoord - shipDown;
-		maxY = yCoord + shipUp;
+		minY = pos.getY() - shipDown;
+		maxY = pos.getY() + shipUp;
 		
 		// update dimensions to client
 		markDirty();
@@ -704,23 +716,23 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		boolean isUnlimited = false;
-		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
-		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		for (Object object : list) {
 			if (object == null || !(object instanceof EntityPlayer)) {
 				continue;
 			}
 			
-			final String displayName = ((EntityPlayer) object).getDisplayName();
+			final String playerName = ((EntityPlayer) object).getName();
 			for (final String nameUnlimited : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
-				isUnlimited = isUnlimited || nameUnlimited.equals(displayName);
+				isUnlimited = isUnlimited || nameUnlimited.equals(playerName);
 			}
 		}
 		
 		updateShipMassAndVolume();
 		if ( !isUnlimited
 		  && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE
-		  && CelestialObjectManager.isPlanet(worldObj, xCoord, zCoord) ) {
+		  && CelestialObjectManager.isPlanet(worldObj, pos.getX(), pos.getZ()) ) {
 			reason.append(String.format("Ship is too big for a planet (max is %d blocks)",
 				WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE));
 			return false;
@@ -730,38 +742,38 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	private boolean validateShipMovementParameters(final TileEntityShipController tileEntityShipController, final StringBuilder reason) {
-		shipMovementType = EnumShipMovementType.compute(worldObj, xCoord, minY, maxY, zCoord, commandCurrent, tileEntityShipController.getMovement().y, reason);
+		shipMovementType = EnumShipMovementType.compute(worldObj, pos.getX(), minY, maxY, pos.getZ(), commandCurrent, tileEntityShipController.getMovement().y, reason);
 		if (shipMovementType == null) {
 			return false;
 		}
 		
 		// compute movement costs
-		shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		shipMovementCosts = new ShipMovementCosts(worldObj, pos, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return true;
 	}
 	
 	// Computer interface are running independently of updateTicks, hence doing local computations getMaxJumpDistance() and getEnergyRequired()
 	protected int getMaxJumpDistance(final TileEntityShipController tileEntityShipController, final EnumShipControllerCommand command, final StringBuilder reason) {
-		final EnumShipMovementType shipMovementType = EnumShipMovementType.compute(worldObj, xCoord, minY, maxY, zCoord, command, tileEntityShipController.getMovement().y, reason);
+		final EnumShipMovementType shipMovementType = EnumShipMovementType.compute(worldObj, pos.getX(), minY, maxY, pos.getZ(), command, tileEntityShipController.getMovement().y, reason);
 		if (shipMovementType == null) {
 			tileEntityShipController.commandDone(false, reason.toString());
 			return -1;
 		}
 		
 		// compute movement costs
-		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, pos, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return shipMovementCosts.maximumDistance_blocks;
 	}
 	
 	protected int getEnergyRequired(final TileEntityShipController tileEntityShipController, final EnumShipControllerCommand command, final StringBuilder reason) {
-		final EnumShipMovementType shipMovementType = EnumShipMovementType.compute(worldObj, xCoord, minY, maxY, zCoord, command, tileEntityShipController.getMovement().y, reason);
+		final EnumShipMovementType shipMovementType = EnumShipMovementType.compute(worldObj, pos.getX(), minY, maxY, pos.getZ(), command, tileEntityShipController.getMovement().y, reason);
 		if (shipMovementType == null) {
 			tileEntityShipController.commandDone(false, reason.toString());
 			return -1;
 		}
 		
 		// compute movement costs
-		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, pos, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return shipMovementCosts.energyRequired;
 	}
 	
@@ -774,8 +786,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		int countBlocksInside = 0;
 		int countBlocksTotal = 0;
 		
-		if ( aabb.isVecInside(Vec3.createVectorHelper(minX, minY, minZ))
-		  && aabb.isVecInside(Vec3.createVectorHelper(maxX, maxY, maxZ)) ) {
+		if ( aabb.isVecInside(new Vec3d(minX, minY, minZ))
+		  && aabb.isVecInside(new Vec3d(maxX, maxY, maxZ)) ) {
 			// fully inside
 			return true;
 		}
@@ -783,13 +795,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		for (int x = minX; x <= maxX; x++) {
 			for (int z = minZ; z <= maxZ; z++) {
 				for (int y = minY; y <= maxY; y++) {
-					Block block = worldObj.getBlock(x, y, z);
+					IBlockState blockState = worldObj.getBlockState(new BlockPos(x, y, z));
 					
 					// Skipping vanilla air & ignored blocks
-					if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
+					if (blockState.getBlock() == Blocks.AIR || Dictionary.BLOCKS_LEFTBEHIND.contains(blockState.getBlock())) {
 						continue;
 					}
-					if (Dictionary.BLOCKS_NOMASS.contains(block)) {
+					if (Dictionary.BLOCKS_NOMASS.contains(blockState.getBlock())) {
 						continue;
 					}
 					
@@ -836,9 +848,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			return false;
 		}
 		
-		int moveX = destX - xCoord;
-		int moveY = destY - yCoord;
-		int moveZ = destZ - zCoord;
+		int moveX = destX - pos.getX();
+		int moveY = destY - pos.getY();
+		int moveZ = destZ - pos.getZ();
 		
 		for (int x = minX; x <= maxX; x++) {
 			newX = moveX + x;
@@ -849,14 +861,14 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 						return false;
 					}
 					
-					final Block blockSource = worldObj.getBlock(x, y, z);
-					final Block blockTarget = worldObj.getBlock(newX, moveY + y, newZ);
+					final Block blockSource = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
+					final Block blockTarget = worldObj.getBlockState(new BlockPos(newX, moveY + y, newZ)).getBlock();
 					
 					// not vanilla air nor ignored blocks at source
 					// not vanilla air nor expandable blocks are target location
-					if ( blockSource != Blocks.air
+					if ( blockSource != Blocks.AIR
 					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockSource)
-					  && blockTarget != Blocks.air
+					  && blockTarget != Blocks.AIR
 					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockTarget)) {
 						return false;
 					}
@@ -884,7 +896,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		int destX = gateX;
 		int destY = gateY;
 		int destZ = gateZ;
-		Jumpgate nearestGate = WarpDrive.jumpgates.findNearestGate(xCoord, yCoord, zCoord);
+		Jumpgate nearestGate = WarpDrive.jumpgates.findNearestGate(pos);
 		
 		final StringBuilder reason = new StringBuilder();
 		if (!isShipInJumpgate(nearestGate, reason)) {
@@ -956,13 +968,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				if (WarpDrive.jumpgates == null) {
 					WarpDrive.logger.warn(this + " WarpDrive.jumpGates is NULL!");
 				} else {
-					nearestGate = WarpDrive.jumpgates.findNearestGate(xCoord, yCoord, zCoord);
+					nearestGate = WarpDrive.jumpgates.findNearestGate(pos);
 				}
 				
 				final StringBuilder reason = new StringBuilder();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
-					tileEntityShipController.commandDone(false, String.format("Ship is too small (%d/%d).\nInsufficient ship mass to engage alcubierre drive.\nIncrease your mass or use a jumpgate to reach or exit hyperspace.",
-					                                            shipMass, WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE));
+					tileEntityShipController.commandDone(false, new TextComponentString(String.format("Ship is too small (%d/%d).\nInsufficient ship mass to engage alcubierre drive.\nIncrease your mass or use a jumpgate to reach or exit hyperspace.",
+					                                            shipMass, WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE)).getFormattedText());
 					return;
 				}
 			}
@@ -1006,9 +1018,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if (Math.abs(movement.z) - shipSize.z > maxDistance) {
 				movement.z = (int) Math.signum(movement.z) * (shipSize.z + maxDistance);
 			}
-			moveX = facing.offsetX * movement.x - facing.offsetZ * movement.z;
+			moveX = facing.getFrontOffsetX() * movement.x - facing.getFrontOffsetZ() * movement.z;
 			moveY = movement.y;
-			moveZ = facing.offsetZ * movement.x + facing.offsetX * movement.z;
+			moveZ = facing.getFrontOffsetZ() * movement.x + facing.getFrontOffsetX() * movement.z;
 		}
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
@@ -1027,15 +1039,16 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-			+ ((cooldownTime_ticks > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.cooling", cooldownTime_ticks / 20) : "")
-			+ ((isolationBlocksCount > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
+			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
+			.appendSibling((cooldownTime_ticks > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.cooling", cooldownTime_ticks / 20)) : new TextComponentString(""))
+			.appendSibling((isolationBlocksCount > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0)) : new TextComponentString(""));
 	}
 	
-	public String getBoundingBoxStatus() {
+	public ITextComponent getBoundingBoxStatus() {
 		return super.getStatusPrefix()
-		       + StatCollector.translateToLocalFormatted(showBoundingBox ? "tile.warpdrive.movement.ShipCore.bounding_box.enabled" : "tile.warpdrive.movement.ShipCore.bounding_box.disabled");
+			.appendSibling(new TextComponentTranslation(showBoundingBox ? "tile.warpdrive.movement.ShipCore.bounding_box.enabled" : "tile.warpdrive.movement.ShipCore.bounding_box.disabled"));
 	}
 	
 	private void updateShipMassAndVolume() {
@@ -1046,10 +1059,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
 					for (int y = minY; y <= maxY; y++) {
-						Block block = worldObj.getBlock(x, y, z);
+						Block block = worldObj.getBlockState(new BlockPos(x, y, z)).getBlock();
 						
 						// Skipping vanilla air & ignored blocks
-						if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
+						if (block == Blocks.AIR || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
 							continue;
 						}
 						newVolume++;
@@ -1070,31 +1083,31 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	private TileEntityShipController findControllerBlock() {
 		TileEntity tileEntity;
-		tileEntity = worldObj.getTileEntity(xCoord + 1, yCoord, zCoord);
+		tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX() + 1, pos.getY(), pos.getZ()));
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			facing = ForgeDirection.EAST;
+			facing = EnumFacing.EAST;
 			return (TileEntityShipController) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord - 1, yCoord, zCoord);
+		tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX() - 1, pos.getY(), pos.getZ()));
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			facing = ForgeDirection.WEST;
+			facing = EnumFacing.WEST;
 			return (TileEntityShipController) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 1);
+		tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() + 1));
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			facing = ForgeDirection.SOUTH;
+			facing = EnumFacing.SOUTH;
 			return (TileEntityShipController) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord - 1);
+		tileEntity = worldObj.getTileEntity(new BlockPos(pos.getX(), pos.getY(), pos.getZ() - 1));
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityShipController) {
-			facing = ForgeDirection.NORTH;
+			facing = EnumFacing.NORTH;
 			return (TileEntityShipController) tileEntity;
 		}
 		
@@ -1111,14 +1124,14 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(EnumFacing from) {
 		return true;
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		facing = ForgeDirection.getOrientation(tag.getByte("facing"));
+		facing = EnumFacing.getFront(tag.getByte("facing"));
 		uuid = new UUID(tag.getLong("uuidMost"), tag.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			uuid = UUID.randomUUID();
@@ -1131,8 +1144,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		if (facing != null) {
 			tag.setByte("facing", (byte) facing.ordinal());
 		}
@@ -1145,25 +1158,25 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		tag.setInteger("cooldownTime", cooldownTime_ticks);
 		tag.setInteger("warmupTime", warmupTime_ticks);
 		tag.setInteger("jumpCount", jumpCount);
+		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		writeToNBT(tagCompound);
+	public NBTTagCompound getUpdateTag() {
+		final NBTTagCompound tagCompound = writeToNBT(super.getUpdateTag());
 		tagCompound.setInteger("minX", minX);
 		tagCompound.setInteger("maxX", maxX);
 		tagCompound.setInteger("minY", minY);
 		tagCompound.setInteger("maxY", maxY);
 		tagCompound.setInteger("minZ", minZ);
 		tagCompound.setInteger("maxZ", maxZ);
-		
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 		minX = tagCompound.getInteger("minX");
 		maxX = tagCompound.getInteger("maxX");
@@ -1205,7 +1218,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	@Override
 	public AxisAlignedBB getStarMapArea() {
-		return AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ);
+		return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
 	}
 	
 	@Override
@@ -1224,7 +1237,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public void onBlockUpdatedInArea(final VectorI vector, final Block block, final int metadata) {
+	public void onBlockUpdatedInArea(final VectorI vector, final IBlockState blockState) {
 		// no operation
 	}
 	
@@ -1233,6 +1246,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		return String.format(
 			"%s \'%s\' @ \'%s\' (%d %d %d)",
 			getClass().getSimpleName(), shipName, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			xCoord, yCoord, zCoord);
+			pos.getX(), pos.getY(), pos.getZ());
 	}
 }

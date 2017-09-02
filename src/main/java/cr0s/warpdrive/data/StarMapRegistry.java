@@ -15,14 +15,17 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 
 import net.minecraftforge.common.DimensionManager;
@@ -53,7 +56,7 @@ public class StarMapRegistry {
 				WarpDrive.logger.info("Starmap registry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
 			}
 		}
-		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
+		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
@@ -68,7 +71,7 @@ public class StarMapRegistry {
 		// not found => add
 		countAdd++;
 		setRegistryItems.add(new StarMapRegistryItem(tileEntity));
-		registry.put(((TileEntity) tileEntity).getWorldObj().provider.dimensionId, setRegistryItems);
+		registry.put(((TileEntity) tileEntity).getWorld().provider.getDimension(), setRegistryItems);
 		if (WarpDriveConfig.LOGGING_STARMAP) {
 			printRegistry("added");
 		}
@@ -78,7 +81,7 @@ public class StarMapRegistry {
 		assert(tileEntity instanceof TileEntity);
 		
 		countRead++;
-		final Set<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
+		final Set<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			// noting to remove
 			return;
@@ -158,16 +161,16 @@ public class StarMapRegistry {
 		return String.format("No ship found with name '%s'", nameShip);
 	}
 	
-	public void onBlockUpdated(final World world, final int x, final int y, final int z, final Block block, final int metadata) {
-		final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.dimensionId);
+	public void onBlockUpdated(final World world, final BlockPos blockPos, final IBlockState blockState) {
+		final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.getDimension());
 		if (setStarMapRegistryItems == null) {
 			return;
 		}
 		for (final StarMapRegistryItem registryItem : setStarMapRegistryItems) {
-			if (registryItem.contains(x, y, z)) {
-				final TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			if (registryItem.contains(blockPos)) {
+				final TileEntity tileEntity = world.getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 				if (tileEntity instanceof IStarMapRegistryTileEntity) {
-					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(x, y, z), block, metadata);
+					((IStarMapRegistryTileEntity) tileEntity).onBlockUpdatedInArea(new VectorI(blockPos), blockState);
 				}
 			}
 		}
@@ -181,7 +184,7 @@ public class StarMapRegistry {
 	public static int getSpaceDimensionId(final World world, final int x, final int z) {
 		CelestialObject celestialObject = CelestialObjectManager.get(world, x, z);
 		if (celestialObject == null) {
-			return world.provider.dimensionId;
+			return world.provider.getDimension();
 		}
 		// already in space?
 		if (celestialObject.isSpace()) {
@@ -202,7 +205,7 @@ public class StarMapRegistry {
 	public static int getHyperspaceDimensionId(final World world, final int x, final int z) {
 		CelestialObject celestialObject = CelestialObjectManager.get(world, x, z);
 		if (celestialObject == null) {
-			return world.provider.dimensionId;
+			return world.provider.getDimension();
 		}
 		// already in hyperspace?
 		if (celestialObject.isHyperspace()) {
@@ -251,10 +254,10 @@ public class StarMapRegistry {
 		final ArrayList<RadarEcho> arrayListRadarEchos = new ArrayList<>(registry.size());
 		cleanup();
 		
-		final CelestialObject celestialObject = CelestialObjectManager.get(tileEntity.getWorldObj(), tileEntity.xCoord, tileEntity.zCoord);
+		final CelestialObject celestialObject = CelestialObjectManager.get(tileEntity.getWorld(), tileEntity.getPos().getX(), tileEntity.getPos().getZ());
 		final Vector3 vectorRadar = getUniversalCoordinates(
 			celestialObject,
-			tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
+			tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
 		// printRegistry();
 		int radius2 = radius * radius;
 		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
@@ -262,7 +265,7 @@ public class StarMapRegistry {
 				if (starMapRegistryItem.type == EnumStarMapEntryType.ACCELERATOR) {
 					continue;
 				}
-				final Vector3 vectorItem = starMapRegistryItem.getUniversalCoordinates(tileEntity.getWorldObj().isRemote);
+				final Vector3 vectorItem = starMapRegistryItem.getUniversalCoordinates(tileEntity.getWorld().isRemote);
 				if (vectorItem == null) {
 					continue;
 				}
@@ -274,7 +277,7 @@ public class StarMapRegistry {
 					continue;
 				}
 				if ( starMapRegistryItem.isolationRate != 0.0D
-				  && tileEntity.getWorldObj().rand.nextDouble() < starMapRegistryItem.isolationRate) {
+				  && tileEntity.getWorld().rand.nextDouble() < starMapRegistryItem.isolationRate) {
 					continue;
 				}
 				
@@ -329,14 +332,14 @@ public class StarMapRegistry {
 		cleanup();
 		
 		core.validateShipSpatialParameters(reason);
-		aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
+		aabb1 = new AxisAlignedBB(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
 		
-		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorldObj().provider.dimensionId);
+		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			return false;
 		}
 		for (StarMapRegistryItem registryItem : setRegistryItems) {
-			assert(registryItem.dimensionId == core.getWorldObj().provider.dimensionId);
+			assert(registryItem.dimensionId == core.getWorld().provider.getDimension());
 			
 			// only check cores
 			if (registryItem.type != EnumStarMapEntryType.SHIP) {
@@ -344,16 +347,16 @@ public class StarMapRegistry {
 			}
 			
 			// Skip self
-			if (registryItem.x == core.xCoord && registryItem.y == core.yCoord && registryItem.z == core.zCoord) {
+			if (registryItem.x == core.getPos().getX() && registryItem.y == core.getPos().getY() && registryItem.z == core.getPos().getZ()) {
 				continue;
 			}
 			
 			// Skip missing ship cores
-			TileEntity tileEntity = core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			TileEntity tileEntity = core.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			TileEntityShipCore shipCore = (TileEntityShipCore) tileEntity;
 			
 			// Skip offline ship cores
 			if (shipCore.isOffline()) {
@@ -365,10 +368,18 @@ public class StarMapRegistry {
 				continue;
 			}
 			
-			// Compare areas for intersection
-			aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
-			if (aabb1.intersectsWith(aabb2)) {
-				return true;
+			// Search for nearest warp cores
+			double d3 = registryItem.x - core.getPos().getX();
+			double d4 = registryItem.y - core.getPos().getY();
+			double d5 = registryItem.z - core.getPos().getZ();
+			double distance2 = d3 * d3 + d4 * d4 + d5 * d5;
+			
+			if (distance2 <= ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1) * ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1)) {
+				// Compare warp-fields for intersection
+				aabb2 = new AxisAlignedBB(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+				if (aabb1.intersectsWith(aabb2)) {
+					return true;
+				}
 			}
 		}
 		
@@ -392,9 +403,10 @@ public class StarMapRegistry {
 					
 					boolean isLoaded;
 					if (world.getChunkProvider() instanceof ChunkProviderServer) {
-						final ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
+						final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 						try {
-							isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+							Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+							isLoaded = chunk != null && chunk.isLoaded();
 						} catch (NoSuchFieldError exception) {
 							isLoaded = chunkProviderServer.chunkExists(registryItem.x >> 4, registryItem.z >> 4);
 						}
@@ -407,9 +419,9 @@ public class StarMapRegistry {
 					}
 					
 					// get block and tile entity
-					final Block block = world.getBlock(registryItem.x, registryItem.y, registryItem.z);
+					final Block block = world.getBlockState(new BlockPos(registryItem.x, registryItem.y, registryItem.z)).getBlock();
 					
-					final TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+					final TileEntity tileEntity = world.getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 					isValid = true;
 					switch (registryItem.type) {
 						case UNDEFINED:

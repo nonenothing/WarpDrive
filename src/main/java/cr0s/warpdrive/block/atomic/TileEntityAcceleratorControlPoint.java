@@ -13,11 +13,12 @@ import li.cil.oc.api.machine.Context;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.fml.common.Optional;
 
-import cpw.mods.fml.common.Optional;
+import javax.annotation.Nonnull;
 
 public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfaced implements IControlChannel {
 	
@@ -46,8 +47,8 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void update() {
+		super.update();
 		
 		if (worldObj.isRemote) {
 			return;
@@ -56,7 +57,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		updateTicks--;
 		if (updateTicks <= 0) {
 			updateTicks = UPDATE_INTERVAL_TICKS;
-			updateMetadata((controlChannel == -1) || !isEnabled ? 0 : 1);
+			updateMetadata((controlChannel == -1) || !isEnabled ? 0 : 1); // @TODO MC1.10
 		}
 	}
 	
@@ -82,20 +83,20 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		}
 	}
 	
-	private String getControlChannelStatus() {
+	private ITextComponent getControlChannelStatus() {
 		if (controlChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.control_channel.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.control_channel.statusLine.undefined");
 		} else if (controlChannel < CONTROL_CHANNEL_MIN || controlChannel > CONTROL_CHANNEL_MAX) {
-			return StatCollector.translateToLocalFormatted("warpdrive.control_channel.statusLine.invalid", controlChannel);
+			return new TextComponentTranslation("warpdrive.control_channel.statusLine.invalid", controlChannel);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.control_channel.statusLine.valid", controlChannel);
+			return new TextComponentTranslation("warpdrive.control_channel.statusLine.valid", controlChannel);
 		}
 	}
 	
 	@Override
-	public String getStatus() {
+	public ITextComponent getStatus() {
 		return super.getStatus()
-		       + getControlChannelStatus();
+		       .appendSibling(getControlChannelStatus());
 	}
 	
 	@Override
@@ -106,22 +107,24 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
+		tag = super.writeToNBT(tag);
 		tag.setBoolean("isEnabled", isEnabled);
 		tag.setInteger(CONTROL_CHANNEL_TAG, controlChannel);
+		return tag;
 	}
 	
+	@Nonnull
 	@Override
-	public Packet getDescriptionPacket() {
+	public NBTTagCompound getUpdateTag() {
 		NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+		NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
@@ -131,7 +134,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	public void setIsEnabled(final boolean isEnabled) {
 		this.isEnabled = isEnabled;
-		WarpDrive.starMap.onBlockUpdated(worldObj, xCoord, yCoord, zCoord, getBlockType(), getBlockMetadata());
+		WarpDrive.starMap.onBlockUpdated(worldObj, pos, worldObj.getBlockState(pos));
 	}
 	
 	// OpenComputer callback methods

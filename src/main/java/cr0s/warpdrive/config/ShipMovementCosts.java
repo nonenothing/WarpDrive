@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.EventWarpDrive.Ship.MovementCosts;
 import cr0s.warpdrive.data.EnumShipMovementType;
 
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -18,7 +19,7 @@ public class ShipMovementCosts {
 	public final int sickness_seconds;
 	public final int cooldown_seconds;
 	
-	public ShipMovementCosts(final World world, final int x, final int y, final int z, 
+	public ShipMovementCosts(final World world, final BlockPos blockPos, 
 	                         final int mass, final EnumShipMovementType shipMovementType, final int distance) {
 		final Factors factorsForJumpParameters = WarpDriveConfig.SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()];
 		final int maximumDistance_blocks = Commons.clamp(0, 30000000, evaluate(mass, distance, factorsForJumpParameters.maximumDistance));
@@ -28,7 +29,7 @@ public class ShipMovementCosts {
 		final int cooldown_seconds = Commons.clamp(0, 3600, evaluate(mass, distance, factorsForJumpParameters.cooldown));
 		
 		// post event allowing other mods to adjust it
-		final MovementCosts movementCosts = new MovementCosts(world, x, y, z,
+		final MovementCosts movementCosts = new MovementCosts(world, blockPos,
 		                                                      mass, shipMovementType.getName(), distance,
 		                                                      maximumDistance_blocks, energyRequired, warmup_seconds, sickness_seconds, cooldown_seconds);
 		MinecraftForge.EVENT_BUS.post(movementCosts);

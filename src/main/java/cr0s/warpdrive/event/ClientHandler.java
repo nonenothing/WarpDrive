@@ -6,66 +6,72 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.util.StatCollector;
 
-import cpw.mods.fml.common.eventhandler.EventPriority;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class ClientHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onTooltipEvent(ItemTooltipEvent event) {
-		if (event.entityPlayer == null) {
+		if (event.getEntityPlayer() == null) {
 			return;
 		}
-		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.itemStack.getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
-			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.breathingHelmet"));
+		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.getItemStack().getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
+			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.breathingHelmet").getFormattedText());
 		}
-		if (Dictionary.ITEMS_FLYINSPACE.contains(event.itemStack.getItem())) {
-			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.flyInSpace"));
+		if (Dictionary.ITEMS_FLYINSPACE.contains(event.getItemStack().getItem())) {
+			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.flyInSpace").getFormattedText());
 		}
-		if (Dictionary.ITEMS_NOFALLDAMAGE.contains(event.itemStack.getItem())) {
-			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.noFallDamage"));
+		if (Dictionary.ITEMS_NOFALLDAMAGE.contains(event.getItemStack().getItem())) {
+			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.noFallDamage").getFormattedText());
 		}
-		if (WarpDrive.isDev && event.entityPlayer.capabilities.isCreativeMode) {// disabled in production
-			Block block = Block.getBlockFromItem(event.itemStack.getItem());
-			if (block != Blocks.air) {
+		if (WarpDrive.isDev && event.getEntityPlayer().capabilities.isCreativeMode) {// disabled in production
+			Block block = Block.getBlockFromItem(event.getItemStack().getItem());
+			if (block != Blocks.AIR && block != null) {
 				try {
-					String uniqueName = Block.blockRegistry.getNameForObject(block);
-					if (uniqueName != null) {
-						Commons.addTooltip(event.toolTip, "" + uniqueName + "");
-					}
+					ResourceLocation resourceLocation = Block.REGISTRY.getNameForObject(block);
+					Commons.addTooltip(event.getToolTip(), "" + resourceLocation + "");
 				} catch(Exception exception) {
 					// no operation
 				}
 				
 				try {
-					String harvestTool = block.getHarvestTool(event.itemStack.getItemDamage());
-					if (harvestTool != null) {
-						Commons.addTooltip(event.toolTip, "Harvest with " + harvestTool + " (" + block.getHarvestLevel(event.itemStack.getItemDamage()) + ")");
-					}
-				} catch(Exception exception) {
+					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+					String harvestTool = block.getHarvestTool(blockState);
+					Commons.addTooltip(event.getToolTip(), "Harvest with " + harvestTool + " (" + block.getHarvestLevel(blockState) + ")");
+				} catch(Exception | AssertionError exception) {
 					// no operation
 				}
-				
-				Commons.addTooltip(event.toolTip, "Light opacity is " + block.getLightOpacity());
 				
 				try {
-					Commons.addTooltip(event.toolTip, "Hardness is " + (float)WarpDrive.fieldBlockHardness.get(block));
+					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+					Commons.addTooltip(event.getToolTip(), "Light opacity is " + block.getLightOpacity(blockState));
+				} catch(Exception | AssertionError exception) {
+					// no operation
+				}
+				
+				try {
+					Commons.addTooltip(event.getToolTip(), "Hardness is " + (float) WarpDrive.fieldBlockHardness.get(block));
 				} catch(Exception exception) {
 					// no operation
 				}
-				Commons.addTooltip(event.toolTip, "Explosion resistance is " + block.getExplosionResistance(null));
+				try {
+					Commons.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
+				} catch(Exception exception) {
+					// no operation
+				}
+				Commons.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
 				
 			} else {
 				try {
-					String uniqueName = Item.itemRegistry.getNameForObject(event.itemStack.getItem());
-					if (uniqueName != null) {
-						Commons.addTooltip(event.toolTip, "" + uniqueName + "");
-					}
+					String uniqueName = event.getItemStack().getItem().getRegistryName().toString();
+					Commons.addTooltip(event.getToolTip(), "" + uniqueName + "");
 				} catch(Exception exception) {
 					// no operation
 				}

@@ -4,6 +4,9 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -16,13 +19,9 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.Constants.NBT;
 
 public class CelestialObjectManager extends XmlFileManager {
 	
@@ -46,7 +45,7 @@ public class CelestialObjectManager extends XmlFileManager {
 		if (world == null) {
 			return null;
 		}
-		return (world.isRemote ? CLIENT : SERVER).get(world.provider.dimensionId, x, z);
+		return (world.isRemote ? CLIENT : SERVER).get(world.provider.getDimension(), x, z);
 	}
 	
 	public static CelestialObject get(final boolean isRemote, final int dimensionId, final int x, final int z) {
@@ -61,7 +60,7 @@ public class CelestialObjectManager extends XmlFileManager {
 				if (celestialObject.isHyperspace()) {
 					continue;
 				}
-				final double distanceSquared = celestialObject.getSquareDistanceInParent(world.provider.dimensionId, x, z);
+				final double distanceSquared = celestialObject.getSquareDistanceInParent(world.provider.getDimension(), x, z);
 				if (distanceSquared <= 0.0D) {
 					return celestialObject;
 				} else if (closestPlanetDistance > distanceSquared) {
@@ -103,7 +102,7 @@ public class CelestialObjectManager extends XmlFileManager {
 				switch (celestialObject.provider) {
 				case CelestialObject.PROVIDER_SPACE:
 					if (celestialObject.isSpace()) {
-						DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_SPACE_PROVIDER_ID);
+						DimensionManager.registerDimension(celestialObject.dimensionId, WarpDrive.dimensionTypeSpace);
 					} else {
 						WarpDrive.logger.error(String.format("Only a space dimension can be provided by WarpDriveSpace. Dimension %d is not one of those.",
 						                                     celestialObject.dimensionId));
@@ -112,7 +111,7 @@ public class CelestialObjectManager extends XmlFileManager {
 					
 				case CelestialObject.PROVIDER_HYPERSPACE:
 					if (celestialObject.isHyperspace()) {
-						DimensionManager.registerDimension(celestialObject.dimensionId, WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID);
+						DimensionManager.registerDimension(celestialObject.dimensionId, WarpDrive.dimensionTypeHyperSpace);
 					} else {
 						WarpDrive.logger.error(String.format("Only an hyperspace dimension can be provided by WarpDriveHyperspace. Dimension %d is not one of those.",
 						                                     celestialObject.dimensionId));
