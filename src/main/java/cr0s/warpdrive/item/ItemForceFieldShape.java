@@ -24,7 +24,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
-import java.util.*;
 
 public class ItemForceFieldShape extends ItemAbstractBase {	
 	
@@ -52,7 +51,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public static ItemStack getItemStackNoCache(EnumForceFieldShape enumForceFieldShape, int amount) {
 		return new ItemStack(WarpDrive.itemForceFieldShape, amount, enumForceFieldShape.ordinal());
 	}
-
+	
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(ItemStack itemStack) {

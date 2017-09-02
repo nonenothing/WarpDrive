@@ -1,0 +1,887 @@
+
+package.loaded.warpdriveCommons = nil 
+local w = require("warpdriveCommons")
+
+local data
+
+----------- Attack lasers support
+
+local laser_batteryIndex = 1
+local laser_batteries = {}
+local laser_stationIndex = 1
+local laser_stations = {}
+local laserAddresses = {}
+local lasercamAddresses = {}
+
+function laser_save(parData)
+  -- rebuild a clean structure, skipping the device objects
+  data.laser_batteries = {}
+  for keyBattery, laserbattery in pairs(laser_batteries) do
+    data.laser_batteries[keyBattery] = {
+      name = laserbattery.name,
+      frequency = laserbattery.frequency,
+      headAddress = laserbattery.headAddress,
+      boosterAddresses = laserbattery.boosterAddresses }
+  end
+  data.laser_stations = {}
+  for keyStation, laserstation in pairs(laser_stations) do
+    data.laser_stations[keyStation] = {
+      name = laserstation.name,
+      cameraAddress = laserstation.cameraAddress,
+      batteries = {}}
+    for keyBattery, laserbattery in pairs(laser_stations[keyStation].batteries) do
+      data.laser_stations[keyStation].batteries[keyBattery] = {
+        name = laserbattery.name,
+        enabled = laserbattery.enabled }
+    end
+  end
+end
+
+function laser_read(parData)
+  data = parData
+  if data.laser_batteries == nil then data.laser_batteries = {}; end
+  laser_batteries = data.laser_batteries
+  for keyBattery, laserbattery in pairs(laser_batteries) do
+    if laserbattery.headAddress ~= nil then
+      laserbattery.head = w.device_get(laserbattery.headAddress)
+    end
+    if laserbattery.name == nil then
+      laserbattery.name = "noname"
+    end
+    if laserbattery.boosterAddresses == nil then
+      laserbattery.boosterAddresses = {}
+    end
+    laserbattery.boosters = {}
+    for boosterKey, boosterAddress in pairs(laserbattery.boosterAddresses) do
+      laserbattery.boosters[boosterKey] = w.device_get(boosterAddress)
+    end
+  end
+  if data.laser_stations == nil then data.laser_stations = {}; end
+  laser_stations = data.laser_stations
+  for keyStation, laserstation in pairs(laser_stations) do
+    if laserstation.cameraAddress ~= nil then
+      laserstation.camera = w.device_get(laserstation.cameraAddress)
+    end
+    if laserstation.name == nil then
+      laserstation.name = "noname"
+    end
+    if laserstation.batteries == nil then
+      laserstation.batteries = {}
+    end
+  end
+  if data.laser_firingMode == nil then data.laser_firingMode = "boosted"; end
+  if data.laser_firingScatter == nil then data.laser_firingScatter = false; end
+end
+
+function laser_getDescription(address)
+  if address == nil then
+    return "~not defined~"
+  end
+  local laser = w.device_get(address)
+  if laser == nil or laser.position == nil then
+    return "~invalid~"
+  end
+  local x, y, z = laser.position()
+  return "@ " .. w.format_integer(x, 7) .. " " .. w.format_integer(y, 3) .. " " .. w.format_integer(z, 7)
+end
+
+function laser_getName(address)
+  return address
+end
+
+function laser_battery_key(character, keycode)
+  if character == 'a' or character == 'A' then -- A or keycode == 30
+    table.insert(laser_batteries, {
+      name = "noname",
+      frequency = -1,
+      headAddress = nil,
+      boosterAddresses = {},
+      head = nil,
+      boosters = {} })
+    laser_batteryIndex = #laser_batteries
+    laser_battery_linkLasers()
+    laser_battery_config()
+    w.data_save()
+    return true
+  elseif character == 'r' or character == 'R' then -- R or keycode == 19
+    table.remove(laser_batteries, laser_batteryIndex)
+    -- laser_batteryIndex = laser_batteryIndex - 1
+    w.data_save()
+    return true
+  elseif character == 'f' or character == 'F' then -- F or keycode == 33
+    if data.laser_firingMode == "boosted" then data.laser_firingMode = "single"
+    elseif data.laser_firingMode == "single" then data.laser_firingMode = "multi"
+    elseif data.laser_firingMode == "multi" then data.laser_firingMode = "boosted" end
+    w.data_save()
+    return true
+  elseif character == 's' or character == 'S' then -- S or keycode == 31
+    data.laser_firingScatter = not data.laser_firingScatter
+    w.data_save()
+    return true
+  elseif character == 'l' or character == 'L' then -- L or keycode == 38
+    laser_battery_linkLasers()
+    w.data_save()
+    return true
+  elseif character == 'c' or character == 'C' then -- C or keycode == 46
+    laser_battery_config()
+    w.data_save()
+    return true
+  elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
+    laser_batteryIndex = laser_batteryIndex - 1
+    return true
+  elseif keycode == 208 or keycode == 205 or character == '+' then -- Down or Right or +
+    laser_batteryIndex = laser_batteryIndex + 1
+    return true
+  end
+  return false
+end
+
+function laser_battery_getCurrent()
+  if laser_batteries ~= nil then
+    if laser_batteryIndex > #laser_batteries then
+      laser_batteryIndex = 1
+    elseif laser_batteryIndex < 1 then
+      laser_batteryIndex = #laser_batteries
+    end
+    return laser_batteries[laser_batteryIndex]
+  else
+    return nil
+  end
+end
+
+function laser_battery_getByName(name)
+  if laser_batteries ~= nil and name ~= nil then
+    for key, laserbattery in pairs(laser_batteries) do
+      if laserbattery.name == name then
+        return laserbattery
+      end
+    end
+  end
+  return { frequency = -1, boosterAddresses = {}, name = "-not defined-", boosters = {} }
+end
+
+function laser_battery_page()
+  w.page_begin(w.data_getName() .. " - Laser batteries")
+  
+  local laserbattery = laser_battery_getCurrent()
+  
+  -- w.setCursorPos(1, 2)
+  if #laser_batteries == 0 then
+    w.setColorDisabled()
+    w.writeCentered(2, "No laser battery defined, press A to add one")
+  elseif laserbattery == nil then
+    w.setColorWarning()
+    w.writeCentered(2, "Laser battery " .. laser_batteryIndex .. " of " .. #laser_batteries .. " is not defined")
+  else
+    w.setColorNormal()
+    w.writeCentered(2, "'" .. laserbattery.name .. "' (" .. laser_batteryIndex .. " of " .. #laser_batteries .. ")")
+
+    w.setCursorPos(1, 3)
+    local headX = 0
+    local headY = 0
+    local headZ = 0
+    local headFrequency = -1
+    if laserbattery.head == nil then
+      w.setColorDisabled()
+      w.write("Laser head is not defined, press L to link one")
+    else
+      w.setColorNormal()
+      headX, headY, headZ = laserbattery.head.position()
+      headFrequency = laserbattery.head.beamFrequency()
+      w.writeLn("Laser head:")
+      if headFrequency == -1 then
+        w.setColorWarning()
+      end
+      w.write(w.format_integer(headFrequency, 5))
+      w.setColorNormal()
+      w.write(" @ " .. w.format_integer(headX, 7) .. " " .. w.format_integer(headY, 3) .. " " .. w.format_integer(headZ, 7)
+        .. " " .. w.format_address(laserbattery.headAddress))
+    end
+    
+    w.setCursorPos(1, 5)
+    if laserbattery.boosters == nil or #laserbattery.boosters == 0 then
+      w.setColorDisabled()
+      w.write("Boosting lasers aren't set, press L to link one")
+    else
+      w.setColorNormal()
+      w.write("Boosting lasers:")
+      for key, booster in pairs(laserbattery.boosters) do
+        w.setCursorPos(1, 5 + key)
+        local x, y, z = booster.position()
+        if booster.beamFrequency() == headFrequency and headFrequency ~= -1 then
+          w.setColorNormal()
+        else
+          w.setColorWarning()
+        end
+        w.write(w.format_integer(booster.beamFrequency(), 5))
+        w.setColorNormal()
+        w.write(" @ " .. w.format_integer(x - headX, 7) .. " " .. w.format_integer(y - headY, 3) .. " " .. w.format_integer(z - headZ, 7)
+          .. " " .. w.format_address(laserbattery.boosterAddresses[key]))
+      end
+    end
+  end
+  
+  w.setColorNormal()
+  w.setCursorPos(1, 14)
+  w.write("  -----------------------------------------------")
+  w.setCursorPos(1, 16)
+  w.write("   Firing mode: " .. data.laser_firingMode)
+  w.setCursorPos(30, 16)
+  w.write("Scatter mode: ")
+  if data.laser_firingScatter then
+    w.setColorSuccess()
+    w.write("ON")
+    w.setColorNormal()
+  else
+    w.write("off")
+  end
+  
+  w.setColorControl()
+  w.setCursorPos(1, 19)
+  w.writeFullLine(" Add/Remove/Configure selected battery (A/R/C)")
+  w.writeFullLine(" select battery (Arrows), Link lasers (L)")
+  w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
+end
+
+function laser_battery_config()
+  local laserbattery = laser_battery_getCurrent()
+  if laserbattery == nil then
+    return
+  end
+  w.page_begin(w.data_getName() .. " - Laser battery configuration")
+  w.setColorNormal()
+  w.setCursorPos(1, 3)
+  w.writeLn("Battery name (" .. laserbattery.name .. "):")
+  laserbattery.name = w.input_readText(laserbattery.name)
+  w.setCursorPos(1, 3)
+  w.clearLine()
+  w.writeLn("Battery name set to " .. laserbattery.name)
+  w.clearLine()
+  
+  if laserbattery.head == nil then
+    return
+  end
+  w.setColorDisabled()
+  w.setCursorPos(1, 4)
+  local headX, headY, headZ = laserbattery.head.position()
+  local headFrequency = laserbattery.head.beamFrequency()
+  w.write("@ " .. w.format_integer(headX, 7) .. " " .. w.format_integer(headY, 3) .. " " .. w.format_integer(headZ, 7))
+  w.setCursorPos(1, 5)
+  w.write("With " .. #laserbattery.boosters .. " boosters")
+  
+  w.setCursorPos(1, 8)
+  w.setColorDisabled()
+  w.write(" Valid values are 0 to 65000 ")
+  w.setColorNormal()
+  local frequency
+  repeat
+    w.setCursorPos(1, 7)
+    w.clearLine()
+    w.write("Battery beam frequency (" .. w.format_integer(headFrequency, 5) .. "): ")
+    frequency = w.input_readNumber(headFrequency)
+    if frequency ~= 0 and (frequency < 0 or frequency > 65000) then
+      w.status_showWarning("This is not a valid beam frequency. Try again.")
+    end
+  until frequency > 0 and frequency <= 65000
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  local newFrequency = laserbattery.head.beamFrequency(frequency)
+  w.write("Head beam frequency set to " .. newFrequency)
+  for key, booster in pairs(laserbattery.boosters) do
+    w.setCursorPos(1, 8 + (key % 5))
+    newFrequency = booster.beamFrequency(frequency)
+    w.write("Booster beam frequency set to " .. newFrequency)
+  end
+end
+
+function laser_battery_linkLasers()
+  local laserbattery = laser_battery_getCurrent()
+  if laserbattery == nil then
+    return
+  end
+  w.page_begin(w.data_getName() .. " - Linking lasers")
+  
+  w.setColorDisabled()
+  w.setCursorPos(1, 3)
+  w.writeLn("Help: Use arrows to select lasers.")
+  w.writeLn("Press backspace/delete to remove laser.")
+  w.writeLn("Press enter to validate.")
+  w.writeLn("Validate with '-no laser-' to stop adding lasers.")
+  
+  w.setColorNormal()
+  if laserbattery.boosters == nil then
+    laserbattery.boosters = {}
+  end
+  w.writeCentered(2, "Battery '" .. laserbattery.name .. "' with " .. #laserbattery.boosters .. " boosters")
+  
+  local laserAddresses_left = {}
+  for keyAddress, laserAddress in pairs(laserAddresses) do
+    laserAddresses_left[keyAddress] = laserAddress
+  end
+  w.setCursorPos(1, 8)
+  if laserbattery.headAddress == nil then
+    w.writeLn("Laser head (not defined): ")
+  else
+    w.writeLn("Laser head (" .. laserbattery.headAddress .. "): ")
+  end
+  laserbattery.headAddress = w.input_readEnum(laserbattery.headAddress, laserAddresses_left, laser_getName, laser_getDescription, "-no laser-")
+  w.setColorNormal()
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  if laserbattery.headAddress == nil then
+    w.writeLn("Laser head set to (not defined)")
+    laserbattery.head = nil
+  else
+    -- remove selected laser from potentials
+    for keyLaser, laserAddress in pairs(laserAddresses_left) do
+      if laser_getName(laserAddress) == laserbattery.headAddress then
+        table.remove(laserAddresses_left, keyLaser)
+        break
+      end
+    end
+    
+    w.writeLn("Laser head set to " .. laserbattery.headAddress)
+    laserbattery.head = w.device_get(laserbattery.headAddress)
+    
+    w.setColorDisabled()
+    w.setCursorPos(1, 9)
+    local headX, headY, headZ = laserbattery.head.position()
+    local headFrequency = laserbattery.head.beamFrequency()
+    w.write("@ " .. w.format_integer(headX, 7) .. " " .. w.format_integer(headY, 3) .. " " .. w.format_integer(headZ, 7))
+  end
+  
+  local key = 1
+  local addressCurrent = nil
+  repeat
+    w.setColorNormal()
+    w.setCursorPos(1, 10 + (key % 5))
+    w.write("Booster #" .. key)
+    addressCurrent = nil
+    if key <= #laserbattery.boosterAddresses then
+      addressCurrent = laserbattery.boosterAddresses[key]
+      w.write(" (" .. addressCurrent .. "): ")
+    else
+      w.write(" (-no laser-): ")
+    end
+    addressCurrent  = w.input_readEnum(addressCurrent, laserAddresses_left, laser_getName, laser_getDescription, "-no laser-")
+    if addressCurrent == nil then
+      if key > #laserbattery.boosterAddresses then
+        key = -1
+      else
+        table.remove(laserbattery.boosterAddresses, key)
+        table.remove(laserbattery.boosters, key)
+        w.success("Removed")
+      end
+    else
+      -- remove selected laser from potentials
+      for keyLaser, laserAddress in pairs(laserAddresses_left) do
+        if laser_getName(laserAddress) == addressCurrent then
+          table.remove(laserAddresses_left, keyLaser)
+          break
+        end
+      end
+      
+      laserbattery.boosterAddresses[key] = addressCurrent
+      laserbattery.boosters[key] = w.device_get(addressCurrent)
+      w.setColorNormal()
+      w.setCursorPos(1, 10 + (key % 5))
+      w.clearLine()
+      w.write("Booster #" .. key .. " set to " .. addressCurrent)
+      key = key + 1
+    end
+  until key == -1
+end
+
+function laser_battery_getName(laserbattery)
+  return laserbattery.name
+end
+
+function laser_battery_getDescription(laserbattery)
+  local msg = ""
+  local x, y, z
+  local found = false
+  if laserbattery.head == nil then
+    msg = msg .. 0
+  else
+    x, y, z = laserbattery.head.position()
+    found = true
+    msg = msg .. 1
+  end
+  msg = msg .. "+"
+  if laserbattery.boosters == nil then
+    msg = msg .. 0
+  else
+    msg = msg .. #laserbattery.boosters
+    if not found then
+      for key, booster in pairs(laserbattery.boosters) do
+        if booster ~= nil and not found then
+          x, y, z = booster.position()
+          found = true
+        end
+      end
+    end
+  end
+  return w.format_string(laserbattery.name, 20)
+    .. msg
+    .. " @ " .. w.format_integer(x, 7) .. " " .. w.format_integer(y, 3) .. " " .. w.format_integer(z, 7)
+end
+
+function laser_station_key(character, keycode)
+  if character == 'a' or character == 'A' then -- A or keycode == 30
+    table.insert(laser_stations, { name = "noname", cameraFrequency = -1, camera = nil, batteries = {} })
+    laser_stationIndex = #laser_stations
+    laser_station_linkBatteries()
+    laser_station_config()
+    w.data_save()
+    return true
+  elseif character == 'r' or character == 'R' then -- R or keycode == 19
+    table.remove(laser_stations, laser_stationIndex)
+    -- laser_stationIndex = laser_stationIndex - 1
+    w.data_save()
+    return true
+  elseif character == 'f' or character == 'F' then -- F or keycode == 33
+    if data.laser_firingMode == "boosted" then data.laser_firingMode = "single"
+    elseif data.laser_firingMode == "single" then data.laser_firingMode = "multi"
+    elseif data.laser_firingMode == "multi" then data.laser_firingMode = "boosted" end
+    w.data_save()
+    return true
+  elseif character == 's' or character == 'S' then -- S or keycode == 31
+    data.laser_firingScatter = not data.laser_firingScatter
+    w.data_save()
+    return true
+  elseif character == 'l' or character == 'L' then -- L or keycode == 38
+    laser_station_linkBatteries()
+    w.data_save()
+    return true
+  elseif character == 'c' or character == 'C' then -- C or keycode == 46
+    laser_station_config()
+    w.data_save()
+    return true
+  elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
+    laser_stationIndex = laser_stationIndex - 1
+    return true
+  elseif keycode == 208 or keycode == 205 or character == '+' then -- Down or Right or +
+    laser_stationIndex = laser_stationIndex + 1
+    return true
+  end
+  return false
+end
+
+function laser_station_getCurrent()
+  if laser_stations ~= nil then
+    if laser_stationIndex > #laser_stations then
+      laser_stationIndex = 1
+    elseif laser_stationIndex < 1 then
+      laser_stationIndex = #laser_stations
+    end
+    return laser_stations[laser_stationIndex]
+  else
+    return nil
+  end
+end
+
+function laser_station_page()
+  w.page_begin(w.data_getName() .. " - Laser stations")
+  
+  local laserstation = laser_station_getCurrent()
+  
+  -- w.setCursorPos(1, 2)
+  if #laser_stations == 0 then
+    w.setColorDisabled()
+    w.writeCentered(2, "No laser stations configured")
+  elseif laserstation == nil then
+    w.setColorWarning()
+    w.writeCentered(2, "Laser station " .. laser_stationIndex .. " of " .. #laser_stations .. " is invalid")
+  else
+    w.setColorNormal()
+    w.writeCentered(2, "'" .. laserstation.name .. "' (" .. laser_stationIndex .. " of " .. #laser_stations .. ")")
+    
+    w.setCursorPos(1, 3)
+    if laserstation.camera == nil then
+      w.setColorDisabled()
+      w.write("Laser camera is not defined, press L to link one")
+    else
+      w.setColorNormal()
+      local camX, camY, camZ = laserstation.camera.position()
+      local camVideoChannel = laserstation.camera.videoChannel()
+      w.writeLn("Laser camera:")
+      if camVideoChannel == -1 then
+        w.setColorWarning()
+      end
+      w.write(w.format_integer(camVideoChannel, 5))
+      w.setColorNormal()
+      w.write(" @ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7)
+        .. " " .. w.format_address(laserstation.cameraAddress))
+    end
+    
+    w.setCursorPos(1, 5)
+    if laserstation.batteries == nil or #laserstation.batteries == 0 then
+      w.setColorDisabled()
+      w.write("Laser batteries aren't set, press L to link one")
+    else
+      w.setColorNormal()
+      w.write("Laser batteries:")
+      for key, battery in pairs(laserstation.batteries) do
+        w.setCursorPos(1, 5 + key)
+        laserbattery = laser_battery_getByName(battery.name)
+        if battery.enabled then
+          w.setColorSuccess()
+        else
+          w.setColorDisabled()
+        end
+        w.write(laser_battery_getDescription(laserbattery))
+      end
+    end
+  end
+  
+  w.setColorNormal()
+  w.setCursorPos(1, 14)
+  w.write("  -----------------------------------------------")
+  w.setCursorPos(1, 16)
+  w.write("   Firing mode: " .. data.laser_firingMode)
+  w.setCursorPos(30, 16)
+  w.write("Scatter mode: ")
+  if data.laser_firingScatter then
+    w.setColorSuccess()
+    w.write("ON")
+    w.setColorNormal()
+  else
+    w.write("off")
+  end
+  
+  w.setColorControl()
+  w.setCursorPos(1, 19)
+  w.writeFullLine(" Add/Remove/Configure laser station (A/R/C)")
+  w.writeFullLine(" select station (Arrows), Link batteries (L)")
+  w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
+end
+
+function laser_station_config()
+  local laserstation = laser_station_getCurrent()
+  if laserstation == nil then
+    return
+  end
+  w.page_begin(w.data_getName() .. " - Laser station configuration")
+  w.setColorNormal()
+  w.setCursorPos(1, 3)
+  w.writeLn("Laser station name (" .. laserstation.name .. "):")
+  laserstation.name = w.input_readText(laserstation.name)
+  w.setCursorPos(1, 3)
+  w.clearLine()
+  w.writeLn("Laser station name set to " .. laserstation.name)
+  w.clearLine()
+  
+  if laserstation.camera == nil then
+    return
+  end
+  w.setCursorPos(1, 5)
+  local camX, camY, camZ = laserstation.camera.position()
+  local camVideoChannel = laserstation.camera.videoChannel()
+  w.write("Camera @ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7))
+  w.setCursorPos(1, 6)
+  w.write("With " .. #laserstation.batteries .. " batteries")
+  
+  w.setCursorPos(1, 8)
+  w.setColorDisabled()
+  w.write(" Valid values are 0 to 268435455 ")
+  w.setColorNormal()
+  local channel
+  repeat
+    w.setCursorPos(1, 7)
+    w.write("Camera video frequency (" .. w.format_integer(camVideoChannel, 5) .. "): ")
+    channel = w.input_readNumber(camVideoChannel)
+    if channel ~= 0 and (channel < 0 or channel > 268435455) then
+      w.status_showWarning("This is not a valid video channel. Try again.")
+    end
+  until channel > 0 and channel <= 268435455
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  
+  w.setCursorPos(1, 7)
+  w.clearLine()
+  local newVideoChannel = laserstation.camera.videoChannel(channel)
+  laserstation.camera.beamFrequency(1420)
+  w.write("Camera video channel set to " .. newVideoChannel)
+  
+  w.setCursorPos(1, 11)
+  w.write("Battery enabling: ")
+  for key, battery in pairs(laserstation.batteries) do
+    laserbattery = laser_battery_getByName(battery.name)
+    local msg = laser_battery_getDescription(laserbattery)
+    
+    w.setCursorPos(1, 11 + (key % 5))
+    if battery.enabled then
+      w.setColorSuccess()
+      w.write(msg)
+      battery.enabled = w.input_readConfirmation("Keep battery '" .. battery.name .. "' enabled? (Y/n)")
+    else
+      w.setColorDisabled()
+      w.write(msg)
+      battery.enabled = w.input_readConfirmation("Enable battery '" .. battery.name .. "'? (Y/n)")
+    end
+    w.setCursorPos(1, 11 + (key % 5))
+    if battery.enabled then
+      w.setColorSuccess()
+      w.write(msg)
+    else
+      w.setColorDisabled()
+      w.write(msg)
+    end
+  end
+end
+
+function laser_station_linkBatteries()
+  local laserstation = laser_station_getCurrent()
+  if laserstation == nil then
+    return
+  end
+  w.page_begin(w.data_getName() .. " - Linking batteries")
+  
+  w.setColorDisabled()
+  w.setCursorPos(1, 3)
+  w.writeLn("Instruction: use arrows to select batteries.")
+  w.writeLn("Press backspace/delete to remove battery.")
+  w.writeLn("Press enter to validate.")
+  w.writeLn("Validate '-no battery-' to stop adding batteries.")
+  
+  w.setColorNormal()
+  if laserstation.batteries == nil then
+    laserstation.batteries = {}
+  end
+  w.writeCentered(2, "Station '" .. laserstation.name .. "' with " .. #laserstation.batteries .. " batteries linked")
+  
+  w.setCursorPos(1, 8)
+  if laserstation.cameraAddress == nil then
+    w.writeLn("Laser camera (not defined): ")
+  else
+    w.writeLn("Laser camera (" .. laserstation.cameraAddress .. "): ")
+  end
+  
+  laserstation.cameraAddress = w.input_readEnum(laserstation.cameraAddress, lasercamAddresses, laser_getName, laser_getDescription, "-no laser camera-")
+  if laserstation.cameraAddress == nil then
+    laserstation.camera = nil
+  else
+    laserstation.camera = w.device_get(laserstation.cameraAddress)
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 8)
+    w.clearLine()
+    w.writeLn("Laser camera set to " .. laserstation.cameraAddress)
+    w.setColorDisabled()
+    w.setCursorPos(1, 9)
+    w.clearLine()
+    local camX, camY, camZ = laserstation.camera.position()
+    local camVideoChannel = laserstation.camera.videoChannel()
+    w.write("@ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7))
+  end
+  
+  local key = 1
+  local nameCurrent = nil
+  local laser_batteries_left = {}
+  for keyBattery, laserbattery in pairs(laser_batteries) do
+    laser_batteries_left[keyBattery] = laserbattery
+  end
+  repeat
+    w.setColorNormal()
+    w.setCursorPos(1, 10 + (key % 5))
+    w.write("Battery #" .. key)
+    nameCurrent = nil
+    if key <= #laserstation.batteries then
+      nameCurrent = laserstation.batteries[key].name
+      w.write(" (" .. nameCurrent .. "): ")
+    else
+      w.write(" (-no battery-): ")
+    end
+    nameCurrent = w.input_readEnum(nameCurrent, laser_batteries_left, laser_battery_getName, laser_battery_getDescription, "-no battery-")
+    if nameCurrent == nil then
+      if key > #laserstation.batteries then
+        key = -1
+      else
+        table.remove(laserstation.batteries, key)
+        w.success("Removed")
+      end
+    else
+      -- remove selected battery from potentials
+      for keyBattery, laserbattery in pairs(laser_batteries_left) do
+        if laser_battery_getName(laserbattery) == nameCurrent then
+          table.remove(laser_batteries_left, keyBattery)
+          break
+        end
+      end
+      
+      laserstation.batteries[key] = { name = nameCurrent, enabled = true }
+      w.setColorNormal()
+      w.setCursorPos(1, 10 + (key % 5))
+      w.clearLine()
+      w.write("Battery #" .. key .. " set to " .. nameCurrent)
+      key = key + 1
+    end
+  until key == -1
+end
+
+function laser_battery_shoot(batteryName, targetX, targetY, targetZ)
+  local laserbattery = laser_battery_getByName(batteryName)
+  
+  if laserbattery == nil then
+    w.status_showWarning("Invalid battery name '" .. batteryName .. "'")
+    return
+  end
+  
+  local x, y, z
+  if data.laser_firingMode == "boosted" and laserbattery.head ~= nil and laserbattery.boosters ~= nil then
+    local frequency = laserbattery.head.beamFrequency()
+    local headX, headY, headZ = laserbattery.head.position()
+    
+    for key, booster in pairs(laserbattery.boosters) do
+      booster.beamFrequency(frequency)
+    end
+    w.sleep(0)
+    for key, booster in pairs(laserbattery.boosters) do
+      x, y, z = booster.position()
+      booster.emitBeam(headX - x, headY - y, headZ - z)
+    end
+    w.sleep(0.1)
+    if data.laser_firingScatter then
+      headX = headX + math.random(-1, 1)
+      headY = headY + math.random(-1, 1)
+      headZ = headZ + math.random(-1, 1)
+    end
+    laserbattery.head.emitBeam(targetX - headX, targetY - headY, targetZ - headZ)
+  elseif data.laser_firingMode == "single" and laserbattery.head ~= nil then
+    x, y, z = laserbattery.head.position()
+    if data.laser_firingScatter then
+      x = x + math.random(-1, 1)
+      y = y + math.random(-1, 1)
+      z = z + math.random(-1, 1)
+    end
+    laserbattery.head.emitBeam(targetX - x, targetY - y, targetZ - z)
+  else
+    if laserbattery.head ~= nil then
+      x, y, z = laserbattery.head.position()
+      if z ~= nil then
+        if data.laser_firingScatter then
+          x = x + math.random(-1, 1)
+          y = y + math.random(-1, 1)
+          z = z + math.random(-1, 1)
+        end
+        laserbattery.head.emitBeam(targetX - x, targetY - y, targetZ - z)
+      end
+    end
+    
+    if laserbattery.boosters ~= nil then
+      for key, booster in pairs(laserbattery.boosters) do
+        x, y, z = booster.position()
+        if z ~= nil then
+          if data.laser_firingScatter then
+            x = x + math.random(-1, 1)
+            y = y + math.random(-1, 1)
+            z = z + math.random(-1, 1)
+          end
+          booster.emitBeam(targetX - x, targetY - y, targetZ - z)
+        end
+      end
+    end
+  end
+end
+
+function laser_boot()
+  -- nothing
+end
+
+function laser_sendEvent()
+  if #laser_stations == 0 then
+    w.status_showWarning("No laser station configured")
+  elseif #laser_batteries == 0 then
+    w.status_showWarning("No laser battery configured")
+  else
+    w.status_showWarning("Laser sent!")
+    for keyStation, laserstation in pairs(laser_stations) do
+      if laserstation.camera ~= nil then
+        local resType, x, y, z, id, meta, res = laserstation.camera.getScanResult()
+        if res ~= -1 then
+          w.status_showWarning("Firing at " .. x .. " " .. y .. " " .. z)
+          for batteryKey, battery in pairs(laserstation.batteries) do
+            if battery.enabled then
+              laser_battery_shoot(battery.name, x, y, z)
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+function laser_register()
+  w.device_register("warpdriveLaserCamera",
+      function(deviceType, address, wrap) table.insert(lasercamAddresses, address) end,
+      function() end)
+  w.device_register("warpdriveLaser",
+      function(deviceType, address, wrap) table.insert(laserAddresses, address) end,
+      function() end)
+  w.event_register("laserScanning", function() laser_sendEvent() return false end )
+  w.event_register("laserSend"    , function()                   return false end )
+  w.data_register("laser", laser_read, laser_save)
+end
+
+----------- connections status
+
+function connections_page(isBooting)
+  w.page_begin(w.data_getName() .. " - Connections")
+  
+  w.writeLn("")
+  
+  if #laserAddresses == 0 then
+    w.setColorDisabled()
+    w.writeLn("No attack laser detected")
+  elseif #laserAddresses == 1 then
+    w.setColorSuccess()
+    w.writeLn("1 attack laser detected")
+  else
+    w.setColorSuccess()
+    w.writeLn(#laserAddresses .. " attack lasers detected")
+  end
+  
+  if #lasercamAddresses == 0 then
+    w.setColorDisabled()
+    w.writeLn("No laser camera detected")
+  elseif #lasercamAddresses == 1 then
+    w.setColorSuccess()
+    w.writeLn("1 laser camera detected")
+  else
+    w.setColorSuccess()
+    w.writeLn(#lasercamAddresses .. " laser cameras detected")
+  end
+  
+  if isBooting then
+    laser_boot()
+  end
+  
+  w.writeLn("")
+  w.setColorNormal()
+  w.writeLn("This is a keyboard controlled user interface.")
+  w.write("Key controls are written like so: ")
+  w.setColorControl()
+  w.write("Action (key)")
+  w.setColorNormal()
+  w.writeLn(".")
+  w.write("For example, typing ")
+  w.setColorControl()
+  w.write(" 1 ")
+  w.setColorNormal()
+  w.writeLn(" will open Laser batteries.")
+end
+
+----------- Boot sequence
+
+w.page_setEndText(" Home (0), Laser batteries (1), Laser stations (2)")
+w.page_register('0', connections_page, nil)
+w.page_register('1', laser_battery_page, laser_battery_key)
+w.page_register('2', laser_station_page, laser_station_key)
+laser_register()
+
+w.boot()
+w.run()
+w.close()

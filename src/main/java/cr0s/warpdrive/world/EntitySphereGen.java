@@ -65,6 +65,7 @@ public final class EntitySphereGen extends Entity {
 	private int pregenSize = 0;
 	
 	private ArrayList<JumpBlock> blocks;
+	private ArrayList<Boolean> isSurfaces;
 	private OrbInstance orbInstance;
 	private boolean replace;
 	
@@ -87,6 +88,7 @@ public final class EntitySphereGen extends Entity {
 		this.state = STATE_SAVING;
 		this.pregenSize = (int) Math.ceil(Math.PI * 4.0F / 3.0F * Math.pow(radius + 1, 3));
 		blocks = new ArrayList<>(this.pregenSize);
+		isSurfaces = new ArrayList<>(this.pregenSize);
 		this.ticksDelay = world.rand.nextInt(60);
 		this.replace = replace;
 	}
@@ -148,15 +150,16 @@ public final class EntitySphereGen extends Entity {
 	private void tickPlaceBlocks() {
 		int blocksToMove = Math.min(BLOCKS_PER_TICK, blocks.size() - currentIndex);
 		LocalProfiler.start("[EntitySphereGen] Placing blocks from " + currentIndex + " to " + (currentIndex + blocksToMove) + "/" + blocks.size());
-		int notifyFlag;
 		
 		for (int index = 0; index < blocksToMove; index++) {
 			if (currentIndex >= blocks.size())
 				break;
-			notifyFlag = (currentIndex % 1000 == 0 ? 2 : 2);
-			JumpBlock jb = blocks.get(currentIndex);
-			JumpBlock.setBlockNoLight(worldObj, new BlockPos(jb.x, jb.y, jb.z), jb.block.getStateFromMeta(jb.blockMeta), notifyFlag);
-			// worldObj.setBlock(jb.x, jb.y, jb.z, jb.block, jb.blockMeta, notifyFlag);
+			final JumpBlock jumpBlock = blocks.get(currentIndex);
+			if (isSurfaces.get(currentIndex)) {
+				worldObj.setBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
+			} else {
+				JumpBlock.setBlockNoLight(worldObj, new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
+			}
 			currentIndex++;
 		}
 		
@@ -167,7 +170,8 @@ public final class EntitySphereGen extends Entity {
 		LocalProfiler.start("[EntitySphereGen] Saving blocks, radius " + radius);
 		
 		// square radius from center of block
-		double sqRadius = (radius + 0.5D) * (radius + 0.5D);
+		double sqRadiusHigh = (radius + 0.5D) * (radius + 0.5D);
+		double sqRadiusLow = (radius - 0.5D) * (radius - 0.5D);
 		
 		// sphere
 		int ceilRadius = radius + 1;
@@ -181,21 +185,22 @@ public final class EntitySphereGen extends Entity {
 					double sqRange = x2y2 + (z + 0.5D) * (z + 0.5D); // Square distance from current position to center
 					
 					// Skip too far blocks
-					if (sqRange > sqRadius) {
+					if (sqRange > sqRadiusHigh) {
 						continue;
 					}
+					final boolean isSurface = sqRange > sqRadiusLow;
 					
 					// Add blocks to memory
 					OrbShell orbShell = orbInstance.getShellForSqRadius(sqRange);
 					// WarpDrive.logger.info("sqRange " + sqRange + " sqRadius " + sqRadius);
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord + y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord + y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord - y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord + y, zCoord - z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord - y, zCoord + z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord + x, yCoord - y, zCoord - z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord + y, zCoord - z));
-					addBlock(new JumpBlock(orbShell.getRandomBlock(rand), xCoord - x, yCoord - y, zCoord - z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord + y, zCoord + z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord + y, zCoord + z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord - y, zCoord + z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord + y, zCoord - z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord - y, zCoord + z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord - y, zCoord - z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord + y, zCoord - z));
+					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord - y, zCoord - z));
 				}
 			}
 		}
@@ -205,24 +210,26 @@ public final class EntitySphereGen extends Entity {
 		LocalProfiler.stop();
 	}
 	
-	private void addBlock(JumpBlock jb) {
+	private void addBlock(final boolean isSurface, final JumpBlock jumpBlock) {
 		if (blocks == null) {
 			return;
 		}
 		// Replace water with random gas (ship in moon)
-		if (worldObj.getBlockState(new BlockPos(jb.x, jb.y, jb.z)).getBlock().isAssociatedBlock(Blocks.WATER)) {
+		if (worldObj.getBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z)).getBlock().isAssociatedBlock(Blocks.WATER)) {
 			if (worldObj.rand.nextInt(50) != 1) {
-				jb.block = WarpDrive.blockGas;
-				jb.blockMeta = gasColor;
+				jumpBlock.block = WarpDrive.blockGas;
+				jumpBlock.blockMeta = gasColor;
 			}
-			blocks.add(jb);
+			blocks.add(jumpBlock);
+			isSurfaces.add(isSurface);
 			return;
 		}
 		// Do not replace existing blocks if fillingSphere is true
-		if (!replace && !worldObj.isAirBlock(new BlockPos(jb.x, jb.y, jb.z))) {
+		if (!replace && !worldObj.isAirBlock(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z))) {
 			return;
 		}
-		blocks.add(jb);
+		blocks.add(jumpBlock);
+		isSurfaces.add(isSurface);
 	}
 	
 	@Override

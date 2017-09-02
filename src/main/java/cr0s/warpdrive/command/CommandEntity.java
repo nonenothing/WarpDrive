@@ -49,7 +49,7 @@ public class CommandEntity extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender par1ICommandSender) {
+	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
 		return "/" + getCommandName() + " <radius> <filter> <kill?>"
 			+ "\nradius: - or <= 0 to check all loaded in current world, 1+ blocks around player"
 			+ "\nfilter: * to get all, anything else is a case insensitive string"
@@ -57,7 +57,7 @@ public class CommandEntity extends CommandBase {
 	}
 	
 	@Override
-	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
 		if (args.length > 3) {
 			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
@@ -68,7 +68,7 @@ public class CommandEntity extends CommandBase {
 		boolean kill = false;
 		try {
 			if (args.length > 0) {
-				String par = args[0].toLowerCase();
+				final String par = args[0].toLowerCase();
 				if (par.equals("-") || par.equals("world") || par.equals("global") || par.equals("*")) {
 					radius = -1;
 				} else {
@@ -81,7 +81,7 @@ public class CommandEntity extends CommandBase {
 				}
 			}
 			if (args.length > 2) {
-				String par = args[2].toLowerCase();
+				final String par = args[2].toLowerCase();
 				kill = par.equals("y") || par.equals("yes") || par.equals("1");
 			}
 		} catch (Exception exception) {
@@ -110,12 +110,12 @@ public class CommandEntity extends CommandBase {
 				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}
-			EntityPlayerMP entityPlayer = (EntityPlayerMP) commandSender;
+			final EntityPlayerMP entityPlayer = (EntityPlayerMP) commandSender;
 			entities = entityPlayer.worldObj.getEntitiesWithinAABBExcludingEntity(entityPlayer, new AxisAlignedBB(
 					Math.floor(entityPlayer.posX    ), Math.floor(entityPlayer.posY    ), Math.floor(entityPlayer.posZ    ),
 					Math.floor(entityPlayer.posX + 1), Math.floor(entityPlayer.posY + 1), Math.floor(entityPlayer.posZ + 1)).expand(radius, radius, radius));
 		}
-		HashMap<String, Integer> counts = new HashMap<>(entities.size());
+		final HashMap<String, Integer> counts = new HashMap<>(entities.size());
 		int count = 0;
 		for (Object object : entities) {
 			if (object instanceof Entity) {
@@ -126,10 +126,15 @@ public class CommandEntity extends CommandBase {
 					name = name.replaceAll("net\\.minecraft\\.entity\\.", "") + "_";
 				}
 				if (filter.isEmpty() && !entitiesNoCount.isEmpty()) {
-					for (String entityNoCount : entitiesNoCount) {// FIXME not working?
+					boolean isCountable = true;
+					for (final String entityNoCount : entitiesNoCount) {
 						if (name.contains(entityNoCount)) {
-							continue;
+							isCountable = false;
+							break;
 						}
+					}
+					if (!isCountable) {
+						continue;
 					}
 				}
 				if (filter.isEmpty() || name.contains(filter)) {
@@ -148,10 +153,15 @@ public class CommandEntity extends CommandBase {
 					// remove entity
 					if (kill && !((Entity) object).isEntityInvulnerable(WarpDrive.damageAsphyxia)) {
 						if (!entitiesNoRemoval.isEmpty()) {
-							for (String entityNoRemoval : entitiesNoRemoval) {// FIXME not working?
+							boolean isRemovable = true;
+							for (final String entityNoRemoval : entitiesNoRemoval) {
 								if (name.contains(entityNoRemoval)) {
-									continue;
+									isRemovable = false;
+									break;
 								}
+							}
+							if (!isRemovable) {
+								continue;
 							}
 						}
 						((Entity) object).setDead();
@@ -168,16 +178,16 @@ public class CommandEntity extends CommandBase {
 		
 		ITextComponent textComponent = new TextComponentString(count + " matching entities within " + radius + " blocks:");
 		textComponent.getStyle().setColor(TextFormatting.GOLD);
-			Commons.addChatMessage(commandSender, textComponent);
+		Commons.addChatMessage(commandSender, textComponent);
 		if (counts.size() < 10) {
-			for (Entry<String, Integer> entry : counts.entrySet()) {
+			for (final Entry<String, Integer> entry : counts.entrySet()) {
 				textComponent = new TextComponentString(entry.getValue().toString() + "§8x§d" + entry.getKey());
 				textComponent.getStyle().setColor(TextFormatting.WHITE);
 				Commons.addChatMessage(commandSender, textComponent);
 			}
 		} else {
 			String message = "";
-			for (Entry<String, Integer> entry : counts.entrySet()) {
+			for (final Entry<String, Integer> entry : counts.entrySet()) {
 				if (!message.isEmpty()) {
 					message += "§8" + ", ";
 				}

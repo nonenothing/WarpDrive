@@ -32,7 +32,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
 		ResourceLocation resourceLocation = getRegistryName();
-		String variant = String.format("color=%s", EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getName());
+		String variant = String.format("color=%s", EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName());
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	

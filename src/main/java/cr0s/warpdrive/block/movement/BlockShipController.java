@@ -46,7 +46,7 @@ public class BlockShipController extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityShipController) {
 				if (entityPlayer.isSneaking()) {
 					Commons.addChatMessage(entityPlayer, ((TileEntityShipController) tileEntity).getStatus());

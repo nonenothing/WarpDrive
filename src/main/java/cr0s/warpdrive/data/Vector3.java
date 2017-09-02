@@ -9,7 +9,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.util.EnumFacing;
 
@@ -29,43 +28,43 @@ public class Vector3 implements Cloneable {
 		this(0, 0, 0);
 	}
 	
-	public Vector3(double x, double y, double z) {
+	public Vector3(final double x, final double y, final double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public Vector3(Entity par1) {
-		x = par1.posX;
-		y = par1.posY;
-		z = par1.posZ;
+	public Vector3(final Entity entity) {
+		x = entity.posX;
+		y = entity.posY;
+		z = entity.posZ;
 	}
 	
-	public Vector3(TileEntity par1) {
-		x = par1.getPos().getX();
-		y = par1.getPos().getY();
-		z = par1.getPos().getZ();
+	public Vector3(final TileEntity tileEntity) {
+		x = tileEntity.getPos().getX();
+		y = tileEntity.getPos().getY();
+		z = tileEntity.getPos().getZ();
 	}
 	
-	public Vector3(Vec3d par1) {
-		x = par1.xCoord;
-		y = par1.yCoord;
-		z = par1.zCoord;
+	public Vector3(final Vec3d vec3) {
+		x = vec3.xCoord;
+		y = vec3.yCoord;
+		z = vec3.zCoord;
 	}
 	
-	public Vector3(RayTraceResult par1) {
-		x = par1.getBlockPos().getX();
-		y = par1.getBlockPos().getY();
-		z = par1.getBlockPos().getZ();
+	public Vector3(final RayTraceResult rayTraceResult) {
+		x = rayTraceResult.getBlockPos().getX();
+		y = rayTraceResult.getBlockPos().getY();
+		z = rayTraceResult.getBlockPos().getZ();
 	}
 	
-	public Vector3(BlockPos par1) {
-		x = par1.getX();
-		y = par1.getY();
-		z = par1.getZ();
+	public Vector3(final BlockPos blockPos) {
+		x = blockPos.getX();
+		y = blockPos.getY();
+		z = blockPos.getZ();
 	}
 	
-	public Vector3(EnumFacing direction) {
+	public Vector3(final EnumFacing direction) {
 		x = direction.getFrontOffsetX();
 		y = direction.getFrontOffsetY();
 		z = direction.getFrontOffsetZ();

@@ -1,38 +1,43 @@
 package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
 
+import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class WorldGenSmallShip extends WorldGenerator {
 	
-	private final boolean corrupted;
+	private final boolean isCorrupted;
+	private final boolean isCreative;
 	
-	public WorldGenSmallShip(final boolean corrupted) {
-		this.corrupted = corrupted;
+	public WorldGenSmallShip(final boolean isCorrupted, final boolean isCreative) {
+		this.isCorrupted = isCorrupted;
+		this.isCreative = isCreative;
 	}
 	
 	@Override
 	public boolean generate(@Nonnull final World world, @Nonnull final Random rand, @Nonnull final BlockPos blockPos) {
-		WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
-		int x = blockPos.getX() - 5;
-		int y = blockPos.getY() - 4;
-		int z = blockPos.getZ() - 6;
-		genStructure.setHullPlain(world, x + 0, y + 1, z + 4);
-		genStructure.setHullPlain(world, x + 0, y + 1, z + 10);
+		final WorldGenStructure genStructure = new WorldGenStructure(isCorrupted, rand);
+		final boolean hasGlassRoof = rand.nextBoolean();
+		final boolean hasWings = rand.nextBoolean();
+		final int x = blockPos.getX() - 5;
+		final int y = blockPos.getY() - 4;
+		final int z = blockPos.getZ() - 6;
+		genStructure.setHullPlain(world, x, y + 1, z + 4);
+		genStructure.setHullPlain(world, x, y + 1, z + 10);
 		genStructure.setHullPlain(world, x + 1, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 1, y + 1, z + 5);
 		genStructure.setHullPlain(world, x + 1, y + 1, z + 9);
@@ -124,9 +129,6 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 5, y + 5, z + 10);
 		genStructure.setHullPlain(world, x + 5, y + 5, z + 11);
 		genStructure.setHullPlain(world, x + 5, y + 6, z + 5);
-		genStructure.setHullPlain(world, x + 5, y + 6, z + 6);
-		genStructure.setHullPlain(world, x + 5, y + 6, z + 7);
-		genStructure.setHullPlain(world, x + 5, y + 6, z + 8);
 		genStructure.setHullPlain(world, x + 5, y + 6, z + 9);
 		genStructure.setHullPlain(world, x + 5, y + 7, z + 6);
 		genStructure.setHullPlain(world, x + 5, y + 7, z + 7);
@@ -149,29 +151,32 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 6, y + 3, z + 2);
 		world.setBlockState(new BlockPos(x + 6, y + 3, z + 3), Blocks.CHEST.getStateFromMeta(3), 0);
-		fillChestWithBonuses(world, rand, x + 6, y + 3, z + 3);
+		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 3, z + 3, "ship");
 		world.setBlockState(new BlockPos(x + 6, y + 3, z + 11), Blocks.CHEST.getStateFromMeta(2), 0);
-		fillChestWithBonuses(world, rand, x + 6, y + 3, z + 11);
+		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 3, z + 11, "ship");
 		genStructure.setHullPlain(world, x + 6, y + 3, z + 12);
 		genStructure.setHullPlain(world, x + 6, y + 4, z + 2);
 		world.setBlockState(new BlockPos(x + 6, y + 4, z + 3), Blocks.CHEST.getStateFromMeta(3), 0);
-		fillChestWithBonuses(world, rand, x + 6, y + 4, z + 3);
+		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 4, z + 3, "ship");
 		world.setBlockState(new BlockPos(x + 6, y + 4, z + 11), Blocks.CHEST.getStateFromMeta(2), 0);
-		fillChestWithBonuses(world, rand, x + 6, y + 4, z + 11);
+		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 4, z + 11, "ship");
 		genStructure.setHullPlain(world, x + 6, y + 4, z + 12);
 		genStructure.setHullPlain(world, x + 6, y + 5, z + 2);
 		genStructure.setHullPlain(world, x + 6, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 6, y + 6, z + 3);
 		genStructure.setHullPlain(world, x + 6, y + 6, z + 4);
-		if (!corrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 6, y + 6, z + 7), WarpDrive.blockAirGenerator.getDefaultState(), 0);
-		}
 		genStructure.setHullPlain(world, x + 6, y + 6, z + 10);
 		genStructure.setHullPlain(world, x + 6, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 6, y + 7, z + 5);
-		genStructure.setHullPlain(world, x + 6, y + 7, z + 6);
-		genStructure.setHullPlain(world, x + 6, y + 7, z + 7);
-		genStructure.setHullPlain(world, x + 6, y + 7, z + 8);
+		if (hasGlassRoof) {
+			genStructure.setHullGlass(world, x + 6, y + 7, z + 6);
+			genStructure.setHullGlass(world, x + 6, y + 7, z + 7);
+			genStructure.setHullGlass(world, x + 6, y + 7, z + 8);
+		} else {
+			genStructure.setHullPlain(world, x + 6, y + 7, z + 6);
+			genStructure.setHullPlain(world, x + 6, y + 7, z + 7);
+			genStructure.setHullPlain(world, x + 6, y + 7, z + 8);
+		}
 		genStructure.setHullPlain(world, x + 6, y + 7, z + 9);
 		genStructure.setHullPlain(world, x + 7, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 7, y + 1, z + 5);
@@ -197,13 +202,18 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 7, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 7, y + 6, z + 3);
 		genStructure.setHullPlain(world, x + 7, y + 6, z + 4);
-		genStructure.setCable(world, x + 7, y + 6, z + 7);
 		genStructure.setHullPlain(world, x + 7, y + 6, z + 10);
 		genStructure.setHullPlain(world, x + 7, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 7, y + 7, z + 5);
-		genStructure.setHullPlain(world, x + 7, y + 7, z + 6);
-		genStructure.setSolarPanel(world, x + 7, y + 7, z + 7);
-		genStructure.setHullPlain(world, x + 7, y + 7, z + 8);
+		if (hasGlassRoof) {
+			genStructure.setHullGlass(world, x + 7, y + 7, z + 6);
+			genStructure.setHullGlass(world, x + 7, y + 7, z + 7);
+			genStructure.setHullGlass(world, x + 7, y + 7, z + 8);
+		} else {
+			genStructure.setHullPlain(world, x + 7, y + 7, z + 6);
+			genStructure.setHullPlain(world, x + 7, y + 7, z + 7);
+			genStructure.setHullPlain(world, x + 7, y + 7, z + 8);
+		}
 		genStructure.setHullPlain(world, x + 7, y + 7, z + 9);
 		genStructure.setHullPlain(world, x + 8, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 8, y + 1, z + 5);
@@ -228,15 +238,18 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 8, y + 5, z + 2);
 		genStructure.setHullGlass(world, x + 8, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 8, y + 6, z + 3);
-		genStructure.setHullPlain(world, x + 8, y + 6, z + 4);
-		genStructure.setCable(world, x + 8, y + 6, z + 7);
-		genStructure.setHullPlain(world, x + 8, y + 6, z + 10);
 		genStructure.setHullPlain(world, x + 8, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 8, y + 7, z + 4);
 		genStructure.setHullPlain(world, x + 8, y + 7, z + 5);
-		genStructure.setHullPlain(world, x + 8, y + 7, z + 6);
-		genStructure.setSolarPanel(world, x + 8, y + 7, z + 7);
-		genStructure.setHullPlain(world, x + 8, y + 7, z + 8);
+		if (hasGlassRoof) {
+			genStructure.setHullGlass(world, x + 8, y + 7, z + 6);
+			genStructure.setHullGlass(world, x + 8, y + 7, z + 7);
+			genStructure.setHullGlass(world, x + 8, y + 7, z + 8);
+		} else {
+			genStructure.setHullPlain(world, x + 8, y + 7, z + 6);
+			genStructure.setHullPlain(world, x + 8, y + 7, z + 7);
+			genStructure.setHullPlain(world, x + 8, y + 7, z + 8);
+		}
 		genStructure.setHullPlain(world, x + 8, y + 7, z + 9);
 		genStructure.setHullPlain(world, x + 8, y + 7, z + 10);
 		genStructure.setHullPlain(world, x + 9, y + 1, z + 4);
@@ -262,14 +275,14 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 9, y + 5, z + 2);
 		genStructure.setHullGlass(world, x + 9, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 9, y + 6, z + 3);
-		genStructure.setHullPlain(world, x + 9, y + 6, z + 4);
-		genStructure.setCable(world, x + 9, y + 6, z + 7);
-		genStructure.setHullPlain(world, x + 9, y + 6, z + 10);
+		if (!isCorrupted || rand.nextBoolean()) {
+			world.setBlockState(new BlockPos(x + 9, y + 6, z + 7), WarpDrive.blockAirGenerator.getDefaultState(), 0);
+		}
 		genStructure.setHullPlain(world, x + 9, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 4);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 5);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 6);
-		genStructure.setSolarPanel(world, x + 9, y + 7, z + 7);
+		genStructure.setHullPlain(world, x + 9, y + 7, z + 7);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 8);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 9);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 10);
@@ -292,16 +305,16 @@ public class WorldGenSmallShip extends WorldGenerator {
 		world.setBlockState(new BlockPos(x + 10, y + 2, z + 10), Blocks.WOOL.getStateFromMeta(14), 0);
 		genStructure.setHullPlain(world, x + 10, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 10, y + 3, z + 2);
-		genStructure.setHullGlass(world, x + 10, y + 3, z + 7);
 		genStructure.setHullPlain(world, x + 10, y + 3, z + 12);
 		genStructure.setHullGlass(world, x + 10, y + 4, z + 2);
 		genStructure.setHullGlass(world, x + 10, y + 4, z + 12);
 		genStructure.setHullGlass(world, x + 10, y + 5, z + 2);
+		genStructure.setHullGlass(world, x + 10, y + 5, z + 7);
 		genStructure.setHullGlass(world, x + 10, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 10, y + 6, z + 3);
-		genStructure.setHullPlain(world, x + 10, y + 6, z + 4);
-		genStructure.setCable(world, x + 10, y + 6, z + 7);	
-		genStructure.setHullPlain(world, x + 10, y + 6, z + 10);
+		genStructure.setHullPlain(world, x + 10, y + 6, z + 6);
+		genStructure.setWiring(world, x + 10, y + 6, z + 7);
+		genStructure.setHullPlain(world, x + 10, y + 6, z + 8);
 		genStructure.setHullPlain(world, x + 10, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 10, y + 7, z + 4);
 		genStructure.setHullPlain(world, x + 10, y + 7, z + 5);
@@ -329,40 +342,44 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 11, y + 2, z + 10);
 		genStructure.setHullPlain(world, x + 11, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 11, y + 3, z + 2);
-		genStructure.setHullGlass(world, x + 11, y + 3, z + 6);
-		if (!corrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 11, y + 3, z + 7), WarpDrive.blockShipController.getDefaultState());
-		}
-		genStructure.setHullGlass(world, x + 11, y + 3, z + 8);
+		genStructure.setHullPlain(world, x + 11, y + 3, z + 7);
+		world.setBlockState(new BlockPos(x + 11, y + 3, z + 9), Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE.getDefaultState(), 0);
 		genStructure.setHullPlain(world, x + 11, y + 3, z + 12);
 		genStructure.setHullGlass(world, x + 11, y + 4, z + 2);
-		genStructure.setHullGlass(world, x + 11, y + 4, z + 6);
-		if ((!corrupted || rand.nextBoolean()) && WarpDriveConfig.isComputerCraftLoaded) {
+		if ((!isCorrupted || rand.nextBoolean()) && WarpDriveConfig.isComputerCraftLoaded) {
 			world.setBlockState(new BlockPos(x + 11, y + 4, z + 7), WarpDriveConfig.CC_Computer.getStateFromMeta(12), 3);
 		}
-		genStructure.setHullGlass(world, x + 11, y + 4, z + 8);
 		genStructure.setHullGlass(world, x + 11, y + 4, z + 12);
 		genStructure.setHullGlass(world, x + 11, y + 5, z + 2);
-		if (!corrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 11, y + 5, z + 7), WarpDrive.blockAirGenerator.getDefaultState(), 0);
+		genStructure.setHullGlass(world, x + 11, y + 5, z + 6);
+		if (!isCorrupted || rand.nextBoolean()) {
+			world.setBlockState(new BlockPos(x + 11, y + 5, z + 7), WarpDrive.blockShipController.getDefaultState());
 		}
+		genStructure.setHullGlass(world, x + 11, y + 5, z + 8);
 		genStructure.setHullGlass(world, x + 11, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 11, y + 6, z + 3);
-		genStructure.setHullPlain(world, x + 11, y + 6, z + 4);
-		genStructure.setCable(world, x + 11, y + 6, z + 7);
-		genStructure.setHullPlain(world, x + 11, y + 6, z + 10);
+		genStructure.setHullPlain(world, x + 11, y + 6, z + 5);
+		genStructure.setWiring(world, x + 11, y + 6, z + 6);
+		genStructure.setWiring(world, x + 11, y + 6, z + 7);
+		genStructure.setWiring(world, x + 11, y + 6, z + 8);
+		genStructure.setHullPlain(world, x + 11, y + 6, z + 9);
 		genStructure.setHullPlain(world, x + 11, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 4);
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 5);
-		genStructure.setHullPlain(world, x + 11, y + 7, z + 6);
+		genStructure.setSolarPanel(world, x + 11, y + 7, z + 6);
 		genStructure.setSolarPanel(world, x + 11, y + 7, z + 7);
-		genStructure.setHullPlain(world, x + 11, y + 7, z + 8);
+		genStructure.setSolarPanel(world, x + 11, y + 7, z + 8);
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 9);
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 10);
 		genStructure.setHullPlain(world, x + 11, y + 8, z + 4);
 		genStructure.setHullPlain(world, x + 11, y + 8, z + 10);
-		genStructure.setHullPlain(world, x + 11, y + 9, z + 4);
-		genStructure.setHullPlain(world, x + 11, y + 9, z + 10);
+		if (hasWings) {
+			genStructure.setHullPlain(world, x + 11, y + 8, z + 3);
+			genStructure.setHullPlain(world, x + 11, y + 8, z + 11);
+		} else {
+			genStructure.setHullPlain(world, x + 11, y + 9, z + 4);
+			genStructure.setHullPlain(world, x + 11, y + 9, z + 10);
+		}
 		genStructure.setHullPlain(world, x + 12, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 12, y + 1, z + 5);
 		genStructure.setHullPlain(world, x + 12, y + 1, z + 6);
@@ -373,33 +390,52 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 12, y + 2, z + 4);
 		genStructure.setHullPlain(world, x + 12, y + 2, z + 5);
 		genStructure.setHullPlain(world, x + 12, y + 2, z + 6);
-		genStructure.setHullPlain(world, x + 12, y + 2, z + 7);
-		genStructure.setHullPlain(world, x + 12, y + 2, z + 8);
+		genStructure.setWiring(world, x + 12, y + 2, z + 7);
+		genStructure.setWiring(world, x + 12, y + 2, z + 8);
+		if (!isCorrupted || rand.nextBoolean()) {
+			world.setBlockState(new BlockPos(x + 12, y + 2, z + 9), WarpDrive.blockLift.getDefaultState());
+			if (isCreative) {// fill with energy
+				TileEntity tileEntity = world.getTileEntity(new BlockPos(x + 12, y + 2, z + 9));
+				if (tileEntity instanceof TileEntityAbstractEnergy) {
+					((TileEntityAbstractEnergy) tileEntity).energy_consume(-((TileEntityAbstractEnergy) tileEntity).energy_getMaxStorage());
+				}
+			}
+		}
 		genStructure.setHullPlain(world, x + 12, y + 2, z + 10);
 		genStructure.setHullPlain(world, x + 12, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 12, y + 3, z + 2);
-		genStructure.setHullGlass(world, x + 12, y + 3, z + 6);
-		if (!corrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 12, y + 3, z + 7), WarpDrive.blockShipCore.getDefaultState());
-		}
-		genStructure.setHullGlass(world, x + 12, y + 3, z + 8);
+		genStructure.setHullPlain(world, x + 12, y + 3, z + 6);
+		genStructure.setWiring(world, x + 12, y + 3, z + 7);
+		genStructure.setHullPlain(world, x + 12, y + 3, z + 8);
 		genStructure.setHullPlain(world, x + 12, y + 3, z + 12);
 		genStructure.setHullGlass(world, x + 12, y + 4, z + 2);
-		genStructure.setHullGlass(world, x + 12, y + 4, z + 6);
-		genStructure.setCable(world, x + 12, y + 4, z + 7);
-		genStructure.setHullGlass(world, x + 12, y + 4, z + 8);
+		genStructure.setHullPlain(world, x + 12, y + 4, z + 6);
+		genStructure.setHullPlain(world, x + 12, y + 4, z + 7);
+		genStructure.setHullPlain(world, x + 12, y + 4, z + 8);
 		genStructure.setHullGlass(world, x + 12, y + 4, z + 12);
 		genStructure.setHullGlass(world, x + 12, y + 5, z + 2);
-		genStructure.setCable(world, x + 12, y + 5, z + 7);
+		genStructure.setHullGlass(world, x + 12, y + 5, z + 6);
+		if (!isCorrupted || rand.nextBoolean()) {
+			world.setBlockState(new BlockPos(x + 12, y + 5, z + 7), WarpDrive.blockShipCore.getDefaultState());
+			if (isCreative) {// fill with energy
+				TileEntity tileEntity = world.getTileEntity(new BlockPos(x + 12, y + 5, z + 7));
+				if (tileEntity instanceof TileEntityAbstractEnergy) {
+					((TileEntityAbstractEnergy) tileEntity).energy_consume( - ((TileEntityAbstractEnergy) tileEntity).energy_getMaxStorage() / 2);
+				}
+			}
+		}
+		genStructure.setHullGlass(world, x + 12, y + 5, z + 8);
 		genStructure.setHullGlass(world, x + 12, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 12, y + 6, z + 3);
 		genStructure.setHullPlain(world, x + 12, y + 6, z + 4);
-		genStructure.setCable(world, x + 12, y + 6, z + 7);
+		genStructure.setHullPlain(world, x + 12, y + 6, z + 5);
+		genStructure.setWiring(world, x + 12, y + 6, z + 7);
+		genStructure.setHullPlain(world, x + 12, y + 6, z + 9);
 		genStructure.setHullPlain(world, x + 12, y + 6, z + 10);
 		genStructure.setHullPlain(world, x + 12, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 12, y + 7, z + 5);
 		genStructure.setHullPlain(world, x + 12, y + 7, z + 6);
-		genStructure.setHullPlain(world, x + 12, y + 7, z + 7);
+		genStructure.setSolarPanel(world, x + 12, y + 7, z + 7);
 		genStructure.setHullPlain(world, x + 12, y + 7, z + 8);
 		genStructure.setHullPlain(world, x + 12, y + 7, z + 9);
 		genStructure.setHullPlain(world, x + 13, y + 1, z + 4);
@@ -419,33 +455,43 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 13, y + 2, z + 10);
 		genStructure.setHullPlain(world, x + 13, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 2);
-		genStructure.setHullPlain(world, x + 13, y + 3, z + 3);
+		if (rand.nextBoolean()) {
+			genStructure.setHullPlain(world, x + 13, y + 3, z + 3);
+			genStructure.setHullGlass(world, x + 13, y + 4, z + 3);
+		} else if (!isCorrupted || rand.nextBoolean()) {
+			world.setBlockState(new BlockPos(x + 13, y + 3, z + 3), WarpDrive.blockAirShield.getDefaultState());
+			world.setBlockState(new BlockPos(x + 13, y + 4, z + 3), WarpDrive.blockAirShield.getDefaultState());
+		}
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 4);
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 5);
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 6);
-		genStructure.setHullPlain(world, x + 13, y + 3, z + 7);
+		genStructure.setWiring(world, x + 13, y + 3, z + 7);
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 8);
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 9);
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 10);
-		genStructure.setHullPlain(world, x + 13, y + 3, z + 11);
+		if (rand.nextBoolean()) {
+			genStructure.setHullPlain(world, x + 13, y + 3, z + 11);
+			genStructure.setHullGlass(world, x + 13, y + 4, z + 11);
+		} else if (!isCorrupted || rand.nextBoolean()) {
+			world.setBlockState(new BlockPos(x + 13, y + 3, z + 11), WarpDrive.blockAirShield.getDefaultState());
+			world.setBlockState(new BlockPos(x + 13, y + 4, z + 11), WarpDrive.blockAirShield.getDefaultState());
+		}
 		genStructure.setHullPlain(world, x + 13, y + 3, z + 12);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 2);
-		genStructure.setHullGlass(world, x + 13, y + 4, z + 3);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 4);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 5);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 6);
-		genStructure.setHullPlain(world, x + 13, y + 4, z + 7);
+		genStructure.setWiring(world, x + 13, y + 4, z + 7);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 8);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 9);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 10);
-		genStructure.setHullGlass(world, x + 13, y + 4, z + 11);
 		genStructure.setHullPlain(world, x + 13, y + 4, z + 12);
 		genStructure.setHullPlain(world, x + 13, y + 5, z + 2);
 		genStructure.setHullPlain(world, x + 13, y + 5, z + 3);
 		world.setBlockState(new BlockPos(x + 13, y + 5, z + 4), Blocks.GLOWSTONE.getDefaultState());
 		genStructure.setHullPlain(world, x + 13, y + 5, z + 5);
 		genStructure.setHullPlain(world, x + 13, y + 5, z + 6);
-		genStructure.setHullPlain(world, x + 13, y + 5, z + 7);
+		genStructure.setWiring(world, x + 13, y + 5, z + 7);
 		genStructure.setHullPlain(world, x + 13, y + 5, z + 8);
 		genStructure.setHullPlain(world, x + 13, y + 5, z + 9);
 		world.setBlockState(new BlockPos(x + 13, y + 5, z + 10), Blocks.GLOWSTONE.getDefaultState());
@@ -455,7 +501,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 13, y + 6, z + 4);
 		genStructure.setHullPlain(world, x + 13, y + 6, z + 5);
 		genStructure.setHullPlain(world, x + 13, y + 6, z + 6);
-		genStructure.setHullPlain(world, x + 13, y + 6, z + 7);
+		genStructure.setWiring(world, x + 13, y + 6, z + 7);
 		genStructure.setHullPlain(world, x + 13, y + 6, z + 8);
 		genStructure.setHullPlain(world, x + 13, y + 6, z + 9);
 		genStructure.setHullPlain(world, x + 13, y + 6, z + 10);
@@ -475,18 +521,18 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 14, y + 3, z + 9);
 		genStructure.setHullPlain(world, x + 14, y + 3, z + 10);
 		genStructure.setHullPlain(world, x + 14, y + 4, z + 4);
-		world.setBlockState(new BlockPos(x + 14, y + 4, z + 5), Blocks.REDSTONE_BLOCK.getDefaultState());
-		world.setBlockState(new BlockPos(x + 14, y + 4, z + 6), Blocks.REDSTONE_BLOCK.getDefaultState());
+		genStructure.setPropulsion(world, x + 14, y + 4, z + 5);
+		genStructure.setPropulsion(world, x + 14, y + 4, z + 6);
 		genStructure.setHullPlain(world, x + 14, y + 4, z + 7);
-		world.setBlockState(new BlockPos(x + 14, y + 4, z + 8), Blocks.REDSTONE_BLOCK.getDefaultState());
-		world.setBlockState(new BlockPos(x + 14, y + 4, z + 9), Blocks.REDSTONE_BLOCK.getDefaultState());
+		genStructure.setPropulsion(world, x + 14, y + 4, z + 8);
+		genStructure.setPropulsion(world, x + 14, y + 4, z + 9);
 		genStructure.setHullPlain(world, x + 14, y + 4, z + 10);
 		genStructure.setHullPlain(world, x + 14, y + 5, z + 4);
-		world.setBlockState(new BlockPos(x + 14, y + 5, z + 5), Blocks.REDSTONE_BLOCK.getDefaultState());
-		world.setBlockState(new BlockPos(x + 14, y + 5, z + 6), Blocks.REDSTONE_BLOCK.getDefaultState());
+		genStructure.setPropulsion(world, x + 14, y + 5, z + 5);
+		genStructure.setPropulsion(world, x + 14, y + 5, z + 6);
 		genStructure.setHullPlain(world, x + 14, y + 5, z + 7);
-		world.setBlockState(new BlockPos(x + 14, y + 5, z + 8), Blocks.REDSTONE_BLOCK.getDefaultState());
-		world.setBlockState(new BlockPos(x + 14, y + 5, z + 9), Blocks.REDSTONE_BLOCK.getDefaultState());
+		genStructure.setPropulsion(world, x + 14, y + 5, z + 8);
+		genStructure.setPropulsion(world, x + 14, y + 5, z + 9);
 		genStructure.setHullPlain(world, x + 14, y + 5, z + 10);
 		genStructure.setHullPlain(world, x + 14, y + 6, z + 4);
 		genStructure.setHullPlain(world, x + 14, y + 6, z + 5);
@@ -502,20 +548,19 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 15, y + 3, z + 4);
 		genStructure.setHullPlain(world, x + 15, y + 3, z + 10);
 		genStructure.setHullPlain(world, x + 15, y + 4, z + 7);
-		world.setBlockState(new BlockPos(x + 15, y + 5, z + 7), Blocks.REDSTONE_BLOCK.getDefaultState());
+		genStructure.setPropulsion(world, x + 15, y + 5, z + 7);
 		genStructure.setHullPlain(world, x + 15, y + 6, z + 4);
 		genStructure.setHullPlain(world, x + 15, y + 6, z + 7);
 		genStructure.setHullPlain(world, x + 15, y + 6, z + 10);
 		genStructure.setHullPlain(world, x + 16, y + 4, z + 7);
-		world.setBlockState(new BlockPos(x + 16, y + 5, z + 7), Blocks.REDSTONE_BLOCK.getDefaultState());
+		genStructure.setPropulsion(world, x + 16, y + 5, z + 7);
 		genStructure.setHullPlain(world, x + 16, y + 6, z + 7);
 		genStructure.setHullPlain(world, x + 17, y + 5, z + 7);
-		world.setBlockState(new BlockPos(x + 12, y + 2, z + 9), Blocks.TRAPDOOR.getStateFromMeta(10), 0);
 		spawnNPC(world, x + 9, y + 3, z + 5);
 		return true;
 	}
 	
-	public static void spawnNPC(final World world, final int x, final int y, final int z) {
+	private static void spawnNPC(final World world, final int x, final int y, final int z) {
 		final int countMobs = 2 + world.rand.nextInt(10);
 		
 		if (world.rand.nextBoolean()) {// Villagers
@@ -525,117 +570,18 @@ public class WorldGenSmallShip extends WorldGenerator {
 				entityVillager.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(WarpDrive.itemWarpArmor[0], 1, 1));
 				world.spawnEntityInWorld(entityVillager);
 			}
-		} else {// Zombies
+		} else if (world.rand.nextBoolean()) {// Zombies
 			for (int idx = 0; idx < countMobs; idx++) {
 				EntityZombie entityZombie = new EntityZombie(world);
 				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
 				world.spawnEntityInWorld(entityZombie);
 			}
-		}
-	}
-	
-	public void fillChestWithBonuses(final World worldObj, final Random rand, final int x, final int y, final int z) {
-		final TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(x, y, z));
-		
-		if (tileEntity != null) {
-			final TileEntityChest chest = (TileEntityChest) tileEntity;
-			final int size = chest.getSizeInventory();
-			int numBonuses = rand.nextInt(size) / 2;
-			
-			for (int i = 0; i < size; i++) {
-				if (rand.nextInt(size) <= numBonuses) {
-					numBonuses--;
-					chest.setInventorySlotContents(i, getRandomBonus(rand));
-				}
+		} else {// Zombie pigmen
+			for (int idx = 0; idx < countMobs; idx++) {
+				EntityPigZombie entityZombie = new EntityPigZombie(world);
+				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
+				world.spawnEntityInWorld(entityZombie);
 			}
 		}
-	}
-	
-	private ItemStack getRandomBonus(final Random rand) {
-		ItemStack res = null;
-		boolean isDone = false;
-		
-		while (!isDone) {
-			switch (rand.nextInt(14)) {
-			case 0: // Mass fabricator
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "blockMachine", -1);
-					res.setItemDamage(14);
-					res.stackSize = 1; // + rand.nextInt(2);
-					isDone = true;
-				}
-				break;
-				
-			case 1:
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "blockNuke", -1);
-					res.stackSize = 1 + rand.nextInt(2);
-					isDone = true;
-				}
-				break;
-				
-			case 2: // Quantum armor bonuses
-			case 3:
-			case 4:
-			case 5:
-				isDone = true;
-				break;// skipped
-				
-			case 6:// Glass fiber cable item
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "itemCable", -1);
-					res.setItemDamage(9);
-					res.stackSize = 2 + rand.nextInt(12);
-					isDone = true;
-				}
-				break;
-			
-			case 7:// UU matter cell
-				if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-					res = WarpDriveConfig.getModItemStack("IC2", "itemCellEmpty", -1);
-					res.setItemDamage(3);
-					res.stackSize = 2 + rand.nextInt(14);
-					isDone = true;
-				}
-				break;
-			
-			case 8:
-				isDone = true;
-				break;// skipped
-			
-			case 9:
-			case 10:
-			case 11: // Rocket launcher platform Tier3
-				if (WarpDriveConfig.isICBMLoaded) {
-					// TODO: No 1.7 ICBM yet
-					// res = new ItemStack(WarpDriveConfig.ICBM_Machine, 1 +
-					// rand.nextInt(1), 2).copy();
-					isDone = true;
-				}
-				break;
-			
-			
-			case 12: // Missiles from conventional to hypersonic
-				if (WarpDriveConfig.isICBMLoaded) {
-					// TODO: No 1.7 ICBM yet
-					// res = new ItemStack(WarpDriveConfig.ICBM_Missile, 2 +
-					// rand.nextInt(1), rand.nextInt(10)).copy();
-					isDone = true;
-				}
-				break;
-			
-			case 13: // Advanced solar panels
-				if (WarpDriveConfig.isAdvancedSolarPanelLoaded) {
-					// TODO: res = new ItemStack(solarPanel_block, rand.nextInt(3), solarPanel_metadata);
-					isDone = true;
-				}
-				break;
-			
-			default:
-				break;
-			}
-		}
-		
-		return res;
 	}
 }

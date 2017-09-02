@@ -35,8 +35,10 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(ItemStack itemStack, @Nonnull EntityPlayer entityPlayer, World world, @Nonnull BlockPos blockPos,
-	                                  EnumHand enumHand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer, final World world,
+	                                  @Nonnull final BlockPos blockPos,
+	                                  final EnumHand enumHand, @Nonnull EnumFacing facing,
+	                                  final float hitX, final float hitY, final float hitZ) {
 		if (itemStack.stackSize == 0) {
 			return EnumActionResult.FAIL;
 		}

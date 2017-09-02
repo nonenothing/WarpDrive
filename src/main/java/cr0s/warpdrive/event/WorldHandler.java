@@ -2,12 +2,13 @@ package cr0s.warpdrive.event;
 
 import cr0s.warpdrive.BreathingManager;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.network.PacketHandler;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -54,22 +55,33 @@ public class WorldHandler {
 			return;
 		}			
 		// WarpDrive.logger.info("onEntityJoinWorld " + event.entity);
-		if (event.getEntity() instanceof EntityPlayer) {
-			WarpDrive.cloaks.onPlayerEnteringDimension((EntityPlayer) event.getEntity());
-			
-		} else if (event.getEntity() instanceof EntityLivingBase) {
+		if (event.getEntity() instanceof EntityLivingBase) {
 			final EntityLivingBase entityLivingBase = (EntityLivingBase) event.getEntity();
 			final int x = MathHelper.floor_double(event.getEntity().posX);
 			final int y = MathHelper.floor_double(event.getEntity().posY);
 			final int z = MathHelper.floor_double(event.getEntity().posZ);
-			final CelestialObject celestialObject = StarMapRegistry.getCelestialObject(entityLivingBase.worldObj, x, z);
-			if (celestialObject == null) {
-				// unregistered dimension => exit
-				return;
-			}
-			if (!celestialObject.hasAtmosphere()) {
-				final boolean canJoin = BreathingManager.onLivingJoinEvent(entityLivingBase, x, y, z);
-				if (!canJoin) {
+			final CelestialObject celestialObject = CelestialObjectManager.get(event.getWorld(), x, z);
+			
+			if (event.getEntity() instanceof EntityPlayerMP) {
+				WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.getEntity(), event.getWorld());
+				PacketHandler.sendClientSync((EntityPlayerMP) event.getEntity(), celestialObject);
+				
+			} else {
+				if (celestialObject == null) {
+					// unregistered dimension => exit
+					return;
+				}
+				if (event.getEntity().ticksExisted > 5) {
+					// just changing dimension
+					return;
+				}
+				if (!celestialObject.hasAtmosphere()) {
+					final boolean canJoin = BreathingManager.onLivingJoinEvent(entityLivingBase, x, y, z);
+					if (!canJoin) {
+						event.setCanceled(true);
+					}
+				}
+				if (!celestialObject.isInsideBorder(event.getEntity().posX, event.getEntity().posZ)) {
 					event.setCanceled(true);
 				}
 			}
@@ -78,8 +90,9 @@ public class WorldHandler {
 	
 	@SubscribeEvent
 	public void onPlayerChangedDimension(PlayerChangedDimensionEvent event) {
-		// WarpDrive.logger.info("onPlayerChangedDimension " + event.player.getName() + " " + event.fromDim + " -> " + event.toDim);
-		WarpDrive.cloaks.onPlayerEnteringDimension(event.player);
+		WarpDrive.logger.info(String.format("onPlayerChangedDimension %s %d -> %d",
+		                                    event.player.getName(), event.fromDim, event.toDim ));
+		WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.player, ((EntityPlayerMP) event.player).worldObj);
 	}
 	
 	// Client side

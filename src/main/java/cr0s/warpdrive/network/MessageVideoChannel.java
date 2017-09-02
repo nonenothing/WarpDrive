@@ -29,13 +29,13 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 		this.blockPos = blockPos;
 		this.videoChannel = videoChannel;
 	}
-
+	
 	@Override
 	public void fromBytes(ByteBuf buffer) {
 		blockPos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
 		videoChannel = buffer.readInt();
 	}
-
+	
 	@Override
 	public void toBytes(ByteBuf buffer) {
 		buffer.writeInt(blockPos.getX());

@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Random;
 
 public class BlockTransportBeacon extends BlockTorch {
+	
 	public BlockTransportBeacon(final String registryName) {
 		super();
 		setHardness(0.5F);

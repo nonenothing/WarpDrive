@@ -14,6 +14,8 @@ death.attack.warpdrive.teleportation.player=%2$s убил %1$s телепорт�
 death.attack.warpdrive.warm=%1$s died from excessive temperature
 death.attack.warpdrive.warm.player=%1$s was cooked by %2$s
 
+itemGroup.warpdrive=WarpDrive
+
 item.warpdrive.component.malformed.name=Поврежденный предмет
 item.warpdrive.component.emerald_crystal.name=Изумрудный настраиваемый кристалл
 item.warpdrive.component.ender_crystal.name=Настраиваемый кристалл Края
@@ -38,7 +40,6 @@ item.warpdrive.component.coil_crystal.name=Coil Crystal
 item.warpdrive.component.electromagnetic_rojector.name=Electromagnetic Projector
 item.warpdrive.component.superconductor.name=Superconductor
 
-item.warpdrive.armor.AirCanisterFull.name=Баллон с воздухом
 item.warpdrive.armor.helmet.name=Космический шлем
 item.warpdrive.armor.chestplate.name=Warp Chestplate
 item.warpdrive.armor.leggings.name=Warp Leggings
@@ -47,6 +48,11 @@ item.warpdrive.armor.boots.name=Warp Boots
 item.warpdrive.atomic.electromagnetic_cell.name=Electromagnetic cell
 item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Use a particle collider to fill me!
 item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Contains %1$s Å³ of %2$s
+
+item.warpdrive.breathing.air_tank0.name=Баллон с воздухом
+item.warpdrive.breathing.air_tank1.name=Basic Air Tank
+item.warpdrive.breathing.air_tank2.name=Advanced Air Tank
+item.warpdrive.breathing.air_tank3.name=Superior Air Tank
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=Фокусировщик лазера реактора IC2
 
@@ -89,7 +95,7 @@ item.warpdrive.forcefield.upgrade.item_port.tooltip=Interface with attached cont
 item.warpdrive.forcefield.upgrade.pumping.name=Pumping upgrade
 item.warpdrive.forcefield.upgrade.pumping.tooltip=§4Work in progress\nPump fluids at the force field location. Add more Pump upgrades to pull fluid with higher viscosity fluids like lava.
 item.warpdrive.forcefield.upgrade.range.name=Range upgrade
-item.warpdrive.forcefield.upgrade.range.tooltip=Increase the projector maximum range
+item.warpdrive.forcefield.upgrade.range.tooltip=Increase the projector maximum size
 item.warpdrive.forcefield.upgrade.repulsion.name=Repulsion upgrade
 item.warpdrive.forcefield.upgrade.repulsion.tooltip=Push stored items to be placed by stabilisation upgrade. Add more Repulsion upgrades to affect passive entities, monsters and eventually players. Add an Inversion for an area/terraforming effect.
 item.warpdrive.forcefield.upgrade.rotation.name=Rotation upgrade
@@ -116,14 +122,38 @@ item.warpdrive.upgrade.Range.name=Улучшение - Радиус
 item.warpdrive.upgrade.Energy.name=Улучшение - Хранилище энергии
 
 
-item.warpdrive.tool.crystalToken.name=Crystal token
-item.warpdrive.tool.crystalToken.tooltip=Crystal encapsulation of ship '%1$s'\n§bEnter the scanner field§7 to build your ship
-item.warpdrive.tool.crystalToken0.name=Crystal token #0
-item.warpdrive.tool.crystalToken1.name=Crystal token #1
-item.warpdrive.tool.crystalToken2.name=Crystal token #2
-item.warpdrive.tool.crystalToken3.name=Crystal token #3
-item.warpdrive.tool.crystalToken4.name=Crystal token #4
-item.warpdrive.tool.crystalToken5.name=Crystal token #5
+item.warpdrive.tool.ship_token.name=Ship token
+item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
+item.warpdrive.tool.ship_token0.name=Ship token #0
+item.warpdrive.tool.ship_token1.name=Ship token #1
+item.warpdrive.tool.ship_token2.name=Ship token #2
+item.warpdrive.tool.ship_token3.name=Ship token #3
+item.warpdrive.tool.ship_token4.name=Ship token #4
+item.warpdrive.tool.ship_token5.name=Ship token #5
+item.warpdrive.tool.ship_token10.name=Ship token #10
+item.warpdrive.tool.ship_token11.name=Ship token #11
+item.warpdrive.tool.ship_token12.name=Ship token #12
+item.warpdrive.tool.ship_token13.name=Ship token #13
+item.warpdrive.tool.ship_token14.name=Ship token #14
+item.warpdrive.tool.ship_token15.name=Ship token #15
+item.warpdrive.tool.ship_token20.name=Ship token #20
+item.warpdrive.tool.ship_token21.name=Ship token #21
+item.warpdrive.tool.ship_token22.name=Ship token #22
+item.warpdrive.tool.ship_token23.name=Ship token #23
+item.warpdrive.tool.ship_token24.name=Ship token #24
+item.warpdrive.tool.ship_token25.name=Ship token #25
+item.warpdrive.tool.ship_token30.name=Ship token #30
+item.warpdrive.tool.ship_token31.name=Ship token #31
+item.warpdrive.tool.ship_token32.name=Ship token #32
+item.warpdrive.tool.ship_token33.name=Ship token #33
+item.warpdrive.tool.ship_token34.name=Ship token #34
+item.warpdrive.tool.ship_token35.name=Ship token #35
+item.warpdrive.tool.ship_token40.name=Ship token #40
+item.warpdrive.tool.ship_token41.name=Ship token #41
+item.warpdrive.tool.ship_token42.name=Ship token #42
+item.warpdrive.tool.ship_token43.name=Ship token #43
+item.warpdrive.tool.ship_token44.name=Ship token #44
+item.warpdrive.tool.ship_token45.name=Ship token #45
 
 
 item.warpdrive.tool.tuning_driver.video_channel.name=Video Channel Tuning Driver
@@ -158,6 +188,7 @@ tile.warpdrive.decoration.decorative.energized.name=Энергизированн
 tile.warpdrive.decoration.decorative.network.name=Сетевой блок
 tile.warpdrive.decoration.decorative.plain.name=Простой блок
 tile.warpdrive.decoration.gas.name=Газ
+tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 tile.warpdrive.decoration.lamp_bubble.name=Bubble Lamp
 tile.warpdrive.decoration.lamp_flat.name=Flat Lamp
 tile.warpdrive.decoration.lamp_long.name=Long Lamp
@@ -637,12 +668,17 @@ warpdrive.video_channel.statusLine.invalid=§cВидеоканал %1$d неде
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cВидеоканал %1$d недействителен или камера слишком далеко.
 warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
 
-warpdrive.cloakingCore.invalidAssembly=§cНеверная структура.
+warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloakingCore.valid=System is valid
 warpdrive.cloakingCore.disabled=Маскировка выключена
 warpdrive.cloakingCore.lowPower=§cМаскировка выключилась, нужно больше энергии, капитан!
 warpdrive.cloakingCore.cloaking=Маскировка %1$d уровня покрывает %2$d блоков.
+
 warpdrive.IC2reactorLaserMonitor.noReactor=Реактор не найден!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d реактор(ов) подключено.
+
 warpdrive.transporter.status=Из %1$.0f %2$.0f %3$.0f в %4$.0f %5$.0f %6$.0f
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.

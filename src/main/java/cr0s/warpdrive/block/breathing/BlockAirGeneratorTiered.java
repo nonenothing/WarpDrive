@@ -28,6 +28,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
@@ -59,6 +61,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex() + (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0);

@@ -29,7 +29,7 @@ public class ItemBlockGas extends ItemBlockAbstractBase {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
 		ResourceLocation resourceLocation = getRegistryName();
-		String variant = String.format("color=%s", EnumGasColor.get( itemStack.getItemDamage() ).getName());
+		String variant = String.format("color=%s", EnumGasColor.get( itemStack.getItemDamage() ).getUnlocalizedName());
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 }

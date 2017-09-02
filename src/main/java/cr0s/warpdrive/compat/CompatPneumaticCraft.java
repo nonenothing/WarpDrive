@@ -1,6 +1,5 @@
 package cr0s.warpdrive.compat;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -11,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class CompatPneumaticCraft implements IBlockTransformer {
 	
@@ -27,7 +27,6 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		WarpDrive.logger.info("isApplicable " + classTileEntityBase.isInstance(tileEntity));
 		return classTileEntityBase.isInstance(tileEntity);
 	}
 	
@@ -37,12 +36,14 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public NBTBase saveExternals(final TileEntity tileEntity) {
+	public NBTBase saveExternals(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
+		// nothing to do
 		return null;
 	}
 	
 	@Override
-	public void remove(TileEntity tileEntity) {
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 	}
 	
@@ -129,7 +130,6 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// pressure chamber wall, pressure chamber window, pressure chamber interface
 		if (nbtTileEntity.hasKey("valveX")) {
-			WarpDrive.logger.info("hasKey valveX");
 			BlockPos target = transformation.apply(
 				nbtTileEntity.getInteger("valveX"),
 				nbtTileEntity.getInteger("valveY"),
@@ -190,7 +190,9 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
+	public void restoreExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity,
+	                             final ITransformation transformation, final NBTBase nbtBase) {
 		// nothing to do
 	}
 }

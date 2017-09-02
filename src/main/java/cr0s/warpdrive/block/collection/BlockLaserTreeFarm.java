@@ -24,8 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockLaserTreeFarm extends BlockAbstractContainer {
+	
 	public static final PropertyEnum<EnumLaserTreeFarmMode> MODE = PropertyEnum.create("mode", EnumLaserTreeFarmMode.class);
 	
 	public BlockLaserTreeFarm(final String registryName) {
@@ -50,6 +53,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 				.withProperty(MODE, EnumLaserTreeFarmMode.get(metadata));
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(MODE).ordinal();
@@ -73,9 +77,9 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLaserTreeFarm) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm) tileEntity).getStatus());
 				return true;
 			}
 		}

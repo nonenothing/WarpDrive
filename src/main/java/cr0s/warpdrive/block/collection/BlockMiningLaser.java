@@ -24,6 +24,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockMiningLaser extends BlockAbstractContainer {
 	
@@ -51,6 +53,7 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 				.withProperty(MODE, EnumMiningLaserMode.get(metadata));
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(MODE).ordinal();
@@ -74,9 +77,9 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityMiningLaser) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityMiningLaser)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityMiningLaser) tileEntity).getStatus());
 				return true;
 			}
 		}

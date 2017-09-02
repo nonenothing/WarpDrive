@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumMiningLaserMode;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
@@ -30,6 +31,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityMiningLaser extends TileEntityAbstractMiner {
+	
 	private final boolean canSilktouch = (WarpDriveConfig.MINING_LASER_SILKTOUCH_DEUTERIUM_L <= 0 || FluidRegistry.isFluidRegistered("deuterium"));
 	
 	private boolean isActive() {
@@ -93,7 +95,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		boolean isOnPlanet = WarpDrive.starMap.hasAtmosphere(worldObj, pos.getX(), pos.getZ());
+		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ());
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {
@@ -444,16 +446,16 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] state() {
-		int energy = getEnergyStored();
-		ITextComponent status = getStatus();
-		Integer retValuablesInLayer, retValuablesMined;
+		final int energy = getEnergyStored();
+		final String status = getStatusHeaderInPureText();
+		final Integer retValuablesInLayer, retValuablesMined;
 		if (isActive()) {
 			retValuablesInLayer = valuablesInLayer.size();
 			retValuablesMined = valuableIndex;
 			
-			return new Object[] { status.getFormattedText(), isActive(), energy, currentLayer, retValuablesMined, retValuablesInLayer };
+			return new Object[] { status, isActive(), energy, currentLayer, retValuablesMined, retValuablesInLayer };
 		}
-		return new Object[] { status.getFormattedText(), isActive(), energy, currentLayer, 0, 0 };
+		return new Object[] { status, isActive(), energy, currentLayer, 0, 0 };
 	}
 	
 	private Object[] onlyOres(Object[] arguments) {
@@ -505,27 +507,27 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "start":
-				return start();
-
-			case "stop":
-				stop();
-				return null;
-
-			case "state":
-				return state();
-
-			case "offset":
-				return offset(arguments);
-
-			case "onlyOres":
-				return onlyOres(arguments);
-
-			case "silktouch":
-				return silktouch(arguments);
+		case "start":
+			return start();
+			
+		case "stop":
+			stop();
+			return null;
+			
+		case "state":
+			return state();
+			
+		case "offset":
+			return offset(arguments);
+			
+		case "onlyOres":
+			return onlyOres(arguments);
+			
+		case "silktouch":
+			return silktouch(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
@@ -533,8 +535,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	@Override
 	public ITextComponent getStatus() {
-		// @TODO merge with base
-		int energy = getEnergyStored();
+		final int energy = getEnergyStored();
 		ITextComponent state = new TextComponentTranslation("IDLE (not mining)");
 		if (currentState == STATE_IDLE) {
 			state = new TextComponentTranslation("IDLE (not mining)");

@@ -54,6 +54,9 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 			// Evaporate fluid
 			worldObj.playSound(null, valuable, net.minecraft.init.SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
 					2.6F + (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()) * 0.8F);
+			
+			// remove without updating neighbours @TODO: add proper pump upgrade
+			worldObj.setBlockState(valuable, Blocks.AIR.getDefaultState(), 2);
 		} else {
 			List<ItemStack> itemStacks = getItemStackFromBlock(valuable, blockState);
 			if (addToConnectedInventories(itemStacks)) {
@@ -61,8 +64,10 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 			}
 			// standard harvest block effect
 			worldObj.playEvent(2001, valuable, Block.getStateId(blockState));
+			
+			// remove while updating neighbours
+			worldObj.setBlockState(valuable, Blocks.AIR.getDefaultState(), 3);
 		}
-		worldObj.setBlockToAir(valuable);
 	}
 	
 	private List<ItemStack> getItemStackFromBlock(BlockPos blockPos, IBlockState blockState) {

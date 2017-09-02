@@ -11,6 +11,7 @@ import java.util.Random;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -42,10 +43,13 @@ public class BlockWeaponController extends BlockAbstractContainer {
 		return 1;
 	}
 	
-	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
+		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityWeaponController) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
 			} else {
@@ -54,7 +58,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 				    .appendSibling(new TextComponentTranslation("warpdrive.error.badTileEntity")));
 				WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 			}
-			return false;
+			return true;
 		}
 		
 		return false;

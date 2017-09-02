@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class ItemUpgrade extends ItemAbstractBase {
+	
 	private static ItemStack[] isCache = new ItemStack[UpgradeType.values().length];
 	
 	public ItemUpgrade(final String registryName) {

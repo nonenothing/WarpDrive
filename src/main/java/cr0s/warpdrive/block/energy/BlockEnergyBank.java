@@ -74,6 +74,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		}
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public byte getTier(final ItemStack itemStack) {
 		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {

@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cofh.api.energy.IEnergyHandler;
 import cofh.api.energy.IEnergyProvider;
 import cofh.api.energy.IEnergyReceiver;
 import cr0s.warpdrive.Commons;
@@ -33,7 +34,7 @@ import net.minecraftforge.fml.common.Optional;
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2"),
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2")
 })
-public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyProvider, IEnergyReceiver, IEnergySink, IEnergySource {
+public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyProvider, IEnergyReceiver, IEnergyHandler, IEnergySink, IEnergySource, cr0s.warpdrive.api.computer.IEnergy {
 	
 	private boolean addedToEnergyNet = false;
 	private long energyStored_internal = 0;
@@ -151,10 +152,6 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		energyStored_internal -= amount_internal;
 	}
 	
-	public Object[] energy() {
-		return new Object[] { energy_getEnergyStored(), energy_getMaxStorage() };
-	}
-	
 	public ITextComponent getEnergyStatus() {
 		if (energy_getMaxStorage() == 0) {
 			return new TextComponentString("");
@@ -166,13 +163,19 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	public ITextComponent getStatus() {
-		ITextComponent textEnergyStatus = getEnergyStatus();
+		final ITextComponent textEnergyStatus = getEnergyStatus();
 		if (textEnergyStatus.getFormattedText().isEmpty()) {
 			return super.getStatus();
 		} else {
 			return super.getStatus()
 				.appendSibling(new TextComponentString("\n")).appendSibling(textEnergyStatus);
 		}
+	}
+	
+	// Common OC/CC methods
+	@Override
+	public Object[] energy() {
+		return new Object[] { energy_getEnergyStored(), energy_getMaxStorage() };
 	}
 	
 	// OpenComputer callback methods
@@ -182,11 +185,11 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		return energy();
 	}
 	
-	// ComputerCraft methods
+	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("energy")) {
 			return energy();

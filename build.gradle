@@ -33,7 +33,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 minecraft {
     version = config.minecraft_version + "-" + config.forge_version
-    runDir = "eclipse"
+    runDir = "run"
     
     // the mappings can be changed at any time, and must be in the following format.
     // snapshot_YYYYMMDD   snapshot are built nightly.
@@ -81,11 +81,11 @@ dependencies {
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
     //compile "some.group:artifact:version"
-      
+    
     // real examples
     //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
     //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
+    
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
@@ -124,12 +124,34 @@ processResources {
     }
 }
 
+//copies the commons folder to all instances
+task copyOpenComputersCommons1(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveShipController')
+}
+task copyOpenComputersCommons2(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveEnanReactorCore')
+}
+task copyOpenComputersCommons3(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveWeaponController')
+}
+task copyOpenComputersCommons4(type: Copy) {
+    from 'src/main/resources/assets/warpdrive/lua.OpenComputers/common'
+    into('build/resources/main/assets/warpdrive/lua.OpenComputers/warpdriveAccelerator')
+}
+
 jar {
+    dependsOn copyOpenComputersCommons1, copyOpenComputersCommons2, copyOpenComputersCommons3, copyOpenComputersCommons4
+    
     manifest {
         attributes FMLAT: "warpdrive_at.cfg"
         attributes FMLCorePlugin: "cr0s.warpdrive.core.FMLLoadingPlugin"
         attributes FMLCorePluginContainsFMLMod: "true"
     }
+    classifier = ''
+    destinationDir = file 'output'
 }
 
 idea {
@@ -139,9 +161,9 @@ idea {
 }
 
 runClient {
-    jvmArgs "-Xmx2048m", "-Xms2048m"
+    jvmArgs "-Xmx2048m", "-Xms1024m", "-ea"
 }
 
 runServer {
-    jvmArgs "-Xmx2048m", "-Xms2048m"
+    jvmArgs "-Xmx2048m", "-Xms1024m", "-ea"
 }

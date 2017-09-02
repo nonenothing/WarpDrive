@@ -49,7 +49,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockForceFieldProjector extends BlockAbstractForceField {
-
+	
 	public static final PropertyBool IS_DOUBLE_SIDED = PropertyBool.create("is_double_sided");
 	public static final IUnlistedProperty<EnumForceFieldShape> SHAPE = Properties.toUnlisted(PropertyEnum.create("shape", EnumForceFieldShape.class));
 	public static final IUnlistedProperty<EnumForceFieldState> STATE = Properties.toUnlisted(PropertyEnum.create("state", EnumForceFieldState.class));

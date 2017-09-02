@@ -1,457 +1,50 @@
-if not term.isColor() then
-  print("Advanced computer required")
-  exit()
-end
-print("loading...")
 
-monitor_textScale = 0.5
+if warpdriveCommons then os.unloadAPI("warpdriveCommons") end
+if not os.loadAPI("warpdrive/warpdriveCommons") then error("missing warpdriveCommons") end
+local w = warpdriveCommons.w
 
-Style = {
-  CDefault = colors.white,
-  BGDefault = colors.blue,
+local data
 
-  CTitle = colors.black,
-  BGTitle = colors.cyan,
+----------- Attack lasers support
 
-  CWarning = colors.white,
-  BGWarning = colors.red,
+local laser_batteryIndex = 1
+local laser_batteries = {}
+local laser_stationIndex = 1
+local laser_stations = {}
+local laserAddresses = {}
+local lasercamAddresses = {}
 
-  CSuccess = colors.white,
-  BGSuccess = colors.lime,
-
-  CDisabled = colors.gray,
-  BGDisabled = colors.blue
-}
-
------------ Monitor support
-
-function SetMonitorColorFrontBack(frontColor, backgroundColor)
-  term.setBackgroundColor(backgroundColor)
-  term.setTextColor(frontColor)
-  if monitors ~= nil then
-    for key,monitor in pairs(monitors) do
-      monitor.setTextColor(frontColor)
-      monitor.setBackgroundColor(backgroundColor)
-    end
-  end
-end
-
-function Write(text)
-  term.write(text)
-  if monitors ~= nil then
-    for key,monitor in pairs(monitors) do
-      if key ~= data.radar_monitorIndex then
-        monitor.write(text)
-      end
-    end
-  end
-end
-
-function SetCursorPos(x, y)
-  term.setCursorPos(x, y)
-  if monitors ~= nil then
-    for key,monitor in pairs(monitors) do
-      if key ~= data.radar_monitorIndex then
-        monitor.setCursorPos(x, y)
-      end
-    end
-  end
-end
-
-function SetColorDefault()
-  SetMonitorColorFrontBack(Style.CDefault, Style.BGDefault)
-end
-
-function SetColorTitle()
-  SetMonitorColorFrontBack(Style.CTitle, Style.BGTitle)
-end
-
-function SetColorWarning()
-  SetMonitorColorFrontBack(Style.CWarning, Style.BGWarning)
-end
-
-function SetColorSuccess()
-  SetMonitorColorFrontBack(Style.CSuccess, Style.BGSuccess)
-end
-
-function SetColorDisabled()
-  SetMonitorColorFrontBack(Style.CDisabled, Style.BGDisabled)
-end
-
-function Clear()
-  clearWarningTick = -1
-  SetColorDefault()
-  term.clear()
-  if monitors ~= nil then
-    for key,monitor in pairs(monitors) do
-      if key ~= data.radar_monitorIndex then
-        monitor.clear()
-      end
-    end
-  end
-  SetCursorPos(1, 1)
-end
-
-function ClearLine()
-  SetColorDefault()
-  term.clearLine()
-  if monitors ~= nil then
-    for key,monitor in pairs(monitors) do
-      if key ~= data.radar_monitorIndex then
-        monitor.clearLine()
-      end
-    end
-  end
-  SetCursorPos(1, 1)
-end
-
-function WriteLn(text)
-  Write(text)
-  local x, y = term.getCursorPos()
-  local width, height = term.getSize()
-  if y > height - 1 then
-    y = 1
-  end
-  SetCursorPos(1, y + 1)
-end
-
-function WriteCentered(y, text)
-  SetCursorPos((51 - text:len()) / 2, y)
-  term.write(text)
-  if monitors ~= nil then
-    for key,monitor in pairs(monitors) do
-      if key ~= data.radar_monitorIndex then
-        local sizeX, sizeY = monitor.getSize()
-        monitor.setCursorPos((sizeX - text:len()) / 2, y)
-        monitor.write(text)
-      end
-    end
-  end
-  local xt, yt = term.getCursorPos()
-  SetCursorPos(1, yt + 1)
-end
-
-function ShowTitle(text)
-  Clear()
-  SetColorTitle()
-  WriteCentered(1, text)
-  SetColorDefault()
-end
-
-function ShowMenu(text)
-  Write(text)
-  local sizeX, sizeY = term.getSize()
-  local xt, yt = term.getCursorPos()
-  for i = xt, sizeX do
-    Write(" ")
-  end
-  SetCursorPos(1, yt + 1)
-end
-
-local clearWarningTick = -1
-function ShowWarning(text)
-  local sizeX, sizeY = term.getSize()
-  SetCursorPos(1, sizeY)
-  ClearLine()
-  SetColorWarning()
-  SetCursorPos((sizeX - text:len() - 2) / 2, sizeY)
-  Write(" " .. text .. " ")
-  SetColorDefault()
-  clearWarningTick = 5
-end
-function ClearWarning()
-  if clearWarningTick > 0 then
-    clearWarningTick = clearWarningTick - 1
-  elseif clearWarningTick == 0 then
-    SetColorDefault()
-    local sizeX, sizeY = term.getSize()
-    SetCursorPos(1, sizeY)
-    ClearLine()
-    clearWarningTick = -1
-  end
-end
-
------------ Formatting & popups
-
-function FormatFloat(value, nbchar)
-  local str = "?"
-  if value ~= nil then
-    str = string.format("%g", value)
-  end
-  if nbchar ~= nil then
-    str = string.sub("               " .. str, -nbchar)
-  end
-  return str
-end
-function FormatInteger(value, nbchar)
-  local str = "?"
-  if value ~= nil then
-    str = string.format("%d", value)
-  end
-  if nbchar ~= nil then
-    str = string.sub("               " .. str, -nbchar)
-  end
-  return str
-end
-
-function boolToYesNo(bool)
-  if bool then
-    return "YES"
-  else
-    return "no"
-  end
-end
-
-function readInputNumber(currentValue)
-  local inputAbort = false
-  local input = string.format(currentValue)
-  if input == "0" then
-    input = ""
-  end
-  local x, y = term.getCursorPos()
-  repeat
-    ClearWarning()
-    SetColorDefault()
-    SetCursorPos(x, y)
-    Write(input .. "            ")
-    input = string.sub(input, -9)
-    
-    local params = { os.pullEventRaw() }
-    local eventName = params[1]
-    local address = params[2]
-    if address == nil then address = "none" end
-    if eventName == "key" then
-      local keycode = params[2]
-      if keycode >= 2 and keycode <= 10 then -- 1 to 9
-        input = input .. string.format(keycode - 1)
-      elseif keycode == 11 or keycode == 82 then -- 0 & keypad 0
-        input = input .. "0"
-      elseif keycode >= 79 and keycode <= 81 then -- keypad 1 to 3
-        input = input .. string.format(keycode - 78)
-      elseif keycode >= 75 and keycode <= 77 then -- keypad 4 to 6
-        input = input .. string.format(keycode - 71)
-      elseif keycode >= 71 and keycode <= 73 then -- keypad 7 to 9
-        input = input .. string.format(keycode - 64)
-      elseif keycode == 14 then -- Backspace
-        input = string.sub(input, 1, string.len(input) - 1)
-      elseif keycode == 211 then -- Delete
-        input = ""
-      elseif keycode == 28 then -- Enter
-        inputAbort = true
-      elseif keycode == 74 or keycode == 12 or keycode == 49 then -- - on numeric keypad or - on US top or n letter
-        if string.sub(input, 1, 1) == "-" then
-          input = string.sub(input, 2)
-        else
-          input = "-" .. input
-        end
-      elseif keycode == 78 then -- +
-        if string.sub(input, 1, 1) == "-" then
-          input = string.sub(input, 2)
-        end
-      else
-        ShowWarning("Key " .. keycode .. " is invalid")
-      end
-    elseif eventName == "terminate" then
-      inputAbort = true
-    elseif not common_event(eventName, params[2]) then
-      ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
-    end
-  until inputAbort
-  SetCursorPos(1, y + 1)
-  if input == "" or input == "-" then
-    return currentValue
-  else
-    return tonumber(input)
-  end
-end
-
-function readInputText(currentValue)
-  local inputAbort = false
-  local input = string.format(currentValue)
-  local x, y = term.getCursorPos()
-  Write(input)
-  os.pullEventRaw() -- skip first char event
-  repeat
-    ClearWarning()
-    SetColorDefault()
-    SetCursorPos(x, y)
-    Write(input .. "                              ")
-    input = string.sub(input, -30)
-    
-    local params = { os.pullEventRaw() }
-    local eventName = params[1]
-    local address = params[2]
-    if address == nil then address = "none" end
-    if eventName == "key" then
-      local keycode = params[2]
-      if keycode == 14 then -- Backspace
-        input = string.sub(input, 1, string.len(input) - 1)
-      elseif keycode == 211 then -- Delete
-        input = ""
-      elseif keycode == 28 then -- Enter
-        inputAbort = true
-      else
-        ShowWarning("Key " .. keycode .. " is invalid")
-      end
-    elseif eventName == "char" then
-      local char = params[2]
-      if char >= ' ' and char <= '~' then -- 1 to 9
-        input = input .. char
-      else
-        ShowWarning("Char #" .. string.byte(char) .. " is invalid")
-      end
-    elseif eventName == "terminate" then
-      inputAbort = true
-    elseif not common_event(eventName, params[2]) then
-      ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
-    end
-  until inputAbort
-  SetCursorPos(1, y + 1)
-  if input == "" then
-    return currentValue
-  else
-    return input
-  end
-end
-
-function readConfirmation(msg)
-  if msg == nil then
-    ShowWarning("Are you sure? (y/n)")
-  else
-    ShowWarning(msg)
-  end
-  repeat
-    local params = { os.pullEventRaw() }
-    local eventName = params[1]
-    local address = params[2]
-    if address == nil then address = "none" end
-    if eventName == "key" then
-      local keycode = params[2]
-      if keycode == 21 then -- Y
-        return true
-      else
-        return false
-      end
-    elseif eventName == "terminate" then
-      return false
-    elseif not common_event(eventName, params[2]) then
-      ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
-    end
-  until false
-end
-
------------ commons: menu, event handlers, etc.
-
-function common_event(eventName, param)
-  if eventName == "redstone" then
-    redstone_event(param)
-  elseif eventName == "timer" then
-  elseif eventName == "laserScanning" then
-    laser_sendEvent()
-  elseif eventName == "laserSend" then
-  elseif eventName == "char" then
-  elseif eventName == "key_up" then
-  elseif eventName == "mouse_click" then
-  elseif eventName == "mouse_up" then
-  elseif eventName == "mouse_drag" then
-  elseif eventName == "monitor_touch" then
-  elseif eventName == "monitor_resize" then
-  elseif eventName == "peripheral" then
-  elseif eventName == "peripheral_detach" then
-  else
-    return false
-  end
-  return true
-end
-
-function menu_common()
-  SetCursorPos(1, 18)
-  SetColorTitle()
-  ShowMenu("1 - Laser batteries, 2 - Laser stations, X Exit")
-end
-
------------ Redstone support
-
-local tblRedstoneState = {-- Remember redstone state on each side
-  ["top"] = rs.getInput("top"),
-  ["front"] = rs.getInput("front"),
-  ["left"] = rs.getInput("left"),
-  ["right"] = rs.getInput("right"),
-  ["back"] = rs.getInput("back"),
-  ["bottom"] = rs.getInput("bottom"),
-}
-local tblSides = {-- list all sides and offset coordinates
-  ["top"   ] = { 3, 1},
-  ["front" ] = { 1, 3},
-  ["left"  ] = { 3, 3},
-  ["right" ] = { 5, 3},
-  ["back"  ] = { 5, 5},
-  ["bottom"] = { 3, 5},
-}
-
-function redstone_event()
-  -- Event only returns nil so we need to check sides manually
-  local message = ""
-  for side, state in pairs(tblRedstoneState) do
-    if rs.getInput(side) ~= state then
-      -- print(side .. " is now " .. tostring(rs.getInput(side)))
-      message = message .. side .. " "
-      tblRedstoneState[side] = rs.getInput(side)
-    end
-  end
-  if message ~= "" then
-    message = "Redstone changed on " .. message
-    showWarning(message)
-  end
-end
-
------------ Configuration
-
-function data_save()
+function laser_save(parData)
+  -- rebuild a clean structure, skipping the device objects
   data.laser_batteries = {}
-  for key,laserbattery in pairs(laser_batteries) do
-    data.laser_batteries[key] = {
+  for keyBattery, laserbattery in pairs(laser_batteries) do
+    data.laser_batteries[keyBattery] = {
       name = laserbattery.name,
       frequency = laserbattery.frequency,
       headAddress = laserbattery.headAddress,
       boosterAddresses = laserbattery.boosterAddresses }
   end
   data.laser_stations = {}
-  for key,laserstation in pairs(laser_stations) do
-    data.laser_stations[key] = {
+  for keyStation, laserstation in pairs(laser_stations) do
+    data.laser_stations[keyStation] = {
       name = laserstation.name,
       cameraAddress = laserstation.cameraAddress,
-      batteries = {}}
-    for batteryKey,laserbattery in pairs(laser_stations[key].batteries) do
-      data.laser_stations[key].batteries[batteryKey] = {
+      batteries = {} }
+    for keyBattery, laserbattery in pairs(laser_stations[keyStation].batteries) do
+      data.laser_stations[keyStation].batteries[keyBattery] = {
         name = laserbattery.name,
         enabled = laserbattery.enabled }
     end
   end
-  
-  local file = fs.open("shipdata.txt", "w")
-  if file ~= nil then
-    file.writeLine(textutils.serialize(data))
-    file.close()
-  else
-    ShowWarning("No file system")
-    os.sleep(3)
-  end
 end
 
-function data_read()
-  data = { }
-  if fs.exists("shipdata.txt") then
-    local file = fs.open("shipdata.txt", "r")
-    data = textutils.unserialize(file.readAll())
-    file.close()
-	if data == nil then data = {}; end
-  end
+function laser_read(parData)
+  data = parData
   if data.laser_batteries == nil then data.laser_batteries = {}; end
   laser_batteries = data.laser_batteries
-  for batteryKey,laserbattery in pairs(laser_batteries) do
+  for keyBattery, laserbattery in pairs(laser_batteries) do
     if laserbattery.headAddress ~= nil then
-      laserbattery.head = peripheral.wrap(laserbattery.headAddress)
+      laserbattery.head = w.device_get(laserbattery.headAddress)
     end
     if laserbattery.name == nil then
       laserbattery.name = "noname"
@@ -460,15 +53,15 @@ function data_read()
       laserbattery.boosterAddresses = {}
     end
     laserbattery.boosters = {}
-    for boosterKey,boosterAddress in pairs(laserbattery.boosterAddresses) do
-      laserbattery.boosters[boosterKey] = peripheral.wrap(boosterAddress)
+    for boosterKey, boosterAddress in pairs(laserbattery.boosterAddresses) do
+      laserbattery.boosters[boosterKey] = w.device_get(boosterAddress)
     end
   end
   if data.laser_stations == nil then data.laser_stations = {}; end
   laser_stations = data.laser_stations
-  for batteryKey,laserstation in pairs(laser_stations) do
+  for keyStation, laserstation in pairs(laser_stations) do
     if laserstation.cameraAddress ~= nil then
-      laserstation.camera = peripheral.wrap(laserstation.cameraAddress)
+      laserstation.camera = w.device_get(laserstation.cameraAddress)
     end
     if laserstation.name == nil then
       laserstation.name = "noname"
@@ -481,57 +74,24 @@ function data_read()
   if data.laser_firingScatter == nil then data.laser_firingScatter = false; end
 end
 
-function data_setName()
-  if ship ~= nil then
-    ShowTitle("<==== Set ship name ====>")
-  else
-    ShowTitle("<==== Set name ====>")
-  end
-  
-  SetCursorPos(1, 2)
-  Write("Enter ship name: ")
-  label = readInputText(label)
-  os.setComputerLabel(label)
-  if ship ~= nil then
-    ship.coreFrequency(label)
-  end
-  os.reboot()
-end
-
-function string_split(source, sep)
-  local sep = sep or ":"
-  local fields = {}
-  local pattern = string.format("([^%s]+)", sep)
-  source:gsub(pattern, function(c) fields[#fields + 1] = c end)
-  return fields
-end
-
-
------------ Attack lasers support
-
-laser_batteryIndex = 1
-laser_batteries = {}
-laser_stationIndex = 1
-laser_stations = {}
-
 function laser_getDescription(address)
   if address == nil then
     return "~not defined~"
   end
-  local laser = peripheral.wrap(address)
+  local laser = w.device_get(address)
   if laser == nil or laser.position == nil then
     return "~invalid~"
   end
   local x, y, z = laser.position()
-  return "@ " .. FormatInteger(x, 7) .. " " .. FormatInteger(y, 3) .. " " .. FormatInteger(z, 7)
+  return "@ " .. w.format_integer(x, 7) .. " " .. w.format_integer(y, 3) .. " " .. w.format_integer(z, 7)
 end
 
 function laser_getName(address)
   return address
 end
 
-function laser_battery_key(char, keycode)
-  if char == 65 or char == 97 or keycode == 30 then -- A
+function laser_battery_key(character, keycode)
+  if character == 'a' or character == 'A' then -- A or keycode == 30
     table.insert(laser_batteries, {
       name = "noname",
       frequency = -1,
@@ -540,35 +100,37 @@ function laser_battery_key(char, keycode)
       head = nil,
       boosters = {} })
     laser_batteryIndex = #laser_batteries
-    data_save()
+    laser_battery_linkLasers()
+    laser_battery_config()
+    w.data_save()
     return true
-  elseif char == 82 or char == 114 or keycode == 19 then -- R
+  elseif character == 'r' or character == 'R' then -- R or keycode == 19
     table.remove(laser_batteries, laser_batteryIndex)
     -- laser_batteryIndex = laser_batteryIndex - 1
-    data_save()
+    w.data_save()
     return true
-  elseif char == 70 or char == 102 or keycode == 33 then -- F
+  elseif character == 'f' or character == 'F' then -- F or keycode == 33
     if data.laser_firingMode == "boosted" then data.laser_firingMode = "single"
     elseif data.laser_firingMode == "single" then data.laser_firingMode = "multi"
     elseif data.laser_firingMode == "multi" then data.laser_firingMode = "boosted" end
-    data_save()
+    w.data_save()
     return true
-  elseif char == 83 or char == 115 or keycode == 31 then -- S
+  elseif character == 's' or character == 'S' then -- S or keycode == 31
     data.laser_firingScatter = not data.laser_firingScatter
-    data_save()
+    w.data_save()
     return true
-  elseif char == 76 or char == 108 or keycode == 38 then -- L
+  elseif character == 'l' or character == 'L' then -- L or keycode == 38
     laser_battery_linkLasers()
-    data_save()
+    w.data_save()
     return true
-  elseif char == 67 or char == 99 or keycode == 46 then -- C
+  elseif character == 'c' or character == 'C' then -- C or keycode == 46
     laser_battery_config()
-    data_save()
+    w.data_save()
     return true
-  elseif keycode == 200 or keycode == 203 or keycode == 74 then -- Up or Left or -
+  elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
     laser_batteryIndex = laser_batteryIndex - 1
     return true
-  elseif keycode == 208 or keycode == 205 or keycode == 78 then -- Down or Right or +
+  elseif keycode == 208 or keycode == 205 or character == '+' then -- Down or Right or +
     laser_batteryIndex = laser_batteryIndex + 1
     return true
   end
@@ -600,86 +162,86 @@ function laser_battery_getByName(name)
 end
 
 function laser_battery_page()
-  ShowTitle(label .. " - Laser batteries")
+  w.page_begin(w.data_getName() .. " - Laser batteries")
   
   local laserbattery = laser_battery_getCurrent()
   
-  -- SetCursorPos(1, 2)
+  -- w.setCursorPos(1, 2)
   if #laser_batteries == 0 then
-    SetColorDisabled()
-    WriteCentered(2, "No laser battery defined, press A to add one")
+    w.setColorDisabled()
+    w.writeCentered(2, "No laser battery defined, press A to add one")
   elseif laserbattery == nil then
-    SetColorWarning()
-    WriteCentered(2, "Laser battery " .. laser_batteryIndex .. " of " .. #laser_batteries .. " is not defined")
+    w.setColorWarning()
+    w.writeCentered(2, "Laser battery " .. laser_batteryIndex .. " of " .. #laser_batteries .. " is not defined")
   else
-    SetColorDefault()
-    WriteCentered(2, "Laser battery " .. laser_batteryIndex .. " of " .. #laser_batteries .. ": " .. laserbattery.name)
-    
-    SetCursorPos(1, 3)
+    w.setColorNormal()
+    w.writeCentered(2, "'" .. laserbattery.name .. "' (" .. laser_batteryIndex .. " of " .. #laser_batteries .. ")")
+
+    w.setCursorPos(1, 3)
     local headX = 0
     local headY = 0
     local headZ = 0
     local headFrequency = -1
     if laserbattery.head == nil then
-      SetColorDisabled()
-      Write("Laser head is not defined, press L to link one")
+      w.setColorDisabled()
+      w.write("Laser head is not defined, press L to link one")
     else
-      SetColorDefault()
+      w.setColorNormal()
       headX, headY, headZ = laserbattery.head.position()
       headFrequency = laserbattery.head.beamFrequency()
-      WriteLn("Laser head:")
+      w.writeLn("Laser head:")
       if headFrequency == -1 then
-        SetColorWarning()
+        w.setColorWarning()
       end
-      Write(FormatInteger(headFrequency, 5))
-      SetColorDefault()
-      Write(" @ " .. FormatInteger(headX, 7) .. " " .. FormatInteger(headY, 3) .. " " .. FormatInteger(headZ, 7)
-        .. " " .. string.sub(laserbattery.headAddress, 10, 100))
+      w.write(w.format_integer(headFrequency, 5))
+      w.setColorNormal()
+      w.write(" @ " .. w.format_integer(headX, 7) .. " " .. w.format_integer(headY, 3) .. " " .. w.format_integer(headZ, 7)
+        .. " " .. w.format_address(laserbattery.headAddress))
     end
     
-    SetCursorPos(1, 5)
+    w.setCursorPos(1, 5)
     if laserbattery.boosters == nil or #laserbattery.boosters == 0 then
-      SetColorDisabled()
-      Write("Boosting lasers aren't set, press L to link one")
+      w.setColorDisabled()
+      w.write("Boosting lasers aren't set, press L to link one")
     else
-      SetColorDefault()
-      Write("Boosting lasers:")
-      for key,booster in pairs(laserbattery.boosters) do
-        SetCursorPos(1, 5 + key)
+      w.setColorNormal()
+      w.write("Boosting lasers:")
+      for key, booster in pairs(laserbattery.boosters) do
+        w.setCursorPos(1, 5 + key)
         local x, y, z = booster.position()
         if booster.beamFrequency() == headFrequency and headFrequency ~= -1 then
-          SetColorDefault()
+          w.setColorNormal()
         else
-          SetColorWarning()
+          w.setColorWarning()
         end
-        Write(FormatInteger(booster.beamFrequency(), 5))
-        SetColorDefault()
-        Write(" @ " .. FormatInteger(x - headX, 7) .. " " .. FormatInteger(y - headY, 3) .. " " .. FormatInteger(z - headZ, 7)
-          .. " " .. string.sub(laserbattery.boosterAddresses[key], 10, 100))
+        w.write(w.format_integer(booster.beamFrequency(), 5))
+        w.setColorNormal()
+        w.write(" @ " .. w.format_integer(x - headX, 7) .. " " .. w.format_integer(y - headY, 3) .. " " .. w.format_integer(z - headZ, 7)
+          .. " " .. w.format_address(laserbattery.boosterAddresses[key]))
       end
     end
   end
   
-  SetColorDefault()
-  SetCursorPos(1, 13)
-  Write("  -----------------------------------------------")
-  SetCursorPos(1, 14)
-  Write("Firing mode: " .. data.laser_firingMode)
-  SetCursorPos(30, 14)
-  Write("Scatter mode: ")
+  w.setColorNormal()
+  w.setCursorPos(1, 13)
+  w.write("  -----------------------------------------------")
+  w.setCursorPos(1, 14)
+  w.write("   Firing mode: " .. data.laser_firingMode)
+  w.setCursorPos(30, 14)
+  w.write("Scatter mode: ")
   if data.laser_firingScatter then
-    SetColorSuccess()
-    Write("ON")
-    SetColorDefault()
+    w.setColorSuccess()
+    w.write("ON")
+    w.setColorNormal()
   else
-    Write("off")
+    w.write("off")
   end
   
-  SetColorTitle()
-  SetCursorPos(1, 15)
-  ShowMenu("A/R/C - Add/Remove/Configure selected battery")
-  ShowMenu("Arrows - Select battery, L - Link lasers")
-  ShowMenu("F - change Firing mode, S - toggle Scatter mode")
+  w.setColorControl()
+  w.setCursorPos(1, 15)
+  w.writeFullLine(" Add/Remove/Configure selected battery (A/R/C)")
+  w.writeFullLine(" select battery (Arrows), Link lasers (L)")
+  w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
 end
 
 function laser_battery_config()
@@ -687,32 +249,52 @@ function laser_battery_config()
   if laserbattery == nil then
     return
   end
-  ShowTitle(label .. " - Laser battery configuration")
-  SetColorDefault()
-  SetCursorPos(1, 3)
-  Write("Battery name (" .. laserbattery.name .. "): ")
-  laserbattery.name = readInputText(laserbattery.name)
+  w.page_begin(w.data_getName() .. " - Laser battery configuration")
+  w.setColorNormal()
+  w.setCursorPos(1, 3)
+  w.writeLn("Battery name (" .. laserbattery.name .. "):")
+  laserbattery.name = w.input_readText(laserbattery.name)
+  w.setCursorPos(1, 3)
+  w.clearLine()
+  w.writeLn("Battery name set to " .. laserbattery.name)
+  w.clearLine()
   
   if laserbattery.head == nil then
     return
   end
-  SetCursorPos(1, 4)
+  w.setColorDisabled()
+  w.setCursorPos(1, 4)
   local headX, headY, headZ = laserbattery.head.position()
   local headFrequency = laserbattery.head.beamFrequency()
-  Write("Head @ " .. FormatInteger(headX, 7) .. " " .. FormatInteger(headY, 3) .. " " .. FormatInteger(headZ, 7))
-  SetCursorPos(1, 5)
-  Write("With " .. #laserbattery.boosters .. " boosters")
+  w.write("@ " .. w.format_integer(headX, 7) .. " " .. w.format_integer(headY, 3) .. " " .. w.format_integer(headZ, 7))
+  w.setCursorPos(1, 5)
+  w.write("With " .. #laserbattery.boosters .. " boosters")
   
-  SetCursorPos(1, 7)
-  Write("Battery beam frequency (" .. FormatInteger(headFrequency, 5) .. "): ")
-  local frequency = readInputNumber(headFrequency)
-  SetCursorPos(1, 8)
+  w.setCursorPos(1, 8)
+  w.setColorDisabled()
+  w.write(" Valid values are 0 to 65000 ")
+  w.setColorNormal()
+  local frequency
+  repeat
+    w.setCursorPos(1, 7)
+    w.clearLine()
+    w.write("Battery beam frequency (" .. w.format_integer(headFrequency, 5) .. "): ")
+    frequency = w.input_readNumber(headFrequency)
+    if frequency ~= 0 and (frequency < 0 or frequency > 65000) then
+      w.status_showWarning("This is not a valid beam frequency. Try again.")
+    end
+  until frequency > 0 and frequency <= 65000
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  
+  w.setCursorPos(1, 8)
+  w.clearLine()
   local newFrequency = laserbattery.head.beamFrequency(frequency)
-  Write("Head beam frequency set to " .. newFrequency)
-  for key,booster in pairs(laserbattery.boosters) do
-    SetCursorPos(1, 8 + (key % 5))
+  w.write("Head beam frequency set to " .. newFrequency)
+  for key, booster in pairs(laserbattery.boosters) do
+    w.setCursorPos(1, 8 + (key % 5))
     newFrequency = booster.beamFrequency(frequency)
-    Write("Booster beam frequency set to " .. newFrequency)
+    w.write("Booster beam frequency set to " .. newFrequency)
   end
 end
 
@@ -721,62 +303,94 @@ function laser_battery_linkLasers()
   if laserbattery == nil then
     return
   end
-  ShowTitle(label .. " - Linking lasers")
+  w.page_begin(w.data_getName() .. " - Linking lasers")
   
-  SetColorDisabled()
-  SetCursorPos(1, 3)
-  WriteLn("Help: Use arrows to select lasers.")
-  WriteLn("Press backspace/delete to remove laser.")
-  WriteLn("Press enter to validate.")
-  WriteLn("Validate with '-no laser-' to stop adding lasers.")
+  w.setColorDisabled()
+  w.setCursorPos(1, 3)
+  w.writeLn("Help: Use arrows to select lasers.")
+  w.writeLn("Press backspace/delete to remove laser.")
+  w.writeLn("Press enter to validate.")
+  w.writeLn("Validate with '-no laser-' to stop adding lasers.")
   
-  SetColorDefault()
+  w.setColorNormal()
   if laserbattery.boosters == nil then
     laserbattery.boosters = {}
   end
-  WriteCentered(2, "Battery '" .. laserbattery.name .. "' with " .. #laserbattery.boosters .. " boosters")
+  w.writeCentered(2, "Battery '" .. laserbattery.name .. "' with " .. #laserbattery.boosters .. " boosters")
   
-  SetCursorPos(1, 8)
-  if laserbattery.headAddress == nil then
-    Write("Laser head (not defined): ")
-  else
-    Write("Laser head (" .. laserbattery.headAddress .. "): ")
+  local laserAddresses_left = {}
+  for keyAddress, laserAddress in pairs(laserAddresses) do
+    laserAddresses_left[keyAddress] = laserAddress
   end
-  laserbattery.headAddress = readInputEnum(laserbattery.headAddress, laserAddresses, laser_getName, laser_getDescription, "-no laser-")
+  w.setCursorPos(1, 8)
   if laserbattery.headAddress == nil then
+    w.writeLn("Laser head (not defined): ")
+  else
+    w.writeLn("Laser head (" .. laserbattery.headAddress .. "): ")
+  end
+  laserbattery.headAddress = w.input_readEnum(laserbattery.headAddress, laserAddresses_left, laser_getName, laser_getDescription, "-no laser-")
+  w.setColorNormal()
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  if laserbattery.headAddress == nil then
+    w.writeLn("Laser head set to (not defined)")
     laserbattery.head = nil
   else
-    laserbattery.head = peripheral.wrap(laserbattery.headAddress)
+    -- remove selected laser from potentials
+    for keyLaser, laserAddress in pairs(laserAddresses_left) do
+      if laser_getName(laserAddress) == laserbattery.headAddress then
+        table.remove(laserAddresses_left, keyLaser)
+        break
+      end
+    end
     
-    SetCursorPos(1, 9)
+    w.writeLn("Laser head set to " .. laserbattery.headAddress)
+    laserbattery.head = w.device_get(laserbattery.headAddress)
+    
+    w.setColorDisabled()
+    w.setCursorPos(1, 9)
     local headX, headY, headZ = laserbattery.head.position()
     local headFrequency = laserbattery.head.beamFrequency()
-    Write("Head @ " .. FormatInteger(headX, 7) .. " " .. FormatInteger(headY, 3) .. " " .. FormatInteger(headZ, 7))
+    w.write("@ " .. w.format_integer(headX, 7) .. " " .. w.format_integer(headY, 3) .. " " .. w.format_integer(headZ, 7))
   end
   
   local key = 1
-  local actualAddress = nil
+  local addressCurrent = nil
   repeat
-    SetCursorPos(1, 10 + (key % 5))
-    Write("Booster #" .. key)
-    actualAddress = nil
+    w.setColorNormal()
+    w.setCursorPos(1, 10 + (key % 5))
+    w.write("Booster #" .. key)
+    addressCurrent = nil
     if key <= #laserbattery.boosterAddresses then
-      actualAddress = laserbattery.boosterAddresses[key]
-      Write(" (" .. actualAddress .. "): ")
+      addressCurrent = laserbattery.boosterAddresses[key]
+      w.write(" (" .. addressCurrent .. "): ")
     else
-      Write(" (-no laser-): ")
+      w.write(" (-no laser-): ")
     end
-    actualAddress  = readInputEnum(actualAddress, laserAddresses, laser_getName, laser_getDescription, "-no laser-")
-    if actualAddress == nil then
+    addressCurrent  = w.input_readEnum(addressCurrent, laserAddresses_left, laser_getName, laser_getDescription, "-no laser-")
+    if addressCurrent == nil then
       if key > #laserbattery.boosterAddresses then
         key = -1
       else
         table.remove(laserbattery.boosterAddresses, key)
         table.remove(laserbattery.boosters, key)
+        w.success("Removed")
       end
     else
-      laserbattery.boosterAddresses[key] = actualAddress
-      laserbattery.boosters[key] = peripheral.wrap(actualAddress)
+      -- remove selected laser from potentials
+      for keyLaser, laserAddress in pairs(laserAddresses_left) do
+        if laser_getName(laserAddress) == addressCurrent then
+          table.remove(laserAddresses_left, keyLaser)
+          break
+        end
+      end
+      
+      laserbattery.boosterAddresses[key] = addressCurrent
+      laserbattery.boosters[key] = w.device_get(addressCurrent)
+      w.setColorNormal()
+      w.setCursorPos(1, 10 + (key % 5))
+      w.clearLine()
+      w.write("Booster #" .. key .. " set to " .. addressCurrent)
       key = key + 1
     end
   until key == -1
@@ -803,7 +417,7 @@ function laser_battery_getDescription(laserbattery)
   else
     msg = msg .. #laserbattery.boosters
     if not found then
-      for key,booster in pairs(laserbattery.boosters) do
+      for key, booster in pairs(laserbattery.boosters) do
         if booster ~= nil and not found then
           x, y, z = booster.position()
           found = true
@@ -811,44 +425,46 @@ function laser_battery_getDescription(laserbattery)
       end
     end
   end
-  return string.sub(laserbattery.name .. "                    ", 1, 20)
+  return w.format_string(laserbattery.name, 20)
     .. msg
-    .. " @ " .. FormatInteger(x, 7) .. " " .. FormatInteger(y, 3) .. " " .. FormatInteger(z, 7)
+    .. " @ " .. w.format_integer(x, 7) .. " " .. w.format_integer(y, 3) .. " " .. w.format_integer(z, 7)
 end
 
-function laser_station_key(char, keycode)
-  if char == 65 or char == 97 or keycode == 30 then -- A
+function laser_station_key(character, keycode)
+  if character == 'a' or character == 'A' then -- A or keycode == 30
     table.insert(laser_stations, { name = "noname", cameraFrequency = -1, camera = nil, batteries = {} })
     laser_stationIndex = #laser_stations
-    data_save()
+    laser_station_linkBatteries()
+    laser_station_config()
+    w.data_save()
     return true
-  elseif char == 82 or char == 114 or keycode == 19 then -- R
+  elseif character == 'r' or character == 'R' then -- R or keycode == 19
     table.remove(laser_stations, laser_stationIndex)
     -- laser_stationIndex = laser_stationIndex - 1
-    data_save()
+    w.data_save()
     return true
-  elseif char == 70 or char == 102 or keycode == 33 then -- F
+  elseif character == 'f' or character == 'F' then -- F or keycode == 33
     if data.laser_firingMode == "boosted" then data.laser_firingMode = "single"
     elseif data.laser_firingMode == "single" then data.laser_firingMode = "multi"
     elseif data.laser_firingMode == "multi" then data.laser_firingMode = "boosted" end
-    data_save()
+    w.data_save()
     return true
-  elseif char == 83 or char == 115 or keycode == 31 then -- S
+  elseif character == 's' or character == 'S' then -- S or keycode == 31
     data.laser_firingScatter = not data.laser_firingScatter
-    data_save()
+    w.data_save()
     return true
-  elseif char == 76 or char == 108 or keycode == 38 then -- L
+  elseif character == 'l' or character == 'L' then -- L or keycode == 38
     laser_station_linkBatteries()
-    data_save()
+    w.data_save()
     return true
-  elseif char == 67 or char == 99 or keycode == 46 then -- C
+  elseif character == 'c' or character == 'C' then -- C or keycode == 46
     laser_station_config()
-    data_save()
+    w.data_save()
     return true
-  elseif keycode == 200 or keycode == 203 or keycode == 74 then -- Up or Left or -
+  elseif keycode == 200 or keycode == 203 or character == '-' then -- Up or Left or -
     laser_stationIndex = laser_stationIndex - 1
     return true
-  elseif keycode == 208 or keycode == 205 or keycode == 78 then -- Down or Right or +
+  elseif keycode == 208 or keycode == 205 or character == '+' then -- Down or Right or +
     laser_stationIndex = laser_stationIndex + 1
     return true
   end
@@ -869,79 +485,79 @@ function laser_station_getCurrent()
 end
 
 function laser_station_page()
-  ShowTitle(label .. " - Laser stations")
+  w.page_begin(w.data_getName() .. " - Laser stations")
   
   local laserstation = laser_station_getCurrent()
   
-  -- SetCursorPos(1, 2)
+  -- w.setCursorPos(1, 2)
   if #laser_stations == 0 then
-    SetColorDisabled()
-    WriteCentered(2, "No laser stations configured")
+    w.setColorDisabled()
+    w.writeCentered(2, "No laser stations configured")
   elseif laserstation == nil then
-    SetColorWarning()
-    WriteCentered(2, "Laser station " .. laser_stationIndex .. " of " .. #laser_stations .. " is invalid")
+    w.setColorWarning()
+    w.writeCentered(2, "Laser station " .. laser_stationIndex .. " of " .. #laser_stations .. " is invalid")
   else
-    SetColorDefault()
-    WriteCentered(2, "'" .. laserstation.name .. "' (" .. laser_stationIndex .. " of " .. #laser_stations .. ")")
+    w.setColorNormal()
+    w.writeCentered(2, "'" .. laserstation.name .. "' (" .. laser_stationIndex .. " of " .. #laser_stations .. ")")
     
-    SetCursorPos(1, 3)
+    w.setCursorPos(1, 3)
     if laserstation.camera == nil then
-      SetColorDisabled()
-      Write("Laser camera is not defined")
+      w.setColorDisabled()
+      w.write("Laser camera is not defined, press L to link one")
     else
-      SetColorDefault()
+      w.setColorNormal()
       local camX, camY, camZ = laserstation.camera.position()
       local camVideoChannel = laserstation.camera.videoChannel()
-      WriteLn("Laser camera:")
+      w.writeLn("Laser camera:")
       if camVideoChannel == -1 then
-        SetColorWarning()
+        w.setColorWarning()
       end
-      Write(FormatInteger(camVideoChannel, 5))
-      SetColorDefault()
-      Write(" @ " .. FormatInteger(camX, 7) .. " " .. FormatInteger(camY, 3) .. " " .. FormatInteger(camZ, 7)
-        .. " " .. string.sub(laserstation.cameraAddress, 10, 100))
+      w.write(w.format_integer(camVideoChannel, 5))
+      w.setColorNormal()
+      w.write(" @ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7)
+        .. " " .. w.format_address(laserstation.cameraAddress, 10, 100))
     end
     
-    SetCursorPos(1, 5)
+    w.setCursorPos(1, 5)
     if laserstation.batteries == nil or #laserstation.batteries == 0 then
-      SetColorDisabled()
-      Write("Laser batteries aren't set, press L to link one")
+      w.setColorDisabled()
+      w.write("Laser batteries aren't set, press L to link one")
     else
-      SetColorDefault()
-      Write("Laser batteries:")
-      for key,battery in pairs(laserstation.batteries) do
-        SetCursorPos(1, 5 + key)
+      w.setColorNormal()
+      w.write("Laser batteries:")
+      for key, battery in pairs(laserstation.batteries) do
+        w.setCursorPos(1, 5 + key)
         laserbattery = laser_battery_getByName(battery.name)
         if battery.enabled then
-          SetColorSuccess()
+          w.setColorSuccess()
         else
-          SetColorDisabled()
+          w.setColorDisabled()
         end
-        Write(laser_battery_getDescription(laserbattery))
+        w.write(laser_battery_getDescription(laserbattery))
       end
     end
   end
   
-  SetColorDefault()
-  SetCursorPos(1, 13)
-  Write("  -----------------------------------------------")
-  SetCursorPos(1, 14)
-  Write("Firing mode: " .. data.laser_firingMode)
-  SetCursorPos(30, 14)
-  Write("Scatter mode: ")
+  w.setColorNormal()
+  w.setCursorPos(1, 13)
+  w.write("  -----------------------------------------------")
+  w.setCursorPos(1, 14)
+  w.write("   Firing mode: " .. data.laser_firingMode)
+  w.setCursorPos(30, 14)
+  w.write("Scatter mode: ")
   if data.laser_firingScatter then
-    SetColorSuccess()
-    Write("ON")
-    SetColorDefault()
+    w.setColorSuccess()
+    w.write("ON")
+    w.setColorNormal()
   else
-    Write("off")
+    w.write("off")
   end
   
-  SetColorTitle()
-  SetCursorPos(1, 15)
-  ShowMenu("A/R/C - Add/Remove/Configure laser station")
-  ShowMenu("Arrows - select station, L - Link batteries")
-  ShowMenu("F - change Firing mode, S - toggle Scatter mode")
+  w.setColorControl()
+  w.setCursorPos(1, 15)
+  w.writeFullLine(" Add/Remove/Configure laser station (A/R/C)")
+  w.writeFullLine(" select station (Arrows), Link batteries (L)")
+  w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
 end
 
 function laser_station_config()
@@ -949,53 +565,71 @@ function laser_station_config()
   if laserstation == nil then
     return
   end
-  ShowTitle(label .. " - Laser station configuration")
-  SetColorDefault()
-  SetCursorPos(1, 3)
-  WriteLn("Laser station name (" .. laserstation.name .. "): ")
-  laserstation.name = readInputText(laserstation.name)
+  w.page_begin(w.data_getName() .. " - Laser station configuration")
+  w.setColorNormal()
+  w.setCursorPos(1, 3)
+  w.writeLn("Laser station name (" .. laserstation.name .. "):")
+  laserstation.name = w.input_readText(laserstation.name)
+  w.setCursorPos(1, 3)
+  w.clearLine()
+  w.writeLn("Laser station name set to " .. laserstation.name)
+  w.clearLine()
   
   if laserstation.camera == nil then
     return
   end
-  SetCursorPos(1, 5)
+  w.setCursorPos(1, 5)
   local camX, camY, camZ = laserstation.camera.position()
   local camVideoChannel = laserstation.camera.videoChannel()
-  Write("Camera @ " .. FormatInteger(camX, 7) .. " " .. FormatInteger(camY, 3) .. " " .. FormatInteger(camZ, 7))
-  SetCursorPos(1, 6)
-  Write("With " .. #laserstation.batteries .. " batteries")
+  w.write("Camera @ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7))
+  w.setCursorPos(1, 6)
+  w.write("With " .. #laserstation.batteries .. " batteries")
   
-  SetCursorPos(1, 8)
-  Write("Camera video channel (" .. FormatInteger(camVideoChannel, 5) .. "): ")
-  local camVideoChannel = readInputNumber(camVideoChannel)
-  SetCursorPos(1, 9)
-  local camVideoChannel = laserstation.camera.videoChannel(camVideoChannel)
+  w.setCursorPos(1, 8)
+  w.setColorDisabled()
+  w.write(" Valid values are 0 to 268435455 ")
+  w.setColorNormal()
+  local channel
+  repeat
+    w.setCursorPos(1, 7)
+    w.write("Camera video frequency (" .. w.format_integer(camVideoChannel, 5) .. "): ")
+    channel = w.input_readNumber(camVideoChannel)
+    if channel ~= 0 and (channel < 0 or channel > 268435455) then
+      w.status_showWarning("This is not a valid video channel. Try again.")
+    end
+  until channel > 0 and channel <= 268435455
+  w.setCursorPos(1, 8)
+  w.clearLine()
+  
+  w.setCursorPos(1, 7)
+  w.clearLine()
+  local newVideoChannel = laserstation.camera.videoChannel(channel)
   laserstation.camera.beamFrequency(1420)
-  Write("Camera video channel set to " .. camVideoChannel)
+  w.write("Camera video channel set to " .. newVideoChannel)
   
-  SetCursorPos(1, 11)
-  Write("Battery enabling: ")
-  for key,battery in pairs(laserstation.batteries) do
+  w.setCursorPos(1, 11)
+  w.write("Battery enabling: ")
+  for key, battery in pairs(laserstation.batteries) do
     laserbattery = laser_battery_getByName(battery.name)
     local msg = laser_battery_getDescription(laserbattery)
     
-    SetCursorPos(1, 11 + (key % 5))
+    w.setCursorPos(1, 11 + (key % 5))
     if battery.enabled then
-      SetColorSuccess()
-      Write(msg)
-      battery.enabled = readConfirmation(" Keep battery '" .. battery.name .. "' enabled? (y/n)")
+      w.setColorSuccess()
+      w.write(msg)
+      battery.enabled = w.input_readConfirmation("Keep battery '" .. battery.name .. "' enabled? (Y/n)")
     else
-      SetColorDisabled()
-      Write(msg)
-      battery.enabled = readConfirmation(" Enable battery '" .. battery.name .. "'? (y/n)")
+      w.setColorDisabled()
+      w.write(msg)
+      battery.enabled = w.input_readConfirmation("Enable battery '" .. battery.name .. "'? (Y/n)")
     end
-    SetCursorPos(1, 11 + (key % 5))
+    w.setCursorPos(1, 11 + (key % 5))
     if battery.enabled then
-      SetColorSuccess()
-      Write(msg)
+      w.setColorSuccess()
+      w.write(msg)
     else
-      SetColorDisabled()
-      Write(msg)
+      w.setColorDisabled()
+      w.write(msg)
     end
   end
 end
@@ -1005,158 +639,95 @@ function laser_station_linkBatteries()
   if laserstation == nil then
     return
   end
-  ShowTitle(label .. " - Linking batteries")
+  w.page_begin(w.data_getName() .. " - Linking batteries")
   
-  SetColorDisabled()
-  SetCursorPos(1, 3)
-  WriteLn("Instruction: use arrows to select batteries.")
-  WriteLn("Press backspace/delete to remove battery.")
-  WriteLn("Press enter to validate.")
-  WriteLn("Validate '-no battery-' to stop adding batteries.")
+  w.setColorDisabled()
+  w.setCursorPos(1, 3)
+  w.writeLn("Instruction: use arrows to select batteries.")
+  w.writeLn("Press backspace/delete to remove battery.")
+  w.writeLn("Press enter to validate.")
+  w.writeLn("Validate '-no battery-' to stop adding batteries.")
   
-  SetColorDefault()
+  w.setColorNormal()
   if laserstation.batteries == nil then
     laserstation.batteries = {}
   end
-  WriteCentered(2, "Camera '" .. laserstation.name .. "' with " .. #laserstation.batteries .. " batteries linked")
+  w.writeCentered(2, "Station '" .. laserstation.name .. "' with " .. #laserstation.batteries .. " batteries linked")
   
-  SetCursorPos(1, 8)
+  w.setCursorPos(1, 8)
   if laserstation.cameraAddress == nil then
-    Write("Laser camera (not defined): ")
+    w.writeLn("Laser camera (not defined): ")
   else
-    Write("Laser camera (" .. laserstation.cameraAddress .. "): ")
+    w.writeLn("Laser camera (" .. laserstation.cameraAddress .. "): ")
   end
   
-  laserstation.cameraAddress = readInputEnum(laserstation.cameraAddress, lasercamAddresses, laser_getName, laser_getDescription, "-no laser camera-")
+  laserstation.cameraAddress = w.input_readEnum(laserstation.cameraAddress, lasercamAddresses, laser_getName, laser_getDescription, "-no laser camera-")
   if laserstation.cameraAddress == nil then
     laserstation.camera = nil
   else
-    laserstation.camera = peripheral.wrap(laserstation.cameraAddress)
+    laserstation.camera = w.device_get(laserstation.cameraAddress)
     
-    SetCursorPos(1, 9)
+    w.setColorNormal()
+    w.setCursorPos(1, 8)
+    w.clearLine()
+    w.writeLn("Laser camera set to " .. laserstation.cameraAddress)
+    w.setColorDisabled()
+    w.setCursorPos(1, 9)
+    w.clearLine()
     local camX, camY, camZ = laserstation.camera.position()
     local camVideoChannel = laserstation.camera.videoChannel()
-    Write("Camera @ " .. FormatInteger(camX, 7) .. " " .. FormatInteger(camY, 3) .. " " .. FormatInteger(camZ, 7))
+    w.write("@ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7))
   end
   
   local key = 1
-  local currentName = nil
+  local nameCurrent = nil
+  local laser_batteries_left = {}
+  for keyBattery, laserbattery in pairs(laser_batteries) do
+    laser_batteries_left[keyBattery] = laserbattery
+  end
   repeat
-    SetCursorPos(1, 10 + (key % 5))
-    Write("Battery #" .. key)
-    currentName = nil
+    w.setColorNormal()
+    w.setCursorPos(1, 10 + (key % 5))
+    w.write("Battery #" .. key)
+    nameCurrent = nil
     if key <= #laserstation.batteries then
-      currentName = laserstation.batteries[key].name
-      Write(" (" .. currentName .. "): ")
+      nameCurrent = laserstation.batteries[key].name
+      w.write(" (" .. nameCurrent .. "): ")
     else
-      Write(" (-no battery-): ")
+      w.write(" (-no battery-): ")
     end
-    currentName  = readInputEnum(currentName, laser_batteries, laser_battery_getName, laser_battery_getDescription, "-no battery-")
-    if currentName == nil then
+    nameCurrent = w.input_readEnum(nameCurrent, laser_batteries_left, laser_battery_getName, laser_battery_getDescription, "-no battery-")
+    if nameCurrent == nil then
       if key > #laserstation.batteries then
         key = -1
       else
         table.remove(laserstation.batteries, key)
+        w.success("Removed")
       end
     else
-      laserstation.batteries[key] = { name = currentName, enabled = true }
+      -- remove selected battery from potentials
+      for keyBattery, laserbattery in pairs(laser_batteries_left) do
+        if laser_battery_getName(laserbattery) == nameCurrent then
+          table.remove(laser_batteries_left, keyBattery)
+          break
+        end
+      end
+      
+      laserstation.batteries[key] = { name = nameCurrent, enabled = true }
+      w.setColorNormal()
+      w.setCursorPos(1, 10 + (key % 5))
+      w.clearLine()
+      w.write("Battery #" .. key .. " set to " .. nameCurrent)
       key = key + 1
     end
   until key == -1
-end
-
-function readInputEnum(currentValue, list, toValue, toDescription, noValue)
-  local inputAbort = false
-  local inputKey = nil
-  local input = nil
-  local inputDescription = nil
-  local x, y = term.getCursorPos()
-  
-  SetCursorPos(1, 17)
-  for key,entry in pairs(list) do
-    if toValue(entry) == currentValue then
-      inputKey = key
-    end
-  end
-  
-  repeat
-    ClearWarning()
-    SetColorDefault()
-    SetCursorPos(x, y)
-    if #list == 0 then
-      inputKey = nil
-    end
-    if inputKey == nil then
-      if currentValue ~= nil then
-        input = noValue
-        inputDescription = "Press enter to return previous entry"
-      else
-        input = noValue
-        inputDescription = "Press enter to close listing"
-      end
-    else
-      if inputKey < 1 then
-        inputKey = #list
-      elseif inputKey > #list then
-        inputKey = 1
-      end
-      
-      input = toValue(list[inputKey])
-      inputDescription = toDescription(list[inputKey])
-    end
-    SetColorDefault()
-    Write(input .. "                                                  ")
-    SetColorDisabled()
-    SetCursorPos(1, y + 1)
-    Write(inputDescription .. "                                                  ")
-    
-    local params = { os.pullEventRaw() }
-    local eventName = params[1]
-    local address = params[2]
-    if address == nil then address = "none" end
-    if eventName == "key" then
-      local keycode = params[2]
-      if keycode == 14 or keycode == 211 then -- Backspace or Delete
-        inputKey = nil
-      elseif keycode == 200 or keycode == 203 or char == 43 or keycode == 78 then -- Up or Left or +
-        if inputKey == nil then
-          inputKey = 1
-        else
-          inputKey = inputKey - 1
-        end
-      elseif keycode == 208 or keycode == 205 or char == 45 or keycode == 74 then -- Down or Right or -
-        if inputKey == nil then
-          inputKey = 1
-        else
-          inputKey = inputKey + 1
-        end
-      elseif keycode == 28 then -- Enter
-        inputAbort = true
-      else
-        ShowWarning("Key " .. keycode .. " is invalid")
-      end
-    elseif eventName == "char" then
-      -- do nothing
-    elseif eventName == "terminate" then
-      inputAbort = true
-    elseif not common_event(eventName, params[2]) then
-      ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
-    end
-  until inputAbort
-  SetCursorPos(1, y + 1)
-  ClearLine()
-  if inputKey == nil then
-    return nil
-  else
-    return toValue(list[inputKey])
-  end
 end
 
 function laser_battery_shoot(batteryName, targetX, targetY, targetZ)
   local laserbattery = laser_battery_getByName(batteryName)
   
   if laserbattery == nil then
-    ShowWarning("Invalid battery name '" .. batteryName .. "'")
+    w.status_showWarning("Invalid battery name '" .. batteryName .. "'")
     return
   end
   
@@ -1165,15 +736,15 @@ function laser_battery_shoot(batteryName, targetX, targetY, targetZ)
     local frequency = laserbattery.head.beamFrequency()
     local headX, headY, headZ = laserbattery.head.position()
     
-    for key,booster in pairs(laserbattery.boosters) do
+    for key, booster in pairs(laserbattery.boosters) do
       booster.beamFrequency(frequency)
     end
-    os.sleep(0)
-    for key,booster in pairs(laserbattery.boosters) do
+    w.sleep(0)
+    for key, booster in pairs(laserbattery.boosters) do
       x, y, z = booster.position()
       booster.emitBeam(headX - x, headY - y, headZ - z)
     end
-    os.sleep(0.1)
+    w.sleep(0.1)
     if data.laser_firingScatter then
       headX = headX + math.random(-1, 1)
       headY = headY + math.random(-1, 1)
@@ -1202,7 +773,7 @@ function laser_battery_shoot(batteryName, targetX, targetY, targetZ)
     end
     
     if laserbattery.boosters ~= nil then
-      for key,booster in pairs(laserbattery.boosters) do
+      for key, booster in pairs(laserbattery.boosters) do
         x, y, z = booster.position()
         if z ~= nil then
           if data.laser_firingScatter then
@@ -1223,17 +794,17 @@ end
 
 function laser_sendEvent()
   if #laser_stations == 0 then
-    ShowWarning("No laser station configured")
+    w.status_showWarning("No laser station configured")
   elseif #laser_batteries == 0 then
-    ShowWarning("No laser battery configured")
+    w.status_showWarning("No laser battery configured")
   else
-    ShowWarning("Laser sent!")
-    for key,laserstation in pairs(laser_stations) do
+    w.status_showWarning("Laser sent!")
+    for keyStation, laserstation in pairs(laser_stations) do
       if laserstation.camera ~= nil then
         local resType, x, y, z, id, meta, res = laserstation.camera.getScanResult()
         if res ~= -1 then
-          ShowWarning("Firing at " .. x .. " " .. y .. " " .. z)
-          for batteryKey,battery in pairs(laserstation.batteries) do
+          w.status_showWarning("Firing at " .. x .. " " .. y .. " " .. z)
+          for batteryKey, battery in pairs(laserstation.batteries) do
             if battery.enabled then
               laser_battery_shoot(battery.name, x, y, z)
             end
@@ -1244,169 +815,86 @@ function laser_sendEvent()
   end
 end
 
------------ Boot sequence
-math.randomseed(os.time())
-label = os.getComputerLabel()
-if not label then
-  label = "" .. os.getComputerID()
+function laser_register()
+  w.device_register("warpdriveLaserCamera",
+      function(deviceType, address, wrap) table.insert(lasercamAddresses, address) end,
+      function() end)
+  w.device_register("warpdriveLaser",
+      function(deviceType, address, wrap) table.insert(laserAddresses, address) end,
+      function() end)
+  w.event_register("laserScanning", function() laser_sendEvent() return false end )
+  w.event_register("laserSend"    , function()                   return false end )
+  w.data_register("laser", laser_read, laser_save)
 end
 
--- read configuration
-data_read()
-Clear()
-print("data_read...")
+----------- connections status
 
--- initial scanning
-monitors = {}
-ShowTitle(label .. " - Connecting...")
-WriteLn("")
-
-sides = peripheral.getNames()
-laserAddresses = {}
-lasercamAddresses = {}
-for key, side in pairs(sides) do
-  os.sleep(0)
-  Write("Checking " .. side .. " ")
-  local componentType = peripheral.getType(side)
-  Write(componentType .. " ")
-  if componentType == "monitor" then
-    Write("wrapping!")
-    lmonitor = peripheral.wrap(side)
-    table.insert(monitors, lmonitor)
-    lmonitor.setTextScale(monitor_textScale)
-  elseif componentType == "warpdriveLaserCamera" then
-    Write("wrapping!")
-    local laserCam = peripheral.wrap(side)
-    table.insert(lasercamAddresses, side)
-  elseif componentType == "warpdriveLaser" then
-    Write("wrapping!")
-    local laser = peripheral.wrap(side)
-    table.insert(laserAddresses, side)
-  end
-  WriteLn("")
-end
-
-if not os.getComputerLabel() and ship ~= nil then
-  data_setName()
-end
-
--- peripherals status
-function connections_page()
-  ShowTitle(label .. " - Connections")
+function connections_page(isBooting)
+  w.page_begin(w.data_getName() .. " - Connections")
   
-  WriteLn("")
+  w.writeLn("")
+  
+  local monitors = w.device_getMonitors()
   if #monitors == 0 then
-    SetColorDisabled()
-    WriteLn("No Monitor detected")
+    w.setColorDisabled()
+    w.writeLn("No Monitor detected")
   elseif #monitors == 1 then
-    SetColorSuccess()
-    WriteLn("1 monitor detected")
+    w.setColorSuccess()
+    w.writeLn("1 monitor detected")
   else
-    SetColorSuccess()
-    WriteLn(#monitors .. " Monitors detected")
-  end
-
-  if #laserAddresses == 0 then
-    SetColorDisabled()
-    WriteLn("No attack laser detected")
-  elseif #laserAddresses == 1 then
-    SetColorSuccess()
-    WriteLn("1 attack laser detected")
-  else
-    SetColorSuccess()
-    WriteLn(#laserAddresses .. " attack lasers detected")
-  end
-
-  if #lasercamAddresses == 0 then
-    SetColorDisabled()
-    WriteLn("No laser camera detected")
-  elseif #lasercamAddresses == 1 then
-    SetColorSuccess()
-    WriteLn("1 laser camera detected")
-  else
-    SetColorSuccess()
-    WriteLn(#lasercamAddresses .. " laser cameras detected")
+    w.setColorSuccess()
+    w.writeLn(#monitors .. " Monitors detected")
   end
   
-  WriteLn("")
-  SetColorTitle()
-  WriteLn("Please refer to below menu for keyboard controls")
-  WriteLn("For example, press 1 to access Laser batteries page")
+  if #laserAddresses == 0 then
+    w.setColorDisabled()
+    w.writeLn("No attack laser detected")
+  elseif #laserAddresses == 1 then
+    w.setColorSuccess()
+    w.writeLn("1 attack laser detected")
+  else
+    w.setColorSuccess()
+    w.writeLn(#laserAddresses .. " attack lasers detected")
+  end
+  
+  if #lasercamAddresses == 0 then
+    w.setColorDisabled()
+    w.writeLn("No laser camera detected")
+  elseif #lasercamAddresses == 1 then
+    w.setColorSuccess()
+    w.writeLn("1 laser camera detected")
+  else
+    w.setColorSuccess()
+    w.writeLn(#lasercamAddresses .. " laser cameras detected")
+  end
+  
+  if isBooting then
+    laser_boot()
+  end
+  
+  w.writeLn("")
+  w.setColorNormal()
+  w.writeLn("This is a keyboard controlled user interface.")
+  w.write("Key controls are written like so: ")
+  w.setColorControl()
+  w.write("Action (key)")
+  w.setColorNormal()
+  w.writeLn(".")
+  w.write("For example, typing ")
+  w.setColorControl()
+  w.write(" 1 ")
+  w.setColorNormal()
+  w.writeLn(" will open Laser batteries.")
 end
 
--- peripheral boot up
-Clear()
-connections_page()
-SetColorDefault()
-WriteLn("")
-os.sleep(0)
-laser_boot()
-os.sleep(0)
+----------- Boot sequence
 
--- main loop
-abort = false
-refresh = true
-page = connections_page
-keyHandler = nil
-repeat
-  ClearWarning()
-  if refresh then
-    Clear()
-    page()
-    menu_common()
-    refresh = false
-  end
-  params = { os.pullEventRaw() }
-  eventName = params[1]
-  address = params[2]
-  if address == nil then address = "none" end
-  -- WriteLn("...")
-  -- WriteLn("Event '" .. eventName .. "', " .. address .. ", " .. params[3] .. ", " .. params[4] .. " received")
-  -- os.sleep(0.2)
-  if eventName == "key" then
-    keycode = params[2]
-    if char == 88 or char == 120 or keycode == 45 then -- x for eXit
-      os.pullEventRaw()
-      abort = true
-    elseif char == 48 or keycode == 11 or keycode == 82 then -- 0
-      page = connections_page
-      keyHandler = nil
-      refresh = true
-    elseif char == 49 or keycode == 2 or keycode == 79 then -- 1
-      page = laser_battery_page
-      keyHandler = laser_battery_key
-      refresh = true
-    elseif char == 50 or keycode == 3 or keycode == 80 then -- 2
-      page = laser_station_page
-      keyHandler = laser_station_key
-      refresh = true
-    elseif keyHandler ~= nil and keyHandler(char, keycode) then
-      refresh = true
-      os.sleep(0)
-    elseif char == 0 then -- control chars
-      refresh = false
-      os.sleep(0)
-    else
-      ShowWarning("Key " .. keycode .. " is invalid")
-      os.sleep(0.2)
-    end
-  elseif eventName == "terminate" then
-    abort = true
-  elseif not common_event(eventName, params[2]) then
-    ShowWarning("Event '" .. eventName .. "', " .. address .. " is unsupported")
-    refresh = true
-    os.sleep(0.2)
-  end
-until abort
+w.page_setEndText(" Home (0), Laser batteries (1), Laser stations (2)")
+w.page_register('0', connections_page, nil)
+w.page_register('1', laser_battery_page, laser_battery_key)
+w.page_register('2', laser_station_page, laser_station_key)
+laser_register()
 
--- clear screens on exit
-SetMonitorColorFrontBack(colors.white, colors.black)
-term.clear()
-if monitors ~= nil then
-  for key,monitor in pairs(monitors) do
-    monitor.clear()
-  end
-end
-SetCursorPos(1, 1)
-WriteLn("Program terminated")
-WriteLn("Type startup to restart it")
+w.boot()
+w.run()
+w.close()

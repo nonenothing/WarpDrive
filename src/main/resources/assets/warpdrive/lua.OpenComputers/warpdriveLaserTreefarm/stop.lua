@@ -4,7 +4,11 @@ local term = require("term")
 
 if not term.isAvailable() then
   computer.beep()
-  return
+  os.exit()
+end
+if component.gpu.getDepth() < 4 then
+  print("Tier 2 GPU required")
+  os.exit()
 end
 
 treefarms = {}

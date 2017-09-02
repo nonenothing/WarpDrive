@@ -35,7 +35,7 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 		}
 		
 		if (entityPlayer.getHeldItem(EnumHand.MAIN_HAND) == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			
 			if (tileEntity instanceof TileEntityAcceleratorControlPoint) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityAcceleratorControlPoint) tileEntity).getStatus());

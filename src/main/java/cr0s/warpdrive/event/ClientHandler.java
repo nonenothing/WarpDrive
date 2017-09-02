@@ -19,7 +19,7 @@ public class ClientHandler {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onTooltipEvent(ItemTooltipEvent event) {
-		if (event.getEntityPlayer() == null || !event.getEntityPlayer().capabilities.isCreativeMode) {
+		if (event.getEntityPlayer() == null) {
 			return;
 		}
 		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.getItemStack().getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
@@ -45,19 +45,19 @@ public class ClientHandler {
 					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
 					String harvestTool = block.getHarvestTool(blockState);
 					Commons.addTooltip(event.getToolTip(), "Harvest with " + harvestTool + " (" + block.getHarvestLevel(blockState) + ")");
-				} catch(Exception exception) {
+				} catch(Exception | AssertionError exception) {
 					// no operation
 				}
 				
 				try {
 					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
 					Commons.addTooltip(event.getToolTip(), "Light opacity is " + block.getLightOpacity(blockState));
-				} catch(Exception exception) {
+				} catch(Exception | AssertionError exception) {
 					// no operation
 				}
 				
 				try {
-					Commons.addTooltip(event.getToolTip(), "Hardness is " + (float)WarpDrive.fieldBlockHardness.get(block));
+					Commons.addTooltip(event.getToolTip(), "Hardness is " + (float) WarpDrive.fieldBlockHardness.get(block));
 				} catch(Exception exception) {
 					// no operation
 				}

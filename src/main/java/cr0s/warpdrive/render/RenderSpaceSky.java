@@ -1,10 +1,12 @@
 package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.CelestialObjectManager;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObject.RenderData;
+import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.data.Vector3;
 
 import java.awt.Color;
 import java.util.Random;
@@ -23,6 +25,7 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 public class RenderSpaceSky extends IRenderHandler {
+	
 	private static RenderSpaceSky INSTANCE = null;
 	
 	public static RenderSpaceSky getInstance() {
@@ -33,17 +36,13 @@ public class RenderSpaceSky extends IRenderHandler {
 	}
 	
 	public static final int callListStars = GLAllocation.generateDisplayLists(3);
+	private static float starBrightness = 0.0F;
+	private static final float ALPHA_TOLERANCE = 1.0F / 256.0F;
+	
 	public static final int callListUpperSkyBox = callListStars + 1;
 	public static final int callListBottomSkyBox = callListStars + 2;
 	
-	{
-		// pre-generate the starfield
-		GL11.glPushMatrix();
-		GL11.glNewList(callListStars, GL11.GL_COMPILE);
-		renderStars();
-		GL11.glEndList();
-		GL11.glPopMatrix();
-		
+	static {
 		// pre-generate skyboxes
 		final Tessellator tessellator = Tessellator.getInstance();
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
@@ -81,9 +80,9 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	@Override
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
-		final Vec3d playerCoordinates = mc.thePlayer.getPositionEyes(partialTicks);
-		final boolean isSpace = world.provider == null
-		                     || WarpDrive.starMap.isInSpace(world, (int) playerCoordinates.xCoord, (int) playerCoordinates.zCoord);
+		final Vec3d vec3Player = mc.thePlayer.getPositionEyes(partialTicks);
+		final CelestialObject celestialObject = world.provider == null ? null
+				: CelestialObjectManager.get(world, (int) vec3Player.xCoord, (int) vec3Player.zCoord);
 		
 		final Tessellator tessellator = Tessellator.getInstance();
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
@@ -115,23 +114,18 @@ public class RenderSpaceSky extends IRenderHandler {
 		/**/
 		
 		// compute global alpha
-		final float alphaBase = 1.0F - world.getRainStrength(partialTicks);
+		final float alphaBase = 1.0F; // - world.getRainStrength(partialTicks);
 		
-		// draw star systems
+		// draw stars
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		float starBrightness = 0.2F;
 		if (world.provider != null) {
-			starBrightness = world.provider.getStarBrightness(partialTicks);
+			starBrightness = world.getStarBrightness(partialTicks);
 		}
-		if (starBrightness > 0.0F) {
-			if (isSpace) {
-				GL11.glColor4f(1.0F, 1.0F, 0.9F, alphaBase * starBrightness);
-			} else {
-				GL11.glColor4f(0.5F, 0.6F, 0.4F, alphaBase * starBrightness);
-			}
-			GL11.glCallList(callListStars);
+		if (starBrightness > 0.0F && celestialObject != null) {
+			renderStars_cached(alphaBase * starBrightness);
 		}
 		
 		// enable texture with alpha blending
@@ -189,8 +183,20 @@ public class RenderSpaceSky extends IRenderHandler {
 		/**/
 		
 		// Planets
-		for(CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
-			renderCelestialObject(tessellator, celestialObject, isSpace, mc.thePlayer.getEntityWorld().provider.getDimension(), playerCoordinates);
+		if (celestialObject != null && celestialObject.opacityCelestialObjects > 0.0F) {
+			final Vector3 vectorPlayer = StarMapRegistry.getUniversalCoordinates(celestialObject, vec3Player.xCoord, vec3Player.yCoord, vec3Player.zCoord);
+			for (CelestialObject celestialObjectChild : CelestialObjectManager.getRenderStack()) {
+				if (celestialObject == celestialObjectChild) {
+					continue;
+				}
+				if (!celestialObject.id.equals(celestialObjectChild.parentId)) {
+					continue;
+				}
+				renderCelestialObject(tessellator,
+				                      celestialObjectChild,
+				                      celestialObject.opacityCelestialObjects,
+				                      vectorPlayer);
+			}
 		}
 		
 		// final double playerAltitude = mc.thePlayer.getPositionEyes(partialTicks).yCoord - world.getHorizon();
@@ -257,15 +263,43 @@ public class RenderSpaceSky extends IRenderHandler {
 	static final double PLANET_FAR = 1786.0D;
 	static final double PLANET_APPROACHING = 512.0D;
 	static final double PLANET_ORBIT = 128.0D;
-	private static void renderCelestialObject(Tessellator tessellator, final CelestialObject celestialObject, final boolean isSpace, final int dimensionId, final Vec3d vec3Player) {
+	private static void renderCelestialObject(final Tessellator tessellator, final CelestialObject celestialObject,
+	                                          final float alphaSky, final Vector3 vectorPlayer) {
 		// @TODO compute relative coordinates for rendering on celestialObject
-		if (dimensionId != celestialObject.parentDimensionId) {
+		
+		// get universal coordinates
+		final Vector3 vectorCenter = StarMapRegistry.getUniversalCoordinates(celestialObject,
+				celestialObject.dimensionCenterX,
+		        64,
+		        celestialObject.dimensionCenterZ);
+		final Vector3 vectorBorderPos = StarMapRegistry.getUniversalCoordinates(celestialObject,
+				celestialObject.dimensionCenterX + celestialObject.borderRadiusX,
+				64,
+				celestialObject.dimensionCenterZ + celestialObject.borderRadiusZ);
+		if (vectorCenter == null || vectorBorderPos == null) {// probably an invalid celestial object tree
 			return;
 		}
+		final double borderRadiusX = vectorBorderPos.x - vectorCenter.x;
+		final double borderRadiusZ = vectorBorderPos.z - vectorCenter.z;
 		
-		final double distanceToCenterX = celestialObject.parentCenterX - vec3Player.xCoord;
-		final double distanceToCenterZ = celestialObject.parentCenterZ - vec3Player.zCoord;
-		final double distanceToBorder = Math.sqrt(Math.max(0, celestialObject.getSquareDistanceInParent(dimensionId, vec3Player.xCoord, vec3Player.zCoord)));
+		// compute distances
+		final double distanceToBorder;
+		{
+			final double dx = Math.abs(vectorPlayer.x - vectorCenter.x) - borderRadiusX;
+			final double dz = Math.abs(vectorPlayer.z - vectorCenter.z) - borderRadiusZ;
+			// are we in orbit?
+			if ((dx <= 0.0D) && (dz <= 0.0D)) {
+				distanceToBorder = 0.0D;
+			} else {
+				// do the maths
+				final double dxOutside = Math.max(0.0D, dx);
+				final double dzOutside = Math.max(0.0D, dz);
+				distanceToBorder = Math.sqrt(dxOutside * dxOutside + dzOutside * dzOutside);
+			}
+		}
+		
+		final double distanceToCenterX = vectorCenter.x - vectorPlayer.x;
+		final double distanceToCenterZ = vectorCenter.z - vectorPlayer.z;
 		final double distanceToCenter = Math.sqrt(distanceToCenterX * distanceToCenterX + distanceToCenterZ * distanceToCenterZ);
 		
 		// transition values
@@ -280,24 +314,24 @@ public class RenderSpaceSky extends IRenderHandler {
 		final double transitionOrbit       = Math.max(0.0D, Math.min(PLANET_ORBIT, distanceToBorder)) / PLANET_ORBIT;
 		
 		// relative position above celestialObject
-		final double offsetX = (1.0 - transitionOrbit) * (distanceToCenterX / celestialObject.borderRadiusX);
-		final double offsetZ = (1.0 - transitionOrbit) * (distanceToCenterZ / celestialObject.borderRadiusZ);
+		final double offsetX = (1.0 - transitionOrbit) * (distanceToCenterX / borderRadiusX);
+		final double offsetZ = (1.0 - transitionOrbit) * (distanceToCenterZ / borderRadiusZ);
 		
 		// simulating a non-planar universe...
-		final double planetY_far = (celestialObject.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 4.0D;
+		final double planetY_far = (celestialObject.dimensionId + 99 % 100 - 50) * Math.log(distanceToCenter) / 1.0D;
 		final double planetY = planetY_far * transitionApproaching;
 		
 		// render range is only used for Z-ordering
-		double renderRange = 180.0D + 10.0D * (distanceToCenter / Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ));
+		double renderRange = 90.0D + 5.0D * (distanceToCenter / Math.max(borderRadiusX, borderRadiusZ));
 		
 		// render size is 1 at space border range
 		// render size is 10 at approaching range
 		// render size is 90 at orbit range
 		// render size is min(1000, celestialObject border) at orbit range
-		final double renderSize = 100.0D / 1000.0D * Math.min(1000.0D, Math.max(celestialObject.borderRadiusX, celestialObject.borderRadiusZ)) * (1.0D - transitionOrbit)
-								+ 50.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
-								+ 5.0D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
-								+ 2.0D * transitionFar;
+		final double renderSize = 50.0D / 1000.0D * Math.min(1000.0D, Math.max(borderRadiusX, borderRadiusZ)) * (1.0D - transitionOrbit)
+								+ 25.0D * (transitionOrbit < 1.0D ? transitionOrbit : (1.0D - transitionApproaching))
+								+ 2.5D * (transitionApproaching < 1.0D ? transitionApproaching : (1.0D - transitionFar))
+								+ 1.0D * transitionFar;
 		
 		// angles
 		@SuppressWarnings("SuspiciousNameCombination")
@@ -334,7 +368,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			final float offsetV = (float) ( Math.signum(renderData.periodV) * ((time / Math.abs(renderData.periodV)) % 1.0D) );
 			
 			// apply rendering parameters
-			GL11.glColor4f(renderData.red, renderData.green, renderData.blue, renderData.alpha * (isSpace ? 1.0F : 0.2F));
+			GL11.glColor4f(renderData.red, renderData.green, renderData.blue, renderData.alpha * alphaSky);
 			if (renderData.texture != null) {
 				GL11.glEnable(GL11.GL_TEXTURE_2D);
 				FMLClientHandler.instance().getClient().renderEngine.bindTexture(renderData.resourceLocation);
@@ -368,7 +402,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			tessellator.draw();
 			
 			// slight offset to get volumetric illusion
-			renderRange -= 5.0D;
+			renderRange -= 2.5D;
 		}
 		
 		// restore settings
@@ -378,13 +412,13 @@ public class RenderSpaceSky extends IRenderHandler {
 		GL11.glPopMatrix();
 	}
 	
-	private void renderStars() {
+	private void renderStars_direct(final float brightness) {
 		final Random rand = new Random(10842L);
 		final boolean hasMoreStars = rand.nextBoolean() || rand.nextBoolean();
 		final Tessellator tessellator = Tessellator.getInstance();
 		final VertexBuffer vertexBuffer = tessellator.getBuffer();
 		
-		final double renderRangeMax = 200.0D;
+		final double renderRangeMax = 100.0D;
 		for (int indexStars = 0; indexStars < (hasMoreStars ? 20000 : 2000); indexStars++) {
 			double randomX;
 			double randomY;
@@ -397,7 +431,7 @@ public class RenderSpaceSky extends IRenderHandler {
 				randomLength = randomX * randomX + randomY * randomY + randomZ * randomZ;
 			} while (randomLength >= 1.0D || randomLength <= 0.90D);
 			
-			final double renderSize = 0.4F + 0.05F * Math.log(1.1D - rand.nextDouble());
+			final double renderSize = 0.2F + 0.025F * Math.log(1.1D - rand.nextDouble());
 			
 			// forcing Z-order
 			randomLength = 1.0D / Math.sqrt(randomLength);
@@ -419,7 +453,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			
 			// colorization
 			final int rgb = getStarColorRGB(rand);
-			GL11.glColor4f(((rgb >> 16) & 0xFF) / 255.0F, ((rgb >> 8) & 0xFF) / 255.0F, (rgb & 0xFF) / 255.0F, 1.0F /* isSpace ? 1.0F : 0.2F /**/);
+			GL11.glColor4f(((rgb >> 16) & 0xFF) / 255.0F, ((rgb >> 8) & 0xFF) / 255.0F, (rgb & 0xFF) / 255.0F, brightness);
 			
 			// pre-computations
 			final double sinH = Math.sin(angleH);
@@ -445,6 +479,18 @@ public class RenderSpaceSky extends IRenderHandler {
 			tessellator.draw();
 		}
 		
+	}
+	
+	private void renderStars_cached(final float brightness) {
+		if (Math.abs(starBrightness - brightness) > ALPHA_TOLERANCE) {
+			starBrightness = brightness;
+			GL11.glPushMatrix();
+			GL11.glNewList(callListStars, GL11.GL_COMPILE);
+			renderStars_direct(brightness);
+			GL11.glEndList();
+			GL11.glPopMatrix();
+		}
+		GL11.glCallList(callListStars);
 	}
 	
 	// colorization loosely inspired from Hertzsprung-Russell diagram

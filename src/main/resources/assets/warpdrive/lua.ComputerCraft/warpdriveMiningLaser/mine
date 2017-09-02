@@ -3,9 +3,9 @@ if not term.isColor() then
   exit()
 end
 
-sides = peripheral.getNames()
+local sides = peripheral.getNames()
 mininglasers = {}
-for key,side in pairs(sides) do
+for _, side in pairs(sides) do
   if peripheral.getType(side) == "warpdriveMiningLaser" then
     print("Wrapping " .. side)
     table.insert(mininglasers, peripheral.wrap(side))
@@ -13,11 +13,11 @@ for key,side in pairs(sides) do
 end
 
 
-noExit = true
+local noExit = true
 layerOffset = 1
 onlyOres = false
 silktouch = false
-args = {...}
+local args = {...}
 if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
     print("Usage: mine <layerOffset> <onlyOres> <silktouch>")
@@ -55,8 +55,8 @@ if #mininglasers == 0 then
   noExit = false
 end
 if noExit then
-  for key,mininglaser in pairs(mininglasers) do
-    statusString, isActive = mininglaser.state()
+  for _, mininglaser in pairs(mininglasers) do
+    local _, isActive = mininglaser.state()
     if not isActive then
       mininglaser.offset(layerOffset)
       mininglaser.onlyOres(onlyOres)
@@ -65,10 +65,10 @@ if noExit then
       mininglaser.start()
     end
   end
-  sleep(1)
+  os.sleep(1)
 end
 
-label = os.getComputerLabel()
+local label = os.getComputerLabel()
 if label then
 else
   label = "" .. os.getComputerID()
@@ -76,10 +76,11 @@ end
 
 term.setTextColor(colors.blue)
 if noExit then
+  local areActive
   repeat
     areActive = false
     for key,mininglaser in pairs(mininglasers) do
-      status, isActive, energy, currentLayer, mined, total = mininglaser.state()
+      local status, isActive, energy, currentLayer, mined, total = mininglaser.state()
       
       term.setBackgroundColor(colors.black)
       term.clear()
@@ -97,9 +98,9 @@ if noExit then
       
       if isActive then
         areActive = true
-        sleep(1)
+        os.sleep(1)
       else
-        sleep(0.1)
+        os.sleep(0.1)
       end
     end
   until not areActive
@@ -107,4 +108,6 @@ end
 
 term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
+
 print()
+print("Program closed")

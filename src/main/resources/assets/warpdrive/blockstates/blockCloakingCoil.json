@@ -3,8 +3,8 @@
 	"defaults": {
 		"model": "minecraft:cube_column",
 		"textures": {
-			"side": "warpdrive:blocks/detection/cloaking_coil-side_inactive",
-			"end" : "warpdrive:blocks/detection/cloaking_coil-top"
+			"side": "warpdrive:blocks/detection/cloaking_coil-projecting_inactive",
+			"end" : "warpdrive:blocks/detection/cloaking_coil-channeling_inactive"
 		},
 		"transform": "forge:default-block"
 	},
@@ -15,7 +15,8 @@
 			"false": {},
 			"true": {
 				"textures": {
-					"side": "warpdrive:blocks/detection/cloaking_coil-side_active"
+					"side": "warpdrive:blocks/detection/cloaking_coil-projecting_active",
+					"end" : "warpdrive:blocks/detection/cloaking_coil-channeling_active"
 				}
 			}
 		},

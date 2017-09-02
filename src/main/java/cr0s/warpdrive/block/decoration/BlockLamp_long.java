@@ -18,7 +18,7 @@ public class BlockLamp_long extends BlockAbstractLamp {
 	private static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.00D, 0.32D, 0.00D, 0.20D, 0.68D, 1.00D);
 	
 	public BlockLamp_long(final String registryName) {
-		super(registryName, "warpdrive.decoration.long_lamp");
+		super(registryName, "warpdrive.decoration.lamp_long");
 	}
 	
 	@Nonnull

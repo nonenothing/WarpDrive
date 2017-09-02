@@ -18,7 +18,7 @@ public class BlockLamp_bubble extends BlockAbstractLamp {
 	private static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 0.70D, 1.00D, 1.00D);
 	
 	public BlockLamp_bubble(final String registryName) {
-		super(registryName, "warpdrive.decoration.bubble_lamp");
+		super(registryName, "warpdrive.decoration.lamp_bubble");
 	}
 	
 	@Nonnull

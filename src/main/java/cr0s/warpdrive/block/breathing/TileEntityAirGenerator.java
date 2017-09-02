@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.BlockProperties;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -46,8 +47,8 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (WarpDrive.starMap.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
-			IBlockState blockState = worldObj.getBlockState(pos);
+		if (CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
+			final IBlockState blockState = worldObj.getBlockState(pos);
 			if (blockState.getValue(BlockProperties.ACTIVE)) {
 				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 			}
@@ -105,15 +106,15 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		isEnabled = tag.getBoolean("isEnabled");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag.setBoolean("isEnabled", isEnabled);
-		return super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		return super.writeToNBT(tagCompound);
 	}
 	
 	@Override
@@ -134,6 +135,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 			pos.getX(), pos.getY(), pos.getZ());
 	}
 	
+	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
 		if (arguments.length == 1) {
 			isEnabled = Commons.toBool(arguments[0]);
@@ -152,11 +154,11 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-		case "enable":
-			return enable(arguments);
+		case "enable": 
+			return enable(arguments);		
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

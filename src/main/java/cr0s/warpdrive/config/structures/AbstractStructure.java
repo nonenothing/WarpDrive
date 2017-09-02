@@ -1,6 +1,6 @@
 package cr0s.warpdrive.config.structures;
 
-import cr0s.warpdrive.config.IXmlRepresentable;
+import cr0s.warpdrive.api.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.XmlFileManager;
 import org.w3c.dom.Element;
@@ -38,12 +38,12 @@ public abstract class AbstractStructure extends WorldGenerator implements IXmlRe
 	abstract public AbstractStructureInstance instantiate(Random random);
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		
-		List<Element> listVariables = XmlFileManager.getChildrenElementByTagName(element, "variable");
+		final List<Element> listVariables = XmlFileManager.getChildrenElementByTagName(element, "variable");
 		for (Element elementVariable : listVariables) {
-			String variableName = elementVariable.getAttribute("name");
-			String variableExpression = elementVariable.getTextContent();
+			final String variableName = elementVariable.getAttribute("name");
+			final String variableExpression = elementVariable.getTextContent();
 			variables.put(variableName, variableExpression);
 		}
 		

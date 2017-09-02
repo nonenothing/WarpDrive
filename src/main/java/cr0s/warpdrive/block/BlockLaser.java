@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockLaser extends BlockAbstractContainer {
-		
+	
 	public BlockLaser(final String registryName) {
 		super(registryName, Material.IRON);
 		setHardness(50.0F);
@@ -48,7 +48,7 @@ public class BlockLaser extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLaser) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityLaser) tileEntity).getStatus());
 				return true;

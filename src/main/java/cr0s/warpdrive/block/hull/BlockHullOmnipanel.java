@@ -4,11 +4,11 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.BlockAbstractOmnipanel;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
+import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;

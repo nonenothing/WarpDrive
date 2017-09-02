@@ -63,8 +63,8 @@ public class OrbInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public void WriteToNBT(NBTTagCompound tag) {
-		super.WriteToNBT(tag);
+	public void WriteToNBT(NBTTagCompound tagCompound) {
+		super.WriteToNBT(tagCompound);
 		// TODO not implemented
 	}
 	
@@ -78,7 +78,7 @@ public class OrbInstance extends AbstractStructureInstance {
 		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness,
 			  Math.max(blockPos.getY(), WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness));
 		if (hasShip) {
-			new WorldGenSmallShip(random.nextFloat() < 0.2F).generate(world, random, new BlockPos(blockPos.getX(), y2, blockPos.getZ()));
+			new WorldGenSmallShip(random.nextFloat() < 0.2F, false).generate(world, random, new BlockPos(blockPos.getX(), y2, blockPos.getZ()));
 		}
 		EntitySphereGen entitySphereGen = new EntitySphereGen(world, blockPos.getX(), y2, blockPos.getZ(), this, !hasShip);
 		world.spawnEntityInWorld(entitySphereGen);

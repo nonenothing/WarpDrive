@@ -59,29 +59,29 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		setUpgrade(EnumForceFieldUpgrade.get(tag.getByte("upgrade")));
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		setUpgrade(EnumForceFieldUpgrade.get(tagCompound.getByte("upgrade")));
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setByte("upgrade", (byte) getUpgrade().ordinal());
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setByte("upgrade", (byte) getUpgrade().ordinal());
+		return tagCompound;
 	}
 	
 	@Nonnull
 	@Override
 	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		return tagCompound;
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.getNbtCompound();
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	

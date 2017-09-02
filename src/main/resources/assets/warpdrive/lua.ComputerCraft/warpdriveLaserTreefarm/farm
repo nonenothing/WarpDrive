@@ -3,9 +3,9 @@ if not term.isColor() then
   exit()
 end
 
-sides = peripheral.getNames()
+local sides = peripheral.getNames()
 treefarms = {}
-for key,side in pairs(sides) do
+for _, side in pairs(sides) do
   if peripheral.getType(side) == "warpdriveLaserTreeFarm" then
     print("Wrapping " .. side)
     table.insert(treefarms, peripheral.wrap(side))
@@ -13,11 +13,11 @@ for key,side in pairs(sides) do
 end
 
 
-noExit = true
+local noExit = true
 breakLeaves = true
 tapTrees = true
 silktouch = false
-args = {...}
+local args = {...}
 if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
     print("Usage: farm <breakLeaves> <tapTrees> <silktouch>")
@@ -57,8 +57,8 @@ if #treefarms == 0 then
   noExit = false
 end
 if noExit then
-  for key,treefarm in pairs(treefarms) do
-    statusString, isActive = treefarm.state()
+  for _, treefarm in pairs(treefarms) do
+    local _, isActive = treefarm.state()
     if not isActive then
       treefarm.breakLeaves(breakLeaves)
       treefarm.tapTrees(tapTrees)
@@ -67,10 +67,10 @@ if noExit then
       treefarm.start()
     end
   end
-  sleep(1)
+  os.sleep(1)
 end
 
-label = os.getComputerLabel()
+local label = os.getComputerLabel()
 if label then
 else
   label = "" .. os.getComputerID()
@@ -78,10 +78,11 @@ end
 
 term.setTextColor(colors.blue)
 if noExit then
+  local areActive
   repeat
-    isActive = false
+    areActive = false
     for key,treefarm in pairs(treefarms) do
-      status, isActive, energy, totalHarvested, currentValuable, totalValuables = treefarm.state()
+      local status, isActive, energy, totalHarvested, currentValuable, totalValuables = treefarm.state()
       
       term.setBackgroundColor(colors.black)
       term.clear()
@@ -100,14 +101,17 @@ if noExit then
       term.write("Harvested " .. totalHarvested .. " items and counting...   ")
       
       if isActive then
-        sleep(1)
+        areActive = true
+        os.sleep(1)
       else
-        sleep(0.1)
+        os.sleep(0.1)
       end
     end
-  until not isActive
+  until not areActive
 end
 
 term.setBackgroundColor(colors.black)
 term.setTextColor(colors.white)
+
 print()
+print("Program closed")

@@ -5,7 +5,6 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.VectorI;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +19,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -38,13 +36,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector, ITickable {
+	
 	private boolean isFirstTick = true;
+	private boolean isDirty = false;
 	
 	@Override
 	public void update() {
 		if (isFirstTick) {
 			isFirstTick = false;
 			onFirstUpdateTick();
+		}
+		
+		if (isDirty) {
+			markDirty();
 		}
 	}
 	
@@ -81,10 +85,15 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	@Override
 	public void markDirty() {
-		super.markDirty();
-		if (worldObj != null) {
-			IBlockState blockState = worldObj.getBlockState(pos);
+		if ( hasWorldObj()
+		  && Commons.isSafeThread() ) {
+			super.markDirty();
+			isDirty = false;
+			final IBlockState blockState = worldObj.getBlockState(pos);
 			worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
+			WarpDrive.starMap.onBlockUpdated(worldObj, pos, blockState);
+		} else {
+			isDirty = true;
 		}
 	}
 	
@@ -263,7 +272,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
-	public ITextComponent getStatus() {
+	protected ITextComponent getStatusPrefix() {
 		if (worldObj != null) {
 			Item item = Item.getItemFromBlock(getBlockType());
 			if (item != null) {
@@ -272,6 +281,18 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			}
 		}
 		return new TextComponentString("");
+	}
+	
+	public ITextComponent getStatusHeader() {
+		return new TextComponentString("");
+	}
+	
+	public ITextComponent getStatus() {
+		return getStatusPrefix().appendSibling( getStatusHeader() );
+	}
+	
+	public String getStatusHeaderInPureText() {
+		return Commons.removeFormatting( getStatusHeader().getUnformattedText() );
 	}
 	
 	// upgrade system

@@ -1,0 +1,40 @@
+local abort = false
+term.setBackgroundColor(colors.black)
+
+Colors = {
+  colors.lime,
+  colors.yellow,
+  colors.white,
+  colors.white,
+  colors.white,
+  colors.white,
+  colors.white
+}
+repeat
+  params = { os.pullEventRaw() }
+  eventName = params[1]
+  side = params[2]
+  if side == nil then side = "none" end
+  print("")
+  term.setTextColor(colors.red)
+  term.write("Event")
+  local index = 1
+  for key, value in pairs(params) do
+    term.setTextColor(Colors[index])
+	index = index + 1
+    if (type(value) == "boolean") then
+      if value then
+        term.write(" true")
+      else
+        term.write(" false")
+      end
+    else
+      term.write(" " .. value)
+    end
+  end
+  term.write(".")
+  if eventName == "terminate" then
+    abort = true
+  end
+until abort
+print("")

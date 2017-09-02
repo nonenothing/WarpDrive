@@ -3,10 +3,13 @@ package cr0s.warpdrive.block.detection;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.RadarEcho;
+import cr0s.warpdrive.data.StarMapRegistry;
+import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.EnumRadarMode;
-import cr0s.warpdrive.data.StarMapRegistryItem;
-import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
@@ -22,7 +25,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityRadar extends TileEntityAbstractEnergy {
-	private ArrayList<StarMapRegistryItem> results;
+	
+	private ArrayList<RadarEcho> results;
 	
 	// radius defined for next scan
 	private int radius = 0;
@@ -59,7 +63,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			if (getBlockMetadata() == 2) {
 				scanning_ticks++;
 				if (scanning_ticks > scanningDuration_ticks) {
-					results = WarpDrive.starMap.radarScan(this, scanningRadius);
+					results = WarpDrive.starMap.getRadarEchos(this, scanningRadius);
 					if (WarpDriveConfig.LOGGING_RADAR) {
 						WarpDrive.logger.info(this + " Scan found " + results.size() + " results in " + scanningRadius + " radius...");
 					}
@@ -99,50 +103,22 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[3] * parRadius * parRadius * parRadius));
 	}
 	
-	// OpenComputer callback methods
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] radius(Context context, Arguments arguments) {
-		return radius(argumentsOCtoCC(arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getEnergyRequired(Context context, Arguments arguments) {
-		return getEnergyRequired(argumentsOCtoCC(arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getScanDuration(Context context, Arguments arguments) {
-		return getScanDuration(argumentsOCtoCC(arguments));
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] start(Context context, Arguments arguments) {
-		return start();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResults(Context context, Arguments arguments) {
-		return getResults();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResultsCount(Context context, Arguments arguments) {
-		return getResultsCount();
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResult(Context context, Arguments arguments) {
-		return getResult(argumentsOCtoCC(arguments));
-	}
-	
 	// Common OC/CC methods
+	@Override
+	public Object[] position() {
+		final CelestialObject celestialObject = CelestialObjectManager.get(worldObj, pos.getX(), pos.getZ());
+		if (celestialObject != null) {
+			Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, pos.getX(), pos.getY(), pos.getZ());
+			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
+		} else {
+			String name = worldObj.getWorldInfo().getWorldName();
+			if (name == null || name.isEmpty()) {
+				name = "DIM" + worldObj.provider.getDimension();
+			}
+			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), name, pos.getX(), pos.getY(), pos.getZ() };
+		}
+	}
+	
 	private Object[] radius(Object[] arguments) {
 		if (arguments.length == 1 && getBlockMetadata() != 2) {
 			int newRadius;
@@ -209,13 +185,12 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		}
 		Object[] objectResults = new Object[results.size()];
 		int index = 0;
-		for (StarMapRegistryItem starMapRegistryItem : results) {
-			final VectorI spaceCoordinates = starMapRegistryItem.getSpaceCoordinates();
+		for (RadarEcho radarEcho : results) {
 			objectResults[index++] = new Object[] {
-					starMapRegistryItem.type.toString(),
-					starMapRegistryItem.name == null ? "" : starMapRegistryItem.name,
-					spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z,
-					starMapRegistryItem.mass };
+					radarEcho.type,
+					radarEcho.name == null ? "" : radarEcho.name,
+					radarEcho.x, radarEcho.y, radarEcho.z,
+					radarEcho.mass };
 		}
 		return objectResults;
 	}
@@ -236,19 +211,61 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}
 			if (index >= 0 && index < results.size()) {
-				StarMapRegistryItem starMapRegistryItem = results.get(index);
-				if (starMapRegistryItem != null) {
-					VectorI spaceCoordinates = starMapRegistryItem.getSpaceCoordinates();
+				RadarEcho radarEcho = results.get(index);
+				if (radarEcho != null) {
 					return new Object[] {
 							true,
-							starMapRegistryItem.type.toString(),
-							starMapRegistryItem.name == null ? "" : starMapRegistryItem.name,
-							spaceCoordinates.x, spaceCoordinates.y, spaceCoordinates.z,
-							starMapRegistryItem.mass };
+							radarEcho.type,
+							radarEcho.name == null ? "" : radarEcho.name,
+							radarEcho.x, radarEcho.y, radarEcho.z,
+							radarEcho.mass };
 				}
 			}
 		}
 		return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
+	}
+	
+	// OpenComputer callback methods
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] radius(Context context, Arguments arguments) {
+		return radius(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+		return getEnergyRequired(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getScanDuration(Context context, Arguments arguments) {
+		return getScanDuration(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] start(Context context, Arguments arguments) {
+		return start();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResults(Context context, Arguments arguments) {
+		return getResults();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResultsCount(Context context, Arguments arguments) {
+		return getResultsCount();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] getResult(Context context, Arguments arguments) {
+		return getResult(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
@@ -273,7 +290,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
 		case "radius":

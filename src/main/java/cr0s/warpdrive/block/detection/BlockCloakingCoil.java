@@ -5,8 +5,6 @@ import cr0s.warpdrive.data.BlockProperties;
 
 import javax.annotation.Nonnull;
 
-import java.util.Random;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -18,6 +16,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockCloakingCoil extends BlockAbstractBase {
+	
+	// Metadata values
+	// 0 = not linked
+	// 1 = inner coil passive
+	// 2-7 = outer coil passive
+	// 8 = (not used)
+	// 9 = inner coil active
+	// 10-15 = outer coil active
 	
 	public static final PropertyBool OUTER = PropertyBool.create("outer");
 	

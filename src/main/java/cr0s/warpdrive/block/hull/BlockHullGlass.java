@@ -31,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageReceiver {
 	
-	final byte tier;
+	private final byte tier;
 	
 	public BlockHullGlass(final String registryName, final byte tier) {
 		super(Material.GLASS);
@@ -104,12 +104,12 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
-		BlockPos blockPosSide = blockPos.offset(facing);
+		final BlockPos blockPosSide = blockPos.offset(facing);
 		if (blockAccess.isAirBlock(blockPosSide)) {
 			return true;
 		}
-		EnumFacing opposite = facing.getOpposite();
-		IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
+		final EnumFacing opposite = facing.getOpposite();
+		final IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
 		if ( blockStateSide.getBlock() instanceof BlockGlass
 		  || blockStateSide.getBlock() instanceof BlockHullGlass ) {
 			return blockState.getBlock().getMetaFromState(blockState)

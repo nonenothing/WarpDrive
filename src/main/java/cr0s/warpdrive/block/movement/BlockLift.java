@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-import cr0s.warpdrive.data.EnumLiftMode;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -23,8 +22,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockLift extends BlockAbstractContainer {
+	
 	public static final PropertyEnum<EnumLiftMode> MODE = PropertyEnum.create("mode", EnumLiftMode.class);
 	
 	public BlockLift(final String registryName) {
@@ -49,6 +51,7 @@ public class BlockLift extends BlockAbstractContainer {
 				.withProperty(MODE, EnumLiftMode.get(metadata));
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(MODE).ordinal();
@@ -72,7 +75,7 @@ public class BlockLift extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLift) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityLift) tileEntity).getStatus());
 				return true;

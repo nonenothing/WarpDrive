@@ -16,6 +16,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
 import net.minecraftforge.common.util.Constants;
 
 public class CompatEnderIO implements IBlockTransformer {
@@ -44,13 +46,15 @@ public class CompatEnderIO implements IBlockTransformer {
 	}
 	
 	@Override
-	public NBTBase saveExternals(final TileEntity tileEntity) {
+	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 		return null;
 	}
 	
 	@Override
-	public void remove(TileEntity tileEntity) {
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 	}
 	
@@ -305,7 +309,9 @@ public class CompatEnderIO implements IBlockTransformer {
 	}
 	
 	@Override
-	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
+	public void restoreExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity,
+	                             final ITransformation transformation, final NBTBase nbtBase) {
 		// nothing to do
 	}
 }

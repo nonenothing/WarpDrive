@@ -44,13 +44,13 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			
 			if (tileEntity instanceof TileEntityMonitor) {
-				int videoChannel = ((TileEntityMonitor)tileEntity).getVideoChannel();
+				final int videoChannel = ((TileEntityMonitor) tileEntity).getVideoChannel();
 				CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
-					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor)tileEntity).getStatus());
+					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor) tileEntity).getStatus());
 					return true;
 				} else {
 					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.monitor.viewingCamera",

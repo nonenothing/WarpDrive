@@ -4,8 +4,8 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.network.PacketHandler;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -30,6 +30,8 @@ public class AirSpreader {
 		// skip non-air blocks
 		if (!stateCenter.isAir()) {
 			stateCenter.setConcentration(world, (byte) 0);
+			stateCenter.removeGeneratorAndCascade(world);
+			stateCenter.removeVoidAndCascade(world);
 			return;
 		}
 		
@@ -57,7 +59,7 @@ public class AirSpreader {
 		int empty_count = 0;
 		
 		for (EnumFacing forgeDirection : directions) {
-			StateAir stateAir = stateAround[forgeDirection.ordinal()];
+			final StateAir stateAir = stateAround[forgeDirection.ordinal()];
 			stateAir.refresh(world,
 			                 x + forgeDirection.getFrontOffsetX(),
 			                 y + forgeDirection.getFrontOffsetY(),
@@ -72,23 +74,19 @@ public class AirSpreader {
 					empty_count++;
 				}
 				// keep highest generator pressure that's going towards us
-				if ( max_pressureGenerator < stateAir.pressureGenerator
-				  && (forgeDirection.getOpposite() != stateAir.directionGenerator || stateAir.isAirSource())) {
-					max_pressureGenerator = stateAir.pressureGenerator;
-					max_directionGenerator = forgeDirection;
+				if (max_pressureGenerator < stateAir.pressureGenerator) {
+					if ( stateAir.isAirSource()
+					  || stateAir.directionGenerator != null ) {
+						max_pressureGenerator = stateAir.pressureGenerator;
+						max_directionGenerator = forgeDirection;
+					}
 				}
 				// keep highest void pressure that's going towards us
-				if ( max_pressureVoid < stateAir.pressureVoid) {
-					if (stateAir.isVoidSource()) {
+				if (max_pressureVoid < stateAir.pressureVoid) {
+					if ( stateAir.isVoidSource()
+					  || stateAir.directionVoid != null ) {
 						max_pressureVoid = stateAir.pressureVoid;
 						max_directionVoid = forgeDirection;
-					} else if (forgeDirection.getOpposite() != stateAir.directionVoid) {
-						// confirm the source validity (i.e. detect local loops)
-						stateAirParent.refresh(world, stateAir, stateAir.directionVoid);
-						if (stateAirParent.pressureVoid == stateAir.pressureVoid + 1) {
-							max_pressureVoid = stateAir.pressureVoid;
-							max_directionVoid = forgeDirection;
-						}
 					}
 				}
 			}
@@ -97,26 +95,61 @@ public class AirSpreader {
 		// update volume detection, skipping the sources
 		if (!stateCenter.isAirSource()) {
 			// propagate if bigger pressure existing around, erase pressure otherwise
-			if ( stateCenter.pressureGenerator <= max_pressureGenerator && max_pressureGenerator > 1) {
-				final short new_pressureGenerator = (short) (max_pressureGenerator - 1);
-				stateCenter.setGeneratorAndUpdateVoid(world, new_pressureGenerator, max_directionGenerator);
-			} else {
-				stateCenter.setGeneratorAndUpdateVoid(world, (short) 0, EnumFacing.DOWN);
+			if ( stateCenter.pressureGenerator < max_pressureGenerator
+			  && max_pressureGenerator > 1 ) {
+				stateCenter.setGeneratorAndUpdateVoid(world, (short) (max_pressureGenerator - 1), max_directionGenerator);
+			} else if (stateCenter.pressureGenerator != 0) {
+				stateCenter.removeGeneratorAndCascade(world);
+				
+				// invalidate cache
+				for (final EnumFacing direction : directions) {
+					final StateAir stateAir = stateAround[direction.ordinal()];
+					stateAir.refresh(world,
+					                 x + direction.getFrontOffsetX(),
+					                 y + direction.getFrontOffsetY(),
+					                 z + direction.getFrontOffsetZ());
+				}
 			}
 		}
 		
 		if (!stateCenter.isVoidSource()) {
 			// propagate if bigger pressure exists around, erase pressure otherwise
-			if (stateCenter.pressureVoid <= max_pressureVoid && max_pressureVoid > 1) {
-				final short new_voidPressure = (short) (max_pressureVoid - 1);
-				stateCenter.setVoid(world, new_voidPressure, max_directionVoid);
-			} else {
-				stateCenter.setVoidAndCascade(world, (short) 0, EnumFacing.DOWN);
+			if ( stateCenter.pressureVoid < max_pressureVoid
+			  && max_pressureVoid > 1 ) {
+				stateCenter.setVoid((short) (max_pressureVoid - 1), max_directionVoid);
+			} else if (stateCenter.pressureVoid != 0) {
+				stateCenter.removeVoidAndCascade(world);
+				
+				// invalidate cache
+				for (final EnumFacing direction : directions) {
+					final StateAir stateAir = stateAround[direction.ordinal()];
+					stateAir.refresh(world,
+					                 x + direction.getFrontOffsetX(),
+					                 y + direction.getFrontOffsetY(),
+					                 z + direction.getFrontOffsetZ());
+				}
 			}
 		}
 		
+		if (sum_concentration == 0) {
+			if ( stateCenter.pressureVoid > 0
+			  && stateCenter.pressureGenerator > 0
+			  && stateCenter.directionGenerator == stateCenter.directionVoid.getOpposite() ) {
+				final Vector3 v3Origin = new Vector3(x + 0.5D, y + 0.5D, z + 0.5D);
+				final Vector3 v3Direction = new Vector3(stateCenter.directionVoid).scale(0.5D);
+				PacketHandler.sendSpawnParticlePacket(world, "cloud", (byte) 2, v3Origin, v3Direction,
+				                                      0.20F + 0.10F * world.rand.nextFloat(),
+				                                      0.25F + 0.25F * world.rand.nextFloat(),
+				                                      0.60F + 0.30F * world.rand.nextFloat(),
+				                                      0.0F,
+				                                      0.0F, 
+				                                      0.0F, 32);
+			}
+			return;
+		}
+		
 		// air leaks means penalty plus some randomization for visual effects
-		if (empty_count > 0 && max_pressureGenerator < 16) {
+		if (empty_count > 0) {
 			if (concentration < 4) {
 				sum_concentration -= empty_count + (world.rand.nextBoolean() ? 0 : empty_count);
 			} else if (concentration < 8) {
@@ -130,10 +163,11 @@ public class AirSpreader {
 		// compute new concentration, buffing closed space
 		int mid_concentration;
 		int new_concentration;
-		final boolean isGrowth = (max_concentration > 8 && (max_concentration - min_concentration < 70))
-		                      || (max_concentration > 5 && (max_concentration - min_concentration < 4));
+		final boolean isGrowth = stateCenter.pressureGenerator > 0
+		                      && (stateCenter.pressureVoid == 0 || stateCenter.isAirSource())
+		                      && max_concentration - min_concentration > 2;
 		if (isGrowth) {
-			mid_concentration = Math.round(sum_concentration / (float) air_count) - 1;
+			mid_concentration = (int) Math.ceil(sum_concentration / (float) air_count);
 			new_concentration = sum_concentration - mid_concentration * (air_count - 1);
 			new_concentration = Math.max(Math.max(concentration + 1, max_concentration - 1), new_concentration - 20);
 		} else {
@@ -144,12 +178,10 @@ public class AirSpreader {
 			}
 		}
 		// apply (de)pressurisation effects
-		if (max_pressureVoid > 0) {
-			if (max_pressureVoid < 260) {
-				mid_concentration = Math.min(mid_concentration, 12);
-				new_concentration = Math.min(new_concentration, 12);
-			}
-		} else if (max_pressureGenerator > 20 && new_concentration > 16) {
+		if (stateCenter.pressureVoid > 0) {
+			mid_concentration = Math.min(mid_concentration, 160);
+			new_concentration = Math.min(new_concentration, 160);
+		} else if (stateCenter.pressureGenerator > 20 && new_concentration > 16) {
 			mid_concentration += 2;
 			new_concentration += 2;
 		}
@@ -162,14 +194,16 @@ public class AirSpreader {
 		}
 		if (new_concentration < 0) {
 			new_concentration = 0;
-		} else if (new_concentration > max_concentration - 1) {
+		} else if (isGrowth && new_concentration > max_concentration) {
+			new_concentration = Math.max(0, max_concentration);
+		} else if (!isGrowth && new_concentration > max_concentration - 1) {
 			new_concentration = Math.max(0, max_concentration - 1);
 		}
 		if (WarpDrive.isDev) {
-			assert (new_concentration < 0);
-			assert (mid_concentration < 0);
-			assert (new_concentration > StateAir.CONCENTRATION_MASK);
-			assert (mid_concentration > StateAir.CONCENTRATION_MASK);
+			assert (new_concentration >= 0);
+			assert (mid_concentration >= 0);
+			assert (new_concentration <= StateAir.CONCENTRATION_MAX);
+			assert (mid_concentration <= StateAir.CONCENTRATION_MAX);
 			if (WarpDriveConfig.LOGGING_BREATHING) {
 				StringBuilder debugConcentrations = new StringBuilder();
 				for (EnumFacing forgeDirection : directions) {
@@ -188,10 +222,16 @@ public class AirSpreader {
 		}
 		
 		// protect air generator
-		MutableBlockPos mutableBlockPos = new MutableBlockPos();
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos();
 		if (concentration != new_concentration) {
 			if (!stateCenter.isAirSource()) {
-				stateCenter.setConcentration(world, (byte) new_concentration);
+				if ( stateCenter.directionGenerator != null
+				  || concentration > new_concentration ) {
+					stateCenter.setConcentration(world, (byte) new_concentration);
+				} else if (WarpDriveConfig.LOGGING_BREATHING) {
+					WarpDrive.logger.warn(String.format("AirSpreader trying to increase central concentration without a generator in range at %s",
+					                                    stateCenter));
+				}
 			} else {
 				boolean hasGenerator = false;
 				final IBlockState blockStateSource = stateCenter.getBlockState(world);
@@ -203,40 +243,40 @@ public class AirSpreader {
 							z - facingSource.getFrontOffsetZ()));
 					if (blockStateGenerator.getBlock() instanceof BlockAirGeneratorTiered) {
 						final EnumFacing facingGenerator = blockStateGenerator.getValue(BlockProperties.FACING);
-						final boolean isActiveGenerator = blockStateGenerator.getValue(BlockProperties.ACTIVE);
-						if (isActiveGenerator && facingGenerator == facingSource) {
+						if (facingGenerator == facingSource) {
 							// all good
 							hasGenerator = true;
 						}
 					}
 					if (!hasGenerator) {
 						if (WarpDriveConfig.LOGGING_BREATHING) {
-							WarpDrive.logger.info(String.format("AirGenerator not found, removing air block at (%d %d %d)",
-							                                    x, y, z));
+							WarpDrive.logger.info(String.format("AirGenerator not found, removing AirSource block at (%d %d %d) -> expecting BlockAirGeneratorTiered, found %s",
+							                                    x, y, z, blockStateGenerator.getBlock()));
 						}
 						stateCenter.removeAirSource(world);
 					}
 				}
 			}
-		} else if (stateCenter.isAirFlow() && new_concentration == 0) {
-			WarpDrive.logger.warn(String.format("Recovering: airFlow removed by center tick of %s", stateCenter));
-			stateCenter.setConcentration(world, (byte) mid_concentration);
+		} else if (stateCenter.isAirFlow() && new_concentration == 0) {// invalid state detected => report and clear
+			WarpDrive.logger.error(String.format("AirSpreader removing invalid central airFlow of %s", stateCenter));
+			stateCenter.setConcentration(world, (byte) new_concentration);
 		}
 		
 		// Check and update air to adjacent blocks
 		// (do not overwrite source block, do not decrease neighbors if we're growing)
 		for (EnumFacing forgeDirection : directions) {
 			StateAir stateAir = stateAround[forgeDirection.ordinal()];
-			if (stateAir.isAirFlow()) {
+			if ( stateAir.isAirFlow()
+			  || (stateAir.isAir(forgeDirection) && !stateAir.isAirSource()) ) {
 				if ( stateAir.concentration != mid_concentration
 				  && (!isGrowth || stateAir.concentration < mid_concentration)) {
 					stateAir.setConcentration(world, (byte) mid_concentration);
-				} else if (mid_concentration == 0 && stateAir.concentration == 0) {
-					WarpDrive.logger.warn(String.format("Recovering: airFlow removed by connected tick of %s", stateAir));
+				} else if (mid_concentration == 0 && stateAir.concentration != 0) {
+					if (WarpDriveConfig.LOGGING_BREATHING) {
+						WarpDrive.logger.warn(String.format("AirSpreader removing connected airFlow of %s", stateAir));
+					}
 					stateAir.setConcentration(world, (byte) mid_concentration);
 				}
-			} else if (stateAir.isAir(forgeDirection) && !stateAir.isAirSource()) {
-				stateAir.setConcentration(world, (byte) mid_concentration);
 			}
 		}
 	}

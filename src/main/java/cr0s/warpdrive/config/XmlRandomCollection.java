@@ -1,5 +1,6 @@
 package cr0s.warpdrive.config;
 
+import cr0s.warpdrive.api.IXmlRepresentable;
 import org.w3c.dom.Element;
 
 /**
@@ -19,6 +20,7 @@ public class XmlRandomCollection<E extends IXmlRepresentable> extends RandomColl
 	 * @param element
 	 *            Element of an XML file
 	 * @throws InvalidXmlException
+	 *            Exception encountered
 	 **/
 	public void loadFromXML(E object, Element element) throws InvalidXmlException {
 		if (!object.loadFromXmlElement(element)) {// skip invalid entries

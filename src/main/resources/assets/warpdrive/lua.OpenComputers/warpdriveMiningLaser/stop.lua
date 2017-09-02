@@ -4,15 +4,20 @@ local term = require("term")
 
 if not term.isAvailable() then
   computer.beep()
-  return
+  os.exit()
+end
+if component.gpu.getDepth() < 4 then
+  print("Tier 2 GPU required")
+  os.exit()
 end
 
 mininglasers = {}
-for address,type in component.list("warpdriveMiningLaser", true) do
+for address, _ in component.list("warpdriveMiningLaser", true) do
   table.insert(mininglasers, component.proxy(address))
 end
 
 local file = io.open("/etc/hostname")
+local label
 if file then
   label = file:read("*l")
   file:close()
@@ -42,8 +47,8 @@ if #mininglasers == 0 then
   computer.beep()
   textOut(1, 2, "No mining laser detected", 0xFF0000, 0x000000)
 else
-  for key,mininglaser in pairs(mininglasers) do
-	statusString, isActive = mininglaser.state()
+  for key, mininglaser in pairs(mininglasers) do
+    local _, isActive = mininglaser.state()
     if not isActive then
       textOut(1, 2 + key, "Mining laser " .. key .. " of " .. #mininglasers .. " is already stopped", 0xFFFFFF, 0xFF0000)
     else

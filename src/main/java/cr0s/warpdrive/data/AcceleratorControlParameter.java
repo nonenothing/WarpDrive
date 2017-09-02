@@ -23,7 +23,7 @@ public class AcceleratorControlParameter {
 	
 	private void readFromNBT(final NBTTagCompound nbtTagCompound) {
 		controlChannel = nbtTagCompound.getInteger(IControlChannel.CONTROL_CHANNEL_TAG);
-		isEnabled = nbtTagCompound.getBoolean("isEnabled");
+		isEnabled = !nbtTagCompound.hasKey("isEnabled") || nbtTagCompound.getBoolean("isEnabled");
 		threshold = nbtTagCompound.getDouble("threshold");
 		description = nbtTagCompound.getString("description");
 	}
@@ -43,9 +43,9 @@ public class AcceleratorControlParameter {
 	}
 	
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		if (object instanceof AcceleratorControlParameter) {
-			AcceleratorControlParameter acceleratorControlParameter = (AcceleratorControlParameter) object;
+			final AcceleratorControlParameter acceleratorControlParameter = (AcceleratorControlParameter) object;
 			return controlChannel == acceleratorControlParameter.controlChannel
 			    && isEnabled == acceleratorControlParameter.isEnabled
 			    && threshold == acceleratorControlParameter.threshold

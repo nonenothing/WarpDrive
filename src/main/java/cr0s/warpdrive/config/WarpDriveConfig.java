@@ -8,8 +8,10 @@ import cr0s.warpdrive.compat.CompatAppliedEnergistics2;
 import cr0s.warpdrive.compat.CompatArsMagica2;
 import cr0s.warpdrive.compat.CompatBiblioCraft;
 import cr0s.warpdrive.compat.CompatBotania;
+import cr0s.warpdrive.compat.CompatBuildCraft;
 import cr0s.warpdrive.compat.CompatCarpentersBlocks;
 import cr0s.warpdrive.compat.CompatComputerCraft;
+import cr0s.warpdrive.compat.CompatCustomNpcs;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatEvilCraft;
 import cr0s.warpdrive.compat.CompatForgeMultipart;
@@ -25,12 +27,19 @@ import cr0s.warpdrive.compat.CompatRedstonePaste;
 import cr0s.warpdrive.compat.CompatSGCraft;
 import cr0s.warpdrive.compat.CompatStargateTech2;
 import cr0s.warpdrive.compat.CompatTConstruct;
+import cr0s.warpdrive.compat.CompatTechguns;
 import cr0s.warpdrive.compat.CompatThaumcraft;
 import cr0s.warpdrive.compat.CompatThermalDynamics;
 import cr0s.warpdrive.compat.CompatThermalExpansion;
 import cr0s.warpdrive.compat.CompatWarpDrive;
-import cr0s.warpdrive.config.filler.FillerManager;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.EnumShipMovementType;
+import cr0s.warpdrive.data.EnumDisplayAlignment;
+import cr0s.warpdrive.network.PacketHandler;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.server.FMLServerHandler;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -45,17 +54,22 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.FakePlayer;
 
 public class WarpDriveConfig {
 	
@@ -69,6 +83,9 @@ public class WarpDriveConfig {
 			"filler-netherores.xml",
 			"filler-undergroundbiomes.xml",
 	};
+	private static final String[] defaultXML_loots = {
+			"loot-default.xml",
+	};
 	private static final String[] defaultXML_structures = {
 			"structures-default.xml",
 			"structures-netherores.xml",
@@ -76,6 +93,9 @@ public class WarpDriveConfig {
 	private static final String[] defaultXML_celestialObjects = {
 			"celestialObjects-default.xml"
 	};
+	
+	public static GenericSetManager<Filler> FillerManager = new GenericSetManager<>("filler", "filler", "fillerSet", Filler.DEFAULT);
+	public static GenericSetManager<Loot> LootManager = new GenericSetManager<>("loot", "loot", "lootSet", Loot.DEFAULT);
 	
 	/*
 	 * The variables which store whether or not individual mods are loaded
@@ -103,7 +123,7 @@ public class WarpDriveConfig {
 	public static ItemStack IC2_Resin;
 	public static Block CC_Computer, CC_peripheral, CCT_Turtle, CCT_Expanded, CCT_Advanced;
 	
-	// Mod configuration (see loadWarpDriveConfig() for comments/definitions)
+	// Mod configuration (see loadConfig() for comments/definitions)
 	// General
 	public static int G_SPACE_BIOME_ID = 95;
 	public static int G_SPACE_PROVIDER_ID = 14;
@@ -125,6 +145,19 @@ public class WarpDriveConfig {
 	public static boolean RECIPES_ENABLE_HARD_IC2 = false;
 	public static boolean RECIPES_ENABLE_VANILLA = false;
 	
+	// Client
+	public static float CLIENT_LOCATION_SCALE = 1.0F;
+	public static String CLIENT_LOCATION_FORMAT_TITLE = "§l%1$s";
+	public static int CLIENT_LOCATION_BACKGROUND_COLOR = Commons.colorARGBtoInt(64, 48, 48, 48);
+	public static int CLIENT_LOCATION_TEXT_COLOR = Commons.colorARGBtoInt(230, 180, 180, 240);
+	public static boolean CLIENT_LOCATION_HAS_SHADOW = true;
+	public static EnumDisplayAlignment CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.MIDDLE_RIGHT;
+	public static int CLIENT_LOCATION_SCREEN_OFFSET_X = 0;
+	public static int CLIENT_LOCATION_SCREEN_OFFSET_Y = -20;
+	public static EnumDisplayAlignment CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.TOP_RIGHT;
+	public static float CLIENT_LOCATION_WIDTH_RATIO = 0.0F;
+	public static int CLIENT_LOCATION_WIDTH_MIN = 90;
+	
 	// Logging
 	public static boolean LOGGING_JUMP = false;
 	public static boolean LOGGING_JUMPBLOCKS = false;
@@ -142,7 +175,8 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_RADAR = false;
 	public static boolean LOGGING_BREATHING = false;
 	public static boolean LOGGING_WORLD_GENERATION = false;
-	public static boolean LOGGING_PROFILING = true;
+	public static boolean LOGGING_PROFILING_CPU_USAGE = true;
+	public static boolean LOGGING_PROFILING_THREAD_SAFETY = false;
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
 	public static boolean LOGGING_BREAK_PLACE = false;
@@ -152,6 +186,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_XML_PREPROCESSOR = false;
 	public static boolean LOGGING_RENDERING = false;
 	public static boolean LOGGING_CHUNK_HANDLER = false;
+	public static boolean LOGGING_CLIENT_SYNCHRONIZATION = false;
 	
 	// Starmap
 	public static int STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = 10;
@@ -163,28 +198,21 @@ public class WarpDriveConfig {
 	public static int SPACE_GENERATOR_Y_MIN_BORDER = 5;
 	public static int SPACE_GENERATOR_Y_MAX_BORDER = 200;
 	
+	// Ship movement costs
+	public static ShipMovementCosts.Factors[] SHIP_MOVEMENT_COSTS_FACTORS = null;
+	
 	// Ship
 	public static int SHIP_MAX_ENERGY_STORED = 100000000;
-	public static int SHIP_NORMALJUMP_ENERGY_PER_BLOCK = 10;
-	public static int SHIP_NORMALJUMP_ENERGY_PER_DISTANCE = 100;
-	public static int SHIP_HYPERJUMP_ENERGY_PER_BLOCK = 100;
-	public static int SHIP_HYPERJUMP_ENERGY_PER_DISTANCE = 1000;
 	public static int SHIP_TELEPORT_ENERGY_PER_ENTITY = 1000000;
-	public static int SHIP_MAX_JUMP_DISTANCE = 128;
-	public static int SHIP_HYPERSPACE_ACCELERATION = 100;
 	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 3000;
 	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 1200;
 	public static int SHIP_MAX_SIDE_SIZE = 127;
-	public static int SHIP_COOLDOWN_INTERVAL_SECONDS = 30;
 	public static int SHIP_COLLISION_TOLERANCE_BLOCKS = 3;
-	public static int SHIP_SHORTJUMP_THRESHOLD_BLOCKS = 50;
-	public static int SHIP_SHORTJUMP_WARMUP_SECONDS = 10;
-	public static int SHIP_LONGJUMP_WARMUP_SECONDS = 30;
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
 	public static int SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
 	public static int SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
+	public static int SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = 120;
 	public static String[] SHIP_VOLUME_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
-	public static boolean SHIP_WARMUP_SICKNESS = true;
 	public static int SHIP_SUMMON_MAX_RANGE = 500;
 	public static boolean SHIP_SUMMON_ACROSS_DIMENSIONS = false;
 	
@@ -299,7 +327,7 @@ public class WarpDriveConfig {
 	public static int[] BREATHING_MAX_ENERGY_STORED = { 1400, 21000, 304500 };  // almost 6 mn of autonomy
 	public static int BREATHING_AIR_GENERATION_TICKS = 40;
 	public static int[] BREATHING_AIR_GENERATION_RANGE_BLOCKS = { 16, 48, 144 };
-	public static int BREATHING_REPRESSURIZATION_SPEED_BLOCKS = 512;
+	public static int BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS = 256;
 	public static int BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
 	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
 	public static boolean BREATHING_AIR_AT_ENTITY_DEBUG = false;
@@ -330,6 +358,7 @@ public class WarpDriveConfig {
 	public static int LIFT_MAX_ENERGY_STORED = 900;
 	public static int LIFT_ENERGY_PER_ENTITY = 150;
 	public static int LIFT_UPDATE_INTERVAL_TICKS = 10;
+	public static int LIFT_ENTITY_COOLDOWN_TICKS = 40;
 	
 	// Chunk loader
 	public static int CL_MAX_ENERGY = 1000000;
@@ -341,12 +370,12 @@ public class WarpDriveConfig {
 	public static float[] HULL_BLAST_RESISTANCE = { 60.0F, 90.0F, 120.0F };
 	
 	// Block transformers library
-	public static HashMap<String, IBlockTransformer> blockTransformers = null;
+	public static HashMap<String, IBlockTransformer> blockTransformers = new HashMap<>(30);
 	
 	// Particles accelerator
 	public static boolean ACCELERATOR_ENABLE = false;
-	public static final double[]  ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
-	public static final double    ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
+	public static final double[] ACCELERATOR_TEMPERATURES_K = { 270.0, 200.0, 7.0 };
+	public static final double ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
 	public static int ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
 	public static Block getModBlock(final String mod, final String id) {
@@ -378,10 +407,29 @@ public class WarpDriveConfig {
 		return new ItemStack(Blocks.FIRE);
 	}
 	
+	protected static double[] getDoubleList(final Configuration config, final String categoy, final String key, final String comment, final double[] valuesDefault) {
+		double[] valuesRead = config.get(categoy, key, valuesDefault, comment).getDoubleList();
+		if (valuesRead.length != valuesDefault.length) {
+			valuesRead = valuesDefault.clone();
+		}
+		
+		return valuesRead;
+	}
+	
 	public static void reload() {
-		CelestialObjectManager.clearForReload();
+		CelestialObjectManager.clearForReload(false);
 		onFMLpreInitialization(stringConfigDirectory);
 		onFMLPostInitialization();
+		
+		final List<EntityPlayerMP> entityPlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
+		for (EntityPlayerMP entityPlayerMP : entityPlayers) {
+			if ( !(entityPlayerMP instanceof FakePlayer) ) {
+				final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayerMP.worldObj,
+				                                                                   MathHelper.floor_double(entityPlayerMP.posX),
+				                                                                   MathHelper.floor_double(entityPlayerMP.posZ));
+				PacketHandler.sendClientSync(entityPlayerMP, celestialObject);
+			}
+		}
 	}
 	
 	public static void onFMLpreInitialization(final String stringConfigDirectory) {
@@ -397,14 +445,16 @@ public class WarpDriveConfig {
 		
 		// unpack default XML files if none are defined
 		unpackResourcesToFolder("filler", ".xml", defaultXML_fillers, "config", configDirectory);
+		unpackResourcesToFolder("loot", ".xml", defaultXML_loots, "config", configDirectory);
 		unpackResourcesToFolder("structures", ".xml", defaultXML_structures, "config", configDirectory);
 		unpackResourcesToFolder("celestialObjects", ".xml", defaultXML_celestialObjects, "config", configDirectory);
 		
 		// always unpack the XML Schema
 		unpackResourceToFolder("WarpDrive.xsd", "config", configDirectory);
 		
-		// read configuration file
-		loadWarpDriveConfig(new File(configDirectory, WarpDrive.MODID + ".cfg"));
+		// read configuration files
+		loadConfig(new File(configDirectory, "config.yml"));
+		loadDictionary(new File(configDirectory, "dictionary.yml"));
 		CelestialObjectManager.load(configDirectory);
 		
 		// read mod dependencies
@@ -427,8 +477,8 @@ public class WarpDriveConfig {
 		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
 	}
 	
-	public static void loadWarpDriveConfig(File file) {
-		Configuration config = new Configuration(file);
+	public static void loadConfig(final File file) {
+		final Configuration config = new Configuration(file);
 		config.load();
 		
 		// General
@@ -463,6 +513,36 @@ public class WarpDriveConfig {
 		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCraft2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
 		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
 		
+		// Client
+		CLIENT_LOCATION_SCALE = Commons.clamp(0.25F, 4.0F, (float) config.get("client", "location_scale", CLIENT_LOCATION_SCALE,
+		                                   "Scale for location text font").getDouble() );
+		
+		CLIENT_LOCATION_FORMAT_TITLE = config.get("client", "location_prefix", CLIENT_LOCATION_FORMAT_TITLE, 
+		                                          "Format for location title").getString();
+		{
+			String stringValue = config.get("client", "location_background_color", String.format("0x%6X", CLIENT_LOCATION_BACKGROUND_COLOR),
+			                                      "Hexadecimal color code for location tile and description background (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
+			CLIENT_LOCATION_BACKGROUND_COLOR = (int) (Long.decode(stringValue) & 0xFFFFFFFFL);
+			
+			stringValue = config.get("client", "location_text_color", String.format("0x%6X", CLIENT_LOCATION_TEXT_COLOR),
+			                         "Hexadecimal color code for location tile and description foreground (0xAARRGGBB where AA is alpha, RR is Red, GG is Green and BB is Blue component)").getString();
+			CLIENT_LOCATION_TEXT_COLOR = (int) (Long.decode(stringValue) & 0xFFFFFFFFL);
+		}
+		CLIENT_LOCATION_HAS_SHADOW = config.get("client", "location_has_shadow", CLIENT_LOCATION_HAS_SHADOW,
+		                                        "Shadow casting option for current celestial object name").getBoolean(CLIENT_LOCATION_HAS_SHADOW);
+		CLIENT_LOCATION_SCREEN_ALIGNMENT = EnumDisplayAlignment.valueOf(config.get("client", "location_screen_alignment", CLIENT_LOCATION_SCREEN_ALIGNMENT.name(),
+		                                              "Alignment on screen: TOP_LEFT, TOP_CENTER, TOP_RIGHT, MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER or BOTTOM_RIGHT").getString());
+		CLIENT_LOCATION_SCREEN_OFFSET_X = config.get("client", "location_offset_x", CLIENT_LOCATION_SCREEN_OFFSET_X,
+		                                             "Horizontal offset on screen, increase to move to the right").getInt();
+		CLIENT_LOCATION_SCREEN_OFFSET_Y = config.get("client", "location_offset_y", CLIENT_LOCATION_SCREEN_OFFSET_Y,
+		                                             "Vertical offset on screen, increase to move down").getInt();
+		CLIENT_LOCATION_TEXT_ALIGNMENT = EnumDisplayAlignment.valueOf(config.get("client", "location_text_alignment", CLIENT_LOCATION_TEXT_ALIGNMENT.name(),
+		                                            "Text alignment: TOP_LEFT, TOP_CENTER, TOP_RIGHT, MIDDLE_LEFT, MIDDLE_CENTER, MIDDLE_RIGHT, BOTTOM_LEFT, BOTTOM_CENTER or BOTTOM_RIGHT").getString());
+		CLIENT_LOCATION_WIDTH_RATIO = (float) config.get("client", "location_width_ratio", CLIENT_LOCATION_WIDTH_RATIO,
+		                                         "Text width as a ratio of full screen width").getDouble();
+		CLIENT_LOCATION_WIDTH_MIN = config.get("client", "location_width_min", CLIENT_LOCATION_WIDTH_MIN,
+		                                       "Text width as a minimum 'pixel' count").getInt();
+		
 		// Logging
 		LOGGING_JUMP = config.get("logging", "enable_jump_logs", LOGGING_JUMP, "Basic jump logs, should always be enabled").getBoolean(true);
 		LOGGING_JUMPBLOCKS = config.get("logging", "enable_jumpblocks_logs", LOGGING_JUMPBLOCKS, "Detailed jump logs to help debug the mod, will spam your logs...").getBoolean(false);
@@ -472,11 +552,13 @@ public class WarpDriveConfig {
 			LOGGING_CLOAKING = config.get("logging", "enable_cloaking_logs", LOGGING_CLOAKING, "Detailed cloaking logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_VIDEO_CHANNEL = config.get("logging", "enable_videoChannel_logs", LOGGING_VIDEO_CHANNEL, "Detailed video channel logs to help debug the mod, will spam your console!").getBoolean(false);
 			LOGGING_TARGETING = config.get("logging", "enable_targeting_logs", LOGGING_TARGETING, "Detailed targeting logs to help debug the mod, will spam your console!").getBoolean(false);
+			LOGGING_CLIENT_SYNCHRONIZATION = config.get("logging", "enable_client_synchronization_logs", LOGGING_CLIENT_SYNCHRONIZATION, "Detailed client synchronization logs to help debug the mod.").getBoolean(false);
 		} else {
 			LOGGING_EFFECTS = false;
 			LOGGING_CLOAKING = false;
 			LOGGING_VIDEO_CHANNEL = false;
 			LOGGING_TARGETING = false;
+			LOGGING_CLIENT_SYNCHRONIZATION = false;
 		}
 		LOGGING_WEAPON = config.get("logging", "enable_weapon_logs", LOGGING_WEAPON, "Detailed weapon logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_CAMERA = config.get("logging", "enable_camera_logs", LOGGING_CAMERA, "Detailed camera logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
@@ -487,7 +569,8 @@ public class WarpDriveConfig {
 		LOGGING_RADAR = config.get("logging", "enable_radar_logs", LOGGING_RADAR, "Detailed radar logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_WORLD_GENERATION = config.get("logging", "enable_world_generation_logs", LOGGING_WORLD_GENERATION, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_PROFILING = config.get("logging", "enable_profiling_logs", LOGGING_PROFILING, "Profiling logs, enable it to check for lag").getBoolean(true);
+		LOGGING_PROFILING_CPU_USAGE = config.get("logging", "enable_profiling_CPU_time", LOGGING_PROFILING_CPU_USAGE, "Profiling logs for CPU time, enable it to check for lag").getBoolean(true);
+		LOGGING_PROFILING_THREAD_SAFETY = config.get("logging", "enable_profiling_thread_safety", LOGGING_PROFILING_THREAD_SAFETY, "Profiling logs for multi-threading, enable it to check for ConcurrentModificationException").getBoolean(false);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
 		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
@@ -504,24 +587,26 @@ public class WarpDriveConfig {
 		STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS = 
 			config.get("starmap", "allow_overlapping_celestial_objects", STARMAP_ALLOW_OVERLAPPING_CELESTIAL_OBJECTS, "Enable to bypass the check at boot. Use at your own risk!").getBoolean();
 		
+		// Ship movement costs
+		SHIP_MOVEMENT_COSTS_FACTORS = new ShipMovementCosts.Factors[EnumShipMovementType.length];
+		for (EnumShipMovementType shipMovementType : EnumShipMovementType.values()) {
+			SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()] = new ShipMovementCosts.Factors(
+			        shipMovementType.warmupDefault,
+			        shipMovementType.energyRequiredDefault,
+			        shipMovementType.cooldownDefault,
+			        shipMovementType.sicknessDefault,
+			        shipMovementType.maximumDistanceDefault);
+			if (shipMovementType.hasConfiguration) {
+				SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()].load(config, "ship_movement_costs", shipMovementType.getName(), shipMovementType.getDescription());
+			}
+		}
+		
 		// Ship
 		SHIP_MAX_ENERGY_STORED = Commons.clamp(0, Integer.MAX_VALUE,
 				config.get("ship", "max_energy_stored", SHIP_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		SHIP_NORMALJUMP_ENERGY_PER_BLOCK = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "normaljump_energy_per_block", SHIP_NORMALJUMP_ENERGY_PER_BLOCK, "Energy cost per non-air block without warping").getInt());
-		SHIP_NORMALJUMP_ENERGY_PER_DISTANCE = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "normaljump_energy_per_distance", SHIP_NORMALJUMP_ENERGY_PER_DISTANCE, "Energy cost per non-air block without warping").getInt());
-		SHIP_HYPERJUMP_ENERGY_PER_DISTANCE = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "hyperjump_energy_per_distance", SHIP_HYPERJUMP_ENERGY_PER_DISTANCE, "Energy cost per non-air block while warping").getInt());
-		SHIP_HYPERJUMP_ENERGY_PER_BLOCK = Commons.clamp(0, Integer.MAX_VALUE,
-				config.get("ship", "hyperjump_energy_per_block", SHIP_HYPERJUMP_ENERGY_PER_BLOCK, "Energy cost per non-air block while warping").getInt());
+		
 		SHIP_TELEPORT_ENERGY_PER_ENTITY = Commons.clamp(0, Integer.MAX_VALUE,
 				config.get("ship", "teleport_energy_per_entity", SHIP_TELEPORT_ENERGY_PER_ENTITY, "Energy cost per entity").getInt());
-		
-		SHIP_MAX_JUMP_DISTANCE = Commons.clamp(0, 30000000,
-				config.get("ship", "max_jump_distance", SHIP_MAX_JUMP_DISTANCE, "Maximum jump length value in blocks").getInt());
-		SHIP_HYPERSPACE_ACCELERATION = Commons.clamp(1, 10000,
-				config.get("ship", "hyperspace_acceleration", SHIP_HYPERSPACE_ACCELERATION, "Acceleration gain from moving while in hyperspace").getInt());
 		
 		SHIP_VOLUME_MAX_ON_PLANET_SURFACE = Commons.clamp(0, 10000000,
 				config.get("ship", "volume_max_on_planet_surface", SHIP_VOLUME_MAX_ON_PLANET_SURFACE, "Maximum ship mass (in blocks) to jump on a planet").getInt());
@@ -534,24 +619,17 @@ public class WarpDriveConfig {
 				config.get("ship", "max_side_size", SHIP_MAX_SIDE_SIZE, "Maximum ship size on each axis in blocks").getInt());
 		SHIP_COLLISION_TOLERANCE_BLOCKS = Commons.clamp(0, 30000000,
 				config.get("ship", "collision_tolerance_blocks", SHIP_COLLISION_TOLERANCE_BLOCKS, "Tolerance in block in case of collision before causing damages...").getInt());
-		SHIP_COOLDOWN_INTERVAL_SECONDS = Commons.clamp(0, 3600,
-				config.get("ship", "cooldown_interval_seconds", SHIP_COOLDOWN_INTERVAL_SECONDS, "Cooldown seconds to wait after jumping").getInt());
 		
-		SHIP_SHORTJUMP_THRESHOLD_BLOCKS = Commons.clamp(0, 30000000,
-				config.get("ship", "shortjump_threshold_blocs", SHIP_SHORTJUMP_THRESHOLD_BLOCKS, "Short jump definition").getInt());
-		SHIP_SHORTJUMP_WARMUP_SECONDS = Commons.clamp(0, 3600,
-				config.get("ship", "shortjump_warmup_seconds", SHIP_SHORTJUMP_WARMUP_SECONDS, "(measured in seconds)").getInt());
-		SHIP_LONGJUMP_WARMUP_SECONDS = Commons.clamp(0, 3600,
-				config.get("ship", "longjump_warmup_seconds", SHIP_LONGJUMP_WARMUP_SECONDS, "(measured in seconds)").getInt());
 		SHIP_WARMUP_RANDOM_TICKS = Commons.clamp(10, 200,
 				config.get("ship", "warmup_random_ticks", SHIP_WARMUP_RANDOM_TICKS, "Random variation added to warmup (measured in ticks)").getInt());
-		SHIP_WARMUP_SICKNESS = config.get("ship", "warmup_sickness", true, "Enable warp sickness during warmup").getBoolean(true);
 		
 		SHIP_SUMMON_MAX_RANGE = config.get("ship", "summon_max_range", SHIP_SUMMON_MAX_RANGE, "Maximum range from which players can be summoned (measured in blocks), set to -1 for unlimited range").getInt();
 		SHIP_SUMMON_ACROSS_DIMENSIONS = config.get("ship", "summon_across_dimensions", false, "Enable summoning players from another dimension").getBoolean(false);
 		
 		SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
 				config.get("ship", "core_isolation_update_interval", SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
+		SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = Commons.clamp(0, 300,
+                config.get("ship", "volume_scan_age_tolerance", SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS, "Ship volume won't be refreshed unless it's older than that many seconds").getInt());
 		SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
 				config.get("ship", "controller_update_interval", SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
 		
@@ -781,8 +859,8 @@ public class WarpDriveConfig {
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[1] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[0], BREATHING_AIR_GENERATION_RANGE_BLOCKS[2], BREATHING_AIR_GENERATION_RANGE_BLOCKS[1]);
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[2] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[1], 256                                , BREATHING_AIR_GENERATION_RANGE_BLOCKS[2]);
 		
-		BREATHING_REPRESSURIZATION_SPEED_BLOCKS = Commons.clamp(120, 4000,
-				config.get("breathing", "repressurization_speed_blocks", BREATHING_REPRESSURIZATION_SPEED_BLOCKS, "Maximum number of blocks to update when a volume has been re-sealed.\nHigher may cause TPS lag spikes, Lower will exponentially increase the repressurization time").getInt());
+		BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS = Commons.clamp(10, 256,
+		        config.get("breathing", "volume_update_depth_blocks", BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS, "Maximum depth of blocks to update when a volume has changed.\nHigher values may cause TPS lag spikes, Lower values will exponentially increase the repressurization time").getInt());
 		BREATHING_AIR_SIMULATION_DELAY_TICKS = Commons.clamp(1, 90,
 				config.get("breathing", "simulation_delay_ticks", BREATHING_AIR_SIMULATION_DELAY_TICKS, "Minimum delay between consecutive air propagation updates of the same block.").getInt());
 		BREATHING_AIR_AT_ENTITY_DEBUG = config.get("breathing", "enable_air_at_entity_debug", BREATHING_AIR_AT_ENTITY_DEBUG, "Spam creative players with air status around them, use at your own risk.").getBoolean(false);
@@ -844,17 +922,25 @@ public class WarpDriveConfig {
 				config.get("lift", "energy_per_entity", LIFT_ENERGY_PER_ENTITY, "Energy consumed per entity moved").getInt());
 		LIFT_UPDATE_INTERVAL_TICKS = Commons.clamp(1, 60,
 				config.get("lift", "update_interval_ticks", LIFT_UPDATE_INTERVAL_TICKS, "Update speed of the check for entities").getInt());
+		LIFT_ENTITY_COOLDOWN_TICKS = Commons.clamp(1, 6000,
+				config.get("lift", "entity_cooldown_ticks", LIFT_ENTITY_COOLDOWN_TICKS, "Cooldown after moving an entity").getInt());
+		
+		// Particles accelerator
+		ACCELERATOR_ENABLE = config.get("accelerator", "enable", ACCELERATOR_ENABLE, "Enable accelerator blocks. Requires a compatible server, as it won't work in single player").getBoolean(false);
+		
+		ACCELERATOR_MAX_PARTICLE_BUNCHES = Commons.clamp(2, 100,
+				config.get("accelerator", "max_particle_bunches", ACCELERATOR_MAX_PARTICLE_BUNCHES, "Maximum number of particle bunches per accelerator controller").getInt());
+		
+		config.save();
+	}
+	
+	public static void loadDictionary(final File file) {
+		final Configuration config = new Configuration(file);
+		config.load();
 		
 		// Dictionary
 		Dictionary.loadConfig(config);
-		
-		// Block transformers library
-		blockTransformers = new HashMap<>();
-		
-		// Particles accelerator
-		ACCELERATOR_MAX_PARTICLE_BUNCHES = Commons.clamp(2, 100,
-			config.get("accelerator", "max_particle_bunches", ACCELERATOR_MAX_PARTICLE_BUNCHES, "Maximum number of particle bunches per accelerator controller").getInt());
-		
+	
 		config.save();
 	}
 	
@@ -871,6 +957,7 @@ public class WarpDriveConfig {
 		}
 		
 		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
+		isICBMLoaded = Loader.isModLoaded("icbm");
 		isICBMClassicLoaded = Loader.isModLoaded("icbmclassic");
 		
 		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
@@ -912,9 +999,17 @@ public class WarpDriveConfig {
 		if (isBiblioCraftLoaded) {
 			CompatBiblioCraft.register();
 		}
+		boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
+		if (isBuildCraftLoaded) {
+			CompatBuildCraft.register();
+		}
 		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
 		if (isCarpentersBlocksLoaded) {
 			CompatCarpentersBlocks.register();
+		}
+		boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
+		if (isCustomNpcsLoaded) {
+			CompatCustomNpcs.register();
 		}
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
@@ -956,6 +1051,10 @@ public class WarpDriveConfig {
 		if (isTConstructLoaded) {
 			CompatTConstruct.register();
 		}
+		boolean isTechgunsLoaded = Loader.isModLoaded("Techguns");
+		if (isTechgunsLoaded) {
+			CompatTechguns.register();
+		}
 		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
@@ -969,6 +1068,7 @@ public class WarpDriveConfig {
 	public static void onFMLPostInitialization() {
 		// load XML files
 		FillerManager.load(configDirectory);
+		LootManager.load(configDirectory);
 		StructureManager.load(configDirectory);
 		
 		Dictionary.apply();
@@ -1006,19 +1106,26 @@ public class WarpDriveConfig {
 			ErrorHandler xmlErrorHandler = new ErrorHandler() {
 				@Override
 				public void warning(SAXParseException exception) throws SAXException {
-					WarpDrive.logger.warn("XML warning: " + exception.getLocalizedMessage());
+					WarpDrive.logger.warn(String.format("XML warning at line %d: %s",
+					                                    exception.getLineNumber(),
+					                                    exception.getLocalizedMessage() ));
 					// exception.printStackTrace();
 				}
 				
 				@Override
 				public void fatalError(SAXParseException exception) throws SAXException {
-					WarpDrive.logger.warn("XML fatal error: " + exception.getLocalizedMessage());
+					WarpDrive.logger.warn(String.format("XML fatal error at line %d: %s",
+					                      exception.getLineNumber(),
+					                      exception.getLocalizedMessage() ));
 					// exception.printStackTrace();
 				}
 				
 				@Override
 				public void error(SAXParseException exception) throws SAXException {
-					WarpDrive.logger.warn("XML error: " + exception.getLocalizedMessage());
+					WarpDrive.logger.warn(String.format("XML error at line %d: %s",
+					                                    exception.getLineNumber(),
+					                                    exception.getLocalizedMessage() ));
+					
 					// exception.printStackTrace();
 				}
 			};

@@ -6,7 +6,6 @@ import cr0s.warpdrive.client.ClientProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
@@ -19,7 +18,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.data.BlockProperties;
 
 import net.minecraft.entity.player.EntityPlayer;

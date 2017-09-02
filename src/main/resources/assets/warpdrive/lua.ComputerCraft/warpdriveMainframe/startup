@@ -1070,7 +1070,7 @@ function core_page()
     WriteLn(" x, y, z          = " .. X .. ", " .. Y .. ", " .. Z)
     local energy, energyMax = ship.energy()
     if energy == nil then energy = 0 end
-    if energyMax == nil then energyMax = 1 end
+    if energyMax == nil or energyMax == 0 then energyMax = 1 end
     WriteLn(" Energy           = " .. math.floor(energy / energyMax * 100) .. " % (" .. energy .. "EU)")
     local playersString, playersArray = ship.getAttachedPlayers()
     if playersString == "" then players = "-" end

@@ -11,7 +11,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
@@ -69,11 +68,13 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		return true;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean canPlaceBlockAt(World world, @Nonnull BlockPos blockPos) {
 		return true;
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
 		return false;
@@ -105,9 +106,13 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 			return facing == EnumFacing.DOWN || facing == EnumFacing.UP;
 		}
 		
-		BlockPos blockPosSide = blockPos.offset(facing);
-		Block sideBlock = blockAccess.getBlockState(blockPosSide).getBlock();
-		return !(sideBlock instanceof BlockAbstractAir) && blockAccess.isAirBlock(blockPosSide);
+		final BlockPos blockPosSide = blockPos.offset(facing);
+		final Block blockSide = blockAccess.getBlockState(blockPosSide).getBlock();
+		if (blockSide instanceof BlockAbstractAir) {
+			return false;
+		}
+		
+		return blockAccess.isAirBlock(blockPosSide);
 	}
 	
 	@Override

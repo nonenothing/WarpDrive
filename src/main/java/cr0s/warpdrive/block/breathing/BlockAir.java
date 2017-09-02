@@ -1,6 +1,6 @@
 package cr0s.warpdrive.block.breathing;
 
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.CelestialObjectManager;
 
 import java.util.Random;
 
@@ -34,7 +34,7 @@ public class BlockAir extends BlockAbstractAir {
 		}
 		
 		final int concentration = blockState.getBlock().getMetaFromState(blockState);
-		final boolean hasAtmosphere = WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ());
+		final boolean hasAtmosphere = CelestialObjectManager.hasAtmosphere(world, blockPos.getX(), blockPos.getZ());
 		
 		// Remove air block to vacuum block
 		if (concentration <= 0 || hasAtmosphere) {
@@ -273,7 +273,7 @@ public class BlockAir extends BlockAbstractAir {
 	
 	@Override
 	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
-		if (!WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
+		if (!CelestialObjectManager.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.scheduleBlockUpdate(blockPos, this, tickRate(world), 0);
 		} else {
 			world.setBlockToAir(blockPos);

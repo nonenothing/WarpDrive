@@ -9,6 +9,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class CompatBotania implements IBlockTransformer {
 	
@@ -42,13 +43,15 @@ public class CompatBotania implements IBlockTransformer {
 	}
 	
 	@Override
-	public NBTBase saveExternals(final TileEntity tileEntity) {
+	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 		return null;
 	}
 	
 	@Override
-	public void remove(TileEntity tileEntity) {
+	public void removeExternals(final World world, final int x, final int y, final int z,
+	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		// nothing to do
 	}
 	
@@ -85,17 +88,21 @@ public class CompatBotania implements IBlockTransformer {
 			}
 		}
 		
-		if (nbtTileEntity.hasKey("bindX") && nbtTileEntity.hasKey("bindY") && nbtTileEntity.hasKey("bindZ")) {
-			BlockPos targetBind = transformation.apply(nbtTileEntity.getInteger("bindX"), nbtTileEntity.getInteger("bindY"), nbtTileEntity.getInteger("bindZ"));
+		if ( nbtTileEntity.hasKey("bindX")
+		  && nbtTileEntity.hasKey("bindY") 
+		  && nbtTileEntity.hasKey("bindZ") ) {
+			final BlockPos targetBind = transformation.apply(nbtTileEntity.getInteger("bindX"), nbtTileEntity.getInteger("bindY"), nbtTileEntity.getInteger("bindZ"));
 			nbtTileEntity.setInteger("bindX", targetBind.getX());
 			nbtTileEntity.setInteger("bindY", targetBind.getY());
 			nbtTileEntity.setInteger("bindZ", targetBind.getZ());
 		}
 		
 		if (nbtTileEntity.hasKey("subTileCmp")) {
-			NBTTagCompound nbtSubTileCmp = nbtTileEntity.getCompoundTag("subTileCmp");
-			if (nbtSubTileCmp.hasKey("collectorX") && nbtSubTileCmp.hasKey("collectorY") && nbtSubTileCmp.hasKey("collectorZ")) {
-				BlockPos targetCollector = transformation.apply(nbtSubTileCmp.getInteger("collectorX"), nbtSubTileCmp.getInteger("collectorY"), nbtSubTileCmp.getInteger("collectorZ"));
+			final NBTTagCompound nbtSubTileCmp = nbtTileEntity.getCompoundTag("subTileCmp");
+			if ( nbtSubTileCmp.hasKey("collectorX")
+			  && nbtSubTileCmp.hasKey("collectorY")
+			  && nbtSubTileCmp.hasKey("collectorZ") ) {
+				final BlockPos targetCollector = transformation.apply(nbtSubTileCmp.getInteger("collectorX"), nbtSubTileCmp.getInteger("collectorY"), nbtSubTileCmp.getInteger("collectorZ"));
 				nbtSubTileCmp.setInteger("collectorX", targetCollector.getX());
 				nbtSubTileCmp.setInteger("collectorY", targetCollector.getY());
 				nbtSubTileCmp.setInteger("collectorZ", targetCollector.getZ());
@@ -103,7 +110,7 @@ public class CompatBotania implements IBlockTransformer {
 		}
 		
 		if (nbtTileEntity.hasKey("rotationX")) {
-			float rotationX = nbtTileEntity.getInteger("rotationX");
+			final float rotationX = nbtTileEntity.getInteger("rotationX");
 			nbtTileEntity.setFloat("rotationX", (rotationX + 270.0F * rotationSteps) % 360.0F);
 		}
 		
@@ -111,7 +118,9 @@ public class CompatBotania implements IBlockTransformer {
 	}
 	
 	@Override
-	public void restoreExternals(TileEntity tileEntity, ITransformation transformation, NBTBase nbtBase) {
+	public void restoreExternals(final World world, final int x, final int y, final int z,
+	                             final Block block, final int blockMeta, final TileEntity tileEntity,
+	                             final ITransformation transformation, final NBTBase nbtBase) {
 		// nothing to do
 	}
 }

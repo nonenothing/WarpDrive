@@ -3,11 +3,10 @@ package cr0s.warpdrive.client;
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
-import cr0s.warpdrive.block.hull.BlockHullPlain;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.api.IItemBase;
 import cr0s.warpdrive.data.EnumHullPlainType;
-import cr0s.warpdrive.render.MyCustomModelLoader;
+import cr0s.warpdrive.render.*;
 
 import javax.annotation.Nonnull;
 
@@ -22,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
 	
@@ -106,14 +106,17 @@ public class ClientProxy extends CommonProxy {
 		}
 		
 		IModelInitialisation(WarpDrive.itemComponent);
-		IModelInitialisation(WarpDrive.itemCrystalToken);
+		IModelInitialisation(WarpDrive.itemShipToken);
 		
 		IModelInitialisation(WarpDrive.itemWarpArmor[0]);
 		IModelInitialisation(WarpDrive.itemWarpArmor[1]);
 		IModelInitialisation(WarpDrive.itemWarpArmor[2]);
 		IModelInitialisation(WarpDrive.itemWarpArmor[3]);
 		
-		IModelInitialisation(WarpDrive.itemAirCanisterFull);
+		IModelInitialisation(WarpDrive.itemAirTanks[0]);
+		IModelInitialisation(WarpDrive.itemAirTanks[1]);
+		IModelInitialisation(WarpDrive.itemAirTanks[2]);
+		IModelInitialisation(WarpDrive.itemAirTanks[3]);
 		
 		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
 			IModelInitialisation(WarpDrive.itemUpgrade);
@@ -133,6 +136,9 @@ public class ClientProxy extends CommonProxy {
 		
 		// MinecraftForge.EVENT_BUS.register(new WarpDriveKeyBindings());
 		// MinecraftForge.EVENT_BUS.register(new RenderGameOverlay();
+		// MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
+		// MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
+		// MinecraftForge.EVENT_BUS.register(new RenderOverlayLocation());
 	}
 	
 	private static void IModelInitialisation(Object object) {

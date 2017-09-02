@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.StructureManager;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.world.JumpgateGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
 import cr0s.warpdrive.world.WorldGenStation;
@@ -65,7 +66,7 @@ public class CommandGenerate extends CommandBase {
 		String structure = args[0];
 		
 		// Reject command, if player is not in space
-		if (!WarpDrive.starMap.isInSpace(world, blockPos.getX(), blockPos.getZ()) && (!"ship".equals(structure))) {
+		if (!CelestialObjectManager.isInSpace(world, blockPos.getX(), blockPos.getZ()) && (!"ship".equals(structure))) {
 			Commons.addChatMessage(commandSender, new TextComponentString("* generate: this structure is only allowed in space!"));
 			return;
 		}
@@ -75,7 +76,7 @@ public class CommandGenerate extends CommandBase {
 			switch (structure) {
 				case "ship":
 					WarpDrive.logger.info("/generate: generating NPC ship at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
-					new WorldGenSmallShip(false).generate(world, world.rand, blockPos);
+					new WorldGenSmallShip(false, true).generate(world, world.rand, blockPos);
 					break;
 				case "station":
 					WarpDrive.logger.info("/generate: generating station at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());

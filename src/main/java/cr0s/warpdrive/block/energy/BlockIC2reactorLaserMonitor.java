@@ -15,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +35,7 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		return new TileEntityIC2reactorLaserMonitor();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {

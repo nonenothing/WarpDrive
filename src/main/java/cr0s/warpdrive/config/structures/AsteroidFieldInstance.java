@@ -25,8 +25,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public void WriteToNBT(final NBTTagCompound tag) {
-		super.WriteToNBT(tag);
+	public void WriteToNBT(final NBTTagCompound tagCompound) {
+		super.WriteToNBT(tagCompound);
 		// TODO not implemented
 	}
 	
@@ -43,7 +43,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 	
 	@Override
 	public boolean generate(@Nonnull final World world, @Nonnull final Random random, @Nonnull final BlockPos blockPos) {
-		LocalProfiler.start("SpaceWorldGenerator.generateAsteroidField");
+		LocalProfiler.start("AsteroidFieldInstance.generate");
 		// 6.0.1 au = 120 radius with 60 to 140 big + 60 to 140 small + 5 to 13 gaz
 		// 45238 blocks surface with 120 to 280 asteroids => 161 to 376 blocks per asteroid (big & small)
 		
@@ -166,7 +166,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		WarpDrive.logger.info("Generating small ship at " + x2 + " " + y2 + " " + z2);
-		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F).generate(world, world.rand, new BlockPos(x2, y2, z2));
+		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F, false).generate(world, world.rand, new BlockPos(x2, y2, z2));
 	}
 	
 	private static void generateStation(final World world, final int x, final int y, final int z, final int jitter) {

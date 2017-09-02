@@ -13,226 +13,133 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class EntityFXBeam extends Particle
-{
-    private static ResourceLocation TEXTURE = null;
-
-    double movX = 0.0D;
-    double movY = 0.0D;
-    double movZ = 0.0D;
-
+public class EntityFXBeam extends Particle {
+    
+    private static final int ROTATION_SPEED = 20;
+    private static final float END_MODIFIER = 1.0F;
+    private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/blocks/energy_grey.png");;
+    
     private float length = 0.0F;
     private float rotYaw = 0.0F;
     private float rotPitch = 0.0F;
     private float prevYaw = 0.0F;
     private float prevPitch = 0.0F;
-    private Vector3 target = new Vector3();
-    private float endModifier = 1.0F;
-    private boolean reverse = false;
-    private boolean pulse = true;
-    private int rotationSpeed = 20;
     private float prevSize = 0.0F;
-    private int energy = 0;
-
-    boolean a = false;
-
-    public EntityFXBeam(World par1World, Vector3 position, float yaw, float pitch, float red, float green, float blue, int age, int energy)
-    {
+    
+    public EntityFXBeam(World par1World, Vector3 position, Vector3 target, float red, float green, float blue, int age, int energy) {
         super(par1World, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
-        a = true;
-        this.setRGB(red, green, blue);
+        this.setRBGColorF(red, green, blue);
         this.setSize(0.02F, 0.02F);
         this.isCollided = false;
         this.motionX = 0.0D;
         this.motionY = 0.0D;
         this.motionZ = 0.0D;
-        this.length = 200;
-        this.rotYaw = yaw;
-        this.rotPitch = pitch;
-        this.prevYaw = this.rotYaw;
-        this.prevPitch = this.rotPitch;
-        this.particleMaxAge = age;
-        this.energy = energy;
-
-        if (red == 1 && green == 0 && blue == 0) {
-            TEXTURE = new ResourceLocation("warpdrive", "textures/blocks/energy_grey.png");
-        }
-
-        /**
-         * Sets the particle age based on distance.
-         */
-        Entity entityRender = Minecraft.getMinecraft().getRenderViewEntity();
-        int visibleDistance = 300;
-
-        if (!Minecraft.getMinecraft().gameSettings.fancyGraphics)
-        {
-            visibleDistance = 100;
-        }
-
-        if (entityRender.getDistance(posX, posY, posZ) > visibleDistance)
-        {
-            particleMaxAge = 0;
-        }
-    }
-
-    public EntityFXBeam(World par1World, Vector3 position, Vector3 target, float red, float green, float blue, int age, int energy)
-    {
-        super(par1World, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
-        this.setRGB(red, green, blue);
-        this.setSize(0.02F, 0.02F);
-        this.isCollided = false;
-        this.motionX = 0.0D;
-        this.motionY = 0.0D;
-        this.motionZ = 0.0D;
-        this.target = target;
-        float xd = (float)(this.posX - this.target.x);
-        float yd = (float)(this.posY - this.target.y);
-        float zd = (float)(this.posZ - this.target.z);
-        this.length = (float) position.distanceTo(this.target);
-        double var7 = MathHelper.sqrt_double(xd * xd + zd * zd);
-        this.rotYaw = ((float)(Math.atan2(xd, zd) * 180.0D / Math.PI));
-        this.rotPitch = ((float)(Math.atan2(yd, var7) * 180.0D / Math.PI));
-        this.prevYaw = this.rotYaw;
-        this.prevPitch = this.rotPitch;
-        this.particleMaxAge = age;
-        this.energy = energy;
-
-        TEXTURE = new ResourceLocation("warpdrive", "textures/blocks/energy_grey.png");
         
-        /**
-         * Sets the particle age based on distance.
-         */
-        Entity entityRender = Minecraft.getMinecraft().getRenderViewEntity();
+        float xd = (float)(this.posX - target.x);
+        float yd = (float)(this.posY - target.y);
+        float zd = (float)(this.posZ - target.z);
+	    this.length = (float) position.distanceTo(target);
+	    final double lengthXZ = MathHelper.sqrt_double(xd * xd + zd * zd);
+        this.rotYaw = (float) (Math.atan2(xd, zd) * 180.0D / Math.PI);
+        this.rotPitch = (float) (Math.atan2(yd, lengthXZ) * 180.0D / Math.PI);
+        this.prevYaw = this.rotYaw;
+        this.prevPitch = this.rotPitch;
+        this.particleMaxAge = age;
+        
+        // kill the particle if it's too far away
+        final Entity entityRender = Minecraft.getMinecraft().getRenderViewEntity();
         int visibleDistance = 300;
-
-        if (!Minecraft.getMinecraft().gameSettings.fancyGraphics)
-        {
+        
+        if (!Minecraft.getMinecraft().gameSettings.fancyGraphics) {
             visibleDistance = 100;
         }
-
-        if (entityRender.getDistance(posX, posY, posZ) > visibleDistance)
-        {
+        
+        if (entityRender.getDistance(posX, posY, posZ) > visibleDistance) {
             particleMaxAge = 0;
         }
-
-        //this.pulse = (energy == 0);
-        //if (TEXTURE != null) {
-        //	System.out.println("BeamFX created. Texture: " + TEXTURE);
-        //}
     }
-
+    
     @Override
-    public void onUpdate()
-    {
+    public void onUpdate() {
         prevPosX = posX;
         prevPosY = posY;
         prevPosZ = posZ;
         prevYaw = rotYaw;
         prevPitch = rotPitch;
-
-        if (!a)
-        {
-            float xd = (float)(posX - target.x);
-            float yd = (float)(posY - target.y);
-            float zd = (float)(posZ - target.z);
-            length = MathHelper.sqrt_float(xd * xd + yd * yd + zd * zd);
-            double var7 = MathHelper.sqrt_double(xd * xd + zd * zd);
-            rotYaw = ((float)(Math.atan2(xd, zd) * 180.0D / Math.PI));
-            rotPitch = ((float)(Math.atan2(yd, var7) * 180.0D / Math.PI));
-        }
-
-        if (particleAge++ >= particleMaxAge)
-        {
+        
+        if (particleAge++ >= particleMaxAge) {
             setExpired();
         }
     }
-
-    public void setRGB(float r, float g, float b)
-    {
-        particleRed = r;
-        particleGreen = g;
-        particleBlue = b;
-    }
-
+    
     @Override
-    public void renderParticle(VertexBuffer vertexBuffer, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ) {
+    public void renderParticle(final VertexBuffer vertexBuffer, final Entity entityIn, final float partialTick,
+                               final float rotationX, final float rotationZ, final float rotationYZ, final float rotationXY, final float rotationXZ) {
         GL11.glPushMatrix();
-        float var9 = 1.0F;
-        float slide = worldObj.getTotalWorldTime();
-        float rot = worldObj.provider.getWorldTime() % (360 / rotationSpeed) * rotationSpeed + rotationSpeed * partialTicks;
-        float size = 1.0F;
-
-        if (pulse)
-        {
-            size = Math.min(particleAge / 4.0F, 1.0F);
-            size = prevSize + (size - prevSize) * partialTicks;
+        
+        final float rot = worldObj.provider.getWorldTime() % (360 / ROTATION_SPEED) * ROTATION_SPEED + ROTATION_SPEED * partialTick;
+        
+        final float sizeTarget = Math.min(particleAge / 4.0F, 1.0F);
+        final float size = prevSize + (sizeTarget - prevSize) * partialTick;
+        
+        // alpha starts at 50%, vanishing to 10% during last ticks
+        float alpha = 0.5F;
+        if (particleMaxAge - particleAge <= 4) {
+            alpha = 0.5F - (4 - (particleMaxAge - particleAge)) * 0.1F;
         }
-        else
-        {
-            size = Math.min(Math.max(energy / 50000F, 1.0F), 7F);
-        }
-
-        float op = 0.5F;
-
-        if ((pulse) && (particleMaxAge - particleAge <= 4))
-        {
-            op = 0.5F - (4 - (particleMaxAge - particleAge)) * 0.1F;
-        }
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+	
+	    // @TODO Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
+	    FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         GL11.glDisable(GL11.GL_CULL_FACE);
-        float var11 = slide + partialTicks;
-
-        if (reverse)
-        {
-            var11 *= -1.0F;
-        }
-
-        float var12 = -var11 * 0.2F - MathHelper.floor_float(-var11 * 0.1F);
+        
+        float relativeTime = worldObj.getTotalWorldTime() + partialTick;
+        final float vOffset = -relativeTime * 0.2F - MathHelper.floor_float(-relativeTime * 0.1F);
+        
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
         GL11.glDepthMask(false);
-        float xx = (float)(prevPosX + (posX - prevPosX) * partialTicks - interpPosX);
-        float yy = (float)(prevPosY + (posY - prevPosY) * partialTicks - interpPosY);
-        float zz = (float)(prevPosZ + (posZ - prevPosZ) * partialTicks - interpPosZ);
+        
+        final float xx = (float)(prevPosX + (posX - prevPosX) * partialTick - interpPosX);
+        final float yy = (float)(prevPosY + (posY - prevPosY) * partialTick - interpPosY);
+        final float zz = (float)(prevPosZ + (posZ - prevPosZ) * partialTick - interpPosZ);
         GL11.glTranslated(xx, yy, zz);
-        float ry = prevYaw + (rotYaw - prevYaw) * partialTicks;
-        float rp = prevPitch + (rotPitch - prevPitch) * partialTicks;
+        
+        float rotYaw = prevYaw + (this.rotYaw - prevYaw) * partialTick;
+        float rotPitch = prevPitch + (this.rotPitch - prevPitch) * partialTick;
         GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef(180.0F + ry, 0.0F, 0.0F, -1.0F);
-        GL11.glRotatef(rp, 1.0F, 0.0F, 0.0F);
-        double var44 = -0.15D * size;
-        double var17 = 0.15D * size;
-        double var44b = -0.15D * size * endModifier;
-        double var17b = 0.15D * size * endModifier;
+        GL11.glRotatef(180.0F + rotYaw, 0.0F, 0.0F, -1.0F);
+        GL11.glRotatef(rotPitch, 1.0F, 0.0F, 0.0F);
         GL11.glRotatef(rot, 0.0F, 1.0F, 0.0F);
         
-        // close parent ongoing
-        Tessellator tessellator = Tessellator.getInstance();
-        for (int t = 0; t < 3; t++)
-        {
-            double var29 = length * size * var9;
-            double var31 = 0.0D;
-            double var33 = 1.0D;
-            double var35 = -1.0F + var12 + t / 3.0F;
-            double var37 = length * size * var9 + var35;
+        final double xMinStart = -0.15D * size;
+        final double xMaxStart = 0.15D * size;
+        final double xMinEnd = -0.15D * size * END_MODIFIER;
+        final double xMaxEnd = 0.15D * size * END_MODIFIER;
+        final double yMax = length * size;
+        final double uMin = 0.0D;
+        final double uMax = 1.0D;
+		
+		final Tessellator tessellator = Tessellator.getInstance();
+        for (int t = 0; t < 3; t++) {
+            final double vMin = -1.0F + vOffset + t / 3.0F;
+            final double vMax = vMin + length * size;
             GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
-            
-            // @TODO MC1.10: tessellator.setBrightness(200);
-            GlStateManager.color(particleRed, particleGreen, particleBlue, op);
-            vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            vertexBuffer.pos(var44b, var29, 0.0D).tex(var33, var37).endVertex();
-            vertexBuffer.pos(var44, 0.0D, 0.0D).tex(var33, var35).endVertex();
-            vertexBuffer.pos(var17, 0.0D, 0.0D).tex(var31, var35).endVertex();
-            vertexBuffer.pos(var17b, var29, 0.0D).tex(var31, var37).endVertex();
+            // @TODO MC1.10 tessellator.setBrightness(200);
+	        GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+	        vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+            vertexBuffer.pos(xMinEnd  , yMax, 0.0D).tex(uMax, vMax).endVertex();
+            vertexBuffer.pos(xMinStart, 0.0D, 0.0D).tex(uMax, vMin).endVertex();
+            vertexBuffer.pos(xMaxStart, 0.0D, 0.0D).tex(uMin, vMin).endVertex();
+            vertexBuffer.pos(xMaxEnd  , yMax, 0.0D).tex(uMin, vMax).endVertex();
             tessellator.draw();
         }
         

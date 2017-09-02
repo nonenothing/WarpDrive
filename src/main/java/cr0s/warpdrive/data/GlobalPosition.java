@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -64,20 +65,23 @@ public class GlobalPosition {
 		return getWorldServerIfLoaded() != null;
 	}
 	
-	public VectorI getSpaceCoordinates() {
-		CelestialObject celestialObject = StarMapRegistry.getCelestialObject(dimensionId, x, z);
-		if (celestialObject == null) {
-			// not a registered area
-			return null;
-		}
-		if (celestialObject.isHyperspace()) {
-			return new VectorI(x, y + 512, z);
-		}
-		if (celestialObject.isSpace()) {
-			return new VectorI(x, y + 256, z);
-		}
-		VectorI vEntry = celestialObject.getEntryOffset();
-		return new VectorI(x - vEntry.x, y, z - vEntry.z);
+	public Vector3 getUniversalCoordinates(final boolean isRemote) {
+		CelestialObject celestialObject = CelestialObjectManager.get(isRemote, dimensionId, x, z);
+		return StarMapRegistry.getUniversalCoordinates(celestialObject, x, y, z);
+	}
+	
+	public GlobalPosition(final NBTTagCompound tagCompound) {
+		dimensionId = tagCompound.getInteger("dimensionId");
+		x = tagCompound.getInteger("x");
+		y = tagCompound.getInteger("y");
+		z = tagCompound.getInteger("z");
+	}
+	
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("dimensionId", dimensionId);
+		tagCompound.setInteger("x", x);
+		tagCompound.setInteger("y", y);
+		tagCompound.setInteger("z", z);
 	}
 	
 	public boolean equals(final TileEntity tileEntity) {

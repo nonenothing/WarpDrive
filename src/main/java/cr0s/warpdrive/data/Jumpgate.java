@@ -8,13 +8,6 @@ import net.minecraft.util.math.BlockPos;
 public class Jumpgate {
 	public String name;
 	public int xCoord, yCoord, zCoord;
-
-	public Jumpgate(final String name, final int x, final int y, final int z) {
-		this.name = name;
-		this.xCoord = x;
-		this.yCoord = y;
-		this.zCoord = z;
-	}
 	
 	public Jumpgate(final String name, final BlockPos blockPos) {
 		this.name = name;

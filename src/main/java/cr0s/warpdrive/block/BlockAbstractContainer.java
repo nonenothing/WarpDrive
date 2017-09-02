@@ -6,8 +6,6 @@ import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
-import defense.api.IEMPBlock;
-import defense.api.IExplosion;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -35,9 +33,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Optional.InterfaceList({
-    @Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech")
+	@Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech"),
+	@Optional.Interface(iface = "resonant.api.explosion.IEMPBlock", modid = "icbmclassic")
 })
-public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, IEMPBlock {
+public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, defense.api.IEMPBlock, resonant.api.explosion.IEMPBlock {
 	
 	protected boolean hasSubBlocks = false; // @TODO: code review
 	
@@ -86,11 +85,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
-			EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(blockPos, entityLiving);
+			final EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(blockPos, entityLiving);
 			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity != null && itemStack.getTagCompound() != null) {
 			NBTTagCompound nbtTagCompound = itemStack.getTagCompound().copy();
 			nbtTagCompound.setInteger("x", blockPos.getX());
@@ -142,38 +141,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return super.rotateBlock(world, blockPos, axis);
 	}
 	
-	// @FIXME untested
-	/*
-	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
-		boolean hasResponse = false;
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		if (tileEntity instanceof IUpgradable) {
-			IUpgradable upgradable = (IUpgradable) tileEntity;
-			ItemStack itemStack = entityPlayer.inventory.getCurrentItem();
-			if (itemStack != null) {
-				Item i = itemStack.getItem();
-				if (i instanceof ItemWarpUpgrade) {
-					if (upgradable.takeUpgrade(EnumUpgradeTypes.values()[itemStack.getItemDamage()], false)) {
-						if (!entityPlayer.capabilities.isCreativeMode)
-							entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						entityPlayer.addChatMessage("Upgrade accepted");
-					} else {
-						entityPlayer.addChatMessage("Upgrade declined");
-					}
-					hasResponse = true;
-				}
-			}
-		}
-		
-		return hasResponse;
-	}
-	/**/
-	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void neighborChanged(IBlockState blockState, World world, BlockPos blockPos, Block block) {
@@ -186,13 +153,46 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	@Optional.Method(modid = "DefenseTech")
-	public void onEMP(World world, int x, int y, int z, IExplosion explosiveEMP) {
+	public void onEMP(World world, int x, int y, int z, defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info("EMP received at " + x + " " + y + " " + z + " from " + explosiveEMP + " with energy " + explosiveEMP.getEnergy() + " and radius " + explosiveEMP.getRadius());
+			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.getDimension(), x, y, z,
+			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
 		// EMP explosive = 3k Energy, 50 radius
-		onEMP(world, new BlockPos(x, y, z), explosiveEMP.getRadius() / 100.0F);
+		if (explosiveEMP.getRadius() == 60.0F) {// compensate tower stacking effect
+			onEMP(world, new BlockPos(x, y, z), 0.02F);
+		} else if (explosiveEMP.getRadius() == 50.0F) {
+			onEMP(world, new BlockPos(x, y, z), 0.70F);
+		} else {
+			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+			                                    world.provider.getDimension(), x, y, z,
+			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+			onEMP(world, new BlockPos(x, y, z), 0.02F);
+		}
+	}
+	
+	@Override
+	@Optional.Method(modid = "icbmclassic")
+	public void onEMP(World world, int x, int y, int z, resonant.api.explosion.IExplosion explosiveEMP) {
+		if (WarpDriveConfig.LOGGING_WEAPON) {
+			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.getDimension(), x, y, z,
+			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+		}
+		// EMP tower = 3k Energy, 60 radius
+		// EMP explosive = 3k Energy, 50 radius
+		if (explosiveEMP.getRadius() == 60.0F) {// compensate tower stacking effect
+			onEMP(world, new BlockPos(x, y, z), 0.02F);
+		} else if (explosiveEMP.getRadius() == 50.0F) {
+			onEMP(world, new BlockPos(x, y, z), 0.70F);
+		} else {
+			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+			                                    world.provider.getDimension(), x, y, z,
+			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+			onEMP(world, new BlockPos(x, y, z), 0.02F);
+		}
 	}
 	
 	public void onEMP(World world, final BlockPos blockPos, final float efficiency) {

@@ -35,6 +35,7 @@ import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
+	
 	private boolean breakLeaves = false;
 	private boolean tapTrees = false;
 	
@@ -628,9 +629,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] state() {
-		int energy = getEnergyStored();
-		String status = getStatus().getFormattedText();
-		Integer retValuables, retValuablesIndex;
+		final int energy = getEnergyStored();
+		final String status = getStatusHeaderInPureText();
+		final Integer retValuables, retValuablesIndex;
 		if (isFarming() && valuables != null) {
 			retValuables = valuables.size();
 			retValuablesIndex = valuableIndex;
@@ -698,30 +699,30 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "start":
-				return start();
-
-			case "stop":
-				stop();
-				return null;
-
-			case "state":
-				return state();
-
-			case "radius":
-				return radius(arguments);
-
-			case "breakLeaves":
-				return breakLeaves(arguments);
-
-			case "silktouch":
-				return silktouch(arguments);
-
-			case "tapTrees":
-				return tapTrees(arguments);
+		case "start":
+			return start();
+			
+		case "stop":
+			stop();
+			return null;
+			
+		case "state":
+			return state();
+			
+		case "radius":
+			return radius(arguments);
+			
+		case "breakLeaves":
+			return breakLeaves(arguments);
+			
+		case "silktouch":
+			return silktouch(arguments);
+			
+		case "tapTrees":
+			return tapTrees(arguments);
 		}
 		
 		return super.callMethod(computer, context, method, arguments);
@@ -729,8 +730,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	@Override
 	public ITextComponent getStatus() {
-		// @TODO merge with base
-		int energy = getEnergyStored();
+		final int energy = getEnergyStored();
 		String state = "IDLE (not farming)";
 		if (currentState == STATE_IDLE) {
 			state = "IDLE (not farming)";

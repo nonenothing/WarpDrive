@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockTransporter extends BlockAbstractContainer {
+	
 	public static final PropertyBool ACTIVE = PropertyBool.create("active");
 	
 	public BlockTransporter(final String registryName) {
@@ -63,9 +64,9 @@ public class BlockTransporter extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityTransporter) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityTransporter)tileEntity).getStatus());
+				Commons.addChatMessage(entityPlayer, ((TileEntityTransporter) tileEntity).getStatus());
 				return true;
 			}
 		}

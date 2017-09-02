@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class MessageTargeting implements IMessage, IMessageHandler<MessageTargeting, IMessage> {
+	
 	private int x;
 	private int y;
 	private int z;

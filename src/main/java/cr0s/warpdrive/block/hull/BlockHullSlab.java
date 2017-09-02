@@ -92,7 +92,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setUnlocalizedName("warpdrive.hull" + tier + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getName());
+		setUnlocalizedName("warpdrive.hull" + tier + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHullSlab(this));
 		
@@ -246,7 +246,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		// vertical slab?
 		if (metadata == 2 || metadata == 8) {
 			if (facing != EnumFacing.DOWN && facing != EnumFacing.UP) {
-				return blockState.withProperty(BlockProperties.FACING, facing);
+				return blockState.withProperty(BlockProperties.FACING, facing.getOpposite());
 			}
 			// is X the furthest away from center?
 			if (Math.abs(hitX - 0.5F) > Math.abs(hitZ - 0.5F)) {

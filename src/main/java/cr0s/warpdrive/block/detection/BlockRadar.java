@@ -24,8 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockRadar extends BlockAbstractContainer {
+	
 	public static final PropertyEnum<EnumRadarMode> MODE = PropertyEnum.create("mode", EnumRadarMode.class);
 	
 	public BlockRadar(final String registryName) {
@@ -50,6 +53,7 @@ public class BlockRadar extends BlockAbstractContainer {
 				.withProperty(MODE, EnumRadarMode.get(metadata));
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(MODE).ordinal();
@@ -78,7 +82,7 @@ public class BlockRadar extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityRadar) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityRadar) tileEntity).getStatus());
 				return true;

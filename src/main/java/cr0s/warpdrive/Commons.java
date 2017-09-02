@@ -3,10 +3,14 @@ package cr0s.warpdrive;
 import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
@@ -14,7 +18,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -39,19 +47,56 @@ public class Commons {
 		return message
 		       .replace("§", CHAR_FORMATTING)
 		       .replace("\\n", "\n")
-		       .replace("|", "\n")
 		       .replace(CHAR_FORMATTING + "r", CHAR_FORMATTING + "7")
 		       .replaceAll("\u00A0", " ");  // u00A0 is 'NO-BREAK SPACE'
 	}
 	
-	public static void addChatMessage(final ICommandSender sender, final ITextComponent textComponent) {
-		if (sender == null) {
+	public static String removeFormatting(final String message) {
+		return updateEscapeCodes(message)
+		       .replaceAll("(" + CHAR_FORMATTING + ".)", "");
+	}
+	
+	private static boolean isFormatColor(char chr) {
+		return chr >= 48 && chr <= 57
+		    || chr >= 97 && chr <= 102
+		    || chr >= 65 && chr <= 70;
+	}
+	
+	private static boolean isFormatSpecial(char chr) {
+		return chr >= 107 && chr <= 111
+		    || chr >= 75 && chr <= 79
+		    || chr == 114
+		    || chr == 82;
+	}
+	
+	// inspired by FontRender.getFormatFromString
+	private static String getFormatFromString(final String message) {
+		final int indexLastChar = message.length() - 1;
+		StringBuilder result = new StringBuilder();
+		int indexEscapeCode = -1;
+		while ((indexEscapeCode = message.indexOf(167, indexEscapeCode + 1)) != -1) {
+			if (indexEscapeCode < indexLastChar) {
+				final char chr = message.charAt(indexEscapeCode + 1);
+				
+				if (isFormatColor(chr)) {
+					result = new StringBuilder("\u00a7" + chr);
+				} else if (isFormatSpecial(chr)) {
+					result.append("\u00a7").append(chr);
+				}
+			}
+		}
+		
+		return result.toString();
+	}
+	
+	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {
+		if (commandSender == null) {
 			WarpDrive.logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
 			return;
 		}
-		String[] lines = updateEscapeCodes(textComponent.getFormattedText()).split("\n");
+		final String[] lines = updateEscapeCodes(textComponent.getFormattedText()).split("\n");
 		for (String line : lines) {
-			sender.addChatMessage(new TextComponentString(line));
+			commandSender.addChatMessage(new TextComponentString(line));
 		}
 		
 		// logger.info(message);
@@ -59,10 +104,8 @@ public class Commons {
 	
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
-	public static void addTooltip(List<String> list, String tooltip) {
-		tooltip = updateEscapeCodes(tooltip);
-		
-		String[] split = tooltip.split("\n");
+	public static void addTooltip(final List<String> list, final String tooltip) {
+		final String[] split = updateEscapeCodes(tooltip).split("\n");
 		for (String line : split) {
 			String lineRemaining = line;
 			String formatNextLine = "";
@@ -71,7 +114,7 @@ public class Commons {
 				int displayLength = 0;
 				int length = lineRemaining.length();
 				while (indexToCut < length && displayLength <= 38) {
-					if (lineRemaining.charAt(indexToCut) == (char)167 && indexToCut + 1 < length) {
+					if (lineRemaining.charAt(indexToCut) == (char) 167 && indexToCut + 1 < length) {
 						indexToCut++;
 					} else {
 						displayLength++;
@@ -89,9 +132,9 @@ public class Commons {
 						// compute remaining format
 						int index = formatNextLine.length();
 						while (index <= indexToCut) {
-							if (lineRemaining.charAt(index) == (char)167 && index + 1 < indexToCut) {
+							if (lineRemaining.charAt(index) == (char) 167 && index + 1 < indexToCut) {
 								index++;
-								formatNextLine += ("" + (char)167) + lineRemaining.charAt(index);
+								formatNextLine += CHAR_FORMATTING + lineRemaining.charAt(index);
 							}
 							index++;
 						}
@@ -139,23 +182,40 @@ public class Commons {
 		return String.format("%,d", Math.round(value));
 	}
 	
+	public static String format(final Object[] arguments) {
+		final StringBuilder result = new StringBuilder();
+		if (arguments != null && arguments.length > 0) {
+			for (final Object argument : arguments) {
+				if (result.length() > 0) {
+					result.append(", ");
+				}
+				if (argument instanceof String) {
+					result.append("\"").append(argument).append("\"");
+				} else {
+					result.append(argument);
+				}
+			}
+		}
+		return result.toString();
+	}
+	
 	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
-		ItemStack ret = itemStack.copy();
+		final ItemStack ret = itemStack.copy();
 		ret.stackSize = newSize;
 		return ret;
 	}
 	
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
-		Collection<IInventory> result = new ArrayList<>(6);
+		final Collection<IInventory> result = new ArrayList<>(6);
 		
 		for(EnumFacing side : EnumFacing.VALUES) {
-			TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
-			tileEntityConnection.getPos().offset(side));
+			final TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
+				tileEntityConnection.getPos().offset(side));
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
 				result.add((IInventory) tileEntity);
 				
 				if (tileEntity instanceof TileEntityChest) {
-					TileEntityChest tileEntityChest = (TileEntityChest) tileEntity;
+					final TileEntityChest tileEntityChest = (TileEntityChest) tileEntity;
 					tileEntityChest.checkForAdjacentChests();
 					if (tileEntityChest.adjacentChestXNeg != null) {
 						result.add(tileEntityChest.adjacentChestXNeg);
@@ -184,8 +244,8 @@ public class Commons {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
 	}
 	
-	public static Set<BlockPos> getConnectedBlocks(World world, final Collection<BlockPos> start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
-		Set<BlockPos> toIgnore = new HashSet<>();
+	public static Set<BlockPos> getConnectedBlocks(final World world, final Collection<BlockPos> start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
+		final Set<BlockPos> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
@@ -195,7 +255,7 @@ public class Commons {
 		
 		Set<BlockPos> toIterateNext;
 		
-		Set<BlockPos> iterated = new HashSet<>();
+		final Set<BlockPos> iterated = new HashSet<>();
 		
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
@@ -249,7 +309,7 @@ public class Commons {
 		if (object instanceof Boolean) {
 			 return ((Boolean) object);
 		}
-		String string = object.toString();
+		final String string = object.toString();
 		return string.equals("true") || string.equals("1.0") || string.equals("1") || string.equals("y") || string.equals("yes");
 	}
 	
@@ -315,6 +375,24 @@ public class Commons {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
 	}
 	
+	public static EnumFacing getHorizontalDirectionFromEntity(final EntityLivingBase entityLiving) {
+		if (entityLiving != null) {
+			final int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+			switch (direction) {
+			default:
+			case 0:
+				return EnumFacing.NORTH;
+			case 1:
+				return EnumFacing.EAST;
+			case 2:
+				return EnumFacing.SOUTH;
+			case 3:
+				return EnumFacing.WEST;
+			}
+		}
+		return EnumFacing.NORTH;
+	}
+	
 	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
 		if (entityLiving != null) {
 			int metadata;
@@ -347,6 +425,11 @@ public class Commons {
 		return 0;
 	}
 	
+	public static boolean isSafeThread() {
+		final String name = Thread.currentThread().getName();
+		return name.equals("Server thread") || name.equals("Client thread");
+	}
+	
 	// loosely inspired by crunchify
 	public static void dumpAllThreads() {
 		final StringBuilder stringBuilder = new StringBuilder();
@@ -365,5 +448,88 @@ public class Commons {
 			stringBuilder.append("\n\n");
 		}
 		WarpDrive.logger.error(stringBuilder.toString());
+	}
+	
+	public static void writeNBTToFile(final String fileName, final NBTTagCompound tagCompound) {
+		if (WarpDrive.isDev) {
+			WarpDrive.logger.info("writeNBTToFile " + fileName);
+		}
+		
+		try {
+			final File file = new File(fileName);
+			if (!file.exists()) {
+				//noinspection ResultOfMethodCallIgnored
+				file.createNewFile();
+			}
+			
+			final FileOutputStream fileoutputstream = new FileOutputStream(file);
+			
+			CompressedStreamTools.writeCompressed(tagCompound, fileoutputstream);
+			
+			fileoutputstream.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+	}
+	
+	public static NBTTagCompound readNBTFromFile(final String fileName) {
+		if (WarpDrive.isDev) {
+			WarpDrive.logger.info("readNBTFromFile " + fileName);
+		}
+		
+		try {
+			final File file = new File(fileName);
+			if (!file.exists()) {
+				return null;
+			}
+			
+			final FileInputStream fileinputstream = new FileInputStream(file);
+			final NBTTagCompound tagCompound = CompressedStreamTools.readCompressed(fileinputstream);
+			
+			fileinputstream.close();
+			
+			return tagCompound;
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
+		final List<EntityPlayerMP> onlinePlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
+		for (EntityPlayerMP onlinePlayer : onlinePlayers) {
+			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
+				return new EntityPlayerMP[] { onlinePlayer };
+			}
+		}
+		
+		final List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(sender, playerNameOrSelector, EntityPlayerMP.class);
+		if (entityPlayerMPs_found != null && !entityPlayerMPs_found.isEmpty()) {
+			return entityPlayerMPs_found.toArray(new EntityPlayerMP[0]);
+		}
+		
+		return null;
+	}
+	
+	public static int colorARGBtoInt(final int alpha, final int red, final int green, final int blue) {
+		return (clamp(0, 255, alpha) << 24)
+		     + (clamp(0, 255, red  ) << 16)
+			 + (clamp(0, 255, green) <<  8)
+			 +  clamp(0, 255, blue );
+	}
+	
+	public static EnumFacing getDirection(final int index) {
+		if (index < 0 || index > 5) {
+			return null;
+		}
+		return EnumFacing.getFront(index);
+	}
+	
+	public static int getOrdinal(final EnumFacing direction) {
+		if (direction == null) {
+			return 6;
+		}
+		return direction.ordinal();
 	}
 }

@@ -26,7 +26,7 @@ public class CommandReload extends CommandBase {
 	@Override
 	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] params) throws CommandException {
 		WarpDriveConfig.reload();
-		Commons.addChatMessage(commandSender, new TextComponentString("WarpDrive configuration has been reloaded. Use at your own risk!"));
+		Commons.addChatMessage(commandSender, new TextComponentString("§aWarpDrive configuration has been reloaded.\n§aUse at your own risk!"));
 	}
 	
 	@Nonnull

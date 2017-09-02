@@ -58,6 +58,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityForceFieldProjector extends TileEntityAbstractForceField {
+	
 	private static final int PROJECTOR_MAX_ENERGY_STORED = 30000;
 	private static final int PROJECTOR_COOLDOWN_TICKS = 300;
 	public static final int PROJECTOR_PROJECTION_UPDATE_TICKS = 8;
@@ -189,7 +190,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		if (energyRequired > energy_getMaxStorage()) {
 			WarpDrive.logger.error("Force field projector requires " + energyRequired + " to get started but can only store " + energy_getMaxStorage());
 		}
-		isPowered = energy_getEnergyStored() >= energyRequired;
+		final boolean new_isPowered = energy_getEnergyStored() >= energyRequired;
+		if (isPowered != new_isPowered) {
+			isPowered = new_isPowered;
+			markDirty();
+		}
 		
 		boolean isEnabledAndValid = isEnabled && isValid();
 		boolean isOn = isEnabledAndValid && cooldownTicks <= 0 && isPowered;
@@ -836,7 +841,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		cache_forceFieldSetup = null;
 		isDirty.set(true);
 		markDirty();
-		if (worldObj != null) {
+		if (hasWorldObj()) {
 			destroyForceField(false);
 		}
 	}
@@ -914,83 +919,84 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		isDoubleSided = tag.getBoolean("isDoubleSided");
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		isDoubleSided = tagCompound.getBoolean("isDoubleSided");
 		
-		if (tag.hasKey("minX")) {
-			setMin(tag.getFloat("minX"), tag.getFloat("minY"), tag.getFloat("minZ"));
+		if (tagCompound.hasKey("minX")) {
+			setMin(tagCompound.getFloat("minX"), tagCompound.getFloat("minY"), tagCompound.getFloat("minZ"));
 		} else {
 			setMin(-1.0F, -1.0F, -1.0F);
 		}
-		if (tag.hasKey("maxX")) {
-			setMax(tag.getFloat("maxX"), tag.getFloat("maxY"), tag.getFloat("maxZ"));
+		if (tagCompound.hasKey("maxX")) {
+			setMax(tagCompound.getFloat("maxX"), tagCompound.getFloat("maxY"), tagCompound.getFloat("maxZ"));
 		} else {
 			setMax(1.0F, 1.0F, 1.0F);
 		}
 		
-		setRotation(tag.getFloat("rotationYaw"), tag.getFloat("rotationPitch"), tag.getFloat("rotationRoll"));
+		setRotation(tagCompound.getFloat("rotationYaw"), tagCompound.getFloat("rotationPitch"), tagCompound.getFloat("rotationRoll"));
 		
-		setShape(EnumForceFieldShape.get(tag.getByte("shape")));
+		setShape(EnumForceFieldShape.get(tagCompound.getByte("shape")));
 		
-		setTranslation(tag.getFloat("translationX"), tag.getFloat("translationY"), tag.getFloat("translationZ"));
+		setTranslation(tagCompound.getFloat("translationX"), tagCompound.getFloat("translationY"), tagCompound.getFloat("translationZ"));
 		
-		legacy_isOn = tag.getBoolean("isOn");
+		legacy_isOn = tagCompound.getBoolean("isOn");
+		
+		isPowered = tagCompound.getBoolean("isPowered");
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setBoolean("isDoubleSided", isDoubleSided);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setBoolean("isDoubleSided", isDoubleSided);
 		
 		if (v3Min.x != -1.0D || v3Min.y != -1.0D || v3Min.z != -1.0D) {
-			tag.setFloat("minX", (float)v3Min.x);
-			tag.setFloat("minY", (float)v3Min.y);
-			tag.setFloat("minZ", (float)v3Min.z);
+			tagCompound.setFloat("minX", (float)v3Min.x);
+			tagCompound.setFloat("minY", (float)v3Min.y);
+			tagCompound.setFloat("minZ", (float)v3Min.z);
 		}
 		if (v3Max.x !=  1.0D || v3Max.y !=  1.0D || v3Max.z !=  1.0D) {
-			tag.setFloat("maxX", (float)v3Max.x);
-			tag.setFloat("maxY", (float)v3Max.y);
-			tag.setFloat("maxZ", (float)v3Max.z);
+			tagCompound.setFloat("maxX", (float)v3Max.x);
+			tagCompound.setFloat("maxY", (float)v3Max.y);
+			tagCompound.setFloat("maxZ", (float)v3Max.z);
 		}
 		
 		if (rotationYaw != 0.0F) {
-			tag.setFloat("rotationYaw", rotationYaw);
+			tagCompound.setFloat("rotationYaw", rotationYaw);
 		}
 		if (rotationPitch != 0.0F) {
-			tag.setFloat("rotationPitch", rotationPitch);
+			tagCompound.setFloat("rotationPitch", rotationPitch);
 		}
 		if (rotationRoll != 0.0F) {
-			tag.setFloat("rotationRoll", rotationRoll);
+			tagCompound.setFloat("rotationRoll", rotationRoll);
 		}
 		
-		tag.setByte("shape", (byte) getShape().ordinal());
+		tagCompound.setByte("shape", (byte) getShape().ordinal());
 		
 		if (v3Translation.x !=  0.0D || v3Translation.y !=  0.0D || v3Translation.z !=  0.0D) {
-			tag.setFloat("translationX", (float)v3Translation.x);
-			tag.setFloat("translationY", (float)v3Translation.y);
-			tag.setFloat("translationZ", (float)v3Translation.z);
+			tagCompound.setFloat("translationX", (float)v3Translation.x);
+			tagCompound.setFloat("translationY", (float)v3Translation.y);
+			tagCompound.setFloat("translationZ", (float)v3Translation.z);
 		}
 		
-		tag.setBoolean("isOn", legacy_isOn);
-		return tag;
+		tagCompound.setBoolean("isOn", legacy_isOn);
+		
+		tagCompound.setBoolean("isPowered", isPowered);
+		return tagCompound;
 	}
 	
 	@Nonnull
 	@Override
 	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound tagCompound = super.getUpdateTag();
-		tagCompound.setBoolean("isPowered", isPowered);
-		tagCompound.setBoolean("isOn", legacy_isOn);
-		return tagCompound;
+		final NBTTagCompound tagCompound = super.getUpdateTag();
+		return writeToNBT(tagCompound);
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
 		super.onDataPacket(networkManager, packet);
-		NBTTagCompound tagCompound = packet.getNbtCompound();
-		isPowered = tagCompound.getBoolean("isPowered");
-		legacy_isOn = tagCompound.getBoolean("isOn");
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
+		readFromNBT(tagCompound);
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {
@@ -1094,8 +1100,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	// Common OC/CC methods
 	private Object[] state() {    // isConnected, isPowered, shape
-		int energy = energy_getEnergyStored();
-		String status = getStatus().toString();
+		final int energy = energy_getEnergyStored();
+		final String status = getStatusHeaderInPureText();
 		return new Object[] { status, isEnabled, isConnected, isPowered, getShape().name(), energy };
 	}
 	
@@ -1116,7 +1122,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
 		case "min":

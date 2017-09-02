@@ -19,6 +19,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockLaserMedium extends BlockAbstractContainer {
 	public static final PropertyInteger LEVEL = PropertyInteger.create("level", 0, 7);
@@ -45,6 +47,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 				.withProperty(LEVEL, metadata);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(LEVEL);

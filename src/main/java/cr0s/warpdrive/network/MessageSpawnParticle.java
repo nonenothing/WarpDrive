@@ -158,6 +158,11 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.SPELL_MOB.getParticleID(),
 						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				break;
+				
+			case "cloud":
+				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.CLOUD.getParticleID(),
+					origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
 			} 
 			
 			if (particle == null) {
@@ -176,7 +181,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	public IMessage onMessage(MessageSpawnParticle messageSpawnParticle, MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
-			WarpDrive.logger.error("WorldObj is null, ignoring beam packet");
+			WarpDrive.logger.error("WorldObj is null, ignoring particle packet");
 			return null;
 		}
 		

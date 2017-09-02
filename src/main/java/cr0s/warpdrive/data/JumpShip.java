@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -47,7 +48,91 @@ public class JumpShip {
 	public JumpShip() {
 	}
 	
-	public void messageToAllPlayersOnShip(ITextComponent textComponent) {
+	public static JumpShip createFromFile(String fileName, StringBuilder reason) {
+		NBTTagCompound schematic = Commons.readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
+		if (schematic == null) {
+			reason.append(String.format("Schematic not found or unknown error reading it: '%s'.", fileName));
+			return null;
+		}
+		
+		final JumpShip jumpShip = new JumpShip();
+		
+		// Compute geometry
+		// int shipMass = schematic.getInteger("shipMass");
+		// String shipName = schematic.getString("shipName");
+		// int shipVolume = schematic.getInteger("shipVolume");
+		if (schematic.hasKey("ship")) {
+			jumpShip.readFromNBT(schematic.getCompoundTag("ship"));
+			
+		} else {
+			// Set deployment variables
+			final short width = schematic.getShort("Width");
+			final short height = schematic.getShort("Height");
+			final short length = schematic.getShort("Length");
+			jumpShip.minX = 0;
+			jumpShip.maxX = width - 1;
+			jumpShip.minY = 0;
+			jumpShip.maxY = height - 1;
+			jumpShip.minZ = 0;
+			jumpShip.maxZ = length - 1;
+			jumpShip.core = null;
+			jumpShip.jumpBlocks = new JumpBlock[width * height * length];
+			
+			// Read blocks and TileEntities from NBT to internal storage array
+			final NBTTagList localBlocks = (NBTTagList) schematic.getTag("Blocks");
+			final byte localMetadata[] = schematic.getByteArray("Data");
+			
+			// Load Tile Entities
+			final NBTTagCompound[] tileEntities = new NBTTagCompound[jumpShip.jumpBlocks.length];
+			final NBTTagList tagListTileEntities = schematic.getTagList("TileEntities", Constants.NBT.TAG_COMPOUND);
+			
+			for (int i = 0; i < tagListTileEntities.tagCount(); i++) {
+				final NBTTagCompound tagTileEntity = tagListTileEntities.getCompoundTagAt(i);
+				final int teX = tagTileEntity.getInteger("x");
+				final int teY = tagTileEntity.getInteger("y");
+				final int teZ = tagTileEntity.getInteger("z");
+				
+				tileEntities[teX + (teY * length + teZ) * width] = tagTileEntity;
+			}
+			
+			// Create list of blocks to deploy
+			for (int x = 0; x < width; x++) {
+				for (int y = 0; y < height; y++) {
+					for (int z = 0; z < length; z++) {
+						final int index = x + (y * length + z) * width;
+						JumpBlock jumpBlock = new JumpBlock();
+						
+						jumpBlock.x = x;
+						jumpBlock.y = y;
+						jumpBlock.z = z;
+						jumpBlock.block = Block.getBlockFromName(localBlocks.getStringTagAt(index));
+						jumpBlock.blockMeta = (localMetadata[index]) & 0xFF;
+						jumpBlock.blockNBT = tileEntities[index];
+						
+						if (jumpBlock.block != null) {
+							if (WarpDriveConfig.LOGGING_BUILDING) {
+								if (tileEntities[index] == null) {
+									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
+										                      + " (no tile entity)");
+								} else {
+									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
+										                      + " with tile entity " + tileEntities[index].getString("id"));
+								}
+							}
+						} else {
+							jumpBlock = null;
+						}
+						jumpShip.jumpBlocks[index] = jumpBlock;
+					}
+				}
+			}
+		}
+		return jumpShip;
+	}
+	
+	public void messageToAllPlayersOnShip(final ITextComponent textComponent) {
 		if (entitiesOnShip == null) {
 			shipCore.messageToAllPlayersOnShip(textComponent);
 		} else {
@@ -230,8 +315,8 @@ public class JumpShip {
 									return false;
 								}
 								
-								TileEntity tileEntity = worldObj.getTileEntity(blockPos);
-								JumpBlock jumpBlock = new JumpBlock(blockState, tileEntity, blockPos);
+								final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
+								JumpBlock jumpBlock = new JumpBlock(worldObj, blockPos, blockState, tileEntity);
 								
 								if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
 									for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
@@ -284,18 +369,18 @@ public class JumpShip {
 		return true;
 	}
 	
-	public void readFromNBT(NBTTagCompound tag) {
-		core = new BlockPos(tag.getInteger("coreX"), tag.getInteger("coreY"), tag.getInteger("coreZ"));
-		dx = tag.getInteger("dx");
-		dz = tag.getInteger("dz");
-		maxX = tag.getInteger("maxX");
-		maxZ = tag.getInteger("maxZ");
-		maxY = tag.getInteger("maxY");
-		minX = tag.getInteger("minX");
-		minZ = tag.getInteger("minZ");
-		minY = tag.getInteger("minY");
-		actualMass = tag.getInteger("actualMass");
-		NBTTagList tagList = tag.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		core = new BlockPos(tagCompound.getInteger("coreX"), tagCompound.getInteger("coreY"), tagCompound.getInteger("coreZ"));
+		dx = tagCompound.getInteger("dx");
+		dz = tagCompound.getInteger("dz");
+		maxX = tagCompound.getInteger("maxX");
+		maxZ = tagCompound.getInteger("maxZ");
+		maxY = tagCompound.getInteger("maxY");
+		minX = tagCompound.getInteger("minX");
+		minZ = tagCompound.getInteger("minZ");
+		minY = tagCompound.getInteger("minY");
+		actualMass = tagCompound.getInteger("actualMass");
+		final NBTTagList tagList = tagCompound.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
 		jumpBlocks = new JumpBlock[tagList.tagCount()];
 		for(int index = 0; index < tagList.tagCount(); index++) {
 			jumpBlocks[index] = new JumpBlock();
@@ -303,25 +388,25 @@ public class JumpShip {
 		}
 	}
 	
-	public void writeToNBT(NBTTagCompound tag) {
-		tag.setInteger("coreX", core.getX());
-		tag.setInteger("coreY", core.getY());
-		tag.setInteger("coreZ", core.getZ());
-		tag.setInteger("dx", dx);
-		tag.setInteger("dz", dz);
-		tag.setInteger("maxX", maxX);
-		tag.setInteger("maxZ", maxZ);
-		tag.setInteger("maxY", maxY);
-		tag.setInteger("minX", minX);
-		tag.setInteger("minZ", minZ);
-		tag.setInteger("minY", minY);
-		tag.setInteger("actualMass", actualMass);
-		NBTTagList tagListJumpBlocks = new NBTTagList();
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("coreX", core.getX());
+		tagCompound.setInteger("coreY", core.getY());
+		tagCompound.setInteger("coreZ", core.getZ());
+		tagCompound.setInteger("dx", dx);
+		tagCompound.setInteger("dz", dz);
+		tagCompound.setInteger("maxX", maxX);
+		tagCompound.setInteger("maxZ", maxZ);
+		tagCompound.setInteger("maxY", maxY);
+		tagCompound.setInteger("minX", minX);
+		tagCompound.setInteger("minZ", minZ);
+		tagCompound.setInteger("minY", minY);
+		tagCompound.setInteger("actualMass", actualMass);
+		final NBTTagList tagListJumpBlocks = new NBTTagList();
 		for (JumpBlock jumpBlock : jumpBlocks) {
-			NBTTagCompound tagCompoundBlock = new NBTTagCompound();
+			final NBTTagCompound tagCompoundBlock = new NBTTagCompound();
 			jumpBlock.writeToNBT(tagCompoundBlock);
 			tagListJumpBlocks.appendTag(tagCompoundBlock);
 		}
-		tag.setTag("jumpBlocks", tagListJumpBlocks);
+		tagCompound.setTag("jumpBlocks", tagListJumpBlocks);
 	}
 }

@@ -14,8 +14,11 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
@@ -41,6 +44,13 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 		setUnlocalizedName("warpdrive.tool.tuning_fork");
 		setFull3D();
 		setHasSubtypes(true);
+	}
+	
+	@Override
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, List<ItemStack> list) {
+		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
+			list.add(new ItemStack(item, 1, dyeColor));
+		}
 	}
 	
 	@Nonnull

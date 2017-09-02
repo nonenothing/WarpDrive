@@ -19,6 +19,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
+	
 	Vector3 myVec;
 	Vector3 reactorVec;
 	EnumFacing side = null;
@@ -134,13 +135,13 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		return super.writeToNBT(nbt);
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		return super.writeToNBT(tagCompound);
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		super.readFromNBT(nbt);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
 	}
 	
 	// OpenComputers callback methods
@@ -166,24 +167,24 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		return new Object[] { side.ordinal() - 2 };
 	}
 	
-	// ComputerCraft methods
+	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
-		String methodName = getMethodName(method);
+		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
-			case "hasReactor":
-				return new Object[]{scanForReactor() != null};
-
-			case "stabilize":
-				if (arguments.length >= 1) {
-					stabilize(Commons.toInt(arguments[0]));
-				}
-				break;
-
-			case "side":
-				return new Object[]{side.ordinal() - 2};
+		case "hasReactor":
+			return new Object[] { scanForReactor() != null };
+			
+		case "stabilize":
+			if (arguments.length >= 1) {
+				stabilize(Commons.toInt(arguments[0]));
+			}
+			break;
+			
+		case "side":
+			return new Object[] { side.ordinal() - 2 };
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

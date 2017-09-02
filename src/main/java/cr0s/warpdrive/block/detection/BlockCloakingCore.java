@@ -25,6 +25,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockCloakingCore extends BlockAbstractContainer {
 	
@@ -50,6 +52,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 				.withProperty(BlockProperties.ACTIVE, metadata != 0);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(BlockProperties.ACTIVE) ? 1 : 0;
@@ -98,8 +101,8 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public void breakBlock(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState) {
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+	public void breakBlock(final World world, @Nonnull final BlockPos blockPos, @Nonnull final IBlockState blockState) {
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		
 		if (tileEntity != null && tileEntity instanceof TileEntityCloakingCore) {
 			((TileEntityCloakingCore) tileEntity).isEnabled = false;

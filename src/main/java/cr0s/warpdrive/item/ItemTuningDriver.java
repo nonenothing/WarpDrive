@@ -32,6 +32,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
+	
 	public static final int MODE_VIDEO_CHANNEL = 0;
 	public static final int MODE_BEAM_FREQUENCY = 1;
 	public static final int MODE_CONTROL_CHANNEL = 2;

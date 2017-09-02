@@ -4,18 +4,22 @@ local term = require("term")
 
 if not term.isAvailable() then
   computer.beep()
-  return
+  os.exit()
+end
+if component.gpu.getDepth() < 4 then
+  print("Tier 2 GPU required")
+  os.exit()
 end
 
 mininglasers = {}
-for address,type in component.list("warpdriveMiningLaser", true) do
+for address, _ in component.list("warpdriveMiningLaser", true) do
   print("Wrapping " .. address)
   table.insert(mininglasers, component.proxy(address))
 end
 
 function textOut(x, y, text, fg, bg)
   if term.isAvailable() then
-    local w, h = component.gpu.getResolution()
+    local w, _ = component.gpu.getResolution()
     if w then
       component.gpu.setBackground(bg)
       component.gpu.setForeground(fg)
@@ -26,11 +30,11 @@ function textOut(x, y, text, fg, bg)
 end
 
 
-noExit = true
+local noExit = true
 layerOffset = 1
 onlyOres = false
 silktouch = false
-args = {...}
+local args = {...}
 if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
     print("Usage: mine <layerOffset> <onlyOres> <silktouch>")
@@ -66,8 +70,8 @@ if #mininglasers == 0 then
   noExit = false
 end
 if noExit then
-  for key,mininglaser in pairs(mininglasers) do
-    statusString, isActive = mininglaser.state()
+  for _, mininglaser in pairs(mininglasers) do
+    local _, isActive = mininglaser.state()
     if not isActive then
       mininglaser.offset(layerOffset)
       mininglaser.onlyOres(onlyOres)
@@ -80,6 +84,7 @@ if noExit then
 end
 
 local file = io.open("/etc/hostname")
+local label
 if file then
   label = file:read("*l")
   file:close()
@@ -88,10 +93,11 @@ else
 end
 
 if noExit then
+  local areActive
   repeat
     areActive = false
-    for key,mininglaser in pairs(mininglasers) do
-      status, isActive, energy, currentLayer, mined, total = mininglaser.state()
+    for key, mininglaser in pairs(mininglasers) do
+      local status, isActive, energy, currentLayer, mined, total = mininglaser.state()
       
       term.clear()
       textOut(1, 1, label .. " - Mining laser " .. key .. " of " .. #mininglasers, 0x0000FF, 0x00FF00)
@@ -111,5 +117,11 @@ end
 
 textOut(1, 1, "", 0xFFFFFF, 0x000000)
 
-print("")
-print("")
+print()
+print()
+print()
+print()
+print()
+print()
+print()
+print("Program closed")

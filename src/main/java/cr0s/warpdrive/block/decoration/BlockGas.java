@@ -3,8 +3,8 @@ package cr0s.warpdrive.block.decoration;
 import java.util.List;
 import java.util.Random;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumGasColor;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
@@ -57,11 +57,6 @@ public class BlockGas extends BlockAbstractBase {
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(COLOR).ordinal();
-	}
-	
-	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
-		return EnumRarity.COMMON;
 	}
 	
 	@Nullable
@@ -132,7 +127,7 @@ public class BlockGas extends BlockAbstractBase {
 	public EnumPushReaction getMobilityFlag(IBlockState state) {
 		return EnumPushReaction.DESTROY;
 	}
-
+	
 	@Nullable
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
@@ -140,16 +135,16 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(Random rand) {
 		return 0;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
-		BlockPos blockPosSide = blockPos.offset(facing);
-		IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
+		final BlockPos blockPosSide = blockPos.offset(facing);
+		final IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
 		if (blockStateSide.getBlock().isAssociatedBlock(this)) {
 			return false;
 		}
@@ -163,9 +158,14 @@ public class BlockGas extends BlockAbstractBase {
 	
 	@Override
 	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
-		// Gas blocks allow only in space
-		if (WarpDrive.starMap.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
+		// Gas blocks are only allowed in space
+		if (CelestialObjectManager.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.setBlockToAir(blockPos);
 		}
+	}
+	
+	@Override
+	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+		return EnumRarity.COMMON;
 	}
 }
