@@ -7,7 +7,6 @@ import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.config.structures.StructureGroup;
 import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.event.ChunkHandler;
 
 import java.util.Random;
 
@@ -32,9 +31,8 @@ public class CommonWorldGenerator implements IWorldGenerator {
 				// as observed on 1.7.10: during world transition, the generator from the previous world is still called
 				return;
 			}
-			if ( celestialObject.borderRadiusX > 0
-			  && ( Math.abs(x - celestialObject.dimensionCenterX) > celestialObject.borderRadiusX
-			    || Math.abs(z - celestialObject.dimensionCenterZ) > celestialObject.borderRadiusZ ) ) {
+			if ( Math.abs(x - celestialObject.dimensionCenterX) > celestialObject.borderRadiusX
+			  || Math.abs(z - celestialObject.dimensionCenterZ) > celestialObject.borderRadiusZ ) {
 				return;
 			}
 			final int y = WarpDriveConfig.SPACE_GENERATOR_Y_MIN_CENTER
