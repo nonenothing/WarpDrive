@@ -202,8 +202,8 @@ public class WarpDriveConfig {
 	// Ship
 	public static int SHIP_MAX_ENERGY_STORED = 100000000;
 	public static int SHIP_TELEPORT_ENERGY_PER_ENTITY = 1000000;
-	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 3000;
-	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 1200;
+	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 1200;
+	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 3000;
 	public static int SHIP_MAX_SIDE_SIZE = 127;
 	public static int SHIP_COLLISION_TOLERANCE_BLOCKS = 3;
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
@@ -227,9 +227,6 @@ public class WarpDriveConfig {
 	public static double RADAR_MAX_ISOLATION_EFFECT = 1.00;
 	
 	// Ship Scanner
-	public static int SS_MAX_ENERGY_STORED = 500000000;
-	public static int SS_ENERGY_PER_BLOCK_SCAN = 100;
-	public static int SS_ENERGY_PER_BLOCK_DEPLOY = 5000;
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	public static int SS_SEARCH_INTERVAL_TICKS = 20;
 	public static int SS_SCAN_BLOCKS_PER_SECOND = 10;
@@ -566,11 +563,11 @@ public class WarpDriveConfig {
 		SHIP_MOVEMENT_COSTS_FACTORS = new ShipMovementCosts.Factors[EnumShipMovementType.length];
 		for (EnumShipMovementType shipMovementType : EnumShipMovementType.values()) {
 			SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()] = new ShipMovementCosts.Factors(
-			        shipMovementType.warmupDefault,
+			        shipMovementType.maximumDistanceDefault,
 			        shipMovementType.energyRequiredDefault,
-			        shipMovementType.cooldownDefault,
+			        shipMovementType.warmupDefault,
 			        shipMovementType.sicknessDefault,
-			        shipMovementType.maximumDistanceDefault);
+			        shipMovementType.cooldownDefault);
 			if (shipMovementType.hasConfiguration) {
 				SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()].load(config, "ship_movement_costs", shipMovementType.getName(), shipMovementType.getDescription());
 			}
@@ -645,21 +642,6 @@ public class WarpDriveConfig {
 				config.get("radar", "max_isolation_effect", RADAR_MAX_ISOLATION_EFFECT, "isolation effect achieved with max number of isolation blocks (0.01 to 1.00)").getDouble(1.00D));
 		
 		// Ship Scanner
-		SS_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
-				config.get("ship_scanner", "max_energy_stored", SS_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		
-		SS_ENERGY_PER_BLOCK_SCAN = config.get("ship_scanner", "energy_per_block_when_scanning", SS_ENERGY_PER_BLOCK_SCAN,
-				"Energy consumed per block when scanning a ship (use -1 to consume everything)").getInt();
-		if (SS_ENERGY_PER_BLOCK_SCAN != -1) {
-			SS_ENERGY_PER_BLOCK_SCAN = Commons.clamp(0, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_SCAN);
-		}
-		
-		SS_ENERGY_PER_BLOCK_DEPLOY = config.get("ship_scanner", "energy_per_block_when_deploying", SS_ENERGY_PER_BLOCK_DEPLOY,
-				"Energy consumed per block when deploying a ship (use -1 to consume everything)").getInt();
-		if (SS_ENERGY_PER_BLOCK_DEPLOY != -1) {
-			SS_ENERGY_PER_BLOCK_DEPLOY = Commons.clamp(0, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_DEPLOY);
-		}
-		
 		SS_MAX_DEPLOY_RADIUS_BLOCKS = Commons.clamp(5, 150,
 				config.get("ship_scanner", "max_deploy_radius_blocks", SS_MAX_DEPLOY_RADIUS_BLOCKS, "Max distance from ship scanner to ship core, measured in blocks (5-150)").getInt());
 		SS_SEARCH_INTERVAL_TICKS = Commons.clamp(5, 150,

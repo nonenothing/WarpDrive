@@ -2,7 +2,7 @@ package cr0s.warpdrive.block.building;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.TileEntityAbstractEnergy;
+import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -44,9 +44,8 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 
 import cpw.mods.fml.common.Optional;
-import net.minecraftforge.common.util.ForgeDirection;
 
-public class TileEntityShipScanner extends TileEntityAbstractEnergy {
+public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
 	
 	private static final int SHIP_TOKEN_MAX_RETRY_COUNT = 5;
 	
@@ -336,22 +335,6 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		return tileEntityShipCore;
 	}
 	
-	private int getScanningEnergyCost(int size) {
-		if (WarpDriveConfig.SS_ENERGY_PER_BLOCK_SCAN >= 0) {
-			return size * WarpDriveConfig.SS_ENERGY_PER_BLOCK_SCAN;
-		} else {
-			return WarpDriveConfig.SS_MAX_ENERGY_STORED;
-		}
-	}
-	
-	private int getDeploymentEnergyCost(int size) {
-		if (WarpDriveConfig.SS_ENERGY_PER_BLOCK_DEPLOY >= 0) {
-			return size * WarpDriveConfig.SS_ENERGY_PER_BLOCK_DEPLOY;
-		} else {
-			return WarpDriveConfig.SS_MAX_ENERGY_STORED;
-		}
-	}
-	
 	private boolean saveShipToSchematic(String fileName, StringBuilder reason) {
 		if (!shipCore.validateShipSpatialParameters(reason)) {
 			return false;
@@ -363,13 +346,6 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		
 		if (width <= 0 || length <= 0 || height <= 0) {
 			reason.append("Invalid ship dimensions, nothing to scan");
-			return false;
-		}
-		
-		// Consume energy
-		int energyCost = getScanningEnergyCost(shipCore.shipMass);
-		if (!energy_consume(energyCost, false)) {
-			reason.append(String.format("Insufficient energy (%d required)", energyCost));
 			return false;
 		}
 		
@@ -521,13 +497,6 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			if (distance > WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS) {
 				reason.append(String.format("Cannot deploy ship more than %d blocks away from scanner.", WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS));
 				return 5;
-			}
-			
-			// Consume energy
-			int energyCost = getDeploymentEnergyCost(blocksToDeployCount);
-			if (!energy_consume(energyCost, false)) {
-				reason.append(String.format("Insufficient energy (%d required)", energyCost));
-				return 1;
 			}
 			
 			// Compute target area
@@ -695,14 +664,9 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 		if (shipCore == null) {
 			return new Object[] { false, 1, "Ship-Core not found" };
 		}
-		int energyCost = getScanningEnergyCost(shipCore.shipMass);
-		if (!energy_consume(energyCost, true)) {
-			return new Object[] { false, 2, "Not enough energy! " + energyCost + " required." };
-		} else {
-			StringBuilder reason = new StringBuilder();
-			boolean success = scanShip(reason);
-			return new Object[] { success, 3, reason.toString() };
-		}
+		StringBuilder reason = new StringBuilder();
+		boolean success = scanShip(reason);
+		return new Object[] { success, 3, reason.toString() };
 	}
 	
 	private Object[] filename() {
@@ -871,17 +835,6 @@ public class TileEntityShipScanner extends TileEntityAbstractEnergy {
 			}
 			entityPlayer.inventory.markDirty();
 		}
-	}
-	
-	// IEnergySink methods implementation
-	@Override
-	public int energy_getMaxStorage() {
-		return WarpDriveConfig.SS_MAX_ENERGY_STORED;
-	}
-	
-	@Override
-	public boolean energy_canInput(ForgeDirection from) {
-		return true;
 	}
 	
 	@Override
