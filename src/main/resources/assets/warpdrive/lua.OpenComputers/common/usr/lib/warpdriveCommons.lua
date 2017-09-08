@@ -821,7 +821,6 @@ local function event_handler(eventName, param)
   elseif eventName == "component_unavailable" then
   -- not supported: task_complete, rednet_message, modem_message
   elseif event_handlers[eventName] ~= nil then
-    w.status_showSuccess("param '" .. param .. "' of type " .. type(param))
     needRedraw = event_handlers[eventName](eventName, param)
   else
     return false, needRedraw
