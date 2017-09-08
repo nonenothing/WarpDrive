@@ -51,4 +51,13 @@ public interface ICelestialObject {
 	 */
 	boolean isInsideBorder(final double x, final double z);
 	
+	/**
+	 * Check if given position is in this object orbit.
+	 *
+	 * @param dimensionId current position in parent dimension
+	 * @param x current position in parent dimension
+	 * @param z current position in parent dimension
+	 * @return true if we're in orbit of the object
+	 */
+	boolean isInOrbit(final int dimensionId, final double x, final double z);
 }

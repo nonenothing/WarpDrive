@@ -158,7 +158,7 @@ public class LivingHandler {
 			// are we actually in orbit?
 			if ( celestialObjectChild != null
 			  && !celestialObject.isHyperspace()
-			  && celestialObjectChild.getSquareDistanceInParent(entityLivingBase.worldObj.provider.dimensionId, x, z) <= 0.0D ) {
+			  && celestialObjectChild.isInOrbit(entityLivingBase.worldObj.provider.dimensionId, x, z) ) {
 				
 				final WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
 				if (worldTarget != null) {
