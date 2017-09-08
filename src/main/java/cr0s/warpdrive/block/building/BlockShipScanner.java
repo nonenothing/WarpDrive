@@ -9,6 +9,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -122,6 +123,14 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	@Override
 	public Item getItemDropped(int par1, Random par2Random, int par3) {
 		return Item.getItemFromBlock(this);
+	}
+	
+	@Override
+	public byte getTier(ItemStack itemStack) {
+		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
+			return 1;
+		}
+		return 0;
 	}
 	
 	@Override

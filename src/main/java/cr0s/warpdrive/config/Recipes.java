@@ -366,12 +366,6 @@ public class Recipes {
 				'c', advancedCircuit,
 				'g', Blocks.glass);
 		
-		GameRegistry.addRecipe(new ItemStack(WarpDrive.blockShipScanner), "sgs", "mma", "amm",
-				'm', advancedMachine,
-				'a', advancedAlloy,
-				's', advancedCircuit,
-				'g', Blocks.glass);
-		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserTreeFarm), false, new Object[] { "cwc", "wmw", "cwc",
 				'c', circuit,
 				'w', "logWood",
@@ -512,12 +506,6 @@ public class Recipes {
 				'l', Blocks.redstone_lamp,
 				'c', "circuitAdvanced",
 				'g', "paneGlassColorless" }));
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockShipScanner), false, new Object[] { "ici", "isi", "mcm",
-				'm', mfsu,
-				'i', iridiumAlloy,
-				'c', "circuitAdvanced",
-				's', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 7) })); // Scanner
 		
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockLaserTreeFarm), false, new Object[] { "awa", "cmc", "asa",
 				'a', advancedAlloy,
