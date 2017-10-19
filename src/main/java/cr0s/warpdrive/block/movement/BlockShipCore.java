@@ -160,9 +160,11 @@ public class BlockShipCore extends BlockAbstractContainer {
 			}
 		}
 		// trigger explosion
-		EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, x + 0.5F, y + 0.5F, z + 0.5F, null);
-		entityTNTPrimed.fuse = 10 + world.rand.nextInt(10);
-		world.spawnEntityInWorld(entityTNTPrimed);
+		if (!world.isRemote) {
+			final EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(world, x + 0.5F, y + 0.5F, z + 0.5F, null);
+			entityTNTPrimed.fuse = 10 + world.rand.nextInt(10);
+			world.spawnEntityInWorld(entityTNTPrimed);
+		}
 		
 		// get a chance to get the drops
 		ArrayList<ItemStack> itemStacks = new ArrayList<>();
