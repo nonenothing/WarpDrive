@@ -432,7 +432,7 @@ end
 
 local function input_readNumber(currentValue)
   local inputAbort = false
-  local input = string.format(currentValue)
+  local input = w.format_string(currentValue)
   if input == "0" then
     input = ""
   end
@@ -459,19 +459,19 @@ local function input_readNumber(currentValue)
       local keycode = params[4]
       
       if keycode >= 2 and keycode <= 10 then -- 1 to 9
-        input = input .. string.format(keycode - 1)
+        input = input .. w.format_string(keycode - 1)
         ignoreNextChar = true
       elseif keycode == 11 or keycode == 82 then -- 0 & keypad 0
         input = input .. "0"
         ignoreNextChar = true
       elseif keycode >= 79 and keycode <= 81 then -- keypad 1 to 3
-        input = input .. string.format(keycode - 78)
+        input = input .. w.format_string(keycode - 78)
         ignoreNextChar = true
       elseif keycode >= 75 and keycode <= 77 then -- keypad 4 to 6
-        input = input .. string.format(keycode - 71)
+        input = input .. w.format_string(keycode - 71)
         ignoreNextChar = true
       elseif keycode >= 71 and keycode <= 73 then -- keypad 7 to 9
-        input = input .. string.format(keycode - 64)
+        input = input .. w.format_string(keycode - 64)
         ignoreNextChar = true
       elseif keycode == 14 then -- Backspace
         input = string.sub(input, 1, string.len(input) - 1)
@@ -539,7 +539,7 @@ end
 
 local function input_readText(currentValue)
   local inputAbort = false
-  local input = string.format(currentValue)
+  local input = w.format_string(currentValue)
   local ignoreNextChar = false
   local x, y = w.getCursorPos()
   
