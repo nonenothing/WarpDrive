@@ -286,6 +286,7 @@ public class Dictionary {
 				config.get("item_tags", "IC2:itemSolarHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "PneumaticCraft:pneumaticHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
 				config.get("item_tags", "Techguns:t3_exo_helmet", "BreathingHelmet").getString();
 				config.get("item_tags", "Techguns:t3_miner_helmet", "BreathingHelmet").getString();
