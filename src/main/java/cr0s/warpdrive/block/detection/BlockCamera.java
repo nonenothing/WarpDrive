@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.render.RenderBlockStandard;
 
 import java.util.Random;
 
@@ -40,6 +41,11 @@ public class BlockCamera extends BlockAbstractContainer {
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return iconBuffer[ICON_SIDE];
+	}
+	
+	@Override
+	public int getRenderType() {
+		return RenderBlockStandard.renderId;
 	}
 	
 	@Override

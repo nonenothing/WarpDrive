@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.render.ClientCameraHandler;
+import cr0s.warpdrive.render.RenderBlockStandard;
 
 import java.util.Random;
 
@@ -45,6 +46,11 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		return iconBuffer[ICON_SIDE];
+	}
+	
+	@Override
+	public int getRenderType() {
+		return RenderBlockStandard.renderId;
 	}
 	
 	@Override
