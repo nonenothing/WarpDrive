@@ -686,8 +686,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		legacy_isOn = false;
 		if (!vForceFields.isEmpty()) {
-			for (Iterator<VectorI> iterator = vForceFields.iterator(); iterator.hasNext();) {
-				VectorI vector = iterator.next();
+			// invalidate() can be multi-threaded, so we're working with a copy of the collection 
+			final VectorI[] vForceFields_cache = vForceFields.toArray(new VectorI[0]);
+			vForceFields.clear();
+			
+			for (VectorI vector : vForceFields_cache) {
 				if (!isChunkLoading) {
 					if (!(worldObj.blockExists(vector.x, vector.y, vector.z))) {// chunk is not loaded, skip it
 						continue;
@@ -696,12 +699,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 						continue;
 					}
 				}
-				Block block = vector.getBlock(worldObj);
 				
+				final Block block = vector.getBlock(worldObj);
 				if (block == WarpDrive.blockForceFields[tier - 1]) {
 					worldObj.setBlockToAir(vector.x, vector.y, vector.z);
 				}
-				iterator.remove();
 			}
 		}
 		
@@ -969,7 +971,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// reset field in case of major changes
 			if (legacy_forceFieldSetup != null) {
-				int energyRequired = (int)Math.max(0, Math.round(cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost));
+				int energyRequired = (int) Math.max(0, Math.round(cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost));
 				if ( legacy_forceFieldSetup.getCamouflageBlock() != cache_forceFieldSetup.getCamouflageBlock()
 				  || legacy_forceFieldSetup.getCamouflageMetadata() != cache_forceFieldSetup.getCamouflageMetadata()
 				  || legacy_forceFieldSetup.beamFrequency != cache_forceFieldSetup.beamFrequency
