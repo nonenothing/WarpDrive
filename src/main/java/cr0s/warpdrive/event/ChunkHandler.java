@@ -234,10 +234,13 @@ public class ChunkHandler {
 			if (chunkData != null) {
 				chunkData.onBlockUpdated(x, y, z);
 			} else {
-				WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
-				                                     world.isRemote ? "Client" : "Server",
-				                                     world.provider.getDimensionName(),
-				                                     x, y, z));
+				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
+					WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
+					                                     world.isRemote ? "Client" : "Server",
+					                                     world.provider.getDimensionName(),
+					                                     x, y, z));
+					Commons.dumpAllThreads();
+				}
 			}
 		}
 	}
