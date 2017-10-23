@@ -174,6 +174,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_BREATHING = false;
 	public static boolean LOGGING_WORLD_GENERATION = false;
 	public static boolean LOGGING_PROFILING_CPU_USAGE = true;
+	public static boolean LOGGING_PROFILING_MEMORY_ALLOCATION = false;
 	public static boolean LOGGING_PROFILING_THREAD_SAFETY = false;
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
@@ -542,6 +543,7 @@ public class WarpDriveConfig {
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_WORLD_GENERATION = config.get("logging", "enable_world_generation_logs", LOGGING_WORLD_GENERATION, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_PROFILING_CPU_USAGE = config.get("logging", "enable_profiling_CPU_time", LOGGING_PROFILING_CPU_USAGE, "Profiling logs for CPU time, enable it to check for lag").getBoolean(true);
+		LOGGING_PROFILING_MEMORY_ALLOCATION = config.get("logging", "enable_profiling_memory_allocation", LOGGING_PROFILING_MEMORY_ALLOCATION, "Profiling logs for memory allocation, enable it to check for lag").getBoolean(true);
 		LOGGING_PROFILING_THREAD_SAFETY = config.get("logging", "enable_profiling_thread_safety", LOGGING_PROFILING_THREAD_SAFETY, "Profiling logs for multi-threading, enable it to check for ConcurrentModificationException").getBoolean(false);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);

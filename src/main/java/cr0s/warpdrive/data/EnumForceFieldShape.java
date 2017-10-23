@@ -1,8 +1,10 @@
 package cr0s.warpdrive.data;
 
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldShape;
+import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,40 +44,48 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 	public Map<VectorI, Boolean> getVertexes(ForceFieldSetup forceFieldSetup) {
 		final VectorI vScale = forceFieldSetup.vMax.clone().translateBack(forceFieldSetup.vMin);
 		final boolean isFusionOrInverted = forceFieldSetup.hasFusion || forceFieldSetup.isInverted;
+		final float thickness = Commons.clamp(1.0F, 2.0F, forceFieldSetup.thickness);
 		final int sizeEstimation;
 		if (!isFusionOrInverted) {// surface only
-			// plane surface    is r^2
-			// sphere surface   is 4*PI*r^2
-			// cylinder surface is 2*PI*r^2 + 2*PI*r*h = 2*PI*r^2 * 1.5
-			// cube surface     is 4*6*r^2
-			final int maxRadius = 1 + (int) Math.ceil(Math.max(vScale.x, Math.max(vScale.y, vScale.z)) / 2.0F);
+			// plane surface           is r^2
+			// sphere surface          is 4*PI*r^2
+			// open cylinder surface   is 2*PI*r * 2*r
+			// cube surface            is 4*6*r^2
+			// in practice, 'r' is adjusted to account for overlaps and rounding
+			final int maxRadius = (int) Math.ceil(Math.max(vScale.x, Math.max(vScale.y, vScale.z)) / 2.0F);
 			switch(this) {
 			case SPHERE:
-				sizeEstimation = (int) Math.ceil(4 * Math.PI * maxRadius * maxRadius);
+				sizeEstimation = (int) Math.ceil(thickness * 4 * Math.PI * maxRadius * (maxRadius + 1));
 				break;
 			
 			case CYLINDER_H:
 			case CYLINDER_V:
 			case TUBE:
-				sizeEstimation = (int) Math.ceil(4 * Math.PI * maxRadius * maxRadius * 1.5F);
+				sizeEstimation = (int) Math.ceil(thickness * 4 * Math.PI * (maxRadius + 2) * (maxRadius + 2));
 				break;
 			
 			case CUBE:
+				sizeEstimation = (int) Math.ceil((int) thickness * 6 * (2 * maxRadius) * (2 * maxRadius + 1));
+				break;
+			
 			case TUNNEL:
-				sizeEstimation = 4 * 6 * maxRadius * maxRadius;
+				sizeEstimation = (int) Math.ceil((int) thickness * 4 * (2 * maxRadius) * (2 * maxRadius + 1));
 				break;
 			
 			case PLANE:
-				sizeEstimation = maxRadius * maxRadius;
+				sizeEstimation = (int) Math.ceil((int) thickness * 2 * (2 * maxRadius + 1) * (2 * maxRadius + 1));
 				break;
 			
 			default:
-				assert(false);
 				sizeEstimation = 8;
+				WarpDrive.logger.error(String.format("Invalid object %s for shape %s with size %s. Please report this to the mod author",
+				                                    this,
+				                                    unlocalizedName,
+				                                    vScale));
 				break;
 			}
 		} else {
-			sizeEstimation = vScale.x * vScale.y * vScale.z;
+			sizeEstimation = (vScale.x + 1) * (vScale.y + 1) * (vScale.z + 1);
 		}
 		final Map<VectorI, Boolean> mapVertexes = new HashMap<>(sizeEstimation);
 		
@@ -227,12 +237,30 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 		}
 		
 		if (mapVertexes.size() > sizeEstimation) {
-			WarpDrive.logger.warn(String.format("Underestimated memory location lag %d > %d for shape %s with size %s, isFusionOrInverted %s. Please report this to the mod author",
+			WarpDrive.logger.warn(String.format("Underestimated memory allocation lag %d > %d for shape %s with size %s, isFusionOrInverted %s, thickness %.2f. Please report this to the mod author",
 			                                    mapVertexes.size(), sizeEstimation,
 			                                    unlocalizedName,
 			                                    vScale,
-			                                    isFusionOrInverted));
+			                                    isFusionOrInverted,
+			                                    forceFieldSetup.thickness));
+		} else if (WarpDriveConfig.LOGGING_PROFILING_MEMORY_ALLOCATION) {
+			if (mapVertexes.size() * 1.25 < sizeEstimation) {
+				WarpDrive.logger.warn(String.format("Overestimated memory allocation %d < %d for shape %s with size %s, isFusionOrInverted %s, thickness %.2f. Please report this to the mod author",
+				                                    mapVertexes.size(), sizeEstimation,
+				                                    unlocalizedName,
+				                                    vScale,
+				                                    isFusionOrInverted,
+				                                    forceFieldSetup.thickness));
+			} else {
+				WarpDrive.logger.warn(String.format("Memory allocation is good: %d vs %d for shape %s with size %s, isFusionOrInverted %s, thickness %.2f. Please report this to the mod author",
+				                                    mapVertexes.size(), sizeEstimation,
+				                                    unlocalizedName,
+				                                    vScale,
+				                                    isFusionOrInverted,
+				                                    forceFieldSetup.thickness));
+			}
 		}
+		
 		return mapVertexes;
 	}
 }
