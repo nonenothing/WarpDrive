@@ -547,7 +547,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	
 	// Pseudo-API for computers
 	public Object[][] getControlPoints(final IBlockAccess blockAccess) {
-		final Object[][] objectResults  = new Object[controlPoints.size() + keyInjectors.length][];
+		final Object[][] objectResults  = new Object[controlPoints.size() + (keyInjectors == null ? 0 : keyInjectors.length)][];
 		int index = 0;
 		for (final Entry<VectorI, Integer> entryControlPoint : controlPoints.entrySet()) {
 			final Integer tier = TrajectoryPoint.getTier(entryControlPoint.getValue());
