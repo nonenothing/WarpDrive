@@ -16,7 +16,8 @@ public class BlockAirFlow extends BlockAbstractAir {
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
 		if (!world.isRemote) {
 			final StateAir stateAir = ChunkHandler.getStateAir(world, x, y, z);
-			if (!stateAir.isAirFlow() || stateAir.concentration == 0) {
+			if ( stateAir != null
+			  && (!stateAir.isAirFlow() || stateAir.concentration == 0) ) {
 				world.setBlockToAir(x, y, z);
 			}
 		}

@@ -96,8 +96,9 @@ public class BreathingManager {
 				vAirBlock = vPosition;
 				break;
 			} else if (block != Blocks.air) {
-				StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.worldObj, vPosition.x, vPosition.y, vPosition.z);
-				if (stateAir.concentration > 0) {
+				final StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.worldObj, vPosition.x, vPosition.y, vPosition.z);
+				if ( stateAir == null
+				  || stateAir.concentration > 0 ) {
 					vAirBlock = vPosition;
 					break;
 				}

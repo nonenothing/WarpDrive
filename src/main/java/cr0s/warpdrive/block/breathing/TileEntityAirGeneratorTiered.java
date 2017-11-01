@@ -95,7 +95,10 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		final int y = yCoord + direction.offsetY;
 		final int z = zCoord + direction.offsetZ;
 		
-		StateAir stateAir = ChunkHandler.getStateAir(worldObj, x, y, z);
+		final StateAir stateAir = ChunkHandler.getStateAir(worldObj, x, y, z);
+		if (stateAir == null) {// chunk isn't loaded
+			return;
+		}
 		stateAir.updateBlockCache(worldObj);
 		if (stateAir.isAir()) {// can be air
 			final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);

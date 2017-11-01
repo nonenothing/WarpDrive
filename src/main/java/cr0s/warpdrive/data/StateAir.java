@@ -91,10 +91,9 @@ public class StateAir {
 	private void refresh(final World world) {
 		// update chunk cache
 		if (chunkData == null || !chunkData.isInside(x, y, z)) {
-			chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			chunkData = ChunkHandler.getChunkData(world, x, y, z);
 			if (chunkData == null) {
-				WarpDrive.logger.error(String.format("State air trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionName(), x, y, z));
+				// chunk isn't loaded, skip it
 				assert(false);
 			}
 			chunk = null;
