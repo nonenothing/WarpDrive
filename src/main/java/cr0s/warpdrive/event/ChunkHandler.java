@@ -225,7 +225,6 @@ public class ChunkHandler {
 		if (event.side != Side.SERVER || event.phase != Phase.END) {
 			return;
 		}
-		// @TODO: add workaround for other mods doing bad multi-threading
 		updateTick(event.world);
 	}
 	
@@ -340,7 +339,7 @@ public class ChunkHandler {
 		return chunkData.getStateAir(world, x, y, z);
 	}
 	
-	public static void updateTick(final World world) {
+	private static void updateTick(final World world) {
 		// get dimension data
 		LocalProfiler.updateCallStat("updateTick");
 		final Map<Integer, Map<Long, ChunkData>> registry = world.isRemote ? registryClient : registryServer;
@@ -398,7 +397,8 @@ public class ChunkHandler {
 		}
 	}
 	
-	public static void updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
+	// apparently, the GC triggers sooner when using sub-function here?
+	private static void updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
 		final ChunkCoordIntPair chunkCoordIntPair = chunkData.getChunkCoords();
 		// skip empty chunks (faster and more frequent)
 		// ship chunk with unloaded neighbours
