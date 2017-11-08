@@ -30,6 +30,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	protected boolean isRotating = false;
 	protected boolean hasSubBlocks = false;
+	private static boolean isInvalidEMPreported = false;
 	
 	protected BlockAbstractContainer(Material material) {
 		super(material);
@@ -136,9 +137,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else if (explosiveEMP.getRadius() == 50.0F) {
 			onEMP(world, x, y, z, 0.70F);
 		} else {
-			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-			                                    world.provider.dimensionId, x, y, z,
-			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+			if (!isInvalidEMPreported) {
+				isInvalidEMPreported = true;
+				WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+				                                    world.provider.dimensionId, x, y, z,
+				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+				Commons.dumpAllThreads();
+			}
 			onEMP(world, x, y, z, 0.02F);
 		}
 	}
@@ -158,9 +163,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else if (explosiveEMP.getRadius() == 50.0F) {
 			onEMP(world, x, y, z, 0.70F);
 		} else {
-			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-			                                    world.provider.dimensionId, x, y, z,
-			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+			if (!isInvalidEMPreported) {
+				isInvalidEMPreported = true;
+				WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+				                                    world.provider.dimensionId, x, y, z,
+				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+				Commons.dumpAllThreads();
+			}
 			onEMP(world, x, y, z, 0.02F);
 		}
 	}
