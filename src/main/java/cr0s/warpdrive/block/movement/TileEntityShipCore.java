@@ -508,7 +508,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		for (int i = 0; i < tileEntityShipController.players.size(); i++) {
 			final String playerName = tileEntityShipController.players.get(i);
-			final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			final EntityPlayerMP entityPlayerMP = Commons.getOnlinePlayerByName(playerName);
 			
 			if ( entityPlayerMP != null
 			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
@@ -522,7 +522,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		for (int i = 0; i < tileEntityShipController.players.size(); i++) {
 			final String playerName = tileEntityShipController.players.get(i);
-			final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			final EntityPlayerMP entityPlayerMP = Commons.getOnlinePlayerByName(playerName);
 			
 			if ( entityPlayerMP != null && playerName.equals(nickname)
 			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
@@ -923,7 +923,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		// Consume energy
 		if (energy_consume(shipMovementCosts.energyRequired, false)) {
 			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
-			JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
+			final JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
 			jump.enable();
 		} else {
 			messageToAllPlayersOnShip("Insufficient energy level");

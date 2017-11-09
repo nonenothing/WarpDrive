@@ -501,19 +501,23 @@ public class Commons {
 	
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
 		@SuppressWarnings("unchecked")
-		List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		final List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 		for (EntityPlayer onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
 				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
 			}
 		}
 		
-		EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, playerNameOrSelector);
+		final EntityPlayerMP[] entityPlayerMPs_found = PlayerSelector.matchPlayers(sender, playerNameOrSelector);
 		if (entityPlayerMPs_found != null && entityPlayerMPs_found.length > 0) {
 			return entityPlayerMPs_found.clone();
 		}
 		
 		return null;
+	}
+	
+	public static EntityPlayerMP getOnlinePlayerByName(final String playerName) {
+		return MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
 	}
 	
 	public static int colorARGBtoInt(final int alpha, final int red, final int green, final int blue) {
