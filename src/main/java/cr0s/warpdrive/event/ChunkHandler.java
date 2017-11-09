@@ -69,7 +69,7 @@ public class ChunkHandler {
 		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.dimensionId, chunkX, chunkZ, true);
 		assert(chunkData != null);
 		// (world can load a non-generated chunk, or the chunk be regenerated, so we reset only as needed)
-		if (!chunkData.isLoaded()) {
+		if (!chunkData.isLoaded()) { 
 			chunkData.load(new NBTTagCompound());
 		}
 	}
@@ -89,7 +89,7 @@ public class ChunkHandler {
 		chunkData.load(event.getData());
 	}
 	
-	// (called after data loading, only useful client side)
+	// (called after data loading, or before a late generation, or on client side) 
 	@SubscribeEvent
 	public void onLoadChunk(ChunkEvent.Load event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
@@ -99,9 +99,9 @@ public class ChunkHandler {
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		if (event.world.isRemote) {
-			final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, true);
-			assert(chunkData != null);
+		final ChunkData chunkData = getChunkData(event.world.isRemote, event.world.provider.dimensionId, event.getChunk().xPosition, event.getChunk().zPosition, true);
+		assert(chunkData != null);
+		if (!chunkData.isLoaded()) {
 			chunkData.load(new NBTTagCompound());
 		}
 	}
@@ -293,6 +293,10 @@ public class ChunkHandler {
 		//noinspection Java8MapApi
 		if (chunkData == null) {
 			if (!doCreate) {
+				if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
+					WarpDrive.logger.info(String.format("getChunkData(%s, %d, %d, %d, false) returning null",
+					                                     isRemote, dimensionId, xChunk, zChunk));
+				}
 				return null;
 			}
 			chunkData = new ChunkData(xChunk, zChunk);
