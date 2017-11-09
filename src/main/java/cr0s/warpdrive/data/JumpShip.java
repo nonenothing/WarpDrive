@@ -112,11 +112,11 @@ public class JumpShip {
 						if (jumpBlock.block != null) {
 							if (WarpDriveConfig.LOGGING_BUILDING) {
 								if (tileEntities[index] == null) {
-									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+									WarpDrive.logger.info("Adding block to deploy: "
 										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
 										                      + " (no tile entity)");
 								} else {
-									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+									WarpDrive.logger.info("Adding block to deploy: "
 										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
 										                      + " with tile entity " + tileEntities[index].getString("id"));
 								}
@@ -149,6 +149,10 @@ public class JumpShip {
 	public String saveEntities() {
 		String result = null;
 		entitiesOnShip = new ArrayList<>();
+		
+		if (worldObj == null) {
+			return null;
+		}
 		
 		AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		

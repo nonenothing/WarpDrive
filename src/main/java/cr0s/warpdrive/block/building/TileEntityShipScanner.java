@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.building;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.ISequencerCallbacks;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
@@ -11,6 +12,7 @@ import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.data.Transformation;
 import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.event.DeploySequencer;
 import cr0s.warpdrive.item.ItemShipToken;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -28,7 +30,6 @@ import java.util.UUID;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -37,7 +38,6 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
@@ -45,9 +45,7 @@ import net.minecraft.util.MathHelper;
 
 import cpw.mods.fml.common.Optional;
 
-public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
-	
-	private static final int SHIP_TOKEN_MAX_RETRY_COUNT = 5;
+public class TileEntityShipScanner extends TileEntityAbstractInterfaced implements ISequencerCallbacks {
 	
 	// persistent properties
 	private String schematicFileName = "";
@@ -64,15 +62,13 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
 	
 	private int laserTicks = 0;
 	private int scanTicks = 0;
-	private int deployDelayTicks = 0;
-	private int deployRetryCounts = 0;
+	private int deployTicks = 0;
 	
 	private int searchTicks = 0;
 	
 	private String playerName = "";
 	
 	private JumpShip jumpShip;
-	private int currentDeployIndex;
 	private int blocksToDeployCount;
 	
 	public TileEntityShipScanner() {
@@ -163,131 +159,34 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
 			scanTicks++;
 			if (scanTicks > 20 * (1 + shipCore.shipMass / WarpDriveConfig.SS_SCAN_BLOCKS_PER_SECOND)) {
 				setState(EnumShipScannerState.IDLE); // disable scanner
-				scanTicks = 0;
 			}
 			break;
 			
 		case DEPLOYING:// active and deploying
-			deployDelayTicks++;
-			if (deployDelayTicks > WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS) {
-				deployDelayTicks = 0;
-				
-				// refresh player object
-				final EntityPlayerMP entityPlayerMP = MinecraftServer.getServer().getConfigurationManager().func_152612_a(playerName);
+			if (deployTicks == 0) {
+				final DeploySequencer sequencer = new DeploySequencer(jumpShip, getWorldObj(), targetX, targetY, targetZ, rotationSteps);
 				
 				// deploy at most (jump speed / 4), at least (deploy speed), optimally in 10 seconds 
-				final int optimumSpeed = Math.round(blocksToDeployCount * WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS / (20 * 10.0F));
+				final int optimumSpeed = Math.round(blocksToDeployCount * WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS / (20.0F * 10.0F));
 				final int blockToDeployPerTick = Math.max(WarpDriveConfig.SS_DEPLOY_BLOCKS_PER_INTERVAL,
-						Math.min(WarpDriveConfig.G_BLOCKS_PER_TICK / 4, optimumSpeed));
-				final int blocksToDeployCurrentTick = Math.min(blockToDeployPerTick, blocksToDeployCount - currentDeployIndex);
-				final int periodLaserEffect = Math.max(1, (blocksToDeployCurrentTick / 10));
+				                                          Math.min(WarpDriveConfig.G_BLOCKS_PER_TICK / 4, optimumSpeed));
 				if (WarpDrive.isDev && WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick + " blocksToDeployCurrentTick " + blocksToDeployCurrentTick + " currentDeployIndex " + currentDeployIndex);
+					WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick);
 				}
-				
-				// deployment done?
-				if (blocksToDeployCurrentTick == 0) {
-					if (playerName != null && !playerName.isEmpty()) {
-						final TileEntity tileEntity = worldObj.getTileEntity(targetX, targetY, targetZ);
-						if (tileEntity instanceof TileEntityShipCore) {
-							final boolean isSuccess = ((TileEntityShipCore) tileEntity).summonOwnerOnDeploy(entityPlayerMP);
-							if (isSuccess) {
-								if (entityPlayerMP != null) {
-									Commons.addChatMessage(entityPlayerMP, "§6" + "Welcome aboard captain. Use the computer to get moving...");
-								}
-							} else {
-								deployRetryCounts--;
-								WarpDrive.logger.warn(String.format("Ship scanner failed to assign new captain, %d retries left",
-								                                    deployRetryCounts));
-								if (deployRetryCounts > 0) {
-									return;
-								}
-							}
-						} else {
-							WarpDrive.logger.warn(String.format("Ship scanner unable to detect ship core after deployment, found %s",
-							                                    tileEntity));
-							deployRetryCounts--;
-							if (deployRetryCounts > 0) {
-								return;
-							}
-						}
-					}
-					
-					setState(EnumShipScannerState.IDLE); // disable scanner
-					if (WarpDriveConfig.LOGGING_BUILDING) {
-						WarpDrive.logger.info(this + " Deployment done");
-					}
-					shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_PERIOD_TICKS * 3;
-					return;
-				}
-				
-				if (WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info(this + " Deploying " + blocksToDeployCurrentTick + " more blocks");
-				}
-				Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
-				int index = 0;
-				while (index < blocksToDeployCurrentTick && currentDeployIndex < blocksToDeployCount) {
-					// Deploy single block
-					JumpBlock jumpBlock = jumpShip.jumpBlocks[currentDeployIndex];
-					
-					if (jumpBlock == null) {
-						if (WarpDriveConfig.LOGGING_BUILDING) {
-							WarpDrive.logger.info("At index " + currentDeployIndex + ", skipping undefined block");
-						}
-					} else if (jumpBlock.block == Blocks.air) {
-						if (WarpDriveConfig.LOGGING_BUILDING) {
-							WarpDrive.logger.info("At index " + currentDeployIndex + ", skipping air block");
-						}
-					} else if (Dictionary.BLOCKS_ANCHOR.contains(jumpBlock.block)) {
-						if (WarpDriveConfig.LOGGING_BUILDING) {
-							WarpDrive.logger.info("At index " + currentDeployIndex + ", skipping anchor block " + jumpBlock.block);
-						}
-					} else {
-						index++;
-						if (WarpDriveConfig.LOGGING_BUILDING) {
-							WarpDrive.logger.info("At index " + currentDeployIndex + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
-								+ " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
-						}
-						
-						// clear computers unique identifiers when using token
-						if (!playerName.isEmpty()) {
-							jumpBlock.removeUniqueIDs();
-						}
-						
-						ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-						Block blockAtTarget = worldObj.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);
-						if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
-							jumpBlock.deploy(worldObj, transformation);
-							
-							if (index % periodLaserEffect == 0) {
-								worldObj.playSoundEffect(xCoord + 0.5f, yCoord, zCoord + 0.5f, "warpdrive:lowlaser", 0.5F, 1.0F);
-								
-								PacketHandler.sendBeamPacket(worldObj,
-										new Vector3(this).translate(0.5D),
-										new Vector3(targetLocation.posX, targetLocation.posY, targetLocation.posZ).translate(0.5D),
-										0f, 1f, 0f, 15, 0, 100);
-							}
-							worldObj.playSoundEffect(targetLocation.posX + 0.5F, targetLocation.posY + 0.5F, targetLocation.posZ + 0.5F,
-								jumpBlock.block.stepSound.func_150496_b(), (jumpBlock.block.stepSound.getVolume() + 1.0F) / 2.0F, jumpBlock.block.stepSound.getPitch() * 0.8F);
-							
-						} else {
-							if (WarpDriveConfig.LOGGING_BUILDING) {
-								WarpDrive.logger.info("Target position is occupied, skipping");
-							}
-							worldObj.newExplosion(null, targetX + jumpBlock.x, targetY + jumpBlock.y, targetZ + jumpBlock.z, 3, false, false);
-							WarpDrive.logger.info("Deployment collision detected at " + (targetX + jumpBlock.x) + " " + (targetY + jumpBlock.y) + " " + (targetZ + jumpBlock.z));
-						}
-					}
-					
-					currentDeployIndex++;
-					
-					// Warn owner if deployment done but wait next tick for teleportation 
-					if (currentDeployIndex >= blocksToDeployCount) {
-						if (entityPlayerMP != null) {
-							Commons.addChatMessage(entityPlayerMP, "Ship complete. Teleporting captain to the main deck");
-						}
-					}
-				}
+				sequencer.setBlocksPerTick(blockToDeployPerTick);
+				sequencer.setCaptain(playerName);
+				sequencer.setEffectSource(new Vector3(this).translate(0.5D));
+				sequencer.setCallback(this);
+				sequencer.enable();
+			}
+			
+			deployTicks++;
+			if (deployTicks > 20.0F * 60.0F) {
+				// timeout in sequencer?
+				WarpDrive.logger.info(this + " Deployment timeout?");
+				deployTicks = 0;
+				setState(EnumShipScannerState.IDLE); // disable scanner
+				shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_PERIOD_TICKS * 3;
 			}
 			break;
 			
@@ -311,6 +210,30 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
 			if (getBlockMetadata() != metadataCamouflage) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadataCamouflage, 2);
 			}
+		}
+	}
+	
+	@Override
+	public void sequencer_finished() {
+		switch (enumShipScannerState) {
+//		case IDLE:// inactive
+//			break;
+		
+//		case SCANNING:// active and scanning
+//			break;
+		
+		case DEPLOYING:// active and deploying
+			setState(EnumShipScannerState.IDLE); // disable scanner
+			if (WarpDriveConfig.LOGGING_BUILDING) {
+				WarpDrive.logger.info(this + " Deployment done");
+			}
+			shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_PERIOD_TICKS * 3;
+			break;
+		
+		default:
+			WarpDrive.logger.error(this + " Invalid ship scanner state, forcing to IDLE...");
+			setState(EnumShipScannerState.IDLE);
+			break;
 		}
 	}
 	
@@ -561,8 +484,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
 		}
 		
 		// initiate deployment sequencer
-		currentDeployIndex = 0;
-		deployRetryCounts = SHIP_TOKEN_MAX_RETRY_COUNT;
+		deployTicks = 0;
 		
 		setState(EnumShipScannerState.DEPLOYING);
 		reason.append(String.format("Deploying ship '%s'...", fileName));
@@ -710,7 +632,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced {
 		case SCANNING:
 			return new Object[] { true, "Scanning", 0, 0 };
 		case DEPLOYING:
-			return new Object[] { true, "Deploying", currentDeployIndex, blocksToDeployCount };
+			return new Object[] { true, "Deploying", 0, blocksToDeployCount };
 		}
 	}
 	

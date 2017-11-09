@@ -226,7 +226,7 @@ public class JumpBlock {
 		}
 	}
 	
-	public void deploy(World targetWorld, ITransformation transformation) {
+	public ChunkCoordinates deploy(World targetWorld, ITransformation transformation) {
 		try {
 			NBTTagCompound nbtToDeploy = null;
 			if (blockTileEntity != null) {
@@ -327,6 +327,8 @@ public class JumpBlock {
 					WarpDrive.logger.error("NBT data was " + nbtToDeploy);
 				}
 			}
+			return target;
+			
 		} catch (Exception exception) {
 			exception.printStackTrace();
 			String coordinates;
@@ -337,6 +339,7 @@ public class JumpBlock {
 			}
 			WarpDrive.logger.error("moveBlockSimple exception at " + coordinates);
 		}
+		return null;
 	}
 	
 	public static void refreshBlockStateOnClient(World world, int x, int y, int z) {
@@ -407,19 +410,19 @@ public class JumpBlock {
 		}
 	}
 	
-	public void readFromNBT(NBTTagCompound tag) {
-		block = Block.getBlockFromName(tag.getString("block"));
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		block = Block.getBlockFromName(tagCompound.getString("block"));
 		if (block == null) {
 			if (WarpDriveConfig.LOGGING_BUILDING) {
-				WarpDrive.logger.warn("Ignoring unknown block " + tag.getString("block") + " from tag " + tag);
+				WarpDrive.logger.warn("Ignoring unknown block " + tagCompound.getString("block") + " from tag " + tagCompound);
 			}
 			block = Blocks.air;
 			return;
 		}
-		blockMeta = tag.getByte("blockMeta");
+		blockMeta = tagCompound.getByte("blockMeta");
 		blockTileEntity = null;
-		if (tag.hasKey("blockNBT")) {
-			blockNBT = tag.getCompoundTag("blockNBT");
+		if (tagCompound.hasKey("blockNBT")) {
+			blockNBT = tagCompound.getCompoundTag("blockNBT");
 			
 			// Clear computer IDs
 			if (blockNBT.hasKey("computerID")) {
@@ -434,11 +437,11 @@ public class JumpBlock {
 		} else {
 			blockNBT = null;
 		}
-		x = tag.getInteger("x");
-		y = tag.getInteger("y");
-		z = tag.getInteger("z");
-		if (tag.hasKey("externals")) {
-			NBTTagCompound tagCompoundExternals = tag.getCompoundTag("externals");
+		x = tagCompound.getInteger("x");
+		y = tagCompound.getInteger("y");
+		z = tagCompound.getInteger("z");
+		if (tagCompound.hasKey("externals")) {
+			NBTTagCompound tagCompoundExternals = tagCompound.getCompoundTag("externals");
 			externals = new HashMap<>();
 			for (Object key : tagCompoundExternals.func_150296_c()) {
 				assert (key instanceof String);
@@ -449,19 +452,19 @@ public class JumpBlock {
 		}
 	}
 	
-	public void writeToNBT(NBTTagCompound tag) {
-		tag.setString("block", Block.blockRegistry.getNameForObject(block));
-		tag.setByte("blockMeta", (byte) blockMeta);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setString("block", Block.blockRegistry.getNameForObject(block));
+		tagCompound.setByte("blockMeta", (byte) blockMeta);
 		if (blockTileEntity != null) {
-			NBTTagCompound tagCompound = new NBTTagCompound();
-			blockTileEntity.writeToNBT(tagCompound);
-			tag.setTag("blockNBT", tagCompound);
+			final NBTTagCompound nbtTileEntity = new NBTTagCompound();
+			blockTileEntity.writeToNBT(nbtTileEntity);
+			tagCompound.setTag("blockNBT", nbtTileEntity);
 		} else if (blockNBT != null) {
-			tag.setTag("blockNBT", blockNBT);
+			tagCompound.setTag("blockNBT", blockNBT);
 		}
-		tag.setInteger("x", x);
-		tag.setInteger("y", y);
-		tag.setInteger("z", z);
+		tagCompound.setInteger("x", x);
+		tagCompound.setInteger("y", y);
+		tagCompound.setInteger("z", z);
 		if (externals != null && !externals.isEmpty()) {
 			NBTTagCompound tagCompoundExternals = new NBTTagCompound();
 			for (Entry<String, NBTBase> entry : externals.entrySet()) {
@@ -471,7 +474,7 @@ public class JumpBlock {
 					tagCompoundExternals.setTag(entry.getKey(), entry.getValue());
 				}
 			}
-			tag.setTag("externals", tagCompoundExternals);
+			tagCompound.setTag("externals", tagCompoundExternals);
 		}
 	}
 	
@@ -483,20 +486,24 @@ public class JumpBlock {
 		if (tagCompound == null) {
 			return;
 		}
+		
 		// ComputerCraft computer
 		if (tagCompound.hasKey("computerID")) {
 			tagCompound.removeTag("computerID");
 			tagCompound.removeTag("label");
 		}
+		
 		// WarpDrive UUID
 		if (tagCompound.hasKey("uuidMost")) {
 			tagCompound.removeTag("uuidMost");
 			tagCompound.removeTag("uuidLeast");
 		}
+		
 		// WarpDrive any OC connected tile
 		if (tagCompound.hasKey("oc:node")) {
 			tagCompound.removeTag("oc:node");
 		}
+		
 		// OpenComputers case
 		if (tagCompound.hasKey("oc:computer")) {
 			NBTTagCompound tagComputer = tagCompound.getCompoundTag("oc:computer");
@@ -507,6 +514,7 @@ public class JumpBlock {
 			tagComputer.removeTag("node");
 			tagCompound.setTag("oc:computer", tagComputer);
 		}
+		
 		// OpenComputers case
 		if (tagCompound.hasKey("oc:items")) {
 			NBTTagList tagListItems = tagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
@@ -552,23 +560,44 @@ public class JumpBlock {
 				tagCompoundBattery.setInteger("energy", 0);
 			}
 		}
+		
+		// Gregtech
+		if (tagCompound.hasKey("mStoredEnergy", NBT.TAG_INT)) {
+			tagCompound.setInteger("mStoredEnergy", 0);
+		}
+		
 		// IC2
 		if (tagCompound.hasKey("energy", NBT.TAG_DOUBLE)) {
 			// energy_consume((int)Math.round(blockNBT.getDouble("energy")), true);
 			tagCompound.setDouble("energy", 0);
 		}
-		// Gregtech
-		if (tagCompound.hasKey("mStoredEnergy", NBT.TAG_INT)) {
-			tagCompound.setInteger("mStoredEnergy", 0);
-		}
+		
 		// Immersive Engineering & Thermal Expansion
 		if (tagCompound.hasKey("Energy", NBT.TAG_INT)) {
 			// energy_consume(blockNBT.getInteger("Energy"), true);
 			tagCompound.setInteger("Energy", 0);
 		}
+		
 		// Mekanism
 		if (tagCompound.hasKey("electricityStored", NBT.TAG_DOUBLE)) {
 			tagCompound.setDouble("electricityStored", 0);
+		}
+		
+		// WarpDrive
+		if (tagCompound.hasKey("energy", NBT.TAG_LONG)) {
+			tagCompound.setLong("energy", 0L);
+		}
+	}
+	
+	public void fillEnergyStorage() {
+		if (block == WarpDrive.blockShipCore) {
+			blockNBT.setLong("energy", WarpDriveConfig.SHIP_MAX_ENERGY_STORED);
+		}
+		if (block == WarpDrive.blockEnergyBank) {
+			final byte tier = blockNBT.getByte("tier");
+			if (tier > 0) {
+				blockNBT.setLong("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
+			}
 		}
 	}
 	
@@ -578,7 +607,7 @@ public class JumpBlock {
 	
 	private static void NetworkHelper_init() {
 		try {
-			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", new Class[] { TileEntity.class, String.class });
+			NetworkManager_updateTileEntityField = Class.forName("ic2.core.network.NetworkManager").getMethod("updateTileEntityField", TileEntity.class, String.class);
 			
 			NetworkManager_instance = Class.forName("ic2.core.IC2").getDeclaredField("network").get(null);
 			// This code is an IC2 hack to fix an issue on 1.7.10 up to industrialcraft-2-2.2.763-experimental, see http://bt.industrial-craft.net/view.php?id=1704
