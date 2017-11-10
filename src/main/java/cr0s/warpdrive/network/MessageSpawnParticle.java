@@ -1,5 +1,6 @@
 package cr0s.warpdrive.network;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -14,6 +15,7 @@ import net.minecraft.client.particle.EntityExplodeFX;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.particle.EntityFireworkSparkFX;
 import net.minecraft.client.particle.EntityFlameFX;
+import net.minecraft.client.particle.EntityHeartFX;
 import net.minecraft.client.particle.EntitySnowShovelFX;
 import net.minecraft.client.particle.EntitySpellParticleFX;
 import net.minecraft.init.Items;
@@ -25,6 +27,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.util.ForgeDirection;
 
 public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSpawnParticle, IMessage> {
 	
@@ -115,7 +118,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		// adjust color as needed
 		EntityFX effect;
 		double noiseLevel = direction.getMagnitude() * 0.35D;
-		for (int i = 0; i < quantity; i++) {
+		for (int index = 0; index < quantity; index++) {
 			Vector3 directionRandomized = new Vector3(
 					direction.x + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
 					direction.y + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
@@ -152,6 +155,27 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			
 			case "cloud":
 				effect = new EntityCloudFX(world, origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
+			
+			case "jammed":// jammed machine particle reusing vanilla angryVillager particle
+				// as of MC1.7.10, direction vector is ignored by upstream
+				final ForgeDirection directionFacing = Commons.getHorizontalDirectionFromEntity(Minecraft.getMinecraft().thePlayer);
+				if (directionFacing.offsetX != 0) {
+					effect = new EntityHeartFX(world,
+					                           origin.x + 0.51D * directionFacing.offsetX,
+					                           origin.y - 0.50D + world.rand.nextDouble(),
+					                           origin.z - 0.50D + world.rand.nextDouble(),
+					                           directionRandomized.x, directionRandomized.y, directionRandomized.z,
+					                           0.5F + world.rand.nextFloat() * 1.5F);
+				} else {
+					effect = new EntityHeartFX(world,
+					                           origin.x - 0.50D + world.rand.nextDouble(),
+					                           origin.y - 0.50D + world.rand.nextDouble(),
+					                           origin.z + 0.51D * directionFacing.offsetZ,
+					                           directionRandomized.x, directionRandomized.y, directionRandomized.z,
+					                           0.5F + world.rand.nextFloat() * 1.5F);
+				}
+				effect.setParticleTextureIndex(81);
 				break;
 			} 
 			if (baseRed >= 0.0F && baseGreen >= 0.0F && baseBlue >= 0.0F) {

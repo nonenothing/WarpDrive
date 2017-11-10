@@ -139,11 +139,30 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				return;
 			}
 		} else if (currentState == STATE_SCAN) {
-			int energyCost = TREE_FARM_ENERGY_PER_SURFACE * (1 + 2 * radiusX) * (1 + 2 * radiusZ);
+			final int energyCost = TREE_FARM_ENERGY_PER_SURFACE * (1 + 2 * radiusX) * (1 + 2 * radiusZ);
 			if (delayTicks == 1) {
 				if (WarpDriveConfig.LOGGING_COLLECTION) {
 					WarpDrive.logger.debug("Scan pre-tick");
 				}
+				
+				// validate environment: clearance above
+				final Block blockAbove = worldObj.getBlock(xCoord, yCoord + 1, zCoord);
+				if ( !isLog(blockAbove)
+				  && !isLeaf(blockAbove)
+				  && !blockAbove.isAir(worldObj, xCoord, yCoord + 1, zCoord) ) {
+					PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
+					                                      new Vector3(0.0D, 0.0D, 0.0D),
+					                                      1.0F, 1.0F, 1.0F,
+					                                      1.0F, 1.0F, 1.0F,
+					                                      32);
+					
+					currentState = STATE_WARMUP;	// going back to warmup state to show the animation when it'll be back online
+					delayTicks = 0;
+					delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
+					updateMetadata(BlockLaserTreeFarm.ICON_SCANNING_LOW_POWER);
+					return;
+				}
+				
 				// check power level
 				enoughPower = consumeEnergyFromLaserMediums(energyCost, true);
 				if (!enoughPower) {
@@ -254,7 +273,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							}
 							
 							// consume power
-							int energyCost = TREE_FARM_ENERGY_PER_WET_SPOT;
+							final int energyCost = TREE_FARM_ENERGY_PER_WET_SPOT;
 							enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
 							if (!enoughPower) {
 								delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
@@ -415,8 +434,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// consume power
-				double energyCost = TREE_FARM_ENERGY_PER_SAPLING;
-				enoughPower = consumeEnergyFromLaserMediums((int) Math.round(energyCost), false);
+				final int energyCost = TREE_FARM_ENERGY_PER_SAPLING;
+				enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
 				if (!enoughPower) {
 					delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_PLANTING_LOW_POWER);
