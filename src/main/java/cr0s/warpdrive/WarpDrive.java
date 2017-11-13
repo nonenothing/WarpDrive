@@ -119,6 +119,7 @@ import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.CommonWorldGenerator;
+import cr0s.warpdrive.event.ItemHandler;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.WorldHandler;
 import cr0s.warpdrive.item.ItemAirTank;
@@ -731,7 +732,7 @@ public class WarpDrive implements LoadingCallback {
 		
 		// Event handlers
 		MinecraftForge.EVENT_BUS.register(new ClientHandler());
-		
+		MinecraftForge.EVENT_BUS.register(new ItemHandler());
 		MinecraftForge.EVENT_BUS.register(new LivingHandler());
 		
 		if (WarpDriveConfig.isComputerCraftLoaded) {
