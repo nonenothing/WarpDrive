@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBlockHull extends ItemBlockAbstractBase {
 	
-	ItemBlockHull(Block block) {
+	ItemBlockHull(final Block block) {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
@@ -27,12 +27,17 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > 15) {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
-		ResourceLocation resourceLocation = getRegistryName();
-		String variant = String.format("color=%s", EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName());
+		final ResourceLocation resourceLocation = getRegistryName();
+		final String variant;
+		if (block instanceof BlockHullStairs) {
+			variant = "facing=east,half=bottom,shape=straight";
+		} else {
+			variant = String.format("color=%s", EnumDyeColor.byMetadata(itemStack.getItemDamage()).getName());
+		}
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	

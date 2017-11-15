@@ -20,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -98,6 +99,13 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	@Override
 	public boolean isFullyOpaque(IBlockState state) {
 		return false;
+	}
+	
+	@Nonnull
+	@SideOnly(Side.CLIENT)
+	@Override
+	public BlockRenderLayer getBlockLayer() {
+		return BlockRenderLayer.TRANSLUCENT; // .CUTOUT;
 	}
 	
 	@SuppressWarnings("deprecation")

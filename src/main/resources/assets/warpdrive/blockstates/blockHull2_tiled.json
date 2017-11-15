@@ -1,0 +1,32 @@
+{
+	"forge_marker": 1,
+	"defaults": {
+		"model": "minecraft:cube_all",
+		"textures": {
+			"all": "warpdrive:blocks/hull/plain-black"
+		},
+		"transform": "forge:default-block"
+	},
+	"variants": {
+		"normal": [{}],
+		"inventory": [{}],
+		"color": {
+			"black"     : { "textures": { "all": "warpdrive:blocks/hull/tiled-black"		} },
+			"blue"      : { "textures": { "all": "warpdrive:blocks/hull/tiled-blue"			} },
+			"brown"     : { "textures": { "all": "warpdrive:blocks/hull/tiled-brown"		} },
+			"cyan"      : { "textures": { "all": "warpdrive:blocks/hull/tiled-cyan"			} },
+			"gray"      : { "textures": { "all": "warpdrive:blocks/hull/tiled-gray"			} },
+			"green"     : { "textures": { "all": "warpdrive:blocks/hull/tiled-green"		} },
+			"light_blue": { "textures": { "all": "warpdrive:blocks/hull/tiled-light_blue"	} },
+			"lime"      : { "textures": { "all": "warpdrive:blocks/hull/tiled-lime"			} },
+			"magenta"   : { "textures": { "all": "warpdrive:blocks/hull/tiled-magenta"		} },
+			"orange"    : { "textures": { "all": "warpdrive:blocks/hull/tiled-orange"		} },
+			"pink"      : { "textures": { "all": "warpdrive:blocks/hull/tiled-pink"			} },
+			"purple"    : { "textures": { "all": "warpdrive:blocks/hull/tiled-purple"		} },
+			"red"       : { "textures": { "all": "warpdrive:blocks/hull/tiled-red"			} },
+			"silver"    : { "textures": { "all": "warpdrive:blocks/hull/tiled-silver"		} },
+			"white"     : { "textures": { "all": "warpdrive:blocks/hull/tiled-white"		} },
+			"yellow"    : { "textures": { "all": "warpdrive:blocks/hull/tiled-yellow"		} }
+		}
+	}
+}
