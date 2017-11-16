@@ -105,7 +105,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	@SideOnly(Side.CLIENT)
 	@Override
 	public BlockRenderLayer getBlockLayer() {
-		return BlockRenderLayer.TRANSLUCENT; // .CUTOUT;
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 	
 	@SuppressWarnings("deprecation")

@@ -58,12 +58,6 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
 	}
 	
-	@Nonnull
-	@Override
-	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess world, BlockPos blockPos) {
-		return blockState;
-	}
-	
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();

@@ -100,6 +100,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 			final BlockPos blockPosSide = blockPos.offset(facing);
 			final IBlockState blockStateSide = world.getBlockState(blockPosSide);
 			final EnumVariant variantSide = blockStateSide.getBlock() == blockSlab ? blockStateSide.getValue(BlockHullSlab.VARIANT) : EnumVariant.PLAIN_FULL;
+			
 			if ( blockStateSide.getBlock() == blockSlab
 			  && !variantItem.getIsDouble()
 			  && !variantSide.getIsDouble()

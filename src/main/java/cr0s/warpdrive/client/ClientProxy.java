@@ -21,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
 	
@@ -50,13 +49,15 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockCloakingCore);
 		IModelInitialisation(WarpDrive.blockCloakingCoil);
 		IModelInitialisation(WarpDrive.blockTransporter);
+		IModelInitialisation(WarpDrive.blockBedrockGlass);
 		// if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 		// 	IModelInitialisation(WarpDrive.blockIC2reactorLaserMonitor);
 		// }
 		// IModelInitialisation(WarpDrive.blockEnanReactorCore);
 		// IModelInitialisation(WarpDrive.blockEnanReactorLaser);
-		// IModelInitialisation(WarpDrive.blockEnergyBank);
+		IModelInitialisation(WarpDrive.blockEnergyBank);
 		IModelInitialisation(WarpDrive.blockAir);
+		// AirSource, AirFlow, AirShield
 		IModelInitialisation(WarpDrive.blockGas);
 		IModelInitialisation(WarpDrive.blockIridium);
 		IModelInitialisation(WarpDrive.blockLamp_bubble);
@@ -91,7 +92,7 @@ public class ClientProxy extends CommonProxy {
 				IModelInitialisation(WarpDrive.blockHulls_plain[index][enumHullPlainType.ordinal()]);
 			}
 			IModelInitialisation(WarpDrive.blockHulls_glass[index]);
-			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+			for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 				IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_omnipanel[index][enumDyeColor.getMetadata()]);
