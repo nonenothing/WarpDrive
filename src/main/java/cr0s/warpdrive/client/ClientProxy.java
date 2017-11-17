@@ -35,7 +35,16 @@ public class ClientProxy extends CommonProxy {
 		// IModelInitialisation(WarpDrive.blockShipController);
 		IModelInitialisation(WarpDrive.blockRadar);
 		IModelInitialisation(WarpDrive.blockWarpIsolation);
+		
+		IModelInitialisation(WarpDrive.blockAir);
+		IModelInitialisation(WarpDrive.blockAirSource);
+		IModelInitialisation(WarpDrive.blockAirFlow);
+		IModelInitialisation(WarpDrive.blockAirShield);
 		IModelInitialisation(WarpDrive.blockAirGenerator);
+		for(int index = 0; index < 3; index++) {
+			IModelInitialisation(WarpDrive.blockAirGeneratorTiered[index]);
+		}
+		
 		IModelInitialisation(WarpDrive.blockLaser);
 		IModelInitialisation(WarpDrive.blockLaserCamera);
 		IModelInitialisation(WarpDrive.blockWeaponController);
@@ -56,8 +65,6 @@ public class ClientProxy extends CommonProxy {
 		// IModelInitialisation(WarpDrive.blockEnanReactorCore);
 		// IModelInitialisation(WarpDrive.blockEnanReactorLaser);
 		IModelInitialisation(WarpDrive.blockEnergyBank);
-		IModelInitialisation(WarpDrive.blockAir);
-		// AirSource, AirFlow, AirShield
 		IModelInitialisation(WarpDrive.blockGas);
 		IModelInitialisation(WarpDrive.blockIridium);
 		IModelInitialisation(WarpDrive.blockLamp_bubble);

@@ -14,6 +14,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -96,6 +97,13 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@Override
 	public int quantityDropped(Random par1Random) {
 		return 0;
+	}
+	
+	@Nonnull
+	@SideOnly(Side.CLIENT)
+	@Override
+	public BlockRenderLayer getBlockLayer() {
+		return BlockRenderLayer.TRANSLUCENT;
 	}
 	
 	@SuppressWarnings("deprecation")
