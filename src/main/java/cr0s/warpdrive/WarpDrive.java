@@ -413,10 +413,10 @@ public class WarpDrive implements LoadingCallback {
 		
 		// warp armor
 		itemWarpArmor = new ItemArmor[4];
-		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[0], armorMaterial, 3, EntityEquipmentSlot.HEAD);
-		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[1], armorMaterial, 3, EntityEquipmentSlot.CHEST);
-		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[2], armorMaterial, 3, EntityEquipmentSlot.LEGS);
-		itemWarpArmor[0] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[3], armorMaterial, 3, EntityEquipmentSlot.FEET);
+		itemWarpArmor[EntityEquipmentSlot.HEAD.getIndex() ] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[EntityEquipmentSlot.HEAD.getIndex() ], armorMaterial, 3, EntityEquipmentSlot.HEAD );
+		itemWarpArmor[EntityEquipmentSlot.CHEST.getIndex()] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[EntityEquipmentSlot.CHEST.getIndex()], armorMaterial, 3, EntityEquipmentSlot.CHEST);
+		itemWarpArmor[EntityEquipmentSlot.LEGS.getIndex() ] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[EntityEquipmentSlot.LEGS.getIndex() ], armorMaterial, 3, EntityEquipmentSlot.LEGS );
+		itemWarpArmor[EntityEquipmentSlot.FEET.getIndex() ] = new ItemWarpArmor("itemWarpArmor_" + ItemWarpArmor.suffixes[EntityEquipmentSlot.FEET.getIndex() ], armorMaterial, 3, EntityEquipmentSlot.FEET );
 		
 		itemAirTanks = new ItemAirTank[4];
 		for (int index = 0; index < 4; index++) {
@@ -657,7 +657,7 @@ public class WarpDrive implements LoadingCallback {
 						break;
 					case "WarpDrive:helmet":
 					case "WarpDrive:itemHelmet":
-						mapping.remap(itemWarpArmor[0]);
+						mapping.remap(itemWarpArmor[3]);
 						break;
 					case "WarpDrive:iridiumBlock":
 						mapping.remap(Item.getItemFromBlock(blockIridium));

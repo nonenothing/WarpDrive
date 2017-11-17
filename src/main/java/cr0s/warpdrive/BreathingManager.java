@@ -268,7 +268,7 @@ public class BreathingManager {
 		final ItemStack itemStackChestplate = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 		if (itemStackChestplate != null) {
 			final Item itemChestplate = itemStackChestplate.getItem();
-			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
+			if (itemChestplate == WarpDrive.itemWarpArmor[2]) {
 				return electrolyseIceToAir(entityLivingBase);
 			}
 		}
@@ -311,7 +311,7 @@ public class BreathingManager {
 		final ItemStack itemStackChestplate = entityPlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 		if (itemStackChestplate != null) {
 			final Item itemChestplate = itemStackChestplate.getItem();
-			if (itemChestplate == WarpDrive.itemWarpArmor[1]) {
+			if (itemChestplate == WarpDrive.itemWarpArmor[2]) {
 				canElectrolyse = true;
 			}
 		}

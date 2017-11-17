@@ -14,7 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ItemWarpArmor extends ItemArmor implements IBreathingHelmet {
-	public static final String[] suffixes = { "helmet", "chestplate", "leggings", "boots" };
+	
+	public static final String[] suffixes = {  "boots", "leggings", "chestplate", "helmet" };
 	
 	public ItemWarpArmor(final String registryName, ArmorMaterial armorMaterial, int renderIndex, EntityEquipmentSlot entityEquipmentSlot) {
 		super(armorMaterial, renderIndex, entityEquipmentSlot);

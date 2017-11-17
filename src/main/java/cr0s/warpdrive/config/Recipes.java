@@ -18,7 +18,6 @@ import cr0s.warpdrive.item.ItemUpgrade;
 
 import java.util.List;
 
-import net.minecraft.block.BlockColored;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
@@ -1487,14 +1486,14 @@ public class Recipes {
 				'i', Items.IRON_INGOT));
         
 		// Warp helmet
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[0]), false, "ggg", "gig", "wcw",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[3]), false, "ggg", "gig", "wcw",
 				'i', Items.IRON_HELMET,
 				'w', Blocks.WOOL,
 				'g', "blockGlass",
 				'c', ItemComponent.getItemStack(EnumComponentType.AIR_CANISTER)));
 		
 		// Warp chestplate
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[1]), false, "gcg", "wiw", "GmG",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[2]), false, "gcg", "wiw", "GmG",
 				'i', Items.IRON_CHESTPLATE,
 				'w', Blocks.WOOL,
 				'g', "blockHull3_glass",
@@ -1503,14 +1502,14 @@ public class Recipes {
 				'c', ItemComponent.getItemStack(EnumComponentType.AIR_CANISTER)));
 		
 		// Warp Leggings
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[2]), false, "gig", "m m", "w w",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[1]), false, "gig", "m m", "w w",
 				'i', Items.IRON_LEGGINGS,
 				'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
 				'w', Blocks.WOOL,
 				'g', "blockHull2_glass"));
 		
 		// Warp boots
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[3]), false, "wiw", "r r", "   ",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.itemWarpArmor[0]), false, "wiw", "r r", "   ",
 				'i', Items.IRON_BOOTS,
 				'w', Blocks.WOOL,
 				'r', rubberOrLeather));

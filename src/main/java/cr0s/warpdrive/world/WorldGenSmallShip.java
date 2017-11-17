@@ -567,7 +567,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 			for (int idx = 0; idx < countMobs; idx++) {
 				EntityVillager entityVillager = new EntityVillager(world, 0);
 				entityVillager.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
-				entityVillager.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(WarpDrive.itemWarpArmor[0], 1, 1));
+				entityVillager.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(WarpDrive.itemWarpArmor[3], 1, 1));
 				world.spawnEntityInWorld(entityVillager);
 			}
 		} else if (world.rand.nextBoolean()) {// Zombies
