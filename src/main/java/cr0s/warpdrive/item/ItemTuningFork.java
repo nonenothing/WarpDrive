@@ -18,7 +18,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
@@ -47,7 +46,7 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	}
 	
 	@Override
-	public void getSubItems(final Item item, final CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, List<ItemStack> list) {
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
 			list.add(new ItemStack(item, 1, dyeColor));
 		}
@@ -153,11 +152,11 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
-		tooltip += new TextComponentTranslation("warpdrive.video_channel.tooltip", getVideoChannel(itemStack));
-		tooltip += "\n" + new TextComponentTranslation("warpdrive.beam_frequency.tooltip", getBeamFrequency(itemStack));
-		tooltip += "\n" + new TextComponentTranslation("warpdrive.control_channel.tooltip", getControlChannel(itemStack));
+		tooltip += new TextComponentTranslation("warpdrive.video_channel.tooltip", getVideoChannel(itemStack)).getFormattedText();
+		tooltip += "\n" + new TextComponentTranslation("warpdrive.beam_frequency.tooltip", getBeamFrequency(itemStack)).getFormattedText();
+		tooltip += "\n" + new TextComponentTranslation("warpdrive.control_channel.tooltip", getControlChannel(itemStack)).getFormattedText();
 		
-		tooltip += "\n\n" + new TextComponentTranslation("item.warpdrive.tool.tuning_fork.tooltip.usage");
+		tooltip += "\n\n" + new TextComponentTranslation("item.warpdrive.tool.tuning_fork.tooltip.usage").getFormattedText();
 		
 		Commons.addTooltip(list, tooltip);
 	}
