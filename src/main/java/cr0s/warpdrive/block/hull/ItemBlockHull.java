@@ -26,6 +26,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
+	@SuppressWarnings("deprecation")
 	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > 15) {
@@ -36,7 +37,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 		if (block instanceof BlockHullStairs) {
 			variant = "facing=east,half=bottom,shape=straight";
 		} else {
-			variant = String.format("color=%s", EnumDyeColor.byMetadata(itemStack.getItemDamage()).getName());
+			variant = block.getStateFromMeta(damage).toString().split("[\\[\\]]")[1];
 		}
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
@@ -47,7 +48,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 		if (itemStack == null || block instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}
-		return getUnlocalizedName() + EnumDyeColor.byDyeDamage( itemStack.getItemDamage() ).getUnlocalizedName();
+		return getUnlocalizedName() + EnumDyeColor.byMetadata( itemStack.getItemDamage() ).getUnlocalizedName();
 	}
 	
 	private byte getTier(final ItemStack itemStack) {

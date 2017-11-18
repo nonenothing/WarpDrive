@@ -5,11 +5,11 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -30,7 +30,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -49,27 +48,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	// 12 for plain double slab
 	// 13-15 for tiled double slabs
 	
-	protected static final EnumVariant[] VARIANT_FROM_METADATA = {
-		EnumVariant.PLAIN_HORIZONTAL,
-		EnumVariant.PLAIN_HORIZONTAL,
-		EnumVariant.PLAIN_VERTICAL,
-		EnumVariant.PLAIN_VERTICAL,
-		EnumVariant.PLAIN_VERTICAL,
-		EnumVariant.PLAIN_VERTICAL,
-		EnumVariant.TILED_HORIZONTAL,
-		EnumVariant.TILED_HORIZONTAL,
-		EnumVariant.TILED_VERTICAL,
-		EnumVariant.TILED_VERTICAL,
-		EnumVariant.TILED_VERTICAL,
-		EnumVariant.TILED_VERTICAL,
-		EnumVariant.PLAIN_FULL,
-		EnumVariant.TILED_FULL_X,
-		EnumVariant.TILED_FULL_Y,
-		EnumVariant.TILED_FULL_Z
-	};
-	
-	protected static final AxisAlignedBB AABB_HALF_BOTTOM = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 0.50D, 1.00D);
-	protected static final AxisAlignedBB AABB_HALF_TOP    = new AxisAlignedBB(0.00D, 0.50D, 0.00D, 1.00D, 1.00D, 1.00D);
+	protected static final AxisAlignedBB AABB_HALF_DOWN   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 0.50D, 1.00D);
+	protected static final AxisAlignedBB AABB_HALF_UP     = new AxisAlignedBB(0.00D, 0.50D, 0.00D, 1.00D, 1.00D, 1.00D);
 	protected static final AxisAlignedBB AABB_HALF_NORTH  = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 1.00D, 0.50D);
 	protected static final AxisAlignedBB AABB_HALF_SOUTH  = new AxisAlignedBB(0.00D, 0.00D, 0.50D, 1.00D, 1.00D, 1.00D);
 	protected static final AxisAlignedBB AABB_HALF_EAST   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 0.50D, 1.00D, 1.00D);
@@ -77,9 +57,6 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	protected static final AxisAlignedBB AABB_FULL        = FULL_BLOCK_AABB;
 	
 	public static final PropertyEnum<EnumVariant> VARIANT = PropertyEnum.create("variant", EnumVariant.class);
-	
-	@Deprecated() // Dirty hack for rendering vertical slabs
-	private IBlockState blockStateForRender;
 	
 	final byte tier;
 	private final IBlockState blockStateHull;
@@ -97,14 +74,13 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		WarpDrive.register(this, new ItemBlockHullSlab(this));
 		
 		setDefaultState(getDefaultState()
-		                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
-		                .withProperty(VARIANT, EnumVariant.PLAIN_HORIZONTAL));
+		                .withProperty(VARIANT, EnumVariant.PLAIN_DOWN));
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, BlockProperties.FACING, VARIANT);
+		return new BlockStateContainer(this, VARIANT);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -112,23 +88,12 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, metadata < 12 ? EnumFacing.getFront(metadata % 6) : EnumFacing.DOWN)
-		       .withProperty(VARIANT, VARIANT_FROM_METADATA[metadata]);
+		        .withProperty(VARIANT, EnumVariant.get(metadata));
 	}
 	
 	@Override
 	public int getMetaFromState(IBlockState blockState) {
-		switch (blockState.getValue(VARIANT)) {
-		default:
-		case PLAIN_HORIZONTAL: return blockState.getValue(BlockProperties.FACING).getIndex();
-		case PLAIN_VERTICAL  : return blockState.getValue(BlockProperties.FACING).getIndex();
-		case TILED_HORIZONTAL: return 6 + blockState.getValue(BlockProperties.FACING).getIndex();
-		case TILED_VERTICAL  : return 6 + blockState.getValue(BlockProperties.FACING).getIndex();
-		case PLAIN_FULL      : return 12;
-		case TILED_FULL_X    : return 13;
-		case TILED_FULL_Y    : return 14;
-		case TILED_FULL_Z    : return 15;
-		}
+		return blockState.getValue(VARIANT).ordinal();
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -145,14 +110,6 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		list.add(new ItemStack(item, 1, 2));
 		list.add(new ItemStack(item, 1, 6));
 		list.add(new ItemStack(item, 1, 8));
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nonnull
-	@Override
-	public EnumBlockRenderType getRenderType(IBlockState blockState) {
-		blockStateForRender = blockState;
-		return super.getRenderType(blockState);
 	}
 	
 	@Override
@@ -186,7 +143,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@Nonnull
 	@Override
 	public Comparable<?> getTypeForItem(@Nonnull ItemStack itemStack) {
-		return VARIANT_FROM_METADATA[itemStack.getItemDamage()];
+		return EnumVariant.get(itemStack.getItemDamage());
 	}
 	
 	@Nonnull
@@ -203,21 +160,10 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	private AxisAlignedBB getBlockBoundsFromState(final IBlockState blockState) {
-		final int metadata = blockState == null ? 0 : getMetaFromState(blockState);
-		if (metadata >= 12) {
+		if (blockState == null) {
 			return AABB_FULL;
-			
-		} else {
-			switch (metadata % 6) {
-			case 0: return AABB_HALF_TOP;
-			case 1: return AABB_HALF_BOTTOM;
-			case 2: return AABB_HALF_SOUTH;
-			case 3: return AABB_HALF_NORTH;
-			case 4: return AABB_HALF_WEST;
-			case 5: return AABB_HALF_EAST;
-			default: return AABB_FULL;
-			}
 		}
+		return blockState.getValue(VARIANT).getAxisAlignedBB();
 	}
 	
 	@Override
@@ -238,25 +184,53 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		}
 		
 		// horizontal slab?
-		if (metadata == 0 || metadata == 6) {
+		if (metadata == 0) {
 			// reuse vanilla logic
-			final EnumFacing blockFacing = (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || hitY <= 0.5F) ? EnumFacing.DOWN : EnumFacing.UP);
-			return blockState.withProperty(BlockProperties.FACING, blockFacing);
+			final EnumVariant variant = (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || hitY <= 0.5F) ? EnumVariant.PLAIN_DOWN : EnumVariant.PLAIN_UP);
+			return blockState.withProperty(VARIANT, variant);
+		} else if (metadata == 6) {
+			// reuse vanilla logic
+			final EnumVariant variant = (facing != EnumFacing.DOWN && (facing == EnumFacing.UP || hitY <= 0.5F) ? EnumVariant.TILED_DOWN : EnumVariant.TILED_UP);
+			return blockState.withProperty(VARIANT, variant);
 		}
 		// vertical slab?
-		if (metadata == 2 || metadata == 8) {
+		if (metadata == 2) {
 			if (facing != EnumFacing.DOWN && facing != EnumFacing.UP) {
-				return blockState.withProperty(BlockProperties.FACING, facing.getOpposite());
+				switch(facing) {
+				case NORTH: return blockState.withProperty(VARIANT, EnumVariant.PLAIN_SOUTH);
+				case SOUTH: return blockState.withProperty(VARIANT, EnumVariant.PLAIN_NORTH);
+				case WEST: return blockState.withProperty(VARIANT, EnumVariant.PLAIN_EAST);
+				case EAST: return blockState.withProperty(VARIANT, EnumVariant.PLAIN_WEST);
+				}
 			}
 			// is X the furthest away from center?
 			if (Math.abs(hitX - 0.5F) > Math.abs(hitZ - 0.5F)) {
 				// west (4) vs east (5)
-				final EnumFacing blockFacing = hitX > 0.5F ? EnumFacing.EAST : EnumFacing.WEST;
-				return blockState.withProperty(BlockProperties.FACING, blockFacing);
+				final EnumVariant variant = hitX > 0.5F ? EnumVariant.PLAIN_EAST : EnumVariant.PLAIN_WEST;
+				return blockState.withProperty(VARIANT, variant);
 			}
 			// north (2) vs south (3)
-			final EnumFacing blockFacing = hitZ > 0.5F ? EnumFacing.SOUTH : EnumFacing.NORTH;
-			return blockState.withProperty(BlockProperties.FACING, blockFacing);
+			final EnumVariant variant = hitZ > 0.5F ? EnumVariant.PLAIN_SOUTH : EnumVariant.PLAIN_NORTH;
+			return blockState.withProperty(VARIANT, variant);
+		}
+		if (metadata == 8) {
+			if (facing != EnumFacing.DOWN && facing != EnumFacing.UP) {
+				switch(facing) {
+				case NORTH: return blockState.withProperty(VARIANT, EnumVariant.TILED_SOUTH);
+				case SOUTH: return blockState.withProperty(VARIANT, EnumVariant.TILED_NORTH);
+				case WEST: return blockState.withProperty(VARIANT, EnumVariant.TILED_EAST);
+				case EAST: return blockState.withProperty(VARIANT, EnumVariant.TILED_WEST);
+				}
+			}
+			// is X the furthest away from center?
+			if (Math.abs(hitX - 0.5F) > Math.abs(hitZ - 0.5F)) {
+				// west (4) vs east (5)
+				final EnumVariant variant = hitX > 0.5F ? EnumVariant.TILED_EAST : EnumVariant.TILED_WEST;
+				return blockState.withProperty(VARIANT, variant);
+			}
+			// north (2) vs south (3)
+			final EnumVariant variant = hitZ > 0.5F ? EnumVariant.TILED_SOUTH : EnumVariant.TILED_NORTH;
+			return blockState.withProperty(VARIANT, variant);
 		}
 		return getStateById(metadata);
 	}
@@ -289,7 +263,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 			return true;
 		}
 		
-		final EnumFacing enumFacing = blockState.getValue(BlockProperties.FACING);
+		final EnumFacing enumFacing = blockState.getValue(VARIANT).getFacing();
 		return enumFacing == side;
 	}
 	
@@ -347,28 +321,58 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		} else {
 			world.setBlockState(blockPos, WarpDrive.blockHulls_slab[tier - 2][blockStateHull.getBlock().getMetaFromState(blockStateHull)]
 			                              .getDefaultState()
-			                              .withProperty(BlockProperties.FACING, blockState.getValue(BlockProperties.FACING))
 			                              .withProperty(VARIANT, blockState.getValue(VARIANT)), 2);
 		}
 		return 0;
 	}
 	
 	public enum EnumVariant implements IStringSerializable {
-		PLAIN_HORIZONTAL("plain_horizontal", false),
-		PLAIN_VERTICAL("plain_vertical", false),
-		TILED_HORIZONTAL("tiled_horizontal", false),
-		TILED_VERTICAL("tiled_vertical", false),
-		PLAIN_FULL("plain_full", true),
-		TILED_FULL_X("tiled_full_x", true),
-		TILED_FULL_Y("tiled_full_y", true),
-		TILED_FULL_Z("tiled_full_z", true);
+		PLAIN_DOWN  ("plain_down"  , false, true , EnumFacing.DOWN , AABB_HALF_DOWN),
+		PLAIN_UP    ("plain_up"    , false, true , EnumFacing.UP   , AABB_HALF_UP),
+		PLAIN_NORTH ("plain_north" , false, true , EnumFacing.NORTH, AABB_HALF_NORTH),
+		PLAIN_SOUTH ("plain_south" , false, true , EnumFacing.SOUTH, AABB_HALF_SOUTH),
+		PLAIN_WEST  ("plain_west"  , false, true , EnumFacing.WEST , AABB_HALF_EAST),
+		PLAIN_EAST  ("plain_east"  , false, true , EnumFacing.EAST , AABB_HALF_WEST),
+		
+		TILED_DOWN  ("tiled_down"  , false, false, EnumFacing.DOWN , AABB_HALF_DOWN),
+		TILED_UP    ("tiled_up"    , false, false, EnumFacing.UP   , AABB_HALF_UP),
+		TILED_NORTH ("tiled_north" , false, false, EnumFacing.NORTH, AABB_HALF_NORTH),
+		TILED_SOUTH ("tiled_south" , false, false, EnumFacing.SOUTH, AABB_HALF_SOUTH),
+		TILED_WEST  ("tiled_west"  , false, false, EnumFacing.WEST , AABB_HALF_EAST),
+		TILED_EAST  ("tiled_east"  , false, false, EnumFacing.EAST , AABB_HALF_WEST),
+		
+		PLAIN_FULL  ("plain_full"  , true , true , EnumFacing.DOWN , AABB_FULL),
+		TILED_FULL_X("tiled_full_x", true , false, EnumFacing.DOWN , AABB_FULL),
+		TILED_FULL_Y("tiled_full_y", true , false, EnumFacing.DOWN , AABB_FULL),
+		TILED_FULL_Z("tiled_full_z", true , false, EnumFacing.DOWN , AABB_FULL);
 		
 		private final String name;
 		private final boolean isDouble;
+		private final boolean isPlain;
+		private final EnumFacing facing;
+		private final AxisAlignedBB axisAlignedBB;
 		
-		EnumVariant(final String name, final boolean isDouble) {
+		// cached values
+		public static final int length;
+		private static final HashMap<Integer, EnumVariant> ID_MAP = new HashMap<>();
+		
+		static {
+			length = EnumVariant.values().length;
+			for (EnumVariant variant : values()) {
+				ID_MAP.put(variant.ordinal(), variant);
+			}
+		}
+		
+		EnumVariant(final String name, final boolean isDouble, final boolean isPlain, final EnumFacing facing, final AxisAlignedBB axisAlignedBB) {
 			this.name = name;
 			this.isDouble = isDouble;
+			this.isPlain = isPlain;
+			this.facing = facing;
+			this.axisAlignedBB = axisAlignedBB;
+		}
+		
+		public static EnumVariant get(final int metadata) {
+			return ID_MAP.get(metadata);
 		}
 		
 		@Nonnull
@@ -381,6 +385,19 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		public boolean getIsDouble()
 		{
 			return isDouble;
+		}
+		
+		public boolean getIsPlain()
+		{
+			return isPlain;
+		}
+		
+		public EnumFacing getFacing() {
+			return facing;
+		}
+		
+		public AxisAlignedBB getAxisAlignedBB() {
+			return axisAlignedBB;
 		}
 	}
 }

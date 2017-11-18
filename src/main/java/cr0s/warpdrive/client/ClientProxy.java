@@ -106,7 +106,7 @@ public class ClientProxy extends CommonProxy {
 			IModelInitialisation(WarpDrive.blockHulls_glass[index]);
 			for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 				IModelInitialisation(WarpDrive.blockHulls_stairs[index][enumDyeColor.getMetadata()]);
-				// IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);
+				IModelInitialisation(WarpDrive.blockHulls_slab[index][enumDyeColor.getMetadata()]);
 				// IModelInitialisation(WarpDrive.blockHulls_omnipanel[index][enumDyeColor.getMetadata()]);
 			}
 		}
