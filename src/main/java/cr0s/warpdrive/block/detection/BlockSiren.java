@@ -2,13 +2,19 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumSirenType;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -31,15 +37,46 @@ public class BlockSiren extends BlockAbstractContainer {
 		hasSubBlocks = true;
 		setUnlocalizedName("warpdrive.detection.Siren");
 		GameRegistry.registerTileEntity(TileEntitySiren.class, WarpDrive.MODID + ":tileEntitySiren");
+		
+		setDefaultState(getDefaultState()
+		                .withProperty(BlockProperties.SIREN_TYPE, EnumSirenType.INDUSTRIAL)
+		                .withProperty(BlockProperties.TIER, EnumTier.NORMAL));
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List<ItemStack> list) {
-		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_INDUSTRIAL));
-		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_BASIC));
-		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED));
-		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_SUPERIOR));
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+		list.add(new ItemStack(item, 1, EnumSirenType.INDUSTRIAL.getIndex()));
+		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.NORMAL.getIndex() - 1));
+		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.ADVANCED.getIndex() - 1));
+		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.SUPERIOR.getIndex() - 1));
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new BlockStateContainer(this, BlockProperties.SIREN_TYPE, BlockProperties.TIER);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+		       .withProperty(BlockProperties.SIREN_TYPE, EnumSirenType.get(metadata & 4))
+		       .withProperty(BlockProperties.TIER, EnumTier.get(1 + (metadata & 3)));
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(BlockProperties.SIREN_TYPE).getIndex() + Math.max(0, (blockState.getValue(BlockProperties.TIER).getIndex() - 1));
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockSiren(this);
 	}
 	
 	@Nonnull
@@ -68,5 +105,13 @@ public class BlockSiren extends BlockAbstractContainer {
 	@Override
 	public int damageDropped(IBlockState blockState) {
 		return getMetaFromState(blockState);
+	}
+	
+	@Override
+	public byte getTier(final ItemStack itemStack) {
+		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
+			return 1;
+		}
+		return (byte) getStateFromMeta(itemStack.getMetadata()).getValue(BlockProperties.TIER).getIndex();
 	}
 }

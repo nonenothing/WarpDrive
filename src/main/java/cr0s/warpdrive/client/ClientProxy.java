@@ -48,15 +48,20 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockLaser);
 		IModelInitialisation(WarpDrive.blockLaserCamera);
 		IModelInitialisation(WarpDrive.blockWeaponController);
+		
 		IModelInitialisation(WarpDrive.blockCamera);
+		IModelInitialisation(WarpDrive.blockCloakingCore);
+		IModelInitialisation(WarpDrive.blockCloakingCoil);
 		IModelInitialisation(WarpDrive.blockMonitor);
+		IModelInitialisation(WarpDrive.blockRadar);
+		IModelInitialisation(WarpDrive.blockSiren);
+		IModelInitialisation(WarpDrive.blockWarpIsolation);
+		
 		IModelInitialisation(WarpDrive.blockLaserMedium);
 		IModelInitialisation(WarpDrive.blockMiningLaser);
 		IModelInitialisation(WarpDrive.blockLaserTreeFarm);
 		IModelInitialisation(WarpDrive.blockLift);
 		IModelInitialisation(WarpDrive.blockShipScanner);
-		IModelInitialisation(WarpDrive.blockCloakingCore);
-		IModelInitialisation(WarpDrive.blockCloakingCoil);
 		IModelInitialisation(WarpDrive.blockTransporter);
 		IModelInitialisation(WarpDrive.blockBedrockGlass);
 		// if (WarpDriveConfig.isIndustrialCraft2Loaded) {

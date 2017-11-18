@@ -1,0 +1,15 @@
+{
+	"forge_marker": 1,
+	"variants": {
+		"inventory": [{}],
+		"siren_type=industrial,tier=creative": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial" } },
+		"siren_type=industrial,tier=normal"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial" } },
+		"siren_type=industrial,tier=advanced": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial" } },
+		"siren_type=industrial,tier=superior": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_industrial" } },
+		"siren_type=raid,tier=creative"      : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_raid_normal" } },
+		"siren_type=raid,tier=normal"        : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_raid_normal" } },
+		"siren_type=raid,tier=advanced"      : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_raid_advanced" } },
+		"siren_type=raid,tier=superior"      : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/detection/siren_raid_superior" } }
+
+	}
+}
