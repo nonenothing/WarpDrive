@@ -267,6 +267,12 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return enumFacing == side;
 	}
 	
+	@Override
+	public boolean isSideSolid(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
+		final EnumFacing enumFacing = blockState.getValue(VARIANT).getFacing();
+		return enumFacing == side;
+	}
+	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
