@@ -28,9 +28,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList({
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "CoFHCore"),
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyProvider", modid = "CoFHCore"),
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = "CoFHCore"),
+	@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "cofhcore"),
+	@Optional.Interface(iface = "cofh.api.energy.IEnergyProvider", modid = "cofhcore"),
+	@Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = "cofhcore"),
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2"),
 	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2")
 })
@@ -339,7 +339,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// ThermalExpansion IEnergyHandler interface
 	@Override
-	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver */
+	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver */
 	public int receiveEnergy(EnumFacing from, int maxReceive_RF, boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]receiveEnergy from " + from + " maxReceive_RF " + maxReceive_RF + " simulate " + simulate);
@@ -366,7 +366,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")	/* IEnergyProvider */
+	@Optional.Method(modid = "cofhcore")	/* IEnergyProvider */
 	public int extractEnergy(EnumFacing from, int maxExtract_RF, boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]extractEnergy from " + from + " maxExtract_RF " + maxExtract_RF + " simulate " + simulate);
@@ -384,26 +384,26 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")	/* IEnergyConnection */
+	@Optional.Method(modid = "cofhcore")	/* IEnergyConnection */
 	public boolean canConnectEnergy(EnumFacing from) {
 		return (energy_getMaxStorage() != 0) && (energy_canInput(from) || energy_canOutput(from)); // Warning: deadlock risk depending on child implementation
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
+	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver and IEnergyProvider */
 	public int getEnergyStored(EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getEnergyStored()) : 0;
 	}
 	
 	@Override
-	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
+	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver and IEnergyProvider */
 	public int getMaxEnergyStored(EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getMaxStorage()) : 0;
 	}
 	
 	
 	// WarpDrive overrides for Thermal Expansion
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private void CoFH_outputEnergy(EnumFacing from, IEnergyReceiver energyReceiver) {
 		if (energyReceiver == null || worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null) {
 			return;
@@ -422,7 +422,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private void CoFH_outputEnergy() {
 		for (EnumFacing from : EnumFacing.VALUES) {
 			if (cofhEnergyReceivers[from.ordinal()] != null) {
@@ -431,7 +431,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private void CoFH_initialiseAPI() {
 		cofhEnergyReceivers = new IEnergyReceiver[EnumFacing.VALUES.length];
 	}
@@ -476,7 +476,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		scanTickCount = -1;
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private void CoFH_scanForEnergyHandlers() {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]CoFH_scanForEnergyHandlers");

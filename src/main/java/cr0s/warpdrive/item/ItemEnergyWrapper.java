@@ -189,32 +189,32 @@ public class ItemEnergyWrapper {
 	
 	
 	// Thermal Expansion IEnergyContainerItem interface
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static boolean CoFH_isContainer(ItemStack itemStack) {
 		return itemStack.getItem() instanceof IEnergyContainerItem;
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static boolean CoFH_canOutput(ItemStack itemStack) {
 		return ((IEnergyContainerItem) itemStack.getItem()).getEnergyStored(itemStack) > 0;
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static boolean CoFH_canInput(ItemStack itemStack) {
 		return ((IEnergyContainerItem) itemStack.getItem()).getEnergyStored(itemStack) < ((IEnergyContainerItem) itemStack.getItem()).getMaxEnergyStored(itemStack);
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static int CoFH_getEnergyStored(ItemStack itemStack) {
 		return (int) Math.floor( ((IEnergyContainerItem)itemStack.getItem()).getEnergyStored(itemStack) );
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static int CoFH_getMaxEnergyStorage(ItemStack itemStack) {
 		return (int) Math.floor( ((IEnergyContainerItem)itemStack.getItem()).getMaxEnergyStored(itemStack) );
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static ItemStack CoFH_consume(ItemStack itemStack, final int amount_RF, final boolean simulate) {
 		if (((IEnergyContainerItem)itemStack.getItem()).extractEnergy(itemStack, amount_RF, simulate) > 0) {
 			return itemStack;
@@ -222,7 +222,7 @@ public class ItemEnergyWrapper {
 		return null;
 	}
 	
-	@Optional.Method(modid = "CoFHCore")
+	@Optional.Method(modid = "cofhcore")
 	private static ItemStack CoFH_charge(ItemStack itemStack, final int amount_RF, final boolean simulate) {
 		if ( ((IEnergyContainerItem)itemStack.getItem()).receiveEnergy(itemStack, amount_RF, simulate) > 0) {
 			return itemStack;

@@ -462,7 +462,7 @@ public class WarpDriveConfig {
 		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
 		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
 		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
-		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
+		isCoFHCoreLoaded = Loader.isModLoaded("cofhcore");
 		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
 		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
