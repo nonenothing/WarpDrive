@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -48,8 +49,25 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		Item item = Item.getItemFromBlock(this);
+		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
+		
+		// Force a single model through through a custom state mapper
+		/*
+		final StateMapperBase stateMapperBase = new StateMapperBase() {
+			@Nonnull
+			@Override
+			protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState blockState) {
+				return modelResourceLocation;
+			}
+		};
+		ModelLoader.setCustomStateMapper(this, stateMapperBase);
+		/**/
+		
+		// Bind our TESR to our tile entity
+		/*
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityXXXX.class, new TileEntityXXXRenderer());
+		/**/
 	}
 	
 	@Override

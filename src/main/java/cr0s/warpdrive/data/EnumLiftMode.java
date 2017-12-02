@@ -31,7 +31,7 @@ public enum EnumLiftMode implements IStringSerializable {
 	public static EnumLiftMode get(final int damage) {
 		return ID_MAP.get(damage);
 	}
-
+	
 	public String getUnlocalizedName() {
 		return unlocalizedName;
 	}

@@ -90,14 +90,23 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				.withProperty(IS_DOUBLE_SIDED, metadata > 7);
 	}
 	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(BlockProperties.FACING).getIndex()
+		       + (blockState.getValue(IS_DOUBLE_SIDED) ? 8 : 0);
+	}
+	
 	@Nonnull
 	@Override
-	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess world, BlockPos blockPos) {
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess blockAccess, BlockPos blockPos) {
+		if (!(blockState instanceof IExtendedBlockState)) {
+			return blockState;
+		}
+		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
 		EnumForceFieldShape forceFieldShape = EnumForceFieldShape.NONE;
 		EnumForceFieldState forceFieldState = EnumForceFieldState.NOT_CONNECTED;
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
-			TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
+			final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
 			forceFieldShape = tileEntityForceFieldProjector.getShape();
 			forceFieldState = tileEntityForceFieldProjector.getState();
 		}
@@ -107,28 +116,12 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				.withProperty(STATE, forceFieldState);
 	}
 	
-	@Override
-	public int getMetaFromState(IBlockState blockState) {
-		return blockState.getValue(BlockProperties.FACING).getIndex()
-			+ (blockState.getValue(IS_DOUBLE_SIDED) ? 8 : 0);
-	}
-	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		Item item = Item.getItemFromBlock(this);
+		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
-		/*
-		// Force a single model through through a custom state mapper
-		StateMapperBase stateMapperBase = new StateMapperBase() {
-			@Nonnull
-			@Override
-			protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState iBlockState) {
-				return ForceFieldProjectorBakedModel.MODEL_RESOURCE_LOCATION;
-			}
-		};
-		ModelLoader.setCustomStateMapper(this, stateMapperBase);
-		/**/
+		
 		// Bind our TESR to our tile entity
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForceFieldProjector.class, new TileEntityForceFieldProjectorRenderer());
 	}
