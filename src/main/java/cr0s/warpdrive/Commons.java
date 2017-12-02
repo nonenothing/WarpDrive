@@ -1,23 +1,31 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
@@ -42,6 +50,12 @@ import java.util.Set;
 public class Commons {
 	
 	private static final String CHAR_FORMATTING = "" + (char)167;
+	private static final List<EnumBlockRenderType> ALLOWED_RENDER_TYPES = Arrays.asList(
+		EnumBlockRenderType.INVISIBLE,
+//		EnumBlockRenderType.LIQUID,
+		EnumBlockRenderType.ENTITYBLOCK_ANIMATED,
+		EnumBlockRenderType.MODEL
+	);
 	
 	public static String updateEscapeCodes(final String message) {
 		return message
@@ -531,5 +545,42 @@ public class Commons {
 			return 6;
 		}
 		return direction.ordinal();
+	}
+	
+	public static boolean isValidCamouflage(final IBlockState blockState) {
+		// fast check
+		if ( blockState == null
+		  || blockState == Blocks.AIR
+		  || !ALLOWED_RENDER_TYPES.contains(blockState.getRenderType())
+		  || Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockState.getBlock()) ) {
+			return false;
+		}
+		
+		if (blockState instanceof IExtendedBlockState) {
+			// own camouflage blocks
+			try {
+				((IExtendedBlockState) blockState).getValue(BlockProperties.CAMOUFLAGE);
+				// failed: add it to the fast check
+				WarpDrive.logger.error(String.format("Recursive camouflage block detected for block state %s, updating dictionary with %s = NOCAMOUFLAGE dictionary to prevent further errors",
+				                                     blockState,
+				                                     blockState.getBlock().getRegistryName()));
+				Dictionary.BLOCKS_NOCAMOUFLAGE.add(blockState.getBlock());
+				return false;
+			} catch (IllegalArgumentException exception) {
+				// success: this is valid block for us
+			}
+			// other mods camouflage blocks
+			for (IUnlistedProperty<?> property : ((IExtendedBlockState) blockState).getUnlistedNames()) {
+				if (property.getType().toString().contains("IBlockState")) {
+					// failed: add it to the fast check
+					WarpDrive.logger.error(String.format("Suspicious camouflage block detected for block state %s, updating dictionary with %s = NOCAMOUFLAGE dictionary to prevent further errors",
+					                                     blockState,
+					                                     blockState.getBlock().getRegistryName()));
+					Dictionary.BLOCKS_NOCAMOUFLAGE.add(blockState.getBlock());
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

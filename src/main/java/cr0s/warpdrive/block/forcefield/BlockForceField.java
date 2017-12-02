@@ -1,13 +1,17 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
+import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumPermissionNode;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.event.ModelBakeEventHandler;
 
 import java.util.List;
 import java.util.Random;
@@ -16,9 +20,11 @@ import net.minecraft.block.BlockGlass;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -40,6 +46,9 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -62,14 +71,18 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		setUnlocalizedName("warpdrive.forcefield.block" + tier);
 		setBlockUnbreakable();
 		
-		setDefaultState(getDefaultState().withProperty(FREQUENCY, 0));
+		setDefaultState(getDefaultState()
+		                .withProperty(FREQUENCY, 0)
+		);
 		GameRegistry.registerTileEntity(TileEntityForceField.class, WarpDrive.PREFIX + registryName);
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, FREQUENCY);
+		return new ExtendedBlockState(this,
+		                              new IProperty[] { FREQUENCY },
+		                              new IUnlistedProperty[] { BlockProperties.CAMOUFLAGE });
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -92,6 +105,25 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return state.getValue(FREQUENCY);
 	}
 	
+	@Nonnull
+	@Override
+	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess blockAccess, BlockPos blockPos) {
+		if (!(blockState instanceof IExtendedBlockState)) {
+			return blockState;
+		}
+		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
+		if (!(tileEntity instanceof TileEntityForceField)) {
+			return blockState;
+		}
+		final TileEntityForceField tileEntityForceField = (TileEntityForceField) tileEntity;
+		IBlockState blockStateCamouflage = tileEntityForceField.cache_blockStateCamouflage;
+		if (!Commons.isValidCamouflage(blockStateCamouflage)) {
+			blockStateCamouflage = Blocks.AIR.getDefaultState();
+		}
+		return ((IExtendedBlockState) blockState)
+		       .withProperty(BlockProperties.CAMOUFLAGE, blockStateCamouflage);
+	}
+	
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
@@ -102,6 +134,19 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityForceField();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		final Item item = Item.getItemFromBlock(this);
+		ClientProxy.modelInitialisation(item);
+		
+		// register camouflage
+		for (Integer integer : FREQUENCY.getAllowedValues()) {
+			final String variant = String.format("%s=%d", FREQUENCY.getName(), integer);
+			ModelBakeEventHandler.registerCamouflage(new ModelResourceLocation(getRegistryName(), variant));
+		}
 	}
 	
 	@Override
@@ -316,25 +361,14 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		// find explosion strength, defaults to no effect
 		double strength = 0.0D;
 		if (entity == null && (explosionX == Math.rint(explosionX)) && (explosionY == Math.rint(explosionY)) && (explosionZ == Math.rint(explosionZ)) ) {
-<<<<<<< HEAD
 			// IC2 Reactor blowing up => block is already air
-			Block block = world.getBlock((int)explosionX, (int)explosionY, (int)explosionZ);
-			TileEntity tileEntity = world.getTileEntity((int)explosionX, (int)explosionY, (int)explosionZ);
-=======
-			// IC2 Reactor blowing up => bloc is already air
 			IBlockState blockState = world.getBlockState(new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ));
 			TileEntity tileEntity = world.getTileEntity(new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ));
->>>>>>> MC1.10
 			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
 				WarpDrive.logger.info("Block at location is " + blockState.getBlock() + " " + blockState.getBlock().getUnlocalizedName() + " with tileEntity " + tileEntity);
 			}
-<<<<<<< HEAD
 			// explosion with no entity and block removed, hence we can't compute the energy impact => boosting explosion resistance
-			return 2.0F * super.getExplosionResistance(entity, world, x, y, z, explosionX, explosionY, explosionZ);
-=======
-			// explosion with no entity and block removed, hence we can compute the energy impact => boosting explosion resistance
 			return 2.0F * super.getExplosionResistance(entity, world, blockPos, explosionX, explosionY, explosionZ);
->>>>>>> MC1.10
 		}
 		
 		if (entity != null) {

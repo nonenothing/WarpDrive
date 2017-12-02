@@ -11,4 +11,6 @@ public class BlockProperties {
 	public static final PropertyDirection           FACING     = PropertyDirection.create("facing");
 	public static final PropertyEnum<EnumSirenType> SIREN_TYPE = PropertyEnum.create("siren_type", EnumSirenType.class);
 	public static final PropertyEnum<EnumTier>      TIER       = PropertyEnum.create("tier", EnumTier.class);
+	public static final UnlistedPropertyBlockState  CAMOUFLAGE = new UnlistedPropertyBlockState("camouflage");
+	
 }

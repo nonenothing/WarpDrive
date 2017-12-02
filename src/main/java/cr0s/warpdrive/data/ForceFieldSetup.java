@@ -6,15 +6,12 @@ import cr0s.warpdrive.api.IForceFieldShape;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
 import cr0s.warpdrive.block.forcefield.TileEntityForceFieldProjector;
-import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -48,8 +45,6 @@ public class ForceFieldSetup extends GlobalPosition {
 	private IBlockState blockStateCamouflage;
 	private int colorMultiplierCamouflage;
 	private int lightCamouflage;
-	private static final List<Integer> ALLOWED_RENDER_TYPES = Arrays.asList(
-		0, 1, 2, 3, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41);
 	private final HashMap<IForceFieldUpgradeEffector, Float> upgrades = new HashMap<>(EnumForceFieldUpgrade.length);
 	public final Collection<IInventory> inventories = new ArrayList<>(12);
 	
@@ -100,26 +95,22 @@ public class ForceFieldSetup extends GlobalPosition {
 		return false; // TODO
 	}
 	
-	private static boolean isValidCamouflage(final IBlockState blockState) {
-		return blockState != null && blockState != Blocks.AIR && ALLOWED_RENDER_TYPES.contains(blockState.getRenderType()) && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockState.getBlock());
-	}
-	
 	public IBlockState getCamouflageBlockState() {
-		if (isValidCamouflage(blockStateCamouflage)) {
+		if (Commons.isValidCamouflage(blockStateCamouflage)) {
 			return blockStateCamouflage;
 		}
 		return Blocks.AIR.getDefaultState();
 	}
 	
 	public int getCamouflageColorMultiplier() {
-		if (isValidCamouflage(blockStateCamouflage)) {
+		if (Commons.isValidCamouflage(blockStateCamouflage)) {
 			return colorMultiplierCamouflage;
 		}
 		return 0;
 	}
 	
 	public int getCamouflageLight() {
-		if (isValidCamouflage(blockStateCamouflage)) {
+		if (Commons.isValidCamouflage(blockStateCamouflage)) {
 			return lightCamouflage;
 		}
 		return 0;
@@ -192,7 +183,7 @@ public class ForceFieldSetup extends GlobalPosition {
 					if (upgradeEffector == EnumForceFieldUpgrade.CAMOUFLAGE) {
 						BlockPos blockPosCamouflage = tileEntity.getPos().offset(EnumFacing.UP);
 						IBlockState blockStateCandidate = tileEntity.getWorld().getBlockState(blockPosCamouflage);
-						if (isValidCamouflage(blockStateCandidate)) {
+						if (Commons.isValidCamouflage(blockStateCandidate)) {
 							blockStateCamouflage = blockStateCandidate;
 							colorMultiplierCamouflage = 0x808080; // blockStateCandidate.colorMultiplier(tileEntity.getWorld(), blockPosCamouflage);
 							lightCamouflage = blockStateCandidate.getLightValue(tileEntity.getWorld(), blockPosCamouflage);
