@@ -1,16 +1,20 @@
 package cr0s.warpdrive.block.breathing;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.render.RenderBlockStandard;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -59,6 +63,15 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@Override
 	public boolean canCollideCheck(int metadata, boolean hitIfLiquid) {
 		return false;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+		// hide in NEI
+		for (int i = 0; i < 16; i++) {
+			Commons.hideItemStack(new ItemStack(item, 1, i));
+		}
 	}
 	
 	@Override

@@ -114,6 +114,7 @@ public class WarpDriveConfig {
 	public static boolean isGregTech5Loaded = false;
 	public static boolean isEnderIOLoaded = false;
 	public static boolean isAdvancedRepulsionSystemLoaded = false;
+	public static boolean isNotEnoughItemsLoaded = false;
 	
 	public static ItemStack IC2_compressedAir;
 	public static ItemStack IC2_emptyCell;
@@ -967,6 +968,7 @@ public class WarpDriveConfig {
 		if (isAdvancedRepulsionSystemLoaded) {
 			CompatAdvancedRepulsionSystems.register();
 		}
+		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
 		
 		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {

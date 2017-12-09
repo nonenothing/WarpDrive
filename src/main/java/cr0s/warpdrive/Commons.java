@@ -1,5 +1,6 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.VectorI;
 
 import net.minecraft.block.Block;
@@ -34,6 +35,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
+import cpw.mods.fml.common.Optional;
 
 /**
  * Common static methods
@@ -525,5 +528,16 @@ public class Commons {
 		     + (clamp(0, 255, red  ) << 16)
 			 + (clamp(0, 255, green) <<  8)
 			 +  clamp(0, 255, blue );
+	}
+	
+	@Optional.Method(modid = "NotEnoughItems")
+	public static void NEI_hideItemStack(final ItemStack itemStack) {
+		codechicken.nei.api.API.hideItem(itemStack);
+	}
+	
+	public static void hideItemStack(final ItemStack itemStack) {
+		if (WarpDriveConfig.isNotEnoughItemsLoaded) {
+			NEI_hideItemStack(itemStack);
+		}
 	}
 }

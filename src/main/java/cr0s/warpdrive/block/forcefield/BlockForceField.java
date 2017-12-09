@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
@@ -83,15 +84,14 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public boolean renderAsNormalBlock() {
 		return false;
 	}
-
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
-		/* Hide in NEI
+		// hide in NEI
 		for (int i = 0; i < 16; i++) {
-			list.add(new ItemStack(item, 1, i));
+			Commons.hideItemStack(new ItemStack(item, 1, i));
 		}
-		/**/
 	}
 	
 	@SideOnly(Side.CLIENT)
