@@ -11,7 +11,7 @@ import net.minecraftforge.event.entity.item.ItemExpireEvent;
 public class ItemHandler {
 	
 	@SubscribeEvent
-	public static void onItemExpireEvent(final ItemExpireEvent event) {
+	public void onItemExpireEvent(final ItemExpireEvent event) {
 		if (event.entityItem == null) {
 			return;
 		}
