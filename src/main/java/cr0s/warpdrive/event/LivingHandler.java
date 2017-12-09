@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -160,7 +161,23 @@ public class LivingHandler {
 			  && !celestialObject.isHyperspace()
 			  && celestialObjectChild.isInOrbit(entityLivingBase.worldObj.provider.dimensionId, x, z) ) {
 				
-				final WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
+				WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
+				
+				if (worldTarget == null) {
+					try {
+						worldTarget = MinecraftServer.getServer().worldServerForDimension(celestialObjectChild.dimensionId);
+					} catch (Exception exception) {
+						WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d for %s",
+						                                     exception.getMessage(),
+						                                     celestialObjectChild.dimensionId,
+						                                     entityLivingBase));
+						if (WarpDrive.isDev) {
+							exception.printStackTrace();
+						}
+						worldTarget = null;
+					}
+				}
+				
 				if (worldTarget != null) {
 					final VectorI vEntry = celestialObjectChild.getEntryOffset();
 					final int xTarget = x + vEntry.x;
