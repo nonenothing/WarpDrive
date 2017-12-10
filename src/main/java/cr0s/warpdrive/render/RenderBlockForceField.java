@@ -17,10 +17,8 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 	public static RenderBlockForceField instance = new RenderBlockForceField();
 	
 	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
-		// this is not supposed to happen
-		//noinspection ConstantConditions
-		assert(false);
+	public void renderInventoryBlock(final Block block, final int metadata, final int modelId, final RenderBlocks renderer) {
+		RenderCommons.renderInventoryBlock(block, metadata, renderer);
 	}
 	
 	@Override
@@ -31,7 +29,7 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 		}
 		
 		int renderType = -1;
-		Block blockCamouflage = ((TileEntityForceField) tileEntity).cache_blockCamouflage;
+		final Block blockCamouflage = ((TileEntityForceField) tileEntity).cache_blockCamouflage;
 		if (blockCamouflage != null && !Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockCamouflage)) {
 			renderType = blockCamouflage.getRenderType();
 		}
