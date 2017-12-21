@@ -313,20 +313,22 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		sourceWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, sourceWorld, Type.NORMAL);
 		if (sourceWorldTicket == null) {
-			reason.append(String.format("Chunkloading rejected in source world %s. Aborting.", sourceWorld.getWorldInfo().getWorldName()));
+			reason.append(String.format("Chunkloading rejected in source world %s. Aborting.",
+			                            sourceWorld.getWorldInfo().getWorldName()));
 			return false;
 		}
-		int x1 = ship.minX >> 4;
-		int x2 = ship.maxX >> 4;
-		int z1 = ship.minZ >> 4;
-		int z2 = ship.maxZ >> 4;
+		
+		final int minX = ship.minX >> 4;
+		final int maxX = ship.maxX >> 4;
+		final int minZ = ship.minZ >> 4;
+		final int maxZ = ship.maxZ >> 4;
 		int chunkCount = 0;
-		for (int x = x1; x <= x2; x++) {
-			for (int z = z1; z <= z2; z++) {
+		for (int x = minX; x <= maxX; x++) {
+			for (int z = minZ; z <= maxZ; z++) {
 				chunkCount++;
 				if (chunkCount > sourceWorldTicket.getMaxChunkListDepth()) {
-					reason.append(String.format("Ship is extending over %d chunks in source world, this is too much! Max is currently set to %d in config/forgeChunkLoading.cfg. Aborting.",
-					                            (x2 - x1 + 1) * (z2 - z1 + 1),
+					reason.append(String.format("Ship is extending over %d chunks in source world. Max is currently set to %d in config/forgeChunkLoading.cfg. Aborting.",
+					                            (maxX - minX + 1) * (maxZ - minZ + 1),
 					                            sourceWorldTicket.getMaxChunkListDepth()));
 					return false;
 				}
@@ -344,23 +346,23 @@ public class JumpSequencer extends AbstractSequencer {
 		targetWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, targetWorld, Type.NORMAL);
 		if (targetWorldTicket == null) {
 			reason.append(String.format("Chunkloading rejected in target world %s. Aborting.",
-				sourceWorld.getWorldInfo().getWorldName()));
+			                            targetWorld.getWorldInfo().getWorldName()));
 			return false;
 		}
 		
-		ChunkCoordinates targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
-		ChunkCoordinates targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
-		int x1 = Math.min(targetMin.posX, targetMax.posX) >> 4;
-		int x2 = Math.max(targetMin.posX, targetMax.posX) >> 4;
-		int z1 = Math.min(targetMin.posZ, targetMax.posZ) >> 4;
-		int z2 = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
+		final ChunkCoordinates targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
+		final ChunkCoordinates targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+		final int minX = Math.min(targetMin.posX, targetMax.posX) >> 4;
+		final int maxX = Math.max(targetMin.posX, targetMax.posX) >> 4;
+		final int minZ = Math.min(targetMin.posZ, targetMax.posZ) >> 4;
+		final int maxZ = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
 		int chunkCount = 0;
-		for (int x = x1; x <= x2; x++) {
-			for (int z = z1; z <= z2; z++) {
+		for (int x = minX; x <= maxX; x++) {
+			for (int z = minZ; z <= maxZ; z++) {
 				chunkCount++;
 				if (chunkCount > targetWorldTicket.getMaxChunkListDepth()) {
-					reason.append(String.format("Ship is extending over %d chunks in target world, this is too much! Max is currently set to %d in config/forgeChunkLoading.cfg. Aborting.",
-					                            (x2 - x1 + 1) * (z2 - z1 + 1),
+					reason.append(String.format("Ship is extending over %d chunks in target world. Max is currently set to %d in config/forgeChunkLoading.cfg. Aborting.",
+					                            (maxX - minX + 1) * (maxZ - minZ + 1),
 					                            targetWorldTicket.getMaxChunkListDepth()));
 					return false;
 				}
@@ -376,14 +378,14 @@ public class JumpSequencer extends AbstractSequencer {
 			WarpDrive.logger.info(this + " Releasing chunks");
 		}
 		
-		int x1, x2, z1, z2;
+		int minX, maxX, minZ, maxZ;
 		if (sourceWorldTicket != null) {
-			x1 = ship.minX >> 4;
-			x2 = ship.maxX >> 4;
-			z1 = ship.minZ >> 4;
-			z2 = ship.maxZ >> 4;
-			for (int x = x1; x <= x2; x++) {
-				for (int z = z1; z <= z2; z++) {
+			minX = ship.minX >> 4;
+			maxX = ship.maxX >> 4;
+			minZ = ship.minZ >> 4;
+			maxZ = ship.maxZ >> 4;
+			for (int x = minX; x <= maxX; x++) {
+				for (int z = minZ; z <= maxZ; z++) {
 					sourceWorld.getChunkFromChunkCoords(x, z).generateSkylightMap();
 					ForgeChunkManager.unforceChunk(sourceWorldTicket, new ChunkCoordIntPair(x, z));
 				}
@@ -393,14 +395,14 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		if (targetWorldTicket != null) {
-			ChunkCoordinates targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
-			ChunkCoordinates targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
-			x1 = Math.min(targetMin.posX, targetMax.posX) >> 4;
-			x2 = Math.max(targetMin.posX, targetMax.posX) >> 4;
-			z1 = Math.min(targetMin.posZ, targetMax.posZ) >> 4;
-			z2 = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
-			for (int x = x1; x <= x2; x++) {
-				for (int z = z1; z <= z2; z++) {
+			final ChunkCoordinates targetMin = transformation.apply(ship.minX, ship.minY, ship.minZ);
+			final ChunkCoordinates targetMax = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+			minX = Math.min(targetMin.posX, targetMax.posX) >> 4;
+			maxX = Math.max(targetMin.posX, targetMax.posX) >> 4;
+			minZ = Math.min(targetMin.posZ, targetMax.posZ) >> 4;
+			maxZ = Math.max(targetMin.posZ, targetMax.posZ) >> 4;
+			for (int x = minX; x <= maxX; x++) {
+				for (int z = minZ; z <= maxZ; z++) {
 					targetWorld.getChunkFromChunkCoords(x, z).generateSkylightMap();
 					ForgeChunkManager.unforceChunk(targetWorldTicket, new ChunkCoordIntPair(x, z));
 				}
@@ -521,6 +523,7 @@ public class JumpSequencer extends AbstractSequencer {
 		             || shipMovementType == EnumShipMovementType.PLANET_LANDING
 		             || shipMovementType == EnumShipMovementType.HYPERSPACE_EXITING
 		             || shipMovementType == EnumShipMovementType.HYPERSPACE_ENTERING;
+		// note: when deploying from scanner shipMovementType is CREATIVE, so betweenWorlds is false
 		
 		{// compute targetWorld and movement vector (moveX, moveY, moveZ)
 			final CelestialObject celestialObjectSource = CelestialObjectManager.get(sourceWorld, ship.coreX, ship.coreZ);
@@ -534,11 +537,13 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		// Check mass constrains
-		if ( CelestialObjectManager.isPlanet(sourceWorld, ship.coreX, ship.coreZ)
+		if ( ( sourceWorld != null
+		    && CelestialObjectManager.isPlanet(sourceWorld, ship.coreX, ship.coreZ) )
 		  || CelestialObjectManager.isPlanet(targetWorld, ship.coreX + moveX, ship.coreZ + moveZ) ) {
 			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE) {
 				LocalProfiler.stop();
-				final String msg = "Ship is too big for a planet (max is " + WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE + " blocks)";
+				final String msg = String.format("Ship is too big for a planet (max is %d blocks while ship is %d blocks)",
+				                                 WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE, ship.actualMass);
 				ship.messageToAllPlayersOnShip(msg);
 				disable(msg);
 				return;
@@ -676,12 +681,14 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		{
-			final String msg = ship.saveEntities();
-			if (msg != null) {
-				disable(msg);
-				ship.messageToAllPlayersOnShip(msg);
-				LocalProfiler.stop();
-				return;
+			if (shipMovementType != EnumShipMovementType.CREATIVE) {
+				if (!ship.saveEntities(reason)) {
+					final String msg = reason.toString();
+					disable(msg);
+					ship.messageToAllPlayersOnShip(msg);
+					LocalProfiler.stop();
+					return;
+				}
 			}
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info(this + " Saved " + ship.entitiesOnShip.size() + " entities from ship");
@@ -923,7 +930,7 @@ public class JumpSequencer extends AbstractSequencer {
 				
 				final ChunkCoordinates target = jumpBlock.deploy(targetWorld, transformation);
 				
-				if (sourceWorld != null) {
+				if (shipMovementType != EnumShipMovementType.CREATIVE) {
 					sourceWorld.removeTileEntity(jumpBlock.x, jumpBlock.y, jumpBlock.z);
 				}
 				
@@ -1024,7 +1031,7 @@ public class JumpSequencer extends AbstractSequencer {
 				for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
 					final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
-						if (sourceWorld != null) {
+						if (shipMovementType != EnumShipMovementType.CREATIVE) {
 							blockTransformer.removeExternals(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z,
 							                                 jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity);
 						}
@@ -1048,21 +1055,20 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		LocalProfiler.start("Jump.moveEntities");
 		
-		if (ship.entitiesOnShip != null) {
-			for (MovingEntity me : ship.entitiesOnShip) {
-				Entity entity = me.entity;
-				
+		if (shipMovementType != EnumShipMovementType.CREATIVE) {
+			for (MovingEntity movingEntity : ship.entitiesOnShip) {
+				final Entity entity = movingEntity.getEntity();
 				if (entity == null) {
 					continue;
 				}
 				
-				double oldEntityX = me.oldX;
-				double oldEntityY = me.oldY;
-				double oldEntityZ = me.oldZ;
+				final double oldEntityX = movingEntity.originalX;
+				final double oldEntityY = movingEntity.originalY;
+				final double oldEntityZ = movingEntity.originalZ;
 				Vec3 target = transformation.apply(oldEntityX, oldEntityY, oldEntityZ);
-				double newEntityX = target.xCoord;
-				double newEntityY = target.yCoord;
-				double newEntityZ = target.zCoord;
+				final double newEntityX = target.xCoord;
+				final double newEntityY = target.yCoord;
+				final double newEntityZ = target.zCoord;
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.info(String.format("Entity moving: (%.2f %.2f %.2f) -> (%.2f %.2f %.2f) entity %s",
@@ -1340,25 +1346,25 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		LocalProfiler.start("Jump.restoreEntitiesPosition");
 		
-		if (ship.entitiesOnShip != null) {
+		if (shipMovementType != EnumShipMovementType.CREATIVE) {
 			for (MovingEntity movingEntity : ship.entitiesOnShip) {
-				Entity entity = movingEntity.entity;
-				
+				final Entity entity = movingEntity.getEntity();
 				if (entity == null) {
 					continue;
 				}
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info("Entity restoring position at (" + movingEntity.oldX + " " + movingEntity.oldY + " " + movingEntity.oldZ + ")");
+					WarpDrive.logger.info(String.format("Entity restoring position at (%f %f %f)",
+					                                    movingEntity.originalX, movingEntity.originalY, movingEntity.originalZ));
 				}
 				
 				// Update position
 				if (entity instanceof EntityPlayerMP) {
-					EntityPlayerMP player = (EntityPlayerMP) entity;
+					final EntityPlayerMP player = (EntityPlayerMP) entity;
 					
-					player.setPositionAndUpdate(movingEntity.oldX, movingEntity.oldY, movingEntity.oldZ);
+					player.setPositionAndUpdate(movingEntity.originalX, movingEntity.originalY, movingEntity.originalZ);
 				} else {
-					entity.setPosition(movingEntity.oldX, movingEntity.oldY, movingEntity.oldZ);
+					entity.setPosition(movingEntity.originalX, movingEntity.originalY, movingEntity.originalZ);
 				}
 			}
 		}
@@ -1369,8 +1375,8 @@ public class JumpSequencer extends AbstractSequencer {
 	private class CheckMovementResult {
 		final ArrayList<Vector3> atSource;
 		final ArrayList<Vector3> atTarget;
-		boolean isCollision = false;
-		public String reason = "";
+		boolean isCollision;
+		public String reason;
 		
 		CheckMovementResult() {
 			atSource = new ArrayList<>(1);

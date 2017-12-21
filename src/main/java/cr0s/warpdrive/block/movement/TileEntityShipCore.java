@@ -33,7 +33,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
@@ -412,9 +411,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		    && tileEntityShipControllerExpected == tileEntityShipControllerWeakReference.get();
 	}
 	
-	public void messageToAllPlayersOnShip(final String message) {
+	protected void messageToAllPlayersOnShip(final String message) {
 		final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final String messageFormatted = String.format("[%s] %s",
+		                                              ((!shipName.isEmpty()) ? shipName : "ShipCore"),
+		                                              message);
 		
 		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + message);
 		for (Object object : list) {
@@ -422,7 +424,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				continue;
 			}
 			
-			Commons.addChatMessage((EntityPlayer) object, "[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] " + message);
+			Commons.addChatMessage((EntityPlayer) object, messageFormatted);
 		}
 	}
 	

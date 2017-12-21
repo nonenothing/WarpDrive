@@ -1,17 +1,43 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.config.WarpDriveConfig;
+
+import java.lang.ref.WeakReference;
+
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class MovingEntity {
-    public final Entity entity;
-    public final double oldX;
-    public final double oldY;
-    public final double oldZ;
-
-    public MovingEntity(Entity parEntity) {
-        entity = parEntity;
-        oldX = parEntity.posX;
-        oldY = parEntity.posY;
-        oldZ = parEntity.posZ;
+    
+    private final WeakReference<Entity> weakEntity;
+    public final double originalX;
+    public final double originalY;
+    public final double originalZ;
+    
+    public MovingEntity(final Entity entity) {
+        weakEntity = new WeakReference<>(entity);
+        originalX = entity.posX;
+        originalY = entity.posY;
+        originalZ = entity.posZ;
+    }
+    
+    public Entity getEntity() {
+        return weakEntity.get();
+    }
+    
+    public boolean isUnlimited() {
+        final Entity entity = getEntity();
+        if (!(entity instanceof EntityPlayer)) {
+            return false;
+        }
+        
+        final String playerName = ((EntityPlayer) entity).getDisplayName();
+        for (final String unlimitedName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
+            if (unlimitedName.equals(playerName)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

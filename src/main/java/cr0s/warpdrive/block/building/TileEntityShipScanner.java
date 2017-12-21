@@ -604,24 +604,31 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	private Object[] deploy(Object[] arguments) {
-		if (arguments.length == 5) {
-			String fileName = (String) arguments[0];
-			int x = Commons.toInt(arguments[1]);
-			int y = Commons.toInt(arguments[2]);
-			int z = Commons.toInt(arguments[3]);
-			byte rotationSteps = (byte) Commons.toInt(arguments[4]);
-			
-			if (!new File(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic").exists()) {
-				return new Object[] { 0, "Specified schematic file was not found!" };
-			} else {
-				final StringBuilder reason = new StringBuilder();
-				final int result = deployShip(fileName, x, y, z, rotationSteps, false, reason);
-				playerName = "";
-				return new Object[] { result, reason.toString() };
-			}
-		} else {
-			return new Object[] { 4, "Invalid arguments count, you need .schematic file name, offsetX, offsetY, offsetZ, rotationSteps!" };
+		if (arguments.length != 5) {
+			return new Object[] { 4, "Invalid arguments count, you need <.schematic file name>, <offsetX>, <offsetY>, <offsetZ>, <rotationSteps>!" };
 		}
+		
+		final String fileName = (String) arguments[0];
+		final int x = Commons.toInt(arguments[1]);
+		final int y = Commons.toInt(arguments[2]);
+		final int z = Commons.toInt(arguments[3]);
+		final byte rotationSteps = (byte) Commons.toInt(arguments[4]);
+		
+		if (!new File(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic").exists()) {
+			return new Object[] { 0, "Specified schematic file was not found!" };
+		}
+		
+		final StringBuilder reason = new StringBuilder();
+		final int result = deployShip(fileName, x, y, z, rotationSteps, false, reason);
+		
+		final EntityPlayer entityPlayer = worldObj.getClosestPlayer(xCoord, yCoord, zCoord, 8);
+		if (entityPlayer != null) {
+			playerName = entityPlayer.getCommandSenderName();
+		} else {
+			playerName = "";
+		}
+		
+		return new Object[] { result, reason.toString() };
 	}
 	
 	private Object[] state() {

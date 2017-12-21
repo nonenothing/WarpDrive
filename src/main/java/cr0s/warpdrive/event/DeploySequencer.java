@@ -4,7 +4,6 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ISequencerCallbacks;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.JumpShip;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -16,11 +15,13 @@ public class DeploySequencer extends JumpSequencer {
 	private String playerName;
 	private ISequencerCallbacks callback;
 	
+	/*
 	public DeploySequencer(final TileEntityShipCore shipCore, final EnumShipMovementType shipMovementType, final String nameTarget,
 	                       final int moveX, final int moveY, final int moveZ, final byte rotationSteps,
 	                       final int destX, final int destY, final int destZ) {
 		super(shipCore, shipMovementType, nameTarget, moveX, moveY, moveZ, rotationSteps, destX, destY, destZ);
 	}
+	/**/
 	
 	public DeploySequencer(final JumpShip jumpShip, final World world,
 	                       final int destX, final int destY, final int destZ, final byte rotationSteps) {
@@ -29,6 +30,7 @@ public class DeploySequencer extends JumpSequencer {
 	
 	public void setCaptain(final String playerName) {
 		this.playerName = playerName;
+		ship.setCaptain(playerName);
 	}
 	
 	public void setCallback(final ISequencerCallbacks object) {
