@@ -341,6 +341,9 @@ public class JumpShip {
 										IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 										if (blockTransformer != null) {
 											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity, reason)) {
+												if (reason.length() > 0) {
+													reason.append("\n");
+												}
 												reason.append(String.format("Jump aborted by on-board block %s at (%d %d %d).",
 												                            jumpBlock.block.getLocalizedName(),
 												                            jumpBlock.x, jumpBlock.y, jumpBlock.z));
