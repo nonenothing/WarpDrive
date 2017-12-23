@@ -12,6 +12,7 @@ import cr0s.warpdrive.compat.CompatBuildCraft;
 import cr0s.warpdrive.compat.CompatCarpentersBlocks;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatCustomNpcs;
+import cr0s.warpdrive.compat.CompatDraconicEvolution;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatEvilCraft;
 import cr0s.warpdrive.compat.CompatForgeMultipart;
@@ -989,6 +990,10 @@ public class WarpDriveConfig {
 		boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
 		if (isCustomNpcsLoaded) {
 			CompatCustomNpcs.register();
+		}
+		boolean isDraconicEvolutionLoaded = Loader.isModLoaded("DraconicEvolution");
+		if (isDraconicEvolutionLoaded) {
+			CompatDraconicEvolution.register();
 		}
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
