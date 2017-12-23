@@ -134,26 +134,26 @@ public class CompatArsMagica2 implements IBlockTransformer {
 		if (!(tileEntity instanceof IPowerNode) || nbtBase == null) {
 			return;
 		}
-		NBTTagCompound nbtTagCompound = (NBTTagCompound) nbtBase;
+		final NBTTagCompound nbtTagCompound = (NBTTagCompound) nbtBase;
 		
 		// powerAmounts
 		// (no changes)
 		
 		// powerPathList
-		NBTTagList powerPathList = nbtTagCompound.getTagList("powerPathList", Constants.NBT.TAG_COMPOUND);
+		final NBTTagList powerPathList = nbtTagCompound.getTagList("powerPathList", Constants.NBT.TAG_COMPOUND);
 		if (powerPathList != null) {
 			for (int powerPathIndex = 0; powerPathIndex < powerPathList.tagCount(); powerPathIndex++) {
-				NBTTagCompound powerPathEntry = (NBTTagCompound) powerPathList.removeTag(0);
+				final NBTTagCompound powerPathEntry = (NBTTagCompound) powerPathList.removeTag(0);
 				
 				// powerPathList[powerPathIndex].powerType
 				// (no change)
 				
 				// powerPathList[powerPathIndex].nodePaths
-				NBTTagList nodePaths = powerPathEntry.getTagList("nodePaths", Constants.NBT.TAG_LIST);
+				final NBTTagList nodePaths = powerPathEntry.getTagList("nodePaths", Constants.NBT.TAG_LIST);
 				if (nodePaths != null) {
 					for (int nodePathIndex = 0; nodePathIndex < nodePaths.tagCount(); nodePathIndex++) {
 						// we can't directly access it, hence removing then adding back later on
-						NBTTagList nodeList = (NBTTagList) nodePaths.removeTag(0);
+						final NBTTagList nodeList = (NBTTagList) nodePaths.removeTag(0);
 						if (nodeList != null) {
 							for (int nodeIndex = 0; nodeIndex < nodeList.tagCount(); nodeIndex++) {
 								NBTTagCompound node = (NBTTagCompound) nodeList.removeTag(0);
@@ -162,7 +162,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 								node.setFloat("Vec3_x", (float)target.xCoord);
 								node.setFloat("Vec3_y", (float)target.yCoord);
 								node.setFloat("Vec3_z", (float)target.zCoord);
-								//tack the node on to the power path
+								// add the node on to the power path
 								nodeList.appendTag(node);
 							}
 							nodePaths.appendTag(nodeList);
@@ -175,9 +175,9 @@ public class CompatArsMagica2 implements IBlockTransformer {
 			nbtTagCompound.setTag("powerPathList", powerPathList);
 		}
 		
-		World targetWorld = transformation.getTargetWorld();
-		ChunkCoordinates target = transformation.apply(tileEntity);
-		TileEntity tileEntityTarget = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
+		final World targetWorld = transformation.getTargetWorld();
+		final ChunkCoordinates target = transformation.apply(tileEntity);
+		final TileEntity tileEntityTarget = targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
 		if (tileEntityTarget == null) {
 			WarpDrive.logger.error("ArsMagica2 compat: No tile entity found at target location " + target + ". We might loose mana network " + nbtBase + ".");
 		} else if (!(tileEntityTarget instanceof IPowerNode)) {
