@@ -873,6 +873,13 @@ public class JumpSequencer extends AbstractSequencer {
 				return false;
 			}
 			
+			// is it defined?
+			if (celestialObject.isVirtual()) {
+				reason.append(String.format("Sorry, we can't go to %s. This is a virtual celestial object. It's either a decorative planet or a server misconfiguration",
+				                            celestialObject.getDisplayName()));
+				return false;
+			}
+			
 			// validate world availability
 			targetWorld = MinecraftServer.getServer().worldServerForDimension(celestialObject.dimensionId);
 			if (targetWorld == null) {
