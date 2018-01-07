@@ -51,6 +51,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class WarpDriveConfig {
 	
@@ -113,6 +115,7 @@ public class WarpDriveConfig {
 	public static boolean isArsMagica2Loaded = false;
 	public static boolean isImmersiveEngineeringLoaded = false;
 	public static boolean isGregTech5Loaded = false;
+	public static boolean isGregTech6Loaded = false;
 	public static boolean isEnderIOLoaded = false;
 	public static boolean isAdvancedRepulsionSystemLoaded = false;
 	public static boolean isNotEnoughItemsLoaded = false;
@@ -380,13 +383,52 @@ public class WarpDriveConfig {
 		try {
 			return GameRegistry.findBlock(mod, id);
 		} catch (Exception exception) {
-			WarpDrive.logger.info("Failed to get mod block for " + mod + ":" + id);
+			WarpDrive.logger.info(String.format("Failed to get mod block for %s:%s", mod, id));
 			exception.printStackTrace();
 		}
 		return Blocks.fire;
 	}
 	
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
+		final ItemStack itemStack = getModItemStackOrNull(mod, id, meta);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		return new ItemStack(Blocks.fire);
+	}
+	
+	public static ItemStack getModItemStack(final String mod1, final String id1, final int meta1,
+	                                        final String mod2, final String id2, final int meta2) {
+		ItemStack itemStack = getModItemStackOrNull(mod1, id1, meta1);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		itemStack = getModItemStackOrNull(mod2, id2, meta2);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		return new ItemStack(Blocks.fire);
+	}
+	
+	public static ItemStack getModItemStack(final String mod1, final String id1, final int meta1,
+	                                        final String mod2, final String id2, final int meta2,
+	                                        final String mod3, final String id3, final int meta3) {
+		ItemStack itemStack = getModItemStackOrNull(mod1, id1, meta1);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		itemStack = getModItemStackOrNull(mod2, id2, meta2);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		itemStack = getModItemStackOrNull(mod3, id3, meta3);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		return new ItemStack(Blocks.fire);
+	}
+	
+	private static ItemStack getModItemStackOrNull(final String mod, final String id, final int meta) {
 		try {
 			ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
 			if (meta != -1) {
@@ -394,13 +436,26 @@ public class WarpDriveConfig {
 			}
 			return item;
 		} catch (Exception exception) {
-			WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
+			WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
+			return null;
 		}
-		return new ItemStack(Blocks.fire);
 	}
 	
-	protected static double[] getDoubleList(final Configuration config, final String categoy, final String key, final String comment, final double[] valuesDefault) {
-		double[] valuesRead = config.get(categoy, key, valuesDefault, comment).getDoubleList();
+	public static ItemStack getOreDictionaryEntry(final String ore) {
+		if (!OreDictionary.doesOreNameExist(ore)) {
+			WarpDrive.logger.info("Failed to get ore named " + ore);
+			return new ItemStack(Blocks.fire);
+		}
+		final ArrayList<ItemStack> itemStacks = OreDictionary.getOres(ore);
+		if (itemStacks.isEmpty()) {
+			WarpDrive.logger.info(String.format("Failed to get item from empty ore dictionary '%s'", ore));
+			return new ItemStack(Blocks.fire);
+		}
+		return itemStacks.get(0);
+	}
+	
+	protected static double[] getDoubleList(final Configuration config, final String category, final String key, final String comment, final double[] valuesDefault) {
+		double[] valuesRead = config.get(category, key, valuesDefault, comment).getDoubleList();
 		if (valuesRead.length != valuesDefault.length) {
 			valuesRead = valuesDefault.clone();
 		}
@@ -957,9 +1012,15 @@ public class WarpDriveConfig {
 			CompatImmersiveEngineering.register();
 		}
 		isGregTech5Loaded = false;
+		isGregTech6Loaded = false;
 		if (Loader.isModLoaded("gregtech")) {
-			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
 			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
+			if ( (isGregTech5Loaded && isGregTech6Loaded)
+			  || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
+				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
+			}
 		}
 		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
 		if (isEnderIOLoaded) {
