@@ -612,15 +612,17 @@ public class JumpSequencer extends AbstractSequencer {
 		transformation = new Transformation(ship, targetWorld, moveX, moveY, moveZ, rotationSteps);
 		
 		{
-			ChunkCoordinates target1 = transformation.apply(ship.minX, ship.minY, ship.minZ);
-			ChunkCoordinates target2 = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
-			AxisAlignedBB aabbSource = AxisAlignedBB.getBoundingBox(ship.minX, ship.minY, ship.minZ, ship.maxX, ship.maxY, ship.maxZ);
+			final ChunkCoordinates target1 = transformation.apply(ship.minX, ship.minY, ship.minZ);
+			final ChunkCoordinates target2 = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+			final AxisAlignedBB aabbSource = AxisAlignedBB.getBoundingBox(ship.minX, ship.minY, ship.minZ, ship.maxX, ship.maxY, ship.maxZ);
 			aabbSource.expand(1.0D, 1.0D, 1.0D);
-			AxisAlignedBB aabbTarget = AxisAlignedBB.getBoundingBox(
+			final AxisAlignedBB aabbTarget = AxisAlignedBB.getBoundingBox(
 					Math.min(target1.posX, target2.posX), Math.min(target1.posY, target2.posY), Math.min(target1.posZ, target2.posZ),
 					Math.max(target1.posX, target2.posX), Math.max(target1.posY, target2.posY), Math.max(target1.posZ, target2.posZ));
 			// Validate positions aren't overlapping
-			if (!betweenWorlds && aabbSource.intersectsWith(aabbTarget)) {
+			if ( shipMovementType != EnumShipMovementType.CREATIVE
+			  && !betweenWorlds
+			  && aabbSource.intersectsWith(aabbTarget) ) {
 				// render fake explosions
 				doCollisionDamage(false);
 				
