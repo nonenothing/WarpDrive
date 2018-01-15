@@ -621,13 +621,16 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		final StringBuilder reason = new StringBuilder();
 		final int result = deployShip(fileName, x, y, z, rotationSteps, false, reason);
 		
+		// don't force captain when deploying from LUA
+		playerName = null;
+		/*
 		final EntityPlayer entityPlayer = worldObj.getClosestPlayer(xCoord, yCoord, zCoord, 8);
 		if (entityPlayer != null) {
 			playerName = entityPlayer.getCommandSenderName();
 		} else {
 			playerName = "";
 		}
-		
+		/**/
 		return new Object[] { result, reason.toString() };
 	}
 	
