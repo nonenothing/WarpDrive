@@ -1152,7 +1152,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// calculation start is done synchronously, by caller
 			try {
-				if (projector.isValid()) {
+				if ( projector != null
+				  && projector.isValid() ) {
 					ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.debug(this + " Calculation started for " + projector);
@@ -1202,7 +1203,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				vInteriorBlocks = null;
 				vPerimeterBlocks = null;
 				exception.printStackTrace();
-				WarpDrive.logger.error(this + " Calculation failed");
+				WarpDrive.logger.error(this + " Calculation failed for " + (projector == null ? "-null-" : projector.toString()));
 			}
 			
 			projector.calculation_done(vInteriorBlocks, vPerimeterBlocks);
