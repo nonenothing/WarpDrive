@@ -3,6 +3,7 @@ package cr0s.warpdrive.event;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
@@ -340,7 +341,13 @@ public class ChunkHandler {
 			// chunk isn't loaded, skip it
 			return null;
 		}
-		return chunkData.getStateAir(world, x, y, z);
+		try {
+			return chunkData.getStateAir(world, x, y, z);
+		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded in %s @ (%d %d %d)",
+			                                    world.provider.getDimensionName(), x, y, z));
+			return null;
+		}
 	}
 	
 	private static void updateTick(final World world) {

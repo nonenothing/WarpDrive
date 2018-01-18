@@ -2,6 +2,7 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.event.ChunkHandler;
 
@@ -369,7 +370,7 @@ public class ChunkData {
 		tickAirSegment[indexData & 0xFFF] = (byte) ((tickCurrent + delay) & 0x7F); 
 	}
 	
-	public StateAir getStateAir(final World world, final int x, final int y, final int z) {
+	public StateAir getStateAir(final World world, final int x, final int y, final int z) throws ExceptionChunkNotLoaded {
 		final StateAir stateAir = new StateAir(this);
 		stateAir.refresh(world, x, y, z);
 		return stateAir;
@@ -447,7 +448,14 @@ public class ChunkData {
 				final int x = (chunkCoordIntPair.chunkXPos << 4) + ((indexBlock & 0x00F0) >> 4);
 				final int y = (indexSegment << 4) + ((indexBlock & 0x0F00) >> 8);
 				final int z = (chunkCoordIntPair.chunkZPos << 4) + (indexBlock & 0x000F);
-				AirSpreader.execute(world, x, y, z);
+				try {
+					AirSpreader.execute(world, x, y, z);
+				} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+					// no operation
+					if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
+						WarpDrive.logger.error(exceptionChunkNotLoaded.getMessage());
+					}
+				}
 			}
 			
 			// clear empty segment

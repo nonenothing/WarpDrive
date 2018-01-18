@@ -7,6 +7,7 @@ import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.event.ChunkHandler;
+import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
@@ -74,27 +75,28 @@ public class StateAir {
 		this.chunk = null;
 	}
 	
-	public void refresh(final World world, final int x, final int y, final int z) {
+	public void refresh(final World world, final int x, final int y, final int z) throws ExceptionChunkNotLoaded {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		refresh(world);
 	}
 	
-	public void refresh(final World world, final StateAir stateAir, final ForgeDirection forgeDirection) {
+	public void refresh(final World world, final StateAir stateAir, final ForgeDirection forgeDirection) throws ExceptionChunkNotLoaded {
 		x = stateAir.x + forgeDirection.offsetX;
 		y = stateAir.y + forgeDirection.offsetY;
 		z = stateAir.z + forgeDirection.offsetZ;
 		refresh(world);
 	}
 	
-	private void refresh(final World world) {
+	private void refresh(final World world) throws ExceptionChunkNotLoaded {
 		// update chunk cache
 		if (chunkData == null || !chunkData.isInside(x, y, z)) {
 			chunkData = ChunkHandler.getChunkData(world, x, y, z);
 			if (chunkData == null) {
-				// chunk isn't loaded, skip it
-				assert(false);
+				// chunk isn't loaded, abort treatment or it'll trigger a CME
+				throw new ExceptionChunkNotLoaded(String.format("Air refresh aborted in %s @ (%d %d %d)",
+				                                                world.provider.getDimensionName(), x, y, z));
 			}
 			chunk = null;
 		}
@@ -197,7 +199,11 @@ public class StateAir {
 			world.setBlock(x, y, z, WarpDrive.blockAirSource, direction.ordinal(), 2);
 			block = WarpDrive.blockAirSource;
 			updateBlockType(world);
-			setGeneratorAndUpdateVoid(world, pressure, direction.getOpposite());
+			try {
+				setGeneratorAndUpdateVoid(world, pressure, direction.getOpposite());
+			} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+				// no operation
+			}
 			setConcentration(world, (byte) CONCENTRATION_MAX);
 		}
 		return updateRequired;
@@ -335,7 +341,7 @@ public class StateAir {
 		}
 	}
 	
-	protected void setGeneratorAndUpdateVoid(final World world, final short pressureNew, final ForgeDirection directionNew) {
+	protected void setGeneratorAndUpdateVoid(final World world, final short pressureNew, final ForgeDirection directionNew) throws ExceptionChunkNotLoaded {
 		if (pressureNew == 0 && pressureVoid > 0) {
 			removeGeneratorAndCascade(world);
 		} else {
@@ -365,10 +371,10 @@ public class StateAir {
 		assert (pressureGenerator == 0 || pressureGenerator == GENERATOR_PRESSURE_MAX || directionGenerator != ForgeDirection.UNKNOWN);
 		assert (pressureGenerator == 0 || directionGenerator != ForgeDirection.UNKNOWN);
 	}
-	protected void removeGeneratorAndCascade(final World world) {
+	protected void removeGeneratorAndCascade(final World world) throws ExceptionChunkNotLoaded {
 		removeGeneratorAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
 	}
-	private void removeGeneratorAndCascade(final World world, final int depth) {
+	private void removeGeneratorAndCascade(final World world, final int depth) throws ExceptionChunkNotLoaded {
 		if (pressureGenerator != 0) {
 			assert (directionGenerator != ForgeDirection.UNKNOWN);
 			dataAir = (dataAir & ~(GENERATOR_PRESSURE_MASK | GENERATOR_DIRECTION_MASK)) | (ForgeDirection.UNKNOWN.ordinal() << GENERATOR_DIRECTION_SHIFT);
@@ -409,10 +415,10 @@ public class StateAir {
 		assert (pressureVoid == 0 || directionVoid != ForgeDirection.UNKNOWN);
 		assert (pressureVoid == 0 || pressureVoid == VOID_PRESSURE_MAX || directionVoid != ForgeDirection.UNKNOWN);
 	}
-	protected void removeVoidAndCascade(final World world) {
+	protected void removeVoidAndCascade(final World world) throws ExceptionChunkNotLoaded {
 		removeVoidAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
 	}
-	private void removeVoidAndCascade(final World world, final int depth) {
+	private void removeVoidAndCascade(final World world, final int depth) throws ExceptionChunkNotLoaded {
 		if (pressureVoid != 0) {
 			assert (directionVoid != ForgeDirection.UNKNOWN);
 			dataAir = (dataAir & ~(VOID_PRESSURE_MASK | VOID_DIRECTION_MASK)) | (ForgeDirection.UNKNOWN.ordinal() << VOID_DIRECTION_SHIFT);
@@ -495,48 +501,53 @@ public class StateAir {
 	}
 	
 	public static void dumpAroundEntity(final EntityPlayer entityPlayer) {
-		StateAir stateAirs[][][] = new StateAir[3][3][3];
-		for (int dy = -1; dy <= 1; dy++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				for (int dx = -1; dx <= 1; dx++) {
-					StateAir stateAir = new StateAir(null);
-					stateAir.refresh(entityPlayer.worldObj,
-					                 MathHelper.floor_double(entityPlayer.posX) + dx,
-					                 MathHelper.floor_double(entityPlayer.posY) + dy,
-					                 MathHelper.floor_double(entityPlayer.posZ) + dz);
-					stateAirs[dx + 1][dy + 1][dz + 1] = stateAir;
+		try {
+			final StateAir stateAirs[][][] = new StateAir[3][3][3];
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					for (int dx = -1; dx <= 1; dx++) {
+						StateAir stateAir = new StateAir(null);
+						stateAir.refresh(entityPlayer.worldObj,
+						                 MathHelper.floor_double(entityPlayer.posX) + dx,
+						                 MathHelper.floor_double(entityPlayer.posY) + dy,
+						                 MathHelper.floor_double(entityPlayer.posZ) + dz);
+						stateAirs[dx + 1][dy + 1][dz + 1] = stateAir;
+					}
 				}
 			}
-		}
-		StringBuilder message = new StringBuilder("------------------------------------------------\n§3Air, §aGenerator §7and §dVoid §7stats at " + entityPlayer.ticksExisted);
-		for (int indexY = 2; indexY >= 0; indexY--) {
-			for (int indexZ = 2; indexZ >= 0; indexZ--) {
-				message.append("\n");
-				for (int indexX = 0; indexX <= 2; indexX++) {
-					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%2d", 100 + stateAir.concentration).substring(1);
-					message.append(String.format("§3%s ", stringValue));
+			final StringBuilder message = new StringBuilder("------------------------------------------------\n");
+			message.append("§3Air, §aGenerator §7and §dVoid §7stats at ").append(entityPlayer.ticksExisted);
+			for (int indexY = 2; indexY >= 0; indexY--) {
+				for (int indexZ = 2; indexZ >= 0; indexZ--) {
+					message.append("\n");
+					for (int indexX = 0; indexX <= 2; indexX++) {
+						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final String stringValue = String.format("%2d", 100 + stateAir.concentration).substring(1);
+						message.append(String.format("§3%s ", stringValue));
+					}
+					message.append("§f| ");
+					for (int indexX = 0; indexX <= 2; indexX++) {
+						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final String stringValue = String.format("%X", 0x100 + stateAir.pressureGenerator).substring(1);
+						final String stringDirection = directionToChar(stateAir.directionGenerator);
+						message.append(String.format("§e%s §a%s ", stringValue, stringDirection));
+					}
+					message.append("§f| ");
+					for (int indexX = 0; indexX <= 2; indexX++) {
+						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final String stringValue = String.format("%X", 0x100 + stateAir.pressureVoid).substring(1);
+						final String stringDirection = directionToChar(stateAir.directionVoid);
+						message.append(String.format("§e%s §d%s ", stringValue, stringDirection));
+					}
+					if (indexZ == 2) message.append("§f\\");
+					else if (indexZ == 1) message.append(String.format("§f  > y = %d", stateAirs[1][indexY][indexZ].y));
+					else message.append("§f/");
 				}
-				message.append("§f| ");
-				for (int indexX = 0; indexX <= 2; indexX++) {
-					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%X", 0x100 + stateAir.pressureGenerator).substring(1);
-					final String stringDirection = directionToChar(stateAir.directionGenerator);
-					message.append(String.format("§e%s §a%s ", stringValue, stringDirection));
-				}
-				message.append("§f| ");
-				for (int indexX = 0; indexX <= 2; indexX++) {
-					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%X", 0x100 + stateAir.pressureVoid).substring(1);
-					final String stringDirection = directionToChar(stateAir.directionVoid);
-					message.append(String.format("§e%s §d%s ", stringValue, stringDirection));
-				}
-				if (indexZ == 2) message.append("§f\\");
-				else if (indexZ == 1) message.append(String.format("§f  > y = %d", stateAirs[1][indexY][indexZ].y));
-				else message.append("§f/");
 			}
+			Commons.addChatMessage(entityPlayer, message.toString());
+		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+			// no operation
 		}
-		Commons.addChatMessage(entityPlayer, message.toString());
 	}
 	
 	private static String directionToChar(final ForgeDirection direction) {
