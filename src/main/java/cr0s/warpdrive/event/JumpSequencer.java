@@ -727,7 +727,8 @@ public class JumpSequencer extends AbstractSequencer {
 			break;
 		}
 		
-		switch (rotationSteps) {
+		if (shipMovementType != EnumShipMovementType.CREATIVE) {
+			switch (rotationSteps) {
 			case 1:
 				ship.messageToAllPlayersOnShip("Turning to the right");
 				break;
@@ -739,6 +740,7 @@ public class JumpSequencer extends AbstractSequencer {
 				break;
 			default:
 				break;
+			}
 		}
 		
 		LocalProfiler.stop();
