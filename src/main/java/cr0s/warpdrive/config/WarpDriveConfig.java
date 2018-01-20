@@ -587,27 +587,27 @@ public class WarpDriveConfig {
 		                                       "Text width as a minimum 'pixel' count").getInt();
 		
 		final String commentTooltip = "When to show %s in tooltips. Valid values are " + EnumTooltipCondition.formatAllValues() + ".";
-		CLIENT_TOOLTIP_REGISTRY_NAME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_REGISTRY_NAME.name(),
+		CLIENT_TOOLTIP_REGISTRY_NAME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_registry_name", CLIENT_TOOLTIP_REGISTRY_NAME.name(),
 		                                                                       String.format(commentTooltip, "registry name")).getString());
-		CLIENT_TOOLTIP_ORE_DICTIONARY_NAME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_ORE_DICTIONARY_NAME.name(),
+		CLIENT_TOOLTIP_ORE_DICTIONARY_NAME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_ore_dictionary_name", CLIENT_TOOLTIP_ORE_DICTIONARY_NAME.name(),
 		                                                                              String.format(commentTooltip, "ore dictionary names")).getString());
-		CLIENT_TOOLTIP_ARMOR = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_ARMOR.name(),
+		CLIENT_TOOLTIP_ARMOR = EnumTooltipCondition.valueOf(config.get("client", "tooltip_armor_stats", CLIENT_TOOLTIP_ARMOR.name(),
 		                                                               String.format(commentTooltip, "armor stats")).getString());
-		CLIENT_TOOLTIP_BURN_TIME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_BURN_TIME.name(),
+		CLIENT_TOOLTIP_BURN_TIME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_burn_time", CLIENT_TOOLTIP_BURN_TIME.name(),
 		                                                                   String.format(commentTooltip, "burn time")).getString());
-		CLIENT_TOOLTIP_DURABILITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_DURABILITY.name(),
+		CLIENT_TOOLTIP_DURABILITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_durability", CLIENT_TOOLTIP_DURABILITY.name(),
 		                                                                    String.format(commentTooltip, "durability")).getString());
-		CLIENT_TOOLTIP_FLAMMABILITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_FLAMMABILITY.name(),
+		CLIENT_TOOLTIP_FLAMMABILITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_flammability", CLIENT_TOOLTIP_FLAMMABILITY.name(),
 		                                                                      String.format(commentTooltip, "flammability")).getString());
-		CLIENT_TOOLTIP_FLUID = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_FLUID.name(),
+		CLIENT_TOOLTIP_FLUID = EnumTooltipCondition.valueOf(config.get("client", "tooltip_fluid_stats", CLIENT_TOOLTIP_FLUID.name(),
 		                                                               String.format(commentTooltip, "fluid stats")).getString());
-		CLIENT_TOOLTIP_HARDNESS = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_HARDNESS.name(),
+		CLIENT_TOOLTIP_HARDNESS = EnumTooltipCondition.valueOf(config.get("client", "tooltip_hardness", CLIENT_TOOLTIP_HARDNESS.name(),
 		                                                                  String.format(commentTooltip, "hardness & explosion resistance")).getString());
-		CLIENT_TOOLTIP_HARVESTING = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_HARVESTING.name(),
+		CLIENT_TOOLTIP_HARVESTING = EnumTooltipCondition.valueOf(config.get("client", "tooltip_harvesting_stats", CLIENT_TOOLTIP_HARVESTING.name(),
 		                                                                    String.format(commentTooltip, "harvesting stats")).getString());
-		CLIENT_TOOLTIP_OPACITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_OPACITY.name(),
+		CLIENT_TOOLTIP_OPACITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_opacity", CLIENT_TOOLTIP_OPACITY.name(),
 		                                                                 String.format(commentTooltip, "opacity")).getString());
-		CLIENT_TOOLTIP_REPAIR_WITH = EnumTooltipCondition.valueOf(config.get("client", "tooltip_", CLIENT_TOOLTIP_REPAIR_WITH.name(),
+		CLIENT_TOOLTIP_REPAIR_WITH = EnumTooltipCondition.valueOf(config.get("client", "tooltip_repair_material", CLIENT_TOOLTIP_REPAIR_WITH.name(),
 		                                                                     String.format(commentTooltip, "repair material")).getString());
 		
 		// Logging
