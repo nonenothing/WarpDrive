@@ -57,6 +57,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	protected int lightCamouflage;
 	
 	// computed properties
+	private boolean isShipToken;
 	private EnumShipScannerState enumShipScannerState = EnumShipScannerState.IDLE;
 	private TileEntityShipCore shipCore = null;
 	
@@ -164,7 +165,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			
 		case DEPLOYING:// active and deploying
 			if (deployTicks == 0) {
-				final DeploySequencer sequencer = new DeploySequencer(jumpShip, getWorldObj(), targetX, targetY, targetZ, rotationSteps);
+				final DeploySequencer sequencer = new DeploySequencer(jumpShip, getWorldObj(), isShipToken, targetX, targetY, targetZ, rotationSteps);
 				
 				// deploy at most (jump speed / 4), at least (deploy speed), optimally in 10 seconds 
 				final int optimumSpeed = Math.round(blocksToDeployCount * WarpDriveConfig.SS_DEPLOY_INTERVAL_TICKS / (20.0F * 10.0F));
@@ -486,25 +487,26 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		// initiate deployment sequencer
 		deployTicks = 0;
 		
+		isShipToken = isForced;
 		setState(EnumShipScannerState.DEPLOYING);
 		reason.append(String.format("Deploying ship '%s'...", fileName));
 		return 3;
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tatagCompound) {
-		super.readFromNBT(tatagCompound);
-		schematicFileName = tatagCompound.getString("schematic");
-		targetX = tatagCompound.getInteger("targetX");
-		targetY = tatagCompound.getInteger("targetY");
-		targetZ = tatagCompound.getInteger("targetZ");
-		rotationSteps = tatagCompound.getByte("rotationSteps");
-		if (tatagCompound.hasKey("camouflageBlock")) {
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		schematicFileName = tagCompound.getString("schematic");
+		targetX = tagCompound.getInteger("targetX");
+		targetY = tagCompound.getInteger("targetY");
+		targetZ = tagCompound.getInteger("targetZ");
+		rotationSteps = tagCompound.getByte("rotationSteps");
+		if (tagCompound.hasKey("camouflageBlock")) {
 			try {
-				blockCamouflage = Block.getBlockFromName(tatagCompound.getString("camouflageBlock"));
-				metadataCamouflage = tatagCompound.getByte("camouflageMeta");
-				colorMultiplierCamouflage = tatagCompound.getInteger("camouflageColorMultiplier");
-				lightCamouflage = tatagCompound.getByte("camouflageLight");
+				blockCamouflage = Block.getBlockFromName(tagCompound.getString("camouflageBlock"));
+				metadataCamouflage = tagCompound.getByte("camouflageMeta");
+				colorMultiplierCamouflage = tagCompound.getInteger("camouflageColorMultiplier");
+				lightCamouflage = tagCompound.getByte("camouflageLight");
 				if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockCamouflage)) {
 					blockCamouflage = null;
 					metadataCamouflage = 0;

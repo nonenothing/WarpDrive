@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ISequencerCallbacks;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.JumpShip;
 
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -23,9 +24,9 @@ public class DeploySequencer extends JumpSequencer {
 	}
 	/**/
 	
-	public DeploySequencer(final JumpShip jumpShip, final World world,
+	public DeploySequencer(final JumpShip jumpShip, final World world, final boolean isInstantiated,
 	                       final int destX, final int destY, final int destZ, final byte rotationSteps) {
-		super(jumpShip, world, destX, destY, destZ, rotationSteps);
+		super(jumpShip, world, isInstantiated ? EnumShipMovementType.INSTANTIATE : EnumShipMovementType.RESTORE, destX, destY, destZ, rotationSteps);
 	}
 	
 	public void setCaptain(final String playerName) {

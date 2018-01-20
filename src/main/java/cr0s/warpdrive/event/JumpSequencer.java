@@ -139,11 +139,11 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 	}
 	
-	public JumpSequencer(final JumpShip jumpShip, final World world,
+	public JumpSequencer(final JumpShip jumpShip, final World world, final EnumShipMovementType enumShipMovementType,
 	                     final int destX, final int destY, final int destZ, final byte rotationSteps) {
 		this.sourceWorld = null;
 		this.ship = jumpShip;
-		this.shipMovementType = EnumShipMovementType.CREATIVE;
+		this.shipMovementType = enumShipMovementType;
 		this.rotationSteps = rotationSteps;
 		this.nameTarget = null;
 		this.destX = destX;
@@ -216,7 +216,8 @@ public class JumpSequencer extends AbstractSequencer {
 			// blank state in case we got desync
 			msCounter = System.currentTimeMillis();
 			if (isEnabled) {
-				if (shipMovementType != EnumShipMovementType.CREATIVE) {
+				if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+				  && shipMovementType != EnumShipMovementType.RESTORE ) {
 					state = STATE_CHUNKLOADING;
 				} else {
 					state = STATE_TRANSFORMER;
@@ -564,7 +565,8 @@ public class JumpSequencer extends AbstractSequencer {
 			moveZ = destZ - ship.coreZ;
 			break;
 			
-		case CREATIVE:
+		case INSTANTIATE:
+		case RESTORE:
 			moveX = destX - ship.coreX;
 			moveY = destY - ship.coreY;
 			moveZ = destZ - ship.coreZ;
@@ -620,7 +622,8 @@ public class JumpSequencer extends AbstractSequencer {
 					Math.min(target1.posX, target2.posX), Math.min(target1.posY, target2.posY), Math.min(target1.posZ, target2.posZ),
 					Math.max(target1.posX, target2.posX), Math.max(target1.posY, target2.posY), Math.max(target1.posZ, target2.posZ));
 			// Validate positions aren't overlapping
-			if ( shipMovementType != EnumShipMovementType.CREATIVE
+			if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+			  && shipMovementType != EnumShipMovementType.RESTORE
 			  && !betweenWorlds
 			  && aabbSource.intersectsWith(aabbTarget) ) {
 				// render fake explosions
@@ -683,7 +686,8 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		{
-			if (shipMovementType != EnumShipMovementType.CREATIVE) {
+			if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+			  && shipMovementType != EnumShipMovementType.RESTORE ) {
 				if (!ship.saveEntities(reason)) {
 					final String msg = reason.toString();
 					disable(msg);
@@ -716,7 +720,8 @@ public class JumpSequencer extends AbstractSequencer {
 		// 	                                             destX, destY, destZ));
 		// 	break;
 		
-		case CREATIVE:
+		case INSTANTIATE:
+		case RESTORE:
 			// no messages in creative
 			break;
 			
@@ -727,7 +732,8 @@ public class JumpSequencer extends AbstractSequencer {
 			break;
 		}
 		
-		if (shipMovementType != EnumShipMovementType.CREATIVE) {
+		if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+		  && shipMovementType != EnumShipMovementType.RESTORE ) {
 			switch (rotationSteps) {
 			case 1:
 				ship.messageToAllPlayersOnShip("Turning to the right");
@@ -752,7 +758,8 @@ public class JumpSequencer extends AbstractSequencer {
 	
 	protected boolean computeTargetWorld(final CelestialObject celestialObjectSource, final EnumShipMovementType shipMovementType, final StringBuilder reason) {
 		switch (shipMovementType) {
-		case CREATIVE:
+		case INSTANTIATE:
+		case RESTORE:
 			// already defined, nothing to do
 			break;
 			
@@ -934,14 +941,15 @@ public class JumpSequencer extends AbstractSequencer {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Deploying from " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z + " of " + jumpBlock.block + "@" + jumpBlock.blockMeta);
 				}
-				if (shipMovementType == EnumShipMovementType.CREATIVE) {
+				if (shipMovementType == EnumShipMovementType.INSTANTIATE) {
 					jumpBlock.removeUniqueIDs();
 					jumpBlock.fillEnergyStorage();
 				}
 				
 				final ChunkCoordinates target = jumpBlock.deploy(targetWorld, transformation);
 				
-				if (shipMovementType != EnumShipMovementType.CREATIVE) {
+				if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+				  && shipMovementType != EnumShipMovementType.RESTORE ) {
 					sourceWorld.removeTileEntity(jumpBlock.x, jumpBlock.y, jumpBlock.z);
 				}
 				
@@ -995,7 +1003,8 @@ public class JumpSequencer extends AbstractSequencer {
 		case GATE_ACTIVATING:
 			break;
 			
-		case CREATIVE:
+		case INSTANTIATE:
+		case RESTORE:
 			if (v3Source != null) {
 				// play the builder effect
 				targetWorld.playSoundEffect(target.posX + 0.5D, target.posY + 0.5D, target.posZ + 0.5D, "warpdrive:lowlaser", 0.5F, 1.0F);
@@ -1042,7 +1051,8 @@ public class JumpSequencer extends AbstractSequencer {
 				for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
 					final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
-						if (shipMovementType != EnumShipMovementType.CREATIVE) {
+						if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+						  && shipMovementType != EnumShipMovementType.RESTORE ) {
 							blockTransformer.removeExternals(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z,
 							                                 jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity);
 						}
@@ -1066,7 +1076,8 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		LocalProfiler.start("Jump.moveEntities");
 		
-		if (shipMovementType != EnumShipMovementType.CREATIVE) {
+		if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+		  && shipMovementType != EnumShipMovementType.RESTORE ) {
 			for (MovingEntity movingEntity : ship.entitiesOnShip) {
 				final Entity entity = movingEntity.getEntity();
 				if (entity == null) {
@@ -1357,7 +1368,8 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		LocalProfiler.start("Jump.restoreEntitiesPosition");
 		
-		if (shipMovementType != EnumShipMovementType.CREATIVE) {
+		if ( shipMovementType != EnumShipMovementType.INSTANTIATE
+		  && shipMovementType != EnumShipMovementType.RESTORE ) {
 			for (MovingEntity movingEntity : ship.entitiesOnShip) {
 				final Entity entity = movingEntity.getEntity();
 				if (entity == null) {
