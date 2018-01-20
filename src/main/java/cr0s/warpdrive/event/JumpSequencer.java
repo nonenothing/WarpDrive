@@ -919,7 +919,7 @@ public class JumpSequencer extends AbstractSequencer {
 		LocalProfiler.start("Jump.moveBlocks");
 		final int blocksToMove = Math.min(blocksPerTick, ship.jumpBlocks.length - actualIndexInShip);
 		final int periodEffect = Math.max(1, blocksToMove / 10);
-		if (WarpDriveConfig.LOGGING_JUMP) {
+		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 			WarpDrive.logger.info(this + " Moving ship blocks " + actualIndexInShip + " to " + (actualIndexInShip + blocksToMove - 1) + " / " + (ship.jumpBlocks.length - 1));
 		}
 		
