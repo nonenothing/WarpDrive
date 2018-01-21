@@ -105,30 +105,36 @@ public class Dictionary {
 				config.get("block_tags", "TConstruct:slime.leaves"                         , "Leaf").getString();
 				
 				// anchors
+				config.get("block_tags", "minecraft:barrier"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "minecraft:bedrock"                               , "Anchor SkipMining").getString();
+				config.get("block_tags", "minecraft:chain_command_block"                   , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:command_block"                         , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:end_gateway"                           , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:end_portal_frame"                      , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:end_portal"                            , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:portal"                                , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:repeating_command_block"               , "Anchor StopMining").getString();
+				config.get("block_tags", "minecraft:structure_block"                       , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
 				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
-				config.get("block_tags", "WarpDrive:bedrock_glass"                         , "Anchor SkipMining").getString();
+				config.get("block_tags", "warpdrive:blockBedrockGlass"                     , "Anchor SkipMining").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
-				config.get("block_tags", "WarpDrive:blockHull1_plain"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull2_plain"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull3_plain"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull1_glass"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull2_glass"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockHull3_glass"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockLamp"                             , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "WarpDrive:blockForceField1"                      , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "WarpDrive:blockForceField2"                      , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "WarpDrive:blockForceField3"                      , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:blockHull1_plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockHull2_plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockHull3_plain"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockHull1_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockHull2_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockHull3_glass"                      , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockLamp"                             , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:blockForceField1"                      , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:blockForceField2"                      , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:blockForceField3"                      , "PlaceLatest StopMining NoMass").getString();
 				config.get("block_tags", "IC2:blockReinforcedFoam"                         , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "IC2:blockAlloy"                                  , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "IC2:blockAlloyGlass"                             , "PlaceEarliest StopMining").getString();
@@ -165,11 +171,11 @@ public class Dictionary {
 				// expendables, a.k.a. "don't blow my ship with this..."
 				config.get("block_tags", "chisel:cloud"                                    , "LeftBehind Expandable").getString();
 				config.get("block_tags", "Railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
-				config.get("block_tags", "WarpDrive:blockGas"                              , "LeftBehind Expandable").getString();
+				config.get("block_tags", "warpdrive:blockGas"                              , "LeftBehind Expandable").getString();
 				config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
-				config.get("block_tags", "WarpDrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
-				config.get("block_tags", "WarpDrive:blockAirFlow"                          , "NoMass Expandable PlaceLatest").getString();
-				config.get("block_tags", "WarpDrive:blockAirSource"                        , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:blockAirFlow"                          , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:blockAirSource"                        , "NoMass Expandable PlaceLatest").getString();
 				
 				// mining a mineshaft...
 				config.get("block_tags", "minecraft:web"                                   , "Mining").getString();
