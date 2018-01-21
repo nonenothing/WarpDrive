@@ -4,9 +4,15 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.data.EnumDisabledInputOutput;
+import cr0s.warpdrive.data.EnumTier;
+import cr0s.warpdrive.event.ModelBakeEventHandler;
 import cr0s.warpdrive.item.ItemComponent;
+import cr0s.warpdrive.render.BakedModelEnergyBank;
 import ic2.api.energy.tile.IExplosionPowerOverride;
 
 import javax.annotation.Nonnull;
@@ -15,7 +21,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,8 +37,13 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import net.minecraftforge.common.property.ExtendedBlockState;
+import net.minecraftforge.common.property.IExtendedBlockState;
+import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -39,11 +54,73 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 })
 public class BlockEnergyBank extends BlockAbstractContainer implements IExplosionPowerOverride {
 	
+	public static final IProperty<EnumDisabledInputOutput> CONFIG = PropertyEnum.create("config" , EnumDisabledInputOutput.class);
+	
+	public static final IUnlistedProperty<EnumDisabledInputOutput> DOWN  = Properties.toUnlisted(PropertyEnum.create("down" , EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> UP    = Properties.toUnlisted(PropertyEnum.create("up"   , EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> NORTH = Properties.toUnlisted(PropertyEnum.create("north", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> SOUTH = Properties.toUnlisted(PropertyEnum.create("south", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> WEST  = Properties.toUnlisted(PropertyEnum.create("west" , EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> EAST  = Properties.toUnlisted(PropertyEnum.create("east" , EnumDisabledInputOutput.class));
+	
 	public BlockEnergyBank(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.energy.EnergyBank.");
 		hasSubBlocks = true;
+		
+		setDefaultState(getDefaultState()
+		                .withProperty(BlockProperties.TIER, EnumTier.BASIC)
+		                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)
+		);
 		GameRegistry.registerTileEntity(TileEntityEnergyBank.class, WarpDrive.PREFIX + registryName);
+	}
+	
+	@Nonnull
+	@Override
+	protected BlockStateContainer createBlockState() {
+		return new ExtendedBlockState(this,
+		                              new IProperty[] { BlockProperties.TIER, CONFIG },
+		                              new IUnlistedProperty[] { DOWN, UP, NORTH, SOUTH, WEST, EAST });
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getStateFromMeta(int metadata) {
+		return getDefaultState()
+		       .withProperty(BlockProperties.TIER, EnumTier.get(metadata % 4));
+	}
+	
+	@Override
+	public int getMetaFromState(IBlockState blockState) {
+		return blockState.getValue(BlockProperties.TIER).getIndex();
+	}
+	
+	@Nonnull
+	@Override
+	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess blockAccess, BlockPos blockPos) {
+		if (!(blockState instanceof IExtendedBlockState)) {
+			return blockState;
+		}
+		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
+		if (!(tileEntity instanceof TileEntityEnergyBank)) {
+			return blockState;
+		}
+		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
+		return ((IExtendedBlockState) blockState)
+		       .withProperty(DOWN, tileEntityEnergyBank.getMode(EnumFacing.DOWN))
+		       .withProperty(UP, tileEntityEnergyBank.getMode(EnumFacing.UP))
+		       .withProperty(NORTH, tileEntityEnergyBank.getMode(EnumFacing.NORTH))
+		       .withProperty(SOUTH, tileEntityEnergyBank.getMode(EnumFacing.SOUTH))
+		       .withProperty(WEST, tileEntityEnergyBank.getMode(EnumFacing.WEST))
+		       .withProperty(EAST, tileEntityEnergyBank.getMode(EnumFacing.EAST));
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Nonnull
+	@Override
+	public IBlockState getActualState(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos pos) {
+		return super.getActualState(blockState, blockAccess, pos);
 	}
 	
 	@Nonnull
@@ -65,11 +142,31 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 			list.add(itemStack);
 			if (tier > 0) {
 				itemStack = new ItemStack(item, 1, tier);
-				NBTTagCompound nbtTagCompound = new NBTTagCompound();
-				nbtTagCompound.setByte("tier", tier);
-				nbtTagCompound.setInteger("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
-				itemStack.setTagCompound(nbtTagCompound);
+				final NBTTagCompound tagCompound = new NBTTagCompound();
+				tagCompound.setByte("tier", tier);
+				tagCompound.setInteger("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
+				itemStack.setTagCompound(tagCompound);
 				list.add(itemStack);
+			}
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		final Item item = Item.getItemFromBlock(this);
+		ClientProxy.modelInitialisation(item);
+		
+		// Bind our TESR to our tile entity
+		// ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForceFieldProjector.class, new TileEntityForceFieldProjectorRenderer());
+		
+		// register (smart) baked model
+		for (final EnumDisabledInputOutput enumDisabledInputOutput : CONFIG.getAllowedValues()) {
+			for (final EnumTier enumTier : BlockProperties.TIER.getAllowedValues()) {
+				final String variant = String.format("%s=%s,%s=%s",
+				                                     CONFIG.getName(), enumDisabledInputOutput,
+				                                     BlockProperties.TIER.getName(), enumTier);
+				ModelBakeEventHandler.registerBakedModel(new ModelResourceLocation(getRegistryName(), variant), BakedModelEnergyBank.class);
 			}
 		}
 	}
@@ -80,9 +177,9 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
 			return 1;
 		}
-		NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
-		if (nbtTagCompound != null && nbtTagCompound.hasKey("tier")) {
-			return nbtTagCompound.getByte("tier");
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound != null && tagCompound.hasKey("tier")) {
+			return tagCompound.getByte("tier");
 		} else {
 			return (byte) itemStack.getItemDamage();
 		}
@@ -99,38 +196,37 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		return defaultPower;
 	}
 	
-	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing facing, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityEnergyBank)) {
 			return false;
 		}
-		TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
+		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
 		
 		if (itemStackHeld != null && itemStackHeld.getItem() instanceof IWarpTool) {
 			if (entityPlayer.isSneaking()) {
-				tileEntityEnergyBank.setMode(facing, (byte)((tileEntityEnergyBank.getMode(facing) + 2) % 3));
+				tileEntityEnergyBank.setMode(facing, tileEntityEnergyBank.getMode(facing).getPrevious());
 			} else {
-				tileEntityEnergyBank.setMode(facing, (byte)((tileEntityEnergyBank.getMode(facing) + 1) % 3));
+				tileEntityEnergyBank.setMode(facing, tileEntityEnergyBank.getMode(facing).getNext());
 			}
-			ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
+			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
 			switch (tileEntityEnergyBank.getMode(facing)) {
-				case TileEntityEnergyBank.MODE_INPUT:
+				case INPUT:
 					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix")
 					    .appendSibling(new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
 					    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", facing.name())) );
 					return true;
-				case TileEntityEnergyBank.MODE_OUTPUT:
+				case OUTPUT:
 					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix")
 					    .appendSibling(new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
 					    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", facing.name())) );
 					return true;
-				case TileEntityEnergyBank.MODE_DISABLED:
+				case DISABLED:
 				default:
 					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix")
 					    .appendSibling(new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))

@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.data.EnumDisabledInputOutput;
 
 import javax.annotation.Nonnull;
 
@@ -16,14 +17,17 @@ import net.minecraft.util.text.TextComponentString;
 
 public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
-	static final byte MODE_DISABLED = 0;
-	static final byte MODE_INPUT = 1;
-	static final byte MODE_OUTPUT = 2;
-	private static final byte[] MODE_DEFAULT_SIDES = { MODE_INPUT, MODE_INPUT, MODE_OUTPUT, MODE_OUTPUT, MODE_OUTPUT, MODE_OUTPUT };
+	private static final EnumDisabledInputOutput[] MODE_DEFAULT_SIDES = {
+			EnumDisabledInputOutput.INPUT,
+			EnumDisabledInputOutput.INPUT,
+			EnumDisabledInputOutput.OUTPUT,
+			EnumDisabledInputOutput.OUTPUT,
+			EnumDisabledInputOutput.OUTPUT,
+			EnumDisabledInputOutput.OUTPUT };
 	
 	// persistent properties
 	private byte tier = -1;
-	private byte[] modeSide = MODE_DEFAULT_SIDES.clone();
+	private EnumDisabledInputOutput[] modeSide = MODE_DEFAULT_SIDES.clone();
 	
 	public TileEntityEnergyBank() {
 		this((byte) 1);
@@ -106,24 +110,24 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	@Override
 	public boolean energy_canInput(EnumFacing from) {
-		return modeSide[from.ordinal()] == MODE_INPUT;
+		return modeSide[from.ordinal()] == EnumDisabledInputOutput.INPUT;
 	}
 	
 	@Override
 	public boolean energy_canOutput(EnumFacing to) {
-		return modeSide[to.ordinal()] == MODE_OUTPUT;
+		return modeSide[to.ordinal()] == EnumDisabledInputOutput.OUTPUT;
 	}
 	
 	byte getTier() {
 		return tier;
 	}
 	
-	byte getMode(final EnumFacing facing) {
+	EnumDisabledInputOutput getMode(final EnumFacing facing) {
 		return modeSide[facing.ordinal()];
 	}
 	
-	void setMode(final EnumFacing facing, final byte mode) {
-		modeSide[facing.ordinal()] = (byte)(mode % 3);
+	void setMode(final EnumFacing facing, final EnumDisabledInputOutput enumDisabledInputOutput) {
+		modeSide[facing.ordinal()] = enumDisabledInputOutput;
 		markDirty();
 		energy_resetConnections(facing);
 	}
@@ -135,10 +139,15 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	// Forge overrides
+	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
 		super.writeToNBT(nbtTagCompound);
 		nbtTagCompound.setByte("tier", tier);
-		nbtTagCompound.setByteArray("modeSide", modeSide);
+		final byte[] bytes = new byte[EnumFacing.values().length];
+		for (final EnumFacing enumFacing : EnumFacing.values()) {
+			bytes[enumFacing.ordinal()] = (byte) modeSide[enumFacing.ordinal()].getIndex();
+		}
+		nbtTagCompound.setByteArray("modeSide", bytes);
 		return nbtTagCompound;
 	}
 	
@@ -146,9 +155,13 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	public void readFromNBT(NBTTagCompound nbtTagCompound) {
 		super.readFromNBT(nbtTagCompound);
 		tier = nbtTagCompound.getByte("tier");
-		modeSide = nbtTagCompound.getByteArray("modeSide");
-		if (modeSide.length != 6) {
+		final byte[] bytes = nbtTagCompound.getByteArray("modeSide");
+		if (bytes.length != 6) {
 			modeSide = MODE_DEFAULT_SIDES.clone();
+		} else {
+			for (final EnumFacing enumFacing : EnumFacing.values()) {
+				modeSide[enumFacing.ordinal()] = EnumDisabledInputOutput.get(bytes[enumFacing.ordinal()]);
+			}
 		}
 	}
 	

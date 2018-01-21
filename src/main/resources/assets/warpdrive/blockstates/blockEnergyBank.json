@@ -1,0 +1,18 @@
+{
+	"forge_marker": 1,
+	"variants": {
+		"inventory": [{}],
+		"config=disabled,tier=creative": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_creative-disabled" } },
+		"config=input,tier=creative"   : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_creative-input"    } },
+		"config=output,tier=creative"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_creative-output"   } },
+		"config=disabled,tier=basic"   : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_basic-disabled"    } },
+		"config=input,tier=basic"      : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_basic-input"       } },
+		"config=output,tier=basic"     : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_basic-output"      } },
+		"config=disabled,tier=advanced": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_advanced-disabled" } },
+		"config=input,tier=advanced"   : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_advanced-input"    } },
+		"config=output,tier=advanced"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_advanced-output"   } },
+		"config=disabled,tier=superior": { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_superior-disabled" } },
+		"config=input,tier=superior"   : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_superior-input"    } },
+		"config=output,tier=superior"  : { "model": "minecraft:cube_all", "textures": { "all" : "warpdrive:blocks/energy/energy_bank_superior-output"   } }
+	}
+}
