@@ -77,6 +77,7 @@ import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.CommonWorldGenerator;
 import cr0s.warpdrive.event.LivingHandler;
+import cr0s.warpdrive.event.ModelBakeEventHandler;
 import cr0s.warpdrive.event.WorldHandler;
 import cr0s.warpdrive.item.ItemAirTank;
 import cr0s.warpdrive.item.ItemComponent;
@@ -537,6 +538,8 @@ public class WarpDrive implements LoadingCallback {
 		
 		// Event handlers
 		MinecraftForge.EVENT_BUS.register(new ClientHandler());
+		
+		MinecraftForge.EVENT_BUS.register(ModelBakeEventHandler.instance);
 		
 		MinecraftForge.EVENT_BUS.register(new LivingHandler());
 		

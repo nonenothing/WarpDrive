@@ -12,6 +12,7 @@ import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.ModelBakeEventHandler;
+import cr0s.warpdrive.render.BakedModelCamouflage;
 
 import java.util.List;
 import java.util.Random;
@@ -145,7 +146,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		// register camouflage
 		for (Integer integer : FREQUENCY.getAllowedValues()) {
 			final String variant = String.format("%s=%d", FREQUENCY.getName(), integer);
-			ModelBakeEventHandler.registerCamouflage(new ModelResourceLocation(getRegistryName(), variant));
+			ModelBakeEventHandler.registerBakedModel(new ModelResourceLocation(getRegistryName(), variant), BakedModelCamouflage.class);
 		}
 	}
 	
