@@ -7,7 +7,7 @@ import net.minecraft.util.IStringSerializable;
 
 public enum EnumTier implements IStringSerializable {
 	CREATIVE ("creative",  0),
-	NORMAL   ("normal"  ,  1),
+	BASIC    ("basic"   ,  1),
 	ADVANCED ("advanced",  2),
 	SUPERIOR ("superior",  3);
 	

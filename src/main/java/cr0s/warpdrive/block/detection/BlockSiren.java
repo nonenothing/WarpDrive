@@ -40,14 +40,14 @@ public class BlockSiren extends BlockAbstractContainer {
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.SIREN_TYPE, EnumSirenType.INDUSTRIAL)
-		                .withProperty(BlockProperties.TIER, EnumTier.NORMAL));
+		                .withProperty(BlockProperties.TIER, EnumTier.BASIC));
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
 		list.add(new ItemStack(item, 1, EnumSirenType.INDUSTRIAL.getIndex()));
-		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.NORMAL.getIndex() - 1));
+		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.BASIC.getIndex() - 1));
 		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.ADVANCED.getIndex() - 1));
 		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.SUPERIOR.getIndex() - 1));
 	}
