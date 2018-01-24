@@ -440,10 +440,10 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				if (!worldObj.isAirBlock(targetX, targetY, targetZ)) {
 					worldObj.newExplosion(null, targetX, targetY, targetZ, 1, false, false);
 					if (WarpDriveConfig.LOGGING_BUILDING) {
-						WarpDrive.logger.info(String.format("Deployment collision detected at %d %d %d",
+						WarpDrive.logger.info(String.format("Deployment collision detected at (%d %d %d)",
 						                                    targetX, targetY, targetZ));
 					}
-					reason.append(String.format("Deployment area occupied with existing ship.\nCan't deploy new ship at %d %d %d",
+					reason.append(String.format("Deployment area occupied with existing ship.\nCan't deploy new ship at (%d %d %d)",
 					                            targetX, targetY, targetZ));
 					return 2;
 				}
@@ -773,7 +773,9 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+		return String.format("%s @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
+		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     xCoord, yCoord, zCoord);
 	}
 }

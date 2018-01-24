@@ -344,8 +344,9 @@ public class ChunkHandler {
 		try {
 			return chunkData.getStateAir(world, x, y, z);
 		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
-			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded in %s @ (%d %d %d)",
-			                                    world.provider.getDimensionName(), x, y, z));
+			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded @ %s (%d %d %d)",
+			                                    world.provider.getDimensionName(),
+			                                    x, y, z));
 			return null;
 		}
 	}

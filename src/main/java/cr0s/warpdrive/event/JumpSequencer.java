@@ -1558,7 +1558,7 @@ public class JumpSequencer extends AbstractSequencer {
 	
 	@Override
 	public String toString() {
-		return String.format("%s/%d \'%s\' @ \'%s\' (%d %d %d) #%d",
+		return String.format("%s/%d \'%s\' @ %s (%d %d %d) #%d",
 			getClass().getSimpleName(), hashCode(),
 			(ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
 			sourceWorld == null ? "~NULL~" : sourceWorld.getWorldInfo().getWorldName(),

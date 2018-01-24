@@ -141,8 +141,10 @@ public class WorldGenStructure {
 			
 			final GenericSet<Loot> lootSet = WarpDriveConfig.LootManager.getRandomSetFromGroup(rand, group);
 			if (lootSet == null) {
-				WarpDrive.logger.warn(String.format("No LootSet found with group %s for inventory @ DIM%d (%d %d %d): check your configuration",
-				                                    group, worldObj.provider.dimensionId, x, y, z));
+				WarpDrive.logger.warn(String.format("No LootSet found with group %s for inventory @ %s (%d %d %d): check your configuration",
+				                                    group,
+				                                    worldObj.provider.getDimensionName(),
+				                                    x, y, z));
 				return;
 			}
 			
@@ -166,10 +168,11 @@ public class WorldGenStructure {
 					}
 				}
 				if (!isAdded) {
-					WarpDrive.logger.info(String.format("Unable to find a valid loot from LootSet %s for inventory %s in @ DIM%d (%d %d %d): check your configuration",
+					WarpDrive.logger.info(String.format("Unable to find a valid loot from LootSet %s for inventory %s in @ %s (%d %d %d): check your configuration",
 					                                    lootSet.getFullName(),
 					                                    inventory.getInventoryName() == null ? "-null name-" : inventory.getInventoryName(),
-					                                    worldObj.provider.dimensionId, x, y, z));
+					                                    worldObj.provider.getDimensionName(),
+					                                    x, y, z));
 				}
 			}
 		}

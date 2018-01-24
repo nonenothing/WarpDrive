@@ -347,7 +347,8 @@ public class JumpBlock {
 		if (tileEntity != null) {
 			Class<?> teClass = tileEntity.getClass();
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info(String.format("Refreshing clients at %d %d %d with %s derived from %s",
+				WarpDrive.logger.info(String.format("Refreshing clients @ %s (%d %d %d) with %s derived from %s",
+				                                    world.provider.getDimensionName(),
 				                                    x, y, z,
 				                                    teClass,
 				                                    teClass.getSuperclass()));

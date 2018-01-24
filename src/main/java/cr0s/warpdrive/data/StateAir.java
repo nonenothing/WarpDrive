@@ -95,7 +95,7 @@ public class StateAir {
 			chunkData = ChunkHandler.getChunkData(world, x, y, z);
 			if (chunkData == null) {
 				// chunk isn't loaded, abort treatment or it'll trigger a CME
-				throw new ExceptionChunkNotLoaded(String.format("Air refresh aborted in %s @ (%d %d %d)",
+				throw new ExceptionChunkNotLoaded(String.format("Air refresh aborted @ %s (%d %d %d)",
 				                                                world.provider.getDimensionName(), x, y, z));
 			}
 			chunk = null;
@@ -316,7 +316,8 @@ public class StateAir {
 					if ((dataAir & BLOCK_MASK) != BLOCK_AIR_PLACEABLE) {
 						// state was out of sync => skip
 						if (WarpDrive.isDev) {
-							WarpDrive.logger.info(String.format("Desynchronized air state detected at %d %d %d: %8x -> %s",
+							WarpDrive.logger.info(String.format("Desynchronized air state detected @ %s (%d %d %d): %8x -> %s",
+							                                    world.provider.getDimensionName(),
 							                                    x, y, z, dataAirLegacy, this));
 						}
 						return;

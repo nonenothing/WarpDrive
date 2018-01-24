@@ -796,7 +796,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public String toString() {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
-		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
+		return String.format("%s \'%s\' @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
 		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName, 
 		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
 		                     xCoord, yCoord, zCoord);

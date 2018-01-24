@@ -88,7 +88,9 @@ public class Filler implements IXmlRepresentableUnit {
 		if (nbtTagCompound != null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity == null) {
-				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)", getName(), x, y, z);
+				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)",
+				                       getName(),
+				                       x, y, z);
 				return;
 			}
 			

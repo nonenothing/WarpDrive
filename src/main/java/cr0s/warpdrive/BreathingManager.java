@@ -71,8 +71,8 @@ public class BreathingManager {
 		}
 		
 		if (WarpDriveConfig.LOGGING_BREATHING) {
-			WarpDrive.logger.warn(String.format("Entity spawn denied at DIM%d @ (%d %d %d) entityId '%s'",
-			                                    entityLivingBase.worldObj.provider.dimensionId,
+			WarpDrive.logger.warn(String.format("Entity spawn denied @ %s (%d %d %d) entityId '%s'",
+			                                    entityLivingBase.worldObj.provider.getDimensionName(),
 			                                    x, y, z, idEntity));
 		}
 		return false;

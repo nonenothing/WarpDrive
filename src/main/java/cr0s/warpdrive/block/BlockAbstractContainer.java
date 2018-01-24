@@ -126,8 +126,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Optional.Method(modid = "DefenseTech")
 	public void onEMP(World world, int x, int y, int z, defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
-			                                    world.provider.dimensionId, x, y, z,
+			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.getDimensionName(), x, y, z,
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
@@ -139,8 +139,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else {
 			if (!isInvalidEMPreported) {
 				isInvalidEMPreported = true;
-				WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-				                                    world.provider.dimensionId, x, y, z,
+				WarpDrive.logger.warn(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+				                                    world.provider.getDimensionName(), x, y, z,
 				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 				Commons.dumpAllThreads();
 			}
@@ -152,8 +152,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Optional.Method(modid = "icbmclassic")
 	public void onEMP(World world, int x, int y, int z, resonant.api.explosion.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
-			                                    world.provider.dimensionId, x, y, z,
+			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.getDimensionName(), x, y, z,
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
@@ -165,8 +165,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else {
 			if (!isInvalidEMPreported) {
 				isInvalidEMPreported = true;
-				WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-				                                    world.provider.dimensionId, x, y, z,
+				WarpDrive.logger.warn(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+				                                    world.provider.getDimensionName(), x, y, z,
 				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 				Commons.dumpAllThreads();
 			}

@@ -595,7 +595,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public String toString() {
-		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)",
+		return String.format("%s %s @ %s (%d %d %d)",
 			getClass().getSimpleName(),
 			connectedComputers == null ? "~NULL~" : connectedComputers,
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
