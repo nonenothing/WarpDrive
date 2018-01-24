@@ -113,7 +113,7 @@ public class Dictionary {
 				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
-				config.get("block_tags", "WarpDrive:bedrock_glass"                         , "Anchor SkipMining").getString();
+				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor SkipMining").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
