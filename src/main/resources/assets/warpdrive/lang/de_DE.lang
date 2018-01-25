@@ -564,7 +564,7 @@ tile.warpdrive.hull3.stairs.red.name=Rote überlegene Treppe
 tile.warpdrive.hull3.stairs.black.name=Schwarze überlegene Treppe
 
 
-warpdrive.guide.prefix=§6%1$s:§r
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§cDieser Block benötigt ein Update, durch zerstören und neu setzen.
 warpdrive.monitor.viewingCamera=Kamera bei %2$d, %3$d, %4$d läuft auf Videokanal %1$d
 warpdrive.ship.attachedPlayers=Verbundene Spieler: %1$s

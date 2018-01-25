@@ -58,8 +58,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 			if (tileEntity instanceof TileEntityWeaponController) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
 			} else {
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
-						getLocalizedName())
+				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(this)
 				    .appendSibling(new TextComponentTranslation("warpdrive.error.badTileEntity")));
 				WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 			}

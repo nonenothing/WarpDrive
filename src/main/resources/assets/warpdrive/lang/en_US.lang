@@ -562,7 +562,7 @@ tile.warpdrive.hull3.stairs.red.name=Red Stained Superior Hull Stairs
 tile.warpdrive.hull3.stairs.black.name=Black Stained Superior Hull Stairs
 
 
-warpdrive.guide.prefix=§6%1$s:§r 
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§cThis block needs an update by breaking and placing it.
 warpdrive.monitor.viewingCamera=Viewing camera at %2$d, %3$d, %4$d on video channel %1$d
 warpdrive.ship.attachedPlayers=Attached players: %1$s

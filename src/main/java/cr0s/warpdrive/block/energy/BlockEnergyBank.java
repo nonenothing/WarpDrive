@@ -218,19 +218,16 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
 			switch (tileEntityEnergyBank.getMode(facing)) {
 			case INPUT:
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
-						new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
+				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
 				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", facing.name())) );
 				return true;
 			case OUTPUT:
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
-				        new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
+				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
 				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", facing.name())) );
 				return true;
 			case DISABLED:
 			default:
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
-				        new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
+				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
 				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", facing.name())) );
 				return true;
 			}

@@ -257,11 +257,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				if (guideTicks <= 0) {
 					guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 					
-					ITextComponent msg = new TextComponentTranslation("warpdrive.guide.prefix", getBlockType().getLocalizedName())
+					final ITextComponent msg = Commons.getChatPrefix(getBlockType())
 					    .appendSibling(new TextComponentTranslation("warpdrive.forcefield.guide.lowPower"));
 					
-					AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
-					List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+					final AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
+					final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 					
 					for (Entity entity : list) {
 						if (entity == null || (!(entity instanceof EntityPlayer)) || entity instanceof FakePlayer) {

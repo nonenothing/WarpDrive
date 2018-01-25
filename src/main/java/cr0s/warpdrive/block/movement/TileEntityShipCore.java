@@ -1041,7 +1041,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public ITextComponent getStatus() {
 		return super.getStatus()
-			.appendSibling(new TextComponentString("\n")).appendSibling(getEnergyStatus())
 			.appendSibling((cooldownTime_ticks > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.cooling", cooldownTime_ticks / 20)) : new TextComponentString(""))
 			.appendSibling((isolationBlocksCount > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0)) : new TextComponentString(""));
 	}

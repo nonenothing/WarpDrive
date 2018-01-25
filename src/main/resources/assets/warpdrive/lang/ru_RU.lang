@@ -560,7 +560,7 @@ tile.warpdrive.hull3.stairs.red.name=Red Stained Superior Hull Stairs
 tile.warpdrive.hull3.stairs.black.name=Black Stained Superior Hull Stairs
 
 
-warpdrive.guide.prefix=§6%1$s:§r 
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§cэтот блок нужно сломать и поставить заново.
 warpdrive.monitor.viewingCamera=Просмотр камеры на %2$d, %3$d, %4$d через канал %1$d
 warpdrive.ship.attachedPlayers=Прирепленные игроки: %1$s

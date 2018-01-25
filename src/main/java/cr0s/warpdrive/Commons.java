@@ -21,7 +21,10 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -101,6 +104,20 @@ public class Commons {
 		}
 		
 		return result.toString();
+	}
+	
+	public static ITextComponent getChatPrefix(final Block block) {
+		return getChatPrefix(block.getUnlocalizedName() + ".name");
+	}
+	
+	public static ITextComponent getChatPrefix(final ItemStack itemStack) {
+		return getChatPrefix(itemStack.getUnlocalizedName() + ".name");
+	}
+	
+	public static ITextComponent getChatPrefix(final String translationKey) {
+		return new TextComponentString("")
+		    .appendSibling(new TextComponentTranslation("warpdrive.guide.prefix", new TextComponentTranslation(translationKey))
+		        .setStyle(new Style().setColor(TextFormatting.GOLD)));
 	}
 	
 	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {

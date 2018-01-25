@@ -277,7 +277,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			Item item = Item.getItemFromBlock(getBlockType());
 			if (item != null) {
 				ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
-				return new TextComponentTranslation("warpdrive.guide.prefix", new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"));
+				return Commons.getChatPrefix(itemStack);
 			}
 		}
 		return new TextComponentString("");

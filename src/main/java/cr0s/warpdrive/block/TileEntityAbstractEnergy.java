@@ -164,7 +164,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Override
 	public ITextComponent getStatus() {
 		final ITextComponent textEnergyStatus = getEnergyStatus();
-		if (textEnergyStatus.getFormattedText().isEmpty()) {
+		if (textEnergyStatus.getUnformattedText().isEmpty()) {
 			return super.getStatus();
 		} else {
 			return super.getStatus()

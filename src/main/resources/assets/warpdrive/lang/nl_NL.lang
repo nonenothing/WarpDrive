@@ -559,7 +559,7 @@ tile.warpdrive.hull3.stairs.red.name=Rood Gekleurd Superieur Pantser Trap
 tile.warpdrive.hull3.stairs.black.name=Zwart Gekleurd Superieur Pantser Trap
 
 
-warpdrive.guide.prefix=§6%1$s:§r 
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§cDit blok heeft een verversing nodig door het de breken en weer te plaatsen.
 warpdrive.monitor.viewingCamera=Camera op%2$d, %3$d, %4$d met videokanaal %1$d aan het bekijken...
 warpdrive.ship.attachedPlayers=Aangesloten Spelers: %1$s

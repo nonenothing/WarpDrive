@@ -371,7 +371,7 @@ tile.warpdrive.hull3.stairs.red.name=紅色高階船體階梯
 tile.warpdrive.hull3.stairs.black.name=黑色高階船體階梯
 
 
-warpdrive.guide.prefix=§6%1$s:§r 
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§c該塊需要重新放置。
 warpdrive.monitor.viewingCamera=查看攝影機 %2$d, %3$d, %4$d 在視頻頻道 %1$d
 warpdrive.ship.attachedPlayers=屬於: %1$s

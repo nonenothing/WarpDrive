@@ -560,7 +560,7 @@ tile.warpdrive.hull3.stairs.red.name=红色卓越船体楼梯
 tile.warpdrive.hull3.stairs.black.name=黑色卓越船体楼梯
 
 
-warpdrive.guide.prefix=§6%1$s:§r 
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§c需要重放置以更新此方块.
 warpdrive.monitor.viewingCamera=观景相机位于 %2$d, %3$d, %4$d 在视频频道%1$d
 warpdrive.ship.attachedPlayers=所属的玩家: %1$s

@@ -560,7 +560,7 @@ tile.warpdrive.hull3.stairs.red.name=Escalier de coque supérieure rouge
 tile.warpdrive.hull3.stairs.black.name=Escalier de coque supérieure noire
 
 
-warpdrive.guide.prefix=§6%1$s:§r 
+warpdrive.guide.prefix=%1$s: 
 warpdrive.error.badTileEntity=§cCe bloc requiers une mise à jour par dépose puis repose.
 warpdrive.monitor.viewingCamera=Affichage de la caméra à %2$d, %3$d, %4$d sur le canal vidéo %1$d
 warpdrive.ship.attachedPlayers=Joueurs attachés: %1$s

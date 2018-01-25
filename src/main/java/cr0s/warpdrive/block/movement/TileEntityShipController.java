@@ -262,21 +262,19 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			
 			if (entityPlayer.getName().equals(name)) {
 				players.remove(i);
-				return new TextComponentTranslation("warpdrive.guide.prefix",
-				        getBlockType().getLocalizedName())
-						.appendSibling(new TextComponentTranslation("warpdrive.ship.playerDetached",
-				                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
-				                                                 getAttachedPlayersList()));
+				return Commons.getChatPrefix(getBlockType())
+					.appendSibling(new TextComponentTranslation("warpdrive.ship.playerDetached",
+				        tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
+				        getAttachedPlayersList()));
 			}
 		}
 		
 		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
 		players.add(entityPlayer.getName());
-		return new TextComponentTranslation("warpdrive.guide.prefix",
-		        getBlockType().getLocalizedName())
-				.appendSibling(new TextComponentTranslation("warpdrive.ship.playerAttached",
-		                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
-		                                                 getAttachedPlayersList()));
+		return Commons.getChatPrefix(getBlockType())
+			.appendSibling(new TextComponentTranslation("warpdrive.ship.playerAttached",
+		        tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
+		        getAttachedPlayersList()));
 	}
 	
 	protected String getAttachedPlayersList() {

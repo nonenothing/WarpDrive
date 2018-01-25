@@ -121,9 +121,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	@Override
 	public ITextComponent getStatus() {
-		ITextComponent energyStatus = getEnergyStatus();
 		return super.getStatus()
-	        .appendSibling(energyStatus.toString().isEmpty() ? new TextComponentString("") : new TextComponentString("\n").appendSibling(energyStatus))
 			.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
 	}
 	
