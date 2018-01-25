@@ -35,11 +35,14 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		return new TileEntityIC2reactorLaserMonitor();
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
 		if (world.isRemote) {
 			return false;
+		}
+		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
 		}
 		
 		if (itemStackHeld == null) {

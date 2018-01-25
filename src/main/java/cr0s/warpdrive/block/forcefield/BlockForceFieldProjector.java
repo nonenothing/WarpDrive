@@ -208,6 +208,10 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			return false;
 		}
 		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityForceFieldProjector)) {
 			return false;

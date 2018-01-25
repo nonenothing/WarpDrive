@@ -157,9 +157,6 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
 		
-		// Bind our TESR to our tile entity
-		// ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForceFieldProjector.class, new TileEntityForceFieldProjectorRenderer());
-		
 		// register (smart) baked model
 		for (final EnumDisabledInputOutput enumDisabledInputOutput : CONFIG.getAllowedValues()) {
 			for (final EnumTier enumTier : BlockProperties.TIER.getAllowedValues()) {
@@ -197,9 +194,13 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing facing, float hitX, float hitY, float hitZ) { 
 		if (world.isRemote) {
 			return false;
+		}
+		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
 		}
 		
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
@@ -216,22 +217,22 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 			}
 			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
 			switch (tileEntityEnergyBank.getMode(facing)) {
-				case INPUT:
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix")
-					    .appendSibling(new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
-					    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", facing.name())) );
-					return true;
-				case OUTPUT:
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix")
-					    .appendSibling(new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
-					    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", facing.name())) );
-					return true;
-				case DISABLED:
-				default:
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix")
-					    .appendSibling(new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
-					    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", facing.name())) );
-					return true;
+			case INPUT:
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
+						new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
+				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", facing.name())) );
+				return true;
+			case OUTPUT:
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
+				        new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
+				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", facing.name())) );
+				return true;
+			case DISABLED:
+			default:
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.guide.prefix",
+				        new TextComponentTranslation(itemStack.getUnlocalizedName() + ".name"))
+				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", facing.name())) );
+				return true;
 			}
 		}
 		
@@ -266,8 +267,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 				tileEntityEnergyBank.dismountUpgrade(enumComponentType);
 				// upgrade dismounted
 				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.dismounted", enumComponentType.name()));
-				return false;
-				
+				return true;
 			}
 			
 		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status
@@ -304,6 +304,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 			tileEntityEnergyBank.mountUpgrade(enumComponentType);
 			// upgrade mounted
 			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.mounted", enumComponentType.name()));
+			return true;
 		}
 		
 		return false;

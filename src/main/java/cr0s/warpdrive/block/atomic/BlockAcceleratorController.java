@@ -33,6 +33,10 @@ public class BlockAcceleratorController extends BlockAbstractContainer {
 			return false;
 		}
 		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityAcceleratorController)) {
 			return false;

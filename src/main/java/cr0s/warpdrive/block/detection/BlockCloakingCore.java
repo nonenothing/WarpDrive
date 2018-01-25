@@ -80,6 +80,10 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 			return false;
 		}
 		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityCloakingCore) {
 			TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore) tileEntity;

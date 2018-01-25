@@ -81,6 +81,10 @@ public class BlockRadar extends BlockAbstractContainer {
 			return false;
 		}
 		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
 		if (itemStackHeld == null) {
 			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityRadar) {

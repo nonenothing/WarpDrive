@@ -34,6 +34,10 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 			return false;
 		}
 		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
 		if (entityPlayer.getHeldItem(EnumHand.MAIN_HAND) == null) {
 			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			

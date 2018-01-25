@@ -108,6 +108,10 @@ public class BlockShipCore extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
 		if (itemStackHeld == null) {
 			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityShipCore) {
