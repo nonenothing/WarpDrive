@@ -53,6 +53,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 		}
 	}
 	
+	@Override
 	public ITextComponent getStatus() {
 		return super.getStatus()
 		    .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
