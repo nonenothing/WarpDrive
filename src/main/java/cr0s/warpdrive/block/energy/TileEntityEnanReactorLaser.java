@@ -19,6 +19,7 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
+	
 	Vector3 myVec;
 	Vector3 reactorVec;
 	ForgeDirection side = ForgeDirection.UNKNOWN;
@@ -39,11 +40,12 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		directionsValidLaserMedium = new ForgeDirection[] { ForgeDirection.UP, ForgeDirection.DOWN };
 	}
 	
-	public TileEntityEnanReactorCore scanForReactor() {
+	public void scanForReactor() {
 		reactor = null;
+		side = ForgeDirection.UNKNOWN;
+		
 		TileEntity tileEntity;
 		// I AM ON THE NORTH SIDE
-		side = ForgeDirection.UNKNOWN;
 		tileEntity = worldObj.getTileEntity(xCoord, yCoord, zCoord + 2);
 		if (tileEntity instanceof TileEntityEnanReactorCore && worldObj.isAirBlock(xCoord, yCoord, zCoord + 1)) {
 			side = ForgeDirection.NORTH;
@@ -76,7 +78,6 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		if (reactor != null) {
 			reactorVec = new Vector3(reactor).translate(0.5);
 		}
-		return reactor;
 	}
 	
 	private void setMetadata() {
@@ -147,7 +148,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] hasReactor(Context context, Arguments arguments) {
-		return new Object[] { scanForReactor() != null };
+		return new Object[] { reactor != null };
 	}
 	
 	@Callback
@@ -174,7 +175,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		
 		switch (methodName) {
 		case "hasReactor":
-			return new Object[] { scanForReactor() != null };
+			return new Object[] { reactor != null };
 			
 		case "stabilize":
 			if (arguments.length >= 1) {
