@@ -26,11 +26,10 @@ import net.minecraft.util.text.TextComponentTranslation;
 
 public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
+	// warning: ItemBlock is created during registration, while block is still being constructed.
+	// As such, we can't use block properties from constructor
 	public ItemBlockAbstractBase(Block block) {
 		super(block);
-		if (block instanceof BlockAbstractContainer) {
-			setHasSubtypes(((BlockAbstractContainer) block).hasSubBlocks);
-		}
 	}
 	
 	@Override
@@ -40,7 +39,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		if ( itemStack == null 
 		  || !(block instanceof BlockAbstractContainer)
 		  || !((BlockAbstractContainer) block).hasSubBlocks ) {
@@ -51,7 +50,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	@Nonnull
 	@Override
-	public EnumRarity getRarity(@Nonnull ItemStack itemStack) {
+	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
 		if ( !(block instanceof IBlockBase) ) {
 			return super.getRarity(itemStack);
 		}
@@ -73,12 +72,12 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	@Nonnull
 	@Override
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		return ClientProxy.getModelResourceLocation(itemStack);
 	}
 	
 	@Override
-	public void addInformation(@Nonnull ItemStack itemStack, @Nonnull EntityPlayer entityPlayer, @Nonnull List<String> list, boolean advancedItemTooltips) {
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer, @Nonnull final List<String> list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";

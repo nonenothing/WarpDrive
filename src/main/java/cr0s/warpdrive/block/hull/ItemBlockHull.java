@@ -27,7 +27,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("deprecation")
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > 15) {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
@@ -44,7 +44,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		if (itemStack == null || block instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}

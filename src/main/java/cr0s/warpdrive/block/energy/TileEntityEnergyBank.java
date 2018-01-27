@@ -17,6 +17,9 @@ import net.minecraft.util.text.TextComponentString;
 
 public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
+	private static final String TAG_MODE_SIDE = "modeSide";
+	private static final String TAG_TIER = "tier";
+	
 	private static final EnumDisabledInputOutput[] MODE_DEFAULT_SIDES = {
 			EnumDisabledInputOutput.INPUT,
 			EnumDisabledInputOutput.INPUT,
@@ -140,22 +143,22 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	// Forge overrides
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
-		super.writeToNBT(nbtTagCompound);
-		nbtTagCompound.setByte("tier", tier);
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setByte(TAG_TIER, tier);
 		final byte[] bytes = new byte[EnumFacing.values().length];
 		for (final EnumFacing enumFacing : EnumFacing.values()) {
 			bytes[enumFacing.ordinal()] = (byte) modeSide[enumFacing.ordinal()].getIndex();
 		}
-		nbtTagCompound.setByteArray("modeSide", bytes);
-		return nbtTagCompound;
+		tagCompound.setByteArray(TAG_MODE_SIDE, bytes);
+		return tagCompound;
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbtTagCompound) {
-		super.readFromNBT(nbtTagCompound);
-		tier = nbtTagCompound.getByte("tier");
-		final byte[] bytes = nbtTagCompound.getByteArray("modeSide");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		tier = tagCompound.getByte(TAG_TIER);
+		final byte[] bytes = tagCompound.getByteArray(TAG_MODE_SIDE);
 		if (bytes.length != 6) {
 			modeSide = MODE_DEFAULT_SIDES.clone();
 		} else {
