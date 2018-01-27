@@ -1,5 +1,7 @@
 package cr0s.warpdrive.render;
 
+import com.google.common.collect.ImmutableList;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IMyBakedModel;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.EnumDisabledInputOutput;
@@ -16,9 +18,12 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 
 import net.minecraftforge.common.property.IExtendedBlockState;
 
@@ -26,6 +31,7 @@ public class BakedModelEnergyBank implements IBakedModel, IMyBakedModel {
 	
 	private ResourceLocation resourceLocation;
 	private IBakedModel bakedModelOriginal;
+	private IExtendedBlockState extendedBlockStateDefault;
 	
 	public BakedModelEnergyBank() {
 	}
@@ -50,8 +56,25 @@ public class BakedModelEnergyBank implements IBakedModel, IMyBakedModel {
 		assert(resourceLocation != null);
 		assert(bakedModelOriginal != null);
 		
-		if (blockState instanceof IExtendedBlockState) {
-			final IExtendedBlockState extendedBlockState = (IExtendedBlockState) blockState;
+		final IExtendedBlockState extendedBlockState;
+		if (blockState == null) {
+			// @TODO: dead code until we have different blocks for each tiers to support item rendering and 1.13+ 
+			if (extendedBlockStateDefault == null) {
+				extendedBlockStateDefault = ((IExtendedBlockState) WarpDrive.blockEnergyBank.getDefaultState())
+				        .withProperty(BlockEnergyBank.DOWN , EnumDisabledInputOutput.INPUT)
+				        .withProperty(BlockEnergyBank.UP   , EnumDisabledInputOutput.INPUT)
+				        .withProperty(BlockEnergyBank.NORTH, EnumDisabledInputOutput.OUTPUT)
+				        .withProperty(BlockEnergyBank.SOUTH, EnumDisabledInputOutput.OUTPUT)
+				        .withProperty(BlockEnergyBank.WEST , EnumDisabledInputOutput.OUTPUT)
+				        .withProperty(BlockEnergyBank.EAST , EnumDisabledInputOutput.OUTPUT);
+			}
+			extendedBlockState = extendedBlockStateDefault;
+		} else if (blockState instanceof IExtendedBlockState) {
+			extendedBlockState = (IExtendedBlockState) blockState;
+		} else {
+			extendedBlockState = null;
+		}
+		if (extendedBlockState != null) {
 			final EnumDisabledInputOutput enumDisabledInputOutput = getEnumDisabledInputOutput(extendedBlockState, facing);
 			final IBlockState blockStateToRender = extendedBlockState.getClean().withProperty(BlockEnergyBank.CONFIG, enumDisabledInputOutput);
 			
@@ -117,23 +140,20 @@ public class BakedModelEnergyBank implements IBakedModel, IMyBakedModel {
 	@Nonnull
 	@Override
 	public ItemOverrideList getOverrides() {
-		// return itemOverrideList
-		return bakedModelOriginal.getOverrides();
+		return itemOverrideList;
 	}
-	/*
+	
 	private final ItemOverrideList itemOverrideList = new ItemOverrideList(ImmutableList.of()) {
 		@Nonnull
 		@Override
-		public IBakedModel handleItemState(@Nonnull IBakedModel model, @Nonnull ItemStack stack, @Nonnull World world, @Nonnull EntityLivingBase entity) {
-			
-			if (!stack.hasTagCompound()) {
-				return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(Blocks.FIRE.getDefaultState());
+		public IBakedModel handleItemState(@Nonnull final IBakedModel model, @Nonnull final ItemStack itemStack,
+		                                   @Nonnull final World world, @Nonnull final EntityLivingBase entity) {
+			final IBlockState blockState = WarpDrive.blockEnergyBank.getStateFromMeta(itemStack.getMetadata());
+			final IBakedModel bakedModel = Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(blockState);
+			if (bakedModel instanceof BakedModelEnergyBank) {
+				return ((BakedModelEnergyBank) bakedModel).bakedModelOriginal;
 			}
-			
-			final IBlockState state = NBTUtil.func_190008_d(stack.getTagCompound().getCompoundTag("BLOCKSTATE"));
-			
-			return Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state);
+			return bakedModel;
 		}
 	};
-	/**/
 }

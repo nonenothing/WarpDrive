@@ -30,6 +30,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -127,6 +128,12 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityEnergyBank((byte)(metadata % 4));
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockEnergyBank(this);
 	}
 	
 	@Override
