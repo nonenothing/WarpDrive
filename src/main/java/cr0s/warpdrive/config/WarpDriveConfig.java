@@ -346,9 +346,13 @@ public class WarpDriveConfig {
 	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
 	public static boolean BREATHING_AIR_AT_ENTITY_DEBUG = false;
 	
-	// IC2 Reactor monitor
-	public static int IC2_REACTOR_MAX_ENERGY_STORED = 1000000;
-	public static double IC2_REACTOR_ENERGY_PER_HEAT = 2;
+	// IC2 Reactor cooler
+	public static int IC2_REACTOR_MAX_HEAT_STORED = 30000;
+	public static int IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK = 648;
+	public static int IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK = 54;
+	public static int IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK = 54;
+	public static int IC2_REACTOR_COOLING_PER_INTERVAL = 1080;
+	public static double IC2_REACTOR_ENERGY_PER_HEAT = 2.0D;
 	public static int IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
 	
 	// Transporter
@@ -918,13 +922,21 @@ public class WarpDriveConfig {
 				config.get("breathing", "simulation_delay_ticks", BREATHING_AIR_SIMULATION_DELAY_TICKS, "Minimum delay between consecutive air propagation updates of the same block.").getInt());
 		BREATHING_AIR_AT_ENTITY_DEBUG = config.get("breathing", "enable_air_at_entity_debug", BREATHING_AIR_AT_ENTITY_DEBUG, "Spam creative players with air status around them, use at your own risk.").getBoolean(false);
 		
-		// IC2 Reactor monitor
-		IC2_REACTOR_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
-				config.get("ic2_reactor_laser", "max_energy_stored", IC2_REACTOR_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
+		// IC2 Reactor cooler
+		IC2_REACTOR_MAX_HEAT_STORED = Commons.clamp(1, 32767,
+		        config.get("ic2_reactor_laser", "max_heat_stored", IC2_REACTOR_MAX_HEAT_STORED, "Maximum heat stored in the focus").getInt());
+		IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK = Commons.clamp(0, 32767,
+		        config.get("ic2_reactor_laser", "component_heat_transfer_per_tick", IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK, "Maximum component heat added to the focus every reactor tick").getInt());
+		IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK = Commons.clamp(0, 32767,
+		        config.get("ic2_reactor_laser", "focus_heat_transfer_per_tick", IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK, "Maximum heat transferred between 2 connected focus every reactor tick").getInt());
+		IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK = Commons.clamp(0, 32767,
+		        config.get("ic2_reactor_laser", "reactor_heat_transfer_per_tick", IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK, "Maximum reactor heat added to the focus every reactor tick").getInt());
+		IC2_REACTOR_COOLING_PER_INTERVAL = Commons.clamp(1, 32767,
+		        config.get("ic2_reactor_laser", "cooling_per_interval", IC2_REACTOR_COOLING_PER_INTERVAL, "Heat extracted from the focus by interval").getInt());
 		IC2_REACTOR_ENERGY_PER_HEAT = Commons.clamp(2.0D, 100000.0D,
-				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT, "Energy cost per heat absorbed").getDouble(2));
+				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT, "Energy cost per heat absorbed").getDouble());
 		IC2_REACTOR_COOLING_INTERVAL_TICKS = Commons.clamp(0, 1200,
-				config.get("ic2_reactor_laser", "cooling_interval_ticks", IC2_REACTOR_COOLING_INTERVAL_TICKS, "Update speed of the check for reactors to cooldown").getInt());
+				config.get("ic2_reactor_laser", "cooling_interval_ticks", IC2_REACTOR_COOLING_INTERVAL_TICKS, "Update speed of the check for reactors to cooldown. Use 10 to tick as fast as the reactor simulation").getInt());
 		
 		// Transporter
 		TRANSPORTER_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,

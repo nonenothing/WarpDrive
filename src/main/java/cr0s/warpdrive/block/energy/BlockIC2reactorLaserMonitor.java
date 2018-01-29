@@ -31,9 +31,9 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[3];
-		icons[0] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorNotConnected");
-		icons[1] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedNotPowered");
-		icons[2] = iconRegister.registerIcon("warpdrive:energy/IC2reactorLaserMonitorConnectedPowered");
+		icons[0] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-disconnected");
+		icons[1] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-connected-invalid");
+		icons[2] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-connected-valid");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -41,19 +41,18 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-		if (tileEntity == null || !(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
+		if (!(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
 			return icons[0];
 		}
 		
-		if (((TileEntityIC2reactorLaserMonitor)tileEntity).isSideActive(side)) {
-			if ((metadata & 8) == 0) {
-				return icons[1];
-			} else {
-				return icons[2];
-			}
+		if ((metadata & 0x7) == 6) {// "unknown" direction
+			return icons[0];
 		}
-		
-		return icons[0];
+		if ((metadata & 8) == 0) {
+			return icons[1];
+		} else {
+			return icons[2];
+		}
 	}
 	
 	@SideOnly(Side.CLIENT)
