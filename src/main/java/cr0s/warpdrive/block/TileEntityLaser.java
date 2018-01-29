@@ -78,7 +78,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			"beamFrequency",
 			"getScanResult"
 		});
-		laserMediumMaxCount = WarpDriveConfig.LASER_CANNON_MAX_MEDIUMS_COUNT;
+		laserMedium_maxCount = WarpDriveConfig.LASER_CANNON_MAX_MEDIUMS_COUNT;
 	}
 	
 	@Override
@@ -118,8 +118,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		    || (beamFrequency == BEAM_FREQUENCY_SCANNING && delayTicks > WarpDriveConfig.LASER_CANNON_EMIT_SCAN_DELAY_TICKS))) {
 			delayTicks = 0;
 			isEmitting = false;
-			int beamEnergy = Math.min(
-					consumeCappedEnergyFromLaserMediums(Integer.MAX_VALUE, false) + MathHelper.floor_double(energyFromOtherBeams * WarpDriveConfig.LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY),
+			final int beamEnergy = Math.min(
+					laserMedium_consumeUpTo(Integer.MAX_VALUE, false) + MathHelper.floor_double(energyFromOtherBeams * WarpDriveConfig.LASER_CANNON_BOOSTER_BEAM_ENERGY_EFFICIENCY),
 					WarpDriveConfig.LASER_CANNON_MAX_LASER_ENERGY);
 			emitBeam(beamEnergy);
 			energyFromOtherBeams = 0;

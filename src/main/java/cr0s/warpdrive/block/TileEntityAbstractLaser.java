@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.api.computer.IAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -16,12 +17,17 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.ForgeDirection;
 
 // Abstract class to manage laser mediums
-public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfaced {
-	// direction of the laser medium stack
-	protected ForgeDirection directionLaserMedium = ForgeDirection.UNKNOWN;
-	protected ForgeDirection[] directionsValidLaserMedium = ForgeDirection.VALID_DIRECTIONS;
-	protected int laserMediumMaxCount = 0;
-	protected int laserMediumCount = 0;
+public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfaced implements IAbstractLaser {
+	
+	// configuration overridden by derived classes
+	protected ForgeDirection[] laserMedium_directionsValid = ForgeDirection.VALID_DIRECTIONS;
+	protected int laserMedium_maxCount = 0;
+	
+	// computed properties
+	protected ForgeDirection laserMedium_direction = ForgeDirection.UNKNOWN;
+	protected int cache_laserMedium_count = 0;
+	protected int cache_laserMedium_energyStored = 0;
+	protected int cache_laserMedium_maxStorage = 0;
 	
 	private final int updateInterval_ticks = 20 * WarpDriveConfig.SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS;
 	private int updateTicks = updateInterval_ticks;
@@ -48,7 +54,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		// accelerate update ticks during boot
 		if (bootTicks > 0) {
 			bootTicks--;
-			if (directionLaserMedium == ForgeDirection.UNKNOWN) {
+			if (laserMedium_direction == ForgeDirection.UNKNOWN) {
 				updateTicks = 1;
 			}
 		}
@@ -56,59 +62,83 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		if (updateTicks <= 0) {
 			updateTicks = updateInterval_ticks;
 			
-			updateLaserMediumStatus();
+			updateLaserMediumDirection();
 		}
 	}
 	
-	private void updateLaserMediumStatus() {
-		for(ForgeDirection direction : directionsValidLaserMedium) {
-			TileEntity tileEntity = worldObj.getTileEntity(xCoord + direction.offsetX, yCoord + direction.offsetY, zCoord + direction.offsetZ);
-			if (tileEntity != null && tileEntity instanceof TileEntityLaserMedium) {
-				directionLaserMedium = direction;
-				laserMediumCount = 0;
-				while(tileEntity != null && (tileEntity instanceof TileEntityLaserMedium) && laserMediumCount < laserMediumMaxCount) {
-					laserMediumCount++;
+	private void updateLaserMediumDirection() {
+		assert(laserMedium_maxCount != 0);
+		
+		for (final ForgeDirection direction : laserMedium_directionsValid) {
+			TileEntity tileEntity = worldObj.getTileEntity(
+					xCoord + direction.offsetX,
+					yCoord + direction.offsetY,
+					zCoord + direction.offsetZ);
+			
+			if (tileEntity instanceof TileEntityLaserMedium) {
+				// at least one found
+				int energyStored = 0;
+				int maxStorage = 0;
+				int count = 1;
+				while ( (tileEntity instanceof TileEntityLaserMedium)
+				     && count <= laserMedium_maxCount) {
+					// add current one
+					energyStored += ((TileEntityLaserMedium) tileEntity).energy_getEnergyStored();
+					maxStorage += ((TileEntityLaserMedium) tileEntity).energy_getMaxStorage();
+					count++;
+					
+					// check next one
 					tileEntity = worldObj.getTileEntity(
-							xCoord + (laserMediumCount + 1) * direction.offsetX,
-							yCoord + (laserMediumCount + 1) * direction.offsetY,
-							zCoord + (laserMediumCount + 1) * direction.offsetZ);
+						xCoord + (count + 1) * direction.offsetX,
+						yCoord + (count + 1) * direction.offsetY,
+						zCoord + (count + 1) * direction.offsetZ);
 				}
+				
+				// save results
+				laserMedium_direction = direction;
+				cache_laserMedium_count = count;
+				cache_laserMedium_energyStored = energyStored;
+				cache_laserMedium_maxStorage = maxStorage;
 				return;
 			}
 		}
-		directionLaserMedium = ForgeDirection.UNKNOWN;
+		
+		// nothing found
+		laserMedium_direction = ForgeDirection.UNKNOWN;
+		cache_laserMedium_count = 0;
+		cache_laserMedium_energyStored = 0;
+		cache_laserMedium_maxStorage = 0;
 	}
 	
-	protected int getEnergyStored() {
-		return consumeCappedEnergyFromLaserMediums(Integer.MAX_VALUE, true);
+	protected int laserMedium_getEnergyStored() {
+		return laserMedium_consumeUpTo(Integer.MAX_VALUE, true);
 	}
 	
-	protected boolean consumeEnergyFromLaserMediums(final int amount, final boolean simulate) {
+	protected boolean laserMedium_consumeExactly(final int amountRequested, final boolean simulate) {
+		final int amountSimulated = laserMedium_consumeUpTo(amountRequested, true);
 		if (simulate) {
-			return amount <= consumeCappedEnergyFromLaserMediums(amount, true);
-		} else {
-			if (amount > consumeCappedEnergyFromLaserMediums(amount, true)) {
-				return false;
-			} else {
-				return amount <= consumeCappedEnergyFromLaserMediums(amount, false);
-			}
+			return amountRequested <= amountSimulated;
 		}
+		if (amountRequested > amountSimulated) {
+			return false;
+		}
+		return amountRequested <= laserMedium_consumeUpTo(amountRequested, false);
 	}
 	
-	protected int consumeCappedEnergyFromLaserMediums(final int amount, final boolean simulate) {
-		if (directionLaserMedium == ForgeDirection.UNKNOWN) {
+	protected int laserMedium_consumeUpTo(final int amount, final boolean simulate) {
+		if (laserMedium_direction == ForgeDirection.UNKNOWN) {
 			return 0;
 		}
 		
 		// Primary scan of all laser mediums
 		int totalEnergy = 0;
 		int count = 1;
-		List<TileEntityLaserMedium> laserMediums = new LinkedList<>();
-		for (; count <= laserMediumMaxCount; count++) {
-			TileEntity tileEntity = worldObj.getTileEntity(
-					xCoord + count * directionLaserMedium.offsetX,
-					yCoord + count * directionLaserMedium.offsetY,
-					zCoord + count * directionLaserMedium.offsetZ);
+		final List<TileEntityLaserMedium> laserMediums = new LinkedList<>();
+		for (; count <= laserMedium_maxCount; count++) {
+			final TileEntity tileEntity = worldObj.getTileEntity(
+					xCoord + count * laserMedium_direction.offsetX,
+					yCoord + count * laserMedium_direction.offsetY,
+					zCoord + count * laserMedium_direction.offsetZ);
 			if (!(tileEntity instanceof TileEntityLaserMedium)) {
 				break;
 			}
@@ -151,37 +181,22 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		return energyTotalConsumed;
 	}
 	
-	protected Object[] energy() {
-		if (directionLaserMedium == ForgeDirection.UNKNOWN) {
-			return new Object[] { 0, 0 };
-		} else {
-			int energyStored = 0;
-			int energyStoredMax = 0;
-			int count = 1;
-			// List<TileEntityLaserMedium> laserMediums = new LinkedList();
-			for (; count <= laserMediumMaxCount; count++) {
-				TileEntity tileEntity = worldObj.getTileEntity(
-						xCoord + count * directionLaserMedium.offsetX,
-						yCoord + count * directionLaserMedium.offsetY,
-						zCoord + count * directionLaserMedium.offsetZ);
-				if (!(tileEntity instanceof TileEntityLaserMedium)) {
-					break;
-				}
-				// laserMediums.add((TileEntityLaserMedium) tileEntity);
-				energyStored += ((TileEntityLaserMedium) tileEntity).energy_getEnergyStored();
-				energyStoredMax += ((TileEntityLaserMedium) tileEntity).energy_getMaxStorage();
-			}
-			return new Object[] { energyStored, energyStoredMax };
-		}
+	// IAbstractLaser overrides
+	@Override
+	public Object[] energy() {
+		return new Object[] { cache_laserMedium_energyStored, cache_laserMedium_maxStorage };
 	}
 	
-	protected Object[] laserMediumDirection() {
-		return new Object[] { directionLaserMedium.name(), directionLaserMedium.offsetX, directionLaserMedium.offsetY, directionLaserMedium.offsetZ };
+	@Override
+	public Object[] laserMediumDirection() {
+		return new Object[] { laserMedium_direction.name(), laserMedium_direction.offsetX, laserMedium_direction.offsetY, laserMedium_direction.offsetZ };
 	}
 	
-	protected Object[] laserMediumCount() {
-		return new Object[] { laserMediumCount };
+	@Override
+	public Object[] laserMediumCount() {
+		return new Object[] { cache_laserMedium_count };
 	}
+	
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
@@ -193,6 +208,12 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] laserMediumDirection(Context context, Arguments arguments) {
 		return laserMediumDirection();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] laserMediumCount(Context context, Arguments arguments) {
+		return laserMediumCount();
 	}
 	
 	// ComputerCraft IPeripheral methods

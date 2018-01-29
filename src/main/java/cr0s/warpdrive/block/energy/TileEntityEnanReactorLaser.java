@@ -36,8 +36,8 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 				"stabilize"
 		});
 		peripheralName = "warpdriveEnanReactorLaser";
-		laserMediumMaxCount = 1;
-		directionsValidLaserMedium = new ForgeDirection[] { ForgeDirection.UP, ForgeDirection.DOWN };
+		laserMedium_maxCount = 1;
+		laserMedium_directionsValid = new ForgeDirection[] { ForgeDirection.UP, ForgeDirection.DOWN };
 	}
 	
 	public void scanForReactor() {
@@ -119,13 +119,13 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		}
 		
 		scanForReactor();
-		if (directionLaserMedium == ForgeDirection.UNKNOWN) {
+		if (laserMedium_direction == ForgeDirection.UNKNOWN) {
 			return;
 		}
 		if (reactor == null) {
 			return;
 		}
-		if (consumeEnergyFromLaserMediums(energy, false)) {
+		if (laserMedium_consumeExactly(energy, false)) {
 			if (WarpDriveConfig.LOGGING_ENERGY && WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.info("ReactorLaser on " + side + " side sending " + energy);
 			}

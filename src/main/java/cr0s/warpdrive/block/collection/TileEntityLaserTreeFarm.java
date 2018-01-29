@@ -91,7 +91,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				"silktouch",
 				"tapTrees"
 		});
-		laserMediumMaxCount = WarpDriveConfig.TREE_FARM_MAX_MEDIUMS_COUNT;
+		laserMedium_maxCount = WarpDriveConfig.TREE_FARM_MAX_MEDIUMS_COUNT;
 		CC_scripts = Arrays.asList("farm", "stop");
 	}
 	
@@ -164,7 +164,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// check power level
-				enoughPower = consumeEnergyFromLaserMediums(energyCost, true);
+				enoughPower = laserMedium_consumeExactly(energyCost, true);
 				if (!enoughPower) {
 					currentState = STATE_WARMUP;	// going back to warmup state to show the animation when it'll be back online
 					delayTicks = 0;
@@ -194,7 +194,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				delayTicks = 0;
 				
 				// consume power
-				enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
+				enoughPower = laserMedium_consumeExactly(energyCost, false);
 				if (!enoughPower) {
 					delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_SCANNING_LOW_POWER);
@@ -274,7 +274,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							
 							// consume power
 							final int energyCost = TREE_FARM_ENERGY_PER_WET_SPOT;
-							enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
+							enoughPower = laserMedium_consumeExactly(energyCost, false);
 							if (!enoughPower) {
 								delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 								updateMetadata(BlockLaserTreeFarm.ICON_FARMING_LOW_POWER);
@@ -311,7 +311,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					if (enableSilktouch) {
 						energyCost *= TREE_FARM_SILKTOUCH_ENERGY_FACTOR;
 					}
-					enoughPower = consumeEnergyFromLaserMediums((int) Math.round(energyCost), false);
+					enoughPower = laserMedium_consumeExactly((int) Math.round(energyCost), false);
 					if (!enoughPower) {
 						delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 						updateMetadata(BlockLaserTreeFarm.ICON_FARMING_LOW_POWER);
@@ -435,7 +435,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				
 				// consume power
 				final int energyCost = TREE_FARM_ENERGY_PER_SAPLING;
-				enoughPower = consumeEnergyFromLaserMediums(energyCost, false);
+				enoughPower = laserMedium_consumeExactly(energyCost, false);
 				if (!enoughPower) {
 					delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 					updateMetadata(BlockLaserTreeFarm.ICON_PLANTING_LOW_POWER);
@@ -481,7 +481,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private LinkedList<VectorI> scanSoils() {
-		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + cache_laserMedium_count * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
 		int xMin = xCoord - Math.min(radiusX, maxRadius);
 		int xMax = xCoord + Math.min(radiusX, maxRadius);
 		int yMin = yCoord;
@@ -514,13 +514,13 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Collection<VectorI> scanTrees() {
-		int maxRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
-		int xMin = xCoord - Math.min(radiusX, maxRadius);
-		int xMax = xCoord + Math.min(radiusX, maxRadius);
-		int yMin = yCoord + 1;
-		int yMax = yCoord + 1 + (tapTrees ? 8 : 0);
-		int zMin = zCoord - Math.min(radiusZ, maxRadius);
-		int zMax = zCoord + Math.min(radiusZ, maxRadius);
+		final int maxScanRadius = WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + cache_laserMedium_count * WarpDriveConfig.TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
+		final int xMin = xCoord - Math.min(radiusX, maxScanRadius);
+		final int xMax = xCoord + Math.min(radiusX, maxScanRadius);
+		final int yMin = yCoord + 1;
+		final int yMax = yCoord + 1 + (tapTrees ? 8 : 0);
+		final int zMin = zCoord - Math.min(radiusZ, maxScanRadius);
+		final int zMax = zCoord + Math.min(radiusZ, maxScanRadius);
 		
 		Collection<VectorI> logPositions = new HashSet<>();
 		
@@ -542,11 +542,12 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		}
 		if (!logPositions.isEmpty()) {
 			@SuppressWarnings("unchecked")
-			HashSet<Block> whitelist = (HashSet<Block>) Dictionary.BLOCKS_LOGS.clone();
+			final HashSet<Block> whitelist = (HashSet<Block>) Dictionary.BLOCKS_LOGS.clone();
 			if (breakLeaves) {
 				whitelist.addAll(Dictionary.BLOCKS_LEAVES);
 			}
-			logPositions = Commons.getConnectedBlocks(worldObj, logPositions, Commons.UP_DIRECTIONS, whitelist, WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + laserMediumCount * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM);
+			final int maxLogDistance = WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE + cache_laserMedium_count * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM;
+			logPositions = Commons.getConnectedBlocks(worldObj, logPositions, Commons.UP_DIRECTIONS, whitelist, maxLogDistance);
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
@@ -644,7 +645,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] state() {
-		final int energy = getEnergyStored();
+		final int energy = laserMedium_getEnergyStored();
 		final String status = getStatusHeaderInPureText();
 		final Integer retValuables, retValuablesIndex;
 		if (isFarming() && valuables != null) {
@@ -745,7 +746,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	@Override
 	public String getStatusHeader() {
-		final int energy = getEnergyStored();
+		final int energy = laserMedium_getEnergyStored();
 		String state = "IDLE (not farming)";
 		if (currentState == STATE_IDLE) {
 			state = "IDLE (not farming)";
