@@ -5,7 +5,9 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -15,7 +17,14 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
-	static IIcon[] icons;
+	
+	private static IIcon[] icons;
+	private static final int ICON_DISCONNECTED = 0;
+	private static final int ICON_HEAD_CONNECTED = 1;
+	private static final int ICON_SIDE_CONNECTED = 2;
+	private static final int ICON_HEAD_VALID = 3;
+	private static final int ICON_SIDE_VALID = 4;
+	
 	
 	public BlockIC2reactorLaserMonitor() {
 		super(Material.iron);
@@ -30,10 +39,12 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
-		icons = new IIcon[3];
-		icons[0] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-disconnected");
-		icons[1] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-connected-invalid");
-		icons[2] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-connected-valid");
+		icons = new IIcon[5];
+		icons[ICON_DISCONNECTED  ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-disconnected");
+		icons[ICON_HEAD_CONNECTED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-connected");
+		icons[ICON_SIDE_CONNECTED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-side-connected");
+		icons[ICON_HEAD_VALID    ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-valid");
+		icons[ICON_SIDE_VALID    ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-side-valid");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -42,16 +53,17 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
-			return icons[0];
+			return icons[ICON_DISCONNECTED];
 		}
 		
-		if ((metadata & 0x7) == 6) {// "unknown" direction
-			return icons[0];
+		final int facing = metadata & 0x7;  
+		if (facing == 6) {// "unknown" direction
+			return icons[ICON_DISCONNECTED];
 		}
 		if ((metadata & 8) == 0) {
-			return icons[1];
+			return icons[facing == side ? ICON_HEAD_CONNECTED : ICON_SIDE_CONNECTED];
 		} else {
-			return icons[2];
+			return icons[facing == side ? ICON_HEAD_VALID : ICON_SIDE_VALID];
 		}
 	}
 	
@@ -63,6 +75,12 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 		} else {
 			return icons[0];
 		}
+	}
+	
+	@Override
+	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
+		world.setBlockMetadataWithNotify(x, y, z, 6, 3);
 	}
 	
 	@Override
