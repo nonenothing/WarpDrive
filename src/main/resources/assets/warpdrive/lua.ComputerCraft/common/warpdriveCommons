@@ -193,8 +193,10 @@ local function writeCentered(y, text)
     for key, monitor in pairs(monitors) do
       if key ~= data.radar_monitorIndex then
         local xSize, ySize = monitor.getSize()
-        monitor.setCursorPos((xSize - text:len()) / 2, y)
-        monitor.write(text)
+        if xSize ~= nil then
+          monitor.setCursorPos((xSize - text:len()) / 2, y)
+          monitor.write(text)
+        end
       end
     end
   end

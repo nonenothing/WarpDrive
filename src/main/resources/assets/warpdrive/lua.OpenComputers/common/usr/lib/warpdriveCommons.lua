@@ -200,7 +200,7 @@ local function writeCentered(y, text)
   
   if term.isAvailable() then
     local xSize, ySize = w.getResolution()
-    if xSize then
+    if xSize ~= nil then
       component.gpu.set((xSize - text:len()) / 2, y, text)
     end
     w.setCursorPos(1, y + 1)
