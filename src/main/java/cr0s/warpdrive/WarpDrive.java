@@ -296,6 +296,7 @@ public class WarpDrive implements LoadingCallback {
 		blockCloakingCoil = new BlockCloakingCoil("blockCloakingCoil");
 		blockMonitor = new BlockMonitor("blockMonitor");
 		blockRadar = new BlockRadar("blockRadar");
+		blockSiren = new BlockSiren("blockSiren");
 		blockWarpIsolation = new BlockWarpIsolation("blockWarpIsolation");
 		
 		// energy blocks and items
@@ -393,7 +394,7 @@ public class WarpDrive implements LoadingCallback {
 		blockHulls_slab = new Block[3][16];
 		
 		for(byte tier = 1; tier <= 3; tier++) {
-			int index = tier - 1;
+			final int index = tier - 1;
 			for (EnumHullPlainType enumHullPlainType : EnumHullPlainType.values()) {
 				blockHulls_plain[index][enumHullPlainType.ordinal()] = new BlockHullPlain("blockHull" + tier + "_" + enumHullPlainType.getName(), tier, enumHullPlainType);
 			}
@@ -404,9 +405,6 @@ public class WarpDrive implements LoadingCallback {
 				blockHulls_slab[index][enumDyeColor.getMetadata()] = new BlockHullSlab("blockHull" + tier + "_slab_" + enumDyeColor.getUnlocalizedName(), blockHulls_plain[index][0].getStateFromMeta(enumDyeColor.getMetadata()), tier);
 			}
 		}
-		
-		// sirens
-		blockSiren = new BlockSiren("blockSiren");
 		
 		// component items
 		itemComponent = new ItemComponent("itemComponent");
