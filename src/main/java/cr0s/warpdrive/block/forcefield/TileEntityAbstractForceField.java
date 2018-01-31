@@ -219,7 +219,10 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	@Override
 	public String toString() {
-		return String.format("%s Beam \'%d\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
-			beamFrequency, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), pos.getX(), pos.getY(), pos.getZ());
+		return String.format("%s Beam \'%d\' @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
+		                     beamFrequency,
+		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

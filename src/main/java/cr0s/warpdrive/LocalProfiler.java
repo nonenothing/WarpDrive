@@ -46,7 +46,7 @@ public class LocalProfiler {
 		}
 	}
 	
-	private static void printCallStats() {
+	public static void printCallStats() {
 		WarpDrive.logger.info("Dumping chunk stats:");
 		for (Entry<String, Integer> entryStat : stats.entrySet()) {
 			WarpDrive.logger.info(String.format("%10d x %s",

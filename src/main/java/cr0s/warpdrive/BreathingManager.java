@@ -73,8 +73,8 @@ public class BreathingManager {
 		}
 		
 		if (WarpDriveConfig.LOGGING_BREATHING) {
-			WarpDrive.logger.warn(String.format("Entity spawn denied at DIM%d @ (%d %d %d) entityId '%s'",
-			                                    entityLivingBase.worldObj.provider.getDimension(),
+			WarpDrive.logger.warn(String.format("Entity spawn denied @ %s (%d %d %d) entityId '%s'",
+			                                    entityLivingBase.worldObj.provider.getSaveFolder(),
 			                                    x, y, z, idEntity));
 		}
 		return false;
@@ -100,8 +100,9 @@ public class BreathingManager {
 				vAirBlock = vPosition;
 				break;
 			} else if (block != Blocks.AIR) {
-				StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.worldObj, vPosition.x, vPosition.y, vPosition.z);
-				if (stateAir.concentration > 0) {
+				final StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.worldObj, vPosition.x, vPosition.y, vPosition.z);
+				if ( stateAir == null
+				  || stateAir.concentration > 0 ) {
 					vAirBlock = vPosition;
 					break;
 				}

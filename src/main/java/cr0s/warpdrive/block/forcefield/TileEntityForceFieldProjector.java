@@ -705,8 +705,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			markDirty();
 		}
 		if (!vForceFields.isEmpty()) {
-			for (Iterator<VectorI> iterator = vForceFields.iterator(); iterator.hasNext();) {
-				VectorI vector = iterator.next();
+			// invalidate() can be multi-threaded, so we're working with a copy of the collection 
+			final VectorI[] vForceFields_cache = vForceFields.toArray(new VectorI[0]);
+			vForceFields.clear();
+			
+			for (VectorI vector : vForceFields_cache) {
 				if (!isChunkLoading) {
 					if (!(worldObj.isBlockLoaded(vector.getBlockPos(), false))) {// chunk is not loaded, skip it
 						continue;
@@ -715,12 +718,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 						continue;
 					}
 				}
-				IBlockState blockState = vector.getBlockState(worldObj);
 				
+				final IBlockState blockState = vector.getBlockState(worldObj);
 				if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]) {
 					worldObj.setBlockToAir(vector.getBlockPos());
 				}
-				iterator.remove();
 			}
 		}
 		
@@ -1006,7 +1008,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// reset field in case of major changes
 			if (legacy_forceFieldSetup != null) {
-				int energyRequired = (int)Math.max(0, Math.round(cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost));
+				final int energyRequired = (int) Math.max(0, Math.round(cache_forceFieldSetup.startupEnergyCost - legacy_forceFieldSetup.startupEnergyCost));
 				if (!legacy_forceFieldSetup.getCamouflageBlockState().equals(cache_forceFieldSetup.getCamouflageBlockState())
 				  || legacy_forceFieldSetup.beamFrequency != cache_forceFieldSetup.beamFrequency
 				  || !energy_consume(energyRequired, false)) {
@@ -1186,7 +1188,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// calculation start is done synchronously, by caller
 			try {
-				if (projector.isValid()) {
+				if ( projector != null
+				  && projector.isValid() ) {
 					ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.debug(this + " Calculation started for " + projector);
@@ -1236,7 +1239,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				vInteriorBlocks = null;
 				vPerimeterBlocks = null;
 				exception.printStackTrace();
-				WarpDrive.logger.error(this + " Calculation failed");
+				WarpDrive.logger.error(this + " Calculation failed for " + (projector == null ? "-null-" : projector.toString()));
 			}
 			
 			projector.calculation_done(vInteriorBlocks, vPerimeterBlocks);

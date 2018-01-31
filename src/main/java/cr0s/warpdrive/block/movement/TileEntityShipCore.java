@@ -56,7 +56,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	public EnumFacing facing;
 	public UUID uuid = null;
 	public String shipName = "default";
-	public double isolationRate = 0.0D;
+	private double isolationRate = 0.0D;
 	private int cooldownTime_ticks = 0;
 	private int warmupTime_ticks = 0;
 	protected int jumpCount = 0;
@@ -91,7 +91,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	private int isolationUpdateTicks = 0;
 	
 	
-	public WeakReference<TileEntityShipController> tileEntityShipControllerWeakReference;
+	private WeakReference<TileEntityShipController> tileEntityShipControllerWeakReference;
 	
 	
 	public TileEntityShipCore() {
@@ -263,7 +263,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			case SUMMON:
 				final String targetName = tileEntityShipController.getTargetName();
 				if ( targetName == null
-				   || targetName.isEmpty()) {
+				  || targetName.isEmpty()) {
 					summonPlayers(tileEntityShipController);
 				} else {
 					summonSinglePlayer(tileEntityShipController, targetName);
@@ -418,8 +418,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		messageToAllPlayersOnShip(new TextComponentString(string));
 	}
 	public void messageToAllPlayersOnShip(ITextComponent textComponent) {
-		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
-		List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final ITextComponent messageFormatted = new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ")
+		                                             .appendSibling(textComponent);
 		
 		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent.getFormattedText());
 		for (final Entity entity : list) {
@@ -427,7 +429,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				continue;
 			}
 			
-			Commons.addChatMessage(entity, new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ").appendSibling(textComponent));
+			Commons.addChatMessage(entity, messageFormatted);
 		}
 	}
 	
@@ -511,13 +513,11 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	private void summonPlayers(final TileEntityShipController tileEntityShipController) {
 		final AxisAlignedBB aabb = new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
-		final MinecraftServer server = worldObj.getMinecraftServer();
-		assert(server != null);
 		
 		for (int i = 0; i < tileEntityShipController.players.size(); i++) {
 			final String playerName = tileEntityShipController.players.get(i);
-			final EntityPlayerMP entityPlayerMP = server.getPlayerList().getPlayerByUsername(playerName);
-			
+			final EntityPlayerMP entityPlayerMP = Commons.getOnlinePlayerByName(playerName);
+
 			if ( entityPlayerMP != null
 			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
 				summonPlayer(entityPlayerMP);
@@ -532,7 +532,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		
 		for (int i = 0; i < tileEntityShipController.players.size(); i++) {
 			final String playerName = tileEntityShipController.players.get(i);
-			final EntityPlayerMP entityPlayerMP = server.getPlayerList().getPlayerByUsername(playerName);
+			final EntityPlayerMP entityPlayerMP = Commons.getOnlinePlayerByName(playerName);
 			
 			if ( entityPlayerMP != null && playerName.equals(nickname)
 			  && isOutsideBB(aabb, MathHelper.floor_double(entityPlayerMP.posX), MathHelper.floor_double(entityPlayerMP.posY), MathHelper.floor_double(entityPlayerMP.posZ)) ) {
@@ -935,7 +935,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		// Consume energy
 		if (energy_consume(shipMovementCosts.energyRequired, false)) {
 			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
-			JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
+			final JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
 			jump.enable();
 		} else {
 			messageToAllPlayersOnShip("Insufficient energy level");
@@ -1243,8 +1243,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public String toString() {
 		return String.format(
-			"%s \'%s\' @ \'%s\' (%d %d %d)",
-			getClass().getSimpleName(), shipName, worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			"%s \'%s\' @ %s (%d %d %d)",
+			getClass().getSimpleName(),
+			shipName,
+			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
 			pos.getX(), pos.getY(), pos.getZ());
 	}
 }

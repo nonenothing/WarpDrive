@@ -141,7 +141,7 @@ public class CamerasRegistry {
 		if (world == null) {
 			return;
 		}
-		WarpDrive.logger.info("Cameras registry for dimension " + world.provider.getDimension() + ":");
+		WarpDrive.logger.info("Cameras registry for dimension " + world.provider.getSaveFolder() + ":");
 		
 		for (CameraRegistryItem cam : registry) {
 			WarpDrive.logger.info("- " + cam.videoChannel + " (" + cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ() + ")");

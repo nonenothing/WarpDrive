@@ -9,17 +9,18 @@ import net.minecraft.world.World;
 
 public enum EnumShipMovementType implements IStringSerializable {
 	
-	//               hasConfig   name                   description                           maximumDistance_blocks                    energyRequired                                 warmup_seconds                        sickness_seconds                      cooldown_seconds       
-	HYPERSPACE_ENTERING ( true , "hyperspace_entering", "entering hyperspace"  , new double[] {    128D, 0D, 0D, 0D, 0D }, new double[] { 10000000D,  0D,   0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 40D, 0D, 0D, 0D, 0D } ),
-	HYPERSPACE_EXITING  ( true , "hyperspace_exiting" , "existing hyperspace"  , new double[] {    128D, 0D, 0D, 0D, 0D }, new double[] { 10000000D,  0D,   0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 40D, 0D, 0D, 0D, 0D } ),
-	HYPERSPACE_MOVING   ( true , "hyperspace_moving"  , "moving in hyperspace" , new double[] {  12800D, 0D, 0D, 0D, 0D }, new double[] {    10000D,  1D,  10D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D } ),
-	PLANET_LANDING      ( true , "planet_landing"     , "landing on a planet"  , new double[] {    128D, 0D, 0D, 0D, 0D }, new double[] {    10000D, 10D, 100D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 60D, 0D, 0D, 0D, 0D } ),
-	PLANET_MOVING       ( true , "planet_moving"      , "moving on a planet"   , new double[] {    128D, 0D, 0D, 0D, 0D }, new double[] {      100D, 10D, 100D, 0D, 0D }, new double[] {  5D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D } ),
-	PLANET_TAKEOFF      ( true , "planet_takeoff"     , "taking off a planet"  , new double[] {    128D, 0D, 0D, 0D, 0D }, new double[] {    10000D, 10D, 100D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 60D, 0D, 0D, 0D, 0D } ),
-	SPACE_MOVING        ( true , "space_moving"       , "moving in space"      , new double[] {    256D, 0D, 0D, 0D, 0D }, new double[] {     1000D, 10D, 100D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D } ),
-	GATE_ACTIVATING     ( true , "gate_activating"    , "activating a jumpgate", new double[] { 100000D, 0D, 0D, 0D, 0D }, new double[] {    20000D, 10D, 100D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D } ),
-	CREATIVE            ( false, ""                   , "admin command"        , new double[] { 999999D, 0D, 0D, 0D, 0D }, new double[] {        0D,  0D,   0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D } ),
-	NONE                ( false, ""                   , "idle, disabled, etc." , new double[] {      0D, 0D, 0D, 0D, 0D }, new double[] {        0D,  0D,   0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D } ),
+	//               hasConfig   name                   description                           maximumDistance_blocks                      energyRequired                                 warmup_seconds                        sickness_seconds                      cooldown_seconds       
+	HYPERSPACE_ENTERING ( true , "hyperspace_entering", "entering hyperspace"  , new double[] {    100D, 0.1D, 0D, 0D, 0D }, new double[] { 10000000D,  0D,   0D, 0D, 0D }, new double[] { 40D, 0D, 0D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D }, new double[] { 60D, 0D, 0D, 0D, 0D } ),
+	HYPERSPACE_EXITING  ( true , "hyperspace_exiting" , "existing hyperspace"  , new double[] {    100D, 0.1D, 0D, 0D, 0D }, new double[] { 10000000D,  0D,   0D, 0D, 0D }, new double[] { 40D, 0D, 0D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D }, new double[] { 60D, 0D, 0D, 0D, 0D } ),
+	HYPERSPACE_MOVING   ( true , "hyperspace_moving"  , "moving in hyperspace" , new double[] {    200D, 0.5D, 0D, 0D, 0D }, new double[] {    10000D,  1D,  10D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D } ),
+	PLANET_LANDING      ( true , "planet_landing"     , "landing on a planet"  , new double[] {     50D, 0.1D, 0D, 0D, 0D }, new double[] {    10000D, 10D, 100D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 60D, 0D, 0D, 0D, 0D } ),
+	PLANET_MOVING       ( true , "planet_moving"      , "moving on a planet"   , new double[] {     50D, 0.1D, 0D, 0D, 0D }, new double[] {      100D, 10D, 100D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 40D, 0D, 0D, 0D, 0D } ),
+	PLANET_TAKEOFF      ( true , "planet_takeoff"     , "taking off a planet"  , new double[] {     50D, 0.1D, 0D, 0D, 0D }, new double[] {    10000D, 10D, 100D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 90D, 0D, 0D, 0D, 0D } ),
+	SPACE_MOVING        ( true , "space_moving"       , "moving in space"      , new double[] {    100D, 0.1D, 0D, 0D, 0D }, new double[] {     1000D, 10D, 100D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] { 30D, 0D, 0D, 0D, 0D } ),
+	GATE_ACTIVATING     ( true , "gate_activating"    , "activating a jumpgate", new double[] { 100000D, 0.1D, 0D, 0D, 0D }, new double[] {    20000D, 10D, 100D, 0D, 0D }, new double[] { 10D, 0D, 0D, 0D, 0D }, new double[] {  3D, 0D, 0D, 0D, 0D }, new double[] { 20D, 0D, 0D, 0D, 0D } ),
+	INSTANTIATE         ( false, ""                   , "generation/ship token", new double[] { 999999D, 0.0D, 0D, 0D, 0D }, new double[] {        0D,  0D,   0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D } ),
+	RESTORE             ( false, ""                   , "admin command"        , new double[] { 999999D, 0.0D, 0D, 0D, 0D }, new double[] {        0D,  0D,   0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D } ),
+	NONE                ( false, ""                   , "idle, disabled, etc." , new double[] {      0D, 0.0D, 0D, 0D, 0D }, new double[] {        0D,  0D,   0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D }, new double[] {  0D, 0D, 0D, 0D, 0D } ),
 	;
 	// nota: empty names won't show up in the configuration file
 	
@@ -52,11 +53,11 @@ public enum EnumShipMovementType implements IStringSerializable {
 		this.hasConfiguration = hasConfiguration;
 		this.unlocalizedName = unlocalizedName;
 		this.description = description;
-		this.warmupDefault = warmupDefault;
-		this.energyRequiredDefault = energyRequiredDefault;
-		this.cooldownDefault = cooldownDefault;
-		this.sicknessDefault = sicknessDefault;
 		this.maximumDistanceDefault = maximumDistanceDefault;
+		this.energyRequiredDefault = energyRequiredDefault;
+		this.warmupDefault = warmupDefault;
+		this.sicknessDefault = sicknessDefault;
+		this.cooldownDefault = cooldownDefault;
 	}
 	
 	public static EnumShipMovementType get(final int damage) {

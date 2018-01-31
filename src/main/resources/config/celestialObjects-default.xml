@@ -7,13 +7,17 @@
 	<!--
 	  An astronomical object or celestial object is a naturally occurring physical entity, association, or structure in the observable universe.
 	  They can be a planet, a more abstract construct like solar system (space dimension) or the all mighty hyperspace.
-	  Hyperspace is defined by it's WarpDriveHyperspace dimension provider. It may a virtual parent celestial object (i.e. one with no dimension defined).
+	  Hyperspace is defined by its WarpDriveHyperspace dimension provider.
 	  Space is a dimension with Hyperspace as its parent.
-	  In theory, multiple planets can exists in the same minecraft world (for example: The Twilight Forest exist on multiple planets in different star systems).
-	  Multiple hyperspaces can be defined.
+	  
+	  This default configuration is fairly simple.
+	  In practice, you can have several hyperspaces containing multiple spaces containing numerous planets, etc..
+	  
+	  When no dimension is defined, a celestial object is considered 'virtual'. An hyperspace can be virtual. A sun is (in most cases) virtual.
+	  In theory, multiple planets can exists in the same Minecraft world (for example: The Twilight Forest exist on multiple planets in different star systems).
 	  
 	  celestialObject.id should be unique for each Celestial object.
-	  When provided by WarpDrive, this is the world folder name instead of DIMxxx or WarpDriveHyperspace and WarpDriveSpace.
+	  When provided by WarpDrive, this is the world folder name instead of DIMxxx.
 	  -->
 	
 	
@@ -35,16 +39,16 @@
 		  dimension.id: this is the id of the dimension. 0 is the Overworld, -1 is the Nether, 1 is the End.
 		  dimension.isBreathable: this is a boolean flag defining if ambient atmosphere is breathable.
 		  dimension.isHyperspace: this is a boolean flag defining if this an hyperspace dimension. 
-		  dimension.gravity: this is the gravity simulation type. Valid keywords are none (0.0), legacySpace, legacyHyperspace, normal (1.0).
+		  dimension.gravity: this is the gravity simulation type. Valid keywords are 'none' (0.0), 'legacySpace', 'legacyHyperspace', 'normal' (1.0) or any value between 0 and 1.
 		  dimension.center.x, dimension.center.z: those are the center coordinate of that dimension world border, measured in blocks. For convenience, it's usually 0, 0.
 		  -->
 		<dimension id="-3" isBreathable="false" isHyperspace="true" gravity="legacyHyperspace">
 			<center x="0" z="0" />
 			<!--
-              provider defines how the world biomes are generated. If it's missing, the mod tries to self-assign space and hyperspace dimensions.
-              provider.type: this is the provider type. Valid keywords are "auto", "WarpDriveSpace", "WarpDriveHyperspace", "other".
-              Currently only Space and Hyperspace can be provided: use other mods to generate planet world.
-              -->
+			  provider defines how the world biomes are generated. If it's missing, the mod tries to self-assign space and hyperspace dimensions.
+			  provider.type: this is the provider type. Valid keywords are "auto", "WarpDriveSpace", "WarpDriveHyperspace", "other".
+			  Currently only Space and Hyperspace can be provided: use other mods to generate planet world.
+			  -->
 			<provider type="WarpDriveHyperspace" />
 		</dimension>
 		
@@ -54,7 +58,7 @@
 		  skybox.backgroundColor is self explanatory. Vanilla enforces plain black at max render distance.
 		  skybox.starBrightnessBase is the minimum brightness of stars in the sky.
 		  skybox.starBrightnessVanilla is how much of the vanilla star brightness is used. Space and hyperspace have no Sun, hence it's a fixed value.
-		  skybox.celestialObjectOpacity is used for that eery feeling. 0 will completly hide celestial objects.
+		  skybox.celestialObjectOpacity is used for that eery feeling. 0 will completely hide celestial objects.
 		  skybox.fogColor is the main color. Higher values increases the halo effect.
 		  skybox.fogFactor is the fog opacity depending on local Sun position. Space and hyperspace have no Sun, hence it's a fixed value.
 		  -->
@@ -71,7 +75,7 @@
 		<celestialObject id="solarSystem">
 			<!--
 			  parent defines the relation with a bigger enveloping celestial object.
-			  parent.group, parent.name (optional): when using multiple files, you can attach to a parent by its group and name.
+			  parent.id (optional): when using multiple files, you can attach to a parent by its id.
 			  parent.center.x, parent.center.z: this is the center coordinates in the parent dimension, measured in blocks.
 			  -->
 			<parent>
@@ -85,8 +89,7 @@
 				<provider type="WarpDriveSpace" />
 				<!--
 					generate defines the chance of different structures to generate
-					generate.group, generate.name: identify the structure from the related XML files
-					Those only works in WarpDrive dimensions, they're ignored otherwise.
+					generate.group, generate.name: identify the structure from the related XML files (name is optional)
 				  -->
 				<generate group="moon" ratio="0.00125" />
 				<generate group="asteroid" ratio="0.0067" />
@@ -115,8 +118,8 @@
 				  alpha: transparency factor from 0.00 (invisible) to 1.00 (opaque)
 				  texture: optional texture to use, can come from resource pack, vanilla or the mod itself
 				  periodU, periodV: optional texture rotation period over the planet, measured in seconds, defaults to 0 (disabled)
-				  		Texture coordinates are defined along U and V axis (you can see them as X and Y axs in the context of the texture pixels).
-				  		A periodU of 40 means the texture will do progressively shift along U axis, doing a full rotation in 40s.
+				  		Texture coordinates are defined along U and V axis (you can see them as X and Y axis in the context of the texture pixels).
+				  		A periodU of 40 means the texture will do progressively shift along U axis, doing a full rotation in 40 seconds.
 				  		A periodU of -80 means the texture will shift twice slower in the opposite direction. 
 				  additive: optional blending function, defaults to false (multiplicative)
 				  		Blending is the mathematical operation to mix existing pixel (previous layer or sky background) with the new one.
@@ -136,9 +139,9 @@
 			<celestialObject id="earth">
 				<parent>
 					<!-- coordinates in the solar system, measured in blocks -->
-					<center x="-40000" z="20000" />
+					<center x="-40000" z="30000" />
 				</parent>
-				<size x="4000" z="4000" />
+				<size x="10000" z="10000" />
 				<dimension id="0" isBreathable="true" gravity="normal">
 					<center x="0" z="0" />
 				</dimension>
@@ -155,7 +158,7 @@
 					<parent>
 						<center x="0" z="0" />
 					</parent>
-					<size x="1000" z="1000" />
+					<size x="2500" z="2500" />
 					<dimension id="-1" isBreathable="true" gravity="normal">
 						<center x="0" z="0" />
 					</dimension>

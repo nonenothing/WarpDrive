@@ -7,6 +7,7 @@ import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.event.ChunkHandler;
+import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
@@ -76,12 +77,12 @@ public class StateAir {
 		blockPos = new MutableBlockPos();
 	}
 	
-	public void refresh(final World world, final int x, final int y, final int z) {
+	public void refresh(final World world, final int x, final int y, final int z) throws ExceptionChunkNotLoaded {
 		blockPos.setPos(x, y, z);
 		refresh(world);
 	}
 	
-	public void refresh(final World world, final StateAir stateAir, final EnumFacing forgeDirection) {
+	public void refresh(final World world, final StateAir stateAir, final EnumFacing forgeDirection) throws ExceptionChunkNotLoaded {
 		blockPos.setPos(
 			stateAir.blockPos.getX() + forgeDirection.getFrontOffsetX(),
 			stateAir.blockPos.getY() + forgeDirection.getFrontOffsetY(),
@@ -89,14 +90,15 @@ public class StateAir {
 		refresh(world);
 	}
 	
-	private void refresh(final World world) {
+	private void refresh(final World world) throws ExceptionChunkNotLoaded {
 		// update chunk cache
 		if (chunkData == null || !chunkData.isInside(blockPos.getX(), blockPos.getY(), blockPos.getZ())) {
-			chunkData = ChunkHandler.getChunkData(world, blockPos.getX(), blockPos.getY(), blockPos.getZ(), false);
+			chunkData = ChunkHandler.getChunkData(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			if (chunkData == null) {
-				WarpDrive.logger.error(String.format("State air trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
-					world.provider.getDimensionType().getName(), blockPos.getX(), blockPos.getY(), blockPos.getZ()));
-				assert(false);
+				// chunk isn't loaded, abort treatment or it'll trigger a CME
+				throw new ExceptionChunkNotLoaded(String.format("Air refresh aborted @ %s (%d %d %d)",
+				                                                world.provider.getDimensionType().getName(),
+				                                                blockPos.getX(), blockPos.getY(), blockPos.getZ()));
 			}
 			chunk = null;
 		}
@@ -206,7 +208,11 @@ public class StateAir {
 			blockState = WarpDrive.blockAirSource.getDefaultState().withProperty(BlockProperties.FACING, direction);
 			world.setBlockState(blockPos, blockState, 2);
 			updateBlockType(world);
-			setGeneratorAndUpdateVoid(world, pressure, direction.getOpposite());
+			try {
+				setGeneratorAndUpdateVoid(world, pressure, direction.getOpposite());
+			} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+				// no operation
+			}
 			setConcentration(world, (byte) CONCENTRATION_MAX);
 		}
 		return updateRequired;
@@ -324,7 +330,8 @@ public class StateAir {
 					if ((dataAir & BLOCK_MASK) != BLOCK_AIR_PLACEABLE) {
 						// state was out of sync => skip
 						if (WarpDrive.isDev) {
-							WarpDrive.logger.info(String.format("Desynchronized air state detected at %d %d %d: %8x -> %s",
+							WarpDrive.logger.info(String.format("Desynchronized air state detected @ %s (%d %d %d): %8x -> %s",
+							                                    world.provider.getSaveFolder(),
 							                                    blockPos.getX(), blockPos.getY(), blockPos.getZ(), dataAirLegacy, this));
 						}
 						return;
@@ -349,7 +356,7 @@ public class StateAir {
 		}
 	}
 	
-	protected void setGeneratorAndUpdateVoid(final World world, final short pressureNew, final EnumFacing directionNew) {
+	protected void setGeneratorAndUpdateVoid(final World world, final short pressureNew, final EnumFacing directionNew) throws ExceptionChunkNotLoaded {
 		if (pressureNew == 0 && pressureVoid > 0) {
 			removeGeneratorAndCascade(world);
 		} else {
@@ -379,11 +386,10 @@ public class StateAir {
 		assert (pressureGenerator == 0 || pressureGenerator == GENERATOR_PRESSURE_MAX || directionGenerator != null);
 		assert (pressureGenerator == 0 || directionGenerator != null);
 	}
-	
-	protected void removeGeneratorAndCascade(final World world) {
+	protected void removeGeneratorAndCascade(final World world) throws ExceptionChunkNotLoaded {
 		removeGeneratorAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
 	}
-	private void removeGeneratorAndCascade(final World world, final int depth) {
+	private void removeGeneratorAndCascade(final World world, final int depth) throws ExceptionChunkNotLoaded {
 		if (pressureGenerator != 0) {
 			assert (directionGenerator != null);
 			dataAir = (dataAir & ~(GENERATOR_PRESSURE_MASK | GENERATOR_DIRECTION_MASK)) | (Commons.getOrdinal(null) << GENERATOR_DIRECTION_SHIFT);
@@ -424,10 +430,10 @@ public class StateAir {
 		assert (pressureVoid == 0 || directionVoid != null);
 		assert (pressureVoid == 0 || pressureVoid == VOID_PRESSURE_MAX || directionVoid != null);
 	}
-	protected void removeVoidAndCascade(final World world) {
+	protected void removeVoidAndCascade(final World world) throws ExceptionChunkNotLoaded {
 		removeVoidAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
 	}
-	private void removeVoidAndCascade(final World world, final int depth) {
+	private void removeVoidAndCascade(final World world, final int depth) throws ExceptionChunkNotLoaded {
 		if (pressureVoid != 0) {
 			assert (directionVoid != null);
 			dataAir = (dataAir & ~(VOID_PRESSURE_MASK | VOID_DIRECTION_MASK)) | (Commons.getOrdinal(null) << VOID_DIRECTION_SHIFT);
@@ -510,48 +516,53 @@ public class StateAir {
 	}
 	
 	public static void dumpAroundEntity(final EntityPlayer entityPlayer) {
-		StateAir stateAirs[][][] = new StateAir[3][3][3];
-		for (int dy = -1; dy <= 1; dy++) {
-			for (int dz = -1; dz <= 1; dz++) {
-				for (int dx = -1; dx <= 1; dx++) {
-					StateAir stateAir = new StateAir(null);
-					stateAir.refresh(entityPlayer.worldObj,
-					                 MathHelper.floor_double(entityPlayer.posX) + dx,
-					                 MathHelper.floor_double(entityPlayer.posY) + dy,
-					                 MathHelper.floor_double(entityPlayer.posZ) + dz);
-					stateAirs[dx + 1][dy + 1][dz + 1] = stateAir;
+		try {
+			final StateAir stateAirs[][][] = new StateAir[3][3][3];
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dz = -1; dz <= 1; dz++) {
+					for (int dx = -1; dx <= 1; dx++) {
+						StateAir stateAir = new StateAir(null);
+						stateAir.refresh(entityPlayer.worldObj,
+						                 MathHelper.floor_double(entityPlayer.posX) + dx,
+						                 MathHelper.floor_double(entityPlayer.posY) + dy,
+						                 MathHelper.floor_double(entityPlayer.posZ) + dz);
+						stateAirs[dx + 1][dy + 1][dz + 1] = stateAir;
+					}
 				}
 			}
-		}
-		StringBuilder message = new StringBuilder("------------------------------------------------\n§3Air, §aGenerator §7and §dVoid §7stats at " + entityPlayer.ticksExisted);
-		for (int indexY = 2; indexY >= 0; indexY--) {
-			for (int indexZ = 2; indexZ >= 0; indexZ--) {
-				message.append("\n");
-				for (int indexX = 0; indexX <= 2; indexX++) {
-					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%2d", 100 + stateAir.concentration).substring(1);
-					message.append(String.format("§3%s ", stringValue));
+			final StringBuilder message = new StringBuilder("------------------------------------------------\n");
+			message.append("§3Air, §aGenerator §7and §dVoid §7stats at ").append(entityPlayer.ticksExisted);
+			for (int indexY = 2; indexY >= 0; indexY--) {
+				for (int indexZ = 2; indexZ >= 0; indexZ--) {
+					message.append("\n");
+					for (int indexX = 0; indexX <= 2; indexX++) {
+						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final String stringValue = String.format("%2d", 100 + stateAir.concentration).substring(1);
+						message.append(String.format("§3%s ", stringValue));
+					}
+					message.append("§f| ");
+					for (int indexX = 0; indexX <= 2; indexX++) {
+						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final String stringValue = String.format("%X", 0x100 + stateAir.pressureGenerator).substring(1);
+						final String stringDirection = directionToChar(stateAir.directionGenerator);
+						message.append(String.format("§e%s §a%s ", stringValue, stringDirection));
+					}
+					message.append("§f| ");
+					for (int indexX = 0; indexX <= 2; indexX++) {
+						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final String stringValue = String.format("%X", 0x100 + stateAir.pressureVoid).substring(1);
+						final String stringDirection = directionToChar(stateAir.directionVoid);
+						message.append(String.format("§e%s §d%s ", stringValue, stringDirection));
+					}
+					if (indexZ == 2) message.append("§f\\");
+					else if (indexZ == 1) message.append(String.format("§f  > y = %d", stateAirs[1][indexY][indexZ].blockPos.getY()));
+					else message.append("§f/");
 				}
-				message.append("§f| ");
-				for (int indexX = 0; indexX <= 2; indexX++) {
-					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%X", 0x100 + stateAir.pressureGenerator).substring(1);
-					final String stringDirection = directionToChar(stateAir.directionGenerator);
-					message.append(String.format("§e%s §a%s ", stringValue, stringDirection));
-				}
-				message.append("§f| ");
-				for (int indexX = 0; indexX <= 2; indexX++) {
-					StateAir stateAir = stateAirs[indexX][indexY][indexZ];
-					final String stringValue = String.format("%X", 0x100 + stateAir.pressureVoid).substring(1);
-					final String stringDirection = directionToChar(stateAir.directionVoid);
-					message.append(String.format("§e%s §d%s ", stringValue, stringDirection));
-				}
-				if (indexZ == 2) message.append("§f\\");
-				else if (indexZ == 1) message.append(String.format("§f  > y = %d", stateAirs[1][indexY][indexZ].blockPos.getY()));
-				else message.append("§f/");
 			}
+  		Commons.addChatMessage(entityPlayer, new TextComponentString(message.toString()));  // @TODO convert formatting chain
+		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+			// no operation
 		}
-		Commons.addChatMessage(entityPlayer, new TextComponentString(message.toString()));  // @TODO convert formatting chain
 	}
 	
 	private static String directionToChar(final EnumFacing direction) {

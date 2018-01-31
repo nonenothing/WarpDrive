@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
@@ -38,7 +39,8 @@ import javax.annotation.Nullable;
 })
 public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, defense.api.IEMPBlock, resonant.api.explosion.IEMPBlock {
 	
-	protected boolean hasSubBlocks = false; // @TODO: code review
+	protected boolean hasSubBlocks = false;
+	private static boolean isInvalidEMPreported = false;
 	
 	protected BlockAbstractContainer(final String registryName, final Material material) {
 		super(material);
@@ -155,8 +157,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Optional.Method(modid = "DefenseTech")
 	public void onEMP(World world, int x, int y, int z, defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
-			                                    world.provider.getDimension(), x, y, z,
+			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.getSaveFolder(), x, y, z,
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
@@ -166,9 +168,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else if (explosiveEMP.getRadius() == 50.0F) {
 			onEMP(world, new BlockPos(x, y, z), 0.70F);
 		} else {
-			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-			                                    world.provider.getDimension(), x, y, z,
-			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+			if (!isInvalidEMPreported) {
+				isInvalidEMPreported = true;
+				WarpDrive.logger.warn(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+			                                      world.provider.getSaveFolder(), x, y, z,
+				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+				Commons.dumpAllThreads();
+			}
 			onEMP(world, new BlockPos(x, y, z), 0.02F);
 		}
 	}
@@ -177,8 +183,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Optional.Method(modid = "icbmclassic")
 	public void onEMP(World world, int x, int y, int z, resonant.api.explosion.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and radius %.1f",
-			                                    world.provider.getDimension(), x, y, z,
+			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
+			                                    world.provider.getSaveFolder(), x, y, z,
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
@@ -188,9 +194,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else if (explosiveEMP.getRadius() == 50.0F) {
 			onEMP(world, new BlockPos(x, y, z), 0.70F);
 		} else {
-			WarpDrive.logger.warn(String.format("EMP received @ DIM%d (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-			                                    world.provider.getDimension(), x, y, z,
-			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+			if (!isInvalidEMPreported) {
+				isInvalidEMPreported = true;
+				WarpDrive.logger.warn(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and unsupported radius %.1f",
+			                                      world.provider.getSaveFolder(), x, y, z,
+				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
+				Commons.dumpAllThreads();
+			}
 			onEMP(world, new BlockPos(x, y, z), 0.02F);
 		}
 	}

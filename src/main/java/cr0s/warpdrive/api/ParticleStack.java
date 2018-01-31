@@ -1,10 +1,13 @@
 package cr0s.warpdrive.api;
 
+import cr0s.warpdrive.data.Vector3;
+
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraft.world.World;
 
 public class ParticleStack {
 	private final Particle particle;
@@ -74,6 +77,20 @@ public class ParticleStack {
 	
 	public final void fill(final int amountAdded) {
 		amount += amountAdded;
+	}
+	
+	public int getEntityLifespan() {
+		if (particle == null) {
+			return -1;
+		}
+		return particle.getEntityLifespan();
+	}
+	
+	public void onWorldEffect(@Nonnull final World world, @Nonnull final Vector3 v3Position) {
+		if (particle == null) {
+			return;
+		}
+		particle.onWorldEffect(world, v3Position, amount);
 	}
 	
 	public String getLocalizedName() {

@@ -46,11 +46,9 @@ public class CompatWarpDrive implements IBlockTransformer {
 	public NBTBase saveExternals(final World world, final int x, final int y, final int z,
 	                             final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (block instanceof BlockAirFlow || block instanceof BlockAirSource) {
-			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z);
 			if (chunkData == null) {
-				WarpDrive.logger.error(String.format("CompatWarpDrive trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionType().getName(), x, y, z));
-				assert(false);
+				// chunk isn't loaded, skip it
 				return null;
 			}
 			final int dataAir = chunkData.getDataAir(x, y, z);
@@ -68,11 +66,9 @@ public class CompatWarpDrive implements IBlockTransformer {
 	public void removeExternals(final World world, final int x, final int y, final int z,
 	                            final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (block instanceof BlockAirFlow || block instanceof BlockAirSource) {
-			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z);
 			if (chunkData == null) {
-				WarpDrive.logger.error(String.format("CompatWarpDrive trying to get data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionType().getName(), x, y, z));
-				assert(false);
+				// chunk isn't loaded, skip it
 				return;
 			}
 			chunkData.setDataAir(x, y, z, StateAir.AIR_DEFAULT);
@@ -188,11 +184,9 @@ public class CompatWarpDrive implements IBlockTransformer {
 		if (((NBTTagCompound) nbtBase).hasKey("dataAir")) {
 			final byte rotationSteps = transformation.getRotationSteps();
 			final int dataAir = ((NBTTagCompound) nbtBase).getInteger("dataAir");
-			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z, false);
+			final ChunkData chunkData = ChunkHandler.getChunkData(world, x, y, z);
 			if (chunkData == null) {
-				WarpDrive.logger.error(String.format("CompatWarpDrive trying to set data from an non-loaded chunk in %s @ (%d %d %d)",
-				                                     world.provider.getDimensionType().getName(), x, y, z));
-				assert(false);
+				// chunk isn't loaded, skip it
 				return;
 			}
 			final int dataAirRotated = StateAir.rotate(dataAir, rotationSteps);

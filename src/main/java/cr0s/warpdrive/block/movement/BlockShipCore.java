@@ -74,7 +74,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 		ArrayList<ItemStack> itemStacks = new ArrayList<>();
 		if (world instanceof WorldServer) {
 			// trigger explosion
-			EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(((WorldServer) world),
+			final EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(((WorldServer) world),
 				blockPos.getX() + 0.5F, blockPos.getY() + 0.5F, blockPos.getZ() + 0.5F, null);
 			entityTNTPrimed.setFuse(10 + ((WorldServer) world).rand.nextInt(10));
 			((WorldServer) world).spawnEntityInWorld(entityTNTPrimed);

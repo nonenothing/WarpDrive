@@ -1,16 +1,13 @@
 package cr0s.warpdrive.block.building;
 
-import java.util.Random;
-
 import cr0s.warpdrive.Commons;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -18,15 +15,12 @@ import net.minecraft.world.World;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.render.RenderBlockShipScanner;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class BlockShipScanner extends BlockAbstractContainer {
-	
-	public static int passCurrent;
 	
 	public BlockShipScanner(final String registryName) {
 		super(registryName, Material.IRON);
@@ -68,8 +62,11 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
+	public byte getTier(ItemStack itemStack) {
+		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
+			return 1;
+		}
+		return 0;
 	}
 	
 	@Override

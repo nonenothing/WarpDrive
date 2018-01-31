@@ -363,7 +363,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		}
 	}
 	
-	protected void commandDone(final boolean success, final String reason) {
+	void commandDone(final boolean success, final String reason) {
 		isEnabled = false;
 		command = EnumShipControllerCommand.IDLE;
 		if (!success) {
@@ -402,7 +402,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		}
 	}
 	
-	protected String getTargetName() {
+	String getTargetName() {
 		return nameTarget;
 	}
 	
@@ -797,7 +797,8 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public String toString() {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
-		return String.format("%s \'%s\' @ \'%s\' (%d %d %d)", getClass().getSimpleName(),
+		return String.format("%s \'%s\' @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
 		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName, 
 		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
 		                     pos.getX(), pos.getY(), pos.getZ());

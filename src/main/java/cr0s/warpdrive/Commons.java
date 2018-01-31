@@ -1,6 +1,7 @@
 package cr0s.warpdrive;
 
 import cr0s.warpdrive.config.Dictionary;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.VectorI;
 
@@ -15,6 +16,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumBlockRenderType;
@@ -29,6 +31,8 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
@@ -543,11 +547,28 @@ public class Commons {
 		return null;
 	}
 	
+	public static EntityPlayerMP getOnlinePlayerByName(final String playerName) {
+		final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+		assert(server != null);
+		return server.getPlayerList().getPlayerByUsername(playerName);
+	}
+	
 	public static int colorARGBtoInt(final int alpha, final int red, final int green, final int blue) {
 		return (clamp(0, 255, alpha) << 24)
 		     + (clamp(0, 255, red  ) << 16)
 			 + (clamp(0, 255, green) <<  8)
 			 +  clamp(0, 255, blue );
+	}
+	
+	@Optional.Method(modid = "NotEnoughItems")
+	public static void NEI_hideItemStack(final ItemStack itemStack) {
+		// @TODO MC1.10: codechicken.nei.api.API.hideItem(itemStack);
+	}
+	
+	public static void hideItemStack(final ItemStack itemStack) {
+		if (WarpDriveConfig.isNotEnoughItemsLoaded) {
+			NEI_hideItemStack(itemStack);
+		}
 	}
 	
 	public static EnumFacing getDirection(final int index) {

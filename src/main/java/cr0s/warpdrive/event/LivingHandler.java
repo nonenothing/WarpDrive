@@ -20,6 +20,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.math.BlockPos;
@@ -163,9 +164,26 @@ public class LivingHandler {
 			// are we actually in orbit?
 			if ( celestialObjectChild != null
 			  && !celestialObject.isHyperspace()
-			  && celestialObjectChild.getSquareDistanceInParent(entityLivingBase.worldObj.provider.getDimension(), x, z) <= 0.0D ) {
+			  && celestialObjectChild.isInOrbit(entityLivingBase.worldObj.provider.getDimension(), x, z) ) {
+
+				WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
 				
-				final WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
+				if (worldTarget == null) {
+					try {
+						final MinecraftServer server = entityLivingBase.worldObj.getMinecraftServer();
+						worldTarget = server.worldServerForDimension(celestialObjectChild.dimensionId);
+					} catch (Exception exception) {
+						WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d for %s",
+						                                     exception.getMessage(),
+						                                     celestialObjectChild.dimensionId,
+						                                     entityLivingBase));
+						if (WarpDrive.isDev) {
+							exception.printStackTrace();
+						}
+						worldTarget = null;
+					}
+				}
+				
 				if (worldTarget != null) {
 					final VectorI vEntry = celestialObjectChild.getEntryOffset();
 					final int xTarget = x + vEntry.x;

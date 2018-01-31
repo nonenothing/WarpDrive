@@ -3,10 +3,12 @@ package cr0s.warpdrive.event;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -68,7 +70,7 @@ public class ChunkHandler {
 		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.getDimension(), chunkX, chunkZ, true);
 		assert(chunkData != null);
 		// (world can load a non-generated chunk, or the chunk be regenerated, so we reset only as needed)
-		if (!chunkData.isLoaded()) {
+		if (!chunkData.isLoaded()) { 
 			chunkData.load(new NBTTagCompound());
 		}
 	}
@@ -88,7 +90,7 @@ public class ChunkHandler {
 		chunkData.load(event.getData());
 	}
 	
-	// (called after data loading, only useful client side)
+	// (called after data loading, or before a late generation, or on client side) 
 	@SubscribeEvent
 	public void onLoadChunk(ChunkEvent.Load event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
@@ -98,9 +100,9 @@ public class ChunkHandler {
 			                                    event.getChunk().getChunkCoordIntPair()));
 		}
 		
-		if (event.getWorld().isRemote) {
-			final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, true);
-			assert(chunkData != null);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, true);
+		assert(chunkData != null);
+		if (!chunkData.isLoaded()) {
 			chunkData.load(new NBTTagCompound());
 		}
 	}
@@ -224,32 +226,49 @@ public class ChunkHandler {
 		if (event.side != Side.SERVER || event.phase != Phase.END) {
 			return;
 		}
-		// @TODO: add workaround for other mods doing bad multi-threading
 		updateTick(event.world);
 	}
 	
 	public static void onBlockUpdated(final World world, final int x, final int y, final int z) {
 		if (!world.isRemote) {
-			final ChunkData chunkData = getChunkData(world, x, y, z, false);
+			final ChunkData chunkData = getChunkData(world, x, y, z);
 			if (chunkData != null) {
 				chunkData.onBlockUpdated(x, y, z);
 			} else {
-				WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
-				                                     world.isRemote ? "Client" : "Server",
+				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
+					WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
+					                                     world.isRemote ? "Client" : "Server",
 				                                     world.provider.getDimensionType().getName(),
-				                                     x, y, z));
+					                                     x, y, z));
+					Commons.dumpAllThreads();
+				}
 			}
 		}
 	}
 	
 	/* internal access */
-	public static ChunkData getChunkData(final World world, final int x, final int y, final int z, final boolean doCreate) {
-		return getChunkData(world.isRemote, world.provider.getDimension(), x, y, z, doCreate);
+	/**
+	 * Return null and spam logs if chunk isn't already generated or loaded 
+	 */
+	public static ChunkData getChunkData(final World world, final int x, final int y, final int z) {
+		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.getDimension(), x, y, z);
+		if (chunkData == null) {
+			WarpDrive.logger.error(String.format("Trying to get data from an non-loaded chunk in %s world %s @ (%d %d %d)",
+			                                     world.isRemote ? "Client" : "Server",
+			                                     world.provider.getSaveFolder(), x, y, z));
+			LocalProfiler.printCallStats();
+			Commons.dumpAllThreads();
+			assert(false);
+		}
+		return chunkData;
 	}
 	
-	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int x, final int y, final int z, final boolean doCreate) {
+	/**
+	 * Return null if chunk isn't already generated or loaded 
+	 */
+	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int x, final int y, final int z) {
 		assert (y >= 0 && y <= 255);
-		return getChunkData(isRemote, dimensionId, x >> 4, z >> 4, doCreate);
+		return getChunkData(isRemote, dimensionId, x >> 4, z >> 4, false);
 	}
 	
 	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int xChunk, final int zChunk, final boolean doCreate) {
@@ -275,6 +294,10 @@ public class ChunkHandler {
 		//noinspection Java8MapApi
 		if (chunkData == null) {
 			if (!doCreate) {
+				if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
+					WarpDrive.logger.info(String.format("getChunkData(%s, %d, %d, %d, false) returning null",
+					                                     isRemote, dimensionId, xChunk, zChunk));
+				}
 				return null;
 			}
 			chunkData = new ChunkData(xChunk, zChunk);
@@ -284,7 +307,16 @@ public class ChunkHandler {
 				                                    dimensionId,
 				                                    chunkData.getChunkCoords()));
 			}
-			mapRegistryItems.put(index, chunkData);
+			if (Commons.isSafeThread()) {
+				mapRegistryItems.put(index, chunkData);
+			} else {
+				WarpDrive.logger.error(String.format("%s world DIM%d chunk %s is being added to the registry outside main thread!",
+				                                    isRemote ? "Client" : "Server",
+				                                    dimensionId,
+				                                    chunkData.getChunkCoords()));
+				Commons.dumpAllThreads();
+				mapRegistryItems.put(index, chunkData);
+			}
 		}
 		return chunkData;
 	}
@@ -298,16 +330,28 @@ public class ChunkHandler {
 	
 	/* commons */
 	public static boolean isLoaded(final World world, final int x, final int y, final int z) {
-		final ChunkData chunkData = getChunkData(world, x, y, z, false);
+		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.getDimension(), x, y, z);
 		return chunkData != null && chunkData.isLoaded();
 	}
 	
 	/* air handling */
 	public static StateAir getStateAir(final World world, final int x, final int y, final int z) {
-		return getChunkData(world, x, y, z, true).getStateAir(world, x, y, z);
+		final ChunkData chunkData = getChunkData(world, x, y, z);
+		if (chunkData == null) {
+			// chunk isn't loaded, skip it
+			return null;
+		}
+		try {
+			return chunkData.getStateAir(world, x, y, z);
+		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded @ %s (%d %d %d)",
+			                                    world.provider.getSaveFolder(),
+			                                    x, y, z));
+			return null;
+		}
 	}
 	
-	public static void updateTick(final World world) {
+	private static void updateTick(final World world) {
 		// get dimension data
 		LocalProfiler.updateCallStat("updateTick");
 		final Map<Integer, Map<Long, ChunkData>> registry = world.isRemote ? registryClient : registryServer;
@@ -318,26 +362,40 @@ public class ChunkHandler {
 		int countLoaded = 0;
 		final long timeForRemoval = System.currentTimeMillis() - CHUNK_HANDLER_UNLOADED_CHUNK_MAX_AGE_MS;
 		final long timeForThrottle = System.currentTimeMillis() + 200;
-		for(final Iterator<Entry<Long, ChunkData>> entryIterator = mapRegistryItems.entrySet().iterator(); entryIterator.hasNext(); ) {
-			final Map.Entry<Long, ChunkData> entryChunkData = entryIterator.next();
-			final ChunkData chunkData = entryChunkData.getValue();
-			// update loaded chunks, remove old unloaded chunks
-			if (chunkData.isLoaded()) {
-				countLoaded++;
-				if (System.currentTimeMillis() < timeForThrottle) {
-					updateTickLoopStep(world, mapRegistryItems, entryChunkData.getValue());
+		final long sizeBefore = mapRegistryItems.size();
+		
+		try {
+			
+			for (final Iterator<Entry<Long, ChunkData>> entryIterator = mapRegistryItems.entrySet().iterator(); entryIterator.hasNext(); ) {
+				final Map.Entry<Long, ChunkData> entryChunkData = entryIterator.next();
+				final ChunkData chunkData = entryChunkData.getValue();
+				// update loaded chunks, remove old unloaded chunks
+				if (chunkData.isLoaded()) {
+					countLoaded++;
+					if (System.currentTimeMillis() < timeForThrottle) {
+						updateTickLoopStep(world, mapRegistryItems, entryChunkData.getValue());
+					}
+				} else if (chunkData.timeUnloaded < timeForRemoval) {
+					if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
+						WarpDrive.logger.info(String.format("%s world %s chunk %s is being removed from updateTick (size is %d)",
+						                                    world.isRemote ? "Client" : "Server",
+						                                    world.provider.getSaveFolder(),
+						                                    chunkData.getChunkCoords(),
+						                                    mapRegistryItems.size()));
+					}
+					entryIterator.remove();
 				}
-			} else if (chunkData.timeUnloaded < timeForRemoval) {
-				if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
-					WarpDrive.logger.info(String.format("%s world %s chunk %s is being removed from updateTick (size is %d)", 
-					                                    world.isRemote ? "Client" : "Server",
-					                                    world.provider.getDimensionType().getName(),
-					                                    chunkData.getChunkCoords(),
-					                                    mapRegistryItems.size()));
-				}
-				entryIterator.remove();
 			}
+			
+		} catch (ConcurrentModificationException exception) {
+			WarpDrive.logger.error(String.format("%s world %s had some chunks changed outside main thread? (size %d -> %d)",
+			                                    world.isRemote ? "Client" : "Server",
+			                                    world.provider.getSaveFolder(),
+			                                    sizeBefore, mapRegistryItems.size()));
+			exception.printStackTrace();
+			LocalProfiler.printCallStats();
 		}
+		
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			if (world.provider.getDimension() == 0) {
 				delayLogging = (delayLogging + 1) % 4096;
@@ -351,7 +409,8 @@ public class ChunkHandler {
 		}
 	}
 	
-	public static void updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
+	// apparently, the GC triggers sooner when using sub-function here?
+	private static void updateTickLoopStep(final World world, final Map<Long, ChunkData> mapRegistryItems, final ChunkData chunkData) {
 		final ChunkPos chunkCoordIntPair = chunkData.getChunkCoords();
 		// skip empty chunks (faster and more frequent)
 		// ship chunk with unloaded neighbours

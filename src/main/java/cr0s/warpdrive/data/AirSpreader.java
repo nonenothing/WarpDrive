@@ -2,6 +2,7 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
@@ -19,7 +20,7 @@ public class AirSpreader {
 		new StateAir(null), new StateAir(null), new StateAir(null) };
 	private static StateAir stateAirParent = new StateAir(null);
 	
-	protected static void execute(final World world, final int x, final int y, final int z) {
+	protected static void execute(final World world, final int x, final int y, final int z) throws ExceptionChunkNotLoaded {
 		// note: compared to the pure block implementation, 0 really means no air, so we no longer offset by 1 on read/write
 		
 		// get central block state

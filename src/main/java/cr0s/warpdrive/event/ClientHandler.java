@@ -8,15 +8,25 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class ClientHandler {
-
+	
+	private boolean isSneaking;
+	private boolean isCreativeMode;
+	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onTooltipEvent(ItemTooltipEvent event) {
 		if (event.getEntityPlayer() == null) {
@@ -31,50 +41,165 @@ public class ClientHandler {
 		if (Dictionary.ITEMS_NOFALLDAMAGE.contains(event.getItemStack().getItem())) {
 			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.noFallDamage").getFormattedText());
 		}
-		if (WarpDrive.isDev && event.getEntityPlayer().capabilities.isCreativeMode) {// disabled in production
-			Block block = Block.getBlockFromItem(event.getItemStack().getItem());
-			if (block != Blocks.AIR && block != null) {
-				try {
-					ResourceLocation resourceLocation = Block.REGISTRY.getNameForObject(block);
-					Commons.addTooltip(event.getToolTip(), "" + resourceLocation + "");
-				} catch(Exception exception) {
-					// no operation
+		
+		isSneaking = event.getEntityPlayer().isSneaking();
+		isCreativeMode = event.getEntityPlayer().capabilities.isCreativeMode;
+		
+		// add block/items details
+		final Block block = Block.getBlockFromItem(event.getItemStack().getItem());
+		if (block != Blocks.AIR) {
+			addBlockDetails(event, block);
+		} else {
+			addItemDetails(event, event.getItemStack().getItem());
+		}
+		
+		// add burn time details (vanilla only register server side?)
+		if (WarpDriveConfig.CLIENT_TOOLTIP_BURN_TIME.isEnabled(isSneaking, isCreativeMode)) {
+			final int fuelValue = GameRegistry.getFuelValue(event.getItemStack());
+			if (fuelValue > 0) {
+				Commons.addTooltip(event.getToolTip(), String.format("Burn time is %d (%.1f ores)", fuelValue, fuelValue / 200.0F));
+			}
+		}
+		
+		// add ore dictionary names
+		if (WarpDriveConfig.CLIENT_TOOLTIP_ORE_DICTIONARY_NAME.isEnabled(isSneaking, isCreativeMode)) {
+			final int[] idOres = OreDictionary.getOreIDs(event.getItemStack());
+			if (idOres.length != 0) {
+				Commons.addTooltip(event.getToolTip(), "Ore dictionary names:");
+				for (final int idOre : idOres) {
+					final String nameOre = OreDictionary.getOreName(idOre);
+					Commons.addTooltip(event.getToolTip(), "- " + nameOre);
 				}
-				
-				try {
+			}
+		}
+	}
+	
+	public void addBlockDetails(final ItemTooltipEvent event, final Block block) {
+		// registry name
+		if (WarpDriveConfig.CLIENT_TOOLTIP_REGISTRY_NAME.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				final ResourceLocation resourceLocation = Block.REGISTRY.getNameForObject(block);
+				if (resourceLocation != null) {
+					Commons.addTooltip(event.getToolTip(), "" + resourceLocation + "");
+				}
+			} catch (Exception exception) {
+				// no operation
+			}
+		}
+		
+		// tool related stats
+		if (WarpDriveConfig.CLIENT_TOOLTIP_HARVESTING.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				final IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+				final String harvestTool = block.getHarvestTool(blockState);
+				if (harvestTool != null) {
+					Commons.addTooltip(event.getToolTip(), String.format("Harvest with %s (%d)",
+					                                                     harvestTool, 
+					                                                     block.getHarvestLevel(blockState)));
+				}
+			} catch (Exception exception) {
+				// no operation
+			}
+		}
+		
+		// generic properties
+		if (WarpDriveConfig.CLIENT_TOOLTIP_OPACITY.isEnabled(isSneaking, isCreativeMode)) {
+			final IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+			Commons.addTooltip(event.getToolTip(), String.format("Light opacity is %d", block.getLightOpacity(blockState)));
+		}
+		
+		if (WarpDriveConfig.CLIENT_TOOLTIP_HARDNESS.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				Commons.addTooltip(event.getToolTip(), String.format("Hardness is %.1f", (float) WarpDrive.fieldBlockHardness.get(block)));
+			} catch (Exception exception) {
+				// no operation
+			}
+			Commons.addTooltip(event.getToolTip(), String.format("Explosion resistance is %.1f", + block.getExplosionResistance(null)));
+		}
+		
+		// flammability
+		if (WarpDriveConfig.CLIENT_TOOLTIP_FLAMMABILITY.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				final int flammability = Blocks.FIRE.getFlammability(block);
+				final int fireSpread = Blocks.FIRE.getEncouragement(block);
+				if (flammability > 0) {
+					Commons.addTooltip(event.getToolTip(), String.format("Flammable: %d, spread %d", flammability, fireSpread));
+				}
+			} catch (Exception exception) {
+				// no operation
+			}
+		}
+		
+		// fluid stats
+		if (WarpDriveConfig.CLIENT_TOOLTIP_FLUID.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				final Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
+				if (fluid != null) {
+					if (fluid.isGaseous()) {
+						Commons.addTooltip(event.getToolTip(), String.format("Gaz viscosity is %d", fluid.getViscosity()));
+						Commons.addTooltip(event.getToolTip(), String.format("Gaz density is %d", fluid.getDensity()));
+					} else {
+						Commons.addTooltip(event.getToolTip(), String.format("Liquid viscosity is %d", fluid.getViscosity()));
+						Commons.addTooltip(event.getToolTip(), String.format("Liquid density is %d", fluid.getDensity()));
+					}
+					Commons.addTooltip(event.getToolTip(), String.format("Temperature is %d K", fluid.getTemperature()));
 					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
 					String harvestTool = block.getHarvestTool(blockState);
-					Commons.addTooltip(event.getToolTip(), "Harvest with " + harvestTool + " (" + block.getHarvestLevel(blockState) + ")");
-				} catch(Exception | AssertionError exception) {
-					// no operation
 				}
-				
-				try {
-					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
-					Commons.addTooltip(event.getToolTip(), "Light opacity is " + block.getLightOpacity(blockState));
-				} catch(Exception | AssertionError exception) {
-					// no operation
+			} catch (Exception exception) {
+				// no operation
+			}
+		}
+	}
+	
+	public void addItemDetails(final ItemTooltipEvent event, final Item item) {
+		// registry name
+		if (WarpDriveConfig.CLIENT_TOOLTIP_REGISTRY_NAME.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				final ResourceLocation resourceLocation = Item.REGISTRY.getNameForObject(item);
+				if (resourceLocation != null) {
+					Commons.addTooltip(event.getToolTip(), "" + resourceLocation + "");
 				}
-				
-				try {
-					Commons.addTooltip(event.getToolTip(), "Hardness is " + (float) WarpDrive.fieldBlockHardness.get(block));
-				} catch(Exception exception) {
-					// no operation
+			} catch (Exception exception) {
+				// no operation
+			}
+		}
+		
+		// (item duration can't be directly understood => out)
+		
+		// durability
+		if (WarpDriveConfig.CLIENT_TOOLTIP_DURABILITY.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				if (event.getItemStack().isItemStackDamageable()) {
+					Commons.addTooltip(event.getToolTip(), String.format("Durability: %d / %d",
+					                                                event.getItemStack().getMaxDamage() - event.getItemStack().getItemDamage(),
+					                                                event.getItemStack().getMaxDamage()));
 				}
-				try {
-					Commons.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
-				} catch(Exception exception) {
-					// no operation
+			} catch (Exception exception) {
+				// no operation
+			}
+		}
+		
+		// armor stats
+		if (WarpDriveConfig.CLIENT_TOOLTIP_ARMOR.isEnabled(isSneaking, isCreativeMode)) {
+			try {
+				if (item instanceof ItemArmor) {
+					Commons.addTooltip(event.getToolTip(), String.format("Armor points: %d",
+					                                                ((ItemArmor) item).damageReduceAmount));
+					final ArmorMaterial armorMaterial = ((ItemArmor) item).getArmorMaterial();
+					Commons.addTooltip(event.getToolTip(), String.format("Enchantability: %d",
+					                                                armorMaterial.getEnchantability()));
+					
+					if (WarpDriveConfig.CLIENT_TOOLTIP_REPAIR_WITH.isEnabled(isSneaking, isCreativeMode)) {
+						final Item itemRepair = armorMaterial.getRepairItem();
+						if (itemRepair != null) {
+							Commons.addTooltip(event.getToolTip(), String.format("Repair with %s",
+							                                                armorMaterial.getRepairItem().getUnlocalizedName()));
+						}
+					}
 				}
-				Commons.addTooltip(event.getToolTip(), "Explosion resistance is " + block.getExplosionResistance(null));
-				
-			} else {
-				try {
-					String uniqueName = event.getItemStack().getItem().getRegistryName().toString();
-					Commons.addTooltip(event.getToolTip(), "" + uniqueName + "");
-				} catch(Exception exception) {
-					// no operation
-				}
+			} catch (Exception exception) {
+				// no operation
 			}
 		}
 	}

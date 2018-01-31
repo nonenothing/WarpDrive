@@ -6,6 +6,7 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -15,8 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,6 +32,12 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
 		return new TileEntityIC2reactorLaserMonitor();
+	}
+	
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState blockState, EntityLivingBase entityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
+		// @TODO MC1.10 world.setBlockMetadataWithNotify(x, y, z, 6, 3);
 	}
 	
 	@Override

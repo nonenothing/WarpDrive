@@ -36,14 +36,15 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 				"stabilize"
 		});
 		peripheralName = "warpdriveEnanReactorLaser";
-		laserMediumMaxCount = 1;
-		directionsValidLaserMedium = new EnumFacing[] { EnumFacing.UP, EnumFacing.DOWN };
+		laserMedium_maxCount = 1;
+		laserMedium_directionsValid = new EnumFacing[] { EnumFacing.UP, EnumFacing.DOWN };
 	}
 	
-	public TileEntityEnanReactorCore scanForReactor() {
+	public void scanForReactor() {
 		reactor = null;
-		TileEntity tileEntity;
 		side = null;
+    
+		TileEntity tileEntity;
 		// I AM ON THE NORTH SIDE
 		tileEntity = worldObj.getTileEntity(pos.add(0, 0, 2));
 		if (tileEntity instanceof TileEntityEnanReactorCore && worldObj.isAirBlock(pos.add(0, 0, 1))) {
@@ -77,7 +78,6 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		if (reactor != null) {
 			reactorVec = new Vector3(reactor).translate(0.5);
 		}
-		return reactor;
 	}
 	
 	private void setMetadata() {
@@ -119,13 +119,13 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		}
 		
 		scanForReactor();
-		if (facingLaserMedium == null) {
+		if (laserMedium_direction == null) {
 			return;
 		}
 		if (reactor == null) {
 			return;
 		}
-		if (consumeEnergyFromLaserMediums(energy, false)) {
+		if (laserMedium_consumeExactly(energy, false)) {
 			if (WarpDriveConfig.LOGGING_ENERGY && WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.info("ReactorLaser on " + side + " side sending " + energy);
 			}
@@ -148,7 +148,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] hasReactor(Context context, Arguments arguments) {
-		return new Object[] { scanForReactor() != null };
+		return new Object[] { reactor != null };
 	}
 	
 	@Callback
@@ -175,7 +175,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		
 		switch (methodName) {
 		case "hasReactor":
-			return new Object[] { scanForReactor() != null };
+			return new Object[] { reactor != null };
 			
 		case "stabilize":
 			if (arguments.length >= 1) {

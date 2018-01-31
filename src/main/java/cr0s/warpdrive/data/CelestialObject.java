@@ -547,6 +547,25 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		return dx * dx + dz * dz;
 	}
 	
+	/**
+	 * Check if given position is in this object orbit.
+	 *
+	 * @param dimensionId current position in parent dimension
+	 * @param x current position in parent dimension
+	 * @param z current position in parent dimension
+	 * @return true if we're in orbit of the object
+	 */
+	@Override
+	public boolean isInOrbit(final int dimensionId, final double x, final double z) {
+		// are we in another dimension?
+		if (!isParentResolved || parent == null || dimensionId != parent.dimensionId) {
+			return false;
+		}
+		// are we in orbit?
+		return (Math.abs(x - parentCenterX) <= borderRadiusX)
+		    && (Math.abs(z - parentCenterZ) <= borderRadiusZ);
+	}
+	
 	public void readFromNBT(NBTTagCompound nbtTagCompound) {
 		isParentResolved = false;
 		

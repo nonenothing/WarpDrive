@@ -121,7 +121,7 @@ public class Dictionary {
 				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
-				config.get("block_tags", "warpdrive:blockBedrockGlass"                     , "Anchor SkipMining").getString();
+				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor SkipMining").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
@@ -295,6 +295,7 @@ public class Dictionary {
 				config.get("item_tags", "IC2:itemSolarHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
+				config.get("item_tags", "PneumaticCraft:pneumaticHelmet", "BreathingHelmet").getString();
 				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
 				config.get("item_tags", "Techguns:t3_exo_helmet", "BreathingHelmet").getString();
 				config.get("item_tags", "Techguns:t3_miner_helmet", "BreathingHelmet").getString();

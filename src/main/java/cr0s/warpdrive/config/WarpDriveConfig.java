@@ -12,6 +12,7 @@ import cr0s.warpdrive.compat.CompatBuildCraft;
 import cr0s.warpdrive.compat.CompatCarpentersBlocks;
 import cr0s.warpdrive.compat.CompatComputerCraft;
 import cr0s.warpdrive.compat.CompatCustomNpcs;
+import cr0s.warpdrive.compat.CompatDraconicEvolution;
 import cr0s.warpdrive.compat.CompatEnderIO;
 import cr0s.warpdrive.compat.CompatEvilCraft;
 import cr0s.warpdrive.compat.CompatForgeMultipart;
@@ -37,9 +38,24 @@ import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.EnumDisplayAlignment;
+import cr0s.warpdrive.data.EnumTooltipCondition;
 import cr0s.warpdrive.network.PacketHandler;
+
+import net.minecraft.block.Block;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.server.FMLServerHandler;
+import net.minecraftforge.oredict.OreDictionary;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -55,21 +71,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-
-import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ResourceLocation;
-
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.util.FakePlayer;
 
 public class WarpDriveConfig {
 	
@@ -114,8 +115,10 @@ public class WarpDriveConfig {
 	public static boolean isArsMagica2Loaded = false;
 	public static boolean isImmersiveEngineeringLoaded = false;
 	public static boolean isGregTech5Loaded = false;
+	public static boolean isGregTech6Loaded = false;
 	public static boolean isEnderIOLoaded = false;
 	public static boolean isAdvancedRepulsionSystemLoaded = false;
+	public static boolean isNotEnoughItemsLoaded = false;
 	
 	public static ItemStack IC2_compressedAir;
 	public static ItemStack IC2_emptyCell;
@@ -158,6 +161,18 @@ public class WarpDriveConfig {
 	public static float CLIENT_LOCATION_WIDTH_RATIO = 0.0F;
 	public static int CLIENT_LOCATION_WIDTH_MIN = 90;
 	
+	public static EnumTooltipCondition CLIENT_TOOLTIP_REGISTRY_NAME = EnumTooltipCondition.ADVANCED_TOOLTIPS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_ORE_DICTIONARY_NAME = EnumTooltipCondition.ALWAYS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_ARMOR = EnumTooltipCondition.ALWAYS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_BURN_TIME = EnumTooltipCondition.ADVANCED_TOOLTIPS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_DURABILITY = EnumTooltipCondition.ALWAYS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_FLAMMABILITY = EnumTooltipCondition.ADVANCED_TOOLTIPS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_FLUID = EnumTooltipCondition.ALWAYS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_HARDNESS = EnumTooltipCondition.ADVANCED_TOOLTIPS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_HARVESTING = EnumTooltipCondition.ALWAYS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_OPACITY = EnumTooltipCondition.ADVANCED_TOOLTIPS;
+	public static EnumTooltipCondition CLIENT_TOOLTIP_REPAIR_WITH = EnumTooltipCondition.ON_SNEAK;
+	
 	// Logging
 	public static boolean LOGGING_JUMP = false;
 	public static boolean LOGGING_JUMPBLOCKS = false;
@@ -176,6 +191,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_BREATHING = false;
 	public static boolean LOGGING_WORLD_GENERATION = false;
 	public static boolean LOGGING_PROFILING_CPU_USAGE = true;
+	public static boolean LOGGING_PROFILING_MEMORY_ALLOCATION = false;
 	public static boolean LOGGING_PROFILING_THREAD_SAFETY = false;
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
@@ -204,8 +220,8 @@ public class WarpDriveConfig {
 	// Ship
 	public static int SHIP_MAX_ENERGY_STORED = 100000000;
 	public static int SHIP_TELEPORT_ENERGY_PER_ENTITY = 1000000;
-	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 3000;
-	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 1200;
+	public static int SHIP_VOLUME_MAX_ON_PLANET_SURFACE = 1200;
+	public static int SHIP_VOLUME_MIN_FOR_HYPERSPACE = 3000;
 	public static int SHIP_MAX_SIDE_SIZE = 127;
 	public static int SHIP_COLLISION_TOLERANCE_BLOCKS = 3;
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
@@ -229,9 +245,6 @@ public class WarpDriveConfig {
 	public static double RADAR_MAX_ISOLATION_EFFECT = 1.00;
 	
 	// Ship Scanner
-	public static int SS_MAX_ENERGY_STORED = 500000000;
-	public static int SS_ENERGY_PER_BLOCK_SCAN = 100;
-	public static int SS_ENERGY_PER_BLOCK_DEPLOY = 5000;
 	public static int SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	public static int SS_SEARCH_INTERVAL_TICKS = 20;
 	public static int SS_SCAN_BLOCKS_PER_SECOND = 10;
@@ -332,9 +345,13 @@ public class WarpDriveConfig {
 	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
 	public static boolean BREATHING_AIR_AT_ENTITY_DEBUG = false;
 	
-	// IC2 Reactor monitor
-	public static int IC2_REACTOR_MAX_ENERGY_STORED = 1000000;
-	public static double IC2_REACTOR_ENERGY_PER_HEAT = 2;
+	// IC2 Reactor cooler
+	public static int IC2_REACTOR_MAX_HEAT_STORED = 30000;
+	public static int IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK = 648;
+	public static int IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK = 54;
+	public static int IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK = 54;
+	public static int IC2_REACTOR_COOLING_PER_INTERVAL = 1080;
+	public static double IC2_REACTOR_ENERGY_PER_HEAT = 2.0D;
 	public static int IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
 	
 	// Transporter
@@ -382,13 +399,52 @@ public class WarpDriveConfig {
 		try {
 			return Block.REGISTRY.getObject(new ResourceLocation(mod, id));
 		} catch (Exception exception) {
-			WarpDrive.logger.info("Failed to get mod block for " + mod + ":" + id);
+			WarpDrive.logger.info(String.format("Failed to get mod block for %s:%s", mod, id));
 			exception.printStackTrace();
 		}
 		return Blocks.FIRE;
 	}
 	
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
+		final ItemStack itemStack = getModItemStackOrNull(mod, id, meta);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		return new ItemStack(Blocks.FIRE);
+	}
+	
+	public static ItemStack getModItemStack(final String mod1, final String id1, final int meta1,
+	                                        final String mod2, final String id2, final int meta2) {
+		ItemStack itemStack = getModItemStackOrNull(mod1, id1, meta1);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		itemStack = getModItemStackOrNull(mod2, id2, meta2);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		return new ItemStack(Blocks.FIRE);
+	}
+	
+	public static ItemStack getModItemStack(final String mod1, final String id1, final int meta1,
+	                                        final String mod2, final String id2, final int meta2,
+	                                        final String mod3, final String id3, final int meta3) {
+		ItemStack itemStack = getModItemStackOrNull(mod1, id1, meta1);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		itemStack = getModItemStackOrNull(mod2, id2, meta2);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		itemStack = getModItemStackOrNull(mod3, id3, meta3);
+		if (itemStack != null) {
+			return itemStack;
+		}
+		return new ItemStack(Blocks.FIRE);
+	}
+	
+	private static ItemStack getModItemStackOrNull(final String mod, final String id, final int meta) {
 		try {
 			Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
 			if (item == null) {
@@ -401,14 +457,26 @@ public class WarpDriveConfig {
 			}
 			return itemStack;
 		} catch (Exception exception) {
-			exception.printStackTrace();
-			WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
+			WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
+			return null;
 		}
-		return new ItemStack(Blocks.FIRE);
 	}
 	
-	protected static double[] getDoubleList(final Configuration config, final String categoy, final String key, final String comment, final double[] valuesDefault) {
-		double[] valuesRead = config.get(categoy, key, valuesDefault, comment).getDoubleList();
+	public static ItemStack getOreDictionaryEntry(final String ore) {
+		if (!OreDictionary.doesOreNameExist(ore)) {
+			WarpDrive.logger.info("Failed to get ore named " + ore);
+			return new ItemStack(Blocks.FIRE);
+		}
+		final List<ItemStack> itemStacks = OreDictionary.getOres(ore);
+		if (itemStacks.isEmpty()) {
+			WarpDrive.logger.info(String.format("Failed to get item from empty ore dictionary '%s'", ore));
+			return new ItemStack(Blocks.FIRE);
+		}
+		return itemStacks.get(0);
+	}
+	
+	protected static double[] getDoubleList(final Configuration config, final String category, final String key, final String comment, final double[] valuesDefault) {
+		double[] valuesRead = config.get(category, key, valuesDefault, comment).getDoubleList();
 		if (valuesRead.length != valuesDefault.length) {
 			valuesRead = valuesDefault.clone();
 		}
@@ -543,6 +611,30 @@ public class WarpDriveConfig {
 		CLIENT_LOCATION_WIDTH_MIN = config.get("client", "location_width_min", CLIENT_LOCATION_WIDTH_MIN,
 		                                       "Text width as a minimum 'pixel' count").getInt();
 		
+		final String commentTooltip = "When to show %s in tooltips. Valid values are " + EnumTooltipCondition.formatAllValues() + ".";
+		CLIENT_TOOLTIP_REGISTRY_NAME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_registry_name", CLIENT_TOOLTIP_REGISTRY_NAME.name(),
+		                                                                       String.format(commentTooltip, "registry name")).getString());
+		CLIENT_TOOLTIP_ORE_DICTIONARY_NAME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_ore_dictionary_name", CLIENT_TOOLTIP_ORE_DICTIONARY_NAME.name(),
+		                                                                              String.format(commentTooltip, "ore dictionary names")).getString());
+		CLIENT_TOOLTIP_ARMOR = EnumTooltipCondition.valueOf(config.get("client", "tooltip_armor_stats", CLIENT_TOOLTIP_ARMOR.name(),
+		                                                               String.format(commentTooltip, "armor stats")).getString());
+		CLIENT_TOOLTIP_BURN_TIME = EnumTooltipCondition.valueOf(config.get("client", "tooltip_burn_time", CLIENT_TOOLTIP_BURN_TIME.name(),
+		                                                                   String.format(commentTooltip, "burn time")).getString());
+		CLIENT_TOOLTIP_DURABILITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_durability", CLIENT_TOOLTIP_DURABILITY.name(),
+		                                                                    String.format(commentTooltip, "durability")).getString());
+		CLIENT_TOOLTIP_FLAMMABILITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_flammability", CLIENT_TOOLTIP_FLAMMABILITY.name(),
+		                                                                      String.format(commentTooltip, "flammability")).getString());
+		CLIENT_TOOLTIP_FLUID = EnumTooltipCondition.valueOf(config.get("client", "tooltip_fluid_stats", CLIENT_TOOLTIP_FLUID.name(),
+		                                                               String.format(commentTooltip, "fluid stats")).getString());
+		CLIENT_TOOLTIP_HARDNESS = EnumTooltipCondition.valueOf(config.get("client", "tooltip_hardness", CLIENT_TOOLTIP_HARDNESS.name(),
+		                                                                  String.format(commentTooltip, "hardness & explosion resistance")).getString());
+		CLIENT_TOOLTIP_HARVESTING = EnumTooltipCondition.valueOf(config.get("client", "tooltip_harvesting_stats", CLIENT_TOOLTIP_HARVESTING.name(),
+		                                                                    String.format(commentTooltip, "harvesting stats")).getString());
+		CLIENT_TOOLTIP_OPACITY = EnumTooltipCondition.valueOf(config.get("client", "tooltip_opacity", CLIENT_TOOLTIP_OPACITY.name(),
+		                                                                 String.format(commentTooltip, "opacity")).getString());
+		CLIENT_TOOLTIP_REPAIR_WITH = EnumTooltipCondition.valueOf(config.get("client", "tooltip_repair_material", CLIENT_TOOLTIP_REPAIR_WITH.name(),
+		                                                                     String.format(commentTooltip, "repair material")).getString());
+		
 		// Logging
 		LOGGING_JUMP = config.get("logging", "enable_jump_logs", LOGGING_JUMP, "Basic jump logs, should always be enabled").getBoolean(true);
 		LOGGING_JUMPBLOCKS = config.get("logging", "enable_jumpblocks_logs", LOGGING_JUMPBLOCKS, "Detailed jump logs to help debug the mod, will spam your logs...").getBoolean(false);
@@ -570,6 +662,7 @@ public class WarpDriveConfig {
 		LOGGING_BREATHING = config.get("logging", "enable_breathing_logs", LOGGING_BREATHING, "Detailed breathing logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_WORLD_GENERATION = config.get("logging", "enable_world_generation_logs", LOGGING_WORLD_GENERATION, "Detailed world generation logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_PROFILING_CPU_USAGE = config.get("logging", "enable_profiling_CPU_time", LOGGING_PROFILING_CPU_USAGE, "Profiling logs for CPU time, enable it to check for lag").getBoolean(true);
+		LOGGING_PROFILING_MEMORY_ALLOCATION = config.get("logging", "enable_profiling_memory_allocation", LOGGING_PROFILING_MEMORY_ALLOCATION, "Profiling logs for memory allocation, enable it to check for lag").getBoolean(true);
 		LOGGING_PROFILING_THREAD_SAFETY = config.get("logging", "enable_profiling_thread_safety", LOGGING_PROFILING_THREAD_SAFETY, "Profiling logs for multi-threading, enable it to check for ConcurrentModificationException").getBoolean(false);
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
@@ -591,11 +684,11 @@ public class WarpDriveConfig {
 		SHIP_MOVEMENT_COSTS_FACTORS = new ShipMovementCosts.Factors[EnumShipMovementType.length];
 		for (EnumShipMovementType shipMovementType : EnumShipMovementType.values()) {
 			SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()] = new ShipMovementCosts.Factors(
-			        shipMovementType.warmupDefault,
+			        shipMovementType.maximumDistanceDefault,
 			        shipMovementType.energyRequiredDefault,
-			        shipMovementType.cooldownDefault,
+			        shipMovementType.warmupDefault,
 			        shipMovementType.sicknessDefault,
-			        shipMovementType.maximumDistanceDefault);
+			        shipMovementType.cooldownDefault);
 			if (shipMovementType.hasConfiguration) {
 				SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()].load(config, "ship_movement_costs", shipMovementType.getName(), shipMovementType.getDescription());
 			}
@@ -670,21 +763,6 @@ public class WarpDriveConfig {
 				config.get("radar", "max_isolation_effect", RADAR_MAX_ISOLATION_EFFECT, "isolation effect achieved with max number of isolation blocks (0.01 to 1.00)").getDouble(1.00D));
 		
 		// Ship Scanner
-		SS_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
-				config.get("ship_scanner", "max_energy_stored", SS_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		
-		SS_ENERGY_PER_BLOCK_SCAN = config.get("ship_scanner", "energy_per_block_when_scanning", SS_ENERGY_PER_BLOCK_SCAN,
-				"Energy consumed per block when scanning a ship (use -1 to consume everything)").getInt();
-		if (SS_ENERGY_PER_BLOCK_SCAN != -1) {
-			SS_ENERGY_PER_BLOCK_SCAN = Commons.clamp(0, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_SCAN);
-		}
-		
-		SS_ENERGY_PER_BLOCK_DEPLOY = config.get("ship_scanner", "energy_per_block_when_deploying", SS_ENERGY_PER_BLOCK_DEPLOY,
-				"Energy consumed per block when deploying a ship (use -1 to consume everything)").getInt();
-		if (SS_ENERGY_PER_BLOCK_DEPLOY != -1) {
-			SS_ENERGY_PER_BLOCK_DEPLOY = Commons.clamp(0, SS_MAX_ENERGY_STORED, SS_ENERGY_PER_BLOCK_DEPLOY);
-		}
-		
 		SS_MAX_DEPLOY_RADIUS_BLOCKS = Commons.clamp(5, 150,
 				config.get("ship_scanner", "max_deploy_radius_blocks", SS_MAX_DEPLOY_RADIUS_BLOCKS, "Max distance from ship scanner to ship core, measured in blocks (5-150)").getInt());
 		SS_SEARCH_INTERVAL_TICKS = Commons.clamp(5, 150,
@@ -865,13 +943,21 @@ public class WarpDriveConfig {
 				config.get("breathing", "simulation_delay_ticks", BREATHING_AIR_SIMULATION_DELAY_TICKS, "Minimum delay between consecutive air propagation updates of the same block.").getInt());
 		BREATHING_AIR_AT_ENTITY_DEBUG = config.get("breathing", "enable_air_at_entity_debug", BREATHING_AIR_AT_ENTITY_DEBUG, "Spam creative players with air status around them, use at your own risk.").getBoolean(false);
 		
-		// IC2 Reactor monitor
-		IC2_REACTOR_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
-				config.get("ic2_reactor_laser", "max_energy_stored", IC2_REACTOR_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
+		// IC2 Reactor cooler
+		IC2_REACTOR_MAX_HEAT_STORED = Commons.clamp(1, 32767,
+		        config.get("ic2_reactor_laser", "max_heat_stored", IC2_REACTOR_MAX_HEAT_STORED, "Maximum heat stored in the focus").getInt());
+		IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK = Commons.clamp(0, 32767,
+		        config.get("ic2_reactor_laser", "component_heat_transfer_per_tick", IC2_REACTOR_COMPONENT_HEAT_TRANSFER_PER_TICK, "Maximum component heat added to the focus every reactor tick").getInt());
+		IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK = Commons.clamp(0, 32767,
+		        config.get("ic2_reactor_laser", "focus_heat_transfer_per_tick", IC2_REACTOR_FOCUS_HEAT_TRANSFER_PER_TICK, "Maximum heat transferred between 2 connected focus every reactor tick").getInt());
+		IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK = Commons.clamp(0, 32767,
+		        config.get("ic2_reactor_laser", "reactor_heat_transfer_per_tick", IC2_REACTOR_REACTOR_HEAT_TRANSFER_PER_TICK, "Maximum reactor heat added to the focus every reactor tick").getInt());
+		IC2_REACTOR_COOLING_PER_INTERVAL = Commons.clamp(1, 32767,
+		        config.get("ic2_reactor_laser", "cooling_per_interval", IC2_REACTOR_COOLING_PER_INTERVAL, "Heat extracted from the focus by interval").getInt());
 		IC2_REACTOR_ENERGY_PER_HEAT = Commons.clamp(2.0D, 100000.0D,
-				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT, "Energy cost per heat absorbed").getDouble(2));
+				config.get("ic2_reactor_laser", "energy_per_heat", IC2_REACTOR_ENERGY_PER_HEAT, "Energy cost per heat absorbed").getDouble());
 		IC2_REACTOR_COOLING_INTERVAL_TICKS = Commons.clamp(0, 1200,
-				config.get("ic2_reactor_laser", "cooling_interval_ticks", IC2_REACTOR_COOLING_INTERVAL_TICKS, "Update speed of the check for reactors to cooldown").getInt());
+				config.get("ic2_reactor_laser", "cooling_interval_ticks", IC2_REACTOR_COOLING_INTERVAL_TICKS, "Update speed of the check for reactors to cooldown. Use 10 to tick as fast as the reactor simulation").getInt());
 		
 		// Transporter
 		TRANSPORTER_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
@@ -984,12 +1070,25 @@ public class WarpDriveConfig {
 		if (isImmersiveEngineeringLoaded) {
 			CompatImmersiveEngineering.register();
 		}
+		isGregTech5Loaded = false;
+		isGregTech6Loaded = false;
+		if (Loader.isModLoaded("gregtech")) {
+			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
+			if ( (isGregTech5Loaded && isGregTech6Loaded)
+			  || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
+				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
+			}
+		}
+		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
 		if (isEnderIOLoaded) {
 			CompatEnderIO.register();
 		}
 		if (isAdvancedRepulsionSystemLoaded) {
 			CompatAdvancedRepulsionSystems.register();
 		}
+		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
 		
 		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {
@@ -1010,6 +1109,10 @@ public class WarpDriveConfig {
 		boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
 		if (isCustomNpcsLoaded) {
 			CompatCustomNpcs.register();
+		}
+		boolean isDraconicEvolutionLoaded = Loader.isModLoaded("DraconicEvolution");
+		if (isDraconicEvolutionLoaded) {
+			CompatDraconicEvolution.register();
 		}
 		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {

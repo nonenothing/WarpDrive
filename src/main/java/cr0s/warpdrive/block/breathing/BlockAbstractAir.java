@@ -1,11 +1,13 @@
 package cr0s.warpdrive.block.breathing;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -13,7 +15,9 @@ import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -67,6 +71,15 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@Override
 	public boolean isReplaceable(IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
 		return true;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List list) {
+		// hide in NEI
+		for (int i = 0; i < 16; i++) {
+			Commons.hideItemStack(new ItemStack(item, 1, i));
+		}
 	}
 	
 	@SideOnly(Side.CLIENT)

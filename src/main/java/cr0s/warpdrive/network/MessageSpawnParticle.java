@@ -1,5 +1,6 @@
 package cr0s.warpdrive.network;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.Vector3;
@@ -8,8 +9,10 @@ import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFirework;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
-import net.minecraft.client.particle.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumParticleTypes;
 
@@ -118,7 +121,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		
 		Particle particle;
 		double noiseLevel = direction.getMagnitude() * 0.35D;
-		for (int i = 0; i < quantity; i++) {
+		for (int index = 0; index < quantity; index++) {
 			Vector3 directionRandomized = new Vector3(
 					direction.x + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
 					direction.y + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
@@ -162,6 +165,27 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			case "cloud":
 				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.CLOUD.getParticleID(),
 					origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				break;
+			
+			case "jammed":// jammed machine particle reusing vanilla angryVillager particle
+				// as of MC1.7.10, direction vector is ignored by upstream
+				final EnumFacing directionFacing = Commons.getHorizontalDirectionFromEntity(Minecraft.getMinecraft().thePlayer);
+				if (directionFacing.getFrontOffsetX() != 0) {
+					particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.VILLAGER_ANGRY.getParticleID(),
+					        origin.x + 0.51D * directionFacing.getFrontOffsetX(),
+					        origin.y - 0.50D + world.rand.nextDouble(),
+					        origin.z - 0.50D + world.rand.nextDouble(),
+					        directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				} else {
+					particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.VILLAGER_ANGRY.getParticleID(),
+					        origin.x - 0.50D + world.rand.nextDouble(),
+					        origin.y - 0.50D + world.rand.nextDouble(),
+					        origin.z + 0.51D * directionFacing.getFrontOffsetZ(),
+					        directionRandomized.x, directionRandomized.y, directionRandomized.z);
+				}
+				assert(particle != null);
+				particle.multipleParticleScaleBy(0.5F + world.rand.nextFloat() * 1.5F);
+				particle.setParticleTextureIndex(81);
 				break;
 			} 
 			

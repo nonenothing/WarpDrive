@@ -52,6 +52,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private boolean enoughPower = false;
 	private int currentLayer;
 	
+	private int radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS;
 	private final ArrayList<BlockPos> valuablesInLayer = new ArrayList<>();
 	private int valuableIndex = 0;
 	
@@ -68,7 +69,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				"silktouch"
 		});
 		CC_scripts = Arrays.asList("mine", "stop");
-		laserMediumMaxCount = WarpDriveConfig.MINING_LASER_MAX_MEDIUMS_COUNT;
+		laserMedium_maxCount = WarpDriveConfig.MINING_LASER_MAX_MEDIUMS_COUNT;
 	}
 	
 	@SuppressWarnings("UnnecessaryReturnStatement")
@@ -96,6 +97,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		}
 		
 		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ());
+		radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + cache_laserMedium_count - 1;
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {
@@ -110,7 +112,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		} else if (currentState == STATE_SCANNING) {
 			if (delayTicks == WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS - 1) {
 				// check power level
-				enoughPower = consumeEnergyFromLaserMediums(isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, true);
+				enoughPower = laserMedium_consumeExactly(isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, true);
 				if (!enoughPower) {
 					updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.SCANNING_LOW_POWER);
 					delayTicks = WarpDriveConfig.MINING_LASER_WARMUP_DELAY_TICKS;
@@ -121,10 +123,10 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				
 				// show current layer
 				int age = Math.max(40, 5 * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS);
-				double xMax = pos.getX() + WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + 1.0D;
-				double xMin = pos.getX() - WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + 0.0D;
-				double zMax = pos.getZ() + WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + 1.0D;
-				double zMin = pos.getZ() - WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + 0.0D;
+				double xMax = pos.getX() + radiusCapacity + 1.0D;
+				double xMin = pos.getX() - radiusCapacity + 0.0D;
+				double zMax = pos.getZ() + radiusCapacity + 1.0D;
+				double zMin = pos.getZ() - radiusCapacity + 0.0D;
 				double y = currentLayer + 1.0D;
 				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMin, y, zMin), new Vector3(xMax, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
 				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMin), new Vector3(xMax, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
@@ -139,7 +141,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 				
 				// consume power
-				enoughPower = consumeEnergyFromLaserMediums(isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, false);
+				enoughPower = laserMedium_consumeExactly(isOnPlanet ? WarpDriveConfig.MINING_LASER_PLANET_ENERGY_PER_LAYER : WarpDriveConfig.MINING_LASER_SPACE_ENERGY_PER_LAYER, false);
 				if (!enoughPower) {
 					updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.SCANNING_LOW_POWER);
 					delayTicks = WarpDriveConfig.MINING_LASER_WARMUP_DELAY_TICKS;
@@ -151,7 +153,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				// scan
 				scanLayer();
 				if (!valuablesInLayer.isEmpty()) {
-					int r = (int) Math.ceil(WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS / 2.0D);
+					int r = (int) Math.ceil(radiusCapacity / 2.0D);
 					int offset = (pos.getY() - currentLayer) % (2 * r);
 					int age = Math.max(20, Math.round(2.5F * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS));
 					double y = currentLayer + 1.0D;
@@ -199,7 +201,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				if (enableSilktouch) {
 					requiredPower *= WarpDriveConfig.MINING_LASER_SILKTOUCH_ENERGY_FACTOR;
 				}
-				enoughPower = consumeEnergyFromLaserMediums(requiredPower, false);
+				enoughPower = laserMedium_consumeExactly(requiredPower, false);
 				if (!enoughPower) {
 					updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.MINING_LOW_POWER);
 					return;
@@ -304,7 +306,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				valuablesInLayer.add(blockPos);
 			}
 		}
-		for (radius = 1; radius <= WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS; radius++) {
+		for (radius = 1; radius <= radiusCapacity; radius++) {
 			xMax = pos.getX() + radius;
 			xMin = pos.getX() - radius;
 			zMax = pos.getZ() + radius;
@@ -446,7 +448,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] state() {
-		final int energy = getEnergyStored();
+		final int energy = laserMedium_getEnergyStored();
 		final String status = getStatusHeaderInPureText();
 		final Integer retValuablesInLayer, retValuablesMined;
 		if (isActive()) {
@@ -534,8 +536,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
-		final int energy = getEnergyStored();
+	public ITextComponent getStatusHeader() {
+		final int energy = laserMedium_getEnergyStored();
 		ITextComponent state = new TextComponentTranslation("IDLE (not mining)");
 		if (currentState == STATE_IDLE) {
 			state = new TextComponentTranslation("IDLE (not mining)");

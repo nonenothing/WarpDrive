@@ -14,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
@@ -68,6 +69,10 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		} else {
 			return new TextComponentString("");
 		}
+	}
+	
+	@Override
+	public void onEntityExpireEvent(EntityItem entityItem, ItemStack itemStack) {
 	}
 	
 	@Nonnull

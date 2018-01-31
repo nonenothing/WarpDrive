@@ -429,7 +429,9 @@ local success, message = pcall(w.run)
 if not success then
   print("failed with message")
   print(message)
-  print("exiting")
+  w.sleep(3.0)
+  print("rebooting...")
+  w.reboot()
 else
   w.close()
 end

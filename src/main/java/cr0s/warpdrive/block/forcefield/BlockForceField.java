@@ -131,6 +131,15 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return new ItemBlockForceField(this);
 	}
 	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+		// hide in NEI
+		for (int i = 0; i < 16; i++) {
+			Commons.hideItemStack(new ItemStack(item, 1, i));
+		}
+	}
+	
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
@@ -176,15 +185,6 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Override
 	public int quantityDropped(Random random) {
 		return 0;
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
-		// @TODO: Hide in NEI
-		for (int i = 0; i < 16; i++) {
-			list.add(new ItemStack(item, 1, i));
-		}
 	}
 	
 	@Nonnull

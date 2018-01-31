@@ -76,6 +76,7 @@ import cr0s.warpdrive.data.*;
 import cr0s.warpdrive.event.ChunkHandler;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.CommonWorldGenerator;
+import cr0s.warpdrive.event.ItemHandler;
 import cr0s.warpdrive.event.LivingHandler;
 import cr0s.warpdrive.event.ModelBakeEventHandler;
 import cr0s.warpdrive.event.WorldHandler;
@@ -536,10 +537,9 @@ public class WarpDrive implements LoadingCallback {
 		
 		// Event handlers
 		MinecraftForge.EVENT_BUS.register(new ClientHandler());
-		
-		MinecraftForge.EVENT_BUS.register(ModelBakeEventHandler.instance);
-		
+		MinecraftForge.EVENT_BUS.register(new ItemHandler());
 		MinecraftForge.EVENT_BUS.register(new LivingHandler());
+		MinecraftForge.EVENT_BUS.register(ModelBakeEventHandler.instance);
 		
 		if (WarpDriveConfig.isComputerCraftLoaded) {
 			peripheralHandler = new WarpDrivePeripheralHandler();

@@ -16,6 +16,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,6 +31,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 public class JumpShip {
+	
 	public World worldObj;
 	public BlockPos core;
 	public int dx;
@@ -48,7 +50,7 @@ public class JumpShip {
 	public JumpShip() {
 	}
 	
-	public static JumpShip createFromFile(String fileName, StringBuilder reason) {
+	public static JumpShip createFromFile(final String fileName, final StringBuilder reason) {
 		NBTTagCompound schematic = Commons.readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
 		if (schematic == null) {
 			reason.append(String.format("Schematic not found or unknown error reading it: '%s'.", fileName));
@@ -112,11 +114,11 @@ public class JumpShip {
 						if (jumpBlock.block != null) {
 							if (WarpDriveConfig.LOGGING_BUILDING) {
 								if (tileEntities[index] == null) {
-									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+									WarpDrive.logger.info("Adding block to deploy: "
 										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
 										                      + " (no tile entity)");
 								} else {
-									WarpDrive.logger.info("[ShipScanner] Adding block to deploy: "
+									WarpDrive.logger.info("Adding block to deploy: "
 										                      + jumpBlock.block.getUnlocalizedName() + ":" + jumpBlock.blockMeta
 										                      + " with tile entity " + tileEntities[index].getString("id"));
 								}
@@ -133,36 +135,51 @@ public class JumpShip {
 	}
 	
 	public void messageToAllPlayersOnShip(final ITextComponent textComponent) {
+		final ITextComponent messageFormatted = new TextComponentString("["
+						+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "ShipCore") + "] ")
+						.appendSibling(textComponent);
 		if (entitiesOnShip == null) {
-			shipCore.messageToAllPlayersOnShip(textComponent);
-		} else {
-			WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent);
-			for (MovingEntity movingEntity : entitiesOnShip) {
-				if (movingEntity.entity instanceof EntityPlayer) {
-					Commons.addChatMessage(movingEntity.entity, new TextComponentString("["
-						+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "WarpCore") + "] ")
-						.appendSibling(textComponent));
-				}
+			// entities not saved yet, get them now
+			final StringBuilder reason = new StringBuilder();
+			saveEntities(reason);
+		}
+		
+		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent);
+		for (MovingEntity movingEntity : entitiesOnShip) {
+			final Entity entity = movingEntity.getEntity();
+			if (entity instanceof EntityPlayer) {
+				Commons.addChatMessage(entity, messageFormatted);
 			}
 		}
 	}
 	
-	public String saveEntities() {
-		String result = null;
+	public boolean saveEntities(final StringBuilder reason) {
+		boolean isSuccess = true;
 		entitiesOnShip = new ArrayList<>();
 		
-		AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		if (worldObj == null) {
+			reason.append("Invalid call to saveEntities, please report it to mod author");
+			return false;
+		}
 		
-		List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
+		
+		final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
 		for (Entity entity : list) {
 			if (entity == null) {
 				continue;
 			}
 			
-			String id = EntityList.getEntityString(entity);
+			final String id = EntityList.getEntityString(entity);
 			if (Dictionary.ENTITIES_ANCHOR.contains(id)) {
-				result = "Anchor entity " + id + " detected at " + Math.floor(entity.posX) + ", " + Math.floor(entity.posY) + ", " + Math.floor(entity.posZ) + ", aborting jump...";
+				if (reason.length() > 0) {
+					reason.append("\n");
+				}
+				reason.append(String.format("Anchor entity %s detected at (%d %d %d), aborting jump...",
+				                            id,
+				                            Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ)));
+				isSuccess = false;
 				// we need to continue so players are added so they can see the message...
 				continue;
 			}
@@ -176,45 +193,40 @@ public class JumpShip {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Adding entity " + id + ": " + entity);
 				}
-			} 
-			MovingEntity movingEntity = new MovingEntity(entity);
+			}
+			final MovingEntity movingEntity = new MovingEntity(entity);
 			entitiesOnShip.add(movingEntity);
 		}
 		
-		return result;
+		return isSuccess;
+	}
+	
+	public void setCaptain(final String playerName) {
+		entitiesOnShip = new ArrayList<>();
+		final EntityPlayerMP entityPlayerMP = Commons.getOnlinePlayerByName(playerName);
+		if (entityPlayerMP == null) {
+			WarpDrive.logger.error(String.format("%s setCaptain: captain is missing", this));
+			return;
+		}
+		final MovingEntity movingEntity = new MovingEntity(entityPlayerMP);
+		entitiesOnShip.add(movingEntity);
 	}
 	
 	public boolean isUnlimited() {
 		if (entitiesOnShip == null) {
 			return false;
 		}
-		for (MovingEntity movingEntity : entitiesOnShip) {
-			if (!(movingEntity.entity instanceof EntityPlayer)) {
-				continue;
-			}
-			
-			String playerName = movingEntity.entity.getName();
-			for (String unlimitedName : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
-				if (unlimitedName.equals(playerName)) {
-					return true;
-				}
+		for (final MovingEntity movingEntity : entitiesOnShip) {
+			if (movingEntity.isUnlimited()) {
+				return true;
 			}
 		}
 		return false;
 	}
 	
-	public void setMinMaxes(int minXV, int maxXV, int minYV, int maxYV, int minZV, int maxZV) {
-		minX = minXV;
-		maxX = maxXV;
-		minY = minYV;
-		maxY = maxYV;
-		minZ = minZV;
-		maxZ = maxZV;
-	}
-	
 	@Override
 	public String toString() {
-		return String.format("%s/%d \'%s\' @ \'%s\' (%d %d %d)",
+		return String.format("%s/%d \'%s\' @ %s (%d %d %d)",
 			getClass().getSimpleName(), hashCode(),
 			shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.shipName),
 			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
@@ -254,7 +266,9 @@ public class JumpShip {
 						continue;
 					}
 					
-					reason.append("Ship snagged by " + blockState.getBlock().getLocalizedName() + " at " + x + " " + y + " " + z + ". Damage report pending...");
+					reason.append(String.format("Ship snagged by %s at (%d %d %d). Sneak right click the ship core to see your ship dimensions, then update your ship dimensions.",
+					                            blockState.getBlock().getLocalizedName(),
+					                            x, y, z));
 					worldObj.createExplosion(null, x, y, z, Math.min(4F * 30, 4F * (jumpBlocks.length / 50)), false);
 					return false;
 				}
@@ -311,7 +325,9 @@ public class JumpShip {
 								
 								// Stop on non-movable blocks
 								if (Dictionary.BLOCKS_ANCHOR.contains(blockState.getBlock())) {
-									reason.append(blockState.getBlock().getLocalizedName() + " detected on board at " + x + " " + y + " " + z + ". Aborting.");
+									reason.append(String.format("Jump aborted by on-board anchor block %s at (%d %d %d).",
+									                            blockState.getBlock().getLocalizedName(),
+									                            x, y, z));
 									return false;
 								}
 								
@@ -323,7 +339,12 @@ public class JumpShip {
 										IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 										if (blockTransformer != null) {
 											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity, reason)) {
-												reason.append(" Jump aborted by " + jumpBlock.block.getLocalizedName() + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+												if (reason.length() > 0) {
+													reason.append("\n");
+												}
+												reason.append(String.format("Jump aborted by on-board block %s at (%d %d %d).",
+												                            jumpBlock.block.getLocalizedName(),
+												                            jumpBlock.x, jumpBlock.y, jumpBlock.z));
 												return false;
 											}
 										}
@@ -359,7 +380,10 @@ public class JumpShip {
 			actualMass = newMass;
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			reason.append("Exception while saving ship, probably a corrupted block at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+			final String msg = String.format("Exception while saving ship, probably a corrupted block at (%d %d %d).",
+			                                 blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			WarpDrive.logger.error(msg);
+			reason.append(msg);
 			return false;
 		}
 		

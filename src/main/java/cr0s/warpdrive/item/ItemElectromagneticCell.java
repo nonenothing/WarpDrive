@@ -6,16 +6,19 @@ import cr0s.warpdrive.api.IParticleContainerItem;
 import cr0s.warpdrive.api.Particle;
 import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.api.ParticleStack;
+import cr0s.warpdrive.data.Vector3;
 
 import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class ItemElectromagneticCell extends ItemAbstractBase implements IParticleContainerItem {
@@ -129,7 +132,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	private static int getDamageLevel(ItemStack itemStack, final ParticleStack particleStack) {
-		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
+		if (!(itemStack.getItem() instanceof ItemElectromagneticCell)) {
 			WarpDrive.logger.error("Invalid ItemStack passed, expecting ItemElectromagneticCell: " + itemStack);
 			return itemStack.getItemDamage();
 		}
@@ -178,7 +181,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		} else if (!particleStack.isParticleEqual(resource) || particleStack.getAmount() >= getCapacity(itemStack)) {
 			return 0;
 		}
-		int transfer = Math.min(resource.getAmount(), getCapacity(itemStack) - particleStack.getAmount());
+		final int transfer = Math.min(resource.getAmount(), getCapacity(itemStack) - particleStack.getAmount());
 		if (doFill) {
 			particleStack.fill(transfer);
 			
@@ -194,7 +197,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	@Override
 	public ParticleStack drain(ItemStack itemStack, final ParticleStack resource, final boolean doDrain) {
-		ParticleStack particleStack = getParticleStack(itemStack);
+		final ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			return null;
 		}
@@ -205,7 +208,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		if (doDrain) {
 			particleStack.fill(-transfer);
 			
-			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
 			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
 			if (!itemStack.hasTagCompound()) {
 				itemStack.setTagCompound(tagCompound);
@@ -213,6 +216,32 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			updateDamageLevel(itemStack, particleStack);
 		}
 		return resource.copy(transfer);
+	}
+	
+	@Override
+	public int getEntityLifespan(final ItemStack itemStack, final World world) {
+		final ParticleStack particleStack = getParticleStack(itemStack);
+		if ( particleStack == null
+		  || particleStack.isEmpty() ) {
+			return super.getEntityLifespan(itemStack, world);
+		}
+		final int lifespan = particleStack.getEntityLifespan();
+		if (lifespan < 0) {
+			return super.getEntityLifespan(itemStack, world);
+		}
+		// less content means more stable, so we scale lifespan with emptiness, up to doubling it
+		return (2 - particleStack.getAmount() / getCapacity(itemStack)) * lifespan;
+	}
+	
+	@Override
+	public void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack) {
+		final ParticleStack particleStack = getParticleStack(itemStack);
+		if ( particleStack == null
+		  || particleStack.isEmpty() ) {
+			super.onEntityExpireEvent(entityItem, itemStack);
+			return;
+		}
+		particleStack.onWorldEffect(entityItem.worldObj, new Vector3(entityItem));
 	}
 	
 	@Override

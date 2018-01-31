@@ -30,8 +30,10 @@ public class StructureGroup implements IStringSerializable {
 		}
 		final AbstractStructure abstractStructure = StructureManager.getStructure(random, group, name);
 		if (abstractStructure == null) {
-			WarpDrive.logger.warn(String.format("Dimension %d @ %d %d %d refers to unknown structure %s. Probably a bad configuration. Skipping for now.",
-			                                    world.provider.getDimension(), x, y, z, getName()));
+			WarpDrive.logger.warn(String.format("Celestial object @ %s (%d %d %d) refers to unknown structure %s. Probably a bad configuration. Skipping for now.",
+			                                    world.provider.getSaveFolder(),
+			                                    x, y, z,
+			                                    getName()));
 			return;
 		}
 		final AbstractStructureInstance abstractStructureInstance = abstractStructure.instantiate(random);
