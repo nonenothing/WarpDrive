@@ -1,6 +1,5 @@
 package cr0s.warpdrive.data;
 
-
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldShape;

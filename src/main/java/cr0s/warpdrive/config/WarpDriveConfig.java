@@ -463,7 +463,7 @@ public class WarpDriveConfig {
 			WarpDrive.logger.info("Failed to get ore named " + ore);
 			return new ItemStack(Blocks.fire);
 		}
-		final ArrayList<ItemStack> itemStacks = OreDictionary.getOres(ore);
+		final List<ItemStack> itemStacks = OreDictionary.getOres(ore);
 		if (itemStacks.isEmpty()) {
 			WarpDrive.logger.info(String.format("Failed to get item from empty ore dictionary '%s'", ore));
 			return new ItemStack(Blocks.fire);

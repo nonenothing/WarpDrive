@@ -165,7 +165,8 @@ public class LivingHandler {
 				
 				if (worldTarget == null) {
 					try {
-						worldTarget = MinecraftServer.getServer().worldServerForDimension(celestialObjectChild.dimensionId);
+						final MinecraftServer server = MinecraftServer.getServer();
+						worldTarget = server.worldServerForDimension(celestialObjectChild.dimensionId);
 					} catch (Exception exception) {
 						WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d for %s",
 						                                     exception.getMessage(),

@@ -49,7 +49,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World parWorld, int i) {
+	public TileEntity createNewTileEntity(World world, int metadata) {
 		return new TileEntityCamera();
 	}
 	
