@@ -32,7 +32,10 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		setHardness(3.5F);
 		setUnlocalizedName("warpdrive.detection.CloakingCoil");
 		
-		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false).withProperty(OUTER, false).withProperty(BlockProperties.FACING, EnumFacing.UP));
+		setDefaultState(getDefaultState()
+		                .withProperty(BlockProperties.ACTIVE, false)
+		                .withProperty(OUTER, false)
+		                .withProperty(BlockProperties.FACING, EnumFacing.UP));
 	}
 	
 	@Nonnull

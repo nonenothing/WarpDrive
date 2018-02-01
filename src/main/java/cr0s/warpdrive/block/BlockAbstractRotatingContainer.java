@@ -16,7 +16,8 @@ public abstract class BlockAbstractRotatingContainer extends BlockAbstractContai
 	protected BlockAbstractRotatingContainer(final String registryName, final Material material) {
 		super(registryName, material);
 		
-		setDefaultState(blockState.getBaseState().withProperty(BlockProperties.FACING, EnumFacing.NORTH));
+		setDefaultState(blockState.getBaseState()
+		                .withProperty(BlockProperties.FACING, EnumFacing.NORTH));
 	}
 	
 	@Nonnull
