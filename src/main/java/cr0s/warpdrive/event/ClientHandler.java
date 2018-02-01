@@ -27,6 +27,7 @@ public class ClientHandler {
 	private boolean isSneaking;
 	private boolean isCreativeMode;
 	
+	@SuppressWarnings("ConstantConditions") // getBlockFromItem() might return null, by design
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onTooltipEvent(ItemTooltipEvent event) {
 		if (event.getEntityPlayer() == null) {
@@ -47,7 +48,7 @@ public class ClientHandler {
 		
 		// add block/items details
 		final Block block = Block.getBlockFromItem(event.getItemStack().getItem());
-		if (block != Blocks.AIR) {
+		if (block != null) {
 			addBlockDetails(event, block);
 		} else {
 			addItemDetails(event, event.getItemStack().getItem());
