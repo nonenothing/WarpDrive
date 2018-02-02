@@ -89,9 +89,17 @@ public class ClientHandler {
 		}
 		
 		// tool related stats
-		if (WarpDriveConfig.CLIENT_TOOLTIP_HARVESTING.isEnabled(isSneaking, isCreativeMode)) {
+		IBlockState blockState = null;
+		try {
+			blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
+		} catch (AssertionError assertionError) {
+			// assertionError.printStackTrace();
+			WarpDrive.logger.error(String.format("Assertion error on item stack %s with state %s",
+			                                     event.getItemStack(), (blockState != null) ? blockState : "-null-"));
+		}
+		if ( WarpDriveConfig.CLIENT_TOOLTIP_HARVESTING.isEnabled(isSneaking, isCreativeMode)
+		  && blockState != null ) {
 			try {
-				final IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
 				final String harvestTool = block.getHarvestTool(blockState);
 				if (harvestTool != null) {
 					Commons.addTooltip(event.getToolTip(), String.format("Harvest with %s (%d)",
@@ -104,9 +112,13 @@ public class ClientHandler {
 		}
 		
 		// generic properties
-		if (WarpDriveConfig.CLIENT_TOOLTIP_OPACITY.isEnabled(isSneaking, isCreativeMode)) {
-			final IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
-			Commons.addTooltip(event.getToolTip(), String.format("Light opacity is %d", block.getLightOpacity(blockState)));
+		if ( WarpDriveConfig.CLIENT_TOOLTIP_OPACITY.isEnabled(isSneaking, isCreativeMode)
+		  && blockState != null ) {
+			try {
+				Commons.addTooltip(event.getToolTip(), String.format("Light opacity is %d", block.getLightOpacity(blockState)));
+			} catch (Exception exception) {
+				// no operation
+			}
 		}
 		
 		if (WarpDriveConfig.CLIENT_TOOLTIP_HARDNESS.isEnabled(isSneaking, isCreativeMode)) {
@@ -144,8 +156,6 @@ public class ClientHandler {
 						Commons.addTooltip(event.getToolTip(), String.format("Liquid density is %d", fluid.getDensity()));
 					}
 					Commons.addTooltip(event.getToolTip(), String.format("Temperature is %d K", fluid.getTemperature()));
-					IBlockState blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
-					String harvestTool = block.getHarvestTool(blockState);
 				}
 			} catch (Exception exception) {
 				// no operation
