@@ -2,6 +2,8 @@ package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumValidPowered;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.network.PacketHandler;
@@ -61,7 +63,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 				
 				// ignore if we're right next to the reactor
 				// ignore if we're not aligned with the reactor
-				BlockPos blockPos = reactor.getReactorPos();
+				final BlockPos blockPos = reactor.getCoreTe().getPos();
 				if ( blockPos.getX() != pos.getX() + 3 * facing.getFrontOffsetX()
 				  || blockPos.getY() != pos.getY() + 3 * facing.getFrontOffsetY()
 				  || blockPos.getZ() != pos.getZ() + 3 * facing.getFrontOffsetZ() ) {
@@ -126,7 +128,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 		if (ticks <= 0)  {
 			ticks = WarpDriveConfig.IC2_REACTOR_COOLING_INTERVAL_TICKS;
 			final IReactor reactor = findReactor();
-			setMetadata();
+			updateBlockState();
 			if (reactor == null) {
 				return;
 			}
@@ -141,15 +143,16 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 		}
 	}
 	
-	private void setMetadata() {
-		int metadata = (facing != null ? facing.ordinal() : 6);
-		if ( isValid
-		  && cache_laserMedium_energyStored >= WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT) {
-			metadata |= 8;
+	private void updateBlockState() {
+		IBlockState blockStateNew = getBlockType().getDefaultState().withProperty(BlockProperties.FACING, facing != null ? facing : EnumFacing.NORTH);
+		if (!isValid) {
+			blockStateNew = blockStateNew.withProperty(BlockIC2reactorLaserMonitor.VALID_POWERED, EnumValidPowered.INVALID);
+		} else if (cache_laserMedium_energyStored < WarpDriveConfig.IC2_REACTOR_ENERGY_PER_HEAT) {
+			blockStateNew = blockStateNew.withProperty(BlockIC2reactorLaserMonitor.VALID_POWERED, EnumValidPowered.VALID);
+		} else {
+			blockStateNew = blockStateNew.withProperty(BlockIC2reactorLaserMonitor.VALID_POWERED, EnumValidPowered.POWERED);
 		}
-		if (getBlockMetadata() != metadata) {
-			updateMetadata(metadata);
-		}
+		updateBlockState(blockStateNew, null, null);
 	}
 	
 	@Override

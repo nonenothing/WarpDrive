@@ -66,7 +66,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			blockState = worldObj.getBlockState(pos);
 		}
 		try {
-			blockState = blockState.withProperty(property, value);
+			if (property != null) {
+				blockState = blockState.withProperty(property, value);
+			}
 			if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
 				worldObj.setBlockState(pos, blockState, 2);
 			}

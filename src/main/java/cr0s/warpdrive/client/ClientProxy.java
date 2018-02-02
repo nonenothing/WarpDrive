@@ -64,9 +64,9 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockShipScanner);
 		IModelInitialisation(WarpDrive.blockTransporter);
 		IModelInitialisation(WarpDrive.blockBedrockGlass);
-		// if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-		// 	IModelInitialisation(WarpDrive.blockIC2reactorLaserMonitor);
-		// }
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+			IModelInitialisation(WarpDrive.blockIC2reactorLaserMonitor);
+		}
 		// IModelInitialisation(WarpDrive.blockEnanReactorCore);
 		// IModelInitialisation(WarpDrive.blockEnanReactorLaser);
 		IModelInitialisation(WarpDrive.blockEnergyBank);

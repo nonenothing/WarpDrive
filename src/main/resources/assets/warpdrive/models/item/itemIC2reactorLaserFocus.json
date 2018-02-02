@@ -1,0 +1,6 @@
+{
+	"parent": "item/handheld",
+	"textures": {
+		"layer0": "warpdrive:items/energy/ic2_reactor_laser_focus"
+	}
+}
