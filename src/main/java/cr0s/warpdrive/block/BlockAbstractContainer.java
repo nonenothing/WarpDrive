@@ -83,7 +83,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState blockState, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
@@ -103,7 +104,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public boolean removedByPlayer(@Nonnull IBlockState blockState, World world, @Nonnull BlockPos blockPos, @Nonnull EntityPlayer player, boolean willHarvest) {
+	public boolean removedByPlayer(@Nonnull final IBlockState blockState, final World world, @Nonnull final BlockPos blockPos,
+	                               @Nonnull final EntityPlayer player, final boolean willHarvest) {
 		return willHarvest || super.removedByPlayer(blockState, world, blockPos, player, false);
 	}
 	

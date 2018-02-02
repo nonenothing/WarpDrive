@@ -47,19 +47,19 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
+	public EnumPushReaction getMobilityFlag(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return blockState.getValue(BlockColored.COLOR).getMetadata();
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
-		for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+		for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 			list.add(new ItemStack(item, 1, enumDyeColor.getMetadata()));
 		}
 	}
@@ -67,19 +67,19 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public MapColor getMapColor(IBlockState blockState) {
+	public MapColor getMapColor(final IBlockState blockState) {
 		return blockState.getValue(BlockColored.COLOR).getMapColor();
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return this.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.byMetadata(metadata));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockColored.COLOR).getMetadata();
 	}
 	
@@ -90,19 +90,20 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
 	
 	@Override
-	public float getBlockHardness(IBlockState blockState, World world, BlockPos blockPos, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos,
-	                       DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(final IBlockState blockState, final World world, final BlockPos blockPos,
+	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}

@@ -40,18 +40,18 @@ public class BlockDecorative extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				.withProperty(TYPE, EnumDecorativeType.get(metadata));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(TYPE).ordinal();
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.COMMON;
 	}
 	
@@ -62,18 +62,18 @@ public class BlockDecorative extends BlockAbstractBase {
 	}
 	
 	@Override
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
-		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
 		}
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
-	public static ItemStack getItemStack(EnumDecorativeType enumDecorativeType) {
+	public static ItemStack getItemStack(final EnumDecorativeType enumDecorativeType) {
 		if (enumDecorativeType != null) {
 			int damage = enumDecorativeType.ordinal();
 			if (itemStackCache[damage] == null) {
@@ -84,7 +84,7 @@ public class BlockDecorative extends BlockAbstractBase {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumDecorativeType enumDecorativeType, int amount) {
+	public static ItemStack getItemStackNoCache(final EnumDecorativeType enumDecorativeType, final int amount) {
 		return new ItemStack(WarpDrive.blockDecorative, amount, enumDecorativeType.ordinal());
 	}
 }

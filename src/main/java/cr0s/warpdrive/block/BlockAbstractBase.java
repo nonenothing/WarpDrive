@@ -71,7 +71,8 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState, final EntityLivingBase entityLiving, final ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
@@ -81,7 +82,8 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	}
 	
 	@Override
-	public boolean removedByPlayer(@Nonnull final IBlockState blockState, final World world, @Nonnull final BlockPos blockPos, @Nonnull final EntityPlayer player, final boolean willHarvest) {
+	public boolean removedByPlayer(@Nonnull final IBlockState blockState, final World world, @Nonnull final BlockPos blockPos,
+	                               @Nonnull final EntityPlayer player, final boolean willHarvest) {
 		return willHarvest || super.removedByPlayer(blockState, world, blockPos, player, false);
 	}
 	

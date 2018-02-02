@@ -89,7 +89,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public MapColor getMapColor(IBlockState state) {
+	public MapColor getMapColor(final IBlockState state) {
 		// @TODO: color from force field frequency
 		return super.getMapColor(state);
 	}
@@ -97,18 +97,18 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
-		return this.getDefaultState().withProperty(FREQUENCY, meta);
+	public IBlockState getStateFromMeta(final int metadata) {
+		return this.getDefaultState().withProperty(FREQUENCY, metadata);
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState state) {
+	public int getMetaFromState(final IBlockState state) {
 		return state.getValue(FREQUENCY);
 	}
 	
 	@Nonnull
 	@Override
-	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess blockAccess, BlockPos blockPos) {
+	public IBlockState getExtendedState(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		if (!(blockState instanceof IExtendedBlockState)) {
 			return blockState;
 		}
@@ -133,7 +133,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		// hide in NEI
 		for (int i = 0; i < 16; i++) {
 			Commons.hideItemStack(new ItemStack(item, 1, i));
@@ -142,7 +142,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityForceField();
 	}
 	
@@ -166,37 +166,37 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(IBlockState state) {
+	public boolean isFullyOpaque(final IBlockState state) {
 		return false;
 	}
 	
 	@Nonnull
 	@Override
-	public ItemStack getPickBlock(@Nonnull IBlockState blockState, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
+	public ItemStack getPickBlock(@Nonnull final IBlockState blockState, final RayTraceResult target, @Nonnull final World world, @Nonnull final BlockPos blockPos, final EntityPlayer entityPlayer) {
 		return new ItemStack(Blocks.AIR);
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
 	@Nonnull
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
+	public EnumBlockRenderType getRenderType(final IBlockState state) {
 		return EnumBlockRenderType.MODEL;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing facing) {
 		final BlockPos blockPosSide = blockPos.offset(facing);
 		if (blockAccess.isAirBlock(blockPosSide)) {
 			return true;
@@ -212,7 +212,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return !blockAccess.isSideSolid(blockPosSide, opposite, false);
 	}
 	
-	protected TileEntityForceFieldProjector getProjector(World world, @Nonnull BlockPos blockPos) {
+	protected TileEntityForceFieldProjector getProjector(final World world, @Nonnull final BlockPos blockPos) {
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField) tileEntity).getProjector();
@@ -220,7 +220,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return null;
 	}
 	
-	private ForceFieldSetup getForceFieldSetup(World world, @Nonnull BlockPos blockPos) {
+	private ForceFieldSetup getForceFieldSetup(final World world, @Nonnull final BlockPos blockPos) {
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField) tileEntity).getForceFieldSetup();
@@ -229,7 +229,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onBlockClicked(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
+	public void onBlockClicked(final World world, final BlockPos blockPos, final EntityPlayer entityPlayer) {
 		if (world.isRemote) {
 			return;
 		}
@@ -242,7 +242,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
 		if (forceFieldSetup != null) {
 			List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
@@ -263,7 +263,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos blockPos, IBlockState blockState, Entity entity) {
+	public void onEntityCollidedWithBlock(final World world, final BlockPos blockPos, final IBlockState blockState, final Entity entity) {
 		if (world.isRemote) {
 			return;
 		}
@@ -314,7 +314,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	/**/
 	
 	@Override
-	public int getLightValue(@Nonnull IBlockState blockState, IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
+	public int getLightValue(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField)tileEntity).cache_lightCamouflage;
@@ -323,7 +323,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return 0;
 	}
 	
-	private void downgrade(World world, final BlockPos blockPos) {
+	private void downgrade(final World world, final BlockPos blockPos) {
 		if (tier > 1) {
 			TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, blockPos);
 			IBlockState blockState = world.getBlockState(blockPos);
@@ -450,18 +450,18 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	/**/
 	
 	@Override
-	public boolean canDropFromExplosion(Explosion p_149659_1_) {
+	public boolean canDropFromExplosion(final Explosion explosion) {
 		return false;
 	}
 	
 	@Override
-	public void onBlockExploded(World world, @Nonnull BlockPos blockPos, @Nonnull Explosion explosion) {
+	public void onBlockExploded(final World world, @Nonnull final BlockPos blockPos, @Nonnull final Explosion explosion) {
 		downgrade(world, blockPos);
 		super.onBlockExploded(world, blockPos, explosion);
 	}
 	
 	@Override
-	public void onEMP(World world, BlockPos blockPos, float efficiency) {
+	public void onEMP(final World world, final BlockPos blockPos, final float efficiency) {
 		if (efficiency * (1.0F - 0.20F * (tier - 1)) > world.rand.nextFloat()) {
 			downgrade(world, blockPos);
 		}
@@ -469,20 +469,20 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onBlockDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
+	public void onBlockDestroyedByExplosion(final World world, final BlockPos blockPos, final Explosion explosion) {
 		// (block is already set to air by caller, see IC2 iTNT for example)
 		downgrade(world, blockPos);
 		super.onBlockDestroyedByExplosion(world, blockPos, explosion);
 	}
 	
 	@Override
-	public float getBlockHardness(IBlockState blockState, World world, final BlockPos blockPos,
+	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(IBlockState blockState, World world, final BlockPos blockPos, final DamageSource damageSource,
+	public int applyDamage(final IBlockState blockState, final World world, final BlockPos blockPos, final DamageSource damageSource,
 	                       final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
 		if (forceFieldSetup != null) {

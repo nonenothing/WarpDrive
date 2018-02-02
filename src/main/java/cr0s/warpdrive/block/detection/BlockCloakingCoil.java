@@ -47,7 +47,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		boolean isActive = (metadata & 7) != 0;
 		boolean isOuter = (metadata & 7) > 1;
 		return getDefaultState()
@@ -59,7 +59,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		if (!blockState.getValue(BlockProperties.ACTIVE)) {
 			return 0;
 		}
@@ -69,7 +69,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		return 2 + blockState.getValue(BlockProperties.FACING).ordinal();
 	}
 	
-	public static void setBlockState(@Nonnull World world, @Nonnull final BlockPos blockPos, final boolean isActive, final boolean isOuter, final EnumFacing enumFacing) {
+	public static void setBlockState(@Nonnull final World world, @Nonnull final BlockPos blockPos, final boolean isActive, final boolean isOuter, final EnumFacing enumFacing) {
 		IBlockState blockStateActual = world.getBlockState(blockPos);
 		IBlockState blockStateNew = blockStateActual.withProperty(BlockProperties.ACTIVE, isActive).withProperty(OUTER, isOuter);
 		if (enumFacing != null) {
@@ -81,7 +81,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.COMMON;
 	}
 }

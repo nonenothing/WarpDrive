@@ -87,19 +87,19 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 		       .withProperty(BlockProperties.TIER, EnumTier.get(metadata % 4));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.TIER).getIndex();
 	}
 	
 	@Nonnull
 	@Override
-	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess blockAccess, BlockPos blockPos) {
+	public IBlockState getExtendedState(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		if (!(blockState instanceof IExtendedBlockState)) {
 			return blockState;
 		}
@@ -143,7 +143,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		for (byte tier = 0; tier < 4; tier++) {
 			ItemStack itemStack = new ItemStack(item, 1, tier);
 			list.add(itemStack);
@@ -201,7 +201,9 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing facing, float hitX, float hitY, float hitZ) { 
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
@@ -218,24 +220,24 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		
 		if (itemStackHeld != null && itemStackHeld.getItem() instanceof IWarpTool) {
 			if (entityPlayer.isSneaking()) {
-				tileEntityEnergyBank.setMode(facing, tileEntityEnergyBank.getMode(facing).getPrevious());
+				tileEntityEnergyBank.setMode(side, tileEntityEnergyBank.getMode(side).getPrevious());
 			} else {
-				tileEntityEnergyBank.setMode(facing, tileEntityEnergyBank.getMode(facing).getNext());
+				tileEntityEnergyBank.setMode(side, tileEntityEnergyBank.getMode(side).getNext());
 			}
 			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
-			switch (tileEntityEnergyBank.getMode(facing)) {
+			switch (tileEntityEnergyBank.getMode(side)) {
 			case INPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", facing.name())) );
+				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", side.name())) );
 				return true;
 			case OUTPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", facing.name())) );
+				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", side.name())) );
 				return true;
 			case DISABLED:
 			default:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", facing.name())) );
+				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", side.name())) );
 				return true;
 			}
 		}

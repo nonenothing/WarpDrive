@@ -31,19 +31,19 @@ public class BlockAirSource extends BlockAbstractAir {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 		       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
 	}
 	
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		if (!world.isRemote) {
 			final StateAir stateAir = ChunkHandler.getStateAir(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			if ( stateAir != null

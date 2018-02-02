@@ -4,8 +4,6 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
-import java.util.Random;
-
 import cr0s.warpdrive.data.EnumMiningLaserMode;
 
 import javax.annotation.Nonnull;
@@ -48,30 +46,27 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				.withProperty(MODE, EnumMiningLaserMode.get(metadata));
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(MODE).ordinal();
 	}
 	
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityMiningLaser();
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
-		return 1;
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}

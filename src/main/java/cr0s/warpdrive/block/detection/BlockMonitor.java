@@ -37,7 +37,9 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 	}
 
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		// Monitor is only reacting client side
 		if (!world.isRemote) {
 			return false;

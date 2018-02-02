@@ -84,21 +84,21 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7))
 				.withProperty(IS_DOUBLE_SIDED, metadata > 7);
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex()
 		       + (blockState.getValue(IS_DOUBLE_SIDED) ? 8 : 0);
 	}
 	
 	@Nonnull
 	@Override
-	public IBlockState getExtendedState(@Nonnull IBlockState blockState, IBlockAccess blockAccess, BlockPos blockPos) {
+	public IBlockState getExtendedState(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		if (!(blockState instanceof IExtendedBlockState)) {
 			return blockState;
 		}
@@ -129,32 +129,32 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
 		return true;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isBlockNormalCube(IBlockState blockState) {
+	public boolean isBlockNormalCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(IBlockState state) {
+	public boolean isFullCube(final IBlockState state) {
 		return false;
 	}
 	
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+	public AxisAlignedBB getBoundingBox(final IBlockState state, final IBlockAccess source, final BlockPos pos) {
 		switch (state.getValue(BlockProperties.FACING)) {
 			case DOWN : return AABB_DOWN ;
 			case UP   : return AABB_UP   ;
@@ -169,7 +169,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase entityLiving) {
+	public IBlockState onBlockPlaced(final World worldIn, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int metadata, final EntityLivingBase entityLiving) {
 		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
 		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
 	}
@@ -182,19 +182,20 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		for (int i = 0; i < 2; ++i) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
 	
 	@Override
-	public int damageDropped(IBlockState state) {
+	public int damageDropped(final IBlockState state) {
 		return state.getValue(IS_DOUBLE_SIDED) ? 1 : 0;
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState blockState, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(blockPos);
 		if (!itemStack.hasTagCompound() && tileEntityForceFieldProjector != null) {
@@ -203,7 +204,9 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
@@ -356,7 +359,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityForceFieldProjector();
 	}
 }

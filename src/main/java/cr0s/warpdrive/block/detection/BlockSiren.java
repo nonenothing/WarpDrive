@@ -45,7 +45,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		list.add(new ItemStack(item, 1, EnumSirenType.INDUSTRIAL.getIndex()));
 		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.BASIC.getIndex() - 1));
 		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.ADVANCED.getIndex() - 1));
@@ -61,7 +61,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 		       .withProperty(BlockProperties.SIREN_TYPE, EnumSirenType.get(metadata & 4))
 		       .withProperty(BlockProperties.TIER, EnumTier.get(1 + (metadata & 3)));
@@ -69,7 +69,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.SIREN_TYPE).getIndex() + Math.max(0, (blockState.getValue(BlockProperties.TIER).getIndex() - 1));
 	}
 	
@@ -81,7 +81,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntitySiren();
 	}
 	
@@ -103,7 +103,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return getMetaFromState(blockState);
 	}
 	

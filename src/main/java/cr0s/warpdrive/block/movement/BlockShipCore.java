@@ -13,7 +13,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -47,7 +46,8 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState blockState, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
@@ -55,11 +55,6 @@ public class BlockShipCore extends BlockAbstractContainer {
 			((TileEntityShipCore) tileEntity).facing = Commons.getHorizontalDirectionFromEntity(entityLiving).getOpposite();
 			// @TODO MC1.10 world.markBlockForUpdate(x, y, z);
 		}
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
 	}
 	
 	@Nonnull
@@ -107,7 +102,9 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (hand != EnumHand.MAIN_HAND) {
 			return true;
 		}

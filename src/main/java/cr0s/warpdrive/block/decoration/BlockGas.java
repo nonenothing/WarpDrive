@@ -1,11 +1,16 @@
 package cr0s.warpdrive.block.decoration;
 
-import java.util.List;
-import java.util.Random;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumGasColor;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.List;
+import java.util.Random;
+
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -21,9 +26,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -49,13 +51,13 @@ public class BlockGas extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				.withProperty(COLOR, EnumGasColor.get(metadata));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(COLOR).ordinal();
 	}
 	
@@ -66,14 +68,14 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@Override
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTabs, List<ItemStack> list) {
-		for (EnumGasColor enumGasColor : EnumGasColor.values()) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+		for (final EnumGasColor enumGasColor : EnumGasColor.values()) {
 			list.add(new ItemStack(item, 1, enumGasColor.ordinal()));
 		}
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
@@ -84,65 +86,65 @@ public class BlockGas extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(IBlockState state) {
+	public boolean isFullyOpaque(final IBlockState state) {
 		return false;
 	}
 	
 	@Override
-	public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public boolean isAir(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
 		return true;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		return null;
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess worldIn, @Nonnull BlockPos blockPos) {
+	public boolean isReplaceable(final IBlockAccess worldIn, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(World worldIn, @Nonnull BlockPos blockPos) {
+	public boolean canPlaceBlockAt(final World worldIn, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
-	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid) {
+	public boolean canCollideCheck(final IBlockState state, final boolean hitIfLiquid) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
+	public EnumPushReaction getMobilityFlag(final IBlockState state) {
 		return EnumPushReaction.DESTROY;
 	}
 	
 	@Nullable
 	@Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
 		return null;
 	}
 	
 	@Override
-	public int quantityDropped(Random rand) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing facing) {
 		final BlockPos blockPosSide = blockPos.offset(facing);
 		final IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
 		if (blockStateSide.getBlock().isAssociatedBlock(this)) {
@@ -157,7 +159,7 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@Override
-	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
+	public void onBlockAdded(final World world, final BlockPos blockPos, final IBlockState blockState) {
 		// Gas blocks are only allowed in space
 		if (CelestialObjectManager.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.setBlockToAir(blockPos);
@@ -165,7 +167,7 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.COMMON;
 	}
 }

@@ -13,13 +13,13 @@ public interface IDamageReceiver {
 	 * Return the block hardness to use for damage resolution.
 	 * Useful for blocks that are unbreakable to normal tools like force fields.
 	 */
-	float getBlockHardness(IBlockState blockState, World world, final BlockPos blockPos,
+	float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel);
 	
 	/**
 	 * Resolve damage applied to a certain level at specific coordinates.
 	 * Returns the remaining damage level or 0 if it was fully absorbed.
 	 */
-	int applyDamage(IBlockState blockState, World world, final BlockPos blockPos,
+	int applyDamage(final IBlockState blockState, final World world, final BlockPos blockPos,
 					final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel);
 }

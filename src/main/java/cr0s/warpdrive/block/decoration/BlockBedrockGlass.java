@@ -1,8 +1,12 @@
 package cr0s.warpdrive.block.decoration;
 
+import cr0s.warpdrive.block.BlockAbstractBase;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.util.Random;
 
-import cr0s.warpdrive.block.BlockAbstractBase;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
@@ -15,11 +19,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BlockBedrockGlass extends BlockAbstractBase {
 	
@@ -40,46 +42,46 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(IBlockState state) {
+	public boolean isFullyOpaque(final IBlockState state) {
 		return false;
 	}
 	
 	@Override
-	public boolean isAir(IBlockState state, IBlockAccess world, BlockPos pos) {
+	public boolean isAir(final IBlockState state, final IBlockAccess world, final BlockPos pos) {
 		return false;
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess worldIn, @Nonnull BlockPos blockPos) {
+	public boolean isReplaceable(final IBlockAccess worldIn, @Nonnull final BlockPos blockPos) {
 		return false;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(World worldIn, @Nonnull BlockPos blockPos) {
+	public boolean canPlaceBlockAt(final World worldIn, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
+	public EnumPushReaction getMobilityFlag(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
 	@Nullable
 	@Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
 		return null;
 	}
 	
 	@Override
-	public int quantityDropped(Random rand) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
@@ -93,7 +95,7 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing facing) {
 		return false;
 	}
 	
@@ -109,7 +111,7 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.EPIC;
 	}
 }

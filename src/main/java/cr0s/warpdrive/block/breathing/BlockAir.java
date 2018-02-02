@@ -272,7 +272,7 @@ public class BlockAir extends BlockAbstractAir {
 	}
 	
 	@Override
-	public void onBlockAdded(World world, BlockPos blockPos, IBlockState blockState) {
+	public void onBlockAdded(final World world, final BlockPos blockPos, final IBlockState blockState) {
 		if (!CelestialObjectManager.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.scheduleBlockUpdate(blockPos, this, tickRate(world), 0);
 		} else {
@@ -282,7 +282,7 @@ public class BlockAir extends BlockAbstractAir {
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.COMMON;
 	}
 }

@@ -92,20 +92,20 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(VARIANT).ordinal();
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
+	public EnumPushReaction getMobilityFlag(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		list.add(new ItemStack(item, 1, 0));
 		list.add(new ItemStack(item, 1, 2));
 		list.add(new ItemStack(item, 1, 6));
@@ -125,7 +125,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	// ItemSlab abstract methods
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(int metadata) {
+	public String getUnlocalizedName(final int metadata) {
 		return getUnlocalizedName();
 	}
 	
@@ -142,7 +142,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@Nonnull
 	@Override
-	public Comparable<?> getTypeForItem(@Nonnull ItemStack itemStack) {
+	public Comparable<?> getTypeForItem(@Nonnull final ItemStack itemStack) {
 		return EnumVariant.get(itemStack.getItemDamage());
 	}
 	
@@ -236,7 +236,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return isDouble() ? 2 : 1;
 	}
 	
@@ -253,7 +253,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public boolean isOpaqueCube(IBlockState blockState) {
+	public boolean isOpaqueCube(final IBlockState blockState) {
 		return isDouble();
 	}
 	
@@ -276,12 +276,12 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public MapColor getMapColor(IBlockState blockState) {
+	public MapColor getMapColor(final IBlockState blockState) {
 		return blockStateHull.getMapColor();
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
 	
@@ -310,15 +310,15 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public float getBlockHardness(IBlockState blockState, World world, BlockPos blockPos,
-	                              DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos,
-	                       DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(final IBlockState blockState, final World world, final BlockPos blockPos,
+	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}

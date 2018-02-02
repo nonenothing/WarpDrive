@@ -66,25 +66,25 @@ public class BlockAirShield extends BlockAbstractOmnipanel {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(IBlockState state) {
+	public boolean isFullyOpaque(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		return null;
 	}
 	
 	@Override
-	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
+	public boolean canCollideCheck(final IBlockState blockState, final boolean hitIfLiquid) {
 		return !hitIfLiquid;
 	}
 	

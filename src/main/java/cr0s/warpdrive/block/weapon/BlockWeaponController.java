@@ -6,12 +6,10 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -39,12 +37,9 @@ public class BlockWeaponController extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}

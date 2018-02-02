@@ -46,36 +46,36 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state) {
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(IBlockState state) {
+	public boolean isFullyOpaque(final IBlockState state) {
 		return false;
 	}
 	
 	@Override
-	public boolean isAir(IBlockState state, IBlockAccess blockAccess, BlockPos pos) {
+	public boolean isAir(final IBlockState state, final IBlockAccess blockAccess, final BlockPos pos) {
 		return true;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		return null;
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess blockAccess, @Nonnull BlockPos blockPos) {
+	public boolean isReplaceable(final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		// hide in NEI
 		for (int i = 0; i < 16; i++) {
 			Commons.hideItemStack(new ItemStack(item, 1, i));
@@ -84,31 +84,31 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean canPlaceBlockAt(World world, @Nonnull BlockPos blockPos) {
+	public boolean canPlaceBlockAt(final World world, @Nonnull final BlockPos blockPos) {
 		return true;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean canCollideCheck(IBlockState blockState, boolean hitIfLiquid) {
+	public boolean canCollideCheck(final IBlockState blockState, final boolean hitIfLiquid) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
+	public EnumPushReaction getMobilityFlag(final IBlockState state) {
 		return EnumPushReaction.DESTROY;
 	}
 	
 	@Nullable
 	@Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
 		return null;
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
@@ -122,7 +122,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing facing) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing facing) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
 			return facing == EnumFacing.DOWN || facing == EnumFacing.UP;
 		}

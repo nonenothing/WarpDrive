@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator implements ITileEntityProvider {
 	
@@ -29,7 +30,9 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}

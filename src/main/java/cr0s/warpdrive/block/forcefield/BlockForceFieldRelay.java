@@ -49,20 +49,20 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int meta) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return this.getDefaultState();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public int getMetaFromState(IBlockState state) {
+	public int getMetaFromState(final IBlockState state) {
 		return 0;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getActualState(@Nonnull IBlockState blockState, IBlockAccess world, BlockPos pos) {
+	public IBlockState getActualState(@Nonnull final IBlockState blockState, final IBlockAccess world, final BlockPos pos) {
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof TileEntityForceFieldRelay) {
 			return blockState.withProperty(UPGRADE, ((TileEntityForceFieldRelay) tileEntity).getUpgrade());
@@ -78,12 +78,14 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
@@ -164,7 +166,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityForceFieldRelay();
 	}
 }

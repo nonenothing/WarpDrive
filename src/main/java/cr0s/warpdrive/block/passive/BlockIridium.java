@@ -3,13 +3,10 @@ package cr0s.warpdrive.block.passive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 
 import javax.annotation.Nonnull;
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockIridium extends BlockAbstractBase {
 	
@@ -20,15 +17,9 @@ public class BlockIridium extends BlockAbstractBase {
 		setUnlocalizedName("warpdrive.passive.IridiumBlock");
 	}
 	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
 	@Nonnull
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.RARE;
 	}
 }

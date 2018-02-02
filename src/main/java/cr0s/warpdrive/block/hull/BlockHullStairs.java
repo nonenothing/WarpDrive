@@ -44,12 +44,12 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public EnumPushReaction getMobilityFlag(IBlockState state) {
+	public EnumPushReaction getMobilityFlag(final IBlockState state) {
 		return EnumPushReaction.BLOCK;
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
 	
@@ -78,15 +78,15 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 	}
 	
 	@Override
-	public float getBlockHardness(IBlockState blockState, World world, BlockPos blockPos,
-	                              DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(IBlockState blockState, World world, BlockPos blockPos,
-	                       DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(final IBlockState blockState, final World world, final BlockPos blockPos,
+	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}

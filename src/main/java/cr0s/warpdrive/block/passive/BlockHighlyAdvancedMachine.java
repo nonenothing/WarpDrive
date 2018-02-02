@@ -1,7 +1,5 @@
 package cr0s.warpdrive.block.passive;
 
-import java.util.Random;
-
 import cr0s.warpdrive.block.BlockAbstractBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.EnumRarity;
@@ -16,12 +14,7 @@ public class BlockHighlyAdvancedMachine extends BlockAbstractBase {
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
-	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.COMMON;
 	}
 }

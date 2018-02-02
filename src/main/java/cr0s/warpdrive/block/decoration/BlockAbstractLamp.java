@@ -27,7 +27,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
 
 public class BlockAbstractLamp extends BlockAbstractBase {
 	
@@ -53,18 +52,18 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack, EnumRarity rarity) {
+	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
 		return EnumRarity.COMMON;
 	}
 	
@@ -78,26 +77,26 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
 		return true;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isBlockNormalCube(IBlockState blockState) {
+	public boolean isBlockNormalCube(final IBlockState blockState) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(IBlockState state)
+	public boolean isOpaqueCube(final IBlockState state)
 	{
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(IBlockState state)
+	public boolean isFullCube(final IBlockState state)
 	{
 		return false;
 	}
@@ -105,34 +104,29 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase entityLiving) {
+	public IBlockState onBlockPlaced(final World worldIn, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int metadata, final EntityLivingBase entityLiving) {
 		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
 		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
-	}
-		
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
 	}
 	
 	@Nullable
 	@SuppressWarnings("deprecation")
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World worldIn, @Nonnull BlockPos pos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World worldIn, @Nonnull final BlockPos pos) {
 		return NULL_AABB;
 	}
 
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState withRotation(@Nonnull IBlockState state, Rotation rot) {
+	public IBlockState withRotation(@Nonnull final IBlockState state, final Rotation rot) {
 		return state.withProperty(BlockProperties.FACING, rot.rotate(state.getValue(BlockProperties.FACING)));
 	}
 
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
-	public IBlockState withMirror(@Nonnull IBlockState state, Mirror mirrorIn) {
+	public IBlockState withMirror(@Nonnull final IBlockState state, final Mirror mirrorIn) {
 		return state.withRotation(mirrorIn.toRotation(state.getValue(BlockProperties.FACING)));
 	}
 }

@@ -91,7 +91,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		}
 	}
 	
-	public boolean isAccessGranted(EntityPlayer entityPlayer, EnumPermissionNode enumPermissionNode) {
+	public boolean isAccessGranted(final EntityPlayer entityPlayer, final EnumPermissionNode enumPermissionNode) {
 		return false; // TODO
 	}
 	
@@ -283,7 +283,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		return entityEnergyCost * FORCEFIELD_MAX_FACTOR_ENTITY_COST * Math.exp(FORCEFIELD_TAU_FACTOR_ENTITY_COST / countEntityInteractions);
 	}
 	
-	public int onEntityEffect(World world, final BlockPos blockPos, Entity entity) {
+	public int onEntityEffect(final World world, final BlockPos blockPos, final Entity entity) {
 		int countdown = 0;
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
@@ -302,7 +302,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		return countdown;
 	}
 	
-	public double applyDamage(World world, final DamageSource damageSource, final double damageLevel) {
+	public double applyDamage(final World world, final DamageSource damageSource, final double damageLevel) {
 		assert(damageSource != null);
 		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {

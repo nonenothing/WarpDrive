@@ -29,20 +29,20 @@ public abstract class BlockAbstractRotatingContainer extends BlockAbstractContai
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState getStateFromMeta(int metadata) {
+	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
 				.withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 7));
 	}
 	
 	@Override
-	public int getMetaFromState(IBlockState blockState) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase entityLiving) {
+	public IBlockState onBlockPlaced(final World worldIn, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int meta, final EntityLivingBase entityLiving) {
 		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
 		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
 	}

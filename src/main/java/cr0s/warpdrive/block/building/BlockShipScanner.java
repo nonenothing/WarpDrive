@@ -57,12 +57,12 @@ public class BlockShipScanner extends BlockAbstractContainer {
 
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityShipScanner();
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
 			return 1;
 		}
@@ -70,7 +70,9 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, BlockPos blockPos, IBlockState blockState, EntityPlayer entityPlayer, EnumHand hand, @Nullable ItemStack itemStackHeld, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
