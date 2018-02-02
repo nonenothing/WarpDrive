@@ -171,7 +171,7 @@ public class ClientProxy extends CommonProxy {
 	
 	@Nonnull
 	public static ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
-		Item item = itemStack.getItem();
+		final Item item = itemStack.getItem();
 		ResourceLocation resourceLocation = item.getRegistryName();
 		if (item.getHasSubtypes()) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + itemStack.getItemDamage());

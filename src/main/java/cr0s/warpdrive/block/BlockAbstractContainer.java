@@ -63,7 +63,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		Item item = Item.getItemFromBlock(this);
+		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
 	}
 	
