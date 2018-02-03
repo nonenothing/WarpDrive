@@ -38,7 +38,7 @@ local radius = tonumber(argv[1])
 local scale = 50
 
 local w, h = component.gpu.getResolution()
-local radarX, radarY, radarZ = radar.position()
+local _, _, _, _, radarX, radarY, radarZ = radar.position()
 
 term.clear()
 
@@ -97,11 +97,7 @@ function scanAndDraw()
   if energyRequired == nil then energyRequired = 0 end
   
   if (energyRequired <= 0 or energy < energyRequired) then
-    local hh = math.floor(h / 2)
-    local hw = math.floor(w / 2)
-    
-    drawBox(hw - 5, hh - 1, 11, 3, 0xFF0000)
-    textOut(hw - 4, hh, "LOW POWER", 0xFFFFFF, 0xFF0000)
+    textOut((w / 2) - 7, 1, " /!\\  LOW POWER ", 0xFFFFFF, 0xFF0000)
     os.sleep(1)
     
     return 0
@@ -110,9 +106,12 @@ function scanAndDraw()
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)
+  textOut(w - 3, 1, "   ping sent    ", 0x808080, 0x000000)
   os.sleep(scanDuration)
   
   redraw()
+  
+  drawContact(radarX, radarY, radarZ, "RAD", 0xFFFF00)
   
   local numResults = radar.getResultsCount()
   
@@ -125,7 +124,7 @@ function scanAndDraw()
     end
   end
   
-  drawContact(radarX, radarY, radarZ, "RAD", 0xFFFF00)
+  os.sleep(scanDuration)
 end
 
 function redraw()
@@ -136,9 +135,7 @@ function redraw()
   drawBox(1, h, w, 1, 0x000000)
   drawBox(w, 1, w, h, 0x000000)
   
-  textOut((w / 2) - 8, 1, "= Q-Radar v0.3 =", 0xFFFFFF, 0x000000)
-  
-  textOut(w - 3, 1, "[X]", 0xFFFFFF, 0xFF0000)
+  textOut((w / 2) - 8, 1, "= Q-Radar v0.4 =", 0xFFFFFF, 0x000000)
   
   local energy, _ = radar.energy()
   if energy == nil then energy = 0 end
@@ -148,6 +145,7 @@ end
 local continue = true
 while component.isAvailable("warpdriveRadar") and continue do
   scanAndDraw()
+  os.sleep(0)
 end
 
 term.clear()
