@@ -69,18 +69,18 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[12];
-		icons[ 0] = iconRegister.registerIcon("warpdrive:energy/energyBankCreativeDisabled");
-		icons[ 1] = iconRegister.registerIcon("warpdrive:energy/energyBankCreativeInput");
-		icons[ 2] = iconRegister.registerIcon("warpdrive:energy/energyBankCreativeOutput");
-		icons[ 3] = iconRegister.registerIcon("warpdrive:energy/energyBankBasicDisabled");
-		icons[ 4] = iconRegister.registerIcon("warpdrive:energy/energyBankBasicInput");
-		icons[ 5] = iconRegister.registerIcon("warpdrive:energy/energyBankBasicOutput");
-		icons[ 6] = iconRegister.registerIcon("warpdrive:energy/energyBankAdvancedDisabled");
-		icons[ 7] = iconRegister.registerIcon("warpdrive:energy/energyBankAdvancedInput");
-		icons[ 8] = iconRegister.registerIcon("warpdrive:energy/energyBankAdvancedOutput");
-		icons[ 9] = iconRegister.registerIcon("warpdrive:energy/energyBankSuperiorDisabled");
-		icons[10] = iconRegister.registerIcon("warpdrive:energy/energyBankSuperiorInput");
-		icons[11] = iconRegister.registerIcon("warpdrive:energy/energyBankSuperiorOutput");
+		icons[ 0] = iconRegister.registerIcon("warpdrive:energy/energy_bank_creative-disabled");
+		icons[ 1] = iconRegister.registerIcon("warpdrive:energy/energy_bank_creative-input");
+		icons[ 2] = iconRegister.registerIcon("warpdrive:energy/energy_bank_creative-output");
+		icons[ 3] = iconRegister.registerIcon("warpdrive:energy/energy_bank_basic-disabled");
+		icons[ 4] = iconRegister.registerIcon("warpdrive:energy/energy_bank_basic-input");
+		icons[ 5] = iconRegister.registerIcon("warpdrive:energy/energy_bank_basic-output");
+		icons[ 6] = iconRegister.registerIcon("warpdrive:energy/energy_bank_advanced-disabled");
+		icons[ 7] = iconRegister.registerIcon("warpdrive:energy/energy_bank_advanced-input");
+		icons[ 8] = iconRegister.registerIcon("warpdrive:energy/energy_bank_advanced-output");
+		icons[ 9] = iconRegister.registerIcon("warpdrive:energy/energy_bank_superior-disabled");
+		icons[10] = iconRegister.registerIcon("warpdrive:energy/energy_bank_superior-input");
+		icons[11] = iconRegister.registerIcon("warpdrive:energy/energy_bank_superior-output");
 	}
 	
 	@SideOnly(Side.CLIENT)

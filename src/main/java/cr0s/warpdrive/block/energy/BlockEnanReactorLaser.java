@@ -33,9 +33,9 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserTopBottom");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserSides");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserActive");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enan_reactor_laser-top_bottom");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enan_reactor_laser-side_inactive");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enan_reactor_laser-side_active");
 	}
 	
 	@SideOnly(Side.CLIENT)

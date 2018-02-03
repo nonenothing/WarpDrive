@@ -123,7 +123,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		if (!hold) {// still loading/booting => hold simulation
 			// unstable at all time
 			if (shouldExplode()) {
-				//	explode();
+				explode();
 			}
 			increaseInstability();
 			
