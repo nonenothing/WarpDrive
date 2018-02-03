@@ -45,7 +45,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super.onBlockAdded(world, x, y, z);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof IBlockUpdateDetector) {
-			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
+			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
 	}
 	
@@ -114,11 +114,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public void onNeighborBlockChange(World world, int x, int y, int z, Block block) {
+	public void onNeighborBlockChange(final World world, final int x, final int y, final int z, final Block block) {
 		super.onNeighborBlockChange(world, x, y, z, block);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof IBlockUpdateDetector) {
-			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
+			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
 	}
 	

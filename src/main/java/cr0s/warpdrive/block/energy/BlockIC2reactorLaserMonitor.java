@@ -20,11 +20,10 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	private static IIcon[] icons;
 	private static final int ICON_DISCONNECTED = 0;
-	private static final int ICON_HEAD_CONNECTED = 1;
-	private static final int ICON_SIDE_CONNECTED = 2;
-	private static final int ICON_HEAD_VALID = 3;
-	private static final int ICON_SIDE_VALID = 4;
-	
+	private static final int ICON_HEAD_VALID   = 1;
+	private static final int ICON_SIDE_VALID   = 2;
+	private static final int ICON_HEAD_POWERED = 3;
+	private static final int ICON_SIDE_POWERED = 4;
 	
 	public BlockIC2reactorLaserMonitor() {
 		super(Material.iron);
@@ -40,11 +39,11 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[5];
-		icons[ICON_DISCONNECTED  ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-disconnected");
-		icons[ICON_HEAD_CONNECTED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-connected");
-		icons[ICON_SIDE_CONNECTED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-side-connected");
-		icons[ICON_HEAD_VALID    ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-valid");
-		icons[ICON_SIDE_VALID    ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-side-valid");
+		icons[ICON_DISCONNECTED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-invalid");
+		icons[ICON_HEAD_VALID  ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-valid");
+		icons[ICON_SIDE_VALID  ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-side-valid");
+		icons[ICON_HEAD_POWERED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-powered");
+		icons[ICON_SIDE_POWERED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-side-powered");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -61,9 +60,9 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 			return icons[ICON_DISCONNECTED];
 		}
 		if ((metadata & 8) == 0) {
-			return icons[facing == side ? ICON_HEAD_CONNECTED : ICON_SIDE_CONNECTED];
-		} else {
 			return icons[facing == side ? ICON_HEAD_VALID : ICON_SIDE_VALID];
+		} else {
+			return icons[facing == side ? ICON_HEAD_POWERED : ICON_SIDE_POWERED];
 		}
 	}
 	

@@ -445,8 +445,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// WarpDrive overrides
 	@Override
-	public void updatedNeighbours() {
-		super.updatedNeighbours();
+	public void onBlockUpdateDetected() {
+		super.onBlockUpdateDetected();
 		
 		if (WarpDriveConfig.isCoFHCoreLoaded) {
 			CoFH_scanForEnergyHandlers();

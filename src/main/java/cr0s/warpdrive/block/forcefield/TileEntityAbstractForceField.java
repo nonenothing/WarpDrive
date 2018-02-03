@@ -44,7 +44,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	@Override
 	protected void onFirstUpdateTick() {
-		Block block = getBlockType();
+		final Block block = getBlockType();
 		if (block instanceof BlockAbstractForceField) {
 			tier = ((BlockAbstractForceField) block).tier;
 		} else {

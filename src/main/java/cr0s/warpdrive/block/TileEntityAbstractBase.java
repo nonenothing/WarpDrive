@@ -48,7 +48,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	@Override
-	public void updatedNeighbours() {
+	public void onBlockUpdateDetected() {
 	}
 	
 	protected void updateMetadata(int metadata) {

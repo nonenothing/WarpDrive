@@ -1154,7 +1154,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			try {
 				if ( projector != null
 				  && projector.isValid() ) {
-					ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
+					final ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.debug(this + " Calculation started for " + projector);
 					}
