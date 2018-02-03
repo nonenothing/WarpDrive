@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumReactorFace;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -25,22 +26,31 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityEnanReactorCore();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void breakBlock(World w, int x, int y, int z, Block oid, int om) {
-		super.breakBlock(w, x, y, z, oid, om);
-		
-		int[] xo = { -2, 2, 0, 0 };
-		int[] zo = { 0, 0, -2, 2 };
-		for (int i = 0; i < 4; i++) {
-			TileEntity te = w.getTileEntity(x + xo[i], y, z + zo[i]);
-			if (te instanceof TileEntityEnanReactorLaser) {
-				((TileEntityEnanReactorLaser) te).unlink();
-			}
-		}
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconBuffer = new IIcon[17];
+		iconBuffer[16] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreTopBottom");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide00");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide01");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide02");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide03");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide10");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide11");
+		iconBuffer[6] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide12");
+		iconBuffer[7] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide13");
+		iconBuffer[8] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide20");
+		iconBuffer[9] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide21");
+		iconBuffer[10] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide22");
+		iconBuffer[11] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide23");
+		iconBuffer[12] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide30");
+		iconBuffer[13] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide31");
+		iconBuffer[14] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide32");
+		iconBuffer[15] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide33");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -65,27 +75,25 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 		return iconBuffer[7];
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconBuffer = new IIcon[17];
-		iconBuffer[16] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreTopBottom");
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide00");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide01");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide02");
-		iconBuffer[3] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide03");
-		iconBuffer[4] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide10");
-		iconBuffer[5] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide11");
-		iconBuffer[6] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide12");
-		iconBuffer[7] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide13");
-		iconBuffer[8] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide20");
-		iconBuffer[9] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide21");
-		iconBuffer[10] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide22");
-		iconBuffer[11] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide23");
-		iconBuffer[12] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide30");
-		iconBuffer[13] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide31");
-		iconBuffer[14] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide32");
-		iconBuffer[15] = iconRegister.registerIcon("warpdrive:energy/enanReactorCoreSide33");
+	public void breakBlock(final World world, final int x, final int y, final int z, final Block block, final int metadata) {
+		super.breakBlock(world, x, y, z, block, metadata);
+		
+		for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
+			if (reactorFace.indexStability < 0) {
+				continue;
+			}
+			
+			final TileEntity tileEntity = world.getTileEntity(
+				x + reactorFace.x,
+				y + reactorFace.y,
+				z + reactorFace.z);
+			if (tileEntity instanceof TileEntityEnanReactorLaser) {
+				if (((TileEntityEnanReactorLaser) tileEntity).getReactorFace() == reactorFace) {
+					((TileEntityEnanReactorLaser) tileEntity).setReactorFace(EnumReactorFace.UNKNOWN, null);
+				}
+			}
+		}
 	}
 	
 	@Override

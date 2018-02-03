@@ -29,23 +29,13 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		return new TileEntityEnanReactorLaser();
 	}
 	
-	private static boolean isActive(int side, int meta) {
-		if (side == 3 && meta == 1) {
-			return true;
-		}
-		
-		if (side == 2 && meta == 2) {
-			return true;
-		}
-		
-		if (side == 4 && meta == 4) {
-			return true;
-		}
-		
-		if (side == 5 && meta == 3) {
-			return true;
-		}
-		return false;
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void registerBlockIcons(IIconRegister iconRegister) {
+		iconBuffer = new IIcon[3];
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserTopBottom");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserSides");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserActive");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -56,7 +46,8 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 			return iconBuffer[0];
 		}
 		
-		if (isActive(side, metadata)) {
+		final int facing = metadata >= 8 ? metadata & 7 : 6;
+		if (side == facing) {
 			return iconBuffer[2];
 		}
 		
@@ -75,15 +66,6 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		}
 		
 		return iconBuffer[1];
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
-		iconBuffer = new IIcon[3];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserTopBottom");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserSides");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:energy/enanReactorLaserActive");
 	}
 	
 	@Override
