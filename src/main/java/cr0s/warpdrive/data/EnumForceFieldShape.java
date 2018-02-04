@@ -28,12 +28,12 @@ public enum EnumForceFieldShape implements IStringSerializable, IForceFieldShape
 	
 	static {
 		length = EnumForceFieldShape.values().length;
-		for (EnumForceFieldShape enumForceFieldShape : values()) {
-			ID_MAP.put(enumForceFieldShape.ordinal(), enumForceFieldShape);
+		for (final EnumForceFieldShape forceFieldShape : values()) {
+			ID_MAP.put(forceFieldShape.ordinal(), forceFieldShape);
 		}
 	}
 	
-	EnumForceFieldShape(String name) {
+	EnumForceFieldShape(final String name) {
 		this.name = name;
 	}
 	
@@ -48,7 +48,7 @@ public enum EnumForceFieldShape implements IStringSerializable, IForceFieldShape
 	}
 	
 	@Override
-	public Map<VectorI, Boolean> getVertexes(ForceFieldSetup forceFieldSetup) {
+	public Map<VectorI, Boolean> getVertexes(final ForceFieldSetup forceFieldSetup) {
 		final VectorI vScale = forceFieldSetup.vMax.clone().translateBack(forceFieldSetup.vMin);
 		final boolean isFusionOrInverted = forceFieldSetup.hasFusion || forceFieldSetup.isInverted;
 		final float thickness = Commons.clamp(1.0F, 2.0F, forceFieldSetup.thickness);

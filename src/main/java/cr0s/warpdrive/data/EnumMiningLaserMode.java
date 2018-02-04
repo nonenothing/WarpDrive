@@ -20,12 +20,12 @@ public enum EnumMiningLaserMode implements IStringSerializable {
 	
 	static {
 		length = EnumMiningLaserMode.values().length;
-		for (EnumMiningLaserMode componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumMiningLaserMode miningLaserMode : values()) {
+			ID_MAP.put(miningLaserMode.ordinal(), miningLaserMode);
 		}
 	}
 	
-	EnumMiningLaserMode(String unlocalizedName) {
+	EnumMiningLaserMode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

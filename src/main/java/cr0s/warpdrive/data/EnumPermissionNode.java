@@ -18,12 +18,12 @@ public enum EnumPermissionNode {
 	
 	static {
 		length = EnumPermissionNode.values().length;
-		for (EnumPermissionNode enumPermissionNode : values()) {
-			ID_MAP.put(enumPermissionNode.ordinal(), enumPermissionNode);
+		for (final EnumPermissionNode permissionNode : values()) {
+			ID_MAP.put(permissionNode.ordinal(), permissionNode);
 		}
 	}
 	
-	EnumPermissionNode(String unlocalizedName) {
+	EnumPermissionNode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

@@ -20,7 +20,7 @@ public enum EnumShipScannerState implements IStringSerializable {
 	
 	static {
 		length = EnumShipScannerState.values().length;
-		for (EnumShipScannerState shipCoreState : values()) {
+		for (final EnumShipScannerState shipCoreState : values()) {
 			ID_MAP.put(shipCoreState.ordinal(), shipCoreState);
 		}
 	}

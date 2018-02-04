@@ -18,12 +18,12 @@ public enum EnumRadarMode implements IStringSerializable {
 	
 	static {
 		length = EnumRadarMode.values().length;
-		for (EnumRadarMode componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumRadarMode radarMode : values()) {
+			ID_MAP.put(radarMode.ordinal(), radarMode);
 		}
 	}
 	
-	EnumRadarMode(String unlocalizedName) {
+	EnumRadarMode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

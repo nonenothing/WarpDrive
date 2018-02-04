@@ -209,8 +209,8 @@ public class Dictionary {
 				taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedBlocks = new HashMap<>(taggedBlocksName.length);
-			for (String name : taggedBlocksName) {
-				String tags = config.get("block_tags", name, "").getString();
+			for (final String name : taggedBlocksName) {
+				final String tags = config.get("block_tags", name, "").getString();
 				taggedBlocks.put(name, tags);
 			}
 		}
@@ -260,8 +260,8 @@ public class Dictionary {
 				taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedEntities = new HashMap<>(taggedEntitiesName.length);
-			for (String name : taggedEntitiesName) {
-				String tags = config.get("entity_tags", name, "").getString();
+			for (final String name : taggedEntitiesName) {
+				final String tags = config.get("entity_tags", name, "").getString();
 				taggedEntities.put(name, tags);
 			}
 		}
@@ -317,8 +317,8 @@ public class Dictionary {
 				taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedItems = new HashMap<>(taggedItemsName.length);
-			for (String name : taggedItemsName) {
-				String tags = config.get("item_tags", name, "").getString();
+			for (final String name : taggedItemsName) {
+				final String tags = config.get("item_tags", name, "").getString();
 				taggedItems.put(name, tags);
 			}
 		}

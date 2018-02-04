@@ -63,7 +63,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		
 		public final String name;
 		
-		ScanResultType(String name) {
+		ScanResultType(final String name) {
 			this.name = name;
 		}
 	}

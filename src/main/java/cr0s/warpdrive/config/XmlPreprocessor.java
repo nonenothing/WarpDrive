@@ -239,7 +239,7 @@ public class XmlPreprocessor {
 			modResults = new TreeMap<>();
 		}
 		
-		public void addMod(String name, String error) {
+		public void addMod(final String name, final String error) {
 			modResults.put(name, error);
 		}
 		

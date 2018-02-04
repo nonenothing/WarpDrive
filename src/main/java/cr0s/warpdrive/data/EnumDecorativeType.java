@@ -19,12 +19,12 @@ public enum EnumDecorativeType implements IStringSerializable {
 	
 	static {
 		length = EnumDecorativeType.values().length;
-		for (EnumDecorativeType componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumDecorativeType decorativeType : values()) {
+			ID_MAP.put(decorativeType.ordinal(), decorativeType);
 		}
 	}
 	
-	EnumDecorativeType(String unlocalizedName) {
+	EnumDecorativeType(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

@@ -18,8 +18,8 @@ public enum EnumSirenType implements IStringSerializable {
 	
 	static {
 		length = EnumSirenType.values().length;
-		for (EnumSirenType enumTier : values()) {
-			ID_MAP.put(enumTier.index, enumTier);
+		for (final EnumSirenType sirenType : values()) {
+			ID_MAP.put(sirenType.index, sirenType);
 		}
 	}
 	

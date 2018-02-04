@@ -19,8 +19,8 @@ public enum EnumValidPowered implements IStringSerializable {
 	
 	static {
 		length = EnumValidPowered.values().length;
-		for (EnumValidPowered enumTier : values()) {
-			ID_MAP.put(enumTier.index, enumTier);
+		for (final EnumValidPowered validPowered : values()) {
+			ID_MAP.put(validPowered.index, validPowered);
 		}
 	}
 	

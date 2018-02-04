@@ -22,12 +22,12 @@ public enum EnumLaserTreeFarmMode implements IStringSerializable {
 	
 	static {
 		length = EnumLaserTreeFarmMode.values().length;
-		for (EnumLaserTreeFarmMode componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumLaserTreeFarmMode laserTreeFarmMode : values()) {
+			ID_MAP.put(laserTreeFarmMode.ordinal(), laserTreeFarmMode);
 		}
 	}
 	
-	EnumLaserTreeFarmMode(String unlocalizedName) {
+	EnumLaserTreeFarmMode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

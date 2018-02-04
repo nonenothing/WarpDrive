@@ -39,8 +39,8 @@ public enum EnumShipMovementType implements IStringSerializable {
 	
 	static {
 		length = EnumShipMovementType.values().length;
-		for (EnumShipMovementType componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumShipMovementType shipMovementType : values()) {
+			ID_MAP.put(shipMovementType.ordinal(), shipMovementType);
 		}
 	}
 	

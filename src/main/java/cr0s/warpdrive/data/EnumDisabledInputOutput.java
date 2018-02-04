@@ -19,8 +19,8 @@ public enum EnumDisabledInputOutput implements IStringSerializable {
 	
 	static {
 		length = EnumDisabledInputOutput.values().length;
-		for (EnumDisabledInputOutput enumDisabledInputOutput : values()) {
-			ID_MAP.put(enumDisabledInputOutput.index, enumDisabledInputOutput);
+		for (final EnumDisabledInputOutput disabledInputOutput : values()) {
+			ID_MAP.put(disabledInputOutput.index, disabledInputOutput);
 		}
 	}
 	

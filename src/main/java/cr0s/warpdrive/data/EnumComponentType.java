@@ -33,12 +33,12 @@ public enum EnumComponentType {
 	
 	static {
 		length = EnumComponentType.values().length;
-		for (EnumComponentType enumComponentType : values()) {
-			ID_MAP.put(enumComponentType.ordinal(), enumComponentType);
+		for (final EnumComponentType componentType : values()) {
+			ID_MAP.put(componentType.ordinal(), componentType);
 		}
 	}
 	
-	EnumComponentType(String unlocalizedName) {
+	EnumComponentType(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

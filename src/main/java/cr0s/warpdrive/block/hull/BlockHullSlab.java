@@ -364,7 +364,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		
 		static {
 			length = EnumVariant.values().length;
-			for (EnumVariant variant : values()) {
+			for (final EnumVariant variant : values()) {
 				ID_MAP.put(variant.ordinal(), variant);
 			}
 		}

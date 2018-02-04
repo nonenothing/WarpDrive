@@ -27,12 +27,12 @@ public enum EnumGasColor implements IStringSerializable {
 	
 	static {
 		length = EnumGasColor.values().length;
-		for (EnumGasColor componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumGasColor gasColor : values()) {
+			ID_MAP.put(gasColor.ordinal(), gasColor);
 		}
 	}
 	
-	EnumGasColor(String unlocalizedName) {
+	EnumGasColor(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

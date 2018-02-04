@@ -20,8 +20,8 @@ public enum EnumForceFieldState implements IStringSerializable {
 	
 	static {
 		length = EnumForceFieldState.values().length;
-		for (EnumForceFieldState enumForceFieldShape : values()) {
-			ID_MAP.put(enumForceFieldShape.ordinal(), enumForceFieldShape);
+		for (final EnumForceFieldState forceFieldState : values()) {
+			ID_MAP.put(forceFieldState.ordinal(), forceFieldState);
 		}
 	}
 	

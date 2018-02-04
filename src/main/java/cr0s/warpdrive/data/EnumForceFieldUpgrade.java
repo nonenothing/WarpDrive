@@ -72,7 +72,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 	
 	static {
 		length = EnumForceFieldUpgrade.values().length;
-		for (EnumForceFieldUpgrade forceFieldShapeType : values()) {
+		for (final EnumForceFieldUpgrade forceFieldShapeType : values()) {
 			ID_MAP.put(forceFieldShapeType.ordinal(), forceFieldShapeType);
 		}
 	}

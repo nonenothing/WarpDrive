@@ -264,7 +264,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	// status
 	protected ITextComponent getUpgradeStatus() {
-		String strUpgrades = getUpgradesAsString();
+		final String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
 			return new TextComponentTranslation("warpdrive.upgrade.statusLine.none",
 				strUpgrades);
@@ -304,7 +304,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return getUpgradeCount(upgrade) > 0;
 	}
 	
-	private String getUpgradeAsString(Object object) {
+	private String getUpgradeAsString(final Object object) {
 		if (object instanceof Item) {
 			return Item.REGISTRY.getNameForObject((Item)object).toString();
 		} else if (object instanceof Block) {
@@ -316,7 +316,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
-	private Object getUpgradeFromString(String name) {
+	private Object getUpgradeFromString(final String name) {
 		for (Object object : maxUpgrades.keySet()) {
 			if (getUpgradeAsString(object).equals(name)) {
 				return object;
@@ -338,7 +338,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (clazz == null) {
 			return installedUpgrades;
 		}
-		Map<Object, Integer> mapResult = new HashMap<>(installedUpgrades.size());
+		final Map<Object, Integer> mapResult = new HashMap<>(installedUpgrades.size());
 		for (Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
 			if (clazz.isInstance(entry.getKey())) {
 				mapResult.put(entry.getKey(), entry.getValue());
@@ -348,12 +348,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	public int getUpgradeCount(final Object upgrade) {
-		Integer value = installedUpgrades.get(upgrade);
+		final Integer value = installedUpgrades.get(upgrade);
 		return value == null ? 0 : value;
 	}
 	
 	public int getUpgradeMaxCount(final Object upgrade) {
-		Integer value = maxUpgrades.get(upgrade);
+		final Integer value = maxUpgrades.get(upgrade);
 		return value == null ? 0 : value;
 	}
 	

@@ -20,8 +20,8 @@ public enum EnumTier implements IStringSerializable {
 	
 	static {
 		length = EnumTier.values().length;
-		for (EnumTier enumTier : values()) {
-			ID_MAP.put(enumTier.index, enumTier);
+		for (final EnumTier tier : values()) {
+			ID_MAP.put(tier.index, tier);
 		}
 	}
 	
