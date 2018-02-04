@@ -28,8 +28,8 @@ public class CommandInvisible extends CommandBase {
 			WarpDrive.logger.info("/invisible: setting invisible to " + params[0]);
 			
 			// get an online player by name
-			List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-			for (EntityPlayer onlinePlayer : onlinePlayers) {
+			final List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+			for (final EntityPlayer onlinePlayer : onlinePlayers) {
 				if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(params[0])) {
 					player = onlinePlayer;
 				}

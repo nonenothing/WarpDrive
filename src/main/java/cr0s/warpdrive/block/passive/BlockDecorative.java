@@ -35,7 +35,7 @@ public class BlockDecorative extends Block {
 	
 	@Override
 	public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list) {
-		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
+		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
 		}
 	}
@@ -44,7 +44,7 @@ public class BlockDecorative extends Block {
 	@Override
 	public void registerBlockIcons(IIconRegister iconRegister) {
 		icons = new IIcon[EnumDecorativeType.length];
-		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
+		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:decoration/decorative-" + enumDecorativeType.unlocalizedName);
 		}
 	}

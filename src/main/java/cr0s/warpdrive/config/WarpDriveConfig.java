@@ -486,8 +486,8 @@ public class WarpDriveConfig {
 		onFMLPostInitialization();
 		
 		@SuppressWarnings("unchecked")
-		List<EntityPlayer> entityPlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		for (EntityPlayer entityPlayer : entityPlayers) {
+		final List<EntityPlayer> entityPlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		for (final EntityPlayer entityPlayer : entityPlayers) {
 			if ( entityPlayer instanceof EntityPlayerMP
 			  && !(entityPlayer instanceof FakePlayer) ) {
 				final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj,
@@ -661,7 +661,7 @@ public class WarpDriveConfig {
 		
 		// Ship movement costs
 		SHIP_MOVEMENT_COSTS_FACTORS = new ShipMovementCosts.Factors[EnumShipMovementType.length];
-		for (EnumShipMovementType shipMovementType : EnumShipMovementType.values()) {
+		for (final EnumShipMovementType shipMovementType : EnumShipMovementType.values()) {
 			SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()] = new ShipMovementCosts.Factors(
 			        shipMovementType.maximumDistanceDefault,
 			        shipMovementType.energyRequiredDefault,
@@ -1251,7 +1251,7 @@ public class WarpDriveConfig {
 			throw new RuntimeException(String.format("Critical error accessing configuration directory, searching for %s*%s files: %s", prefix, suffix, configDirectory));
 		}
 		if (files.length == 0) {
-			for (String filename : filenames) {
+			for (final String filename : filenames) {
 				unpackResourceToFolder(filename, resourcePathSource, folderTarget);
 			}
 		}

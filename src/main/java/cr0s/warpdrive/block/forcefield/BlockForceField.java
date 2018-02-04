@@ -152,7 +152,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		if (world.isRemote) {
 			return;
 		}
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			forceFieldSetup.onEntityEffect(world, x, y, z, entityPlayer);
 		}
@@ -160,11 +160,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
-			List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 0.9D, z + 1));
+			final List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 0.9D, z + 1));
 			
-			for (EntityPlayer entityPlayer : entities) {
+			for (final EntityPlayer entityPlayer : entities) {
 				if (entityPlayer != null && entityPlayer.isSneaking()) {
 					if ( entityPlayer.capabilities.isCreativeMode 
 					  || forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH)) {
@@ -185,15 +185,15 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			return;
 		}
 		
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			forceFieldSetup.onEntityEffect(world, x, y, z, entity);
 			double distance2 = new Vector3(x, y, z).translate(0.5F).distanceTo_square(entity);
 			if (entity instanceof EntityLiving && distance2 < 0.26D) {
 				boolean hasPermission = false;
 				
-				List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 0.9D, z + 1));
-				for (EntityPlayer entityPlayer : entities) {
+				final List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 0.9D, z + 1));
+				for (final EntityPlayer entityPlayer : entities) {
 					if (entityPlayer != null && entityPlayer.isSneaking()) {
 						if ( entityPlayer.capabilities.isCreativeMode
 						  || forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH) ) {

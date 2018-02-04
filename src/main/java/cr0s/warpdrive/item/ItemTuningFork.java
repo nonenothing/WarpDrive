@@ -66,7 +66,7 @@ public class ItemTuningFork extends Item implements IWarpTool {
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
-		for(int dyeColor = 0; dyeColor < 16; dyeColor++) {
+		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
 			list.add(new ItemStack(item, 1, dyeColor));
 		}
 	}

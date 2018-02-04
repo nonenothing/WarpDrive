@@ -296,13 +296,13 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy {
 			if (WarpDriveConfig.LOGGING_TRANSPORTER) {
 				WarpDrive.logger.info(this + " lock strength " + getLockStrength());
 			}
-			ArrayList<Entity> entitiesToTransport = findEntities(sourceVec, ls);
-			Integer energyRequired = getEnergyRequired();
+			final ArrayList<Entity> entitiesToTransport = findEntities(sourceVec, ls);
+			final Integer energyRequired = getEnergyRequired();
 			if (energyRequired == null) {
 				return -1;
 			}
-			Vector3 modDest = destVec.clone().translate(centreOnMe);
-			for (Entity ent : entitiesToTransport) {
+			final Vector3 modDest = destVec.clone().translate(centreOnMe);
+			for (final Entity ent : entitiesToTransport) {
 				if (energy_consume(energyRequired, false)) {
 					if (WarpDriveConfig.LOGGING_TRANSPORTER) {
 						WarpDrive.logger.info(this + " Transporting entity " + ent.getEntityId());

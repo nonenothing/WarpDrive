@@ -123,15 +123,15 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setBoolean("isEnabled", isEnabled);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setBoolean("isEnabled", isEnabled);
 	}
 	
 	@Override

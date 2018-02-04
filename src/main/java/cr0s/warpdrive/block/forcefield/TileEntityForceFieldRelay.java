@@ -50,6 +50,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 		}
 	}
 	
+	@Override
 	public String getStatus() {
 		return super.getStatus()
 			       + "\n" + getUpgradeStatus();

@@ -25,8 +25,8 @@ public class ItemBlockDecorative extends ItemBlock {
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTabs, List list) {
-		for (EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
-			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
+		for (final EnumDecorativeType decorativeType : EnumDecorativeType.values()) {
+			list.add(new ItemStack(item, 1, decorativeType.ordinal()));
 		}
 	}
 	

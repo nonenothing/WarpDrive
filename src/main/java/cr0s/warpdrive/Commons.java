@@ -99,7 +99,7 @@ public class Commons {
 		final String[] lines = updateEscapeCodes(message).split("\n");
 		String format = "";
 		getFormatFromString(lines[0]);
-		for (String line : lines) {
+		for (final String line : lines) {
 			final String formattedLine = format + line;
 			commandSender.addChatMessage(new ChatComponentText(formattedLine));
 			format = getFormatFromString(formattedLine);
@@ -112,7 +112,7 @@ public class Commons {
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(final List<String> list, final String tooltip) {
 		final String[] split = updateEscapeCodes(tooltip).split("\n");
-		for (String line : split) {
+		for (final String line : split) {
 			String lineRemaining = line;
 			String formatNextLine = "";
 			while (!lineRemaining.isEmpty()) {
@@ -167,7 +167,7 @@ public class Commons {
 			} catch (Exception exception2) {
 				exception2.printStackTrace();
 				String map = "";
-				for(Field fieldDeclared : clazz.getDeclaredFields()) {
+				for (Field fieldDeclared : clazz.getDeclaredFields()) {
 					if (!map.isEmpty()) {
 						map += ", ";
 					}
@@ -214,7 +214,7 @@ public class Commons {
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
 		final Collection<IInventory> result = new ArrayList<>(6);
 		
-		for(ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 			final TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
 				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
@@ -270,7 +270,7 @@ public class Commons {
 					iterated.add(current);
 				}
 				
-				for(ForgeDirection direction : directions) {
+				for (ForgeDirection direction : directions) {
 					VectorI next = current.clone(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
 						if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
@@ -367,7 +367,7 @@ public class Commons {
 			return yValues[0];
 		}
 		
-		for(int index = 0; index < xValues.length - 1; index++) {
+		for (int index = 0; index < xValues.length - 1; index++) {
 			if (xInput < xValues[index + 1]) {
 				return interpolate(xValues[index], yValues[index], xValues[index + 1], yValues[index + 1], xInput);
 			}
@@ -441,7 +441,7 @@ public class Commons {
 		final StringBuilder stringBuilder = new StringBuilder();
 		final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 100);
-		for (ThreadInfo threadInfo : threadInfos) {
+		for (final ThreadInfo threadInfo : threadInfos) {
 			stringBuilder.append('"');
 			stringBuilder.append(threadInfo.getThreadName());
 			stringBuilder.append("\"\n\tjava.lang.Thread.State: ");
@@ -505,7 +505,7 @@ public class Commons {
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
 		@SuppressWarnings("unchecked")
 		final List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-		for (EntityPlayer onlinePlayer : onlinePlayers) {
+		for (final EntityPlayer onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
 				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
 			}

@@ -176,7 +176,7 @@ public class ChunkHandler {
 		final Map<Long, ChunkData> mapRegistryItems = registry.get(event.world.provider.dimensionId);
 		if (mapRegistryItems != null) {
 			// unload chunks during shutdown
-			for (ChunkData chunkData : mapRegistryItems.values()) {
+			for (final ChunkData chunkData : mapRegistryItems.values()) {
 				if (chunkData.isLoaded()) {
 					chunkData.unload();
 				}

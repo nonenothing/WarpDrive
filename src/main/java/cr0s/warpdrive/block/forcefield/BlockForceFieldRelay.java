@@ -32,10 +32,10 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldUpgrade.length + 1];
 		
-		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
+		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
 				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "_" + enumForceFieldUpgrade.unlocalizedName);
 			} else {

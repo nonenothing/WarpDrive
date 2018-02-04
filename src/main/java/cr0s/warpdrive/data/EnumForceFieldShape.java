@@ -26,8 +26,8 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 	
 	static {
 		length = EnumForceFieldShape.values().length;
-		for (EnumForceFieldShape enumForceFieldShape : values()) {
-			ID_MAP.put(enumForceFieldShape.ordinal(), enumForceFieldShape);
+		for (final EnumForceFieldShape forceFieldShape : values()) {
+			ID_MAP.put(forceFieldShape.ordinal(), forceFieldShape);
 		}
 	}
 	

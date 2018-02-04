@@ -37,9 +37,9 @@ public class ItemForceFieldShape extends Item {
 		itemStackCache = new ItemStack[EnumForceFieldShape.length];
 	}
 	
-	public static ItemStack getItemStack(EnumForceFieldShape enumForceFieldShape) {
-		if (enumForceFieldShape != null) {
-			int damage = enumForceFieldShape.ordinal();
+	public static ItemStack getItemStack(final EnumForceFieldShape forceFieldShape) {
+		if (forceFieldShape != null) {
+			int damage = forceFieldShape.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldShape, 1, damage);
 			}
@@ -48,15 +48,15 @@ public class ItemForceFieldShape extends Item {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumForceFieldShape enumForceFieldShape, int amount) {
-		return new ItemStack(WarpDrive.itemForceFieldShape, amount, enumForceFieldShape.ordinal());
+	public static ItemStack getItemStackNoCache(final EnumForceFieldShape forceFieldShape, final int amount) {
+		return new ItemStack(WarpDrive.itemForceFieldShape, amount, forceFieldShape.ordinal());
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldShape.length];
-		for(EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
+		for (final EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
 			icons[enumForceFieldShape.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/shape_" + enumForceFieldShape.unlocalizedName);
 		}
 	}
@@ -80,7 +80,7 @@ public class ItemForceFieldShape extends Item {
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
-		for(EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
+		for (final EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
 			if (enumForceFieldShape != EnumForceFieldShape.NONE) {
 				list.add(new ItemStack(item, 1, enumForceFieldShape.ordinal()));
 			}
@@ -97,12 +97,12 @@ public class ItemForceFieldShape extends Item {
 	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
-		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
+		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (StatCollector.canTranslate(tooltipName1)) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
 		}
 		
-		String tooltipName2 = getUnlocalizedName() + ".tooltip";
+		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
 		}

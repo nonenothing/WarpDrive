@@ -365,7 +365,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				Block plant = null;
 				int plantMetadata = -1;
 				IInventory inventory = null;
-				for (IInventory inventoryLoop : inventories) {
+				for (final IInventory inventoryLoop : inventories) {
 					if (!found) {
 						slotIndex = 0;
 					}
@@ -491,9 +491,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		
 		LinkedList<VectorI> soilPositions = new LinkedList<>();
 		
-		for(int y = yMin; y <= yMax; y++) {
-			for(int x = xMin; x <= xMax; x++) {
-				for(int z = zMin; z <= zMax; z++) {
+		for (int y = yMin; y <= yMax; y++) {
+			for (int x = xMin; x <= xMax; x++) {
+				for (int z = zMin; z <= zMax; z++) {
 					if (worldObj.isAirBlock(x, y + 1, z)) {
 						Block block = worldObj.getBlock(x, y, z);
 						if (isSoil(block)) {
@@ -524,9 +524,9 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		
 		Collection<VectorI> logPositions = new HashSet<>();
 		
-		for(int y = yMin; y <= yMax; y++) {
-			for(int x = xMin; x <= xMax; x++) {
-				for(int z = zMin; z <= zMax; z++) {
+		for (int y = yMin; y <= yMax; y++) {
+			for (int x = xMin; x <= xMax; x++) {
+				for (int z = zMin; z <= zMax; z++) {
 					Block block = worldObj.getBlock(x, y, z);
 					if (isLog(block)) {
 						VectorI pos = new VectorI(x, y, z);

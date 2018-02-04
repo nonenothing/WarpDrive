@@ -365,7 +365,7 @@ public class WarpDrive implements LoadingCallback {
 		GameRegistry.registerTileEntity(TileEntityAirGenerator.class, MODID + ":blockAirGenerator");
 		
 		blockAirGeneratorTiered = new Block[3];
-		for(byte tier = 1; tier <= 3; tier++) {
+		for (byte tier = 1; tier <= 3; tier++) {
 			final int index = tier - 1;
 			blockAirGeneratorTiered[index] = new BlockAirGeneratorTiered(tier);
 			GameRegistry.registerBlock(blockAirGeneratorTiered[index], ItemBlockAbstractBase.class, "blockAirGenerator" + tier);
@@ -515,7 +515,7 @@ public class WarpDrive implements LoadingCallback {
 		blockForceFields = new Block[3];
 		blockForceFieldProjectors = new Block[3];
 		blockForceFieldRelays = new Block[3];
-		for(byte tier = 1; tier <= 3; tier++) {
+		for (byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			// FORCE FIELD
 			blockForceFields[index] = new BlockForceField(tier);
@@ -600,11 +600,11 @@ public class WarpDrive implements LoadingCallback {
 		blockHulls_stairs = new Block[3][16];
 		blockHulls_slab = new Block[3][16];
 		
-		for(byte tier = 1; tier <= 3; tier++) {
+		for (byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
-			for (EnumHullPlainType enumHullPlainType : EnumHullPlainType.values()) {
-				blockHulls_plain[index][enumHullPlainType.ordinal()] = new BlockHullPlain(tier, enumHullPlainType);
-				GameRegistry.registerBlock(blockHulls_plain[index][enumHullPlainType.ordinal()], ItemBlockHull.class, "blockHull" + tier + "_" + enumHullPlainType.getName());
+			for (final EnumHullPlainType hullPlainType : EnumHullPlainType.values()) {
+				blockHulls_plain[index][hullPlainType.ordinal()] = new BlockHullPlain(tier, hullPlainType);
+				GameRegistry.registerBlock(blockHulls_plain[index][hullPlainType.ordinal()], ItemBlockHull.class, "blockHull" + tier + "_" + hullPlainType.getName());
 			}
 			blockHulls_glass[index] = new BlockHullGlass(tier);
 			GameRegistry.registerBlock(blockHulls_glass[index], ItemBlockHull.class, "blockHull" + tier + "_glass");
@@ -701,7 +701,7 @@ public class WarpDrive implements LoadingCallback {
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
 		/* @TODO not sure why it would be needed, disabling for now
 		// load all owned dimensions at boot
-		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			if (celestialObject.provider.equals(CelestialObject.PROVIDER_OTHER)) {
 				DimensionManager.getWorld(celestialObject.dimensionId);
 			}

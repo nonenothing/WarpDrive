@@ -37,9 +37,9 @@ public class ItemForceFieldUpgrade extends Item {
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];
 	}
 	
-	public static ItemStack getItemStack(EnumForceFieldUpgrade enumForceFieldUpgrade) {
-		if (enumForceFieldUpgrade != null) {
-			int damage = enumForceFieldUpgrade.ordinal();
+	public static ItemStack getItemStack(final EnumForceFieldUpgrade forceFieldUpgrade) {
+		if (forceFieldUpgrade != null) {
+			int damage = forceFieldUpgrade.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldUpgrade, 1, damage);
 			}
@@ -48,15 +48,15 @@ public class ItemForceFieldUpgrade extends Item {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumForceFieldUpgrade enumForceFieldUpgrade, int amount) {
-		return new ItemStack(WarpDrive.itemForceFieldUpgrade, amount, enumForceFieldUpgrade.ordinal());
+	public static ItemStack getItemStackNoCache(final EnumForceFieldUpgrade forceFieldUpgrade, final int amount) {
+		return new ItemStack(WarpDrive.itemForceFieldUpgrade, amount, forceFieldUpgrade.ordinal());
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldUpgrade.length];
-		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
+		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade_" + enumForceFieldUpgrade.unlocalizedName);
 		}
 	}
@@ -80,7 +80,7 @@ public class ItemForceFieldUpgrade extends Item {
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
-		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
+		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
 				list.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
 			}
@@ -97,23 +97,23 @@ public class ItemForceFieldUpgrade extends Item {
 	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
-		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
+		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (StatCollector.canTranslate(tooltipName1)) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1));
 		}
 		
-		String tooltipName2 = getUnlocalizedName() + ".tooltip";
+		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2));
 		}
 		
 		Commons.addTooltip(list, "\n");
 		
-		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
-		if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
+		EnumForceFieldUpgrade forceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
+		if (forceFieldUpgrade.maxCountOnProjector > 0) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.projector"));
 		}
-		if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
+		if (forceFieldUpgrade.maxCountOnRelay > 0) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.relay"));
 		}
 		Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount"));

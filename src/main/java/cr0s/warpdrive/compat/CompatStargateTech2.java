@@ -86,9 +86,9 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	}
 	
 	private static NBTTagCompound rotateFacingColors(final Byte rotationSteps, final NBTTagCompound tag) {
-		NBTTagCompound newFacing = new NBTTagCompound();
-		Set<String> keys = tag.func_150296_c();
-		for (String key : keys) {
+		final NBTTagCompound newFacing = new NBTTagCompound();
+		final Set<String> keys = tag.func_150296_c();
+		for (final String key : keys) {
 			NBTBase base = tag.getTag(key);
 			if (base instanceof NBTTagByte && rotFacingcolors.containsKey(key)) {
 				switch (rotationSteps) {

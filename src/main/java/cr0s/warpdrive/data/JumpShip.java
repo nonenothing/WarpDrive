@@ -145,7 +145,7 @@ public class JumpShip {
 		}
 		
 		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + message);
-		for (MovingEntity movingEntity : entitiesOnShip) {
+		for (final MovingEntity movingEntity : entitiesOnShip) {
 			final Entity entity = movingEntity.getEntity();
 			if (entity instanceof EntityPlayer) {
 				Commons.addChatMessage((EntityPlayer) entity, messageFormatted);
@@ -166,7 +166,7 @@ public class JumpShip {
 		
 		final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
-		for (Entity entity : list) {
+		for (final Entity entity : list) {
 			if (entity == null) {
 				continue;
 			}
@@ -334,10 +334,10 @@ public class JumpShip {
 								
 								final int blockMeta = worldObj.getBlockMetadata(x, y, z);
 								final TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
-								JumpBlock jumpBlock = new JumpBlock(worldObj, x, y, z, block, blockMeta, tileEntity);
+								final JumpBlock jumpBlock = new JumpBlock(worldObj, x, y, z, block, blockMeta, tileEntity);
 								
 								if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
-									for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
+									for (final Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
 										IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 										if (blockTransformer != null) {
 											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity, reason)) {
@@ -410,7 +410,7 @@ public class JumpShip {
 		actualMass = tagCompound.getInteger("actualMass");
 		final NBTTagList tagList = tagCompound.getTagList("jumpBlocks", Constants.NBT.TAG_COMPOUND);
 		jumpBlocks = new JumpBlock[tagList.tagCount()];
-		for(int index = 0; index < tagList.tagCount(); index++) {
+		for (int index = 0; index < tagList.tagCount(); index++) {
 			jumpBlocks[index] = new JumpBlock();
 			jumpBlocks[index].readFromNBT(tagList.getCompoundTagAt(index));
 		}

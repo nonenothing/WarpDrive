@@ -85,14 +85,14 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected boolean addToInventories(final List<ItemStack> itemStacks, final Collection<IInventory> inventories) {
 		boolean overflow = false;
 		if (itemStacks != null) {
-			for (ItemStack itemStack : itemStacks) {
+			for (final ItemStack itemStack : itemStacks) {
 				if (itemStack.getItem() == null) {
 					WarpDrive.logger.error(this + "Invalid itemStack with null item...");
 					continue;
 				}
 				int qtyLeft = itemStack.stackSize;
-				ItemStack itemStackLeft = itemStack.copy();
-				for (IInventory inventory : inventories) {
+				final ItemStack itemStackLeft = itemStack.copy();
+				for (final IInventory inventory : inventories) {
 					qtyLeft = addToInventory(itemStack, inventory);
 					if (qtyLeft > 0) {
 						itemStackLeft.stackSize = qtyLeft;
@@ -108,8 +108,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					int transfer;
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, itemStackLeft.getMaxStackSize());
-						ItemStack itemStackDrop = Commons.copyWithSize(itemStackLeft, transfer);
-						EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, itemStackDrop);
+						final ItemStack itemStackDrop = Commons.copyWithSize(itemStackLeft, transfer);
+						final EntityItem entityItem = new EntityItem(worldObj, xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D, itemStackDrop);
 						worldObj.spawnEntityInWorld(entityItem);
 						qtyLeft -= transfer;
 					}
@@ -184,14 +184,14 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	// saved properties
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		if (tag.hasKey("upgrades")) {
-			NBTTagCompound nbtTagCompoundUpgrades = tag.getCompoundTag("upgrades");
-			Set<String> keys = nbtTagCompoundUpgrades.func_150296_c();
-			for (String key : keys) {
+	public void readFromNBT(NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		if (tagCompound.hasKey("upgrades")) {
+			final NBTTagCompound nbtTagCompoundUpgrades = tagCompound.getCompoundTag("upgrades");
+			final Set<String> keys = nbtTagCompoundUpgrades.func_150296_c();
+			for (final String key : keys) {
 				Object object = getUpgradeFromString(key);
-				int value = nbtTagCompoundUpgrades.getByte(key);
+				final int value = nbtTagCompoundUpgrades.getByte(key);
 				if (object == null) {
 					WarpDrive.logger.error("Found an unknown upgrade named '" + key + "' in " + this);
 					object = key;
@@ -202,24 +202,24 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public void writeToNBT(final NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		if (!installedUpgrades.isEmpty()) {
-			NBTTagCompound nbtTagCompoundUpgrades = new NBTTagCompound();
-			for (Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
-				String key = getUpgradeAsString(entry.getKey());
+			final NBTTagCompound nbtTagCompoundUpgrades = new NBTTagCompound();
+			for (final Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
+				final String key = getUpgradeAsString(entry.getKey());
 				nbtTagCompoundUpgrades.setByte(key, (byte)(int)entry.getValue());
 			}
 			tagCompound.setTag("upgrades", nbtTagCompoundUpgrades);
 		}
 	}
 	
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		writeToNBT(nbtTagCompound);
-		nbtTagCompound.removeTag("x");
-		nbtTagCompound.removeTag("y");
-		nbtTagCompound.removeTag("z");
-		return nbtTagCompound;
+	public NBTTagCompound writeItemDropNBT(final NBTTagCompound tagCompound) {
+		writeToNBT(tagCompound);
+		tagCompound.removeTag("x");
+		tagCompound.removeTag("y");
+		tagCompound.removeTag("z");
+		return tagCompound;
 	}
 	
 	// status
@@ -297,8 +297,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (clazz == null) {
 			return installedUpgrades;
 		}
-		Map<Object, Integer> mapResult = new HashMap<>(installedUpgrades.size());
-		for (Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
+		final Map<Object, Integer> mapResult = new HashMap<>(installedUpgrades.size());
+		for (final Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
 			if (clazz.isInstance(entry.getKey())) {
 				mapResult.put(entry.getKey(), entry.getValue());
 			}
@@ -318,11 +318,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	protected String getUpgradesAsString() {
 		String message = "";
-		for (Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
+		for (final Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
 			if (!message.isEmpty()) {
 				message += ", ";
 			}
-			Object key = entry.getKey();
+			final Object key = entry.getKey();
 			String keyName = key.toString();
 			if (key instanceof Item) {
 				keyName = ((Item) key).getUnlocalizedName();

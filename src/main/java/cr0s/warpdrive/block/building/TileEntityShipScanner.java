@@ -351,8 +351,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		
 		schematic.setString("Materials", "Alpha");
-		NBTTagList tagListBlocks = new NBTTagList();
-		for (String stringRegistryName : stringBlockRegistryNames) {
+		final NBTTagList tagListBlocks = new NBTTagList();
+		for (final String stringRegistryName : stringBlockRegistryNames) {
 			tagListBlocks.appendTag(new NBTTagString(stringRegistryName));
 		}
 		schematic.setTag("Blocks", tagListBlocks);
@@ -702,7 +702,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			return;
 		}
 		if (entityPlayers.size() > 1) {
-			for (EntityPlayer entityPlayer : entityPlayers) {
+			for (final EntityPlayer entityPlayer : entityPlayers) {
 				Commons.addChatMessage(entityPlayer, "§c" + "Too many players detected: please stand in the beam one at a time.");
 				shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS;
 			}

@@ -19,8 +19,8 @@ public enum EnumLiftMode implements IStringSerializable {
 	
 	static {
 		length = EnumLiftMode.values().length;
-		for (EnumLiftMode componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumLiftMode liftMode : values()) {
+			ID_MAP.put(liftMode.ordinal(), liftMode);
 		}
 	}
 	

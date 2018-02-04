@@ -19,7 +19,7 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 		this.structure = structure;
 		
 		// evaluate variables
-		for (Entry<String, String> entry : structure.variables.entrySet()) {
+		for (final Entry<String, String> entry : structure.variables.entrySet()) {
 			double value;
 			String stringValue = entry.getValue();
 			try {
@@ -45,7 +45,7 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 			return valueOrExpression;
 		}
 		String result = valueOrExpression;
-		for (Entry<String, Double> variable : variables.entrySet()) {
+		for (final Entry<String, Double> variable : variables.entrySet()) {
 			result = result.replaceAll(variable.getKey(), "" + variable.getValue());
 		}
 		return result;
@@ -59,9 +59,9 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 		
 		// get variables values
 		/*
-		NBTTagCompound tagVariables = tag.getCompoundTag("wd_variables");
-		NBTTagList names = tagVariables.getTagList("x", 0);
-		for (Entry<String, Double> entry : tagVariables.getTagList("x", 0)) {
+		final NBTTagCompound tagVariables = tag.getCompoundTag("wd_variables");
+		final NBTTagList names = tagVariables.getTagList("x", 0);
+		for (final Entry<String, Double> entry : tagVariables.getTagList("x", 0)) {
 			tagVariables.setDouble(entry.getKey(), entry.getValue());
 		}
 		/**/
@@ -71,7 +71,7 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 		tagCompound.setString("wd_structureGroup", structure.group);
 		tagCompound.setString("wd_structureName", structure.name);
 		final NBTTagCompound tagVariables = new NBTTagCompound();
-		for (Entry<String, Double> entry : variables.entrySet()) {
+		for (final Entry<String, Double> entry : variables.entrySet()) {
 			tagVariables.setDouble(entry.getKey(), entry.getValue());
 		}
 		tagCompound.setTag("wd_variables", tagVariables);

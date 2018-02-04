@@ -200,8 +200,8 @@ public class Dictionary {
 				taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedBlocks = new HashMap<>(taggedBlocksName.length);
-			for (String name : taggedBlocksName) {
-				String tags = config.get("block_tags", name, "").getString();
+			for (final String name : taggedBlocksName) {
+				final String tags = config.get("block_tags", name, "").getString();
 				taggedBlocks.put(name, tags);
 			}
 		}
@@ -251,8 +251,8 @@ public class Dictionary {
 				taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedEntities = new HashMap<>(taggedEntitiesName.length);
-			for (String name : taggedEntitiesName) {
-				String tags = config.get("entity_tags", name, "").getString();
+			for (final String name : taggedEntitiesName) {
+				final String tags = config.get("entity_tags", name, "").getString();
 				taggedEntities.put(name, tags);
 			}
 		}
@@ -308,8 +308,8 @@ public class Dictionary {
 				taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedItems = new HashMap<>(taggedItemsName.length);
-			for (String name : taggedItemsName) {
-				String tags = config.get("item_tags", name, "").getString();
+			for (final String name : taggedItemsName) {
+				final String tags = config.get("item_tags", name, "").getString();
 				taggedItems.put(name, tags);
 			}
 		}
@@ -322,25 +322,25 @@ public class Dictionary {
 		BLOCKS_LOGS = new HashSet<>();
 		BLOCKS_LEAVES = new HashSet<>();
 		String[] oreNames = OreDictionary.getOreNames();
-		for (String oreName : oreNames) {
-			String lowerOreName = oreName.toLowerCase();
+		for (final String oreName : oreNames) {
+			final String lowerOreName = oreName.toLowerCase();
 			if (oreName.length() > 4 && oreName.substring(0, 3).equals("ore")) {
-				ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
-				for (ItemStack itemStack : itemStacks) {
+				final ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
+				for (final ItemStack itemStack : itemStacks) {
 					BLOCKS_ORES.add(Block.getBlockFromItem(itemStack.getItem()));
 					// WarpDrive.logger.info("- added " + oreName + " to ores as " + itemStack);
 				}
 			}
 			if (lowerOreName.startsWith("log") || lowerOreName.endsWith("log") || lowerOreName.endsWith("logs")) {
-				ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
-				for (ItemStack itemStack : itemStacks) {
+				final ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
+				for (final ItemStack itemStack : itemStacks) {
 					BLOCKS_LOGS.add(Block.getBlockFromItem(itemStack.getItem()));
 					// WarpDrive.logger.info("- added " + oreName + " to logs as " + itemStack);
 				}
 			}
 			if (lowerOreName.startsWith("leave") || lowerOreName.endsWith("leave") || lowerOreName.endsWith("leaves")) {
-				ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
-				for (ItemStack itemStack : itemStacks) {
+				final ArrayList<ItemStack> itemStacks = OreDictionary.getOres(oreName);
+				for (final ItemStack itemStack : itemStacks) {
 					BLOCKS_LEAVES.add(Block.getBlockFromItem(itemStack.getItem()));
 					// WarpDrive.logger.info("- added " + oreName + " to leaves as " + itemStack);
 				}
@@ -360,13 +360,13 @@ public class Dictionary {
 		BLOCKS_STOPMINING = new HashSet<>(taggedBlocks.size());
 		BLOCKS_PLACE = new HashMap<>(taggedBlocks.size());
 		BLOCKS_NOCAMOUFLAGE = new HashSet<>(taggedBlocks.size());
-		for (Entry<String, String> taggedBlock : taggedBlocks.entrySet()) {
-			Block block = Block.getBlockFromName(taggedBlock.getKey());
+		for (final Entry<String, String> taggedBlock : taggedBlocks.entrySet()) {
+			final Block block = Block.getBlockFromName(taggedBlock.getKey());
 			if (block == null) {
 				WarpDrive.logger.info("Ignoring missing block " + taggedBlock.getKey());
 				continue;
 			}
-			for (String tag : taggedBlock.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
+			for (final String tag : taggedBlock.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
 				switch (tag) {
 				case "Soil"         : BLOCKS_SOILS.add(block); break;
 				case "Log"          : BLOCKS_LOGS.add(block); break;
@@ -397,15 +397,15 @@ public class Dictionary {
 		ENTITIES_LEFTBEHIND = new HashSet<>(taggedEntities.size());
 		ENTITIES_NONLIVINGTARGET = new HashSet<>(taggedEntities.size());
 		ENTITIES_LIVING_WITHOUT_AIR = new HashSet<>(taggedEntities.size());
-		for (Entry<String, String> taggedEntity : taggedEntities.entrySet()) {
-			String entityId = taggedEntity.getKey();
+		for (final Entry<String, String> taggedEntity : taggedEntities.entrySet()) {
+			final String entityId = taggedEntity.getKey();
 			/* we can't detect missing entities, since some of them are 'hacked' in
 			if (!EntityList.stringToIDMapping.containsKey(entityId)) {
 				WarpDrive.logger.info("Ignoring missing entity " + entityId);
 				continue;
 			}
 			/**/
-			for (String tag : taggedEntity.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
+			for (final String tag : taggedEntity.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
 				switch (tag) {
 				case "Anchor"          : ENTITIES_ANCHOR.add(entityId); break;
 				case "NoMass"          : ENTITIES_NOMASS.add(entityId); break;
@@ -423,14 +423,14 @@ public class Dictionary {
 		ITEMS_FLYINSPACE = new HashSet<>(taggedItems.size());
 		ITEMS_NOFALLDAMAGE = new HashSet<>(taggedItems.size());
 		ITEMS_BREATHING_HELMET = new HashSet<>(taggedItems.size());
-		for (Entry<String, String> taggedItem : taggedItems.entrySet()) {
-			String itemId = taggedItem.getKey();
-			Item item = GameData.getItemRegistry().getObject(itemId);
+		for (final Entry<String, String> taggedItem : taggedItems.entrySet()) {
+			final String itemId = taggedItem.getKey();
+			final Item item = GameData.getItemRegistry().getObject(itemId);
 			if (item == null) {
 				WarpDrive.logger.info("Ignoring missing item " + itemId);
 				continue;
 			}
-			for (String tag : taggedItem.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
+			for (final String tag : taggedItem.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
 				switch (tag) {
 				case "FlyInSpace"     : ITEMS_FLYINSPACE.add(item); break;
 				case "NoFallDamage"   : ITEMS_NOFALLDAMAGE.add(item); break;
@@ -496,7 +496,7 @@ public class Dictionary {
 		/**/
 		
 		// scan blocks registry
-		for(Object blockKey : Block.blockRegistry.getKeys()) {
+		for (final Object blockKey : Block.blockRegistry.getKeys()) {
 			Object object = Block.blockRegistry.getObject(blockKey);
 			WarpDrive.logger.debug("Checking block registry for '" + blockKey + "': " + object);
 			if (!(object instanceof Block)) {
@@ -558,7 +558,7 @@ public class Dictionary {
 		}
 	}
 	
-	private static String getHashMessage(HashSet hashSet) {
+	private static String getHashMessage(final HashSet hashSet) {
 		final StringBuilder message = new StringBuilder();
 		for (Object object : hashSet) {
 			if (message.length() > 0) {
@@ -576,9 +576,9 @@ public class Dictionary {
 		return message.toString();
 	}
 	
-	private static String getHashMessage(HashMap<Block, Integer> hashMap) {
+	private static String getHashMessage(final HashMap<Block, Integer> hashMap) {
 		final StringBuilder message = new StringBuilder();
-		for (Entry<Block, Integer> entry : hashMap.entrySet()) {
+		for (final Entry<Block, Integer> entry : hashMap.entrySet()) {
 			if (message.length() > 0) {
 				message.append(", ");
 			}

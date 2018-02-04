@@ -15,8 +15,8 @@ public enum EnumHullPlainType {
 	
 	static {
 		length = EnumHullPlainType.values().length;
-		for (EnumHullPlainType enumComponentType : values()) {
-			ID_MAP.put(enumComponentType.ordinal(), enumComponentType);
+		for (final EnumHullPlainType hullPlainType : values()) {
+			ID_MAP.put(hullPlainType.ordinal(), hullPlainType);
 		}
 	}
 	

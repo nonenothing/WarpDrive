@@ -111,7 +111,7 @@ public class RandomCollection<E extends IStringSerializable> {
 	 * @return Named object or null if there is no object with that name
 	 **/
 	public E getNamedEntry(final String name) {
-		for(E object : list) {
+		for (final E object : list) {
 			if (object.getName().equals(name)) {
 				return object;
 			}
@@ -129,7 +129,7 @@ public class RandomCollection<E extends IStringSerializable> {
 		if (list.isEmpty()) {
 			return "-none defined-";
 		}
-		for(E object : list) {
+		for (final E object : list) {
 			if (!names.isEmpty()) {
 				names += ", ";
 			}
@@ -197,12 +197,12 @@ public class RandomCollection<E extends IStringSerializable> {
 	
 	public void loadFrom(RandomCollection<E> objects) {
 		int previousWeight = 0;
-		for (Entry<Integer, E> entry : objects.weightMap.entrySet()) {
+		for (final Entry<Integer, E> entry : objects.weightMap.entrySet()) {
 			addWeight(entry.getKey() - previousWeight, entry.getValue());
 			previousWeight = entry.getKey();
 		}
 		double previousRatio = 0.0D;
-		for (Entry<Double, E> entry : objects.ratioMap.entrySet()) {
+		for (final Entry<Double, E> entry : objects.ratioMap.entrySet()) {
 			addRatio(entry.getKey() - previousRatio, entry.getValue());
 			previousRatio = entry.getKey();
 		}

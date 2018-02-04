@@ -17,8 +17,8 @@ public enum EnumCameraType {
 	
 	static {
 		length = EnumCameraType.values().length;
-		for (EnumCameraType enumCameraType : values()) {
-			ID_MAP.put(enumCameraType.ordinal(), enumCameraType);
+		for (final EnumCameraType cameraType : values()) {
+			ID_MAP.put(cameraType.ordinal(), cameraType);
 		}
 	}
 	

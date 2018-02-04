@@ -92,8 +92,8 @@ public class CompatMekanism implements IBlockTransformer {
 		}
 		
 		// ducts
-		HashMap<String, NBTBase> mapRotated = new HashMap<>(9);
-		for (String key : rotConAttachmentNames.keySet()) {
+		final HashMap<String, NBTBase> mapRotated = new HashMap<>(9);
+		for (final String key : rotConAttachmentNames.keySet()) {
 			if (nbtTileEntity.hasKey(key)) {
 				NBTBase nbtBase = nbtTileEntity.getTag(key);
 				nbtTileEntity.removeTag(key);
@@ -113,7 +113,7 @@ public class CompatMekanism implements IBlockTransformer {
 				}
 			}
 		}
-		for (Map.Entry<String, NBTBase> entry : mapRotated.entrySet()) {
+		for (final Map.Entry<String, NBTBase> entry : mapRotated.entrySet()) {
 			nbtTileEntity.setTag(entry.getKey(), entry.getValue());
 		}
 		

@@ -59,7 +59,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 	@Override
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
 		final List<Element> listChildren = XmlFileManager.getChildrenElementByTagName(element, nameElementUnit);
-		for (Element elementChild : listChildren) {
+		for (final Element elementChild : listChildren) {
 			@SuppressWarnings("unchecked")
 			final E unit = (E) unitDefault.constructor();
 			units.loadFromXML(unit, elementChild);
@@ -67,7 +67,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 		
 		final List<Element> listImports = XmlFileManager.getChildrenElementByTagName(element, "import");
 		if (!listImports.isEmpty()) { 
-			for (Element elementImport : listImports) {
+			for (final Element elementImport : listImports) {
 				final String importGroup = elementImport.getAttribute("group");
 				final String importName = elementImport.getAttribute("name");
 				if (!importGroup.isEmpty()) {

@@ -29,7 +29,7 @@ public class OrbInstance extends AbstractStructureInstance {
 		totalThickness = 0;
 		minThickness = 0;
 		int orbShellIndexOut = 0;
-		for(int orbShellIndexIn = 0; orbShellIndexIn < orb.orbShells.length; orbShellIndexIn++) {
+		for (int orbShellIndexIn = 0; orbShellIndexIn < orb.orbShells.length; orbShellIndexIn++) {
 			OrbShell orbShell = orb.orbShells[orbShellIndexIn].instantiate(random);
 			if (orbShell != null) {
 				orbShells[orbShellIndexOut] = orbShell;
@@ -42,7 +42,7 @@ public class OrbInstance extends AbstractStructureInstance {
 		}
 		
 		sqRadiusToOrbShell = new OrbShell[totalThickness * totalThickness];
-		for(int sqRadius = 0; sqRadius < sqRadiusToOrbShell.length; sqRadius++) {
+		for (int sqRadius = 0; sqRadius < sqRadiusToOrbShell.length; sqRadius++) {
 			int cumulatedRange = 0;
 			for (int shellIndex = 0; shellIndex < orbShells.length; shellIndex++) {
 				cumulatedRange += orbShellThicknesses[shellIndex];

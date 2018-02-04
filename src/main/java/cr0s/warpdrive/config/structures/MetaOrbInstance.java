@@ -79,11 +79,11 @@ public class MetaOrbInstance extends OrbInstance {
 	private void addShell(final World world, final VectorI location, final int radius) {
 		final double sqRadius = radius * radius;
 		// iterate all blocks within cube with side 2 * radius
-		for(int x = location.x - radius; x <= location.x + radius; x++) {
+		for (int x = location.x - radius; x <= location.x + radius; x++) {
 			final int dX2 = (x - location.x) * (x - location.x);
-			for(int y = location.y - radius; y <= location.y + radius; y++) {
+			for (int y = location.y - radius; y <= location.y + radius; y++) {
 				final int dX2Y2 = dX2 + (y - location.y) * (y - location.y);
-				for(int z = location.z - radius; z <= location.z + radius; z++) {
+				for (int z = location.z - radius; z <= location.z + radius; z++) {
 					// current radius
 					final int sqRange = dX2Y2 + (location.z - z) * (location.z - z);
 					
@@ -132,7 +132,7 @@ public class MetaOrbInstance extends OrbInstance {
 			for (int index = 0; index < count; index++) {
 				boolean found = false;
 				
-				for(int step = 0; step < CORE_MAX_TRIES && !found; step++) {
+				for (int step = 0; step < CORE_MAX_TRIES && !found; step++) {
 					final VectorI location = new VectorI(
 							(int)Math.round(xMin + diameter * random.nextDouble()),
 							(int)Math.round(yMin + diameter * random.nextDouble()),

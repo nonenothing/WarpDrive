@@ -31,7 +31,7 @@ public class StructureManager extends XmlFileManager {
 		structuresByGroup = new HashMap<>();
 		INSTANCE.load(dir, "structure", "structure");
 		
-		for (String group : REQUIRED_GROUPS) {
+		for (final String group : REQUIRED_GROUPS) {
 			if (!structuresByGroup.containsKey(group)) {
 				WarpDrive.logger.error("Error: no structure defined for mandatory group " + group);
 			}

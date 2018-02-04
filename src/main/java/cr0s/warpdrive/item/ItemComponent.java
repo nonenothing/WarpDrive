@@ -56,7 +56,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	@Override
 	public void registerIcons(IIconRegister iconRegister) {
 		icons = new IIcon[EnumComponentType.length];
-		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
+		for (final EnumComponentType enumComponentType : EnumComponentType.values()) {
 			icons[enumComponentType.ordinal()] = iconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
 		}
 	}
@@ -80,7 +80,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	
 	@Override
 	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
-		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
+		for (final EnumComponentType enumComponentType : EnumComponentType.values()) {
 			list.add(new ItemStack(item, 1, enumComponentType.ordinal()));
 		}
 	}

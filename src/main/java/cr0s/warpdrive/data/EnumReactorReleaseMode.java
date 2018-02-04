@@ -19,8 +19,8 @@ public enum EnumReactorReleaseMode implements IStringSerializable {
 	
 	static {
 		length = EnumReactorReleaseMode.values().length;
-		for (EnumReactorReleaseMode componentType : values()) {
-			ID_MAP.put(componentType.ordinal(), componentType);
+		for (final EnumReactorReleaseMode reactorReleaseMode : values()) {
+			ID_MAP.put(reactorReleaseMode.ordinal(), reactorReleaseMode);
 		}
 	}
 	

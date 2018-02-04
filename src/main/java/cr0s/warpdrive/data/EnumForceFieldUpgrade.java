@@ -70,8 +70,8 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	
 	static {
 		length = EnumForceFieldUpgrade.values().length;
-		for (EnumForceFieldUpgrade forceFieldShapeType : values()) {
-			ID_MAP.put(forceFieldShapeType.ordinal(), forceFieldShapeType);
+		for (final EnumForceFieldUpgrade forceFieldUpgrade : values()) {
+			ID_MAP.put(forceFieldUpgrade.ordinal(), forceFieldUpgrade);
 		}
 	}
 	

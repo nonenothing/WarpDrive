@@ -82,9 +82,9 @@ public class GenericSetManager<E extends IXmlRepresentableUnit> extends XmlFileM
 		while (!genericSetsDependencies.isEmpty() && iterationCount++ < 10) {
 			final HashMap<GenericSet<E>, ArrayList<String>> genericSetsLeftToImport = new HashMap<>();
 			
-			for (Entry<GenericSet<E>, ArrayList<String>> entry : genericSetsDependencies.entrySet()) {
+			for (final Entry<GenericSet<E>, ArrayList<String>> entry : genericSetsDependencies.entrySet()) {
 				final ArrayList<String> newDependencies = new ArrayList<>();
-				for (String dependency : entry.getValue()) {
+				for (final String dependency : entry.getValue()) {
 					final GenericSet<E> genericSet = getGenericSet(dependency);
 					if (genericSet == null) {
 						WarpDrive.logger.error(String.format("Ignoring missing %s %s dependency in %s %s", nameElementSet, dependency, nameElementSet, entry.getKey()));
@@ -116,9 +116,9 @@ public class GenericSetManager<E extends IXmlRepresentableUnit> extends XmlFileM
 		// recursion has reach the limit?
 		if (!genericSetsDependencies.isEmpty()) {
 			WarpDrive.logger.error("Too many import recursions, ignoring the remaining ones:");
-			for (Entry<GenericSet<E>, ArrayList<String>> entry : genericSetsDependencies.entrySet()) {
+			for (final Entry<GenericSet<E>, ArrayList<String>> entry : genericSetsDependencies.entrySet()) {
 				WarpDrive.logger.warn(String.format("- %s %s is pending:", nameElementSet, entry.getKey()));
-				for (String dependency : entry.getValue()) {
+				for (final String dependency : entry.getValue()) {
 					WarpDrive.logger.warn(" + " + dependency);
 				}
 			}

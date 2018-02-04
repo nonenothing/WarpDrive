@@ -83,7 +83,7 @@ public class CompatEnderIO implements IBlockTransformer {
 	private static final short[] rotPosHorizontal = {  1,  3,  0,  2,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
-		byte[] newData = data.clone();
+		final byte[] newData = data.clone();
 		for (int index = 0; index < data.length; index++) {
 			switch (rotationSteps) {
 			case 1:
@@ -102,10 +102,10 @@ public class CompatEnderIO implements IBlockTransformer {
 		return newData;
 	}
 	private NBTTagCompound rotate_conduit(final byte rotationSteps, NBTTagCompound nbtConduit) {
-		NBTTagCompound nbtNewConduit = new NBTTagCompound();
-		Set<String> keys = nbtConduit.func_150296_c();
-		for (String key : keys) {
-			NBTBase base = nbtConduit.getTag(key);
+		final NBTTagCompound nbtNewConduit = new NBTTagCompound();
+		final Set<String> keys = nbtConduit.func_150296_c();
+		for (final String key : keys) {
+			final NBTBase base = nbtConduit.getTag(key);
 			switch(base.getId()) {
 			case Constants.NBT.TAG_INT_ARRAY:	// "connections", "externalConnections"
 				int[] data = nbtConduit.getIntArray(key);
@@ -133,7 +133,7 @@ public class CompatEnderIO implements IBlockTransformer {
 				break;
 				
 			default:
-				String[] parts = key.split("\\.");
+				final String[] parts = key.split("\\.");
 				if (parts.length != 2 || !rotSideNames.containsKey(parts[1])) {
 					nbtNewConduit.setTag(key, base);
 				} else {
@@ -158,9 +158,9 @@ public class CompatEnderIO implements IBlockTransformer {
 		return nbtNewConduit;
 	}
 	
-	private void rotateReservoir(NBTTagCompound nbtTileEntity, final ITransformation transformation, final byte rotationSteps) {
+	private void rotateReservoir(final NBTTagCompound nbtTileEntity, final ITransformation transformation, final byte rotationSteps) {
 		if (nbtTileEntity.hasKey("front")) {
-			short front = nbtTileEntity.getShort("front");
+			final short front = nbtTileEntity.getShort("front");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setShort("front", rotFront[front]);
@@ -176,7 +176,7 @@ public class CompatEnderIO implements IBlockTransformer {
 			}
 		}
 		if (nbtTileEntity.hasKey("right")) {
-			short right = nbtTileEntity.getShort("right");
+			final short right = nbtTileEntity.getShort("right");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setShort("right", rotRight[right]);
@@ -194,8 +194,8 @@ public class CompatEnderIO implements IBlockTransformer {
 		
 		// Multiblock
 		if (nbtTileEntity.hasKey("multiblock") && nbtTileEntity.hasKey("pos")) {
-			int[] oldCoords = nbtTileEntity.getIntArray("multiblock");
-			ChunkCoordinates[] targets = new ChunkCoordinates[oldCoords.length / 3];
+			final int[] oldCoords = nbtTileEntity.getIntArray("multiblock");
+			final ChunkCoordinates[] targets = new ChunkCoordinates[oldCoords.length / 3];
 			for (int index = 0; index < oldCoords.length / 3; index++) {
 				targets[index] = transformation.apply(oldCoords[3 * index], oldCoords[3 * index + 1], oldCoords[3 * index + 2]);
 			}
@@ -227,7 +227,7 @@ public class CompatEnderIO implements IBlockTransformer {
 				}
 			}
 			
-			int[] newCoords = new int[oldCoords.length];
+			final int[] newCoords = new int[oldCoords.length];
 			for (int index = 0; index < oldCoords.length / 3; index++) {
 				newCoords[3 * index    ] = targets[index].posX;
 				newCoords[3 * index + 1] = targets[index].posY;
@@ -264,8 +264,8 @@ public class CompatEnderIO implements IBlockTransformer {
 		}
 		
 		// Faces
-		Map<String, Short> map = new HashMap<>();
-		for (String key : rotFaceNames.keySet()) {
+		final Map<String, Short> map = new HashMap<>();
+		for (final String key : rotFaceNames.keySet()) {
 			if (nbtTileEntity.hasKey(key)) {
 				short face = nbtTileEntity.getShort(key);
 				switch (rotationSteps) {
@@ -286,18 +286,18 @@ public class CompatEnderIO implements IBlockTransformer {
 			}
 		}
 		if (!map.isEmpty()) {
-			for (Entry<String, Short> entry : map.entrySet()) {
+			for (final Entry<String, Short> entry : map.entrySet()) {
 				nbtTileEntity.setShort(entry.getKey(), entry.getValue());
 			}
 		}
 		
 		// Conduits
 		if (nbtTileEntity.hasKey("conduits")) {
-			NBTTagList nbtConduits = nbtTileEntity.getTagList("conduits", Constants.NBT.TAG_COMPOUND);
-			NBTTagList nbtNewConduits = new NBTTagList(); 
+			final NBTTagList nbtConduits = nbtTileEntity.getTagList("conduits", Constants.NBT.TAG_COMPOUND);
+			final NBTTagList nbtNewConduits = new NBTTagList(); 
 			for (int index = 0; index < nbtConduits.tagCount(); index++) {
-				NBTTagCompound conduitTypeAndContent = nbtConduits.getCompoundTagAt(index);
-				NBTTagCompound newConduitTypeAndContent = new NBTTagCompound();
+				final NBTTagCompound conduitTypeAndContent = nbtConduits.getCompoundTagAt(index);
+				final NBTTagCompound newConduitTypeAndContent = new NBTTagCompound();
 				newConduitTypeAndContent.setString("conduitType", conduitTypeAndContent.getString("conduitType"));
 				newConduitTypeAndContent.setTag("conduit", rotate_conduit(rotationSteps, conduitTypeAndContent.getCompoundTag("conduit")));
 				nbtNewConduits.appendTag(newConduitTypeAndContent);

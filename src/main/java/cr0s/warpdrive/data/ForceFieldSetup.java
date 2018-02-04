@@ -143,14 +143,14 @@ public class ForceFieldSetup extends GlobalPosition {
 		Vector3 v3Max = new Vector3( 1.0D,  1.0D,  1.0D);
 		Vector3 v3Translation = new Vector3(0.0D, 0.0D, 0.0D);
 		
-		for (TileEntity tileEntity : tileEntities) {
+		for (final TileEntity tileEntity : tileEntities) {
 			// only consider same dimension
 			if (tileEntity.getWorldObj() == null || tileEntity.getWorldObj().provider.dimensionId != dimensionId) {
 				continue;
 			}
 			// projectors
 			if (tileEntity instanceof TileEntityForceFieldProjector) {
-				TileEntityForceFieldProjector projector = (TileEntityForceFieldProjector) tileEntity;
+				final TileEntityForceFieldProjector projector = (TileEntityForceFieldProjector) tileEntity;
 				if (tileEntity.xCoord == x && tileEntity.yCoord == y && tileEntity.zCoord == z) {
 					shapeProvider = projector.getShapeProvider();
 					isDoubleSided = projector.isDoubleSided;
@@ -161,9 +161,9 @@ public class ForceFieldSetup extends GlobalPosition {
 					v3Min = projector.getMin();
 					v3Max = projector.getMax();
 					v3Translation = projector.getTranslation();
-					for (Entry<Object, Integer> entry : projector.getUpgradesOfType(null).entrySet()) {
+					for (final Entry<Object, Integer> entry : projector.getUpgradesOfType(null).entrySet()) {
 						if (entry.getKey() instanceof IForceFieldUpgrade) {
-							IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)entry.getKey()).getUpgradeEffector();
+							final IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)entry.getKey()).getUpgradeEffector();
 							if (upgradeEffector != null) {
 								Float currentValue = upgradeValues.get(upgradeEffector);
 								if (currentValue == null) {
@@ -231,7 +231,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		
 		// apply scaling
 		float speedRatio;
-		for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgradeValues.entrySet()) {
+		for (final Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgradeValues.entrySet()) {
 			float scaledValue = entry.getKey().getScaledValue(1.0F, entry.getValue());
 			if (scaledValue != 0.0F) {
 				upgrades.put(entry.getKey(), scaledValue);
@@ -298,12 +298,12 @@ public class ForceFieldSetup extends GlobalPosition {
 		return entityEnergyCost * FORCEFIELD_MAX_FACTOR_ENTITY_COST * Math.exp(FORCEFIELD_TAU_FACTOR_ENTITY_COST / countEntityInteractions);
 	}
 	
-	public int onEntityEffect(World world, final int blockX, final int blockY, final int blockZ, Entity entity) {
+	public int onEntityEffect(final World world, final int blockX, final int blockY, final int blockZ, Entity entity) {
 		int countdown = 0;
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
 			if (((TileEntityForceFieldProjector)tileEntity).onEntityInteracted(entity.getUniqueID())) {
-				for (Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgrades.entrySet()) {
+				for (final Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgrades.entrySet()) {
 					Float value = entry.getValue();
 					if (entry.getKey() == EnumForceFieldUpgrade.COOLING || entry.getKey() == EnumForceFieldUpgrade.HEATING) {
 						value = temperatureLevel;

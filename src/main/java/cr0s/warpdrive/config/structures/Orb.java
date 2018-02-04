@@ -27,10 +27,10 @@ public class Orb extends AbstractStructure {
 	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
 		super.loadFromXmlElement(element);
 		
-		List<Element> listShells = XmlFileManager.getChildrenElementByTagName(element, "shell");
+		final List<Element> listShells = XmlFileManager.getChildrenElementByTagName(element, "shell");
 		orbShells = new OrbShell[listShells.size()];
 		int shellIndexOut = 0;
-		for (Element elementShell : listShells) {
+		for (final Element elementShell : listShells) {
 			String orbShellName = elementShell.getAttribute("name");
 			
 			orbShells[shellIndexOut] = new OrbShell(getFullName(), orbShellName);
@@ -43,7 +43,7 @@ public class Orb extends AbstractStructure {
 			}
 		}
 		
-		List<Element> listSchematic = XmlFileManager.getChildrenElementByTagName(element, "schematic");
+		final List<Element> listSchematic = XmlFileManager.getChildrenElementByTagName(element, "schematic");
 		if (listSchematic.size() > 1) {
 			WarpDrive.logger.error("Too many schematic defined, only first one will be used in structure " + getFullName());
 		}
@@ -84,8 +84,8 @@ public class Orb extends AbstractStructure {
 			super.loadFromXmlElement(element);
 			
 			// resolve static imports
-			for (String importGroupName : getImportGroupNames()) {
-				GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getGenericSet(importGroupName);
+			for (final String importGroupName : getImportGroupNames()) {
+				final GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getGenericSet(importGroupName);
 				if (fillerSet == null) {
 					WarpDrive.logger.warn("Skipping missing FillerSet " + importGroupName + " in shell " + parentFullName + ":" + name);
 				} else {
@@ -94,7 +94,7 @@ public class Orb extends AbstractStructure {
 			}
 			
 			// validate dynamic imports
-			for (String importGroup : getImportGroups()) {
+			for (final String importGroup : getImportGroups()) {
 				if (!WarpDriveConfig.FillerManager.doesGroupExist(importGroup)) {
 					WarpDrive.logger.warn("An invalid FillerSet group " + importGroup + " is referenced in shell " + parentFullName + ":" + name);
 				}
@@ -121,12 +121,12 @@ public class Orb extends AbstractStructure {
 		}
 		
 		public OrbShell instantiate(Random random) {
-			OrbShell orbShell = new OrbShell(parentFullName, name);
+			final OrbShell orbShell = new OrbShell(parentFullName, name);
 			orbShell.minThickness = minThickness;
 			orbShell.maxThickness = maxThickness;
 			try {
 				orbShell.loadFrom(this);
-				for (String importGroup : getImportGroups()) {
+				for (final String importGroup : getImportGroups()) {
 					GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getRandomSetFromGroup(random, importGroup);
 					if (fillerSet == null) {
 						WarpDrive.logger.info("Ignoring invalid group " + importGroup + " in shell " + name + " of structure " + parentFullName);

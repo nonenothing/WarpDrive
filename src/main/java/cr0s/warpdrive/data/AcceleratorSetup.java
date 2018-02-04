@@ -84,7 +84,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			energy_maxStorage = 0;
 		} else {
 			int maxStorage = 0;
-			for(TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+			for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 				maxStorage += tileEntityEnergyBank.energy_getMaxStorage();
 			}
 			energy_maxStorage = maxStorage;
@@ -195,7 +195,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockVoidShellPlain,
 			WarpDrive.blockVoidShellGlass);
 		TrajectoryPoint trajectoryPoint = null;
-		for(ForgeDirection direction : Commons.HORIZONTAL_DIRECTIONS) {
+		for (ForgeDirection direction : Commons.HORIZONTAL_DIRECTIONS) {
 			final VectorI next = firstVoidShell.clone(direction);
 			if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
 				trajectoryPoint = new TrajectoryPoint(world, firstVoidShell.translate(direction), direction);
@@ -221,7 +221,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		HashSet<TrajectoryPoint> transferToAdd = new HashSet<>();
 		while(!acceleratorToAdd.isEmpty()) {
 			// add all accelerators found
-			for (TrajectoryPoint trajectoryToAdd : acceleratorToAdd) {
+			for (final TrajectoryPoint trajectoryToAdd : acceleratorToAdd) {
 				trajectoryPoint = trajectoryToAdd;
 				while ( trajectoryPoint.hasNoMissingVoidShells()
 				     && isInRange(trajectoryPoint)
@@ -243,7 +243,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			acceleratorToAdd.clear();
 			
 			// add all transfer found
-			for (TrajectoryPoint trajectoryToAdd : transferToAdd) {
+			for (final TrajectoryPoint trajectoryToAdd : transferToAdd) {
 				trajectoryPoint = trajectoryToAdd;
 				while ( trajectoryPoint.hasNoMissingVoidShells()
 				     && isInRange(trajectoryPoint)
@@ -490,7 +490,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		if (trajectoryAccelerator == null) {
 			return false;
 		}
-		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			if (tileEntityEnergyBank.isInvalid()) {
 				return false;
 			}
@@ -501,7 +501,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	// Pseudo-API for energy
 	public int energy_getEnergyStored() {
 		int energyStored = 0;
-		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			energyStored += tileEntityEnergyBank.energy_getEnergyStored();
 		}
 		return energyStored;
@@ -509,7 +509,7 @@ public class AcceleratorSetup extends GlobalPosition {
 	
 	public int energy_getPotentialOutput() {
 		long potentialOutput = 0;
-		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			potentialOutput = Math.min(potentialOutput + tileEntityEnergyBank.energy_getPotentialOutput(), Integer.MAX_VALUE);
 		}
 		return (int) potentialOutput;
@@ -525,7 +525,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		int energyConsumed = 0;
 		int energyLeft = amount_internal - energyMean * energyBanks.size();
 		assert(energyConsumed + energyLeft == amount_internal);
-		for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyMean + energyLeft);
 			tileEntityEnergyBank.energy_consume(energyToConsume);
 			energyConsumed += energyToConsume;
@@ -534,7 +534,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		assert(energyConsumed + energyLeft == amount_internal);
 		// then, draw remaining in no special order
 		if (energyLeft > 0) {
-			for(final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
+			for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 				final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyLeft);
 				tileEntityEnergyBank.energy_consume(energyToConsume);
 				energyConsumed += energyToConsume;
