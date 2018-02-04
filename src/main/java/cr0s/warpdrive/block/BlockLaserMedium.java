@@ -14,6 +14,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockLaserMedium extends BlockAbstractContainer {
+	
+	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
 	public BlockLaserMedium() {
@@ -23,22 +25,22 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[9];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:laserMediumSide0");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:laserMediumSide1");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:laserMediumSide2");
-		iconBuffer[3] = iconRegister.registerIcon("warpdrive:laserMediumSide3");
-		iconBuffer[4] = iconRegister.registerIcon("warpdrive:laserMediumSide4");
-		iconBuffer[5] = iconRegister.registerIcon("warpdrive:laserMediumSide5");
-		iconBuffer[6] = iconRegister.registerIcon("warpdrive:laserMediumSide6");
-		iconBuffer[7] = iconRegister.registerIcon("warpdrive:laserMediumSide7");
-		iconBuffer[8] = iconRegister.registerIcon("warpdrive:laserMediumTopBottom");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:laser_medium-side0");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:laser_medium-side1");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:laser_medium-side2");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:laser_medium-side3");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:laser_medium-side4");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:laser_medium-side5");
+		iconBuffer[6] = iconRegister.registerIcon("warpdrive:laser_medium-side6");
+		iconBuffer[7] = iconRegister.registerIcon("warpdrive:laser_medium-side7");
+		iconBuffer[8] = iconRegister.registerIcon("warpdrive:laser_medium-top_bottom");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[8];
@@ -49,7 +51,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0 || side == 1) {
 			return iconBuffer[8];
 		}
@@ -58,21 +60,19 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityLaserMedium();
 	}
 	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityLaserMedium) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityLaserMedium) tileEntity).getStatus());
 				return true;

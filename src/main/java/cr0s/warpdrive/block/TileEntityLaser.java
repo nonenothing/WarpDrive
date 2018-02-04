@@ -675,7 +675,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		return String.format("%s Beam \'%d\' @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
 		                     beamFrequency,
-		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 		                     xCoord, yCoord, zCoord);
 	}
 }

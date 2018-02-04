@@ -55,7 +55,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityForceField();
 	}
 	
@@ -96,7 +96,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {

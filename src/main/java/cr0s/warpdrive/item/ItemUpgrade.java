@@ -92,10 +92,10 @@ public class ItemUpgrade extends Item {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister ir) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[UpgradeType.values().length];
 		for (UpgradeType val : UpgradeType.values()) {
-			iconBuffer[val.ordinal()] = ir.registerIcon("warpdrive:upgrade" + val);
+			iconBuffer[val.ordinal()] = iconRegister.registerIcon("warpdrive:upgrade" + val);
 		}
 	}
 	

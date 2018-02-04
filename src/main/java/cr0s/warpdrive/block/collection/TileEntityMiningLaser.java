@@ -556,6 +556,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	@Override
 	public String toString() {
 		return String.format("%s @ \'%s\' %d, %d, %d",
-			getClass().getSimpleName(), worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(), xCoord, yCoord, zCoord);
+		                     getClass().getSimpleName(), 
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(), 
+		                     xCoord, yCoord, zCoord);
 	}
 }

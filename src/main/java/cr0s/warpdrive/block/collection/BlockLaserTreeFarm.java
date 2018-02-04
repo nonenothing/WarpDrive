@@ -38,7 +38,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
 		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
 		iconBuffer[ICON_FARMING_LOW_POWER ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
@@ -80,7 +80,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityLaserTreeFarm();
 	}
 	

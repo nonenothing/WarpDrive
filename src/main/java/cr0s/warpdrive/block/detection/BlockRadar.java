@@ -36,7 +36,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
 		iconBuffer[ICON_SIDE_INACTIVE      ] = iconRegister.registerIcon("warpdrive:detection/radarSideInactive");
 		iconBuffer[ICON_BOTTOM             ] = iconRegister.registerIcon("warpdrive:detection/radarBottom");
@@ -80,7 +80,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityRadar();
 	}
 	

@@ -43,7 +43,7 @@ public class ItemTuningFork extends Item implements IWarpTool {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {

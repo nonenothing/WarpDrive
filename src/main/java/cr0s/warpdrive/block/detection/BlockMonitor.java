@@ -33,7 +33,7 @@ public class BlockMonitor extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
 		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
 	}
@@ -85,7 +85,7 @@ public class BlockMonitor extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityMonitor();
 	}
 }

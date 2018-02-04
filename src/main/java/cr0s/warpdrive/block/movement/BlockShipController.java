@@ -34,7 +34,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[11];
 		// Solid textures
 		iconBuffer[ICON_INACTIVE_SIDE] = iconRegister.registerIcon("warpdrive:movement/ship_controller-side_inactive");
@@ -85,7 +85,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityShipController();
 	}
 	

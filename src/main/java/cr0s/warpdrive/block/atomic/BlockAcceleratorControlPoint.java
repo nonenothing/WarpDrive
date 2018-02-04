@@ -25,7 +25,7 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[2];
 		
 		icons[0] = iconRegister.registerIcon(getTextureName() + "-off");
@@ -57,7 +57,7 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int p_149915_2_) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityAcceleratorControlPoint();
 	}
 }

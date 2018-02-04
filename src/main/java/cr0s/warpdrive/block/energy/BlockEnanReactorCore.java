@@ -32,7 +32,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[17];
 		iconBuffer[16] = iconRegister.registerIcon("warpdrive:energy/enan_reactor_core-top_bottom");
 		iconBuffer[ 0] = iconRegister.registerIcon("warpdrive:energy/enan_reactor_core-side00");

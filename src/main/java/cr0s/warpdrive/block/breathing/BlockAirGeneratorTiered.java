@@ -42,7 +42,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
 		iconBuffer[ICON_INACTIVE_SIDE] = iconRegister.registerIcon("warpdrive:breathing/air_generator-side_inactive");
 		iconBuffer[ICON_BOTTOM] = iconRegister.registerIcon("warpdrive:breathing/air_generator-connection");
@@ -75,7 +75,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityAirGeneratorTiered();
 	}
 		

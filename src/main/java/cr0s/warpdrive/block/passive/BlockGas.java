@@ -76,7 +76,7 @@ public class BlockGas extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[12];
 		iconBuffer[0] = iconRegister.registerIcon("warpdrive:decoration/gas-blue");
 		iconBuffer[1] = iconRegister.registerIcon("warpdrive:decoration/gas-red");

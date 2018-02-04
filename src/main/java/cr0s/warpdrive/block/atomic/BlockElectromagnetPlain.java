@@ -20,7 +20,7 @@ public class BlockElectromagnetPlain extends BlockAbstractAccelerator {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconSide = iconRegister.registerIcon("warpdrive:atomic/electromagnet" + tier + "_plain-side");
 		iconTop = iconRegister.registerIcon("warpdrive:atomic/electromagnet" + tier + "_plain-top");
 	}

@@ -799,7 +799,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return String.format("%s \'%s\' @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
 		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName, 
-		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 		                     xCoord, yCoord, zCoord);
 	}
 }

@@ -32,7 +32,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[2];
 		
 		icons[0] = iconRegister.registerIcon(getTextureName() + "-off");

@@ -32,7 +32,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[2];
 		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/cloakingCoreInactive");
 		iconBuffer[1] = iconRegister.registerIcon("warpdrive:detection/cloakingCoreActive");
@@ -56,7 +56,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityCloakingCore();
 	}
 	

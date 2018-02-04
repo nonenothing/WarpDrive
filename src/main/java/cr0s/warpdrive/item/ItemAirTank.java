@@ -33,7 +33,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[24];
 		icons[ 0] = iconRegister.registerIcon("warpdrive:breathing/air_canister");
 		icons[ 1] = iconRegister.registerIcon("warpdrive:breathing/air_canister");

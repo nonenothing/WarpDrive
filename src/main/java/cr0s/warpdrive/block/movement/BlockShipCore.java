@@ -47,7 +47,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[18];
 		iconBuffer[ICON_TOP_BOTTOM    ] = iconRegister.registerIcon("warpdrive:movement/ship_core-top-bottom");
 		iconBuffer[ICON_LEFT_OFFLINE  ] = iconRegister.registerIcon("warpdrive:movement/ship_core-left_offline");
@@ -131,7 +131,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityShipCore();
 	}
 	

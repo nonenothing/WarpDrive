@@ -36,7 +36,7 @@ public class EntityParticleBunch extends Entity {
 	public EntityParticleBunch(World world) {
 		super(world);
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-			WarpDrive.logger.info(this + " created in dimension '" + worldObj.getWorldInfo().getWorldName() + "'");
+			WarpDrive.logger.info(this + " created in dimension " + worldObj.provider.getDimensionName());
 		}
 	}
 	
@@ -171,7 +171,7 @@ public class EntityParticleBunch extends Entity {
 		return String.format("%s/%d @ \'%s\' %.2f %.2f %.2f",
 			getClass().getSimpleName(),
 			getEntityId(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 			posX, posY, posZ);
 	}
 }

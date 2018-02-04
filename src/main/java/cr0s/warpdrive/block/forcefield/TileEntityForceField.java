@@ -129,8 +129,9 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 						// projector is disabled or out of power
 						worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 						if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-							WarpDrive.logger.info("Removed a force field from an offline projector at "
-							    + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+							WarpDrive.logger.info(String.format("Removed a force field from an offline projector @ %s (%d %d %d)", 
+							                                    worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
+							                                    xCoord, yCoord, zCoord));
 						}
 					}
 				}
@@ -142,8 +143,9 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			if (gracePeriod_calls < 0) {
 				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
 				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-					WarpDrive.logger.info("Removed a force field with no projector defined at "
-						                 + (worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName()) + " " + xCoord + " " + yCoord + " " + zCoord);
+					WarpDrive.logger.info(String.format("Removed a force field with no projector defined @ %s (%d %d %d)",
+					                                    worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
+					                                    xCoord, yCoord, zCoord));
 				}
 			}
 		}

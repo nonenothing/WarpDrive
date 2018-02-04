@@ -25,7 +25,7 @@ public class BlockIridium extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		blockIcon = iconRegister.registerIcon("warpdrive:passive/iridiumSide");
 	}
 	

@@ -39,18 +39,18 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityEnergyBank((byte)(metadata % 4));
 	}
 	
 	@Override
-	public int damageDropped(int metadata) {
+	public int damageDropped(final int metadata) {
 		return metadata;
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (byte tier = 0; tier < 4; tier++) {
 			ItemStack itemStack = new ItemStack(item, 1, tier);
 			list.add(itemStack);
@@ -67,7 +67,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[12];
 		icons[ 0] = iconRegister.registerIcon("warpdrive:energy/energy_bank_creative-disabled");
 		icons[ 1] = iconRegister.registerIcon("warpdrive:energy/energy_bank_creative-input");
@@ -119,21 +119,22 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityEnergyBank)) {
 			return false;
 		}
-		TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
-		ItemStack itemStackHeld = entityPlayer.getHeldItem();
-		EnumFacing facing = EnumFacing.getFront(side);
+		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		final EnumFacing facing = EnumFacing.getFront(side);
 		
-		if (itemStackHeld != null && itemStackHeld.getItem() instanceof IWarpTool) {
+		if ( itemStackHeld != null
+		  && itemStackHeld.getItem() instanceof IWarpTool ) {
 			if (entityPlayer.isSneaking()) {
 				tileEntityEnergyBank.setMode(facing, (byte)((tileEntityEnergyBank.getMode(facing) + 2) % 3));
 			} else {
 				tileEntityEnergyBank.setMode(facing, (byte)((tileEntityEnergyBank.getMode(facing) + 1) % 3));
 			}
-			ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, world.getBlockMetadata(x, y, z));
+			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, world.getBlockMetadata(x, y, z));
 			switch (tileEntityEnergyBank.getMode(facing)) {
 				case TileEntityEnergyBank.MODE_INPUT:
 					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
@@ -155,17 +156,20 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		}
 		
 		EnumComponentType enumComponentType = null;
-		if (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemComponent) {
+		if ( itemStackHeld != null
+		  && itemStackHeld.getItem() instanceof ItemComponent ) {
 			enumComponentType = EnumComponentType.get(itemStackHeld.getItemDamage());
 		}
 		
 		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
 		if (entityPlayer.isSneaking()) {
-			// using an upgrade item or an empty means dismount upgrade
-			if (itemStackHeld == null || enumComponentType != null) {
+			// using an upgrade item or an empty hand means dismount upgrade
+			if ( itemStackHeld == null
+			  || enumComponentType != null ) {
 				// find a valid upgrade to dismount
-				if (itemStackHeld == null || !tileEntityEnergyBank.hasUpgrade(enumComponentType)) {
-					enumComponentType = (EnumComponentType)tileEntityEnergyBank.getFirstUpgradeOfType(EnumComponentType.class, null);
+				if ( itemStackHeld == null
+				  || !tileEntityEnergyBank.hasUpgrade(enumComponentType) ) {
+					enumComponentType = (EnumComponentType) tileEntityEnergyBank.getFirstUpgradeOfType(EnumComponentType.class, null);
 				}
 				
 				if (enumComponentType == null) {
@@ -176,8 +180,8 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 				
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// dismount the current upgrade item
-					ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.delayBeforeCanPickup = 0;
 					world.spawnEntityInWorld(entityItem);
 				}
@@ -186,7 +190,6 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 				// upgrade dismounted
 				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.dismounted", enumComponentType.name()));
 				return false;
-				
 			}
 			
 		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status

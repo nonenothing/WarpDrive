@@ -24,13 +24,13 @@ public class BlockTransporter extends BlockAbstractContainer {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World world, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityTransporter();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
 		// Solid textures
 		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporterBottom");

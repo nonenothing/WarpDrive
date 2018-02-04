@@ -43,7 +43,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[31];
 		icons[ 0] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-empty");
 		icons[ 1] = iconRegister.registerIcon("warpdrive:atomic/electromagnetic_cell-blue-20");

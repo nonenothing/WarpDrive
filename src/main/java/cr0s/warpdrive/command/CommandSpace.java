@@ -167,11 +167,11 @@ public class CommandSpace extends CommandBase {
 			}
 			
 			// inform player
-			String message = "§aTeleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.getWorldInfo().getWorldName();
+			String message = "§aTeleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.provider.getDimensionName();
 			Commons.addChatMessage(commandSender, message);
 			WarpDrive.logger.info(message);
 			if (commandSender != entityPlayerMP) {
-				Commons.addChatMessage(entityPlayerMP, commandSender.getCommandSenderName() + " is teleporting you to dimension " + dimensionIdTarget); // + ":" + worldTarget.getWorldInfo().getWorldName());
+				Commons.addChatMessage(entityPlayerMP, commandSender.getCommandSenderName() + " is teleporting you to dimension " + dimensionIdTarget); // + ":" + worldTarget.provider.getDimensionName());
 			}
 			
 			// find a good spot

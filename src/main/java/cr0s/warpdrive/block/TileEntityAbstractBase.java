@@ -306,21 +306,25 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return mapResult;
 	}
 	
+	public int getValidUpgradeCount(final Object upgrade) {
+		return Math.min(getUpgradeMaxCount(upgrade), getUpgradeCount(upgrade));
+	}
+	
 	public int getUpgradeCount(final Object upgrade) {
-		Integer value = installedUpgrades.get(upgrade);
+		final Integer value = installedUpgrades.get(upgrade);
 		return value == null ? 0 : value;
 	}
 	
 	public int getUpgradeMaxCount(final Object upgrade) {
-		Integer value = maxUpgrades.get(upgrade);
+		final Integer value = maxUpgrades.get(upgrade);
 		return value == null ? 0 : value;
 	}
 	
 	protected String getUpgradesAsString() {
-		String message = "";
+		final StringBuilder message = new StringBuilder();
 		for (final Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
-			if (!message.isEmpty()) {
-				message += ", ";
+			if (message.length() > 0) {
+				message.append(", ");
 			}
 			final Object key = entry.getKey();
 			String keyName = key.toString();
@@ -330,12 +334,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				keyName = ((Block) key).getUnlocalizedName();
 			}
 			if (entry.getValue() == 1) {
-				message += keyName;
+				message.append(keyName);
 			} else {
-				message += entry.getValue() + " x " + keyName;
+				message.append(entry.getValue()).append(" x ").append(keyName);
 			}
 		}
-		return message;
+		return message.toString();
 	}
 	
 	protected void setUpgradeMaxCount(final Object upgrade, final int value) {
@@ -356,7 +360,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	public boolean dismountUpgrade(final Object upgrade) {
-		int count = getUpgradeCount(upgrade);
+		final int count = getUpgradeCount(upgrade);
 		if (count > 1) {
 			installedUpgrades.put(upgrade, count - 1);
 			markDirty();

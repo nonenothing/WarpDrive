@@ -36,7 +36,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[3];
 		iconBuffer[ICON_TOP] = iconRegister.registerIcon("warpdrive:movement/ship_controller-top");
 		iconBuffer[ICON_BOTTOM] = iconRegister.registerIcon("warpdrive:movement/ship_controller-bottom");
@@ -55,7 +55,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World parWorld, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityWeaponController();
 	}
 	

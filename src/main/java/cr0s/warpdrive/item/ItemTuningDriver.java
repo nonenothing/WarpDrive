@@ -49,7 +49,7 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[3];
 		
 		icons[MODE_VIDEO_CHANNEL  ] = iconRegister.registerIcon("warpdrive:tool/tuning_driver-cyan");

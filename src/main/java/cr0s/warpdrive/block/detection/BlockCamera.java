@@ -31,7 +31,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
 		// Solid textures
 		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:detection/cameraSide");
@@ -49,7 +49,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityCamera();
 	}
 	

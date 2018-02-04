@@ -229,7 +229,7 @@ public class JumpShip {
 		return String.format("%s/%d \'%s\' @ %s (%d %d %d)",
 			getClass().getSimpleName(), hashCode(),
 			shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.shipName),
-			worldObj == null || worldObj.getWorldInfo() == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 			coreX, coreY, coreZ);
 	}
 	

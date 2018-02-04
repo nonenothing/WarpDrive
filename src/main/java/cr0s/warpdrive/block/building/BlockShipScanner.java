@@ -38,7 +38,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
 		iconBuffer[ICON_BOTTOM  ] = iconRegister.registerIcon("warpdrive:building/shipScannerBottom");
 		iconBuffer[ICON_TOP     ] = iconRegister.registerIcon("warpdrive:building/shipScannerTop");
@@ -111,7 +111,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 		
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityShipScanner();
 	}
 	

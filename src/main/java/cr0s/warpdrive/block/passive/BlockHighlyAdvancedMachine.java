@@ -24,7 +24,7 @@ public class BlockHighlyAdvancedMachine extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		blockIcon = iconRegister.registerIcon("warpdrive:passive/highlyAdvancedMachineSide");
 	}
 	

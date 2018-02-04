@@ -82,7 +82,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
 			iconBuffer = new IIcon[16];
 			iconBuffer[ 0] = iconRegister.registerIcon("warpdrive:breathing/air0");

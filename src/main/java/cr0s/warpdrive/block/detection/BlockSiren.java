@@ -42,7 +42,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[4];
 		// Solid textures
 		iconBuffer[ICON_INDUSTRIAL] = iconRegister.registerIcon("warpdrive:detection/siren_industrial");
@@ -75,7 +75,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntitySiren();
 	}
 	

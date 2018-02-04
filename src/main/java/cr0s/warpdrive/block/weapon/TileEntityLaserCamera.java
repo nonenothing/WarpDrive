@@ -187,7 +187,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		                     getClass().getSimpleName(),
 		                     beamFrequency,
 		                     videoChannel,
-		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 		                     xCoord, yCoord, zCoord);
 	}
 }

@@ -36,7 +36,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
 		// Solid textures
 		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:weapon/laserCameraSide");
@@ -54,7 +54,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World parWorld, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityLaserCamera();
 	}
 	

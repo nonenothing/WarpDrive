@@ -57,7 +57,7 @@ public class ItemShipToken extends Item {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[VALID_METADATAS.length];
 		for (int index = 0; index < VALID_METADATAS.length; index++) {
 			icons[index] = iconRegister.registerIcon("warpdrive:tool/ship_token-" + VALID_METADATAS[index]);

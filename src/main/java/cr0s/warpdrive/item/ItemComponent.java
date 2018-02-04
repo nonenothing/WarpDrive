@@ -54,7 +54,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerIcons(IIconRegister iconRegister) {
+	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumComponentType.length];
 		for (final EnumComponentType enumComponentType : EnumComponentType.values()) {
 			icons[enumComponentType.ordinal()] = iconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
@@ -62,7 +62,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			return "item.warpdrive.crafting." + EnumComponentType.get(damage).unlocalizedName;
@@ -71,7 +71,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			return icons[damage];
 		}
@@ -79,7 +79,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (final EnumComponentType enumComponentType : EnumComponentType.values()) {
 			list.add(new ItemStack(item, 1, enumComponentType.ordinal()));
 		}
@@ -87,12 +87,12 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	
 	// IAirContainerItem overrides for empty air canister
 	@Override
-	public boolean canContainAir(ItemStack itemStack) {
+	public boolean canContainAir(final ItemStack itemStack) {
 		return (itemStack.getItem() instanceof ItemComponent && itemStack.getItemDamage() == EnumComponentType.AIR_CANISTER.ordinal());
 	}
 	
 	@Override
-	public int getMaxAirStorage(ItemStack itemStack) {
+	public int getMaxAirStorage(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getMaxAirStorage(itemStack);
 		} else {
@@ -101,18 +101,18 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public int getCurrentAirStorage(ItemStack itemStack) {
+	public int getCurrentAirStorage(final ItemStack itemStack) {
 		return 0;
 	}
 	
 	@Override
-	public ItemStack consumeAir(ItemStack itemStack) {
+	public ItemStack consumeAir(final ItemStack itemStack) {
 		WarpDrive.logger.error(this + " consumeAir() with itemStack " + itemStack);
 		throw new RuntimeException("Invalid call to consumeAir() on non or empty container");
 	}
 	
 	@Override
-	public int getAirTicksPerConsumption(ItemStack itemStack) {
+	public int getAirTicksPerConsumption(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getAirTicksPerConsumption(itemStack);
 		} else {
@@ -121,7 +121,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public ItemStack getFullAirContainer(ItemStack itemStack) {
+	public ItemStack getFullAirContainer(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getFullAirContainer(itemStack);
 		}
@@ -129,7 +129,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public ItemStack getEmptyAirContainer(ItemStack itemStack) {
+	public ItemStack getEmptyAirContainer(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getEmptyAirContainer(itemStack);
 		}
@@ -145,7 +145,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";

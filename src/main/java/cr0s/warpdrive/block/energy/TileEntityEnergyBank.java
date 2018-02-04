@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.energy;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
@@ -49,7 +48,7 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	private double getEfficiency() {
-		int upgradeCount = Commons.clamp(0, getUpgradeMaxCount(EnumComponentType.SUPERCONDUCTOR), getUpgradeCount(EnumComponentType.SUPERCONDUCTOR));
+		final int upgradeCount = getValidUpgradeCount(EnumComponentType.SUPERCONDUCTOR);
 		return WarpDriveConfig.ENERGY_BANK_EFFICIENCY_PER_UPGRADE[upgradeCount];
 	}
 	
@@ -173,10 +172,10 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ %s (%d %d %d) %8d",
-			getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			xCoord, yCoord, zCoord,
-			energy_getEnergyStored());
+		return String.format("%s @ %s (%d %d %d) %8d", 
+		                     getClass().getSimpleName(), 
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(), 
+		                     xCoord, yCoord, zCoord, 
+		                     energy_getEnergyStored());
 	}
 }

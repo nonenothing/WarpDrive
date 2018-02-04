@@ -18,7 +18,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,6 +36,7 @@ import java.util.Random;
 import java.util.Set;
 
 import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.util.ForgeDirection;
 
 /**
  * Common static methods
@@ -166,15 +166,15 @@ public class Commons {
 				fieldToReturn = clazz.getDeclaredField(obfuscatedName);
 			} catch (Exception exception2) {
 				exception2.printStackTrace();
-				String map = "";
+				StringBuilder map = new StringBuilder();
 				for (Field fieldDeclared : clazz.getDeclaredFields()) {
-					if (!map.isEmpty()) {
-						map += ", ";
+					if (map.length() > 0) {
+						map.append(", ");
 					}
-					map += fieldDeclared.getName();
+					map.append(fieldDeclared.getName());
 				}
 				WarpDrive.logger.error(String.format("Unable to find %1$s field in %2$s class. Available fields are: %3$s",
-						deobfuscatedName, clazz.toString(), map));
+				                                     deobfuscatedName, clazz.toString(), map.toString()));
 			}
 		}
 		if (fieldToReturn != null) {
@@ -255,8 +255,7 @@ public class Commons {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
 		
-		Set<VectorI> toIterate = new HashSet<>();
-		toIterate.addAll(start);
+		Set<VectorI> toIterate = new HashSet<>(start);
 		
 		Set<VectorI> toIterateNext;
 		

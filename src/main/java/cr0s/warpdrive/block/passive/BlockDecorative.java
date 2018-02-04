@@ -42,7 +42,7 @@ public class BlockDecorative extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumDecorativeType.length];
 		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:decoration/decorative-" + enumDecorativeType.unlocalizedName);

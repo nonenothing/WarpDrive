@@ -38,7 +38,7 @@ public class BlockCloakingCoil extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[4];
 		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/cloaking_coil-channeling_inactive");
 		iconBuffer[1] = iconRegister.registerIcon("warpdrive:detection/cloaking_coil-projecting_inactive");

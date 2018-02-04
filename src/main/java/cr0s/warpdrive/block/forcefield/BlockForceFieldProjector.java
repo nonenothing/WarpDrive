@@ -40,7 +40,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[11];
 		icons[ 0] = iconRegister.registerIcon("warpdrive:forcefield/projectorSide_notConnected");
 		icons[ 1] = iconRegister.registerIcon("warpdrive:forcefield/projectorSide_connectedNotPowered");
@@ -258,7 +258,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityForceFieldProjector();
 	}
 }

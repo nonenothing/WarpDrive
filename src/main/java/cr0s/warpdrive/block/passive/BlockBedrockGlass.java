@@ -55,7 +55,7 @@ public class BlockBedrockGlass extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icon = iconRegister.registerIcon("warpdrive:decoration/bedrock_glass");
 	}
 	

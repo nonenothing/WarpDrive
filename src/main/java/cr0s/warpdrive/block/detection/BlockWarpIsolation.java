@@ -28,7 +28,7 @@ public class BlockWarpIsolation extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
 		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/warpIsolation");
 	}

@@ -72,7 +72,7 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {

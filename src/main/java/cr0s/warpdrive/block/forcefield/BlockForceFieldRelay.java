@@ -157,7 +157,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityForceFieldRelay();
 	}
 }

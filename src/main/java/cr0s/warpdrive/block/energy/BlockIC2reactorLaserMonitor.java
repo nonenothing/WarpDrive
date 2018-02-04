@@ -31,13 +31,13 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World var1, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityIC2reactorLaserMonitor();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[5];
 		icons[ICON_DISCONNECTED] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-invalid");
 		icons[ICON_HEAD_VALID  ] = iconRegister.registerIcon("warpdrive:energy/ic2_reactor_laser_cooler-head-valid");

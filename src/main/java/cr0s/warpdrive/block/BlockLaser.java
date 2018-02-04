@@ -19,9 +19,9 @@ public class BlockLaser extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
-
+	
 	private static final int ICON_SIDE = 0;
-
+	
 	public BlockLaser() {
 		super(Material.iron);
 		setHardness(50.0F);
@@ -31,44 +31,35 @@ public class BlockLaser extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void registerBlockIcons(IIconRegister iconRegister) {
+	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
-		// Solid textures
-		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:laserSide");
+		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:laser-side");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return iconBuffer[ICON_SIDE];
 	}
-
+	
 	@Override
-	public TileEntity createNewTileEntity(World parWorld, int i) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityLaser();
 	}
-
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
+	
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(final Random random) {
 		return 1;
 	}
-
-	/**
-	 * Returns the ID of the items to drop on destruction.
-	 */
+	
 	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
 		return Item.getItemFromBlock(this);
 	}
 	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
