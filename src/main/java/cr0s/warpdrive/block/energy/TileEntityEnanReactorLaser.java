@@ -2,8 +2,10 @@ package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.computer.IEnanReactorLaser;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumReactorFace;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -12,20 +14,26 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
+
+import java.lang.ref.WeakReference;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 import net.minecraftforge.fml.common.Optional;
 
-public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
+public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implements IEnanReactorLaser {
 	
-	Vector3 myVec;
-	Vector3 reactorVec;
-	EnumFacing side = null;
-	TileEntityEnanReactorCore reactor;
+	// persistent properties
+	private EnumReactorFace reactorFace = EnumReactorFace.UNKNOWN;
+	private int energyStabilizationRequest = 0;
 	
-	private boolean isFirstUpdate = true;
+	// computed properties
+	private Vector3 vLaser;
+	private Vector3 vReactorCore;
+	private WeakReference<TileEntityEnanReactorCore> weakReactorCore;
 	
 	public TileEntityEnanReactorLaser() {
 		super();
@@ -38,52 +46,78 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		peripheralName = "warpdriveEnanReactorLaser";
 		laserMedium_maxCount = 1;
 		laserMedium_directionsValid = new EnumFacing[] { EnumFacing.UP, EnumFacing.DOWN };
+		updateInterval_ticks = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS;
 	}
 	
-	public void scanForReactor() {
-		reactor = null;
-		side = null;
-    
-		TileEntity tileEntity;
-		// I AM ON THE NORTH SIDE
-		tileEntity = worldObj.getTileEntity(pos.add(0, 0, 2));
-		if (tileEntity instanceof TileEntityEnanReactorCore && worldObj.isAirBlock(pos.add(0, 0, 1))) {
-			side = EnumFacing.NORTH;
-			reactor = (TileEntityEnanReactorCore) tileEntity;
+	@Override
+	protected void onFirstUpdateTick() {
+		super.onFirstUpdateTick();
+		
+		final TileEntityEnanReactorCore reactorCore = getReactorCore();
+		if (reactorCore == null) {
+			// laser isn't linked yet, let's try to update nearby reactors
+			for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
+				if (reactorFace.indexStability < 0) {
+					continue;
+				}
+				
+				final TileEntity tileEntity = worldObj.getTileEntity(pos.add(- reactorFace.x, - reactorFace.y, - reactorFace.z));
+				if (tileEntity instanceof TileEntityEnanReactorCore) {
+					((TileEntityEnanReactorCore) tileEntity).onBlockUpdateDetected();
+				}
+			}
 		}
 		
-		// I AM ON THE SOUTH SIDE
-		tileEntity = worldObj.getTileEntity(pos.add(0, 0, -2));
-		if (tileEntity instanceof TileEntityEnanReactorCore && worldObj.isAirBlock(pos.add(0, 0, -1))) {
-			side = EnumFacing.SOUTH;
-			reactor = (TileEntityEnanReactorCore) tileEntity;
-		}
+		vLaser = new Vector3(this).translate(0.5);
+	}
+	
+	@Override
+	public void update() {
+		super.update();
 		
-		// I AM ON THE WEST SIDE
-		tileEntity = worldObj.getTileEntity(pos.add(2, 0, 0));
-		if (tileEntity instanceof TileEntityEnanReactorCore && worldObj.isAirBlock(pos.add(1, 0, 0))) {
-			side = EnumFacing.WEST;
-			reactor = (TileEntityEnanReactorCore) tileEntity;
-		}
-		
-		// I AM ON THE EAST SIDE
-		tileEntity = worldObj.getTileEntity(pos.add(-2, 0, 0));
-		if (tileEntity instanceof TileEntityEnanReactorCore && worldObj.isAirBlock(pos.add(-1, 0, 0))) {
-			side = EnumFacing.EAST;
-			reactor = (TileEntityEnanReactorCore) tileEntity;
-		}
-		
-		setMetadata();
-		
-		if (reactor != null) {
-			reactorVec = new Vector3(reactor).translate(0.5);
+		if (energyStabilizationRequest > 0) {
+			doStabilize(energyStabilizationRequest);
+			energyStabilizationRequest = 0;
 		}
 	}
 	
-	private void setMetadata() {
+	@Nonnull 
+	public EnumReactorFace getReactorFace() {
+		return reactorFace != null ? reactorFace : EnumReactorFace.UNKNOWN;
+	}
+	
+	public void setReactorFace(@Nonnull final EnumReactorFace reactorFace, final TileEntityEnanReactorCore reactorCore) {
+		this.reactorFace = reactorFace;
+		this.weakReactorCore = reactorCore != null && reactorFace != EnumReactorFace.UNKNOWN ? new WeakReference<>(reactorCore) : null;
+		
+		updateMetadata();
+		
+		if (reactorCore != null) {
+			vReactorCore = new Vector3(reactorCore).translate(0.5);
+		}
+	}
+	
+	private TileEntityEnanReactorCore getReactorCore() {
+		if (reactorFace == EnumReactorFace.UNKNOWN) {
+			return null;
+		}
+		TileEntityEnanReactorCore reactorCore = weakReactorCore != null ? weakReactorCore.get() : null;
+		if (reactorCore == null) {
+			final TileEntity tileEntity = worldObj.getTileEntity(
+				pos.offset(reactorFace.facing, -1));
+			if (tileEntity instanceof TileEntityEnanReactorCore) {
+				reactorCore = (TileEntityEnanReactorCore) tileEntity;
+				weakReactorCore = new WeakReference<>(reactorCore);
+			}
+		}
+		return reactorCore;
+	}
+	
+	private void updateMetadata() {
 		int metadata = 0;
-		if (side != null) {
-			metadata = side.ordinal() - 1;
+		if ( reactorFace != null
+		  && reactorFace.propertyLaser != null ) {
+			metadata = 8 + reactorFace.propertyLaser.ordinal();
 		}
 		if (getBlockMetadata() != metadata) {
 			updateMetadata(metadata);
@@ -91,80 +125,112 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	public void update() {
-		super.update();
+	public void onBlockUpdateDetected() {
+		super.onBlockUpdateDetected();
 		
-		if (isFirstUpdate) {
-			isFirstUpdate = false;
-			scanForReactor();
-			myVec = new Vector3(this).translate(0.5);
+		final TileEntityEnanReactorCore reactorCore = getReactorCore();
+		if (reactorCore != null) {
+			reactorCore.onBlockUpdateDetected();
 		}
 	}
 	
-	public void unlink() {
-		side = null;
-		setMetadata();
-	}
-	
-	@Override
-	public void updatedNeighbours() {
-		super.updatedNeighbours();
+	boolean stabilize(final int energy) {
+		if (energy <= 0) {
+			return false;
+		}
 		
-		scanForReactor();
+		if (laserMedium_direction == null) {
+			return false;
+		}
+		
+		energyStabilizationRequest = energy;
+		return true;
 	}
 	
-	private void stabilize(final int energy) {
+	private void doStabilize(final int energy) {
 		if (energy <= 0) {
 			return;
 		}
 		
-		scanForReactor();
 		if (laserMedium_direction == null) {
 			return;
 		}
-		if (reactor == null) {
+		
+		final TileEntityEnanReactorCore reactorCore = getReactorCore();
+		if (reactorCore == null) {
 			return;
 		}
 		if (laserMedium_consumeExactly(energy, false)) {
 			if (WarpDriveConfig.LOGGING_ENERGY && WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.info("ReactorLaser on " + side + " side sending " + energy);
+				WarpDrive.logger.info("ReactorLaser on " + reactorFace + " side sending " + energy);
 			}
-			reactor.decreaseInstability(side, energy);
-			PacketHandler.sendBeamPacket(worldObj, myVec, reactorVec, 0.1F, 0.2F, 1.0F, 25, 50, 100);
+			reactorCore.decreaseInstability(reactorFace, energy);
+			PacketHandler.sendBeamPacket(worldObj, vLaser, vReactorCore, 0.1F, 0.2F, 1.0F, 25, 50, 100);
 		}
 	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
-		return super.writeToNBT(tagCompound);
+		super.writeToNBT(tagCompound);
+		tagCompound.setInteger("reactorFace", reactorFace.ordinal());
+		tagCompound.setInteger("energyStabilizationRequest", energyStabilizationRequest);
+		return tagCompound;
 	}
 	
 	@Override
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
+		
+		reactorFace = EnumReactorFace.get(tagCompound.getInteger("reactorFace"));
+		energyStabilizationRequest = tagCompound.getInteger("energyStabilizationRequest");
+	}
+	
+	
+	// Common OC/CC methods
+	@Override
+	public Object[] hasReactor() {
+		return new Object[] { reactorFace != EnumReactorFace.UNKNOWN };
+	}
+	
+	@Override
+	public Object[] stabilize(Object[] arguments) {
+		if (arguments.length != 1) {
+			return new Object[] { false, "Invalid number of arguments" };
+		}
+		final int energy;
+		try {
+			energy = Commons.toInt(arguments[0]);
+		} catch (Exception exception) {
+			if (WarpDriveConfig.LOGGING_LUA) {
+				WarpDrive.logger.error(this + " LUA error on stabilize(): Integer expected for 1st argument " + arguments[0]);
+			}
+			return new Object[] { false, "Invalid integer" };
+		}
+		return new Object[] { stabilize(energy) };
+	}
+	
+	@Override
+	public Object[] side() {
+		return new Object[] { reactorFace.indexStability, reactorFace.tier.getName(), reactorFace.getName() };
 	}
 	
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] hasReactor(Context context, Arguments arguments) {
-		return new Object[] { reactor != null };
+		return hasReactor();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] stabilize(Context context, Arguments arguments) {
-		if (arguments.count() >= 1) {
-			stabilize(arguments.checkInteger(0));
-		}
-		
-		return null;
+		return stabilize(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] side(Context context, Arguments arguments) {
-		return new Object[] { side.ordinal() - 2 };
+		return side();
 	}
 	
 	// ComputerCraft IPeripheral methods
@@ -175,16 +241,13 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser {
 		
 		switch (methodName) {
 		case "hasReactor":
-			return new Object[] { reactor != null };
+			return hasReactor();
 			
 		case "stabilize":
-			if (arguments.length >= 1) {
-				stabilize(Commons.toInt(arguments[0]));
-			}
-			break;
+			return stabilize(arguments);
 			
 		case "side":
-			return new Object[] { side.ordinal() - 2 };
+			return side();
 		}
 		
 		return super.callMethod(computer, context, method, arguments);

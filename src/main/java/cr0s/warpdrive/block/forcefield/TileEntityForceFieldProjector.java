@@ -1190,18 +1190,22 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			try {
 				if ( projector != null
 				  && projector.isValid() ) {
-					ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
+					final ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.debug(this + " Calculation started for " + projector);
 					}
 					
 					// create HashSets
-					VectorI vScale = forceFieldSetup.vMax.clone().subtract(forceFieldSetup.vMin);
+					final VectorI vScale = forceFieldSetup.vMax.clone().subtract(forceFieldSetup.vMin);
 					vInteriorBlocks = new HashSet<>(vScale.x * vScale.y * vScale.z);
 					vPerimeterBlocks = new HashSet<>(2 * vScale.x * vScale.y + 2 * vScale.x * vScale.z + 2 * vScale.y * vScale.z);
 					
 					// compute interior fields to remove overlapping parts
-					for (Map.Entry<VectorI, Boolean> entry : forceFieldSetup.shapeProvider.getVertexes(forceFieldSetup).entrySet()) {
+					final Map<VectorI, Boolean> vertexes = forceFieldSetup.shapeProvider.getVertexes(forceFieldSetup);
+					if (vertexes.isEmpty()) {
+						WarpDrive.logger.error(this + " No vertexes for " + forceFieldSetup + " at " + projector);
+					}
+					for (Map.Entry<VectorI, Boolean> entry : vertexes.entrySet()) {
 						VectorI vPosition = entry.getKey();
 						if (forceFieldSetup.isDoubleSided || vPosition.y >= 0) {
 							if ((forceFieldSetup.rotationYaw != 0.0F) || (forceFieldSetup.rotationPitch != 0.0F) || (forceFieldSetup.rotationRoll != 0.0F)) {

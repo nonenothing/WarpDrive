@@ -88,7 +88,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	private int calculateEnergyRequired(final int parRadius) {
-		return (int)Math.round(Math.max(WarpDriveConfig.RADAR_SCAN_MIN_ENERGY_COST,
+		return (int) Math.round(Math.max(WarpDriveConfig.RADAR_SCAN_MIN_ENERGY_COST,
 				  WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[0]
 				+ WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[1] * parRadius
 				+ WarpDriveConfig.RADAR_SCAN_ENERGY_COST_FACTORS[2] * parRadius * parRadius
@@ -96,7 +96,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	private int calculateScanDuration(final int parRadius) {
-		return (int)Math.round(20 * Math.max(WarpDriveConfig.RADAR_SCAN_MIN_DELAY_SECONDS,
+		return (int) Math.round(20 * Math.max(WarpDriveConfig.RADAR_SCAN_MIN_DELAY_SECONDS,
 				  WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[0]
 				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[1] * parRadius
 				+ WarpDriveConfig.RADAR_SCAN_DELAY_FACTORS_SECONDS[2] * parRadius * parRadius
@@ -153,7 +153,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		}
 		return new Integer[] { -1 };
 	}
-
+	
 	private Object[] start() {
 		// always clear results
 		results = null;

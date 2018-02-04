@@ -5,15 +5,21 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.computer.IEnanReactorCore;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumReactorFace;
+import cr0s.warpdrive.data.EnumReactorReleaseMode;
+import cr0s.warpdrive.data.EnumTier;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -23,7 +29,7 @@ import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implements IEnanReactorCore {
 	
-	private int containedEnergy = 0;
+	private static final int ENAN_REACTOR_SETUP_TICKS = 1200;
 	
 	// generation & instability is 'per tick'
 	private static final int PR_MIN_GENERATION = 4;
@@ -42,27 +48,29 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	private static final double PR_MAX_LASER_ENERGY = 200000.0D;
 	private static final double PR_MAX_LASER_EFFECT = PR_MAX_INSTABILITY * 20 / 0.33D;
 	
-	private int tickCount = 0;
+	private boolean hold = true; // hold updates and power output until reactor is controlled (i.e. don't explode on chunk-loading while computer is booting)
 	
-	private final double[] instabilityValues = { 0.0D, 0.0D, 0.0D, 0.0D }; // no instability  = 0, explosion = 100
+	// persistent properties
+	private EnumTier tier = EnumTier.BASIC;
+	private boolean isEnabled = false;
+	private EnumReactorReleaseMode releaseMode = EnumReactorReleaseMode.OFF;
+	private int releaseRate = 0;
+	private int releaseAbove = 0;
+	private double instabilityTarget = 50.0D;
+	private int stabilizerEnergy = 10000;
+	
+	private int containedEnergy = 0;
+	private double[] instabilityValues = { 0.0D, 0.0D, 0.0D, 0.0D }; // no instability  = 0, explosion = 100
+	
+	// computed properties
+	private int updateTicks = 0;
+	private int setupTicks = 0;
+	
 	private float lasersReceived = 0;
 	private int lastGenerationRate = 0;
 	private int releasedThisTick = 0; // amount of energy released during current tick update
 	private long releasedThisCycle = 0; // amount of energy released during current cycle
 	private long releasedLastCycle = 0;
-	
-	private boolean hold = true; // hold updates and power output until reactor is controlled (i.e. don't explode on chunk-loading while computer is booting)
-	private boolean isEnabled = false;
-	private static final int MODE_DONT_RELEASE = 0;
-	private static final int MODE_MANUAL_RELEASE = 1;
-	private static final int MODE_RELEASE_ABOVE = 2;
-	private static final int MODE_RELEASE_AT_RATE = 3;
-	private static final String[] MODE_STRING = { "OFF", "MANUAL", "ABOVE", "RATE" };
-	private int releaseMode = 0;
-	private int releaseRate = 0;
-	private int releaseAbove = 0;
-	
-	private boolean init = false;
 	
 	public TileEntityEnanReactorCore() {
 		super();
@@ -71,89 +79,129 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			"enable",
 			"energy",		// returns energy, max energy, energy rate
 			"instability",	// returns ins0,1,2,3
+			"instabilityTarget",
 			"release",		// releases all energy
 			"releaseRate",	// releases energy when more than arg0 is produced
 			"releaseAbove",	// releases any energy above arg0 amount
+			"stabilizerEnergy",
 			"state"
 		});
 		CC_scripts = Arrays.asList("startup");
 	}
 	
-	private void increaseInstability(EnumFacing from, boolean isNatural) {
-		if (energy_canOutput(from)) {
+	@Override
+	public void update() {
+		super.update();
+		
+		if (worldObj.isRemote) {
 			return;
 		}
 		
-		int side = from.ordinal() - 2;
-		if (containedEnergy > WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * PR_MIN_GENERATION * 100) {
-			double amountToIncrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS
-					* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((worldObj.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.1));
-			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info(String.format("increaseInstability %.5f", amountToIncrease));
+		if (WarpDriveConfig.LOGGING_ENERGY) {
+			WarpDrive.logger.info(String.format("updateTicks %d setupTicks %d releasedThisTick %6d lasersReceived %.5f releasedThisCycle %6d containedEnergy %8d",
+			                                    updateTicks, setupTicks, releasedThisTick, lasersReceived, releasedThisCycle, containedEnergy));
+		}
+		releasedThisTick = 0;
+		
+		setupTicks--;
+		if (setupTicks <= 0) {
+			setupTicks = ENAN_REACTOR_SETUP_TICKS;
+			scanSetup();
+		}
+		
+		lasersReceived = Math.max(0.0F, lasersReceived - 0.05F);
+		updateTicks--;
+		if (updateTicks > 0) {
+			return;
+		}
+		updateTicks = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS;
+		releasedLastCycle = releasedThisCycle;
+		releasedThisCycle = 0;
+		
+		updateMetadata();
+		
+		if (!hold) {// still loading/booting => hold simulation
+			// unstable at all time
+			if (shouldExplode()) {
+				explode();
 			}
-			instabilityValues[side] += amountToIncrease * (isNatural ? 1.0D : 0.25D);
-		} else {
-			double amountToDecrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * Math.max(PR_MIN_INSTABILITY, instabilityValues[side] * 0.02D);
-			instabilityValues[side] = Math.max(0.0D, instabilityValues[side] - amountToDecrease);
+			increaseInstability();
+			
+			generateEnergy();
+			
+			runControlLoop();
+		}
+		
+		sendEvent("reactorPulse", lastGenerationRate);
+	}
+	
+	private void increaseInstability() {
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			// increase instability
+			final int indexStability = reactorFace.indexStability;
+			if (containedEnergy > WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * PR_MIN_GENERATION * 100) {
+				final double amountToIncrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS
+						* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((worldObj.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.1));
+				if (WarpDriveConfig.LOGGING_ENERGY) {
+					WarpDrive.logger.info(String.format("increaseInstability %.5f", amountToIncrease));
+				}
+				instabilityValues[indexStability] += amountToIncrease;
+			} else {
+				// when charge is extremely low, reactor is naturally stabilizing, to avoid infinite decay
+				final double amountToDecrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * Math.max(PR_MIN_INSTABILITY, instabilityValues[indexStability] * 0.02D);
+				instabilityValues[indexStability] = Math.max(0.0D, instabilityValues[indexStability] - amountToDecrease);
+			}
 		}
 	}
 	
-	private void increaseInstability(final boolean isNatural) {
-		increaseInstability(EnumFacing.NORTH, isNatural);
-		increaseInstability(EnumFacing.SOUTH, isNatural);
-		increaseInstability(EnumFacing.EAST, isNatural);
-		increaseInstability(EnumFacing.WEST, isNatural);
-	}
-	
-	public void decreaseInstability(final EnumFacing from, final int energy) {
-		if (energy_canOutput(from)) {
+	public void decreaseInstability(final EnumReactorFace reactorFace, final int energy) {
+		if (reactorFace.indexStability < 0) {
 			return;
 		}
 		
-		// laser is active => start updating reactor
-		hold = false;
-		
-		int amount = convertInternalToRF_floor(energy);
+		final int amount = convertInternalToRF_floor(energy);
 		if (amount <= 1) {
 			return;
 		}
 		
-		lasersReceived = Math.min(10.0F, lasersReceived + 1F / WarpDriveConfig.ENAN_REACTOR_MAX_LASERS_PER_SECOND);
-		double nospamFactor = 1.0;
+		lasersReceived = Math.min(10.0F, lasersReceived + 1.0F / WarpDriveConfig.ENAN_REACTOR_MAX_LASERS_PER_SECOND);
+		double nospamFactor = 1.0D;
 		if (lasersReceived > 1.0F) {
 			nospamFactor = 0.5;
-			worldObj.newExplosion(null, pos.getX() + from.getFrontOffsetX(), pos.getY() + from.getFrontOffsetY(), pos.getZ() + from.getFrontOffsetZ(), 1, false, false);
-			// increaseInstability(from, false);
-			// increaseInstability(false);
+			worldObj.newExplosion(null,
+			                      pos.getX() + reactorFace.facing.getFrontOffsetX(),
+			                      pos.getY() + reactorFace.facing.getFrontOffsetY(),
+			                      pos.getZ() + reactorFace.facing.getFrontOffsetZ(),
+			                      1, false, false);
 		}
-		double normalisedAmount = Math.min(1.0D, Math.max(0.0D, amount / PR_MAX_LASER_ENERGY)); // 0.0 to 1.0
-		double baseLaserEffect = 0.5D + 0.5D * Math.cos(Math.PI - (1.0D + Math.log10(0.1D + 0.9D * normalisedAmount)) * Math.PI); // 0.0 to 1.0
-		double randomVariation = 0.8D + 0.4D * worldObj.rand.nextDouble(); // ~1.0
-		double amountToRemove = PR_MAX_LASER_EFFECT * baseLaserEffect * randomVariation * nospamFactor;
+		final double normalisedAmount = Math.min(1.0D, Math.max(0.0D, amount / PR_MAX_LASER_ENERGY)); // 0.0 to 1.0
+		final double baseLaserEffect = 0.5D + 0.5D * Math.cos(Math.PI - (1.0D + Math.log10(0.1D + 0.9D * normalisedAmount)) * Math.PI); // 0.0 to 1.0
+		final double randomVariation = 0.8D + 0.4D * worldObj.rand.nextDouble(); // ~1.0
+		final double amountToRemove = PR_MAX_LASER_EFFECT * baseLaserEffect * randomVariation * nospamFactor;
 		
-		int side = from.ordinal() - 2;
+		final int indexStability = reactorFace.indexStability;
 		
 		if (WarpDriveConfig.LOGGING_ENERGY) {
-			if (side == 3) {
-				WarpDrive.logger.info("Instability on " + from
+			if (indexStability == 3) {
+				WarpDrive.logger.info("Instability on " + reactorFace
 					+ " decreased by " + String.format("%.1f", amountToRemove) + "/" + String.format("%.1f", PR_MAX_LASER_EFFECT)
 					+ " after consuming " + amount + "/" + PR_MAX_LASER_ENERGY + " lasersReceived is " + String.format("%.1f", lasersReceived) + " hence nospamFactor is " + nospamFactor);
 			}
 		}
 		
-		instabilityValues[side] = Math.max(0, instabilityValues[side] - amountToRemove);
+		instabilityValues[indexStability] = Math.max(0, instabilityValues[indexStability] - amountToRemove);
 		
-		updateSideTextures();
+		updateMetadata();
 	}
 	
 	private void generateEnergy() {
 		double stabilityOffset = 0.5;
-		for (int i = 0; i < 4; i++) {
-			stabilityOffset *= Math.max(0.01D, instabilityValues[i] / 100.0D);
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			stabilityOffset *= Math.max(0.01D, instabilityValues[reactorFace.indexStability] / 100.0D);
 		}
 		
-		if (isEnabled) {// producing, instability increase output, you want to take the risk
-			int amountToGenerate = (int) Math.ceil(WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * (0.5D + stabilityOffset)
+		if (isEnabled) {// producing, instability increases output, you want to take the risk
+			final int amountToGenerate = (int) Math.ceil(WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * (0.5D + stabilityOffset)
 					* (PR_MIN_GENERATION + PR_MAX_GENERATION * Math.pow(containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.6D)));
 			containedEnergy = Math.min(containedEnergy + amountToGenerate, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
 			lastGenerationRate = amountToGenerate / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS;
@@ -170,54 +218,40 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 	}
 	
-	@Override
-	public void update() {
-		super.update();
-		
-		if (worldObj.isRemote) {
-			return;
-		}
-		
-		if (WarpDriveConfig.LOGGING_ENERGY) {
-			WarpDrive.logger.info(String.format("tickCount %d releasedThisTick %6d lasersReceived %.5f releasedThisCycle %6d containedEnergy %8d",
-			                                    tickCount, releasedThisTick, lasersReceived, releasedThisCycle, containedEnergy));
-		}
-		releasedThisTick = 0;
-		
-		lasersReceived = Math.max(0.0F, lasersReceived - 0.05F);
-		tickCount++;
-		if (tickCount < WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS) {
-			return;
-		}
-		tickCount = 0;
-		releasedLastCycle = releasedThisCycle;
-		releasedThisCycle = 0;
-		
-		if (!init) {
-			init = true;
-			updatedNeighbours();
-		}
-		
-		updateSideTextures();
-		
-		if (!hold) {// still loading/booting => hold simulation
-			// unstable at all time
-			if (shouldExplode()) {
-				explode();
+	private void runControlLoop() {
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			if (instabilityValues[reactorFace.indexStability] > instabilityTarget) {
+				final TileEntity tileEntity = worldObj.getTileEntity(
+					pos.add(reactorFace.x, reactorFace.y, reactorFace.z));
+				if (tileEntity instanceof TileEntityEnanReactorLaser) {
+					((TileEntityEnanReactorLaser) tileEntity).stabilize(stabilizerEnergy);
+				}
 			}
-			increaseInstability(true);
-			
-			generateEnergy();
 		}
+	}
+	
+	private boolean shouldExplode() {
+		boolean exploding = false;
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			exploding = exploding || (instabilityValues[reactorFace.indexStability] >= 100);
+		}
+		exploding &= (worldObj.rand.nextInt(4) == 2);
 		
-		sendEvent("reactorPulse", lastGenerationRate);
+		if (exploding) {
+			WarpDrive.logger.info(this
+			                      + String.format(" Explosion triggered, Instability is [%.2f, %.2f, %.2f, %.2f], Energy stored is %d, Laser received is %.2f, %s",
+			                                      instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3],
+			                                      containedEnergy, lasersReceived, isEnabled ? "ENABLED" : "DISABLED"));
+			isEnabled = false;
+		}
+		return exploding;
 	}
 	
 	private void explode() {
 		// remove blocks randomly up to x blocks around (breaking whatever protection is there)
-		double normalizedEnergy = containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED;
-		int radius = (int) Math.round(PR_MAX_EXPLOSION_RADIUS * Math.pow(normalizedEnergy, 0.125));
-		double chanceOfRemoval = PR_MAX_EXPLOSION_REMOVAL_CHANCE * Math.pow(normalizedEnergy, 0.125);
+		final double normalizedEnergy = containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED;
+		final int radius = (int) Math.round(PR_MAX_EXPLOSION_RADIUS * Math.pow(normalizedEnergy, 0.125));
+		final double chanceOfRemoval = PR_MAX_EXPLOSION_REMOVAL_CHANCE * Math.pow(normalizedEnergy, 0.125);
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " Explosion radius is " + radius + ", Chance of removal is " + chanceOfRemoval);
 		}
@@ -244,7 +278,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		// set a few augmented TnT around reactor core
 		for (int i = 0; i < 3; i++) {
-			worldObj.newExplosion((Entity) null,
+			worldObj.newExplosion(null,
 				pos.getX() + worldObj.rand.nextInt(3) - 0.5D,
 				pos.getY() + worldObj.rand.nextInt(3) - 0.5D,
 				pos.getZ() + worldObj.rand.nextInt(3) - 0.5D,
@@ -252,51 +286,62 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 	}
 	
-	private void updateSideTextures() {
+	private void updateMetadata() {
 		double maxInstability = 0.0D;
-		for (Double ins : instabilityValues) {
-			if (ins > maxInstability) {
-				maxInstability = ins;
+		for (final Double instability : instabilityValues) {
+			if (instability > maxInstability) {
+				maxInstability = instability;
 			}
 		}
-		int instabilityNibble = (int) Math.max(0, Math.min(3, Math.round(maxInstability / 25.0D)));
-		int energyNibble = (int) Math.max(0, Math.min(3, Math.round(4.0D * containedEnergy / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED)));
+		final int instabilityNibble = (int) Math.max(0, Math.min(3, Math.round(maxInstability / 25.0D)));
+		final int energyNibble = (int) Math.max(0, Math.min(3, Math.round(4.0D * containedEnergy / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED)));
 		
-		int metadata = 4 * instabilityNibble + energyNibble;
+		final int metadata = 4 * instabilityNibble + energyNibble;
 		if (getBlockMetadata() != metadata) {
 			updateMetadata(metadata);
 		}
 	}
 	
-	private boolean shouldExplode() {
-		boolean exploding = false;
-		for (int i = 0; i < 4; i++) {
-			exploding = exploding || (instabilityValues[i] >= 100);
-		}
-		exploding &= (worldObj.rand.nextInt(4) == 2);
+	@Override
+	public void onBlockUpdateDetected() {
+		super.onBlockUpdateDetected();
 		
-		if (exploding) {
-			WarpDrive.logger.info(this
-				+ String.format(" Explosion triggered, Instability is [%.2f, %.2f, %.2f, %.2f], Energy stored is %d, Laser received is %.2f, %s",
-				instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3],
-				containedEnergy, lasersReceived, isEnabled ? "ENABLED" : "DISABLED"));
-			isEnabled = false;
-		}
-		return exploding;
+		setupTicks = 0;
 	}
 	
-	@Override
-	public void updatedNeighbours() {
-		super.updatedNeighbours();
+	private void scanSetup() {
+		// first check if we have the required 'air' blocks
+		boolean isValid = true;
+		for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
+			if (reactorFace.tier != tier) {
+				continue;
+			}
+			if (reactorFace.indexStability < 0) {
+				final BlockPos blockPos = pos.add(reactorFace.x, reactorFace.y, reactorFace.z);
+				final IBlockState blockState = worldObj.getBlockState(blockPos);
+				final boolean isAir = blockState.getBlock().isAir(blockState, worldObj, blockPos);
+				if (!isAir) {
+					isValid = false;
+					final Vector3 vPosition = new Vector3(blockPos).translate(0.5D);
+					PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, vPosition,
+					                                      new Vector3(0.0D, 0.0D, 0.0D),
+					                                      1.0F, 1.0F, 1.0F,
+					                                      1.0F, 1.0F, 1.0F,
+					                                      32);
+				}
+			}
+		}
 		
-		int[] offsetsX = { 0, 0, -2, 2 };
-		int[] offsetsZ = { 2, -2, 0, 0 };
-		
-		TileEntity tileEntity;
-		for (int i = 0; i < 4; i++) {
-			tileEntity = worldObj.getTileEntity(pos.add(offsetsX[i], 0, offsetsZ[i]));
+		// then update the stabilization lasers accordingly
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			final TileEntity tileEntity = worldObj.getTileEntity(
+				pos.add(reactorFace.x, reactorFace.y, reactorFace.z));
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
-				((TileEntityEnanReactorLaser) tileEntity).scanForReactor();
+				if (isValid) {
+					((TileEntityEnanReactorLaser) tileEntity).setReactorFace(reactorFace, this);
+				} else {
+					((TileEntityEnanReactorLaser) tileEntity).setReactorFace(EnumReactorFace.UNKNOWN, null);
+				}
 			}
 		}
 	}
@@ -325,6 +370,41 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
+	public Object[] energy() {
+		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
+	}
+	
+	@Override
+	public Object[] instability() {
+		// computer is alive => start updating reactor
+		hold = false;
+		
+		ArrayList<Double> result = new ArrayList<>(16);
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			result.add(reactorFace.indexStability, instabilityValues[reactorFace.indexStability]);
+		}
+		return result.toArray();
+	}
+	
+	@Override
+	public Object[] instabilityTarget(Object[] arguments) {
+		if (arguments.length == 1) {
+			double instabilityTargetRequested;
+			try {
+				instabilityTargetRequested = Commons.toDouble(arguments[0]);
+			} catch (Exception exception) {
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on instabilityTarget(): Double expected for 1st argument " + arguments[0]);
+				}
+				return new Object[] { instabilityTarget };
+			}
+			
+			instabilityTarget = Commons.clamp(0.0D, 100.0D, instabilityTargetRequested);
+		}
+		return new Object[] { instabilityTarget };
+	}
+	
+	@Override
 	public Object[] release(Object[] arguments) {
 		if (arguments.length == 1) {
 			boolean releaseRequested;
@@ -334,14 +414,14 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on release(): Boolean expected for 1st argument " + arguments[0]);
 				}
-				return new Object[] { releaseMode != MODE_DONT_RELEASE };
+				return new Object[] { releaseMode != EnumReactorReleaseMode.OFF };
 			}
 			
-			releaseMode = releaseRequested ? MODE_MANUAL_RELEASE : MODE_DONT_RELEASE;
+			releaseMode = releaseRequested ? EnumReactorReleaseMode.UNLIMITED : EnumReactorReleaseMode.OFF;
 			releaseAbove = 0;
 			releaseRate = 0;
 		}
-		return new Object[] { releaseMode != MODE_DONT_RELEASE };
+		return new Object[] { releaseMode != EnumReactorReleaseMode.OFF };
 	}
 	
 	@Override
@@ -354,19 +434,19 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on releaseRate(): Integer expected for 1st argument " + arguments[0]);
 				}
-				return new Object[] { MODE_STRING[releaseMode], releaseRate };
+				return new Object[] { releaseMode.getName(), releaseRate };
 			}
 			
 			if (releaseRateRequested <= 0) {
-				releaseMode = MODE_DONT_RELEASE;
+				releaseMode = EnumReactorReleaseMode.OFF;
 				releaseRate = 0;
 			} else {
 				// player has to adjust it
 				releaseRate = releaseRateRequested;
-				releaseMode = MODE_RELEASE_AT_RATE;
+				releaseMode = EnumReactorReleaseMode.AT_RATE;
 			}
 		}
-		return new Object[] { MODE_STRING[releaseMode], releaseRate };
+		return new Object[] { releaseMode.getName(), releaseRate };
 	}
 	
 	@Override
@@ -378,42 +458,74 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			if (WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.error(this + " LUA error on releaseAbove(): Integer expected for 1st argument " + arguments[0]);
 			}
-			return new Object[] { MODE_STRING[releaseMode], releaseAbove };
+			return new Object[] { releaseMode.getName(), releaseAbove };
 		}
 		
 		if (releaseAboveRequested <= 0) {
-			releaseMode = 0;
-			releaseAbove = MODE_DONT_RELEASE;
+			releaseMode = EnumReactorReleaseMode.OFF;
+			releaseAbove = 0;
 		} else {
-			releaseMode = MODE_RELEASE_ABOVE;
+			releaseMode = EnumReactorReleaseMode.ABOVE;
 			releaseAbove = releaseAboveRequested;
 		}
 		
-		return new Object[] { MODE_STRING[releaseMode], releaseAbove };
+		return new Object[] { releaseMode.getName(), releaseAbove };
+	}
+	
+	@Override
+	public Object[] stabilizerEnergy(Object[] arguments) {
+		if (arguments.length == 1) {
+			int stabilizerEnergyRequested;
+			try {
+				stabilizerEnergyRequested = Commons.toInt(arguments[0]);
+			} catch (Exception exception) {
+				if (WarpDriveConfig.LOGGING_LUA) {
+					WarpDrive.logger.error(this + " LUA error on stabilizerEnergy(): Integer expected for 1st argument " + arguments[0]);
+				}
+				return new Object[] { stabilizerEnergy };
+			}
+			
+			stabilizerEnergy = Commons.clamp(0, Integer.MAX_VALUE, stabilizerEnergyRequested);
+		}
+		return new Object[] { stabilizerEnergy };
 	}
 	
 	@Override
 	public Object[] state() {
 		final String status = getStatusHeaderInPureText();
-		if (releaseMode == MODE_DONT_RELEASE || releaseMode == MODE_MANUAL_RELEASE) {
-			return new Object[] { status, isEnabled, containedEnergy, MODE_STRING[releaseMode], 0 };
-		} else if (releaseMode == MODE_RELEASE_ABOVE) {
-			return new Object[] { status, isEnabled, containedEnergy, MODE_STRING[releaseMode], releaseAbove };
+		if (releaseMode == EnumReactorReleaseMode.OFF || releaseMode == EnumReactorReleaseMode.UNLIMITED) {
+			return new Object[] { status, isEnabled, containedEnergy, releaseMode.getName(), 0 };
+		} else if (releaseMode == EnumReactorReleaseMode.ABOVE) {
+			return new Object[] { status, isEnabled, containedEnergy, releaseMode.getName(), releaseAbove };
 		} else {
-			return new Object[] { status, isEnabled, containedEnergy, MODE_STRING[releaseMode], releaseRate };
+			return new Object[] { status, isEnabled, containedEnergy, releaseMode.getName(), releaseRate };
 		}
 	}
 	
 	// OpenComputer callback methods
-	@Override
-	public Object[] energy() {
-		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
-	}
-	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
 	public Object[] enable(Context context, Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
+	}
+	
+	@Callback
+	@Override
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] energy(Context context, Arguments arguments) {
+		return energy();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] instability(Context context, Arguments arguments) {
+		return instability();
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] instabilityTarget(Context context, Arguments arguments) {
+		return instabilityTarget(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
@@ -436,10 +548,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] instability(Context context, Arguments arguments) {
-		// computer is alive => start updating reactor
-		hold = false;
-		return new Double[] { instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3] };
+	public Object[] stabilizerEnergy(Context context, Arguments arguments) {
+		return stabilizerEnergy(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
@@ -466,11 +576,10 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				return energy();
 				
 			case "instability":
-				Object[] retVal = new Object[4];
-				for (int i = 0; i < 4; i++) {
-					retVal[i] = instabilityValues[i];
-				}
-				return retVal;
+				return instability();
+				
+			case "instabilityTarget":
+				return instabilityTarget(arguments);
 				
 			case "release":
 				return release(arguments);
@@ -480,6 +589,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				
 			case "releaseAbove":
 				return releaseAbove(arguments);
+				
+			case "stabilizerEnergy":
+				return stabilizerEnergy(arguments);
 				
 			case "state":
 				return state();
@@ -500,17 +612,17 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 		int result = 0;
 		int capacity = Math.max(0, 2 * lastGenerationRate - releasedThisTick);
-		if (releaseMode == MODE_MANUAL_RELEASE) {
+		if (releaseMode == EnumReactorReleaseMode.UNLIMITED) {
 			result = Math.min(Math.max(0, containedEnergy), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info("PotentialOutput Manual " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
 			}
-		} else if (releaseMode == MODE_RELEASE_ABOVE) {
+		} else if (releaseMode == EnumReactorReleaseMode.ABOVE) {
 			result = Math.min(Math.max(0, containedEnergy - releaseAbove), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info("PotentialOutput Above " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
 			}
-		} else if (releaseMode == MODE_RELEASE_AT_RATE) {
+		} else if (releaseMode == EnumReactorReleaseMode.AT_RATE) {
 			int remainingRate = Math.max(0, releaseRate - releasedThisTick);
 			result = Math.min(Math.max(0, containedEnergy), Math.min(remainingRate, capacity));
 			if (WarpDriveConfig.LOGGING_ENERGY) {
@@ -553,45 +665,64 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
-		tagCompound.setInteger("energy", containedEnergy);
-		tagCompound.setInteger("releaseMode", releaseMode);
+		tagCompound.setInteger("tier", tier.ordinal());
+		
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setInteger("releaseMode", releaseMode.ordinal());
 		tagCompound.setInteger("releaseRate", releaseRate);
 		tagCompound.setInteger("releaseAbove", releaseAbove);
-		tagCompound.setDouble("i0", instabilityValues[0]);
-		tagCompound.setDouble("i1", instabilityValues[1]);
-		tagCompound.setDouble("i2", instabilityValues[2]);
-		tagCompound.setDouble("i3", instabilityValues[3]);
-		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setDouble("instabilityTarget", instabilityTarget);
+		tagCompound.setInteger("stabilizerEnergy", stabilizerEnergy);
+		
+		tagCompound.setInteger("energy", containedEnergy);
+		final NBTTagCompound tagCompoundInstability = new NBTTagCompound();
+		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+			tagCompoundInstability.setDouble(reactorFace.name, instabilityValues[reactorFace.indexStability]);
+		}
+		tagCompound.setTag("instability", tagCompoundInstability);
 		return tagCompound;
 	}
 	
 	@Override
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		containedEnergy = tagCompound.getInteger("energy");
-		releaseMode = tagCompound.getInteger("releaseMode");
-		releaseRate = tagCompound.getInteger("releaseRate");
-		releaseAbove = tagCompound.getInteger("releaseAbove");
-		instabilityValues[0] = tagCompound.getDouble("i0");
-		instabilityValues[1] = tagCompound.getDouble("i1");
-		instabilityValues[2] = tagCompound.getDouble("i2");
-		instabilityValues[3] = tagCompound.getDouble("i3");
-		isEnabled = tagCompound.getBoolean("active")    // up to 1.3.30 included
-		         || tagCompound.getBoolean("isEnabled");
+		if (tagCompound.hasKey("tier")) {// added in 1.3.37
+			tier = EnumTier.get(tagCompound.getInteger("tier"));
+			isEnabled = tagCompound.getBoolean("isEnabled");
+			releaseMode = EnumReactorReleaseMode.get(tagCompound.getInteger("releaseMode"));
+			releaseRate = tagCompound.getInteger("releaseRate");
+			releaseAbove = tagCompound.getInteger("releaseAbove");
+			instabilityTarget = tagCompound.getDouble("instabilityTarget");
+			stabilizerEnergy = tagCompound.getInteger("stabilizerEnergy");
+			
+			containedEnergy = tagCompound.getInteger("energy");
+			final NBTTagCompound tagCompoundInstability = tagCompound.getCompoundTag("instability");
+			for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
+				instabilityValues[reactorFace.indexStability] = tagCompoundInstability.getDouble(reactorFace.name);
+			}
+			
+		} else {// upgrade legacy block, resetting reactor state
+			tier = EnumTier.BASIC;
+			isEnabled = false;
+			releaseMode = EnumReactorReleaseMode.get(tagCompound.getInteger("releaseMode"));
+			releaseRate = tagCompound.getInteger("releaseRate");
+			releaseAbove = tagCompound.getInteger("releaseAbove");
+			// keep default values for others
+		}
 	}
 	
 	@Override
 	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeItemDropNBT(tagCompound);
-		tagCompound.removeTag("energy");
+		tagCompound.removeTag("isEnabled");
 		tagCompound.removeTag("releaseMode");
 		tagCompound.removeTag("releaseRate");
 		tagCompound.removeTag("releaseAbove");
-		tagCompound.removeTag("i0");
-		tagCompound.removeTag("i1");
-		tagCompound.removeTag("i2");
-		tagCompound.removeTag("i3");
-		tagCompound.removeTag("isEnabled");
+		tagCompound.removeTag("instabilityTarget");
+		tagCompound.removeTag("stabilizerEnergy");
+		
+		tagCompound.removeTag("energy");
+		tagCompound.removeTag("instability");
 		return tagCompound;
 	}
 	

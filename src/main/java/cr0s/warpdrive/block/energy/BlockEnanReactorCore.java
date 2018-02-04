@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.energy;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumReactorFace;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
@@ -10,6 +11,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
@@ -23,25 +26,31 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityEnanReactorCore();
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
 	public void breakBlock(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState) {
 		super.breakBlock(world, blockPos, blockState);
 		
-		int[] offsetsX = { -2, 2, 0, 0 };
-		int[] offsetsZ = { 0, 0, -2, 2 };
-		for (int i = 0; i < 4; i++) {
-			TileEntity tileEntity = world.getTileEntity(blockPos.add(offsetsX[i], 0, offsetsZ[i]));
+		for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
+			if (reactorFace.indexStability < 0) {
+				continue;
+			}
+			
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
-				((TileEntityEnanReactorLaser) tileEntity).unlink();
+				if (((TileEntityEnanReactorLaser) tileEntity).getReactorFace() == reactorFace) {
+					((TileEntityEnanReactorLaser) tileEntity).setReactorFace(EnumReactorFace.UNKNOWN, null);
+				}
 			}
 		}
 	}
 	
 	@Override
+
 	public byte getTier(final ItemStack itemStack) {
 		return 3;
 	}

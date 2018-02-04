@@ -117,13 +117,13 @@ public class ForceFieldSetup extends GlobalPosition {
 	}
 	
 	private float getScaledUpgrade(final IForceFieldUpgradeEffector effector) {
-		Float scaledValue = upgrades.get(effector);
+		final Float scaledValue = upgrades.get(effector);
 		return scaledValue == null ? 0.0F : scaledValue;
 	}
 	
 	private void refresh() {
-		Set<TileEntity> tileEntities = ForceFieldRegistry.getTileEntities(beamFrequency, getWorldServerIfLoaded(), x, y, z);
-		HashMap<IForceFieldUpgradeEffector, Float> upgradeValues = new HashMap<>(EnumForceFieldUpgrade.length);
+		final Set<TileEntity> tileEntities = ForceFieldRegistry.getTileEntities(beamFrequency, getWorldServerIfLoaded(), x, y, z);
+		final HashMap<IForceFieldUpgradeEffector, Float> upgradeValues = new HashMap<>(EnumForceFieldUpgrade.length);
 		Vector3 v3Min = new Vector3(-1.0D, -1.0D, -1.0D);
 		Vector3 v3Max = new Vector3( 1.0D,  1.0D,  1.0D);
 		Vector3 v3Translation = new Vector3(0.0D, 0.0D, 0.0D);

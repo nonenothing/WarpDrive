@@ -22,7 +22,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityEnanReactorLaser();
 	}
 	

@@ -219,13 +219,19 @@ function reactor_setLaser()
   elseif data.reactor_laserAmount > 100000 then
     data.reactor_laserAmount = 100000
   end
+  if reactor ~= nill then
+    data.reactor_laserAmount = reactor.stabilizerEnergy(data.reactor_laserAmount)
+  end
 end
 
 function reactor_setTargetStability()
-  if data.reactor_targetStability < 1 then
-    data.reactor_targetStability = 1
-  elseif data.reactor_targetStability > 100 then
-    data.reactor_targetStability = 100
+  if data.reactor_targetStability < 1.0 then
+    data.reactor_targetStability = 1.0
+  elseif data.reactor_targetStability > 100.0 then
+    data.reactor_targetStability = 100.0
+  end
+  if reactor ~= nill then
+    data.reactor_targetStability = 100.0 - reactor.instabilityTarget(100.0 - data.reactor_targetStability)
   end
 end
 
@@ -257,12 +263,6 @@ function reactor_pulse(output)
     w.reboot()
   end
   local instabilities = { reactor.instability() }
-  for key, instability in pairs(instabilities) do
-    local stability = 100.0 - instability
-    if stability < data.reactor_targetStability then
-      reactor_laser(key - 1)
-    end
-  end
   if w.page_getCallbackDisplay() == reactor_page and (not reactor_configPageLoaded) then
     for key, instability in pairs(instabilities) do
       w.setCursorPos(12, 2 + key)

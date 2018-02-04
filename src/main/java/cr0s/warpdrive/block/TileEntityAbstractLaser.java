@@ -29,7 +29,8 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	protected int cache_laserMedium_energyStored = 0;
 	protected int cache_laserMedium_maxStorage = 0;
 	
-	private final int updateInterval_ticks = 20 * WarpDriveConfig.SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS;
+	private final int updateInterval_slow_ticks = 20 * WarpDriveConfig.SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS;
+	protected int updateInterval_ticks = updateInterval_slow_ticks;
 	private int updateTicks = updateInterval_ticks;
 	private int bootTicks = 20;
 	

@@ -78,7 +78,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super.onBlockAdded(world, pos, state);
 		TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
-			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
+			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
 	}
 	
@@ -147,11 +147,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public void neighborChanged(IBlockState blockState, World world, BlockPos blockPos, Block block) {
+	public void neighborChanged(final IBlockState blockState, final World world, final BlockPos blockPos, final Block block) {
 		super.neighborChanged(blockState, world, blockPos, block);
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
-			((IBlockUpdateDetector) tileEntity).updatedNeighbours();
+			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
 	}
 	

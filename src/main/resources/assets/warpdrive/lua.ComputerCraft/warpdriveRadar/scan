@@ -33,10 +33,10 @@ if #argv ~= 1 then
 end
 
 local radius = tonumber(argv[1])
-local scale = 50
 
 local w, h = term.getSize()
-local radarX, radarY, radarZ = radar.position()
+local scale = math.min(w, h) / 2
+local _, _, _, _, radarX, radarY, radarZ = radar.position()
 
 term.clear()
 
@@ -55,7 +55,7 @@ function textOut(x, y, text, fg, bg)
   term.write(text)
   local _, yt = term.getCursorPos()
   term.setCursorPos(1, yt + 1)
-end	
+end
 
 function translateXZ(oldX, oldZ)
   local x = radarX - oldX
@@ -84,18 +84,12 @@ function scanAndDraw()
   local energy, energyMax = radar.energy()
   if energy == nil then energy = 0 end
   if energyMax == nil or energyMax == 0 then energyMax = 1 end
-    
+  
   local energyRequired = radar.getEnergyRequired(radius)
   if energyRequired == nil then energyRequired = 0 end
   
   if (energyRequired <= 0 or energy < energyRequired) then
-    local hh = math.floor(h / 2)
-    local hw = math.floor(w / 2)
-    
-    paintutils.drawLine(hw - 5, hh - 1, hw + 5, hh - 1, colors.red)
-    paintutils.drawLine(hw - 5, hh, hw + 5, hh, colors.red)
-    textOut(hw - 4, hh,"LOW POWER", colors.white, colors.red)
-    paintutils.drawLine(hw - 5, hh + 1, hw + 5, hh + 1, colors.red)
+    textOut((w / 2) - 7, 1, " /!\\  LOW POWER ", colors.white, colors.red)
     os.sleep(1)
     
     return 0
@@ -103,23 +97,31 @@ function scanAndDraw()
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)
+  textOut((w / 2) - 7, 1, "   ping sent    ", colors.gray, colors.black)
   os.sleep(scanDuration)
+  
+  local delay = 0
+  local numResults
+  repeat
+    numResults = radar.getResultsCount()
+    os.sleep(0.05)
+    delay = delay + 1
+  until (numResults ~= nil and numResults ~= -1) or delay > 10
   
   redraw()
   
-  local numResults = radar.getResultsCount()
+  drawContact(radarX, radarY, radarZ, "RAD", colors.yellow)
   
-  if (numResults ~= 0) then
+  if numResults ~= nil and numResults > 0 then
     for i = 0, numResults-1 do
       local success, _, name, cx, cy, cz = radar.getResult(i)
-      
       if success then
         drawContact(cx, cy, cz, name, colors.red)
       end
     end
   end
   
-  drawContact(radarX, radarY, radarZ, "RAD", colors.yellow)
+  os.sleep(scanDuration)
 end
 
 function redraw()
@@ -127,9 +129,7 @@ function redraw()
   
   paintutils.drawLine(1, 1, w, 1, colors.black)
   
-  textOut((w / 2) - 8, 1, "= Q-Radar v0.3 =", colors.white, colors.black)
-  
-  textOut(w - 3, 1, "[X]", colors.white, colors.red)
+  textOut((w / 2) - 7, 1, "= Q-Radar v0.4 =", colors.white, colors.black)
   
   paintutils.drawLine(1, h, w, h, colors.black)
   local energy, _ = radar.energy()
@@ -140,6 +140,7 @@ end
 local continue = true
 while continue do
   scanAndDraw()
+  os.sleep(0)
 end
 
 term.clear()

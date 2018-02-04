@@ -57,7 +57,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	@Override
-	public void updatedNeighbours() {
+	public void onBlockUpdateDetected() {
 	}
 	
 	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, IProperty<T> property, V value) {
