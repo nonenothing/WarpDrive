@@ -94,8 +94,8 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	
 	@Optional.Method(modid = "IC2")
 	private boolean coolReactor(final IReactor reactor) {
-		for(int x = 0; x < 9; x++) {
-			for(int y = 0; y < 6; y++) {
+		for (int x = 0; x < 9; x++) {
+			for (int y = 0; y < 6; y++) {
 				final ItemStack itemStack = reactor.getItemAt(x, y);
 				if ( itemStack != null
 				  && itemStack.getItem() instanceof ItemIC2reactorLaserFocus ) {

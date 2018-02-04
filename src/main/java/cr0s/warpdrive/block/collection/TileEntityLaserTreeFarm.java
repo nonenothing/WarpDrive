@@ -374,7 +374,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				ItemStack itemStack = null;
 				IBlockState plant = null;
 				IInventory inventory = null;
-				for (IInventory inventoryLoop : inventories) {
+				for (final IInventory inventoryLoop : inventories) {
 					if (plant == null) {
 						slotIndex = 0;
 					}
@@ -495,12 +495,12 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		
 		LinkedList<BlockPos> soilPositions = new LinkedList<>();
 		
-		for(int y = yMin; y <= yMax; y++) {
-			for(int x = xMin; x <= xMax; x++) {
-				for(int z = zMin; z <= zMax; z++) {
-					BlockPos blockPos = new BlockPos(x, y, z);
+		for (int y = yMin; y <= yMax; y++) {
+			for (int x = xMin; x <= xMax; x++) {
+				for (int z = zMin; z <= zMax; z++) {
+					final BlockPos blockPos = new BlockPos(x, y, z);
 					if (worldObj.isAirBlock(blockPos.add(0, 1, 0))) {
-						Block block = worldObj.getBlockState(blockPos).getBlock();
+						final Block block = worldObj.getBlockState(blockPos).getBlock();
 						if (isSoil(block)) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
 								WarpDrive.logger.info("Found soil at " + x + " " + y + " " + z);
@@ -528,11 +528,11 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 		
 		Collection<BlockPos> logPositions = new HashSet<>();
 		
-		for(int y = yMin; y <= yMax; y++) {
-			for(int x = xMin; x <= xMax; x++) {
-				for(int z = zMin; z <= zMax; z++) {
-					BlockPos blockPos = new BlockPos(x, y, z);
-					Block block = worldObj.getBlockState(blockPos).getBlock();
+		for (int y = yMin; y <= yMax; y++) {
+			for (int x = xMin; x <= xMax; x++) {
+				for (int z = zMin; z <= zMax; z++) {
+					final BlockPos blockPos = new BlockPos(x, y, z);
+					final Block block = worldObj.getBlockState(blockPos).getBlock();
 					if (isLog(block)) {
 						if (!logPositions.contains(blockPos)) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {

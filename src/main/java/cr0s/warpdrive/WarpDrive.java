@@ -282,7 +282,7 @@ public class WarpDrive implements LoadingCallback {
 		blockAirGenerator = new BlockAirGenerator("blockAirGenerator");
 		
 		blockAirGeneratorTiered = new Block[3];
-		for(byte tier = 1; tier <= 3; tier++) {
+		for (byte tier = 1; tier <= 3; tier++) {
 			final int index = tier - 1;
 			blockAirGeneratorTiered[index] = new BlockAirGeneratorTiered("blockAirGenerator" + tier, tier);
 		}
@@ -335,7 +335,7 @@ public class WarpDrive implements LoadingCallback {
 		blockForceFields = new Block[3];
 		blockForceFieldProjectors = new Block[3];
 		blockForceFieldRelays = new Block[3];
-		for(byte tier = 1; tier <= 3; tier++) {
+		for (byte tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			blockForceFields[index] = new BlockForceField("blockForceField" + tier, tier);
 			blockForceFieldProjectors[index] = new BlockForceFieldProjector("blockProjector" + tier, tier);
@@ -396,8 +396,8 @@ public class WarpDrive implements LoadingCallback {
 		
 		for(byte tier = 1; tier <= 3; tier++) {
 			final int index = tier - 1;
-			for (EnumHullPlainType enumHullPlainType : EnumHullPlainType.values()) {
-				blockHulls_plain[index][enumHullPlainType.ordinal()] = new BlockHullPlain("blockHull" + tier + "_" + enumHullPlainType.getName(), tier, enumHullPlainType);
+			for (final EnumHullPlainType hullPlainType : EnumHullPlainType.values()) {
+				blockHulls_plain[index][hullPlainType.ordinal()] = new BlockHullPlain("blockHull" + tier + "_" + hullPlainType.getName(), tier, hullPlainType);
 			}
 			blockHulls_glass[index] = new BlockHullGlass("blockHull" + tier + "_glass", tier);
 			blockHulls_omnipanel[index] = new BlockHullOmnipanel("blockHull" + tier + "_omnipanel", tier);
@@ -506,7 +506,7 @@ public class WarpDrive implements LoadingCallback {
 	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
 		/* @TODO not sure why it would be needed, disabling for now
 		// load all owned dimensions at boot
-		for (CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
+		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
 			if (celestialObject.provider.equals(CelestialObject.PROVIDER_OTHER)) {
 				DimensionManager.getWorld(celestialObject.dimensionId);
 			}

@@ -1780,7 +1780,7 @@ public class Recipes {
 	
 	private static void initDynamicHull() {
 		// Hull ore dictionary
-		for(int tier = 1; tier <= 3; tier++) {
+		for (int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			for (int woolColor = 0; woolColor < 16; woolColor++) {
 				OreDictionary.registerOre("blockHull" + tier + "_plain", new ItemStack(WarpDrive.blockHulls_plain[index][0], 1, woolColor));
@@ -1925,7 +1925,7 @@ public class Recipes {
 		}
 		
 		// Hull blocks variation
-		for(int tier = 1; tier <= 3; tier++) {
+		for (int tier = 1; tier <= 3; tier++) {
 			int index = tier - 1;
 			for (EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
 				final int woolColor = enumDyeColor.getDyeDamage();  // @TODO sounds about wrong

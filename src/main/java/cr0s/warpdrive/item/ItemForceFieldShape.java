@@ -37,9 +37,9 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 		itemStackCache = new ItemStack[EnumForceFieldShape.length];
 	}
 	
-	public static ItemStack getItemStack(EnumForceFieldShape enumForceFieldShape) {
-		if (enumForceFieldShape != null) {
-			int damage = enumForceFieldShape.ordinal();
+	public static ItemStack getItemStack(final EnumForceFieldShape forceFieldShape) {
+		if (forceFieldShape != null) {
+			int damage = forceFieldShape.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldShape, 1, damage);
 			}
@@ -48,8 +48,8 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumForceFieldShape enumForceFieldShape, int amount) {
-		return new ItemStack(WarpDrive.itemForceFieldShape, amount, enumForceFieldShape.ordinal());
+	public static ItemStack getItemStackNoCache(final EnumForceFieldShape forceFieldShape, final int amount) {
+		return new ItemStack(WarpDrive.itemForceFieldShape, amount, forceFieldShape.ordinal());
 	}
 	
 	@Nonnull
@@ -93,12 +93,12 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
-		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
+		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.canTranslate(tooltipName1)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
-		String tooltipName2 = getUnlocalizedName() + ".tooltip";
+		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}

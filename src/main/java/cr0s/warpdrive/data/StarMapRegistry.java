@@ -260,8 +260,8 @@ public class StarMapRegistry {
 			tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
 		// printRegistry();
 		int radius2 = radius * radius;
-		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
-			for (StarMapRegistryItem starMapRegistryItem : entryDimension.getValue()) {
+		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
+			for (final StarMapRegistryItem starMapRegistryItem : entryDimension.getValue()) {
 				if (starMapRegistryItem.type == EnumStarMapEntryType.ACCELERATOR) {
 					continue;
 				}
@@ -313,9 +313,9 @@ public class StarMapRegistry {
 	public void printRegistry(final String trigger) {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
-		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
+		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			StringBuilder message = new StringBuilder();
-			for (StarMapRegistryItem registryItem : entryDimension.getValue()) {
+			for (final StarMapRegistryItem registryItem : entryDimension.getValue()) {
 				message.append(String.format("\n- %s '%s' @ DIM%d (%d %d %d) with %.3f isolation rate",
 				                             registryItem.type, registryItem.name,
 				                             registryItem.dimensionId, registryItem.x, registryItem.y, registryItem.z,
@@ -338,7 +338,7 @@ public class StarMapRegistry {
 		if (setRegistryItems == null) {
 			return false;
 		}
-		for (StarMapRegistryItem registryItem : setRegistryItems) {
+		for (final StarMapRegistryItem registryItem : setRegistryItems) {
 			assert(registryItem.dimensionId == core.getWorld().provider.getDimension());
 			
 			// only check cores
@@ -391,13 +391,13 @@ public class StarMapRegistry {
 		LocalProfiler.start("Starmap registry cleanup");
 		
 		boolean isValid;
-		for (Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
+		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			final WorldServer world = DimensionManager.getWorld(entryDimension.getKey());
 			// skip unloaded worlds
 			if (world == null) {
 				continue;
 			}
-			for (StarMapRegistryItem registryItem : entryDimension.getValue()) {
+			for (final StarMapRegistryItem registryItem : entryDimension.getValue()) {
 				isValid = false;
 				if (registryItem != null) {
 					
@@ -475,7 +475,7 @@ public class StarMapRegistry {
 		final NBTTagList tagList = tagCompound.getTagList("starMapRegistryItems", Constants.NBT.TAG_COMPOUND);
 		final StarMapRegistryItem[] registryFlat = new StarMapRegistryItem[tagList.tagCount()];
 		final HashMap<Integer, Integer> sizeDimensions = new HashMap<>();
-		for(int index = 0; index < tagList.tagCount(); index++) {
+		for (int index = 0; index < tagList.tagCount(); index++) {
 			final StarMapRegistryItem starMapRegistryItem = new StarMapRegistryItem(tagList.getCompoundTagAt(index));
 			registryFlat[index] = starMapRegistryItem;
 			
@@ -487,26 +487,26 @@ public class StarMapRegistry {
 		
 		// pre-build the local collections using known stats to avoid re-allocations
 		final HashMap<Integer, ArrayList<StarMapRegistryItem>> registryLocal = new HashMap<>();
-		for(Entry<Integer, Integer> entryDimension : sizeDimensions.entrySet()) {
+		for (final Entry<Integer, Integer> entryDimension : sizeDimensions.entrySet()) {
 			registryLocal.put(entryDimension.getKey(), new ArrayList<>(entryDimension.getValue()));
 		}
 		
 		// fill the local collections
-		for(StarMapRegistryItem starMapRegistryItem : registryFlat) {
+		for (final StarMapRegistryItem starMapRegistryItem : registryFlat) {
 			registryLocal.get(starMapRegistryItem.dimensionId).add(starMapRegistryItem);
 		}
 		
 		// transfer to main one
 		registry.clear();
-		for(Entry<Integer, ArrayList<StarMapRegistryItem>> entry : registryLocal.entrySet()) {
+		for (final Entry<Integer, ArrayList<StarMapRegistryItem>> entry : registryLocal.entrySet()) {
 			registry.put(entry.getKey(), new CopyOnWriteArraySet<>(entry.getValue()));
 		}
 	}
 	
 	public void writeToNBT(final NBTTagCompound tagCompound) {
 		final NBTTagList tagList = new NBTTagList();
-		for(CopyOnWriteArraySet<StarMapRegistryItem> starMapRegistryItems : registry.values()) {
-			for(StarMapRegistryItem starMapRegistryItem : starMapRegistryItems) {
+		for (final CopyOnWriteArraySet<StarMapRegistryItem> starMapRegistryItems : registry.values()) {
+			for (final StarMapRegistryItem starMapRegistryItem : starMapRegistryItems) {
 				final NBTTagCompound tagCompoundItem = new NBTTagCompound();
 				starMapRegistryItem.writeToNBT(tagCompoundItem);
 				tagList.appendTag(tagCompoundItem);

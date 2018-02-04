@@ -147,7 +147,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			}
 		} else {
 			final NBTTagList tagListPlayers = tagCompound.getTagList("players", Constants.NBT.TAG_STRING);
-			for(int index = 0; index < tagListPlayers.tagCount(); index++) {
+			for (int index = 0; index < tagListPlayers.tagCount(); index++) {
 				final String namePlayer = tagListPlayers.getStringTagAt(index);
 				players.add(namePlayer);
 			}
@@ -351,7 +351,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	private void setCommand(final String command) {
-		for(EnumShipControllerCommand enumShipControllerCommand : EnumShipControllerCommand.values()) {
+		for (final EnumShipControllerCommand enumShipControllerCommand : EnumShipControllerCommand.values()) {
 			if (enumShipControllerCommand.name().equalsIgnoreCase(command)) {
 				this.command = enumShipControllerCommand;
 				markDirty();
@@ -447,7 +447,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] shipName(Object[] arguments) {
-		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? findCoreBlock() : tileEntityShipCoreWeakReference.get();
+		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		if (tileEntityShipCore == null) {
 			return null;
 		}

@@ -86,12 +86,12 @@ public class ForceFieldRegistry {
 		
 		// find all relays in that network
 		Set<TileEntity> setToIterateNext;
-		Set<TileEntity> setRelaysInRange = new HashSet<>();
+		final Set<TileEntity> setRelaysInRange = new HashSet<>();
 		while(!setToIterate.isEmpty()) {
 			setToIterateNext = new HashSet<>();
-			for (TileEntity tileEntityCurrent : setToIterate) {
+			for (final TileEntity tileEntityCurrent : setToIterate) {
 				setRelaysInRange.add(tileEntityCurrent);
-				for (TileEntity tileEntityEntry : setRelays) {
+				for (final TileEntity tileEntityEntry : setRelays) {
 					if (!setRelaysInRange.contains(tileEntityEntry) && !setToIterate.contains(tileEntityEntry) && !setToIterateNext.contains(tileEntityEntry)) {
 						range2 = (tileEntityCurrent.getPos().getX() - tileEntityEntry.getPos().getX()) * (tileEntityCurrent.getPos().getX() - tileEntityEntry.getPos().getX())
 						       + (tileEntityCurrent.getPos().getY() - tileEntityEntry.getPos().getY()) * (tileEntityCurrent.getPos().getY() - tileEntityEntry.getPos().getY())
@@ -106,9 +106,9 @@ public class ForceFieldRegistry {
 		}
 		
 		// find all non-relays in range of that network
-		Set<TileEntity> setEntries = new HashSet<>();
-		for (TileEntity tileEntityRelayInRange : setRelaysInRange) {
-			for (TileEntity tileEntityEntry : setNonRelays) {
+		final Set<TileEntity> setEntries = new HashSet<>();
+		for (final TileEntity tileEntityRelayInRange : setRelaysInRange) {
+			for (final TileEntity tileEntityEntry : setNonRelays) {
 				if (!setEntries.contains(tileEntityEntry)) {
 					range2 = (tileEntityRelayInRange.getPos().getX() - tileEntityEntry.getPos().getX()) * (tileEntityRelayInRange.getPos().getX() - tileEntityEntry.getPos().getX())
 					       + (tileEntityRelayInRange.getPos().getY() - tileEntityEntry.getPos().getY()) * (tileEntityRelayInRange.getPos().getY() - tileEntityEntry.getPos().getY())
@@ -146,16 +146,16 @@ public class ForceFieldRegistry {
 		}
 	}
 	
-	public static void removeFromRegistry(IBeamFrequency tileEntity) {
+	public static void removeFromRegistry(final IBeamFrequency tileEntity) {
 		assert(tileEntity instanceof TileEntity);
 		
 		countRead++;
-		Set<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());
+		final Set<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());
 		if (setGlobalPositions == null) {
 			// noting to remove
 			return;
 		}
-		for (Iterator<GlobalPosition> iterator = setGlobalPositions.iterator(); iterator.hasNext();) {
+		for (final Iterator<GlobalPosition> iterator = setGlobalPositions.iterator(); iterator.hasNext();) {
 			GlobalPosition globalPosition = iterator.next();
 			if (globalPosition.equals(tileEntity)) {
 				// found it, remove and exit
@@ -170,7 +170,7 @@ public class ForceFieldRegistry {
 	public static void printRegistry(final String trigger) {
 		WarpDrive.logger.info("Forcefield registry (" + registry.size() + " entries after " + trigger + "):");
 		
-		for (Map.Entry<Integer, CopyOnWriteArraySet<GlobalPosition>> entry : registry.entrySet()) {
+		for (final Map.Entry<Integer, CopyOnWriteArraySet<GlobalPosition>> entry : registry.entrySet()) {
 			String message = "";
 			for (GlobalPosition globalPosition : entry.getValue()) {
 				if (!message.isEmpty()) {

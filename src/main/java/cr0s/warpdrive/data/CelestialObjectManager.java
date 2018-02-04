@@ -97,7 +97,7 @@ public class CelestialObjectManager extends XmlFileManager {
 	
 	public static void onFMLInitialization() {
 		// only create dimensions if we own them
-		for (CelestialObject celestialObject : SERVER.celestialObjects) {
+		for (final CelestialObject celestialObject : SERVER.celestialObjects) {
 			if (!celestialObject.isVirtual()) {
 				switch (celestialObject.provider) {
 				case CelestialObject.PROVIDER_SPACE:
@@ -200,7 +200,7 @@ public class CelestialObjectManager extends XmlFileManager {
 		final int count = celestialObjectsById.size();
 		celestialObjects = new CelestialObject[count];
 		int index = 0;
-		for (CelestialObject celestialObject : celestialObjectsById.values()) {
+		for (final CelestialObject celestialObject : celestialObjectsById.values()) {
 			celestialObjects[index++] = celestialObject;
 			celestialObject.resolveParent(celestialObjectsById.get(celestialObject.parentId));
 		}

@@ -19,7 +19,7 @@ public abstract class AbstractSequencer {
 		while (!isUpdating.compareAndSet(false, true)) {
 			Thread.yield();
 		}
-		for(Iterator<Entry<AbstractSequencer, Boolean>> iterator = sequencers.entrySet().iterator(); iterator.hasNext(); ) {
+		for (final Iterator<Entry<AbstractSequencer, Boolean>> iterator = sequencers.entrySet().iterator(); iterator.hasNext(); ) {
 			Entry<AbstractSequencer, Boolean> entry = iterator.next();
 			boolean doContinue = entry.getKey().onUpdate();
 			if (!doContinue) {

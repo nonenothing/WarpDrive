@@ -243,13 +243,13 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Nullable
 	@Override
 	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
 		if (forceFieldSetup != null) {
-			List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
+			final List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
 				blockPos.getX(), blockPos.getY(), blockPos.getZ(),
 				blockPos.getX() + 1.0D, blockPos.getY() + 1.0D, blockPos.getZ() + 1.0D));
 			
-			for (EntityPlayer entityPlayer : entities) {
+			for (final EntityPlayer entityPlayer : entities) {
 				if (entityPlayer != null && entityPlayer.isSneaking()) {
 					if ( entityPlayer.capabilities.isCreativeMode 
 					  || forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH)) {
@@ -268,17 +268,17 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			return;
 		}
 		
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
 		if (forceFieldSetup != null) {
 			forceFieldSetup.onEntityEffect(world, blockPos, entity);
 			double distance2 = new Vector3(blockPos).translate(0.5F).distanceTo_square(entity);
 			if (entity instanceof EntityLiving && distance2 < 0.26D) {
 				boolean hasPermission = false;
 				
-				List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
+				final List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
 					blockPos.getX(), blockPos.getY(), blockPos.getZ(),
 					blockPos.getX() + 1.0D, blockPos.getY() + 0.9D, blockPos.getZ() + 1.0D));
-				for (EntityPlayer entityPlayer : entities) {
+				for (final EntityPlayer entityPlayer : entities) {
 					if (entityPlayer != null && entityPlayer.isSneaking()) {
 						if ( entityPlayer.capabilities.isCreativeMode
 						  || forceFieldSetup.isAccessGranted(entityPlayer, EnumPermissionNode.SNEAK_THROUGH) ) {

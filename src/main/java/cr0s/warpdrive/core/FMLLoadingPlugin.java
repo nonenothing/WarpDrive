@@ -39,7 +39,7 @@ public class FMLLoadingPlugin implements IFMLLoadingPlugin, IFMLCallHook {
 		location = (File) data.get("coremodLocation");
 		if (debugLog) {
 			logger.info("injectData:");
-			for (Entry<String, Object> entry : data.entrySet()) {
+			for (final Entry<String, Object> entry : data.entrySet()) {
 				logger.info("- " + entry.getKey() + " = " + entry.getValue());
 			}
 		}

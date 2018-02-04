@@ -306,8 +306,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		if (tier == 1) {// tier1 = gaz and air blocks don't count
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
-					for(z = minZ; z <= maxZ; z++) {
-						if (!worldObj.isAirBlock(new BlockPos(x, y, z))) {
+					for (z = minZ; z <= maxZ; z++) {
+						if (!worldObj.isAirBlock(new BlockPos(x, y, z))) { // @TODO MC1.10 use mutableBlockPos
 							volume_new++;
 						} 
 					}
@@ -317,8 +317,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		} else {// tier2 = everything counts
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
-					for(z = minZ; z <= maxZ; z++) {
-						if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) {
+					for (z = minZ; z <= maxZ; z++) {
+						if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) { // @TODO MC1.10 use mutableBlockPos
 							volume_new++;
 						} 
 					}

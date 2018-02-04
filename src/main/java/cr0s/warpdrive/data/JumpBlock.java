@@ -78,7 +78,7 @@ public class JumpBlock {
 		this.z = blockPos.getZ();
 		
 		// save externals
-		for (Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
+		for (final Entry<String, IBlockTransformer> entryBlockTransformer : WarpDriveConfig.blockTransformers.entrySet()) {
 			if (entryBlockTransformer.getValue().isApplicable(block, blockMeta, tileEntity)) {
 				final NBTBase nbtBase = entryBlockTransformer.getValue().saveExternals(world, x, y, z, block, blockMeta, tileEntity);
 				// (we always save, even if null as a reminder on which transformer applies to this block)
@@ -236,7 +236,7 @@ public class JumpBlock {
 			}
 			int newBlockMeta = blockMeta;
 			if (externals != null) {
-				for (Entry<String, NBTBase> external : externals.entrySet()) {
+				for (final Entry<String, NBTBase> external : externals.entrySet()) {
 					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
 						newBlockMeta = blockTransformer.rotate(block, blockMeta, nbtToDeploy, transformation);
@@ -245,8 +245,8 @@ public class JumpBlock {
 			} else {
 				newBlockMeta = getMetadataRotation(nbtToDeploy, transformation.getRotationSteps());
 			}
-			BlockPos target = transformation.apply(x, y, z);
-			IBlockState blockState = block.getStateFromMeta(newBlockMeta);
+			final BlockPos target = transformation.apply(x, y, z);
+			final IBlockState blockState = block.getStateFromMeta(newBlockMeta);
 			setBlockNoLight(targetWorld, target, blockState, 2);
 			
 			// Re-schedule air blocks update
@@ -391,7 +391,7 @@ public class JumpBlock {
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 							WarpDrive.logger.info("Tile has " + fields.size() + " networked fields: " + fields);
 						}
-						for (String field : fields) {
+						for (final String field : fields) {
 							NetworkHelper_updateTileEntityField(tileEntity, field);
 						}
 					} catch (NoSuchMethodException exception) {
@@ -470,8 +470,8 @@ public class JumpBlock {
 		tagCompound.setInteger("y", y);
 		tagCompound.setInteger("z", z);
 		if (externals != null && !externals.isEmpty()) {
-			NBTTagCompound tagCompoundExternals = new NBTTagCompound();
-			for (Entry<String, NBTBase> entry : externals.entrySet()) {
+			final NBTTagCompound tagCompoundExternals = new NBTTagCompound();
+			for (final Entry<String, NBTBase> entry : externals.entrySet()) {
 				if (entry.getValue() == null) {
 					tagCompoundExternals.setString(entry.getKey(), "");
 				} else {

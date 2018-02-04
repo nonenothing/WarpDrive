@@ -35,9 +35,9 @@ public class XmlPreprocessor {
 	 */
 	public static String checkModRequirements(Element element) {
 		
-		ModCheckResults modCheckResults = new ModCheckResults();
+		final ModCheckResults modCheckResults = new ModCheckResults();
 		
-		for (String mod : element.getAttribute("mods").split(",")) {
+		for (final String mod : element.getAttribute("mods").split(",")) {
 			
 			// @TODO add version check
 			
@@ -107,23 +107,23 @@ public class XmlPreprocessor {
 		
 		// 'in' takes precedence over 'from' attribute
 		if (elementFor.hasAttribute("in")) {
-			String[] inOptions = elementFor.getAttribute("in").split(",");
+			final String[] inOptions = elementFor.getAttribute("in").split(",");
 			
 			// copy children with replaced variable
-			for(String variableValue : inOptions) {
+			for (final String variableValue : inOptions) {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
 				}
 				NodeList allChildren = root.getChildNodes();
-				for(int childIndex = 0; childIndex < allChildren.getLength(); childIndex ++) {
+				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex ++) {
 					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, variableValue);
 					root.getParentNode().appendChild(copy);
 				}
 			}
 			
 		} else {
-			String stringFrom = elementFor.getAttribute("from");
-			String stringTo = elementFor.getAttribute("to");
+			final String stringFrom = elementFor.getAttribute("from");
+			final String stringTo = elementFor.getAttribute("to");
 			
 			if (stringTo.isEmpty() || stringFrom.isEmpty()) {
 				throw new InvalidXmlException("For element with no 'in' attribute requires both 'from' and 'to' attributes! " + variableName);
@@ -203,12 +203,12 @@ public class XmlPreprocessor {
 			}
 			
 			// then apply them
-			for (String attr : nameToRemove) {
-				attributes.removeNamedItem(attr);
+			for (final String attribute : nameToRemove) {
+				attributes.removeNamedItem(attribute);
 			}
 			
-			for (Attr attr : attrToAdd) {
-				attributes.setNamedItem(attr);
+			for (final Attr attribute : attrToAdd) {
+				attributes.setNamedItem(attribute);
 			}
 		}
 		
@@ -251,7 +251,7 @@ public class XmlPreprocessor {
 		public String toString() {
 			String string = (modResults.size() > 1 ? "{" : "");
 			boolean isFirst = true;
-			for (Entry<String, String> entry : modResults.entrySet()) {
+			for (final Entry<String, String> entry : modResults.entrySet()) {
 				if (isFirst) {
 					isFirst = false;
 				} else {

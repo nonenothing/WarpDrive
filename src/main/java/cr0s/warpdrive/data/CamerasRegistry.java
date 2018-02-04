@@ -17,12 +17,12 @@ public class CamerasRegistry {
 		registry = new LinkedList<>();
 	}
 	
-	public CameraRegistryItem getCameraByVideoChannel(World world, int videoChannel) {
+	public CameraRegistryItem getCameraByVideoChannel(final World world, final int videoChannel) {
 		if (world == null) {
 			return null;
 		}
 		CameraRegistryItem cam;
-		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
+		for (final Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
 			if (cam.videoChannel == videoChannel && cam.dimensionId == world.provider.getDimension()) {
 				if (isCamAlive(world, cam)) {
@@ -42,9 +42,9 @@ public class CamerasRegistry {
 		return null;
 	}
 	
-	private CameraRegistryItem getCamByPosition(World world, BlockPos position) {
+	private CameraRegistryItem getCamByPosition(final World world, final BlockPos position) {
 		CameraRegistryItem cam;
-		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
+		for (final Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
 			if (cam.position.getX() == position.getX() && cam.position.getY() == position.getY() && cam.position.getZ() == position.getZ()
 					&& cam.dimensionId == world.provider.getDimension()) {
@@ -55,7 +55,7 @@ public class CamerasRegistry {
 		return null;
 	}
 	
-	private static boolean isCamAlive(World world, CameraRegistryItem cam) {
+	private static boolean isCamAlive(final World world, final CameraRegistryItem cam) {
 		if (world.provider.getDimension() != cam.dimensionId) {
 			WarpDrive.logger.error("Inconsistent worldObj with camera " + world.provider.getDimension() + " vs " + cam.dimensionId);
 			return false;
@@ -80,11 +80,11 @@ public class CamerasRegistry {
 		return true;
 	}
 	
-	private void removeDeadCams(World world) {
+	private void removeDeadCams(final World world) {
 		// LocalProfiler.start("CamRegistry Removing dead cameras");
 		
 		CameraRegistryItem cam;
-		for (Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
+		for (final Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
 			cam = it.next();
 			if (!isCamAlive(world, cam)) {
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
@@ -98,8 +98,8 @@ public class CamerasRegistry {
 		// LocalProfiler.stop();
 	}
 	
-	public void removeFromRegistry(World world, BlockPos position) {
-		CameraRegistryItem cam = getCamByPosition(world, position);
+	public void removeFromRegistry(final World world, final BlockPos position) {
+		final CameraRegistryItem cam = getCamByPosition(world, position);
 		if (cam != null) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info("Removing camera by request in dimension " + cam.dimensionId + " at "
@@ -109,12 +109,12 @@ public class CamerasRegistry {
 		}
 	}
 	
-	public void updateInRegistry(World world, BlockPos position, int videoChannel, EnumCameraType enumCameraType) {
-		CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, enumCameraType);
+	public void updateInRegistry(final World world, final BlockPos position, final int videoChannel, final EnumCameraType enumCameraType) {
+		final CameraRegistryItem cam = new CameraRegistryItem(world, position, videoChannel, enumCameraType);
 		removeDeadCams(world);
 		
 		if (isCamAlive(world, cam)) {
-			CameraRegistryItem existingCam = getCamByPosition(world, cam.position);
+			final CameraRegistryItem existingCam = getCamByPosition(world, cam.position);
 			if (existingCam == null) {
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 					WarpDrive.logger.info("Adding 'live' camera at "
@@ -143,7 +143,7 @@ public class CamerasRegistry {
 		}
 		WarpDrive.logger.info("Cameras registry for dimension " + world.provider.getSaveFolder() + ":");
 		
-		for (CameraRegistryItem cam : registry) {
+		for (final CameraRegistryItem cam : registry) {
 			WarpDrive.logger.info("- " + cam.videoChannel + " (" + cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ() + ")");
 		}
 	}

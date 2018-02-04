@@ -42,11 +42,11 @@ public enum EnumTooltipCondition implements IStringSerializable {
 	
 	public static String formatAllValues() {
 		final StringBuilder result = new StringBuilder();
-		for (EnumTooltipCondition enumTooltipCondition : EnumTooltipCondition.values()) {
+		for (final EnumTooltipCondition tooltipCondition : EnumTooltipCondition.values()) {
 			if (result.length() > 0) {
 				result.append(", ");
 			}
-			result.append(enumTooltipCondition);
+			result.append(tooltipCondition);
 		}
 		return result.toString();
 	}

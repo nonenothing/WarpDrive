@@ -56,7 +56,7 @@ public class RecipeParticleShapedOre implements IRecipe {
 		if (recipe[indexRecipe] instanceof String[]) {
 			String[] stringRecipeLines = ((String[]) recipe[indexRecipe++]);
 			
-			for (String stringRecipeLine : stringRecipeLines) {
+			for (final String stringRecipeLine : stringRecipeLines) {
 				width = stringRecipeLine.length();
 				shape += stringRecipeLine;
 			}
@@ -126,7 +126,7 @@ public class RecipeParticleShapedOre implements IRecipe {
 		
 		itemStackIngredients = new Object[recipe.recipeItems.length];
 		
-		for(int i = 0; i < itemStackIngredients.length; i++) {
+		for (int i = 0; i < itemStackIngredients.length; i++) {
 			ItemStack itemStackIngredient = recipe.recipeItems[i];
 			
 			if (itemStackIngredient == null) {
@@ -135,7 +135,7 @@ public class RecipeParticleShapedOre implements IRecipe {
 			
 			itemStackIngredients[i] = recipe.recipeItems[i];
 			
-			for(Entry<ItemStack, String> entry : replacements.entrySet()) {
+			for (final Entry<ItemStack, String> entry : replacements.entrySet()) {
 				if (OreDictionary.itemMatches(entry.getKey(), itemStackIngredient, true)) {
 					itemStackIngredients[i] = OreDictionary.getOres(entry.getValue());
 					break;

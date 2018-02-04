@@ -41,7 +41,7 @@ public class StarMapRegistryItem extends GlobalPosition {
 		
 		static {
 			length = EnumStarMapEntryType.values().length;
-			for (EnumStarMapEntryType enumStarMapEntryType : values()) {
+			for (final EnumStarMapEntryType enumStarMapEntryType : values()) {
 				mapNames.put(enumStarMapEntryType.getName(), enumStarMapEntryType);
 			}
 		}

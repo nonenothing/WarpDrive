@@ -86,8 +86,8 @@ public class PacketHandler {
 		
 		MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		// Send packet to all players within cloaked area
-		List<Entity> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
-		for (Entity entity : list) {
+		final List<Entity> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
+		for (final Entity entity : list) {
 			if (entity != null && entity instanceof EntityPlayerMP) {
 				PacketHandler.simpleNetworkManager.sendTo(messageBeamEffect, (EntityPlayerMP) entity);
 			}

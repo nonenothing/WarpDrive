@@ -32,8 +32,8 @@ public class CommandInvisible extends CommandBase {
 			WarpDrive.logger.info("/invisible: setting invisible to " + args[0]);
 			
 			// get an online player by name
-			List<EntityPlayerMP> entityPlayers = server.getPlayerList().getPlayerList();
-			for (EntityPlayerMP entityPlayer : entityPlayers) {
+			final List<EntityPlayerMP> entityPlayers = server.getPlayerList().getPlayerList();
+			for (final EntityPlayerMP entityPlayer : entityPlayers) {
 				if (entityPlayer.getDisplayNameString().equalsIgnoreCase(args[0])) {
 					player = entityPlayer;
 				}

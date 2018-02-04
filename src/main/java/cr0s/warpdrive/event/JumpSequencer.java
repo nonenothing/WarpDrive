@@ -1071,7 +1071,7 @@ public class JumpSequencer extends AbstractSequencer {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Moving externals for block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				}
-				for (Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
+				for (final Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
 					final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
 						if ( shipMovementType != EnumShipMovementType.INSTANTIATE
@@ -1101,7 +1101,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if ( shipMovementType != EnumShipMovementType.INSTANTIATE
 		  && shipMovementType != EnumShipMovementType.RESTORE ) {
-			for (MovingEntity movingEntity : ship.entitiesOnShip) {
+			for (final MovingEntity movingEntity : ship.entitiesOnShip) {
 				final Entity entity = movingEntity.getEntity();
 				if (entity == null) {
 					continue;
@@ -1394,7 +1394,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if ( shipMovementType != EnumShipMovementType.INSTANTIATE
 		  && shipMovementType != EnumShipMovementType.RESTORE ) {
-			for (MovingEntity movingEntity : ship.entitiesOnShip) {
+			for (final MovingEntity movingEntity : ship.entitiesOnShip) {
 				final Entity entity = movingEntity.getEntity();
 				if (entity == null) {
 					continue;

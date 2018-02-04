@@ -92,8 +92,8 @@ public class RecipeTuningDriver implements IRecipe {
 				// find a matching dye from ore dictionary
 				boolean matched = false;
 				for (int indexDye = 0; indexDye < Recipes.oreDyes.length; indexDye++) {
-					List<ItemStack> itemStackDyes = OreDictionary.getOres(Recipes.oreDyes[indexDye]);
-					for (ItemStack itemStackDye : itemStackDyes) {
+					final List<ItemStack> itemStackDyes = OreDictionary.getOres(Recipes.oreDyes[indexDye]);
+					for (final ItemStack itemStackDye : itemStackDyes) {
 						if (OreDictionary.itemMatches(itemStackSlot, itemStackDye, true)) {
 							// match found, update dye combination
 							matched = true;

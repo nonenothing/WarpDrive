@@ -27,7 +27,7 @@ public class LocalProfiler {
 		if ( !threadName.equals("Server thread")
 		  && !threadName.equals("Client thread") ) {
 			int depth = 0;
-			for (StackTraceElement stackTraceElement : stacktrace) {
+			for (final StackTraceElement stackTraceElement : stacktrace) {
 				if (depth++ > 2 && depth < 30) {
 					stringBuilderKey.append("\n  ").append(stackTraceElement.getClassName());
 					stringBuilderKey.append(".").append(stackTraceElement.getMethodName());
@@ -48,7 +48,7 @@ public class LocalProfiler {
 	
 	public static void printCallStats() {
 		WarpDrive.logger.info("Dumping chunk stats:");
-		for (Entry<String, Integer> entryStat : stats.entrySet()) {
+		for (final Entry<String, Integer> entryStat : stats.entrySet()) {
 			WarpDrive.logger.info(String.format("%10d x %s",
 			                                    entryStat.getValue(),
 			                                    entryStat.getKey()));

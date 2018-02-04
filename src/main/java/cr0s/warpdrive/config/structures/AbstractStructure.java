@@ -41,7 +41,7 @@ public abstract class AbstractStructure extends WorldGenerator implements IXmlRe
 	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		
 		final List<Element> listVariables = XmlFileManager.getChildrenElementByTagName(element, "variable");
-		for (Element elementVariable : listVariables) {
+		for (final Element elementVariable : listVariables) {
 			final String variableName = elementVariable.getAttribute("name");
 			final String variableExpression = elementVariable.getTextContent();
 			variables.put(variableName, variableExpression);

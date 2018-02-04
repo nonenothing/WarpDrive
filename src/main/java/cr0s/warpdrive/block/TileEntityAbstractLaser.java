@@ -154,7 +154,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		}
 		
 		// Secondary scan for laser medium below the required average
-		for (TileEntityLaserMedium laserMedium : laserMediums) {
+		for (final TileEntityLaserMedium laserMedium : laserMediums) {
 			int energyStored = laserMedium.energy_getEnergyStored();
 			if (energyStored < energyAverage) {
 				energyLeftOver += energyAverage - energyStored;
@@ -163,7 +163,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		
 		// Third and final pass for energy consumption
 		int energyTotalConsumed = 0;
-		for (TileEntityLaserMedium laserMedium : laserMediums) {
+		for (final TileEntityLaserMedium laserMedium : laserMediums) {
 			int energyStored = laserMedium.energy_getEnergyStored();
 			int energyToConsume = Math.min(energyStored, energyAverage + energyLeftOver);
 			energyLeftOver -= Math.max(0, energyToConsume - energyAverage);

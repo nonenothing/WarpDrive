@@ -76,7 +76,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		} else {
 			int currentLength = methodsArray.length;
 			methodsArray = Arrays.copyOf(methodsArray, methodsArray.length + methodsToAdd.length);
-			for (String method : methodsToAdd) {
+			for (final String method : methodsToAdd) {
 				methodsArray[currentLength] = method;
 				currentLength++;
 			}
@@ -243,7 +243,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			strings = strings[strings.length - 1].split("\\.");
 		}
 		ArrayList<Integer> integers = new ArrayList<>(strings.length);
-		for (String string : strings) {
+		for (final String string : strings) {
 			integers.add(Integer.parseInt(string));
 		}
 		return integers.toArray();
@@ -294,7 +294,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				computer.mount("/" + folderPeripheral, ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/" + peripheralName));
 				computer.mount("/warpupdater"        , ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/common/updater"));
 				if (WarpDriveConfig.G_LUA_SCRIPTS == WarpDriveConfig.LUA_SCRIPTS_ALL) {
-					for (String script : CC_scripts) {
+					for (final String script : CC_scripts) {
 						computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/" + peripheralName + "/" + script));
 					}
 				}
@@ -326,7 +326,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			WarpDrive.logger.info(this + " Sending event '" + eventName + "'");
 		}
 		if (WarpDriveConfig.isComputerCraftLoaded) {
-			for(Map.Entry<Integer, IComputerAccess> integerIComputerAccessEntry : connectedComputers.entrySet()) {
+			for (final Map.Entry<Integer, IComputerAccess> integerIComputerAccessEntry : connectedComputers.entrySet()) {
 				IComputerAccess comp = integerIComputerAccessEntry.getValue();
 				comp.queueEvent(eventName, arguments);
 			}

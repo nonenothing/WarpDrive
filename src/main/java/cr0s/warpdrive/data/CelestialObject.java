@@ -612,7 +612,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		final NBTTagList nbtTagListRenderData = nbtTagCompound.getTagList("renderData", NBT.TAG_COMPOUND);
 		final int countRender = nbtTagListRenderData.tagCount();
 		setRenderData = new LinkedHashSet<>(countRender);
-		for(int indexRenderData = 0; indexRenderData < countRender; indexRenderData++) {
+		for (int indexRenderData = 0; indexRenderData < countRender; indexRenderData++) {
 			final NBTTagCompound tagCompoundRenderData = nbtTagListRenderData.getCompoundTagAt(indexRenderData);
 			setRenderData.add(new RenderData(tagCompoundRenderData));
 		}
@@ -656,7 +656,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		nbtTagCompound.setTag("factorFog", factorFog.writeToNBT(new NBTTagCompound()));
 		
 		final NBTTagList nbtTagListRenderData = new NBTTagList();
-		for(final RenderData renderData : setRenderData) {
+		for (final RenderData renderData : setRenderData) {
 			nbtTagListRenderData.appendTag(renderData.writeToNBT(new NBTTagCompound()));
 		}
 		nbtTagCompound.setTag("renderData", nbtTagListRenderData);

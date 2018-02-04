@@ -30,7 +30,7 @@ public class DamageIrradiation extends DamageSource {
 			v3Position.x + radius, v3Position.y + radius, v3Position.z + radius);
 		final List<EntityLivingBase> listEntityLivingBase = world.getEntitiesWithinAABB(EntityLivingBase.class, axisAlignedBB);
 		if (listEntityLivingBase != null) {
-			for (EntityLivingBase entityLivingBase : listEntityLivingBase) {
+			for (final EntityLivingBase entityLivingBase : listEntityLivingBase) {
 				// cap damage below 1 m distance, since the entity is never really inside the source and damage tends to +INF
 				final float distance = Math.min(1.0F, (float) Math.sqrt(v3Position.distanceTo_square(entityLivingBase)));
 				onEntityEffect(strength / (distance * distance), world, v3Position, entityLivingBase);

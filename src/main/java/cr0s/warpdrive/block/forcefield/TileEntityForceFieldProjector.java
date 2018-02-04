@@ -126,7 +126,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		});
 		CC_scripts = Arrays.asList("enable", "disable");
 		
-		for (EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
+		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnProjector > 0) {
 				setUpgradeMaxCount(enumForceFieldUpgrade, enumForceFieldUpgrade.maxCountOnProjector);
 			}
@@ -263,7 +263,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					final AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
 					final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 					
-					for (Entity entity : list) {
+					for (final Entity entity : list) {
 						if (entity == null || (!(entity instanceof EntityPlayer)) || entity instanceof FakePlayer) {
 							continue;
 						}
@@ -403,7 +403,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			// skip if fusion upgrade is present and it's inside another projector area
 			if (forceFieldSetup.hasFusion) {
-				for (TileEntityForceFieldProjector projector : forceFieldSetup.projectors) {
+				for (final TileEntityForceFieldProjector projector : forceFieldSetup.projectors) {
 					if (projector.isPartOfInterior(vector)) {
 						doProjectThisBlock = false;
 						break;
@@ -572,7 +572,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		Block blockToPlace = null;
 		int metadataToPlace = -1;
 		IInventory inventory = null;
-		for (IInventory inventoryLoop : forceFieldSetup.inventories) {
+		for (final IInventory inventoryLoop : forceFieldSetup.inventories) {
 			if (!found) {
 				slotIndex = 0;
 			}
@@ -679,9 +679,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					return true;
 				}
 			} else {
-				for (ItemStack itemStackDrop : itemStacks) {
-					ItemStack drop = itemStackDrop.copy();
-					EntityItem entityItem = new EntityItem(worldObj, vector.x + 0.5D, vector.y + 1.0D, vector.z + 0.5D, drop);
+				for (final ItemStack itemStackDrop : itemStacks) {
+					final ItemStack drop = itemStackDrop.copy();
+					final EntityItem entityItem = new EntityItem(worldObj, vector.x + 0.5D, vector.y + 1.0D, vector.z + 0.5D, drop);
 					worldObj.spawnEntityInWorld(entityItem);
 				}
 			}
@@ -1205,8 +1205,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					if (vertexes.isEmpty()) {
 						WarpDrive.logger.error(this + " No vertexes for " + forceFieldSetup + " at " + projector);
 					}
-					for (Map.Entry<VectorI, Boolean> entry : vertexes.entrySet()) {
-						VectorI vPosition = entry.getKey();
+					for (final Map.Entry<VectorI, Boolean> entry : vertexes.entrySet()) {
+						final VectorI vPosition = entry.getKey();
 						if (forceFieldSetup.isDoubleSided || vPosition.y >= 0) {
 							if ((forceFieldSetup.rotationYaw != 0.0F) || (forceFieldSetup.rotationPitch != 0.0F) || (forceFieldSetup.rotationRoll != 0.0F)) {
 								vPosition.rotateByAngle(forceFieldSetup.rotationYaw, forceFieldSetup.rotationPitch, forceFieldSetup.rotationRoll);

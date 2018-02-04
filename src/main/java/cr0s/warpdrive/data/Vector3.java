@@ -572,24 +572,24 @@ public class Vector3 implements Cloneable {
 	
 	public RayTraceResult rayTraceEntities(World world, float rotationYaw, float rotationPitch, double reachDistance) {
 		RayTraceResult pickedEntity = null;
-		Vec3d startingPosition = toVec3d();
-		Vec3d look = getDeltaPositionFromRotation(rotationYaw, rotationPitch).toVec3d();
-		Vec3d reachPoint = new Vec3d(startingPosition.xCoord + look.xCoord * reachDistance, startingPosition.yCoord + look.yCoord * reachDistance,
+		final Vec3d startingPosition = toVec3d();
+		final Vec3d look = getDeltaPositionFromRotation(rotationYaw, rotationPitch).toVec3d();
+  	final Vec3d reachPoint = new Vec3d(startingPosition.xCoord + look.xCoord * reachDistance, startingPosition.yCoord + look.yCoord * reachDistance,
 				startingPosition.zCoord + look.zCoord * reachDistance);
-		double playerBorder = 1.1 * reachDistance;
-		AxisAlignedBB boxToScan = new AxisAlignedBB(-playerBorder, -playerBorder, -playerBorder, playerBorder, playerBorder, playerBorder);
-		List<Entity> entitiesHit = world.getEntitiesWithinAABBExcludingEntity(null, boxToScan);
+		final double playerBorder = 1.1 * reachDistance;
+		final AxisAlignedBB boxToScan = new AxisAlignedBB(-playerBorder, -playerBorder, -playerBorder, playerBorder, playerBorder, playerBorder);
+		final List<Entity> entitiesHit = world.getEntitiesWithinAABBExcludingEntity(null, boxToScan);
 		double closestEntity = reachDistance;
 		
 		if (entitiesHit.isEmpty()) {
 			return null;
 		}
 		
-		for (Entity entityHit : entitiesHit) {
+		for (final Entity entityHit : entitiesHit) {
 			if (entityHit != null && entityHit.canBeCollidedWith() && entityHit.getCollisionBoundingBox() != null) {
-				float border = entityHit.getCollisionBorderSize();
-				AxisAlignedBB aabb = entityHit.getCollisionBoundingBox().expand(border, border, border);
-				RayTraceResult hitMOP = aabb.calculateIntercept(startingPosition, reachPoint);
+				final float border = entityHit.getCollisionBorderSize();
+				final AxisAlignedBB aabb = entityHit.getCollisionBoundingBox().expand(border, border, border);
+				final RayTraceResult hitMOP = aabb.calculateIntercept(startingPosition, reachPoint);
 				
 				if (hitMOP != null) {
 					if (aabb.isVecInside(startingPosition)) {
@@ -599,7 +599,7 @@ public class Vector3 implements Cloneable {
 							closestEntity = 0.0D;
 						}
 					} else {
-						double distance = startingPosition.distanceTo(hitMOP.hitVec);
+						final double distance = startingPosition.distanceTo(hitMOP.hitVec);
 
 						if (distance < closestEntity || closestEntity == 0.0D) {
 							pickedEntity = new RayTraceResult(entityHit);

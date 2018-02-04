@@ -130,7 +130,7 @@ public class Commons {
 			return;
 		}
 		final String[] lines = updateEscapeCodes(textComponent.getFormattedText()).split("\n");
-		for (String line : lines) {
+		for (final String line : lines) {
 			commandSender.addChatMessage(new TextComponentString(line));
 		}
 		
@@ -141,7 +141,7 @@ public class Commons {
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(final List<String> list, final String tooltip) {
 		final String[] split = updateEscapeCodes(tooltip).split("\n");
-		for (String line : split) {
+		for (final String line : split) {
 			String lineRemaining = line;
 			String formatNextLine = "";
 			while (!lineRemaining.isEmpty()) {
@@ -196,7 +196,7 @@ public class Commons {
 			} catch (Exception exception2) {
 				exception2.printStackTrace();
 				String map = "";
-				for(Field fieldDeclared : clazz.getDeclaredFields()) {
+				for (Field fieldDeclared : clazz.getDeclaredFields()) {
 					if (!map.isEmpty()) {
 						map += ", ";
 					}
@@ -243,7 +243,7 @@ public class Commons {
 	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
 		final Collection<IInventory> result = new ArrayList<>(6);
 		
-		for(EnumFacing side : EnumFacing.VALUES) {
+		for(final EnumFacing side : EnumFacing.VALUES) {
 			final TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
 				tileEntityConnection.getPos().offset(side));
 			if (tileEntity != null && (tileEntity instanceof IInventory)) {
@@ -300,8 +300,8 @@ public class Commons {
 					iterated.add(current);
 				}
 				
-				for(EnumFacing direction : directions) {
-					BlockPos next = current.offset(direction);
+				for(final EnumFacing direction : directions) {
+					final BlockPos next = current.offset(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
 						if (whitelist.contains(new VectorI(next).getBlockState_noChunkLoading(world).getBlock())) {
 							toIterateNext.add(next);
@@ -396,7 +396,7 @@ public class Commons {
 			return yValues[0];
 		}
 		
-		for(int index = 0; index < xValues.length - 1; index++) {
+		for (int index = 0; index < xValues.length - 1; index++) {
 			if (xInput < xValues[index + 1]) {
 				return interpolate(xValues[index], yValues[index], xValues[index + 1], yValues[index + 1], xInput);
 			}
@@ -470,7 +470,7 @@ public class Commons {
 		final StringBuilder stringBuilder = new StringBuilder();
 		final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 		final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 100);
-		for (ThreadInfo threadInfo : threadInfos) {
+		for (final ThreadInfo threadInfo : threadInfos) {
 			stringBuilder.append('"');
 			stringBuilder.append(threadInfo.getThreadName());
 			stringBuilder.append("\"\n\tjava.lang.Thread.State: ");
@@ -533,7 +533,7 @@ public class Commons {
 	
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
 		final List<EntityPlayerMP> onlinePlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
-		for (EntityPlayerMP onlinePlayer : onlinePlayers) {
+		for (final EntityPlayerMP onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
 				return new EntityPlayerMP[] { onlinePlayer };
 			}

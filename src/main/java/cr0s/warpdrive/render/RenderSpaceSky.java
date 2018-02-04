@@ -185,7 +185,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		// Planets
 		if (celestialObject != null && celestialObject.opacityCelestialObjects > 0.0F) {
 			final Vector3 vectorPlayer = StarMapRegistry.getUniversalCoordinates(celestialObject, vec3Player.xCoord, vec3Player.yCoord, vec3Player.zCoord);
-			for (CelestialObject celestialObjectChild : CelestialObjectManager.getRenderStack()) {
+			for (final CelestialObject celestialObjectChild : CelestialObjectManager.getRenderStack()) {
 				if (celestialObject == celestialObjectChild) {
 					continue;
 				}

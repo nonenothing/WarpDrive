@@ -233,15 +233,15 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			
 			// Apply effect to entities
 			if (entityHits != null) {
-				for (Entry<Double, RayTraceResult> entityHitEntry : entityHits.entrySet()) {
-					double entityHitDistance = entityHitEntry.getKey();
+				for (final Entry<Double, RayTraceResult> entityHitEntry : entityHits.entrySet()) {
+					final double entityHitDistance = entityHitEntry.getKey();
 					// ignore entities behind walls
 					if (entityHitDistance >= blockHitDistance) {
 						break;
 					}
 					
 					// only hits entities with health or whitelisted
-					RayTraceResult mopEntity = entityHitEntry.getValue();
+					final RayTraceResult mopEntity = entityHitEntry.getValue();
 					if (mopEntity == null) {
 						continue;
 					}
@@ -252,7 +252,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 							WarpDrive.logger.info("Entity is a valid target (living) " + entity);
 						}
 					} else {
-						String entityId = EntityList.getEntityString(mopEntity.entityHit);
+						final String entityId = EntityList.getEntityString(mopEntity.entityHit);
 						if (!Dictionary.ENTITIES_NONLIVINGTARGET.contains(entityId)) {
 							if (WarpDriveConfig.LOGGING_WEAPON) {
 								WarpDrive.logger.info("Entity is an invalid target (non-living " + entityId + ") " + mopEntity.entityHit);
@@ -308,7 +308,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 				break;
 			}
 			
-			IBlockState blockState = worldObj.getBlockState(blockHit.getBlockPos());
+			final IBlockState blockState = worldObj.getBlockState(blockHit.getBlockPos());
 			// int blockMeta = worldObj.getBlockMetadata(hit.blockX, hit.blockY, hit.blockZ);
 			// get hardness and blast resistance
 			float hardness = -2.0F;
@@ -478,8 +478,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 		
 		// Pick the closest one on trajectory
-		HashMap<Double, RayTraceResult> entityHits = new HashMap<>(entities.size());
-		for (Entity entity : entities) {
+		final HashMap<Double, RayTraceResult> entityHits = new HashMap<>(entities.size());
+		for (final Entity entity : entities) {
 			if (entity != null && entity.canBeCollidedWith() && entity.getCollisionBoundingBox() != null) {
 				double border = entity.getCollisionBorderSize();
 				AxisAlignedBB aabbEntity = entity.getCollisionBoundingBox().expand(border, border, border);

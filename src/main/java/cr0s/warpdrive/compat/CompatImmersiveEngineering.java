@@ -46,11 +46,11 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 	@Optional.Method(modid = "ImmersiveEngineering")
 	public NBTBase saveExternals(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (tileEntity instanceof IImmersiveConnectable) {
-			BlockPos node = tileEntity.getPos();
-			Collection<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorld(), node);
+			final BlockPos node = tileEntity.getPos();
+			final Collection<Connection> connections = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorld(), node);
 			if (connections != null) {
-				NBTTagList nbtImmersiveEngineering = new NBTTagList();
-				for (Connection connection : connections) {
+				final NBTTagList nbtImmersiveEngineering = new NBTTagList();
+				for (final Connection connection : connections) {
 					nbtImmersiveEngineering.appendTag(connection.writeToNBT());
 				}
 				ImmersiveNetHandler.INSTANCE.clearConnectionsOriginatingFrom(node, tileEntity.getWorld());
@@ -95,22 +95,22 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 	public void restoreExternals(final World world, final int x, final int y, final int z,
 	                             final Block block, final int blockMeta, final TileEntity tileEntity,
 	                             final ITransformation transformation, final NBTBase nbtBase) {
-		NBTTagList nbtImmersiveEngineering = (NBTTagList) nbtBase;
+		final NBTTagList nbtImmersiveEngineering = (NBTTagList) nbtBase;
 		if (nbtImmersiveEngineering == null) {
 			return;
 		}
-		World targetWorld = transformation.getTargetWorld();
+		final World targetWorld = transformation.getTargetWorld();
 		
 		// powerPathList
 		for (int indexConnectionToAdd = 0; indexConnectionToAdd < nbtImmersiveEngineering.tagCount(); indexConnectionToAdd++) {
-			Connection connectionToAdd = Connection.readFromNBT(nbtImmersiveEngineering.getCompoundTagAt(indexConnectionToAdd));
+			final Connection connectionToAdd = Connection.readFromNBT(nbtImmersiveEngineering.getCompoundTagAt(indexConnectionToAdd));
 			connectionToAdd.start = transformation.apply(connectionToAdd.start);
 			connectionToAdd.end = transformation.apply(connectionToAdd.end);
-			BlockPos node = tileEntity.getPos();
-			Collection<Connection> connectionActuals = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorld(), node);
+			final BlockPos node = tileEntity.getPos();
+			final Collection<Connection> connectionActuals = ImmersiveNetHandler.INSTANCE.getConnections(tileEntity.getWorld(), node);
 			boolean existing = false;
 			if (connectionActuals != null) {
-				for (Connection connectionActual : connectionActuals) {
+				for (final Connection connectionActual : connectionActuals) {
 					if ( connectionActual.start.equals(connectionToAdd.start)
 					  && connectionActual.end.equals(connectionToAdd.end) ) {
 						existing = true;

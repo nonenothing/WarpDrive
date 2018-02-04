@@ -58,7 +58,7 @@ public class CommandSpace extends CommandBase {
 				return;
 			}
 			
-			EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
+			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else if (commandSender instanceof EntityPlayer) {
@@ -69,7 +69,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 		} else if (args.length == 2) {
-			EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
+			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
@@ -89,7 +89,7 @@ public class CommandSpace extends CommandBase {
 			return;
 		}
 		
-		for (EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
+		for (final EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
 			// toggle between overworld and space if no dimension was provided
 			int xTarget = MathHelper.floor_double(entityPlayerMP.posX);
 			int yTarget = Math.min(255, Math.max(0, MathHelper.floor_double(entityPlayerMP.posY)));
