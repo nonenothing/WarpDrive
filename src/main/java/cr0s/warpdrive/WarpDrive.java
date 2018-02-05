@@ -4,7 +4,6 @@ import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
 import cr0s.warpdrive.block.BlockLaserMedium;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
-import cr0s.warpdrive.block.TileEntityAbstractChunkLoading;
 import cr0s.warpdrive.block.TileEntityChunkLoader;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.block.TileEntityLaserMedium;
@@ -117,6 +116,7 @@ import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.event.ChunkHandler;
+import cr0s.warpdrive.event.ChunkLoadingHandler;
 import cr0s.warpdrive.event.ClientHandler;
 import cr0s.warpdrive.event.CommonWorldGenerator;
 import cr0s.warpdrive.event.ItemHandler;
@@ -148,7 +148,6 @@ import cr0s.warpdrive.world.SpaceWorldProvider;
 import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
@@ -160,10 +159,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemDye;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -182,16 +177,13 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
-import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
-import net.minecraftforge.common.ForgeChunkManager.Ticket;
-import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.oredict.RecipeSorter;
 
 @Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2;" + " after:CoFHCore;" + " after:ComputerCraft;"
 		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;" + " after:DefenseTech;" + " after:icbmclassic;")
-public class WarpDrive implements LoadingCallback {
+public class WarpDrive {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
 	public static final boolean isDev = VERSION.equals("@" + "version" + "@") || VERSION.contains("-dev");
@@ -679,7 +671,7 @@ public class WarpDrive implements LoadingCallback {
 		proxy.registerEntities();
 		proxy.registerRendering();
 		
-		ForgeChunkManager.setForcedChunkLoadingCallback(instance, instance);
+		ForgeChunkManager.setForcedChunkLoadingCallback(instance, ChunkLoadingHandler.INSTANCE);
 		
 		commonWorldGenerator = new CommonWorldGenerator();
 		GameRegistry.registerWorldGenerator(commonWorldGenerator, 0);
@@ -761,51 +753,6 @@ public class WarpDrive implements LoadingCallback {
 		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandReload());
 		event.registerServerCommand(new CommandSpace());
-	}
-	
-	public Ticket registerChunkLoadTileEntity(TileEntityAbstractChunkLoading tileEntity) {
-		World worldObj = tileEntity.getWorldObj();
-		if (ForgeChunkManager.ticketCountAvailableFor(this, worldObj) > 0) {
-			Ticket ticket = ForgeChunkManager.requestTicket(this, worldObj, Type.NORMAL);
-			if (ticket != null) {
-				tileEntity.giveTicket(ticket); // FIXME calling the caller is a bad idea
-				return ticket;
-			} else {
-				WarpDrive.logger.error("Ticket not granted");
-			}
-		} else {
-			WarpDrive.logger.error("No tickets left!");
-		}
-		return null;
-	}
-	
-	@Override
-	public void ticketsLoaded(List<Ticket> tickets, World world) {
-		for (Ticket ticket : tickets) {
-			NBTTagCompound data = ticket.getModData();
-			if (data != null) {
-				int w = data.getInteger("ticketWorldObj");
-				int x = data.getInteger("ticketX");
-				int y = data.getInteger("ticketY");
-				int z = data.getInteger("ticketZ");
-				if (w != 0 || x != 0 || y != 0 || z != 0) {
-					WorldServer worldServer = DimensionManager.getWorld(w);
-					if (worldServer != null) {// skip non-loaded worlds
-						TileEntity tileEntity = worldServer.getTileEntity(x, y, z);
-						if (tileEntity != null && tileEntity instanceof TileEntityAbstractChunkLoading) {
-							if (((TileEntityAbstractChunkLoading) tileEntity).shouldChunkLoad()) {
-								WarpDrive.logger.info("ChunkLoadingTicket is loading " + tileEntity);
-								((TileEntityAbstractChunkLoading) tileEntity).giveTicket(ticket);
-								((TileEntityAbstractChunkLoading) tileEntity).refreshLoading(true);
-								return;
-							}
-						}
-					}
-				}
-			}
-			
-			ForgeChunkManager.releaseTicket(ticket);
-		}
 	}
 	
 	@Mod.EventHandler

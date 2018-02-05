@@ -3,7 +3,7 @@ package cr0s.warpdrive.item;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirContainerItem;
-import cr0s.warpdrive.block.energy.BlockEnergyBank;
+import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumComponentType;
 
 import java.util.List;
@@ -139,9 +139,11 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	
 	
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
-		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, player);
+	public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
+		final Block block = world.getBlock(x, y, z);
+		
+		return block instanceof BlockAbstractContainer
+		    || super.doesSneakBypassUse(world, x, y, z, player);
 	}
 	
 	@Override
