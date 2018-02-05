@@ -12,6 +12,7 @@ import cr0s.warpdrive.api.ExceptionChunkNotLoaded;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDynamicLiquid;
 import net.minecraft.block.BlockPane;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockStaticLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -233,6 +234,10 @@ public class StateAir {
 			typeBlock = BLOCK_SEALER;
 			
 		} else if (block instanceof BlockAbstractOmnipanel) {
+			typeBlock = BLOCK_SEALER;
+			
+		} else if (block instanceof BlockStairs) {
+			// stairs are reporting slab collision box, so we can't detect them automatically
 			typeBlock = BLOCK_SEALER;
 			
 		} else if (block instanceof BlockStaticLiquid || block instanceof BlockDynamicLiquid) {// vanilla liquid (water & lava sources or flowing)
