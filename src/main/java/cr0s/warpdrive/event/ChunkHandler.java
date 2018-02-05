@@ -215,7 +215,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unwatch by %s",
 			                                    event.player.worldObj.isRemote ? "Client" : "Server",
-			                                    event.player.worldObj.provider.getDimensionName(),
+			                                    event.player.worldObj.provider.getSaveFolder(),
 			                                    event.chunk,
 			                                    event.player));
 		}

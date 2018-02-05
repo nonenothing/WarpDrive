@@ -51,7 +51,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			return "item.warpdrive.component." + EnumComponentType.get(damage).getUnlocalizedName();
@@ -60,7 +60,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
+	public void getSubItems(@Nonnull final Item item, @Nonnull final CreativeTabs creativeTabs, @Nonnull final List<ItemStack> subItems) {
 		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
 			subItems.add(new ItemStack(item, 1, enumComponentType.ordinal()));
 		}
@@ -69,7 +69,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
 		if (damage >= 0 && damage < EnumComponentType.length) {
@@ -80,12 +80,12 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	// IAirContainerItem overrides for empty air canister
 	@Override
-	public boolean canContainAir(ItemStack itemStack) {
+	public boolean canContainAir(final ItemStack itemStack) {
 		return (itemStack.getItem() instanceof ItemComponent && itemStack.getItemDamage() == EnumComponentType.AIR_CANISTER.ordinal());
 	}
 	
 	@Override
-	public int getMaxAirStorage(ItemStack itemStack) {
+	public int getMaxAirStorage(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getMaxAirStorage(itemStack);
 		} else {
@@ -94,18 +94,18 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	}
 	
 	@Override
-	public int getCurrentAirStorage(ItemStack itemStack) {
+	public int getCurrentAirStorage(final ItemStack itemStack) {
 		return 0;
 	}
 	
 	@Override
-	public ItemStack consumeAir(ItemStack itemStack) {
+	public ItemStack consumeAir(final ItemStack itemStack) {
 		WarpDrive.logger.error(this + " consumeAir() with itemStack " + itemStack);
 		throw new RuntimeException("Invalid call to consumeAir() on non or empty container");
 	}
 	
 	@Override
-	public int getAirTicksPerConsumption(ItemStack itemStack) {
+	public int getAirTicksPerConsumption(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getAirTicksPerConsumption(itemStack);
 		} else {
@@ -114,7 +114,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	}
 	
 	@Override
-	public ItemStack getFullAirContainer(ItemStack itemStack) {
+	public ItemStack getFullAirContainer(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getFullAirContainer(itemStack);
 		}
@@ -122,7 +122,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	}
 	
 	@Override
-	public ItemStack getEmptyAirContainer(ItemStack itemStack) {
+	public ItemStack getEmptyAirContainer(final ItemStack itemStack) {
 		if (canContainAir(itemStack)) {
 			return WarpDrive.itemAirTanks[0].getEmptyAirContainer(itemStack);
 		}
@@ -132,13 +132,15 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	
 	@Override
-	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess world, BlockPos blockPos, EntityPlayer player) {
-		Block block = world.getBlockState(blockPos).getBlock();
-		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(itemStack, world, blockPos, player);
+	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess world, final BlockPos blockPos, final EntityPlayer player) {
+		final Block block = world.getBlockState(blockPos).getBlock();
+		
+		return block instanceof BlockEnergyBank
+		    || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";

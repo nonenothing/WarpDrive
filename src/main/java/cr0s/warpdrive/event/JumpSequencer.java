@@ -322,7 +322,7 @@ public class JumpSequencer extends AbstractSequencer {
 		sourceWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, sourceWorld, Type.NORMAL);
 		if (sourceWorldTicket == null) {
 			reason.append(String.format("Chunkloading rejected in source world %s. Aborting.",
-			                            sourceWorld.getWorldInfo().getWorldName()));
+			                            sourceWorld.provider.getSaveFolder()));
 			return false;
 		}
 		
@@ -354,7 +354,7 @@ public class JumpSequencer extends AbstractSequencer {
 		targetWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, targetWorld, Type.NORMAL);
 		if (targetWorldTicket == null) {
 			reason.append(String.format("Chunkloading rejected in target world %s. Aborting.",
-			                            targetWorld.getWorldInfo().getWorldName()));
+			                            targetWorld.provider.getSaveFolder()));
 			return false;
 		}
 		
@@ -1588,7 +1588,7 @@ public class JumpSequencer extends AbstractSequencer {
 		return String.format("%s/%d \'%s\' @ %s (%d %d %d) #%d",
 			getClass().getSimpleName(), hashCode(),
 			(ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
-			sourceWorld == null ? "~NULL~" : sourceWorld.getWorldInfo().getWorldName(),
+			sourceWorld == null ? "~NULL~" : sourceWorld.provider.getSaveFolder(),
 			ship == null ? -1 : ship.core.getX(), ship == null ? -1 : ship.core.getY(), ship == null ? -1 : ship.core.getZ(),
 			ticks);
 	}

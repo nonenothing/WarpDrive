@@ -126,7 +126,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	
 	@Nonnull
 	@Override
-	public TileEntity createNewTileEntity(@Nonnull World world, int metadata) {
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityEnergyBank((byte)(metadata % 4));
 	}
 	
@@ -137,7 +137,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return getMetaFromState(blockState);
 	}
 	
@@ -218,7 +218,8 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		}
 		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
 		
-		if (itemStackHeld != null && itemStackHeld.getItem() instanceof IWarpTool) {
+		if ( itemStackHeld != null
+		  && itemStackHeld.getItem() instanceof IWarpTool ) {
 			if (entityPlayer.isSneaking()) {
 				tileEntityEnergyBank.setMode(side, tileEntityEnergyBank.getMode(side).getPrevious());
 			} else {
@@ -243,17 +244,20 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		}
 		
 		EnumComponentType enumComponentType = null;
-		if (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemComponent) {
+		if ( itemStackHeld != null
+		  && itemStackHeld.getItem() instanceof ItemComponent ) {
 			enumComponentType = EnumComponentType.get(itemStackHeld.getItemDamage());
 		}
 		
 		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
 		if (entityPlayer.isSneaking()) {
-			// using an upgrade item or an empty means dismount upgrade
-			if (itemStackHeld == null || enumComponentType != null) {
+			// using an upgrade item or an empty hand means dismount upgrade
+			if ( itemStackHeld == null
+			  || enumComponentType != null ) {
 				// find a valid upgrade to dismount
-				if (itemStackHeld == null || !tileEntityEnergyBank.hasUpgrade(enumComponentType)) {
-					enumComponentType = (EnumComponentType)tileEntityEnergyBank.getFirstUpgradeOfType(EnumComponentType.class, null);
+				if ( itemStackHeld == null
+				  || !tileEntityEnergyBank.hasUpgrade(enumComponentType) ) {
+					enumComponentType = (EnumComponentType) tileEntityEnergyBank.getFirstUpgradeOfType(EnumComponentType.class, null);
 				}
 				
 				if (enumComponentType == null) {
@@ -264,8 +268,8 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 				
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// dismount the current upgrade item
-					ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.setNoPickupDelay();
 					world.spawnEntityInWorld(entityItem);
 				}

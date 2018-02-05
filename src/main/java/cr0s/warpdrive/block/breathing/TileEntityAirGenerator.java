@@ -131,7 +131,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d)",
 			getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+			worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
 			pos.getX(), pos.getY(), pos.getZ());
 	}
 	

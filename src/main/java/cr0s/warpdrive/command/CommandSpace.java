@@ -175,7 +175,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 			// inform player
-			String message = "§aTeleporting player " + entityPlayerMP.getName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.getWorldInfo().getWorldName();
+			String message = "§aTeleporting player " + entityPlayerMP.getName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.provider.getSaveFolder();
 			Commons.addChatMessage(commandSender, new TextComponentString(message));
 			WarpDrive.logger.info(message);
 			if (commandSender != entityPlayerMP) {

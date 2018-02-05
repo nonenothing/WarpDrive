@@ -1242,11 +1242,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	@Override
 	public String toString() {
-		return String.format(
-			"%s \'%s\' @ %s (%d %d %d)",
-			getClass().getSimpleName(),
-			shipName,
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-			pos.getX(), pos.getY(), pos.getZ());
+		return String.format("%s \'%s\' @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
+		                     shipName,
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

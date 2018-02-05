@@ -195,15 +195,15 @@ public class Commons {
 				fieldToReturn = clazz.getDeclaredField(obfuscatedName);
 			} catch (Exception exception2) {
 				exception2.printStackTrace();
-				String map = "";
+				StringBuilder map = new StringBuilder();
 				for (Field fieldDeclared : clazz.getDeclaredFields()) {
-					if (!map.isEmpty()) {
-						map += ", ";
+					if (map.length() > 0) {
+						map.append(", ");
 					}
-					map += fieldDeclared.getName();
+					map.append(fieldDeclared.getName());
 				}
 				WarpDrive.logger.error(String.format("Unable to find %1$s field in %2$s class. Available fields are: %3$s",
-						deobfuscatedName, clazz.toString(), map));
+				                                     deobfuscatedName, clazz.toString(), map.toString()));
 			}
 		}
 		if (fieldToReturn != null) {
@@ -285,8 +285,7 @@ public class Commons {
 			toIgnore.addAll(Arrays.asList(ignore));
 		}
 		
-		Set<BlockPos> toIterate = new HashSet<>();
-		toIterate.addAll(start);
+		Set<BlockPos> toIterate = new HashSet<>(start);
 		
 		Set<BlockPos> toIterateNext;
 		
@@ -295,7 +294,7 @@ public class Commons {
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
 			toIterateNext = new HashSet<>();
-			for (BlockPos current : toIterate) {
+			for (final BlockPos current : toIterate) {
 				if (whitelist.contains(new VectorI(current).getBlockState_noChunkLoading(world).getBlock())) {
 					iterated.add(current);
 				}

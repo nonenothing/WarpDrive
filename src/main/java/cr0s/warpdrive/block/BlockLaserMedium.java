@@ -23,6 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockLaserMedium extends BlockAbstractContainer {
+  
 	public static final PropertyInteger LEVEL = PropertyInteger.create("level", 0, 7);
 	
 	public BlockLaserMedium(final String registryName) {
@@ -72,7 +73,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityLaserMedium) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityLaserMedium) tileEntity).getStatus());
 				return true;

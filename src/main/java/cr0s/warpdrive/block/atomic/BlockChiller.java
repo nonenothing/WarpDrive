@@ -31,7 +31,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return 0;
 	}
 	

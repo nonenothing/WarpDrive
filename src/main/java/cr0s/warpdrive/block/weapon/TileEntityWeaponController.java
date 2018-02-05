@@ -35,8 +35,8 @@ public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	@Override
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d)",
-		                     getClass().getSimpleName(), 
-		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     getClass().getSimpleName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

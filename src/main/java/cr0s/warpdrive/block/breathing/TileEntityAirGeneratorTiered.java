@@ -142,16 +142,16 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return true;
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d)",
-			getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-				pos.getX(), pos.getY(), pos.getZ());
+		                     getClass().getSimpleName(),
+		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
+		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 	
 	public Object[] enable(Object[] arguments) {

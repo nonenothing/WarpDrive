@@ -193,9 +193,9 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	@Override
 	public String toString() {
 		return String.format("%s %d @ %s (%d %d %d)", 
-				getClass().getSimpleName(),
-				videoChannel,
-				worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-						pos.getX(), pos.getY(), pos.getZ());
+		                     getClass().getSimpleName(), 
+		                     videoChannel, 
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

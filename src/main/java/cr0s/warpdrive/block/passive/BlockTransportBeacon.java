@@ -25,7 +25,7 @@ public class BlockTransportBeacon extends BlockTorch {
 	}
 	
 	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand) {
+	public void randomDisplayTick(final IBlockState stateIn, final World worldIn, final BlockPos pos, final Random rand) {
 		EnumFacing enumfacing = stateIn.getValue(FACING);
 		double d0 = (double)pos.getX() + 0.5D;
 		double d1 = (double)pos.getY() + 0.7D;

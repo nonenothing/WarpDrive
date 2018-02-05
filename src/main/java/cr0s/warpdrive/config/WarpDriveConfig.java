@@ -202,6 +202,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_XML_PREPROCESSOR = false;
 	public static boolean LOGGING_RENDERING = false;
 	public static boolean LOGGING_CHUNK_HANDLER = false;
+	public static boolean LOGGING_CHUNK_LOADING = true;
 	public static boolean LOGGING_CLIENT_SYNCHRONIZATION = false;
 	
 	// Starmap
@@ -378,9 +379,9 @@ public class WarpDriveConfig {
 	public static int LIFT_ENTITY_COOLDOWN_TICKS = 40;
 	
 	// Chunk loader
-	public static int CL_MAX_ENERGY = 1000000;
-	public static int CL_MAX_DISTANCE = 2;
-	public static int CL_RF_PER_CHUNKTICK = 320;
+	public static int CHUNK_LOADER_MAX_ENERGY_STORED = 1000000;
+	public static int CHUNK_LOADER_MAX_RADIUS = 2;
+	public static int CHUNK_LOADER_ENERGY_PER_CHUNK = 8;
 	
 	// Hull
 	public static float[] HULL_HARDNESS = { 25.0F, 50.0F, 80.0F };
@@ -673,6 +674,7 @@ public class WarpDriveConfig {
 		LOGGING_XML_PREPROCESSOR = config.get("logging", "enable_XML_preprocessor_logs", LOGGING_XML_PREPROCESSOR, "Save XML preprocessor results as output*.xml file, enable it to debug your XML configuration files").getBoolean(false);
 		LOGGING_RENDERING = config.get("logging", "enable_rendering_logs", LOGGING_RENDERING, "Detailed rendering logs to help debug the mod.").getBoolean(false);
 		LOGGING_CHUNK_HANDLER = config.get("logging", "enable_chunk_handler_logs", LOGGING_CHUNK_HANDLER, "Detailed chunk data logs to help debug the mod.").getBoolean(false);
+		LOGGING_CHUNK_LOADING = config.get("logging", "enable_chunk_loading_logs", LOGGING_CHUNK_LOADING, "Chunk loading logs, enable it to report chunk loaders updates").getBoolean(false);
 		
 		// Starmap registry
 		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
@@ -1010,6 +1012,16 @@ public class WarpDriveConfig {
 				config.get("lift", "update_interval_ticks", LIFT_UPDATE_INTERVAL_TICKS, "Update speed of the check for entities").getInt());
 		LIFT_ENTITY_COOLDOWN_TICKS = Commons.clamp(1, 6000,
 				config.get("lift", "entity_cooldown_ticks", LIFT_ENTITY_COOLDOWN_TICKS, "Cooldown after moving an entity").getInt());
+		
+		
+		// Chunk loader
+		CHUNK_LOADER_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
+				config.get("chunk_loader", "max_energy_stored", CHUNK_LOADER_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
+		CHUNK_LOADER_MAX_RADIUS = Commons.clamp(1, Integer.MAX_VALUE,
+				config.get("chunk_loader", "max_radius", CHUNK_LOADER_MAX_RADIUS, "Maximum radius when loading a square shape, measured in chunks. A linear shape can be up to 1 chunk wide by (radius + 1 + radius) ^ 2 chunks long.").getInt());
+		CHUNK_LOADER_ENERGY_PER_CHUNK = Commons.clamp(1, 100,
+				config.get("chunk_loader", "energy_per_chunk", CHUNK_LOADER_ENERGY_PER_CHUNK, "Energy consumed per chunk loaded").getInt());
+		
 		
 		// Particles accelerator
 		ACCELERATOR_ENABLE = config.get("accelerator", "enable", ACCELERATOR_ENABLE, "Enable accelerator blocks. Requires a compatible server, as it won't work in single player").getBoolean(false);
