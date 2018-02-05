@@ -59,7 +59,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		isRefreshNeeded = true;
 	}
 	
-	public synchronized void refreshLoading(final boolean force) {
+	private void refreshLoading(final boolean force) {
 		final boolean shouldChunkLoad = shouldChunkLoad();
 		if (shouldChunkLoad) {
 			if (ticket == null) {

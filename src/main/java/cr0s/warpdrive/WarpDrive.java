@@ -646,7 +646,7 @@ public class WarpDrive {
 			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
 		}
 		
-		// TOOL ITEMS
+		// tool items
 		itemTuningFork = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningFork, "itemTuningFork");
 		
@@ -668,11 +668,14 @@ public class WarpDrive {
 		damageTeleportation = new DamageTeleportation();
 		damageWarm = new DamageWarm();
 		
+		// entities
 		proxy.registerEntities();
 		proxy.registerRendering();
 		
+		// chunk loading
 		ForgeChunkManager.setForcedChunkLoadingCallback(instance, ChunkLoadingHandler.INSTANCE);
 		
+		// world generation
 		commonWorldGenerator = new CommonWorldGenerator();
 		GameRegistry.registerWorldGenerator(commonWorldGenerator, 0);
 		

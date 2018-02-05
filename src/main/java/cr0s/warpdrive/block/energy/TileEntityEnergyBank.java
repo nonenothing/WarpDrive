@@ -172,10 +172,10 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ %s (%d %d %d) %8d", 
-		                     getClass().getSimpleName(), 
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(), 
-		                     xCoord, yCoord, zCoord, 
+		return String.format("%s @ %s (%d %d %d) %8d",
+		                     getClass().getSimpleName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
+		                     xCoord, yCoord, zCoord,
 		                     energy_getEnergyStored());
 	}
 }
