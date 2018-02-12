@@ -135,7 +135,8 @@ public class JumpSequencer extends AbstractSequencer {
 		targetWorld = null;
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Sequencer created");
+			WarpDrive.logger.info(String.format("%s Sequencer created for shipCore %s with shipMovementType %s",
+			                                    this, shipCore, shipMovementType));
 		}
 	}
 	
@@ -153,7 +154,8 @@ public class JumpSequencer extends AbstractSequencer {
 		targetWorld = world;
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Sequencer created");
+			WarpDrive.logger.info(String.format("%s Sequencer created for ship %s with shipMovementType %s",
+			                                    this, ship, shipMovementType));
 		}
 	}
 	
