@@ -234,16 +234,36 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	private boolean shouldExplode() {
 		boolean exploding = false;
+		final StringBuilder laserStatus = new StringBuilder();
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
 			exploding = exploding || (instabilityValues[reactorFace.indexStability] >= 100);
+			int laserEnergy = 0;
+			final TileEntity tileEntity = worldObj.getTileEntity(
+					xCoord + reactorFace.x,
+					yCoord + reactorFace.y,
+					zCoord + reactorFace.z);
+			if (tileEntity instanceof TileEntityEnanReactorLaser) {
+				try {
+					laserEnergy = (int) ((TileEntityEnanReactorLaser) tileEntity).energy()[0];
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					WarpDrive.logger.error(String.format("%s tileEntity is %s", this, tileEntity));
+				}
+			}
+			laserStatus.append(String.format("\n- face %s has reached instability %.2f while laser has %d energy available",
+			                                 reactorFace.name,
+			                                 instabilityValues[reactorFace.indexStability],
+			                                 laserEnergy));
 		}
 		exploding &= (worldObj.rand.nextInt(4) == 2);
 		
 		if (exploding) {
-			WarpDrive.logger.info(this
-			                      + String.format(" Explosion triggered, Instability is [%.2f, %.2f, %.2f, %.2f], Energy stored is %d, Laser received is %.2f, %s",
-			                                      instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3],
-			                                      containedEnergy, lasersReceived, isEnabled ? "ENABLED" : "DISABLED"));
+			WarpDrive.logger.info(String.format("%s Explosion triggered\nEnergy stored is %d, Laser received is %.2f, reactor is %s%s",
+			                                    this,
+			                                    containedEnergy,
+			                                    lasersReceived,
+			                                    isEnabled ? "ENABLED" : "DISABLED",
+			                                    laserStatus.toString()));
 			isEnabled = false;
 		}
 		return exploding;
