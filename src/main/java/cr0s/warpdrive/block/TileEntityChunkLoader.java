@@ -117,6 +117,8 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		}
 		
 		isPowered = energy_consume(chunkloading_getEnergyRequired(), !isEnabled);
+		
+		updateMetadata(isEnabled ? isPowered ? 2 : 1 : 0);
 	}
 	
 	private void setBounds(final int negX, final int posX, final int negZ, final int posZ) {
