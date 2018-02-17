@@ -111,8 +111,30 @@ public class Commons {
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(final List<String> list, final String tooltip) {
+		// skip empty tooltip
+		if (tooltip.isEmpty()) {
+			return;
+		}
+		
+		// apply requested formatting
 		final String[] split = updateEscapeCodes(tooltip).split("\n");
+		
+		// add new lines
 		for (final String line : split) {
+			// skip redundant information
+			boolean isExisting = false;
+			for (final String lineExisting : list) {
+				if ( lineExisting.contains(split[0])
+				     || split[0].contains(lineExisting) ) {
+					isExisting = true;
+					break;
+				}
+			}
+			if (isExisting) {
+				continue;
+			}
+			
+			// apply screen formatting/cesure
 			String lineRemaining = line;
 			String formatNextLine = "";
 			while (!lineRemaining.isEmpty()) {
