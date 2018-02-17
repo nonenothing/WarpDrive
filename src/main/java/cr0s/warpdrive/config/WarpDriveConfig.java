@@ -356,10 +356,39 @@ public class WarpDriveConfig {
 	public static int IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
 	
 	// Transporter
-	public static int TRANSPORTER_MAX_ENERGY_STORED = 1000000;
-	public static boolean TRANSPORTER_USE_RELATIVE_COORDS = true;
-	public static double TRANSPORTER_ENERGY_PER_BLOCK = 100.0;
-	public static double TRANSPORTER_MAX_BOOST_MUL = 4.0;
+	public static int TRANSPORTER_MAX_ENERGY_STORED = 2000000;
+	public static int TRANSPORTER_ENERGY_STORED_UPGRADE_BONUS = TRANSPORTER_MAX_ENERGY_STORED / 2;
+	public static int TRANSPORTER_ENERGY_STORED_UPGRADE_MAX_QUANTITY = 8;
+	public static int TRANSPORTER_RANGE_BASE_BLOCKS = 128;
+	public static int TRANSPORTER_RANGE_UPGRADE_BLOCKS = 16;
+	public static int TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY = 8;
+	public static double TRANSPORTER_ACQUIRING_ENERGY_FACTOR = 0.02D;
+	public static int TRANSPORTER_JAMMED_COOLDOWN_TICKS = 2 * 20;
+	public static int TRANSPORTER_TRANSFER_ENERGY_AT_MIN_RANGE = 100000;
+	public static int TRANSPORTER_TRANSFER_ENERGY_AT_MAX_RANGE = 1000000;
+	public static double TRANSPORTER_TRANSFER_ENERGY_FACTOR_MAX = 10.0D;
+	public static int TRANSPORTER_TRANSFER_FAILURE_MAX_DAMAGE = 5;
+	public static double TRANSPORTER_TRANSFER_SUCCESS_LOCK_BONUS = 0.20D;
+	public static int TRANSPORTER_TRANSFER_SUCCESS_MAX_DAMAGE = 100;
+	public static double TRANSPORTER_TRANSFER_LOCKING_LOST = 0.5D;
+	public static int TRANSPORTER_TRANSFER_WARMUP_TICKS = 3 * 20;
+	public static int TRANSPORTER_TRANSFER_RELEASE_TICKS = 2 * 20;
+	public static int TRANSPORTER_TRANSFER_COOLDOWN_TICKS = 10 * 20;
+	public static double TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS = 1.0D;
+	public static int TRANSPORTER_ENTITY_GRAB_RADIUS_BLOCKS = 2;
+	public static int TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS = 2;
+	public static double TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK = 0.999D; // natural decay
+	public static double TRANSPORTER_LOCKING_STRENGTH_IN_WILDERNESS = 0.25D;
+	public static double TRANSPORTER_LOCKING_STRENGTH_AT_FOCUS = 0.5D;
+	public static double TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER = 1.0D;
+	public static double TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR = 0.5D;
+	public static double TRANSPORTER_LOCKING_STRENGTH_UPGRADE = 0.15D;
+	public static double TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS = 0.25D;
+	public static double TRANSPORTER_LOCKING_SPEED_AT_FOCUS = 0.75D;
+	public static double TRANSPORTER_LOCKING_SPEED_AT_TRANSPORTER = 1.0D;
+	public static double TRANSPORTER_LOCKING_SPEED_UPGRADE = 0.25D;
+	public static int TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS = 5 * 20;
+	public static int TRANSPORTER_LOCKING_UPGRADE_MAX_QUANTITY = 2;
 	
 	// Enantiomorphic power reactor
 	public static int ENAN_REACTOR_MAX_ENERGY_STORED = 100000000;
@@ -942,11 +971,10 @@ public class WarpDriveConfig {
 		// Transporter
 		TRANSPORTER_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
 				config.get("transporter", "max_energy_stored", TRANSPORTER_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		TRANSPORTER_USE_RELATIVE_COORDS = config.get("transporter", "use_relative_coords", TRANSPORTER_USE_RELATIVE_COORDS, "Should transporter use relative coordinates?").getBoolean(true);
-		TRANSPORTER_ENERGY_PER_BLOCK = Commons.clamp(1.0D, TRANSPORTER_MAX_ENERGY_STORED / 10.0D,
-				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK, "Energy cost per block distance").getDouble(100.0D));
-		TRANSPORTER_MAX_BOOST_MUL = Commons.clamp(1.0D, 1000.0D,
-				config.get("transporter", "max_boost", TRANSPORTER_MAX_BOOST_MUL, "Maximum energy boost allowed").getDouble(4.0));
+//		TRANSPORTER_ENERGY_PER_BLOCK = Commons.clamp(1.0D, TRANSPORTER_MAX_ENERGY_STORED / 10.0D,
+//				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK, "Energy cost per block distance").getDouble(100.0D));
+//		TRANSPORTER_MAX_BOOST_MUL = Commons.clamp(1.0D, 1000.0D,
+//				config.get("transporter", "max_boost", TRANSPORTER_MAX_BOOST_MUL, "Maximum energy boost allowed").getDouble(4.0));
 		
 		// Enantiomorphic reactor
 		ENAN_REACTOR_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,

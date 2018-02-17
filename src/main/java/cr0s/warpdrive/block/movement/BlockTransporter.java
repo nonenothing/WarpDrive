@@ -48,12 +48,9 @@ public class BlockTransporter extends BlockAbstractContainer {
 		return iconBuffer[2];
 	}
 	
-	
-	/**
-	 * Called upon block activation (right click on the block.)
-	 */
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
@@ -66,6 +63,6 @@ public class BlockTransporter extends BlockAbstractContainer {
 			}
 		}
 		
-		return false;
+		return super.onBlockActivated(world, x, y, z, entityPlayer, side, hitX, hitY, hitZ);
 	}
 }

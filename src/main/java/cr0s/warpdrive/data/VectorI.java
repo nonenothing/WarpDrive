@@ -8,13 +8,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ChunkProviderServer;
 
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -209,6 +207,13 @@ public class VectorI implements Cloneable {
 		return this;
 	}
 	
+	public VectorI translate(final EnumFacing side) {
+		x += side.getFrontOffsetX();
+		y += side.getFrontOffsetY();
+		z += side.getFrontOffsetZ();
+		return this;
+	}
+	
 	// return a new vector adding both parts
 	public static VectorI add(final VectorI vector1, final VectorI vector2) {
 		return new VectorI(vector1.x + vector2.x, vector1.y + vector2.y, vector1.z + vector2.z);
@@ -279,13 +284,13 @@ public class VectorI implements Cloneable {
 		return vector;
 	}
 	
-	public void readFromNBT(NBTTagCompound nbtTagCompound) {
+	public void readFromNBT(final NBTTagCompound nbtTagCompound) {
 		x = nbtTagCompound.getInteger("x");
 		y = nbtTagCompound.getInteger("y");
 		z = nbtTagCompound.getInteger("z");
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
+	public NBTTagCompound writeToNBT(final NBTTagCompound nbtTagCompound) {
 		nbtTagCompound.setInteger("x", x);
 		nbtTagCompound.setInteger("y", y);
 		nbtTagCompound.setInteger("z", z);
@@ -308,11 +313,11 @@ public class VectorI implements Cloneable {
 		return (newX * newX + newY * newY + newZ * newZ);
 	}
 	
-	public int distance2To(final Entity entity) {
-		int newX = (int) (Math.round(entity.posX)) - x;
-		int newY = (int) (Math.round(entity.posY)) - y;
-		int newZ = (int) (Math.round(entity.posZ)) - z;
-		return (newX * newX + newY * newY + newZ * newZ);
+	public double distance2To(final Entity entity) {
+		final double newX = entity.posX - x;
+		final double newY = entity.posY - y;
+		final double newZ = entity.posZ - z;
+		return newX * newX + newY * newY + newZ * newZ;
 	}
 	
 	public int distance2To(final TileEntity tileEntity) {
