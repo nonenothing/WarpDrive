@@ -105,6 +105,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	public TileEntityForceFieldProjector() {
 		super();
+		IC2_sinkTier = 4;
+		IC2_sourceTier = 4;
 		
 		peripheralName = "warpdriveForceFieldProjector";
 		addMethods(new String[] {
