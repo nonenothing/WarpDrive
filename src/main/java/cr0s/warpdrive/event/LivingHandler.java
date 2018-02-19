@@ -9,6 +9,7 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StateAir;
+import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
@@ -102,13 +103,7 @@ public class LivingHandler {
 			final double newEntityY = entityLivingBase.posY + 0.1D;
 			final double newEntityZ = celestialObject.dimensionCenterX + Math.signum(relativeZ) * newAbsoluteZ;
 			// entity.isAirBorne = true;
-			// @TODO: force client refresh of non-player entities
-			if (entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP player = (EntityPlayerMP) entityLivingBase;
-				player.setPositionAndUpdate(newEntityX, newEntityY, newEntityZ);
-			} else {
-				entityLivingBase.setPosition(newEntityX, newEntityY, newEntityZ);
-			}
+			Commons.moveEntity(entityLivingBase, entityLivingBase.worldObj, new Vector3(newEntityX, newEntityY, newEntityZ));
 			
 			// spam chat if it's a player
 			if (entityLivingBase instanceof EntityPlayer && !entityLivingBase.isDead && entityLivingBase.deathTime <= 0) {

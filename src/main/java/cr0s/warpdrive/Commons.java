@@ -1,11 +1,14 @@
 package cr0s.warpdrive;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.world.SpaceTeleporter;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.PlayerSelector;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -17,7 +20,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -398,7 +403,7 @@ public class Commons {
 		return yValues[yValues.length - 1];
 	}
 	
-	private static double interpolate(final double xMin, final double yMin, final double xMax, final double yMax, final double x) {
+	public static double interpolate(final double xMin, final double yMin, final double xMax, final double yMax, final double x) {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
 	}
 	
@@ -561,4 +566,36 @@ public class Commons {
 			NEI_hideItemStack(itemStack);
 		}
 	}
+	
+	public static void moveEntity(final Entity entity, final World worldDestination, final Vector3 v3Destination) {
+		// change to another dimension if needed
+		if (worldDestination != entity.worldObj) {
+			final World worldSource = entity.worldObj;
+			final MinecraftServer server = MinecraftServer.getServer();
+			final WorldServer from = server.worldServerForDimension(worldSource.provider.dimensionId);
+			final WorldServer to = server.worldServerForDimension(worldDestination.provider.dimensionId);
+			final SpaceTeleporter teleporter = new SpaceTeleporter(to, 0, 
+			                                                       MathHelper.floor_double(v3Destination.x),
+			                                                       MathHelper.floor_double(v3Destination.y), 
+			                                                       MathHelper.floor_double(v3Destination.z));
+			
+			if (entity instanceof EntityPlayerMP) {
+				final EntityPlayerMP player = (EntityPlayerMP) entity;
+				server.getConfigurationManager().transferPlayerToDimension(player, worldDestination.provider.dimensionId, teleporter);
+				player.sendPlayerAbilities();
+			} else {
+				server.getConfigurationManager().transferEntityToWorld(entity, worldSource.provider.dimensionId, from, to, teleporter);
+			}
+		}
+		
+		// update position
+		if (entity instanceof EntityPlayerMP) {
+			final EntityPlayerMP player = (EntityPlayerMP) entity;
+			player.setPositionAndUpdate(v3Destination.x, v3Destination.y, v3Destination.z);
+		} else {
+			// @TODO: force client refresh of non-player entities
+			entity.setPosition(v3Destination.x, v3Destination.y, v3Destination.z);
+		}
+	}
+	
 }

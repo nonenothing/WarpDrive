@@ -19,7 +19,6 @@ import cr0s.warpdrive.data.Transformation;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
-import cr0s.warpdrive.world.SpaceTeleporter;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -42,11 +41,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
@@ -1100,29 +1097,12 @@ public class JumpSequencer extends AbstractSequencer {
 							newEntityX, newEntityY, newEntityZ, entity.toString()));
 				}
 				
-				// Travel to another dimension if needed
-				if (betweenWorlds) {
-					MinecraftServer server = MinecraftServer.getServer();
-					WorldServer from = server.worldServerForDimension(sourceWorld.provider.dimensionId);
-					WorldServer to = server.worldServerForDimension(targetWorld.provider.dimensionId);
-					SpaceTeleporter teleporter = new SpaceTeleporter(to, 0,
-							MathHelper.floor_double(newEntityX),
-							MathHelper.floor_double(newEntityY),
-							MathHelper.floor_double(newEntityZ));
-					
-					if (entity instanceof EntityPlayerMP) {
-						EntityPlayerMP player = (EntityPlayerMP) entity;
-						server.getConfigurationManager().transferPlayerToDimension(player, targetWorld.provider.dimensionId, teleporter);
-						player.sendPlayerAbilities();
-					} else {
-						server.getConfigurationManager().transferEntityToWorld(entity, sourceWorld.provider.dimensionId, from, to, teleporter);
-					}
-				}
-				
-				// Update position
 				transformation.rotate(entity);
+				Commons.moveEntity(entity, targetWorld, new Vector3(newEntityX, newEntityY, newEntityZ));
+				
+				// Update bed position
 				if (entity instanceof EntityPlayerMP) {
-					EntityPlayerMP player = (EntityPlayerMP) entity;
+					final EntityPlayerMP player = (EntityPlayerMP) entity;
 					
 					ChunkCoordinates bedLocation = player.getBedLocation(sourceWorld.provider.dimensionId);
 					
@@ -1133,9 +1113,6 @@ public class JumpSequencer extends AbstractSequencer {
 						bedLocation = transformation.apply(bedLocation);
 						player.setSpawnChunk(bedLocation, false, targetWorld.provider.dimensionId);
 					}
-					player.setPositionAndUpdate(newEntityX, newEntityY, newEntityZ);
-				} else {
-					entity.setPosition(newEntityX, newEntityY, newEntityZ);
 				}
 			}
 		}
