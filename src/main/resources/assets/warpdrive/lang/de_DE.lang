@@ -681,7 +681,7 @@ warpdrive.cloakingCore.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Bl
 warpdrive.IC2reactorLaserMonitor.noReactor=Kein Reaktor gefunden!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d Reaktor(en) verbunden.
 
-warpdrive.transporter.status=Von %1$.0f %2$.0f %3$.0f zu %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=Von (%1$.0f %2$.0f %3$.0f) zu (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bRaumatmung§r verbraucht Luftkanister oder IC2 Druckluftzellen.
 warpdrive.tooltip.itemTag.flyInSpace=§bRaumtaugliches Jetpack§r.

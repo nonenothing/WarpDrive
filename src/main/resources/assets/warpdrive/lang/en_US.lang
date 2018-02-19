@@ -678,7 +678,7 @@ warpdrive.cloakingCore.cloaking=A tier %1$d cloak is currently covering %2$d blo
 warpdrive.IC2reactorLaserMonitor.noReactor=No reactor found!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) connected.
 
-warpdrive.transporter.status=From %1$.0f %2$.0f %3$.0f to %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
 warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r.

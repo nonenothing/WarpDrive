@@ -452,7 +452,7 @@ warpdrive.cloakingCore.lowPower=§c僞裝失效了，我們需要更多的能量
 warpdrive.cloakingCore.cloaking=A 層 %1$d 僞裝目前正確覆蓋 %2$d 區域！
 warpdrive.IC2reactorLaserMonitor.noReactor=沒有反應堆！
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d 反應器連接。
-warpdrive.transporter.status=From %1$.0f %2$.0f %3$.0f to %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingIC2=§b空間呼吸§r 正在從您的庫存消耗IC2的壓縮空氣囊。
 warpdrive.tooltip.itemTag.flyInSpace=§b空間噴氣背包§r.

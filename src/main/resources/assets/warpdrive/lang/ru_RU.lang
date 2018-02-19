@@ -676,7 +676,7 @@ warpdrive.cloakingCore.cloaking=Маскировка %1$d уровня покр�
 warpdrive.IC2reactorLaserMonitor.noReactor=Реактор не найден!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d реактор(ов) подключено.
 
-warpdrive.transporter.status=Из %1$.0f %2$.0f %3$.0f в %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=Из (%1$.0f %2$.0f %3$.0f) в (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
 warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r.

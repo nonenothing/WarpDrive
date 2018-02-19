@@ -677,7 +677,7 @@ warpdrive.cloakingCore.cloaking=Een Niveau %1$d dekmantelveld bedekt huidig %2$d
 warpdrive.IC2reactorLaserMonitor.noReactor=Geen reactor gevonden!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) aangesloten.
 
-warpdrive.transporter.status=Van %1$.0f %2$.0f %3$.0f naar %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=Van (%1$.0f %2$.0f %3$.0f) naar (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingHelmet=§Ademhalen in de ruimte§r consumeert de inhoud van een Zuurstoffles en/of IC2 Gecompresseerde Luchtcellen uit je inventory.
 warpdrive.tooltip.itemTag.flyInSpace=§bJetpack Die werkt in de ruimte§r.

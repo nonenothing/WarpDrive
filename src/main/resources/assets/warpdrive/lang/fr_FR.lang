@@ -676,7 +676,7 @@ warpdrive.cloakingCore.cloaking=Un champ de niveau %1$d couvre actuellement %2$d
 warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
 
-warpdrive.transporter.status=De %1$.0f %2$.0f %3$.0f à %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=De (%1$.0f %2$.0f %3$.0f) à (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingHelmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.
 warpdrive.tooltip.itemTag.flyInSpace=Jetpack compatible avec une utilisation §bspatiale§r.

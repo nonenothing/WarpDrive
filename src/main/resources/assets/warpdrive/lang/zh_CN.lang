@@ -678,7 +678,7 @@ warpdrive.cloakingCore.cloaking=一个层级 %1$d 伪装目前覆盖 %2$d方块!
 warpdrive.IC2reactorLaserMonitor.noReactor=未发现反应堆!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d反应堆已连接.
 
-warpdrive.transporter.status=从%1$.0f %2$.0f %3$.0f到 %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=从 (%1$.0f %2$.0f %3$.0f) 到 (%4$.0f %5$.0f %6$.0f)
 
 warpdrive.tooltip.itemTag.breathingHelmet=§b太空中呼吸§r消耗背包中的IC压缩空气
 warpdrive.tooltip.itemTag.flyInSpace=§b太空喷气背包§r.
