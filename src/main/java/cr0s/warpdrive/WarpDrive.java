@@ -131,7 +131,6 @@ import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.item.ItemTuningDriver;
 import cr0s.warpdrive.item.ItemTuningFork;
-import cr0s.warpdrive.item.ItemUpgrade;
 import cr0s.warpdrive.item.ItemWarpArmor;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
@@ -245,7 +244,6 @@ public class WarpDrive {
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
 	public static ItemShipToken itemShipToken;
-	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningFork;
 	public static ItemTuningDriver itemTuningDriver;
 	public static ItemForceFieldShape itemForceFieldShape;
@@ -641,11 +639,6 @@ public class WarpDrive {
 			GameRegistry.registerItem(itemAirTanks[index], "itemAirTank" + index);
 		}
 		
-		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
-			itemUpgrade = new ItemUpgrade();
-			GameRegistry.registerItem(itemUpgrade, "itemUpgrade");
-		}
-		
 		// tool items
 		itemTuningFork = new ItemTuningFork();
 		GameRegistry.registerItem(itemTuningFork, "itemTuningFork");
@@ -858,9 +851,6 @@ public class WarpDrive {
 						break;
 					case "WarpDrive:transporter":
 						mapping.remap(Item.getItemFromBlock(blockTransporter));
-						break;
-					case "WarpDrive:upgrade":
-						mapping.remap(itemUpgrade);
 						break;
 					case "WarpDrive:warpCore":
 						mapping.remap(Item.getItemFromBlock(blockShipCore));

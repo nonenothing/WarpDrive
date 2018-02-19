@@ -8,13 +8,11 @@ import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumDecorativeType;
 import cr0s.warpdrive.data.EnumForceFieldShape;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
-import cr0s.warpdrive.data.UpgradeType;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.item.ItemElectromagneticCell;
 import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemTuningDriver;
-import cr0s.warpdrive.item.ItemUpgrade;
 
 import java.util.ArrayList;
 
@@ -109,27 +107,6 @@ public class Recipes {
 		GameRegistry.addRecipe(new ShapedOreRecipe(BlockDecorative.getItemStackNoCache(EnumDecorativeType.NETWORK, 8), false, "sss", "scs", "sss",
 				's', BlockDecorative.getItemStack(EnumDecorativeType.PLAIN),
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
-		
-		// Upgrade items
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemUpgrade.getItemStack(UpgradeType.Energy), false, "c", "e", "r",
-				'c', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-				'e', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
-				'r', Items.redstone));
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemUpgrade.getItemStack(UpgradeType.Power), false, "c", "e", "r",
-				'c', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-				'e', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-				'r', Items.redstone));
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemUpgrade.getItemStack(UpgradeType.Speed), false, "c", "e", "r",
-				'c', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-				'e', Items.sugar,
-				'r', Items.redstone));
-		
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemUpgrade.getItemStack(UpgradeType.Range), false, "c", "e", "r",
-				'c', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-				'e', WarpDrive.blockTransportBeacon,
-				'r', Items.redstone));
 		
 		// WarpCore
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockShipCore), false, "ipi", "ici", "idi",
