@@ -34,7 +34,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.StatCollector;
 import net.minecraft.util.Vec3;
 
 import cpw.mods.fml.common.Optional;
@@ -522,26 +521,6 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		r = (float)vRGB.x;
 		g = (float)vRGB.y;
 		b = (float)vRGB.z;
-	}
-	
-	protected String getBeamFrequencyStatus() {
-		if (beamFrequency == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
-		} else if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency );
-		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency );
-		}
-	}
-	
-	@Override
-	public String getStatus() {
-		if (worldObj == null || !worldObj.isRemote) {
-			return super.getStatus()
-			       + "\n" + getBeamFrequencyStatus();
-		} else {
-			return super.getStatus();
-		}
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {

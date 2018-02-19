@@ -126,12 +126,6 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		energy_resetConnections(facing);
 	}
 	
-	@Override
-	public String getStatus() {
-		return super.getStatus()
-		       + "\n" + getUpgradeStatus();
-	}
-	
 	// Forge overrides
 	@Override
 	public void writeToNBT(NBTTagCompound nbtTagCompound) {

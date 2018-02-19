@@ -448,9 +448,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public String getStatus() {
+	public String getStatusHeader() {
 		if (worldObj == null) {
-			return super.getStatus();
+			return super.getStatusHeader();
 		}
 		
 		final String unlocalizedStatus;
@@ -463,7 +463,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		} else {
 			unlocalizedStatus = "warpdrive.cloakingCore.cloaking";
 		}
-		return super.getStatus()
+		return super.getStatusHeader()
 		    + "\n" + StatCollector.translateToLocalFormatted(unlocalizedStatus,
 				tier,
 				volume);

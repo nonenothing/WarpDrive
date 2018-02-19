@@ -153,12 +153,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		refreshChunkLoading();
 	}
 	
-	@Override
-	public String getStatus() {
-		return super.getStatus()
-		       + "\n" + getUpgradeStatus();
-	}
-	
 	// Forge overrides
 	@Override
 	public void readFromNBT(final NBTTagCompound tagCompound) {

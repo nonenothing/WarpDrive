@@ -51,12 +51,6 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public String getStatus() {
-		return super.getStatus()
-			       + "\n" + getUpgradeStatus();
-	}
-	
-	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		setUpgrade(EnumForceFieldUpgrade.get(tagCompound.getByte("upgrade")));

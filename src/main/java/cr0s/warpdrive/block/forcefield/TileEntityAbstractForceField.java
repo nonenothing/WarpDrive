@@ -107,22 +107,6 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		}
 	}
 	
-	String getBeamFrequencyStatus() {
-		if (beamFrequency == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
-		} else if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
-		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
-		}
-	}
-	
-	@Override
-	public String getStatus() {
-		return super.getStatus()
-			+ "\n" + getBeamFrequencyStatus();
-	}
-	
 	@Override
 	public void readFromNBT(NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);

@@ -3,8 +3,11 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CameraRegistryItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -243,13 +246,70 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	protected String getBeamFrequencyStatus(final int beamFrequency) {
+		if (beamFrequency == -1) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
+		} else if (beamFrequency < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency );
+		} else {
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency );
+		}
+	}
+	
+	protected String getVideoChannelStatus(final int videoChannel) {
+		if (videoChannel == -1) {
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.undefined");
+		} else if (videoChannel < 0) {
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
+		} else {
+			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
+			if (camera == null) {
+				WarpDrive.cameras.printRegistry(worldObj);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
+			} else if (camera.isTileEntity(this)) {
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.valid", videoChannel);
+			} else {
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.validCamera",
+				                                               videoChannel,
+				                                               camera.position.chunkPosX,
+				                                               camera.position.chunkPosY,
+				                                               camera.position.chunkPosZ);
+			}
+		}
+	}
+	
 	public String getStatusHeader() {
 		return "";
 	}
 	
 	public String getStatus() {
-		return getStatusPrefix()
+		String message = getStatusPrefix()
 		     + getStatusHeader();
+		
+		if (this instanceof IBeamFrequency) {
+			// only show in item form or from server side
+			if ( worldObj == null
+			  || !worldObj.isRemote ) {
+				message += "\n" 
+				         + getBeamFrequencyStatus(((IBeamFrequency) this).getBeamFrequency());
+			}
+		}
+		
+		if (this instanceof IVideoChannel) {
+			// only show in item form or from client side
+			if ( worldObj == null
+			  || worldObj.isRemote ) {
+				message += "\n"
+				         + getVideoChannelStatus(((IVideoChannel) this).getVideoChannel());
+			}
+		}
+		
+		if (isUpgradeable()) {
+			return message
+			    + "\n" + getUpgradeStatus();
+		}
+		
+		return message;
 	}
 	
 	public String getStatusHeaderInPureText() {
@@ -259,6 +319,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	// upgrade system
 	private final HashMap<Object, Integer> installedUpgrades = new HashMap<>(10);
 	private final HashMap<Object, Integer> maxUpgrades = new HashMap<>(10);
+	public boolean isUpgradeable() {
+		return !maxUpgrades.isEmpty();
+	}
 	public boolean hasUpgrade(final Object upgrade) {
 		return getUpgradeCount(upgrade) > 0;
 	}
