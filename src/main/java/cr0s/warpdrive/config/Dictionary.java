@@ -214,7 +214,8 @@ public class Dictionary {
 					+ "Tags shall be separated by at least one space, comma or tabulation.\n" + "Invalid tags will be ignored silently. Tags and block names are case sensitive.\n"
 					+ "In case of conflicts, the latest tag overwrite the previous ones.\n" + "- Anchor: ship can't move with this entity aboard (default: none).\n"
 					+ "- NoMass: this entity doesn't count when calculating ship volume/mass (default: Galacticraft air bubble).\n"
-					+ "- LeftBehind: this entity won't move with your ship (default: Galacticraft air bubble).\n"
+					+ "- LeftBehind: this entity won't move with your ship nor transporter (default: Galacticraft air bubble).\n"
+//					+ "- NoTransport: this entity is ignored by the transporter (default: -none-).\n"
 					+ "- NonLivingTarget: this non-living entity can be targeted/removed by weapons (default: ItemFrame, Painting).\n"
 					+ "- LivingWithoutAir: this living entity doesn't need air to live (default: vanilla zombies and skeletons).");
 			

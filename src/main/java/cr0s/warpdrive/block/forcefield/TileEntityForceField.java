@@ -16,8 +16,9 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityForceField extends TileEntityAbstractBase {
+	
 	private VectorI vProjector;
-
+	
 	// cache parameters used for rendering, force projector check for others
 	private int cache_beamFrequency;
 	public Block cache_blockCamouflage;
@@ -154,7 +155,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {
-		TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector();
+		final TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector();
 		if (tileEntityForceFieldProjector == null) {
 			return null;
 		}

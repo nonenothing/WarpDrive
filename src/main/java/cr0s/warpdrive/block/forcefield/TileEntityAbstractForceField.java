@@ -18,7 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.util.StatCollector;
 
 import cpw.mods.fml.common.Optional;
 
@@ -28,15 +27,15 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	protected byte tier = -1;
 	protected int beamFrequency = -1;
 	public boolean isEnabled = true;
+	protected boolean isConnected = false;
 	
 	// computed properties
 	protected Vector3 vRGB;
-	protected boolean isConnected = false;
 	
 	public TileEntityAbstractForceField() {
 		super();
-
-		addMethods(new String[]{
+		
+		addMethods(new String[] {
 			"enable",
 			"beamFrequency"
 		});
@@ -186,7 +185,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				if (arguments.length == 1) {
 					setBeamFrequency(Commons.toInt(arguments[0]));
 				}
-				return new Integer[]{ beamFrequency };
+				return new Integer[] { beamFrequency };
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();

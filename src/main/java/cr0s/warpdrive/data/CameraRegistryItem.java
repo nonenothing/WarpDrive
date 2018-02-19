@@ -26,6 +26,6 @@ public class CameraRegistryItem {
 			&& position.chunkPosX == tileEntity.xCoord
 			&& position.chunkPosY == tileEntity.yCoord
 			&& position.chunkPosZ == tileEntity.zCoord
-			&& videoChannel == ((IVideoChannel)tileEntity).getVideoChannel();
+			&& videoChannel == ((IVideoChannel) tileEntity).getVideoChannel();
 	}
 }

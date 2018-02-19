@@ -528,7 +528,7 @@ public class Commons {
 		final List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 		for (final EntityPlayer onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getCommandSenderName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
-				return new EntityPlayerMP[]{ (EntityPlayerMP)onlinePlayer };
+				return new EntityPlayerMP[] { (EntityPlayerMP)onlinePlayer };
 			}
 		}
 		

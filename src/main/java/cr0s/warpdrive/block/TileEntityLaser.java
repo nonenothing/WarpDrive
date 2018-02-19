@@ -518,9 +518,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			beamFrequency = parBeamFrequency;
 		}
 		final Vector3 vRGB = IBeamFrequency.getBeamColor(beamFrequency);
-		r = (float)vRGB.x;
-		g = (float)vRGB.y;
-		b = (float)vRGB.z;
+		r = (float) vRGB.x;
+		g = (float) vRGB.y;
+		b = (float) vRGB.z;
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {
@@ -634,13 +634,13 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return emitBeam(arguments);
 			
 		case "position":
-			return new Integer[]{ xCoord, yCoord, zCoord };
+			return new Integer[] { xCoord, yCoord, zCoord };
 			
 		case "beamFrequency":
 			if (arguments.length == 1) {
 				setBeamFrequency(Commons.toInt(arguments[0]));
 			}
-			return new Integer[]{ beamFrequency };
+			return new Integer[] { beamFrequency };
 			
 		case "getScanResult":
 			return getScanResult();

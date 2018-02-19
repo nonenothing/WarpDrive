@@ -29,6 +29,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class ForceFieldSetup extends GlobalPosition {
+	
 	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 100;
 	private static final float FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND = 20;
 	private static final float FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND = 10000;
