@@ -1,6 +1,6 @@
 if not term.isColor() then
   print("Advanced computer required")
-  exit()
+  error()
 end
 print("loading...")
 

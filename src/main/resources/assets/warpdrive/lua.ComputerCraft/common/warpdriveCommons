@@ -182,9 +182,10 @@ local function writeLn(text)
 end
 
 local function writeCentered(y, text)
+  local unused
   if text == nil then
     text = y
-    _, y = w.getCursorPos()
+    unused, y = w.getCursorPos()
   end
   
   w.setCursorPos((51 - text:len()) / 2, y)
@@ -1006,7 +1007,7 @@ end
 local function boot()
   if not term.isColor() then
     print("Advanced computer required")
-    exit()
+    error()
   end
   print("loading...")
   
@@ -1030,7 +1031,7 @@ local function boot()
     w.write(deviceType .. " ")
     if deviceType == "monitor" then
       w.write("wrapping!")
-      lmonitor = w.device_get(address)
+      local lmonitor = w.device_get(address)
       table.insert(monitors, lmonitor)
       lmonitor.setTextScale(monitor_textScale)
     else
@@ -1056,7 +1057,7 @@ local function boot()
   -- peripheral boot up
   if page_handlers['0'] == nil then
     w.status_showWarning("Missing handler for connection page '0'!")
-    exit()
+    error()
   end
   page_handlers['0'].display(true)
 end

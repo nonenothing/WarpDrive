@@ -1,16 +1,20 @@
-
 if not term.isColor() then
   print("Advanced computer required")
-  exit()
+  error()
 end
 
-function error(message)
+function showError(message)
   term.setBackgroundColor(colors.black)
   term.setTextColor(colors.red)
   term.write(message)
   term.setBackgroundColor(colors.black)
   term.setTextColor(colors.white)
   print()
+end
+
+function showErrorAndExit(message)
+  showError(message)
+  error()
 end
 
 local radar
@@ -22,14 +26,12 @@ for _, side in pairs(sides) do
   end
 end
 if radar == nil then
-  error("No radar detected")
-  exit()
+  showErrorAndExit("No radar detected")
 end
 
 local argv = { ... }
 if #argv ~= 1 then
-  error("Usage: scan <scanRadius>")
-  exit()
+  showErrorAndExit("Usage: scan <scanRadius>")
 end
 
 local radius = tonumber(argv[1])

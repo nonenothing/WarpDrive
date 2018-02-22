@@ -193,9 +193,10 @@ local function writeLn(text)
 end
 
 local function writeCentered(y, text)
+  local unused
   if text == nil then
     text = y
-    _, y = w.getCursorPos()
+    unused, y = w.getCursorPos()
   end
   
   if term.isAvailable() then

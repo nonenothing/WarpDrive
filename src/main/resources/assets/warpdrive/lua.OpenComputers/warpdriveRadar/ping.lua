@@ -6,7 +6,7 @@ if not term.isAvailable() then
   os.exit()
 end
 
-function error(message)
+function showError(message)
   component.gpu.setBackground(0x000000)
   component.gpu.setForeground(0xFF0000)
   local xt, yt = term.getCursor()
@@ -16,31 +16,32 @@ function error(message)
   print("")
 end
 
-if not component.isAvailable("warpdriveRadar") then
-  error("No radar detected")
+function showErrorAndExit(message)
+  showError(message)
   os.exit()
+end
+
+if not component.isAvailable("warpdriveRadar") then
+  showErrorAndExit("No radar detected")
 end
 
 local radar = component.warpdriveRadar
 
 local argv = { ... }
 if #argv ~= 1 then
-  error("Usage: ping <scanRadius>")
-  os.exit()
+  showErrorAndExit("Usage: ping <scanRadius>")
 end
 local radius = tonumber(argv[1])
 
 if radius < 1 or radius > 9999 then
-  error("Radius must be between 1 and 9999")
-  os.exit()
+  showErrorAndExit("Radius must be between 1 and 9999")
 end
 
 local energy, energyMax = radar.energy()
 local energyRequired = radar.getEnergyRequired(radius)
 local scanDuration = radar.getScanDuration(radius)
 if energy < energyRequired then
-  error("Low energy level... (" .. energy .. "/" .. energyRequired .. ")")
-  os.exit()
+  showErrorAndExit("Low energy level... (" .. energy .. "/" .. energyRequired .. ")")
 end
 radar.radius(radius)
 radar.start()
@@ -63,7 +64,7 @@ if count ~= nil and count > 0 then
     if success then
       print(type .. " " .. name .. " @ (" .. x .. " " .. y .. " " .. z .. ")")
     else
-      error("Error " .. type)
+      showError("Error " .. type)
     end
   end
 else

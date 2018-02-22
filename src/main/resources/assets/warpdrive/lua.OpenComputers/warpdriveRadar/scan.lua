@@ -11,7 +11,7 @@ if component.gpu.getDepth() < 4 then
   os.exit()
 end
 
-function error(message)
+function showError(message)
   component.gpu.setBackground(0x000000)
   component.gpu.setForeground(0xFF0000)
   local xt, yt = term.getCursor()
@@ -21,17 +21,20 @@ function error(message)
   print("")
 end
 
+function showErrorAndExit(message)
+  showError(message)
+  os.exit()
+end
+
 if not component.isAvailable("warpdriveRadar") then
   computer.beep()
-  error("No radar detected")
-  os.exit()
+  showErrorAndExit("No radar detected")
 end
 local radar = component.warpdriveRadar
 
 local argv = { ... }
 if #argv ~= 1 then
-  error("Usage: scan <scanRadius>")
-  os.exit()
+  showErrorAndExit("Usage: scan <scanRadius>")
 end
 
 local radius = tonumber(argv[1])
