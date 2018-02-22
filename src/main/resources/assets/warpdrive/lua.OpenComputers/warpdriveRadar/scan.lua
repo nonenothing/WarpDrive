@@ -100,7 +100,7 @@ function scanAndDraw()
   if energyRequired == nil then energyRequired = 0 end
   
   if (energyRequired <= 0 or energy < energyRequired) then
-    textOut((w / 2) - 7, 1, " /!\\  LOW POWER ", 0xFFFFFF, 0xFF0000)
+    textOut((w / 2) - 8, 1, " /!\\  LOW POWER ", 0xFFFFFF, 0xFF0000)
     os.sleep(1)
     
     return 0
@@ -109,7 +109,7 @@ function scanAndDraw()
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)
-  textOut(w - 3, 1, "   ping sent    ", 0x808080, 0x000000)
+  textOut((w / 2) - 8, 1, "   ping sent    ", 0x808080, 0x000000)
   os.sleep(scanDuration)
   
   local delay = 0
