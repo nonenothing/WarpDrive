@@ -65,25 +65,6 @@ local styles = {
   success  = { front = colors.white    , back = colors.lime      },
 }
 
-local local_env = {-- mostly for OC
-  data = data,
-  data_shouldUpdateName = data_shouldUpdateName,
-  data_name = data_name,
-  data_handlers = data_handlers,
-  device_handlers = device_handlers,
-  event_handlers = event_handlers,
-  monitors = monitors,
-  monitor_textScale = monitor_textScale,
-  monitor_colorFront = monitor_colorFront,
-  monitor_colorBackground = monitor_colorBackground,
-  page_handlers = page_handlers,
-  page_endText = page_endText,
-  page_callbackDisplay = page_callbackDisplay,
-  page_callbackKey = page_callbackKey,
-  event_refreshPeriod_s = event_refreshPeriod_s,
-  ship = ship,
-  styles = styles }
-
 ----------- Terminal & monitor support
 
 local function setMonitorColorFrontBack(colorFront, colorBackground)
@@ -1037,7 +1018,7 @@ local function run()
   local refresh = true
   local ignoreNextChar = false
   
-  function selectPage(index)
+  local function selectPage(index)
     if page_handlers[index] ~= nil then
       page_callbackDisplay = page_handlers[index].display
       page_callbackKey = page_handlers[index].key
@@ -1227,4 +1208,4 @@ w = {
   close = close,
 }
 
-return w, local_env
+return w
