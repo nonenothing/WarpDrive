@@ -114,6 +114,7 @@ public class Dictionary {
 				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
 				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
+				config.get("block_tags", "malisisdoors:null"                               , "Anchor").getString(); // improper registration of block causing NPE
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
 				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor SkipMining NoBlink").getString();
 				
