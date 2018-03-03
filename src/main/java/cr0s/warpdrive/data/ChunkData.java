@@ -341,6 +341,11 @@ public class ChunkData {
 	}
 	
 	public void setDataAir(final int x, final int y, final int z, final int dataAirBlock) {
+		// ignore out of world requests
+		if (y < 0 || y > 255) {
+			return;
+		}
+		
 		final int indexData = getDataIndex(x, y, z);
 		
 		// get segment
