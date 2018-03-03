@@ -1399,8 +1399,8 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	private CheckMovementResult checkCollisionAndProtection(ITransformation transformation, final boolean fullCollisionDetails, final String context) {
-		CheckMovementResult result = new CheckMovementResult();
-		VectorI offset = new VectorI((int)Math.signum(moveX), (int)Math.signum(moveY), (int)Math.signum(moveZ));
+		final CheckMovementResult result = new CheckMovementResult();
+		final VectorI offset = new VectorI((int) Math.signum(moveX), (int) Math.signum(moveY), (int) Math.signum(moveZ));
 		
 		int x, y, z;
 		ChunkCoordinates coordTarget;
@@ -1446,8 +1446,9 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if (blockSource != Blocks.air && CommonProxy.isBlockPlaceCanceled(null, coordCoreAtTarget.posX, coordCoreAtTarget.posY, coordCoreAtTarget.posZ,
-						targetWorld, coordTarget.posX, coordTarget.posY, coordTarget.posZ, blockSource, 0)) {
+					if ( blockSource != Blocks.air
+					  && CommonProxy.isBlockPlaceCanceled(null, coordCoreAtTarget.posX, coordCoreAtTarget.posY, coordCoreAtTarget.posZ,
+					                                      targetWorld, coordTarget.posX, coordTarget.posY, coordTarget.posZ, blockSource, 0) ) {
 						result.add(x, y, z,
 						           coordTarget.posX,
 						           coordTarget.posY,

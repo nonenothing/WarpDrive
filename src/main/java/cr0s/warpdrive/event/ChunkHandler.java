@@ -264,7 +264,7 @@ public class ChunkHandler {
 	}
 	
 	/**
-	 * Return null if chunk isn't already generated or loaded 
+	 * Return null if chunk isn't already generated or loaded
 	 */
 	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int x, final int y, final int z) {
 		assert (y >= 0 && y <= 255);
