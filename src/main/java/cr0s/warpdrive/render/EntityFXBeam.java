@@ -21,7 +21,7 @@ public class EntityFXBeam extends EntityFX {
     
     private static final int ROTATION_SPEED = 20;
     private static final float END_MODIFIER = 1.0F;
-    private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/blocks/energy_grey.png");;
+    private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/particle/energy_grey.png");
     
     private float length = 0.0F;
     private float rotYaw = 0.0F;
@@ -39,9 +39,9 @@ public class EntityFXBeam extends EntityFX {
         this.motionY = 0.0D;
         this.motionZ = 0.0D;
         
-        float xd = (float)(this.posX - target.x);
-        float yd = (float)(this.posY - target.y);
-        float zd = (float)(this.posZ - target.z);
+        final float xd = (float) (this.posX - target.x);
+        final float yd = (float) (this.posY - target.y);
+        final float zd = (float) (this.posZ - target.z);
         this.length = (float) new Vector3(this).distanceTo(target);
         final double lengthXZ = MathHelper.sqrt_double(xd * xd + zd * zd);
         this.rotYaw = (float) (Math.atan2(xd, zd) * 180.0D / Math.PI);
@@ -77,7 +77,8 @@ public class EntityFXBeam extends EntityFX {
     }
     
     @Override
-    public void renderParticle(final Tessellator tessellator, final float partialTick, final float f1, final float f2, final float f3, final float f4, final float f5) {
+    public void renderParticle(final Tessellator tessellator, final float partialTick,
+                               final float cosYaw, final float cosPitch, final float sinYaw, final float sinSinPitch, final float cosSinPitch) {
         tessellator.draw();
         GL11.glPushMatrix();
         

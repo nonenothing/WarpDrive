@@ -23,6 +23,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 
 public class PacketHandler {
+	
 	private static final SimpleNetworkWrapper simpleNetworkManager = NetworkRegistry.INSTANCE.newSimpleChannel(WarpDrive.MODID);
 	private static Method EntityTrackerEntry_getPacketForThisEntity;
 	
@@ -47,45 +48,42 @@ public class PacketHandler {
 	}
 	
 	// Beam effect sent to client side
-	public static void sendBeamPacket(World worldObj, Vector3 source, Vector3 target, float red, float green, float blue, int age, int energy, int radius) {
-		assert(!worldObj.isRemote);
+	public static void sendBeamPacket(final World world, final Vector3 v3Source, final Vector3 v3Target,
+	                                  final float red, final float green, final float blue,
+	                                  final int age, final int energy, final int radius) {
+		assert(!world.isRemote);
 		
-		MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
+		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(v3Source, v3Target, red, green, blue, age, energy);
 		
 		// small beam are sent relative to beam center
-		if (source.distanceTo_square(target) < 3600 /* 60 * 60 */) {
+		if (v3Source.distanceTo_square(v3Target) < 3600 /* 60 * 60 */) {
 			simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
-					worldObj.provider.dimensionId, (source.x + target.x) / 2, (source.y + target.y) / 2, (source.z + target.z) / 2, radius));
+					world.provider.dimensionId, (v3Source.x + v3Target.x) / 2, (v3Source.y + v3Target.y) / 2, (v3Source.z + v3Target.z) / 2, radius));
 		} else {// large beam are sent from both ends
-			if (true) {
-				List<EntityPlayerMP> playerEntityList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
-				int dimensionId = worldObj.provider.dimensionId;
-				int radius_square = radius * radius;
-				for (int index = 0; index < playerEntityList.size(); index++) {
-					final EntityPlayerMP entityplayermp = playerEntityList.get(index);
-					
-					if (entityplayermp.dimension == dimensionId) {
-						Vector3 player = new Vector3(entityplayermp);
-						if (source.distanceTo_square(player) < radius_square || target.distanceTo_square(player) < radius_square) {
-							simpleNetworkManager.sendTo(messageBeamEffect, entityplayermp);
-						}
+			final List<EntityPlayerMP> playerEntityList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+			final int dimensionId = world.provider.dimensionId;
+			final int radius_square = radius * radius;
+			for (int index = 0; index < playerEntityList.size(); index++) {
+				final EntityPlayerMP entityPlayerMP = playerEntityList.get(index);
+				
+				if (entityPlayerMP.dimension == dimensionId) {
+					if ( v3Source.distanceTo_square(entityPlayerMP) < radius_square
+					  || v3Target.distanceTo_square(entityPlayerMP) < radius_square ) {
+						simpleNetworkManager.sendTo(messageBeamEffect, entityPlayerMP);
 					}
 				}
-			} else {
-				simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
-						worldObj.provider.dimensionId, source.x, source.y, source.z, radius));
-				simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
-						worldObj.provider.dimensionId, target.x, target.y, target.z, radius));
 			}
 		}
 	}
 	
-	public static void sendBeamPacketToPlayersInArea(World worldObj, Vector3 source, Vector3 target, float red, float green, float blue, int age, int energy, AxisAlignedBB aabb) {
-		assert(!worldObj.isRemote);
+	public static void sendBeamPacketToPlayersInArea(final World world, final Vector3 source, final Vector3 target,
+	                                                 final float red, final float green, final float blue,
+	                                                 final int age, final int energy, final AxisAlignedBB aabb) {
+		assert(!world.isRemote);
 		
 		MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		// Send packet to all players within cloaked area
-		final List<Entity> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
+		final List<Entity> list = world.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
 		for (final Entity entity : list) {
 			if (entity != null && entity instanceof EntityPlayerMP) {
 				PacketHandler.simpleNetworkManager.sendTo(messageBeamEffect, (EntityPlayerMP) entity);
@@ -94,19 +92,19 @@ public class PacketHandler {
 	}
 	
 	// Forced particle effect sent to client side
-	public static void sendSpawnParticlePacket(World worldObj, final String type, final byte quantity,
+	public static void sendSpawnParticlePacket(final World world, final String type, final byte quantity,
 	                                           final Vector3 origin, final Vector3 direction,
 	                                           final float baseRed, final float baseGreen, final float baseBlue,
 	                                           final float fadeRed, final float fadeGreen, final float fadeBlue,
 	                                           final int radius) {
-		assert(!worldObj.isRemote);
+		assert(!world.isRemote);
 		
 		MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(
 			type, quantity, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue);
 		
 		// small beam are sent relative to beam center
 		simpleNetworkManager.sendToAllAround(messageSpawnParticle, new TargetPoint(
-				worldObj.provider.dimensionId, origin.x, origin.y, origin.z, radius));
+				world.provider.dimensionId, origin.x, origin.y, origin.z, radius));
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
 			WarpDrive.logger.info(String.format("Sent particle effect '%s' x %d from %s toward %s as RGB %.2f %.2f %.2f fading to %.2f %.2f %.2f",
@@ -115,7 +113,7 @@ public class PacketHandler {
 	}
 	
 	// Monitor/Laser/Camera updating its video channel to client side
-	public static void sendVideoChannelPacket(int dimensionId, int xCoord, int yCoord, int zCoord, int videoChannel) {
+	public static void sendVideoChannelPacket(final int dimensionId, final int xCoord, final int yCoord, final int zCoord, final int videoChannel) {
 		MessageVideoChannel messageVideoChannel = new MessageVideoChannel(xCoord, yCoord, zCoord, videoChannel);
 		simpleNetworkManager.sendToAllAround(messageVideoChannel, new TargetPoint(dimensionId, xCoord, yCoord, zCoord, 100));
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
@@ -124,7 +122,7 @@ public class PacketHandler {
 	}
 	
 	// LaserCamera shooting at target (client -> server)
-	public static void sendLaserTargetingPacket(int x, int y, int z, float yaw, float pitch) {
+	public static void sendLaserTargetingPacket(final int x, final int y, final int z, final float yaw, final float pitch) {
 		MessageTargeting messageTargeting = new MessageTargeting(x, y, z, yaw, pitch);
 		simpleNetworkManager.sendToServer(messageTargeting);
 		if (WarpDriveConfig.LOGGING_TARGETING) {
@@ -149,7 +147,7 @@ public class PacketHandler {
 		simpleNetworkManager.sendTo(messageClientSync, entityPlayerMP);
 	}
 	
-	public static Packet getPacketForThisEntity(Entity entity) {
+	public static Packet getPacketForThisEntity(final Entity entity) {
 		EntityTrackerEntry entry = new EntityTrackerEntry(entity, 0, 0, false);
 		try {
 			return (Packet) EntityTrackerEntry_getPacketForThisEntity.invoke(entry);

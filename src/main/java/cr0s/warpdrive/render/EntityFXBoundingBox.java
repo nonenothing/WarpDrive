@@ -17,10 +17,11 @@ public class EntityFXBoundingBox extends EntityFX {
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/particle/bounding_box.png");
 	
-	private Vector3 min = new Vector3();
-	private Vector3 max = new Vector3();
+	private Vector3 min;
+	private Vector3 max;
 	
-	public EntityFXBoundingBox(World world, Vector3 position, Vector3 min, Vector3 max, float red, float green, float blue, int age) {
+	public EntityFXBoundingBox(final World world, final Vector3 position, final Vector3 min, final Vector3 max,
+	                           final float red, final float green, final float blue, final int age) {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		this.setRBGColorF(red, green, blue);
 		this.setSize(0.02F, 0.02F);
@@ -59,7 +60,8 @@ public class EntityFXBoundingBox extends EntityFX {
 	}
 	
 	@Override
-	public void renderParticle(Tessellator tessellator, float partialTick, float f1, float f2, float f3, float f4, float f5) {
+	public void renderParticle(final Tessellator tessellator, final float partialTick,
+	                           final float cosYaw, final float cosPitch, final float sinYaw, final float sinSinPitch, final float cosSinPitch) {
 		tessellator.draw();
 		GL11.glPushMatrix();
 		
