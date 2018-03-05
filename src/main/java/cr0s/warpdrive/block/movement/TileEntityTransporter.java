@@ -108,7 +108,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			return;
 		}
 		
-		// Frequency is not set
+		// frequency is not set
 		final boolean new_isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
 		if (isConnected != new_isConnected) {
 			isConnected = new_isConnected;
@@ -116,7 +116,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		}
 		
 		// global override
-		boolean isActive = isEnabled;
+		boolean isActive = isEnabled && isConnected;
 		if (!isEnabled) {
 			transporterState = EnumTransporterState.DISABLED;
 		} else {
@@ -152,7 +152,8 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		}
 		
 		// state feedback
-		if (isActive && isJammed) {
+		updateMetadata(isActive ? 1 : 0);
+		if (isActive && isLockRequested && isJammed) {
 			PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
 			                                      new Vector3(0.0D, 0.0D, 0.0D),
 			                                      1.0F, 1.0F, 1.0F,
@@ -301,6 +302,12 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	
 	private void updateParameters() {
 		isJammed = false;
+		
+		// check connection
+		if (!isConnected) {
+			isJammed = true;
+			return;
+		}
 		
 		// check minimum range
 		if (vSource_relative.subtract(vDestination_relative).getMagnitudeSquared() < 2) {

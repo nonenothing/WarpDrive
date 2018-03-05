@@ -17,12 +17,12 @@ public class BlockTransporter extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
-
+	
 	public BlockTransporter() {
 		super(Material.iron);
 		setBlockName("warpdrive.movement.Transporter");
 	}
-
+	
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityTransporter();
@@ -31,11 +31,12 @@ public class BlockTransporter extends BlockAbstractContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
-		iconBuffer = new IIcon[3];
+		iconBuffer = new IIcon[4];
 		// Solid textures
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporterBottom");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/transporterTop");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/transporterSide");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporter-bottom");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/transporter-top");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/transporter-side_inactive");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/transporter-side_active");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -44,8 +45,8 @@ public class BlockTransporter extends BlockAbstractContainer {
 		if (side == 0 || side == 1) {
 			return iconBuffer[side];
 		}
-
-		return iconBuffer[2];
+		
+		return iconBuffer[metadata == 0 ? 2 : 3];
 	}
 	
 	@Override
