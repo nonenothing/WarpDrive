@@ -176,6 +176,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 					                           0.5F + world.rand.nextFloat() * 1.5F);
 				}
 				effect.setParticleTextureIndex(81);
+				effect.setAlphaF(0.5F);
 				break;
 			} 
 			if (baseRed >= 0.0F && baseGreen >= 0.0F && baseBlue >= 0.0F) {
