@@ -263,6 +263,16 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			transporterState = EnumTransporterState.DISABLED;
 			break;
 		}
+		
+		// client effects
+		if ( lockStrengthActual > 0.0F
+		  || tickEnergizing > 0
+		  || tickCooldown > 0 ) {
+			final Entity entity = weakEntity == null ? null : weakEntity.get();
+			PacketHandler.sendTransporterEffectPacket(worldObj, vSource_absolute, vDestination_absolute, lockStrengthActual,
+			                                          entity, v3EntityPosition,
+			                                          tickEnergizing, tickCooldown, 64);
+		}
 	}
 	
 	@Override

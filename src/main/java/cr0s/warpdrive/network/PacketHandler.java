@@ -5,6 +5,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CloakedArea;
 import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -34,6 +35,7 @@ public class PacketHandler {
 		simpleNetworkManager.registerMessage(MessageCloak.class               , MessageCloak.class               , 3, Side.CLIENT);
 		simpleNetworkManager.registerMessage(MessageSpawnParticle.class       , MessageSpawnParticle.class       , 4, Side.CLIENT);
 		simpleNetworkManager.registerMessage(MessageVideoChannel.class        , MessageVideoChannel.class        , 5, Side.CLIENT);
+		simpleNetworkManager.registerMessage(MessageTransporterEffect.class   , MessageTransporterEffect.class   , 6, Side.CLIENT);
 		
 		simpleNetworkManager.registerMessage(MessageTargeting.class           , MessageTargeting.class           , 100, Side.SERVER);
 		simpleNetworkManager.registerMessage(MessageClientValidation.class    , MessageClientValidation.class    , 101, Side.SERVER);
@@ -109,6 +111,32 @@ public class PacketHandler {
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
 			WarpDrive.logger.info(String.format("Sent particle effect '%s' x %d from %s toward %s as RGB %.2f %.2f %.2f fading to %.2f %.2f %.2f",
 				type, quantity, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue));
+		}
+	}
+	
+	// Transporter effect sent to client side
+	public static void sendTransporterEffectPacket(final World world, final VectorI vSource, final VectorI vDestination, final double lockStrength,
+	                                               final Entity entity, final Vector3 v3EntityPosition,
+	                                               final int tickEnergizing, final int tickCooldown, final int radius) {
+		assert(!world.isRemote);
+		
+		final MessageTransporterEffect messageTransporterEffect = new MessageTransporterEffect(vSource, vDestination, lockStrength,
+		                                                                                       entity, v3EntityPosition,
+		                                                                                       tickEnergizing, tickCooldown);
+		
+		// check both ends to send packet
+		final List<EntityPlayerMP> playerEntityList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+		final int dimensionId = world.provider.dimensionId;
+		final int radius_square = radius * radius;
+		for (int index = 0; index < playerEntityList.size(); index++) {
+			final EntityPlayerMP entityPlayerMP = playerEntityList.get(index);
+			
+			if (entityPlayerMP.dimension == dimensionId) {
+				if ( vSource.distance2To(entityPlayerMP) < radius_square
+				  || vDestination.distance2To(entityPlayerMP) < radius_square ) {
+					simpleNetworkManager.sendTo(messageTransporterEffect, entityPlayerMP);
+				}
+			}
 		}
 	}
 	
