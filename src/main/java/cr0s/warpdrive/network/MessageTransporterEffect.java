@@ -202,11 +202,11 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			// add particle
 			final EntityFX effect = new EntityFXDot(world, v3Position,
 			                                        v3Motion, v3Acceleration, 0.98D,
-			                                        redBase + redFactor * world.rand.nextFloat(),
-			                                        greenBase+ greenFactor * world.rand.nextFloat(),
-			                                        blueBase + blueFactor * world.rand.nextFloat(),
-			                                        1.0F,
 			                                        30);
+			effect.setRBGColorF(redBase   + redFactor   * world.rand.nextFloat(),
+			                    greenBase + greenFactor * world.rand.nextFloat(),
+			                    blueBase  + blueFactor  * world.rand.nextFloat() );
+			effect.setAlphaF(1.0F);
 			FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
 		}
 	}

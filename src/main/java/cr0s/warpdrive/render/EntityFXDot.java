@@ -19,11 +19,8 @@ public class EntityFXDot extends EntityFX {
 	
 	public EntityFXDot(final World world, final Vector3 v3Position,
 	                   final Vector3 v3Motion, final Vector3 v3Acceleration, final double friction,
-	                   final float red, final float green, final float blue, final float alpha,
 	                   final int age) {
 		super(world, v3Position.x, v3Position.y, v3Position.z, 0.0D, 0.0D, 0.0D);
-		this.setRBGColorF(red, green, blue);
-		this.setAlphaF(alpha);
 		this.setSize(0.02F, 0.02F);
 		this.noClip = true;
 		this.motionX = v3Motion.x;
@@ -34,7 +31,7 @@ public class EntityFXDot extends EntityFX {
 		this.particleMaxAge = age;
 		
 		// defaults to vanilla water drip
-		this.setParticleTextureIndex(113);
+		setParticleTextureIndex(113);
 		
 		// refresh bounding box
 		setPosition(v3Position.x, v3Position.y, v3Position.z);

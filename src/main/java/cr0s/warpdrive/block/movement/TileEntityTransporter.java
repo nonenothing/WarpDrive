@@ -47,7 +47,6 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	
 	// persistent properties
 	private int beamFrequency = -1;
-	private boolean isConnected = false;
 	private boolean isEnabled = true;
 	private boolean isLockRequested = false;
 	private boolean isEnergizeRequested = false;
@@ -59,6 +58,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 	private EnumTransporterState transporterState = EnumTransporterState.DISABLED;
 	
 	// computed properties
+	private boolean isConnected = false;
 	private int energyCostForTransfer = 0;
 	private double lockStrengthOptimal = -1.0D;
 	private double lockStrengthSpeed = 0.0D;
@@ -108,50 +108,50 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			return;
 		}
 		
-		// frequency is not set
-		final boolean new_isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
-		if (isConnected != new_isConnected) {
-			isConnected = new_isConnected;
-			markDirty();
+		// frequency status
+		isConnected = beamFrequency > 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX;
+		
+		// always cooldown
+		if (tickCooldown > 0) {
+			tickCooldown--;
+		} else {
+			tickCooldown = 0;
 		}
 		
-		// global override
-		boolean isActive = isEnabled && isConnected;
+		// consume power and apply general lock strength increase and decay
+		boolean isPowered;
 		if (!isEnabled) {
 			transporterState = EnumTransporterState.DISABLED;
+			isPowered = false;
+			// (lock strength is cleared in state machine)
 		} else {
 			// energy consumption
 			final int energyRequired = getEnergyRequired(transporterState);
 			if (energyRequired > 0) {
-				final boolean isPowered = energy_consume(energyRequired, false);
+				isPowered = energy_consume(energyRequired, false);
 				if (!isPowered) {
 					transporterState = EnumTransporterState.IDLE;
-					isActive = false;
 				}
-			}
-			
-			// apply cooldown when enabled
-			if (tickCooldown > 0) {
-				tickCooldown--;
 			} else {
-				tickCooldown = 0;
+				isPowered = true;
 			}
 			
 			// lock strength always decays
-			lockStrengthActual *= WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK;
+			lockStrengthActual = Math.max(0.0D, lockStrengthActual * WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK);
 			
 			// lock strength is capped at optimal, increasing when powered
 			// a slight overshoot is added to force convergence
-			final double overshoot = 0.01D;
-			if (isActive) {
+			if ( isPowered
+			  && ( transporterState == EnumTransporterState.ACQUIRING
+			    || transporterState == EnumTransporterState.ENERGIZING ) ) {
+				final double overshoot = 0.01D;
 				lockStrengthActual = Math.min(lockStrengthOptimal,
 				                              lockStrengthActual + lockStrengthSpeed * (lockStrengthOptimal - lockStrengthActual + overshoot));
-			} else {
-				lockStrengthActual = Math.max(0.0D, lockStrengthActual);
 			}
 		}
 		
 		// state feedback
+		final boolean isActive = isEnabled && isConnected && isPowered;
 		updateMetadata(isActive ? 1 : 0);
 		if (isActive && isLockRequested && isJammed) {
 			PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
@@ -161,6 +161,7 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 			                                      32);
 		}
 		
+		// execute state transitions
 		switch (transporterState) {
 		case DISABLED:
 			isLockRequested = false;
@@ -655,7 +656,6 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		super.writeToNBT(tagCompound);
 		
 		tagCompound.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, beamFrequency);
-		tagCompound.setBoolean("isConnected", isConnected);
 		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setBoolean("isLockRequested", isLockRequested);
 		tagCompound.setBoolean("isEnergizeRequested", isEnergizeRequested);
@@ -674,7 +674,6 @@ public class TileEntityTransporter extends TileEntityAbstractEnergy implements I
 		super.readFromNBT(tagCompound);
 		
 		beamFrequency = tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
-		isConnected = tagCompound.getBoolean("isConnected");
 		isEnabled = tagCompound.getBoolean("isEnabled");
 		isLockRequested = tagCompound.getBoolean("isLockRequested");
 		isEnergizeRequested = tagCompound.getBoolean("isEnergizeRequested");
