@@ -4,8 +4,7 @@ if not component.isAvailable("warpdriveCloakingCore") then
   print("No cloaking core detected")
 else
   local cloakingCore = component.warpdriveCloakingCore
-  cloakingCore.tier(2)
-  cloakingCore.enable(true)
+  cloakingCore.enable(false)
   local isValid, message = cloakingCore.isAssemblyValid()
   if isValid then
     print("Cloaking is disabled")
