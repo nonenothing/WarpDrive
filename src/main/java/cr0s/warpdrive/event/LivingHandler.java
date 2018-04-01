@@ -20,14 +20,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -156,25 +154,12 @@ public class LivingHandler {
 			  && !celestialObject.isHyperspace()
 			  && celestialObjectChild.isInOrbit(entityLivingBase.worldObj.provider.dimensionId, x, z) ) {
 				
-				WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
-				
+				final WorldServer worldTarget = Commons.getOrCreateWorldServer(celestialObjectChild.dimensionId);
 				if (worldTarget == null) {
-					try {
-						final MinecraftServer server = MinecraftServer.getServer();
-						worldTarget = server.worldServerForDimension(celestialObjectChild.dimensionId);
-					} catch (Exception exception) {
-						WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d for %s",
-						                                     exception.getMessage(),
-						                                     celestialObjectChild.dimensionId,
-						                                     entityLivingBase));
-						if (WarpDrive.isDev) {
-							exception.printStackTrace();
-						}
-						worldTarget = null;
-					}
-				}
-				
-				if (worldTarget != null) {
+					WarpDrive.logger.error(String.format("Unable to initialize dimension %d for %s",
+					                                     celestialObjectChild.dimensionId,
+					                                     entityLivingBase));
+				} else {
 					final VectorI vEntry = celestialObjectChild.getEntryOffset();
 					final int xTarget = x + vEntry.x;
 					final int yTarget = worldTarget.getActualHeight() + 5;

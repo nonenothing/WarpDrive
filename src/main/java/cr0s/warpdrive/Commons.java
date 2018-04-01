@@ -41,6 +41,7 @@ import java.util.Random;
 import java.util.Set;
 
 import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
 /**
@@ -596,6 +597,27 @@ public class Commons {
 			// @TODO: force client refresh of non-player entities
 			entity.setPosition(v3Destination.x, v3Destination.y, v3Destination.z);
 		}
+	}
+	
+	public static WorldServer getOrCreateWorldServer(final int dimensionId) {
+		WorldServer worldServer = DimensionManager.getWorld(dimensionId);
+		
+		if (worldServer == null) {
+			try {
+				final MinecraftServer server = MinecraftServer.getServer();
+				worldServer = server.worldServerForDimension(dimensionId);
+			} catch (Exception exception) {
+				WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d",
+				                                     exception.getMessage(),
+				                                     dimensionId));
+				if (WarpDrive.isDev) {
+					exception.printStackTrace();
+				}
+				worldServer = null;
+			}
+		}
+		
+		return worldServer;
 	}
 	
 }
