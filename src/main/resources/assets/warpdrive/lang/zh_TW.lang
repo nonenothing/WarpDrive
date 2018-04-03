@@ -210,7 +210,9 @@ tile.warpdrive.forcefield.relay3.tooltip=支持在其網絡內共享最多1個�
 tile.warpdrive.movement.Lift.name=升降機
 tile.warpdrive.movement.ShipController.name=船艦制禦器
 tile.warpdrive.movement.ShipCore.name=波動核心
-tile.warpdrive.movement.Transporter.name=運輸
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=運輸
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=鐳射&攝像機
 tile.warpdrive.weapon.WeaponController.name=火控系統

@@ -29,7 +29,8 @@ public class StarMapRegistryItem extends GlobalPosition {
 		STAR(4, "star"),    		    // a star
 		STRUCTURE(5, "structure"),	    // a structure from WorldGeneration (moon, asteroid field, etc.)
 		WARP_ECHO(6, "warp_echo"),	    // remains of a warp
-		ACCELERATOR(7, "accelerator");	// an accelerator setup
+		ACCELERATOR(7, "accelerator"),	// an accelerator setup
+		TRANSPORTER(8, "transporter");	// a transporter room
 		
 		private final int id;
 		private final String name;

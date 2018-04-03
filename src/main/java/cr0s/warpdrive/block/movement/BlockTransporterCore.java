@@ -13,40 +13,40 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockTransporter extends BlockAbstractContainer {
+public class BlockTransporterCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
 	
-	public BlockTransporter() {
+	public BlockTransporterCore() {
 		super(Material.iron);
-		setBlockName("warpdrive.movement.Transporter");
+		setBlockName("warpdrive.movement.transporter_core");
 	}
 	
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
-		return new TileEntityTransporter();
+		return new TileEntityTransporterCore();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
-		iconBuffer = new IIcon[4];
-		// Solid textures
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporter-bottom");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/transporter-top");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/transporter-side_inactive");
-		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/transporter-side_active");
+		iconBuffer = new IIcon[5];
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporter_core-bottom_top");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/transporter_core-side_invalid");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/transporter_core-side_offline");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/transporter_core-side_low_power");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:movement/transporter_core-side_online");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(int side, int metadata) {
 		if (side == 0 || side == 1) {
-			return iconBuffer[side];
+			return iconBuffer[0];
 		}
 		
-		return iconBuffer[metadata == 0 ? 2 : 3];
+		return iconBuffer[(metadata % 4) + 1];
 	}
 	
 	@Override
@@ -58,8 +58,8 @@ public class BlockTransporter extends BlockAbstractContainer {
 		
 		if (entityPlayer.getHeldItem() == null) {
 			final TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity instanceof TileEntityTransporter) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityTransporter) tileEntity).getStatus());
+			if (tileEntity instanceof TileEntityTransporterCore) {
+				Commons.addChatMessage(entityPlayer, ((TileEntityTransporterCore) tileEntity).getStatus());
 				return true;
 			}
 		}

@@ -1083,17 +1083,14 @@ public class JumpSequencer extends AbstractSequencer {
 					continue;
 				}
 				
-				final double oldEntityX = movingEntity.originalX;
-				final double oldEntityY = movingEntity.originalY;
-				final double oldEntityZ = movingEntity.originalZ;
-				Vec3 target = transformation.apply(oldEntityX, oldEntityY, oldEntityZ);
+				final Vec3 target = transformation.apply(movingEntity.v3OriginalPosition.x, movingEntity.v3OriginalPosition.y, movingEntity.v3OriginalPosition.z);
 				final double newEntityX = target.xCoord;
 				final double newEntityY = target.yCoord;
 				final double newEntityZ = target.zCoord;
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.info(String.format("Entity moving: (%.2f %.2f %.2f) -> (%.2f %.2f %.2f) entity %s",
-							oldEntityX, oldEntityY, oldEntityZ,
+							movingEntity.v3OriginalPosition.x, movingEntity.v3OriginalPosition.y, movingEntity.v3OriginalPosition.z,
 							newEntityX, newEntityY, newEntityZ, entity.toString()));
 				}
 				
@@ -1357,16 +1354,16 @@ public class JumpSequencer extends AbstractSequencer {
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.info(String.format("Entity restoring position at (%f %f %f)",
-					                                    movingEntity.originalX, movingEntity.originalY, movingEntity.originalZ));
+					                                    movingEntity.v3OriginalPosition.x, movingEntity.v3OriginalPosition.y, movingEntity.v3OriginalPosition.z));
 				}
 				
 				// Update position
 				if (entity instanceof EntityPlayerMP) {
 					final EntityPlayerMP player = (EntityPlayerMP) entity;
 					
-					player.setPositionAndUpdate(movingEntity.originalX, movingEntity.originalY, movingEntity.originalZ);
+					player.setPositionAndUpdate(movingEntity.v3OriginalPosition.x, movingEntity.v3OriginalPosition.y, movingEntity.v3OriginalPosition.z);
 				} else {
-					entity.setPosition(movingEntity.originalX, movingEntity.originalY, movingEntity.originalZ);
+					entity.setPosition(movingEntity.v3OriginalPosition.x, movingEntity.v3OriginalPosition.y, movingEntity.v3OriginalPosition.z);
 				}
 			}
 		}

@@ -71,11 +71,13 @@ import cr0s.warpdrive.block.hull.ItemBlockHullSlab;
 import cr0s.warpdrive.block.movement.BlockLift;
 import cr0s.warpdrive.block.movement.BlockShipController;
 import cr0s.warpdrive.block.movement.BlockShipCore;
-import cr0s.warpdrive.block.movement.BlockTransporter;
+import cr0s.warpdrive.block.movement.BlockTransporterCore;
+import cr0s.warpdrive.block.movement.BlockTransporterContainment;
+import cr0s.warpdrive.block.movement.BlockTransporterScanner;
 import cr0s.warpdrive.block.movement.TileEntityLift;
 import cr0s.warpdrive.block.movement.TileEntityShipController;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
-import cr0s.warpdrive.block.movement.TileEntityTransporter;
+import cr0s.warpdrive.block.movement.TileEntityTransporterCore;
 import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.passive.BlockBedrockGlass;
 import cr0s.warpdrive.block.passive.BlockDecorative;
@@ -206,7 +208,9 @@ public class WarpDrive {
 	public static Block blockShipScanner;
 	public static Block blockCloakingCore;
 	public static Block blockCloakingCoil;
-	public static Block blockTransporter;
+	public static Block blockTransporterCore;
+	public static Block blockTransporterContainment;
+	public static Block blockTransporterScanner;
 	public static Block blockIC2reactorLaserMonitor;
 	public static Block blockEnanReactorCore;
 	public static Block blockEnanReactorLaser;
@@ -464,11 +468,21 @@ public class WarpDrive {
 		
 		GameRegistry.registerBlock(blockCloakingCoil, ItemBlockAbstractBase.class, "blockCloakingCoil");
 		
-		// TRANSPORTER
-		blockTransporter = new BlockTransporter();
+		// TRANSPORTER CORE
+		blockTransporterCore = new BlockTransporterCore();
 		
-		GameRegistry.registerBlock(blockTransporter, ItemBlockAbstractBase.class, "blockTransporter");
-		GameRegistry.registerTileEntity(TileEntityTransporter.class, MODID + ":blockTransporter");
+		GameRegistry.registerBlock(blockTransporterCore, ItemBlockAbstractBase.class, "blockTransporterCore");
+		GameRegistry.registerTileEntity(TileEntityTransporterCore.class, MODID + ":blockTransporterCore");
+		
+		// TRANSPORTER CONTAINMENT
+		blockTransporterContainment = new BlockTransporterContainment();
+		
+		GameRegistry.registerBlock(blockTransporterContainment, ItemBlockAbstractBase.class, "blockTransporterContainment");
+		
+		// TRANSPORTER SCANNER
+		blockTransporterScanner = new BlockTransporterScanner();
+		
+		GameRegistry.registerBlock(blockTransporterScanner, ItemBlockAbstractBase.class, "blockTransporterScanner");
 		
 		// IC2 REACTOR LASER MONITOR
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
@@ -850,7 +864,8 @@ public class WarpDrive {
 						mapping.remap(Item.getItemFromBlock(blockTransportBeacon));
 						break;
 					case "WarpDrive:transporter":
-						mapping.remap(Item.getItemFromBlock(blockTransporter));
+					case "WarpDrive:blockTransporter":
+						mapping.remap(Item.getItemFromBlock(blockTransporterCore));
 						break;
 					case "WarpDrive:warpCore":
 						mapping.remap(Item.getItemFromBlock(blockShipCore));
@@ -944,7 +959,8 @@ public class WarpDrive {
 						mapping.remap(blockTransportBeacon);
 						break;
 					case "WarpDrive:transporter":
-						mapping.remap(blockTransporter);
+					case "WarpDrive:blockTransporter":
+						mapping.remap(blockTransporterCore);
 						break;
 					case "WarpDrive:warpCore":
 						mapping.remap(blockShipCore);

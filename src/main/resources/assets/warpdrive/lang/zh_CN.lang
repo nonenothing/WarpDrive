@@ -294,7 +294,9 @@ tile.warpdrive.movement.ShipCore.name=飞船核心
 tile.warpdrive.movement.ShipCore.tooltip=相对于控制器以设定飞船中心.连接供能设备充能.\n必须水平紧贴控制器才能连接.
 tile.warpdrive.movement.ShipCore.bounding_box.disabled=边界显示已禁用.
 tile.warpdrive.movement.ShipCore.bounding_box.enabled=边界显示启用. 只有你可见.\n再次潜行右击核心可关闭.
-tile.warpdrive.movement.Transporter.name=传送台
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=传送台
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=激光+相机
 tile.warpdrive.weapon.WeaponController.name=武器控制器

@@ -294,7 +294,9 @@ tile.warpdrive.movement.ShipCore.name=Schip-Kern
 tile.warpdrive.movement.ShipCore.tooltip=Definieert uw schips-middelpunt ten opzichte van ships-bestuurder. Sluit een stroombron aan om de kern op te laden.\nMoet horizontaal naast een Schips-bestuurder worden geplaatst.
 tile.warpdrive.movement.ShipCore.bounding_box.disabled=Bounding box display have been disabled.
 tile.warpdrive.movement.ShipCore.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
-tile.warpdrive.movement.Transporter.name=Transporteur
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=Transporter Core
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=Laser met Camera
 tile.warpdrive.weapon.WeaponController.name=Wapens-Bestuurder

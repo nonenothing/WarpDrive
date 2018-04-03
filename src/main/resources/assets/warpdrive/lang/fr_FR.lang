@@ -292,7 +292,9 @@ tile.warpdrive.movement.ShipController.name=Controlleur de vaisseau
 tile.warpdrive.movement.ShipController.tooltip=Défini l'avant du vaisseau par rapport au coeur. Attache un ordinateur pour ouvrir l'interface utilisateur.\nDoit être placé horizontalement directement à coté du Coeur de vaisseau.
 tile.warpdrive.movement.ShipCore.name=Coeur de vaisseau
 tile.warpdrive.movement.ShipCore.tooltip=Défini le centre du vaisseau par rapport au controlleur. Connecte une source d'énergie pour charger le coeur\nDoit être placé horizontalement directement à coté du Controlleur de vaisseau.
-tile.warpdrive.movement.Transporter.name=Transporteur
+tile.warpdrive.movement.transporter_containment.name=Confinement de transporteur
+tile.warpdrive.movement.transporter_core.name=Cœur de transporteur
+tile.warpdrive.movement.transporter_scanner.name=Scanneur de transporteur
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Caméra
 tile.warpdrive.weapon.WeaponController.name=Controlleur d'armement

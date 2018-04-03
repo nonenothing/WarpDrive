@@ -294,7 +294,9 @@ tile.warpdrive.movement.ShipCore.name=Ship Core
 tile.warpdrive.movement.ShipCore.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
 tile.warpdrive.movement.ShipCore.bounding_box.disabled=Bounding box display have been disabled.
 tile.warpdrive.movement.ShipCore.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
-tile.warpdrive.movement.Transporter.name=Transporter
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=Transporter Core
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=Laser + Camera
 tile.warpdrive.weapon.WeaponController.name=Weapon Controller

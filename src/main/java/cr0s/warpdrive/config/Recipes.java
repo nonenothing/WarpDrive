@@ -174,7 +174,7 @@ public class Recipes {
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
 		
 		// Transporter
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporter), false, "iii", "ptc", "iii",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterCore), false, "iii", "ptc", "iii",
 				'i', Items.iron_ingot,
 				't', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
@@ -348,7 +348,7 @@ public class Recipes {
 				'w', "logWood",
 				'm', WarpDrive.blockMiningLaser }));
 		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporter), false, new Object[] { "ece", "imi", "iei",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterCore), false, new Object[] { "ece", "imi", "iei",
 				'e', Items.ender_pearl,
 				'c', circuit,
 				'i', ironPlate,
@@ -491,7 +491,7 @@ public class Recipes {
 				'm', WarpDrive.blockMiningLaser,
 				's', WarpDriveConfig.getModItemStack("IC2", "itemToolChainsaw", -1) }));
 		
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporter), false, new Object[] { "aea", "ctc", "ama",
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterCore), false, new Object[] { "aea", "ctc", "ama",
 				'a', advancedAlloy,
 				'e', Items.ender_pearl,
 				'c', "circuitAdvanced",
@@ -1269,15 +1269,25 @@ public class Recipes {
 				'a', Items.diamond_axe,
 				'g', "paneGlassColorless"));
 		
-		// Transporter is non-functional => no recipe
-		/*
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporter), false, "aea", "ctc", "ama",
-				'a', advancedAlloy,
-				'e', Items.ender_pearl,
-				'c', "circuitAdvanced",
-				'm', advancedMachine,
-				't', WarpDriveConfig.getModItemStack("IC2", "blockMachine2", 0) )); // Teleporter
-		/**/
+		// Transporter containment is 1 HV Machine casing, 2 Ender crystal, gives 2
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterContainment, 2), false, " e ", " m ", " e ",
+				'm', itemStackMachineCasings[2],
+				'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL)));
+		
+		// Transporter core is 1 HV Machine casing, 1 Emerald crystal, 1 Capacitive crystal, 1 Diamond crystal, 1 Power interface, 1 Computer interface
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterCore), false, " E ", "pmd", " c ",
+				'm', itemStackMachineCasings[2],
+				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+				'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL),
+				'E', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
+				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
+		
+		// Transporter scanner is 1 HV Machine casing, 1 Emerald crystal, 3 Capacitive crystal, 2 Ender crystal
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterScanner), false, " E ", "eme", "CCC",
+				'm', itemStackMachineCasings[2],
+				'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
+				'E', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
+				'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
 		
 		// IC2 needs to be loaded for the following 2 recipes
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
@@ -1358,7 +1368,7 @@ public class Recipes {
 				't', oreEmeraldOrTitaniumPlate,
 				'i', oreEmeraldOrReinforcedIridiumPlate,
 				'c', itemStackGoldIngotOrCoil,
-				'm', itemStackMachineCasings[3] )); 
+				'm', itemStackMachineCasings[3] ));
 		
 		// Enantiomorphic reactor core is 1 EV Machine casing, 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorCore), false, "CpC", "lml", "CcC",

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.Block;
@@ -93,6 +94,25 @@ public class StarMapRegistry {
 			}
 		}
 		// not found => ignore it
+	}
+	
+	public StarMapRegistryItem getByUUID(final EnumStarMapEntryType enumStarMapEntryType, final UUID uuid) {
+		for (final Integer dimensionId : registry.keySet()) {
+			final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(dimensionId);
+			if (setStarMapRegistryItems == null) {
+				continue;
+			}
+			
+			for (final StarMapRegistryItem starMapRegistryItem : setStarMapRegistryItems) {
+				if ( enumStarMapEntryType == null
+				  || starMapRegistryItem.type == enumStarMapEntryType ) {
+					if (starMapRegistryItem.uuid.equals(uuid)) {
+						return starMapRegistryItem;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	public String find(final String nameShip) {
