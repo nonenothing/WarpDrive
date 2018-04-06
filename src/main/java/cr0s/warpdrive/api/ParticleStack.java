@@ -11,9 +11,10 @@ import net.minecraft.world.World;
 import cpw.mods.fml.common.FMLLog;
 
 public class ParticleStack {
+	
 	private final Particle particle;
 	private int amount;
-	private NBTTagCompound tag;
+	private NBTTagCompound tagCompound;
 	
 	public ParticleStack(@Nonnull final Particle particle, final int amount) {
 		if (!ParticleRegistry.isParticleRegistered(particle)) {
@@ -28,42 +29,42 @@ public class ParticleStack {
 		this(particle, amount);
 		
 		if (nbt != null) {
-			tag = (NBTTagCompound) nbt.copy();
+			tagCompound = (NBTTagCompound) nbt.copy();
 		}
 	}
 	
 	public ParticleStack(ParticleStack stack, int amount) {
-		this(stack.getParticle(), amount, stack.tag);
+		this(stack.getParticle(), amount, stack.tagCompound);
 	}
 	
 	/**
 	 * Return null if stack is invalid.
 	 */
-	public static ParticleStack loadFromNBT(NBTTagCompound nbt) {
-		if (nbt == null) {
+	public static ParticleStack loadFromNBT(final NBTTagCompound tagCompound) {
+		if (tagCompound == null) {
 			return null;
 		}
-		String particleName = nbt.getString("name");
+		String particleName = tagCompound.getString("name");
 		
 		if (particleName == null || ParticleRegistry.getParticle(particleName) == null) {
 			return null;
 		}
-		ParticleStack stack = new ParticleStack(ParticleRegistry.getParticle(particleName), nbt.getInteger("amount"));
+		ParticleStack stack = new ParticleStack(ParticleRegistry.getParticle(particleName), tagCompound.getInteger("amount"));
 		
-		if (nbt.hasKey("tag")) {
-			stack.tag = nbt.getCompoundTag("tag");
+		if (tagCompound.hasKey("tag")) {
+			stack.tagCompound = tagCompound.getCompoundTag("tag");
 		}
 		return stack;
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		nbt.setString("name", ParticleRegistry.getParticleName(getParticle()));
-		nbt.setInteger("amount", amount);
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setString("name", ParticleRegistry.getParticleName(getParticle()));
+		tagCompound.setInteger("amount", amount);
 		
-		if (tag != null) {
-			nbt.setTag("tag", tag);
+		if (this.tagCompound != null) {
+			tagCompound.setTag("tag", this.tagCompound);
 		}
-		return nbt;
+		return tagCompound;
 	}
 	
 	public final Particle getParticle() {
@@ -103,11 +104,11 @@ public class ParticleStack {
 	}
 	
 	public ParticleStack copy() {
-		return new ParticleStack(getParticle(), amount, tag);
+		return new ParticleStack(getParticle(), amount, tagCompound);
 	}
 	
 	public ParticleStack copy(final int amount) {
-		return new ParticleStack(getParticle(), amount, tag);
+		return new ParticleStack(getParticle(), amount, tagCompound);
 	}
 	
 	public boolean isParticleEqual(ParticleStack other) {
@@ -115,7 +116,7 @@ public class ParticleStack {
 	}
 	
 	private boolean isParticleStackTagEqual(ParticleStack other) {
-		return tag == null ? other.tag == null : other.tag != null && tag.equals(other.tag);
+		return tagCompound == null ? other.tagCompound == null : other.tagCompound != null && tagCompound.equals(other.tagCompound);
 	}
 	
 	public static boolean areParticleStackTagsEqual(ParticleStack stack1, ParticleStack stack2) {
@@ -147,8 +148,8 @@ public class ParticleStack {
 		int code = 1;
 		code = 31 * code + getParticle().hashCode();
 		code = 31 * code + amount;
-		if (tag != null) {
-			code = 31 * code + tag.hashCode();
+		if (tagCompound != null) {
+			code = 31 * code + tagCompound.hashCode();
 		}
 		return code;
 	}

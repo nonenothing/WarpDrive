@@ -17,7 +17,7 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -86,7 +86,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			"stabilizerEnergy",
 			"state"
 		});
-		CC_scripts = Arrays.asList("startup");
+		CC_scripts = Collections.singletonList("startup");
 	}
 	
 	@Override

@@ -132,37 +132,37 @@ public class EntityParticleBunch extends Entity {
 	}
 	
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound nbtTagCompound) {
-		// energy = nbtTagCompound.getInteger("energy");
-		vectorNextPosition = Vector3.createFromNBT(nbtTagCompound.getCompoundTag("nextPosition"));
-		if (nbtTagCompound.hasKey("turningPoint")) {
-			vectorTurningPoint = Vector3.createFromNBT(nbtTagCompound.getCompoundTag("turningPoint"));
+	protected void readEntityFromNBT(final NBTTagCompound tagCompound) {
+		// energy = tagCompound.getInteger("energy");
+		vectorNextPosition = Vector3.createFromNBT(tagCompound.getCompoundTag("nextPosition"));
+		if (tagCompound.hasKey("turningPoint")) {
+			vectorTurningPoint = Vector3.createFromNBT(tagCompound.getCompoundTag("turningPoint"));
 		}
 	}
 	
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound nbtTagCompound) {
-		// nbtTagCompound.setDouble("energy", energy);
-		nbtTagCompound.setTag("nextPosition", vectorNextPosition.writeToNBT(new NBTTagCompound()));
+	protected void writeEntityToNBT(final NBTTagCompound tagCompound) {
+		// tagCompound.setDouble("energy", energy);
+		tagCompound.setTag("nextPosition", vectorNextPosition.writeToNBT(new NBTTagCompound()));
 		if (vectorTurningPoint != null) {
-			nbtTagCompound.setTag("turningPoint", vectorTurningPoint.writeToNBT(new NBTTagCompound()));
+			tagCompound.setTag("turningPoint", vectorTurningPoint.writeToNBT(new NBTTagCompound()));
 		}
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound p_70109_1_) {
-		super.writeToNBT(p_70109_1_);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
 	}
 	
 	// prevent saving entity to chunk
 	@Override
-	public boolean writeMountToNBT(NBTTagCompound p_98035_1_) {
+	public boolean writeMountToNBT(final NBTTagCompound tagCompound) {
 		return false;
 	}
 	
 	// prevent saving entity to chunk
 	@Override
-	public boolean writeToNBTOptional(NBTTagCompound p_70039_1_) {
+	public boolean writeToNBTOptional(final NBTTagCompound tagCompound) {
 		return false;
 	}
 	

@@ -361,21 +361,21 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		layerOffset = tag.getInteger("layerOffset");
-		mineAllBlocks = tag.getBoolean("mineAllBlocks");
-		currentState = tag.getInteger("currentState");
-		currentLayer = tag.getInteger("currentLayer");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		layerOffset = tagCompound.getInteger("layerOffset");
+		mineAllBlocks = tagCompound.getBoolean("mineAllBlocks");
+		currentState = tagCompound.getInteger("currentState");
+		currentLayer = tagCompound.getInteger("currentLayer");
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setInteger("layerOffset", layerOffset);
-		tag.setBoolean("mineAllBlocks", mineAllBlocks);
-		tag.setInteger("currentState", currentState);
-		tag.setInteger("currentLayer", currentLayer);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setInteger("layerOffset", layerOffset);
+		tagCompound.setBoolean("mineAllBlocks", mineAllBlocks);
+		tagCompound.setInteger("currentState", currentState);
+		tagCompound.setInteger("currentLayer", currentLayer);
 	}
 	
 	// OpenComputer callback methods

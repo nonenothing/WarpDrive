@@ -99,17 +99,17 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 		controlChannel = tagCompound.getInteger(CONTROL_CHANNEL_TAG);
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setBoolean("isEnabled", isEnabled);
-		tag.setInteger(CONTROL_CHANNEL_TAG, controlChannel);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setInteger(CONTROL_CHANNEL_TAG, controlChannel);
 	}
 	
 	@Override
@@ -120,8 +120,8 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 	}
 	

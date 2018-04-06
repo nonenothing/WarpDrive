@@ -128,26 +128,26 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	// Forge overrides
 	@Override
-	public void writeToNBT(NBTTagCompound nbtTagCompound) {
-		super.writeToNBT(nbtTagCompound);
-		nbtTagCompound.setByte("tier", tier);
-		nbtTagCompound.setByteArray("modeSide", modeSide);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setByte("tier", tier);
+		tagCompound.setByteArray("modeSide", modeSide);
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbtTagCompound) {
-		super.readFromNBT(nbtTagCompound);
-		tier = nbtTagCompound.getByte("tier");
-		modeSide = nbtTagCompound.getByteArray("modeSide");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		tier = tagCompound.getByte("tier");
+		modeSide = tagCompound.getByteArray("modeSide");
 		if (modeSide == null || modeSide.length != 6) {
 			modeSide = MODE_DEFAULT_SIDES.clone();
 		}
 	}
 	
 	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
-		return nbtTagCompound;
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
+		return tagCompound;
 	}
 	
 	@Override

@@ -1118,35 +1118,37 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		facing = ForgeDirection.getOrientation(tag.getByte("facing"));
-		uuid = new UUID(tag.getLong("uuidMost"), tag.getLong("uuidLeast"));
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		
+		facing = ForgeDirection.getOrientation(tagCompound.getByte("facing"));
+		uuid = new UUID(tagCompound.getLong("uuidMost"), tagCompound.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			uuid = UUID.randomUUID();
 		}
-		shipName = tag.getString("corefrequency") + tag.getString("shipName");	// coreFrequency is the legacy tag name
-		isolationRate = tag.getDouble("isolationRate");
-		cooldownTime_ticks = tag.getInteger("cooldownTime");
-		warmupTime_ticks = tag.getInteger("warmupTime");
-		jumpCount = tag.getInteger("jumpCount");
+		shipName = tagCompound.getString("corefrequency") + tagCompound.getString("shipName");	// coreFrequency is the legacy tag name
+		isolationRate = tagCompound.getDouble("isolationRate");
+		cooldownTime_ticks = tagCompound.getInteger("cooldownTime");
+		warmupTime_ticks = tagCompound.getInteger("warmupTime");
+		jumpCount = tagCompound.getInteger("jumpCount");
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		
 		if (facing != null) {
-			tag.setByte("facing", (byte) facing.ordinal());
+			tagCompound.setByte("facing", (byte) facing.ordinal());
 		}
 		if (uuid != null) {
-			tag.setLong("uuidMost", uuid.getMostSignificantBits());
-			tag.setLong("uuidLeast", uuid.getLeastSignificantBits());
+			tagCompound.setLong("uuidMost", uuid.getMostSignificantBits());
+			tagCompound.setLong("uuidLeast", uuid.getLeastSignificantBits());
 		}
-		tag.setString("shipName", shipName);
-		tag.setDouble("isolationRate", isolationRate);
-		tag.setInteger("cooldownTime", cooldownTime_ticks);
-		tag.setInteger("warmupTime", warmupTime_ticks);
-		tag.setInteger("jumpCount", jumpCount);
+		tagCompound.setString("shipName", shipName);
+		tagCompound.setDouble("isolationRate", isolationRate);
+		tagCompound.setInteger("cooldownTime", cooldownTime_ticks);
+		tagCompound.setInteger("warmupTime", warmupTime_ticks);
+		tagCompound.setInteger("jumpCount", jumpCount);
 	}
 	
 	@Override

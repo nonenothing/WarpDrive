@@ -520,23 +520,23 @@ public class Vector3 implements Cloneable {
 	}
 	
 	
-	public static Vector3 createFromNBT(NBTTagCompound nbtTagCompound) {
+	public static Vector3 createFromNBT(final NBTTagCompound tagCompound) {
 		Vector3 vector = new Vector3();
-		vector.readFromNBT(nbtTagCompound);
+		vector.readFromNBT(tagCompound);
 		return vector;
 	}
 	
-	public void readFromNBT(NBTTagCompound nbtTagCompound) {
-		x = nbtTagCompound.getDouble("x");
-		y = nbtTagCompound.getDouble("y");
-		z = nbtTagCompound.getDouble("z");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		x = tagCompound.getDouble("x");
+		y = tagCompound.getDouble("y");
+		z = tagCompound.getDouble("z");
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound.setDouble("x", x);
-		nbtTagCompound.setDouble("y", y);
-		nbtTagCompound.setDouble("z", z);
-		return nbtTagCompound;
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setDouble("x", x);
+		tagCompound.setDouble("y", y);
+		tagCompound.setDouble("z", z);
+		return tagCompound;
 	}
 	
 	public static Vector3 UP() {

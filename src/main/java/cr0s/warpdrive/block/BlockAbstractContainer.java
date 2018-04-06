@@ -65,11 +65,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (itemStack.hasTagCompound()) {
-			NBTTagCompound nbtTagCompound = (NBTTagCompound)itemStack.getTagCompound().copy();
-			nbtTagCompound.setInteger("x", x);
-			nbtTagCompound.setInteger("y", y);
-			nbtTagCompound.setInteger("z", z);
-			tileEntity.readFromNBT(nbtTagCompound);
+			final NBTTagCompound tagCompound = (NBTTagCompound) itemStack.getTagCompound().copy();
+			tagCompound.setInteger("x", x);
+			tagCompound.setInteger("y", y);
+			tagCompound.setInteger("z", z);
+			tileEntity.readFromNBT(tagCompound);
 			world.markBlockForUpdate(x, y, z);
 		}
 	}
@@ -87,9 +87,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			if (tileEntity == null) {
 				WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
 			} else if (tileEntity instanceof TileEntityAbstractBase) {
-				NBTTagCompound nbtTagCompound = new NBTTagCompound();
-				((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
-				itemStack.setTagCompound(nbtTagCompound);
+				final NBTTagCompound tagCompound = new NBTTagCompound();
+				((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);
+				itemStack.setTagCompound(tagCompound);
 			}
 		}
 		world.setBlockToAir(x, y, z);
@@ -100,10 +100,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
 		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(x, y, z);
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {
-			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
-			itemStack.setTagCompound(nbtTagCompound);
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);
+			itemStack.setTagCompound(tagCompound);
 		}
 		return itemStack;
 	}

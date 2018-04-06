@@ -51,15 +51,15 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 		return result;
 	}
 	
-	public AbstractStructureInstance(NBTTagCompound tag) {
+	public AbstractStructureInstance(final NBTTagCompound tagCompound) {
 		// FIXME to be implemented
 		
 		// get deployable
-		// String deployableName = tag.getString("wd_structureName");
+		// String deployableName = tagCompound.getString("wd_structureName");
 		
 		// get variables values
 		/*
-		final NBTTagCompound tagVariables = tag.getCompoundTag("wd_variables");
+		final NBTTagCompound tagVariables = tagCompound.getCompoundTag("wd_variables");
 		final NBTTagList names = tagVariables.getTagList("x", 0);
 		for (final Entry<String, Double> entry : tagVariables.getTagList("x", 0)) {
 			tagVariables.setDouble(entry.getKey(), entry.getValue());

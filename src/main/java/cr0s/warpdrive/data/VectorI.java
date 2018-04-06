@@ -278,23 +278,23 @@ public class VectorI implements Cloneable {
 	}
 	
 	
-	public static VectorI createFromNBT(NBTTagCompound nbtTagCompound) {
+	public static VectorI createFromNBT(final NBTTagCompound tagCompound) {
 		VectorI vector = new VectorI();
-		vector.readFromNBT(nbtTagCompound);
+		vector.readFromNBT(tagCompound);
 		return vector;
 	}
 	
-	public void readFromNBT(final NBTTagCompound nbtTagCompound) {
-		x = nbtTagCompound.getInteger("x");
-		y = nbtTagCompound.getInteger("y");
-		z = nbtTagCompound.getInteger("z");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		x = tagCompound.getInteger("x");
+		y = tagCompound.getInteger("y");
+		z = tagCompound.getInteger("z");
 	}
 	
-	public NBTTagCompound writeToNBT(final NBTTagCompound nbtTagCompound) {
-		nbtTagCompound.setInteger("x", x);
-		nbtTagCompound.setInteger("y", y);
-		nbtTagCompound.setInteger("z", z);
-		return nbtTagCompound;
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("x", x);
+		tagCompound.setInteger("y", y);
+		tagCompound.setInteger("z", z);
+		return tagCompound;
 	}
 	
 	// Square roots are evil, avoid them at all cost

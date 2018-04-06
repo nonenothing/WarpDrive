@@ -194,25 +194,25 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
 		
-		nbtTagCompound.removeTag("players");
+		tagCompound.removeTag("players");
 		
-		nbtTagCompound.removeTag("isEnabled");
-		nbtTagCompound.removeTag("command");
-		nbtTagCompound.removeTag("front");
-		nbtTagCompound.removeTag("right");
-		nbtTagCompound.removeTag("up");
-		nbtTagCompound.removeTag("back");
-		nbtTagCompound.removeTag("left");
-		nbtTagCompound.removeTag("down");
-		nbtTagCompound.removeTag("moveFront");
-		nbtTagCompound.removeTag("moveUp");
-		nbtTagCompound.removeTag("moveRight");
-		nbtTagCompound.removeTag("rotationSteps");
-		nbtTagCompound.removeTag("nameTarget");
-		return nbtTagCompound;
+		tagCompound.removeTag("isEnabled");
+		tagCompound.removeTag("command");
+		tagCompound.removeTag("front");
+		tagCompound.removeTag("right");
+		tagCompound.removeTag("up");
+		tagCompound.removeTag("back");
+		tagCompound.removeTag("left");
+		tagCompound.removeTag("down");
+		tagCompound.removeTag("moveFront");
+		tagCompound.removeTag("moveUp");
+		tagCompound.removeTag("moveRight");
+		tagCompound.removeTag("rotationSteps");
+		tagCompound.removeTag("nameTarget");
+		return tagCompound;
 	}
 	
 	@Override

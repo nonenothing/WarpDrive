@@ -26,7 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
-	final double LIFT_GRAB_RADIUS = 0.4;
+	private static final double LIFT_GRAB_RADIUS = 0.4D;
 	
 	// persistent properties
 	private EnumLiftMode mode = EnumLiftMode.INACTIVE;
@@ -139,8 +139,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object object : list) {
-					if ( object != null
-					  && object instanceof EntityLivingBase
+					if ( object instanceof EntityLivingBase
 					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 						((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
@@ -161,8 +160,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			if (list != null) {
 				for (Object object : list) {
-					if ( object != null
-					  && object instanceof EntityLivingBase
+					if ( object instanceof EntityLivingBase
 					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 						((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
 						PacketHandler.sendBeamPacket(worldObj,
@@ -180,29 +178,29 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		if (tag.hasKey("mode")) {
-			final byte byteValue = tag.getByte("mode");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		if (tagCompound.hasKey("mode")) {
+			final byte byteValue = tagCompound.getByte("mode");
 			mode = EnumLiftMode.get(Commons.clamp(0, 3, byteValue == -1 ? 3 : byteValue));
 		}
-		if (tag.hasKey("computerEnabled")) {
-			isEnabled = tag.getBoolean("computerEnabled");  // up to 1.3.30 included
-		} else if (tag.hasKey("isEnabled")) {
-			isEnabled = tag.getBoolean("isEnabled");
+		if (tagCompound.hasKey("computerEnabled")) {
+			isEnabled = tagCompound.getBoolean("computerEnabled");  // up to 1.3.30 included
+		} else if (tagCompound.hasKey("isEnabled")) {
+			isEnabled = tagCompound.getBoolean("isEnabled");
 		}
-		if (tag.hasKey("computerMode")) {
-			final byte byteValue = tag.getByte("computerMode");
+		if (tagCompound.hasKey("computerMode")) {
+			final byte byteValue = tagCompound.getByte("computerMode");
 			computerMode = EnumLiftMode.get(Commons.clamp(0, 3, byteValue == -1 ? 3 : byteValue));
 		}
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setByte("mode", (byte) mode.ordinal());
-		tag.setBoolean("isEnabled", isEnabled);
-		tag.setByte("computerMode", (byte) computerMode.ordinal());
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setByte("mode", (byte) mode.ordinal());
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setByte("computerMode", (byte) computerMode.ordinal());
 	}
 	
 	@Override

@@ -1524,12 +1524,12 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	@Override
-	protected void readFromNBT(NBTTagCompound nbttagcompound) {
+	protected void readFromNBT(final NBTTagCompound tagCompound) {
 		WarpDrive.logger.error(this + " readFromNBT()");
 	}
 	
 	@Override
-	protected void writeToNBT(NBTTagCompound nbttagcompound) {
+	protected void writeToNBT(final NBTTagCompound tagCompound) {
 		WarpDrive.logger.error(this + " writeToNBT()");
 	}
 	

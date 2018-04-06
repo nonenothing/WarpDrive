@@ -107,7 +107,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		tier = tagCompound.getByte("tier");
 		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
@@ -116,7 +116,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public void writeToNBT(final NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		tagCompound.setByte("tier", tier);
 		tagCompound.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
@@ -132,8 +132,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 	}
 	

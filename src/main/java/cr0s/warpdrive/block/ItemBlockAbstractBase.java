@@ -62,11 +62,11 @@ public class ItemBlockAbstractBase extends ItemBlock {
 		return ((IBlockBase) field_150939_a).getRarity(itemStack, super.getRarity(itemStack));
 	}
 	
-	private String getStatus(final NBTTagCompound nbtTagCompound, final int metadata) {
-		TileEntity tileEntity = field_150939_a.createTileEntity(null, metadata);
+	private String getStatus(final NBTTagCompound tagCompound, final int metadata) {
+		final TileEntity tileEntity = field_150939_a.createTileEntity(null, metadata);
 		if (tileEntity instanceof TileEntityAbstractBase) {
-			if (nbtTagCompound != null) {
-				tileEntity.readFromNBT(nbtTagCompound);
+			if (tagCompound != null) {
+				tileEntity.readFromNBT(tagCompound);
 			}
 			return ((TileEntityAbstractBase) tileEntity).getStatus();
 			

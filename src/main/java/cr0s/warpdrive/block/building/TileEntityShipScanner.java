@@ -424,14 +424,14 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			}
 			
 			// Compute target area
-			Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
-			ChunkCoordinates targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
-			ChunkCoordinates targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
-			ChunkCoordinates targetLocationMin = new ChunkCoordinates(
+			final Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
+			final ChunkCoordinates targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
+			final ChunkCoordinates targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
+			final ChunkCoordinates targetLocationMin = new ChunkCoordinates(
 			                Math.min(targetLocation1.posX, targetLocation2.posX) - 1,
 			    Math.max(0, Math.min(targetLocation1.posY, targetLocation2.posY) - 1),
 			                Math.min(targetLocation1.posZ, targetLocation2.posZ) - 1);
-			ChunkCoordinates targetLocationMax = new ChunkCoordinates(
+			final ChunkCoordinates targetLocationMax = new ChunkCoordinates(
 			                  Math.max(targetLocation1.posX, targetLocation2.posX) + 1,
 			    Math.min(255, Math.max(targetLocation1.posY, targetLocation2.posY) + 1),
 			                  Math.max(targetLocation1.posZ, targetLocation2.posZ) + 1);
@@ -494,7 +494,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		schematicFileName = tagCompound.getString("schematic");
 		targetX = tagCompound.getInteger("targetX");
@@ -525,7 +525,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public void writeToNBT(final NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		tagCompound.setString("schematic", schematicFileName);
 		tagCompound.setInteger("targetX", targetX);

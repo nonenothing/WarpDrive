@@ -24,13 +24,13 @@ public class Filler implements IXmlRepresentableUnit {
 		DEFAULT.name           = "-default-";
 		DEFAULT.block          = Blocks.air;
 		DEFAULT.metadata       = 0;
-		DEFAULT.nbtTagCompound = null;
+		DEFAULT.tagCompound    = null;
 	}
 	
 	private String name;
 	public Block block;
 	public int metadata;
-	public NBTTagCompound nbtTagCompound = null;
+	public NBTTagCompound tagCompound = null;
 	
 	@Override
 	public String getName() {
@@ -67,17 +67,17 @@ public class Filler implements IXmlRepresentableUnit {
 		}
 		
 		// Get nbt attribute, default to null/none
-		nbtTagCompound = null;
+		tagCompound = null;
 		String stringNBT = element.getAttribute("nbt");
 		if (!stringNBT.isEmpty()) {
 			try {
-				nbtTagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
+				tagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
 			} catch (NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for block " + nameBlock);
 			}
 		}
 		
-		name = nameBlock + "@" + metadata + "{" + nbtTagCompound + "}";
+		name = nameBlock + "@" + metadata + "{" + tagCompound + "}";
 		
 		return true;
 	}
@@ -85,7 +85,7 @@ public class Filler implements IXmlRepresentableUnit {
 	public void setBlock(World world, int x, int y, int z) {
 		JumpBlock.setBlockNoLight(world, x, y, z, block, metadata, 2);
 		
-		if (nbtTagCompound != null) {
+		if (tagCompound != null) {
 			TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity == null) {
 				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)",
@@ -97,9 +97,9 @@ public class Filler implements IXmlRepresentableUnit {
 			NBTTagCompound nbtTagCompoundTileEntity = new NBTTagCompound();
 			tileEntity.writeToNBT(nbtTagCompoundTileEntity);
 			
-			for (Object key : nbtTagCompound.func_150296_c()) {
+			for (Object key : tagCompound.func_150296_c()) {
 				if (key instanceof String) {
-					nbtTagCompoundTileEntity.setTag((String) key, nbtTagCompound.getTag((String) key));
+					nbtTagCompoundTileEntity.setTag((String) key, tagCompound.getTag((String) key));
 				}
 			}
 			
@@ -122,7 +122,7 @@ public class Filler implements IXmlRepresentableUnit {
 		return object instanceof Filler
 			&& (block == null || block.equals(((Filler)object).block))
 			&& metadata == ((Filler)object).metadata
-			&& (nbtTagCompound == null || nbtTagCompound.equals(((Filler)object).nbtTagCompound));
+			&& (tagCompound == null || tagCompound.equals(((Filler)object).tagCompound));
 	}
 	
 	@Override
@@ -132,6 +132,6 @@ public class Filler implements IXmlRepresentableUnit {
 
 	@Override
 	public int hashCode() {
-		return Block.getIdFromBlock(block) * 16 + metadata + (nbtTagCompound == null ? 0 : nbtTagCompound.hashCode() * 4096 * 16);
+		return Block.getIdFromBlock(block) * 16 + metadata + (tagCompound == null ? 0 : tagCompound.hashCode() * 4096 * 16);
 	}
 }

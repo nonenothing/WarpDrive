@@ -35,17 +35,17 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		if (tag.hasKey("projector")) {
-			vProjector = VectorI.createFromNBT(tag.getCompoundTag("projector"));
-			cache_beamFrequency = tag.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
-			if (tag.hasKey("camouflageBlock")) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		if (tagCompound.hasKey("projector")) {
+			vProjector = VectorI.createFromNBT(tagCompound.getCompoundTag("projector"));
+			cache_beamFrequency = tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
+			if (tagCompound.hasKey("camouflageBlock")) {
 				try {
-					cache_blockCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock"));
-					cache_metadataCamouflage = tag.getByte("camouflageMeta");
-					cache_colorMultiplierCamouflage = tag.getInteger("camouflageColorMultiplier");
-					cache_lightCamouflage = tag.getByte("camouflageLight");
+					cache_blockCamouflage = Block.getBlockFromName(tagCompound.getString("camouflageBlock"));
+					cache_metadataCamouflage = tagCompound.getByte("camouflageMeta");
+					cache_colorMultiplierCamouflage = tagCompound.getInteger("camouflageColorMultiplier");
+					cache_lightCamouflage = tagCompound.getByte("camouflageLight");
 					if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(cache_blockCamouflage)) {
 						cache_blockCamouflage = null;
 						cache_metadataCamouflage = 0;
@@ -72,7 +72,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompound) {
+	public void writeToNBT(final NBTTagCompound tagCompound) {
 		super.writeToNBT(tagCompound);
 		if (vProjector != null) {
 			tagCompound.setTag("projector", vProjector.writeToNBT(new NBTTagCompound()));
@@ -95,7 +95,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
+	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
 		NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 	}

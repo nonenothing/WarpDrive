@@ -21,28 +21,28 @@ import net.minecraftforge.common.util.Constants.NBT;
 
 public class MessageClientSync implements IMessage, IMessageHandler<MessageClientSync, IMessage> {
 	
-	private NBTTagCompound nbtTagCompound;
+	private NBTTagCompound tagCompound;
 	
 	public MessageClientSync() {
 		// required on receiving side
 	}
 	
 	public MessageClientSync(final EntityPlayerMP entityPlayerMP, final CelestialObject celestialObject) {
-		nbtTagCompound = new NBTTagCompound();
-		nbtTagCompound.setTag("celestialObjects"     , CelestialObjectManager.writeClientSync(entityPlayerMP, celestialObject));
-		nbtTagCompound.setTag("items_breathingHelmet", Dictionary.writeItemsToNBT(Dictionary.ITEMS_BREATHING_HELMET));
-		nbtTagCompound.setTag("items_flyInSpace"     , Dictionary.writeItemsToNBT(Dictionary.ITEMS_FLYINSPACE));
-		nbtTagCompound.setTag("items_noFallDamage"   , Dictionary.writeItemsToNBT(Dictionary.ITEMS_NOFALLDAMAGE));
+		tagCompound = new NBTTagCompound();
+		tagCompound.setTag("celestialObjects"     , CelestialObjectManager.writeClientSync(entityPlayerMP, celestialObject));
+		tagCompound.setTag("items_breathingHelmet", Dictionary.writeItemsToNBT(Dictionary.ITEMS_BREATHING_HELMET));
+		tagCompound.setTag("items_flyInSpace"     , Dictionary.writeItemsToNBT(Dictionary.ITEMS_FLYINSPACE));
+		tagCompound.setTag("items_noFallDamage"   , Dictionary.writeItemsToNBT(Dictionary.ITEMS_NOFALLDAMAGE));
 	}
 	
 	@Override
 	public void fromBytes(ByteBuf buffer) {
-		nbtTagCompound = ByteBufUtils.readTag(buffer);
+		tagCompound = ByteBufUtils.readTag(buffer);
 	}
 	
 	@Override
 	public void toBytes(ByteBuf buffer) {
-		ByteBufUtils.writeTag(buffer, nbtTagCompound);
+		ByteBufUtils.writeTag(buffer, tagCompound);
 	}
 	
 	@Override
@@ -56,17 +56,17 @@ public class MessageClientSync implements IMessage, IMessageHandler<MessageClien
 		
 		if (WarpDriveConfig.LOGGING_CLIENT_SYNCHRONIZATION) {
 			WarpDrive.logger.info(String.format("Received client synchronization packet: %s",
-			                                    messageClientSync.nbtTagCompound));
+			                                    messageClientSync.tagCompound));
 		}
 		
 		try {
-			CelestialObjectManager.readClientSync(messageClientSync.nbtTagCompound.getTagList("celestialObjects", NBT.TAG_COMPOUND));
-			Dictionary.ITEMS_BREATHING_HELMET = Dictionary.readItemsFromNBT(messageClientSync.nbtTagCompound.getTagList("items_breathingHelmet", NBT.TAG_STRING));
-			Dictionary.ITEMS_FLYINSPACE       = Dictionary.readItemsFromNBT(messageClientSync.nbtTagCompound.getTagList("items_flyInSpace"     , NBT.TAG_STRING));
-			Dictionary.ITEMS_NOFALLDAMAGE     = Dictionary.readItemsFromNBT(messageClientSync.nbtTagCompound.getTagList("items_noFallDamage"   , NBT.TAG_STRING));
+			CelestialObjectManager.readClientSync(messageClientSync.tagCompound.getTagList("celestialObjects", NBT.TAG_COMPOUND));
+			Dictionary.ITEMS_BREATHING_HELMET = Dictionary.readItemsFromNBT(messageClientSync.tagCompound.getTagList("items_breathingHelmet", NBT.TAG_STRING));
+			Dictionary.ITEMS_FLYINSPACE       = Dictionary.readItemsFromNBT(messageClientSync.tagCompound.getTagList("items_flyInSpace"     , NBT.TAG_STRING));
+			Dictionary.ITEMS_NOFALLDAMAGE     = Dictionary.readItemsFromNBT(messageClientSync.tagCompound.getTagList("items_noFallDamage"   , NBT.TAG_STRING));
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			WarpDrive.logger.error(String.format("Fails to parse client synchronization packet %s", messageClientSync.nbtTagCompound));
+			WarpDrive.logger.error(String.format("Fails to parse client synchronization packet %s", messageClientSync.tagCompound));
 		}
 		
 		return new MessageClientValidation();

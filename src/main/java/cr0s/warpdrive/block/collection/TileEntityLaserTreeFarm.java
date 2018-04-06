@@ -556,32 +556,32 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setInteger("radiusX", radiusX);
-		tag.setInteger("radiusZ", radiusZ);
-		tag.setBoolean("breakLeaves", breakLeaves);
-		tag.setBoolean("tapTrees", tapTrees);
-		tag.setInteger("currentState", currentState);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setInteger("radiusX", radiusX);
+		tagCompound.setInteger("radiusZ", radiusZ);
+		tagCompound.setBoolean("breakLeaves", breakLeaves);
+		tagCompound.setBoolean("tapTrees", tapTrees);
+		tagCompound.setInteger("currentState", currentState);
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		radiusX = tag.getInteger("radiusX");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		radiusX = tagCompound.getInteger("radiusX");
 		if (radiusX == 0) {
 			radiusX = 1;
 		}
 		radiusX = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusX);
-		radiusZ = tag.getInteger("radiusZ");
+		radiusZ = tagCompound.getInteger("radiusZ");
 		if (radiusZ == 0) {
 			radiusZ = 1;
 		}
 		radiusZ = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, radiusZ);
 		
-		breakLeaves     = tag.getBoolean("breakLeaves");
-		tapTrees        = tag.getBoolean("tapTrees");
-		currentState    = tag.getInteger("currentState");
+		breakLeaves     = tagCompound.getBoolean("breakLeaves");
+		tapTrees        = tagCompound.getBoolean("tapTrees");
+		currentState    = tagCompound.getInteger("currentState");
 		if (currentState == STATE_HARVEST || currentState == STATE_TAP || currentState == STATE_PLANT) {
 			bScanOnReload = true;
 		}

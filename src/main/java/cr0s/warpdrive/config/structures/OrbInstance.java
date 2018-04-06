@@ -56,8 +56,8 @@ public class OrbInstance extends AbstractStructureInstance {
 		schematicName = orb.schematicName;
 	}
 	
-	public OrbInstance(NBTTagCompound tag) {
-		super(tag);
+	public OrbInstance(final NBTTagCompound tagCompound) {
+		super(tagCompound);
 		// TODO not implemented
 	}
 	

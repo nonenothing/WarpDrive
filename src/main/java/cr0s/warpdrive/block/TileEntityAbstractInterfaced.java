@@ -152,20 +152,20 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
 		if ( WarpDriveConfig.isOpenComputersLoaded
 		  && FMLCommonHandler.instance().getEffectiveSide().isServer() ) {
 			if (OC_node == null) {
 				OC_constructor();
 			}
 			if (OC_node != null && OC_node.host() == this) {
-				OC_node.load(tag.getCompoundTag("oc:node"));
-			} else if (tag.hasKey("oc:node")) {
+				OC_node.load(tagCompound.getCompoundTag("oc:node"));
+			} else if (tagCompound.hasKey("oc:node")) {
 				WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
-				OC_fileSystem.node().load(tag.getCompoundTag("oc:fs"));
+				OC_fileSystem.node().load(tagCompound.getCompoundTag("oc:fs"));
 			} else if (OC_hasResource) {
 				WarpDrive.logger.error(this + " OC filesystem failed to construct or wrong node, ignoring NBT filesystem data read...");
 			}
@@ -173,28 +173,28 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (OC_node != null && OC_node.host() == this) {
 				final NBTTagCompound nbtNode = new NBTTagCompound();
 				OC_node.save(nbtNode);
-				tag.setTag("oc:node", nbtNode);
+				tagCompound.setTag("oc:node", nbtNode);
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
 				final NBTTagCompound nbtFileSystem = new NBTTagCompound();
 				OC_fileSystem.node().save(nbtFileSystem);
-				tag.setTag("oc:fs", nbtFileSystem);
+				tagCompound.setTag("oc:fs", nbtFileSystem);
 			}
 		}
 	}
 	
 	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
-		nbtTagCompound.removeTag("oc:node");
-		nbtTagCompound.removeTag("oc:fs");
-		return nbtTagCompound;
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
+		tagCompound.removeTag("oc:node");
+		tagCompound.removeTag("oc:fs");
+		return tagCompound;
 	}
 	
 	@Override

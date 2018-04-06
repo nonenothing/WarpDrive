@@ -134,13 +134,13 @@ public class CompatArsMagica2 implements IBlockTransformer {
 		if (!(tileEntity instanceof IPowerNode) || nbtBase == null) {
 			return;
 		}
-		final NBTTagCompound nbtTagCompound = (NBTTagCompound) nbtBase;
+		final NBTTagCompound tagCompound = (NBTTagCompound) nbtBase;
 		
 		// powerAmounts
 		// (no changes)
 		
 		// powerPathList
-		final NBTTagList powerPathList = nbtTagCompound.getTagList("powerPathList", Constants.NBT.TAG_COMPOUND);
+		final NBTTagList powerPathList = tagCompound.getTagList("powerPathList", Constants.NBT.TAG_COMPOUND);
 		if (powerPathList != null) {
 			for (int powerPathIndex = 0; powerPathIndex < powerPathList.tagCount(); powerPathIndex++) {
 				final NBTTagCompound powerPathEntry = (NBTTagCompound) powerPathList.removeTag(0);
@@ -172,7 +172,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 				}
 				powerPathList.appendTag(powerPathEntry);
 			}
-			nbtTagCompound.setTag("powerPathList", powerPathList);
+			tagCompound.setTag("powerPathList", powerPathList);
 		}
 		
 		final World targetWorld = transformation.getTargetWorld();
@@ -183,7 +183,7 @@ public class CompatArsMagica2 implements IBlockTransformer {
 		} else if (!(tileEntityTarget instanceof IPowerNode)) {
 			WarpDrive.logger.error("ArsMagica2 compat: invalid tile entity " + tileEntityTarget + " found at target location " + target + ".");
 		} else {
-			PowerNodeRegistry.For(targetWorld).setDataCompoundForNode((IPowerNode) tileEntityTarget, nbtTagCompound);
+			PowerNodeRegistry.For(targetWorld).setDataCompoundForNode((IPowerNode) tileEntityTarget, tagCompound);
 		}
 	}
 }

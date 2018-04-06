@@ -534,16 +534,16 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
-		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
+		legacyVideoChannel = tagCompound.getInteger("cameraFrequency") + tagCompound.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
 	}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound tag) {
-		super.writeToNBT(tag);
-		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
+	public void writeToNBT(final NBTTagCompound tagCompound) {
+		super.writeToNBT(tagCompound);
+		tagCompound.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 	}
 	
 	@Override

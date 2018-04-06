@@ -95,7 +95,7 @@ public class JumpBlock {
 		}
 		block = filler.block;
 		blockMeta = filler.metadata;
-		blockNBT = (filler.nbtTagCompound != null) ? (NBTTagCompound) filler.nbtTagCompound.copy() : null;
+		blockNBT = (filler.tagCompound != null) ? (NBTTagCompound) filler.tagCompound.copy() : null;
 		this.x = x;
 		this.y = y;
 		this.z = z;

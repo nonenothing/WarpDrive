@@ -43,8 +43,8 @@ public class ForceFieldRegistry {
 		Set<TileEntity> setToIterate = new HashSet<>();
 		int range2;
 		int maxRange2 = ForceFieldSetup.FORCEFIELD_RELAY_RANGE * ForceFieldSetup.FORCEFIELD_RELAY_RANGE;
-		for (GlobalPosition globalPosition : setGlobalPositions) {
-			WorldServer world = globalPosition.getWorldServerIfLoaded();
+		for (final GlobalPosition globalPosition : setGlobalPositions) {
+			final WorldServer world = globalPosition.getWorldServerIfLoaded();
 			if (world != null) {
 				// skip if it's in another dimension
 				if (world != worldSource) {
@@ -52,8 +52,9 @@ public class ForceFieldRegistry {
 				}
 				
 				// confirm frequency and split by groups
-				TileEntity tileEntity = world.getTileEntity(globalPosition.x, globalPosition.y, globalPosition.z);
-				if ((tileEntity instanceof IBeamFrequency) && ((IBeamFrequency)tileEntity).getBeamFrequency() == beamFrequency) {
+				final TileEntity tileEntity = world.getTileEntity(globalPosition.x, globalPosition.y, globalPosition.z);
+				if ( (tileEntity instanceof IBeamFrequency)
+				  && ((IBeamFrequency)tileEntity).getBeamFrequency() == beamFrequency ) {
 					if (tileEntity instanceof TileEntityForceFieldRelay) {
 						// add relays in range as start point
 						range2 = (globalPosition.x - x) * (globalPosition.x - x) + (globalPosition.y - y) * (globalPosition.y - y) + (globalPosition.z - z) * (globalPosition.z - z);

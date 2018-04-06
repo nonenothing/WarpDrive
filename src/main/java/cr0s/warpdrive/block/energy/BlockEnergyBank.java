@@ -53,10 +53,10 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 			list.add(itemStack);
 			if (tier > 0) {
 				itemStack = new ItemStack(item, 1, tier);
-				NBTTagCompound nbtTagCompound = new NBTTagCompound();
-				nbtTagCompound.setByte("tier", tier);
-				nbtTagCompound.setInteger("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
-				itemStack.setTagCompound(nbtTagCompound);
+				final NBTTagCompound tagCompound = new NBTTagCompound();
+				tagCompound.setByte("tier", tier);
+				tagCompound.setInteger("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
+				itemStack.setTagCompound(tagCompound);
 				list.add(itemStack);
 			}
 		}
@@ -102,9 +102,9 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
 			return 1;
 		}
-		NBTTagCompound nbtTagCompound = itemStack.getTagCompound();
-		if (nbtTagCompound != null && nbtTagCompound.hasKey("tier")) {
-			return nbtTagCompound.getByte("tier");
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound != null && tagCompound.hasKey("tier")) {
+			return tagCompound.getByte("tier");
 		} else {
 			return (byte) itemStack.getItemDamage();
 		}

@@ -17,23 +17,23 @@ public class AcceleratorControlParameter {
 		this.controlChannel = controlChannel;
 	}
 	
-	public AcceleratorControlParameter(final NBTTagCompound nbtTagCompound) {
-		readFromNBT(nbtTagCompound);
+	public AcceleratorControlParameter(final NBTTagCompound tagCompound) {
+		readFromNBT(tagCompound);
 	}
 	
-	private void readFromNBT(final NBTTagCompound nbtTagCompound) {
-		controlChannel = nbtTagCompound.getInteger(IControlChannel.CONTROL_CHANNEL_TAG);
-		isEnabled = !nbtTagCompound.hasKey("isEnabled") || nbtTagCompound.getBoolean("isEnabled");
-		threshold = nbtTagCompound.getDouble("threshold");
-		description = nbtTagCompound.getString("description");
+	private void readFromNBT(final NBTTagCompound tagCompound) {
+		controlChannel = tagCompound.getInteger(IControlChannel.CONTROL_CHANNEL_TAG);
+		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
+		threshold = tagCompound.getDouble("threshold");
+		description = tagCompound.getString("description");
 	}
 	
-	public NBTTagCompound writeToNBT(final NBTTagCompound nbtTagCompound) {
-		nbtTagCompound.setInteger(IControlChannel.CONTROL_CHANNEL_TAG, controlChannel);
-		nbtTagCompound.setBoolean("isEnabled", isEnabled);
-		nbtTagCompound.setDouble("threshold", threshold);
-		nbtTagCompound.setString("description", description);
-		return nbtTagCompound;
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger(IControlChannel.CONTROL_CHANNEL_TAG, controlChannel);
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setDouble("threshold", threshold);
+		tagCompound.setString("description", description);
+		return tagCompound;
 	}
 	
 	// Hash based collections need a stable hashcode, so we use a unique id instead

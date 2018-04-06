@@ -231,7 +231,7 @@ public final class EntitySphereGen extends Entity {
 	}
 	
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound tag) {
+	protected void readEntityFromNBT(final NBTTagCompound tagCompound) {
 		// FIXME not implemented
 	}
 	
@@ -249,7 +249,7 @@ public final class EntitySphereGen extends Entity {
 	}
 	
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound tag) {
+	protected void writeEntityToNBT(final NBTTagCompound tagCompound) {
 		// FIXME not implemented
 	}
 	

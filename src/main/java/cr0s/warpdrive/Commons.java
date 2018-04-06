@@ -21,6 +21,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -131,7 +133,7 @@ public class Commons {
 			boolean isExisting = false;
 			for (final String lineExisting : list) {
 				if ( lineExisting.contains(split[0])
-				     || split[0].contains(lineExisting) ) {
+				  || split[0].contains(lineExisting) ) {
 					isExisting = true;
 					break;
 				}
@@ -316,25 +318,25 @@ public class Commons {
 	
 	// data manipulation methods
 	
-	public static int toInt(double d) {
+	public static int toInt(final double d) {
 		return (int) Math.round(d);
 	}
 	
-	public static int toInt(Object object) {
+	public static int toInt(final Object object) {
 		return toInt(toDouble(object));
 	}
 	
-	public static double toDouble(Object object) {
+	public static double toDouble(final Object object) {
 		assert(!(object instanceof Object[]));
 		return Double.parseDouble(object.toString());
 	}
 	
-	public static float toFloat(Object object) {
+	public static float toFloat(final Object object) {
 		assert(!(object instanceof Object[]));
 		return Float.parseFloat(object.toString());
 	}
 	
-	public static boolean toBool(Object object) {
+	public static boolean toBool(final Object object) {
 		if (object == null) {
 			 return false;
 		}
@@ -620,4 +622,15 @@ public class Commons {
 		return worldServer;
 	}
 	
+	// server side version of EntityLivingBase.rayTrace
+	private static final double BLOCK_REACH_DISTANCE = 5.0D;    // this is a client side hardcoded value, applicable to creative players
+	public static MovingObjectPosition getInteractingBlock(final World world, final EntityPlayer entityPlayer) {
+		return getInteractingBlock(world, entityPlayer, BLOCK_REACH_DISTANCE);
+	}
+	public static MovingObjectPosition getInteractingBlock(final World world, final EntityPlayer entityPlayer, final double distance) {
+		Vec3 vec3Position = Vec3.createVectorHelper(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
+		Vec3 vec3Look = entityPlayer.getLook(1.0F);
+		Vec3 vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
+		return world.func_147447_a(vec3Position, vec3Target, false, false, true);
+	}
 }
