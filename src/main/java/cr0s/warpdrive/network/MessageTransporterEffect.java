@@ -58,6 +58,9 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			idEntities = new ArrayList<>(movingEntities.size());
 			v3EntityPositions = new ArrayList<>(movingEntities.size());
 			for (final MovingEntity movingEntity : movingEntities) {
+				if (movingEntity == MovingEntity.INVALID) {
+					continue;
+				}
 				final Entity entity = movingEntity.getEntity();
 				if (entity != null) {
 					idEntities.add(entity.getEntityId());
@@ -131,12 +134,10 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 		final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		
 		// handle source
-		if (globalPosition.distance2To(player) <= maxRenderDistance_squared) {
-			handleAtSource(world);
+		if (globalPosition.distance2To(player) > maxRenderDistance_squared) {
+			return;
 		}
-	}
-	
-	private void handleAtSource(final World world) {
+		
 		// add flying particles in area of effect when in the wild
 		if (!isTransporterRoom) {
 			spawnParticlesInArea(world, globalPosition.getVectorI(), false,
@@ -151,7 +152,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			// energizing
 			// @TODO cylinder fade in + shower
 			if (entity != null) {
-				final Vector3 v3Position = new Vector3(entity);
+				final Vector3 v3Position = v3EntityPositions.get(indexEntity).translate(ForgeDirection.DOWN, entity.getEyeHeight());
 				final Vector3 v3Target = v3Position.clone().translate(ForgeDirection.UP, entity.height);
 				final EntityFX effect = new EntityFXBeam(world, v3Position, v3Target,
 				                          0.6F + 0.1F * world.rand.nextFloat(),

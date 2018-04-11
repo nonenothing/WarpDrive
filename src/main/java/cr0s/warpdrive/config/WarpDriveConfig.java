@@ -392,6 +392,8 @@ public class WarpDriveConfig {
 	public static double TRANSPORTER_LOCKING_SPEED_UPGRADE = 0.25D;
 	public static int TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS = 5 * 20;
 	public static int TRANSPORTER_LOCKING_UPGRADE_MAX_QUANTITY = 2;
+	public static int TRANSPORTER_BEACON_MAX_ENERGY_STORED = 60000;
+	public static int TRANSPORTER_BEACON_ENERGY_PER_TICK = 60000 / (300 * 20);  // 10 EU/t over 5 minutes
 	
 	// Enantiomorphic power reactor
 	public static int ENAN_REACTOR_MAX_ENERGY_STORED = 100000000;

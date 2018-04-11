@@ -192,7 +192,6 @@ tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 
 tile.warpdrive.passive.IridiumBlock.name=Iridium Blok
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Heel geavanceerd machineblok
-tile.warpdrive.passive.TransportBeacon.name=Transport-baken
 
 tile.warpdrive.machines.ChunkLoader.name=Chunk-lader
 tile.warpdrive.machines.Laser.name=Laser
@@ -294,6 +293,7 @@ tile.warpdrive.movement.ShipCore.name=Schip-Kern
 tile.warpdrive.movement.ShipCore.tooltip=Definieert uw schips-middelpunt ten opzichte van ships-bestuurder. Sluit een stroombron aan om de kern op te laden.\nMoet horizontaal naast een Schips-bestuurder worden geplaatst.
 tile.warpdrive.movement.ShipCore.bounding_box.disabled=Bounding box display have been disabled.
 tile.warpdrive.movement.ShipCore.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
+tile.warpdrive.movement.transporter_beacon.name=Transport-baken
 tile.warpdrive.movement.transporter_containment.name=Transporter Containment
 tile.warpdrive.movement.transporter_core.name=Transporter Core
 tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner

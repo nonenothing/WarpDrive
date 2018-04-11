@@ -192,7 +192,6 @@ tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 
 tile.warpdrive.passive.IridiumBlock.name=Блок иридия
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Высокотехнологичный корпус механизма
-tile.warpdrive.passive.TransportBeacon.name=Маяк для транспортера
 
 tile.warpdrive.machines.ChunkLoader.name=Загрузчик чанков
 tile.warpdrive.machines.Laser.name=Лазер
@@ -292,6 +291,7 @@ tile.warpdrive.movement.ShipController.name=Контроллер корабля
 tile.warpdrive.movement.ShipController.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core.
 tile.warpdrive.movement.ShipCore.name=Ядро корабля
 tile.warpdrive.movement.ShipCore.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
+tile.warpdrive.movement.transporter_beacon.name=Маяк для транспортера
 tile.warpdrive.movement.transporter_containment.name=Transporter Containment
 tile.warpdrive.movement.transporter_core.name=Транспортер
 tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner

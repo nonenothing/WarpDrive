@@ -3,7 +3,9 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IItemTransporterBeacon;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.api.computer.ITransporterCore;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.block.forcefield.BlockForceField;
@@ -29,11 +31,14 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -44,7 +49,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -84,7 +88,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	private int tickUpdateParameters = 0;
 	private boolean isConnected = false;
 	private GlobalPosition globalPositionBeacon = null;
-	private int tickBeaconRefresh = 0;
 	private int energyCostForTransfer = 0;
 	private double lockStrengthOptimal = -1.0D;
 	private double lockStrengthSpeed = 0.0D;
@@ -93,8 +96,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	private GlobalPosition globalPositionLocal = null;
 	private GlobalPosition globalPositionRemote = null;
 	private ArrayList<VectorI> vRemoteScanners = null;
-	private ArrayList<MovingEntity> movingEntitiesLocal = null;
-	private ArrayList<MovingEntity> movingEntitiesRemote = null;
+	private HashMap<Integer, MovingEntity> movingEntitiesLocal = new HashMap<>(8);
+	private HashMap<Integer, MovingEntity> movingEntitiesRemote = new HashMap<>(8);
 	private int tickEnergizing = 0;
 	
 	public TileEntityTransporterCore() {
@@ -116,7 +119,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			"getEnergyRequired",
 			"energize"
 		});
-		CC_scripts = Arrays.asList("startup");
+		CC_scripts = Collections.singletonList("startup");
 		
 		setUpgradeMaxCount(EnumComponentType.ENDER_CRYSTAL, WarpDriveConfig.TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY);
 		setUpgradeMaxCount(EnumComponentType.CAPACITIVE_CRYSTAL, WarpDriveConfig.TRANSPORTER_ENERGY_STORED_UPGRADE_MAX_QUANTITY);
@@ -160,6 +163,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			if (energyRequired > 0) {
 				isPowered = energy_consume(energyRequired, false);
 				if (!isPowered) {
+					reasonJammed = "Insufficient energy for transfer";
 					transporterState = EnumTransporterState.IDLE;
 					tickCooldown = Math.max(tickCooldown, WarpDriveConfig.TRANSPORTER_JAMMED_COOLDOWN_TICKS);
 				}
@@ -222,8 +226,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			  || tickEnergizing > 0
 			  || tickCooldown > 0 ) {
 				PacketHandler.sendTransporterEffectPacket(worldObj, globalPositionLocal, globalPositionRemote, lockStrengthActual,
-						movingEntitiesLocal, movingEntitiesRemote,
-						tickEnergizing, tickCooldown, 64);
+				                                          movingEntitiesLocal.values(), movingEntitiesRemote.values(),
+				                                          tickEnergizing, tickCooldown, 64);
 			}
 		}
 		
@@ -255,46 +259,46 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				tickCooldown += WarpDriveConfig.TRANSPORTER_JAMMED_COOLDOWN_TICKS;
 				transporterState = EnumTransporterState.IDLE;
 				
-			} else if ( globalPositionBeacon != null
-			         && !isEnergizeRequested
-			         && lockStrengthActual >= 1.0D ) {// automatic energizing triggered by beacon
-				isEnergizeRequested = true;
-				
-			} else if ( isEnergizeRequested
-			         && tickCooldown == 0 ) {
-				// force parameters validation for next tick
-				tickUpdateParameters = 0;
-				
-				// reset entities to grab
-				movingEntitiesLocal = null;
-				movingEntitiesRemote = null;
-				
-				tickEnergizing = WarpDriveConfig.TRANSPORTER_TRANSFER_WARMUP_TICKS;
-				transporterState = EnumTransporterState.ENERGIZING;
+			} else if (tickCooldown == 0) {
+				if ( globalPositionBeacon != null
+				  && !isEnergizeRequested
+				  && lockStrengthActual >= 0.85D ) {// automatic energizing triggered by beacon
+					isEnergizeRequested = true;
+					
+				} else if (isEnergizeRequested) {
+					// force parameters validation for next tick
+					tickUpdateParameters = 0;
+					
+					// reset entities to grab
+					movingEntitiesLocal.clear();
+					movingEntitiesRemote.clear();
+					
+					tickEnergizing = WarpDriveConfig.TRANSPORTER_TRANSFER_WARMUP_TICKS;
+					transporterState = EnumTransporterState.ENERGIZING;
+				}
 			}
 			break;
 		
 		case ENERGIZING:
 			if (!isLockRequested) {
-				movingEntitiesLocal = null;
-				movingEntitiesRemote = null;
+				movingEntitiesLocal.clear();
+				movingEntitiesRemote.clear();
 				transporterState = EnumTransporterState.IDLE;
 				
 			} else if (!isEnergizeRequested) {
-				movingEntitiesLocal = null;
-				movingEntitiesRemote = null;
+				movingEntitiesLocal.clear();
+				movingEntitiesRemote.clear();
 				transporterState = EnumTransporterState.ACQUIRING;
 				
 			} else if (isJammed) {// (jammed while energizing)
 				tickCooldown += WarpDriveConfig.TRANSPORTER_JAMMED_COOLDOWN_TICKS;
-				movingEntitiesLocal = null;
-				movingEntitiesRemote = null;
+				movingEntitiesLocal.clear();
+				movingEntitiesRemote.clear();
 				transporterState = EnumTransporterState.IDLE;
-			} else if (tickCooldown > 0) {// cooling down
-				break;
+				
+			} else if (tickCooldown <= 0) {// (not cooling down)
+				state_energizing();
 			}
-			
-			state_energizing();
 			break;
 		
 		default:
@@ -326,14 +330,18 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	private void state_energizing() {
 		// get entities
-		updateEntityToTransfer();
-		if ( (movingEntitiesLocal == null || movingEntitiesLocal.isEmpty())
-		  && (movingEntitiesRemote == null || movingEntitiesRemote.isEmpty()) ) {// nothing found
-			movingEntitiesLocal = null;
-			movingEntitiesRemote = null;
+		final int countEntities = updateEntityToTransfer();
+		
+		// post event on first tick
+		if (tickEnergizing == WarpDriveConfig.TRANSPORTER_TRANSFER_WARMUP_TICKS) {
+			sendEvent("transporterEnergizing", countEntities);
+		}
+		
+		// cancel if not entity was found
+		if (countEntities == 0) {
+			// cancel transfer, cooldown, don't loose strength
 			isEnergizeRequested = false;
 			tickCooldown += WarpDriveConfig.TRANSPORTER_TRANSFER_COOLDOWN_TICKS;
-			lockStrengthActual = Math.max(0.0D, lockStrengthActual - WarpDriveConfig.TRANSPORTER_TRANSFER_LOCKING_LOST);
 			transporterState = EnumTransporterState.ACQUIRING;
 			return;
 		}
@@ -345,50 +353,102 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// transfer at final tick
-		energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, vRemoteScanners);
+		if ( vRemoteScanners == null
+		  || vRemoteScanners.isEmpty() ) {
+			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, globalPositionRemote.getVectorI());
+		} else {
+			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, vRemoteScanners);
+		}
 		energizeEntities(lockStrengthActual, movingEntitiesRemote, worldObj, vLocalScanners);
 		
+		// clear entities, cancel transfer, cooldown, loose a bit of strength
+		movingEntitiesLocal.clear();
+		movingEntitiesRemote.clear();
+		isEnergizeRequested = false;
 		tickCooldown += WarpDriveConfig.TRANSPORTER_TRANSFER_COOLDOWN_TICKS;
 		lockStrengthActual = Math.max(0.0D, lockStrengthActual - WarpDriveConfig.TRANSPORTER_TRANSFER_LOCKING_LOST);
+		transporterState = EnumTransporterState.ACQUIRING;
+		
+		// inform beacon provider
+		if (globalPositionBeacon != null) {
+			final World world = globalPositionBeacon.getWorldServerIfLoaded();
+			if (world == null) {
+				WarpDrive.logger.warn("Unable to disable TransporterBeacon %s: world isn't loaded",
+				                      globalPositionBeacon);
+			} else {
+				final TileEntity tileEntity = world.getTileEntity(globalPositionBeacon.x, globalPositionBeacon.y, globalPositionBeacon.z);
+				if (tileEntity instanceof ITransporterBeacon) {
+					((ITransporterBeacon) tileEntity).energizeDone();
+				} else {
+					WarpDrive.logger.warn("Unable to disable TransporterBeacon %s: unsupported tile entity %s",
+					                      globalPositionBeacon, tileEntity);
+				}
+			}
+		}
 	}
 	
-	private static void energizeEntities(final double lockStrength, final ArrayList<MovingEntity> movingEntities, final World world, final ArrayList<VectorI> vScanners) {
-		for (int indexEntity = 0; indexEntity < vScanners.size(); indexEntity++) {
-			final MovingEntity movingEntity = movingEntities.get(indexEntity);
-			final VectorI vScanner = vScanners.get(indexEntity);
-			// check entity has a pod
-			if ( movingEntity == null
-			  || vScanner == null ) {// invalid position
-				continue;
-			}
-			final Entity entity = movingEntity.getEntity();
-			if (entity == null) {// (bad state)
-				WarpDrive.logger.warn("Entity went missing, skipping transportation...");
-				continue;
-			}
-			
-			// check lock strength
-			if ( lockStrength < 1.0D
-			  && world.rand.nextDouble() > lockStrength ) {
-				if (WarpDriveConfig.LOGGING_TRANSPORTER) {
-					WarpDrive.logger.info(String.format("Insufficient lock strength %.3f to transport %s", lockStrength, entity));
-				}
-				applyTeleportationDamages(false, entity, lockStrength);
-				continue;
-			}
-			
-			// teleport
-			final Vector3 v3Target = new Vector3(
-					vScanner.x + 0.5D,
-					vScanner.y + 0.5D,
-					vScanner.z + 0.5D);
-			if (WarpDriveConfig.LOGGING_TRANSPORTER) {
-				WarpDrive.logger.info(String.format("Transporting entity %s to %s",
-				                                    entity, v3Target));
-			}
-			Commons.moveEntity(entity, world, v3Target);
-			applyTeleportationDamages(false, entity, lockStrength);
+	private void energizeEntities(final double lockStrength, final HashMap<Integer, MovingEntity> movingEntities, final World world, final VectorI vPosition) {
+		for (final Entry<Integer, MovingEntity> entryEntity : movingEntities.entrySet()) {
+			final MovingEntity movingEntity = entryEntity.getValue();
+			energizeEntity(lockStrength, movingEntity, world, vPosition);
 		}
+	}
+	private void energizeEntities(final double lockStrength, final HashMap<Integer, MovingEntity> movingEntities, final World world, final ArrayList<VectorI> vScanners) {
+		for (final Entry<Integer, MovingEntity> entryEntity : movingEntities.entrySet()) {
+			final int indexEntity = entryEntity.getKey();
+			final MovingEntity movingEntity = entryEntity.getValue();
+			final VectorI vScanner = vScanners.get(indexEntity);
+			energizeEntity(lockStrength, movingEntity, world, vScanner);
+		}
+	}
+	private void energizeEntity(final double lockStrength, final MovingEntity movingEntity, final World world, final VectorI vPosition) {
+		// check entity is valid
+		if (movingEntity == MovingEntity.INVALID) {
+			return;
+		}
+		if ( movingEntity == null
+		  || vPosition == null ) {// corrupted data
+			WarpDrive.logger.warn(String.format("Invalid entity %s for position %s, skipping transportation...",
+			                                    movingEntity, vPosition));
+			return;
+		}
+		final Entity entity = movingEntity.getEntity();
+		if (entity == null) {// (bad state)
+			WarpDrive.logger.warn("Entity went missing, skipping transportation...");
+			return;
+		}
+		
+		// compute friendly name
+		final String nameEntity = entity.getCommandSenderName();
+		
+		// check lock strength
+		if ( lockStrength < 1.0D
+		  && world.rand.nextDouble() > lockStrength ) {
+			if (WarpDriveConfig.LOGGING_TRANSPORTER) {
+				WarpDrive.logger.info(String.format("Insufficient lock strength %.3f to transport %s",
+				                                    lockStrength, entity));
+			}
+			applyTeleportationDamages(false, entity, lockStrength);
+			
+			// post event on transfer done
+			sendEvent("transporterFailure", nameEntity);
+			return;
+		}
+		
+		// teleport
+		final Vector3 v3Target = new Vector3(
+				vPosition.x + 0.5D,
+				vPosition.y + 0.99D,
+				vPosition.z + 0.5D);
+		if (WarpDriveConfig.LOGGING_TRANSPORTER) {
+			WarpDrive.logger.info(String.format("Transporting entity %s to %s",
+			                                    entity, v3Target));
+		}
+		Commons.moveEntity(entity, world, v3Target);
+		applyTeleportationDamages(false, entity, lockStrength);
+		
+		// post event on transfer done
+		sendEvent("transporterSuccess", nameEntity);
 	}
 	
 	@Override
@@ -497,7 +557,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final int zMin = zCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
 		final int zMax = zCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
 		
-		ArrayList<VectorI> vScanners = new ArrayList<>(16);
+		final ArrayList<VectorI> vScanners = new ArrayList<>(16);
 		for (int x = xMin; x <= xMax; x++) {
 			for (int y = yMin; y <= yMax; y++) {
 				if (y < 0 || y > 254) {
@@ -580,9 +640,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		// check beacon obsolescence
 		if (globalPositionBeacon != null) {
-			tickBeaconRefresh++;
-			if (tickBeaconRefresh > WarpDriveConfig.TRANSPORTER_BEACON_WATCHDOG_TIMEOUT_TICKS) {
+			final WorldServer worldBeacon = globalPositionBeacon.getWorldServerIfLoaded();
+			if (worldBeacon == null) {
 				globalPositionBeacon = null;
+			} else {
+				final TileEntity tileEntity = worldBeacon.getTileEntity(globalPositionBeacon.x, globalPositionBeacon.y, globalPositionBeacon.z);
+				if ( !(tileEntity instanceof ITransporterBeacon)
+				  || !((ITransporterBeacon) tileEntity).isActive() ) {
+					globalPositionBeacon = null;
+				}
 			}
 		}
 		
@@ -621,17 +687,18 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				reasonJammed = "No player by that name";
 			} else {
 				final ItemStack itemStackHeld = entityPlayer.getHeldItem();
-				final Item itemBeacon = Item.getItemFromBlock(WarpDrive.blockTransporterBeacon);
 				if ( itemStackHeld == null
 				  || itemStackHeld.stackSize <= 0
-				  || itemStackHeld.getItem() != itemBeacon ) {
+				  || !(itemStackHeld.getItem() instanceof IItemTransporterBeacon) ) {
 				    reasonJammed = "No transporter beacon in player hand";
-				} else if (itemStackHeld.getItemDamage() != 0) {// @TODO: add toggle for transporter beacon
-					reasonJammed = "Player beacon is offline";
+				} else if (!((IItemTransporterBeacon) itemStackHeld.getItem()).isActive(itemStackHeld)) {
+					reasonJammed = "Player beacon is out of power";
 				} else {
 					globalPositionRemoteNew = new GlobalPosition(entityPlayer);
 				}
 			}
+		} else {
+			reasonJammed = "No remote location defined";
 		}
 		
 		if ( globalPositionRemoteNew == null
@@ -642,7 +709,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				transporterState = EnumTransporterState.ACQUIRING;
 			}
 			isJammed = (globalPositionRemoteNew == null);
-			return;
+			if (isJammed) {
+				return;
+			}
 		}
 		
 		// validate target dimension
@@ -697,9 +766,12 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		// compute focalization bonuses
 		final FocusValues focusValuesLocal  = getFocusValueAtCoordinates(worldObj, globalPositionLocal.getVectorI());
 		final FocusValues focusValuesRemote = getFocusValueAtCoordinates(worldRemote, globalPositionRemote.getVectorI());
-		final double focusBoost = energyFactor 
-		                        * WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR 
-		                        / WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_FACTOR_MAX;
+		final double focusBoost = Commons.interpolate(
+				1.0D,
+				0.0D,
+				WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_FACTOR_MAX,
+				WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR,
+				energyFactor);
 		lockStrengthOptimal = (focusValuesLocal.strength + focusValuesRemote.strength) / 2.0D + focusBoost;
 		lockStrengthSpeed   = (focusValuesLocal.speed + focusValuesRemote.speed) / 2.0D
 		                    / WarpDriveConfig.TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS;
@@ -774,7 +846,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		if ( globalPositionBeacon == null
 		  || !globalPositionBeacon.equals(tileEntity) ) {
-			remoteLocationRequested = new WeakReference<>(tileEntity);
+			globalPositionBeacon = new GlobalPosition(tileEntity);
+			energyFactor = Math.max(4.0D, energyFactor);    // ensure minimum energy factor for beacon transfer
 			isJammed = true;
 			reasonJammed = "Beacon request received";
 			lockStrengthActual = 0;
@@ -783,7 +856,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 		}
 		
-		tickBeaconRefresh = 0;
 		return true;
 	}
 	
@@ -988,47 +1060,46 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 	}
 	
-	private void updateEntityToTransfer() {
+	private int updateEntityToTransfer() {
 		final int countScanners = Math.min(vLocalScanners.size(), vRemoteScanners != null ? vRemoteScanners.size() : vLocalScanners.size());
-		
-		// initiate storage
-		if (movingEntitiesLocal == null) {
-			movingEntitiesLocal = new ArrayList<>(countScanners);
-		}
-		if (movingEntitiesRemote == null) {
-			movingEntitiesRemote = new ArrayList<>(countScanners);
-		}
+		int countEntities = 0;
 		
 		// collect all candidates at local location
-		updateEntitiesOnScanners(worldObj, vLocalScanners, countScanners, movingEntitiesLocal);
+		countEntities += updateEntitiesOnScanners(worldObj, vLocalScanners, countScanners, movingEntitiesLocal);
 		
 		// collect all candidates at remote location
 		final World worldRemote = Commons.getOrCreateWorldServer(globalPositionRemote.dimensionId);
 		if (vRemoteScanners != null) {
-			updateEntitiesOnScanners(worldRemote, vRemoteScanners, countScanners, movingEntitiesRemote);
+			countEntities += updateEntitiesOnScanners(worldRemote, vRemoteScanners, countScanners, movingEntitiesRemote);
 		} else {
-			updateEntitiesInArea(worldRemote, globalPositionRemote, countScanners, movingEntitiesRemote);
+			countEntities += updateEntitiesInArea(worldRemote, globalPositionRemote, countScanners, movingEntitiesRemote);
 		}
+		return countEntities;
 	}
 	
-	private static void updateEntitiesOnScanners(final World world, final ArrayList<VectorI> vScanners, final int countScanners, final ArrayList<MovingEntity> movingEntities) {
+	private static int updateEntitiesOnScanners(final World world, final ArrayList<VectorI> vScanners, final int countScanners, final HashMap<Integer, MovingEntity> movingEntities) {
+		final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
+		                        * WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
+		// remember entities allocated so we don't double grab them
+		final HashSet<Entity> entitiesOnScanners = new HashSet<>(countScanners);
+		int countEntities = 0;
+		
 		// allocate an entity to each scanner
 		for (int index = 0; index < countScanners; index++) {
 			MovingEntity movingEntity = movingEntities.get(index);
-			final Entity entityOnScanner = getCandidateEntityOnScanner(world, vScanners.get(index));
+			// skip marked spots
+			if (movingEntity == MovingEntity.INVALID) {
+				continue;
+			}
 			
 			// validate existing entity
-			if ( movingEntity != MovingEntity.INVALID
-			  && movingEntity != null ) {
+			if (movingEntity != null) {
 				final Entity entity = movingEntity.getEntity();
 				if ( entity == null
-				  || entity.isDead ) {
-					// no longer valid => search a new one, no energy lost
+				  || entity.isDead ) {// no longer valid => search a new one, no energy lost
 					movingEntity = null;
 					
 				} else {
-					final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
-					                        * WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
 					final double distance2 = movingEntity.getDistanceMoved_square();
 					if (distance2 > tolerance2) {// entity moved too much => damage existing one, loose this slot
 						final double strength = Math.sqrt(distance2) / Math.sqrt(tolerance2) / 2.0D;
@@ -1039,35 +1110,48 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 			
 			// grab another entity
-			if ( movingEntity == null
-			  && entityOnScanner != null ) {
-				movingEntity = new MovingEntity(entityOnScanner);
+			if ( movingEntity == null) {
+				final Entity entityOnScanner = getCandidateEntityOnScanner(world, vScanners.get(index), entitiesOnScanners);
+				if (entityOnScanner != null) {
+					movingEntity = new MovingEntity(entityOnScanner);
+					entitiesOnScanners.add(entityOnScanner);
+				}
 			}
 			
 			// save updated entity
-			movingEntities.set(index, movingEntity);
+			if (movingEntity == null) {// no candidate => mark the spot so we don't grab new ones while energizing
+				movingEntities.put(index, MovingEntity.INVALID);
+			} else {
+				movingEntities.put(index, movingEntity);
+				countEntities++;
+			}
 		}
+		
+		return countEntities;
 	}
 	
-	private static void updateEntitiesInArea(final World world, final GlobalPosition globalPosition, final int countScanners, final ArrayList<MovingEntity> movingEntities) {
+	private static int updateEntitiesInArea(final World world, final GlobalPosition globalPosition, final int countScanners, final HashMap<Integer, MovingEntity> movingEntities) {
+		final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
+		                        * WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
 		final LinkedHashSet<Entity> entities = getCandidateEntitiesInArea(world, globalPosition);
+		int countEntities = 0;
 		
 		// allocate an entity to each scanner
 		for (int index = 0; index < countScanners; index++) {
 			MovingEntity movingEntity = movingEntities.get(index);
+			// skip marked spots
+			if (movingEntity == MovingEntity.INVALID) {
+				continue;
+			}
 			
 			// validate existing entity
-			if ( movingEntity != MovingEntity.INVALID
-			  && movingEntity != null ) {
+			if (movingEntity != null) {
 				final Entity entity = movingEntity.getEntity();
 				if ( entity == null
-				  || entity.isDead ) {
-					// no longer valid => search a new one, no energy lost
+				  || entity.isDead ) {// no longer valid => search a new one, no energy lost
 					movingEntity = null;
 					
-				} else {
-					final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
-					                        * WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
+				} else if (entities.contains(entity)) {// still in the list
 					final double distance2 = movingEntity.getDistanceMoved_square();
 					if (distance2 > tolerance2) {// entity moved too much => damage existing one, loose this slot
 						final double strength = Math.sqrt(distance2) / Math.sqrt(tolerance2) / 2.0D;
@@ -1076,24 +1160,35 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 					} else {// still valid => remove it from candidates to avoid double grab
 						entities.remove(entity);
 					}
+				} else {// exited the area or shifted in order => invalidate the spot
+					movingEntity = MovingEntity.INVALID;
 				}
 			}
 			
 			// grab another entity
 			if ( movingEntity == null
 			  && !entities.isEmpty() ) {
-				final Entity entity = entities.iterator().next();
+				Iterator<Entity> entityIterable = entities.iterator();
+				final Entity entity = entityIterable.next();
 				if (entity != null) {
 					movingEntity = new MovingEntity(entity);
+					entityIterable.remove();
 				}
 			}
 			
 			// save updated entity
-			movingEntities.set(index, movingEntity);
+			if (movingEntity == null) {// no candidate => mark the spot so we don't grab new ones while energizing
+				movingEntities.put(index, MovingEntity.INVALID);
+			} else {
+				movingEntities.put(index, movingEntity);
+				countEntities++;
+			}
 		}
+		
+		return countEntities;
 	}
 	
-	private static Entity getCandidateEntityOnScanner(final World world, final VectorI vScanner) {
+	private static Entity getCandidateEntityOnScanner(final World world, final VectorI vScanner, final HashSet<Entity> entitiesOnScanners) {
 		final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(
 				vScanner.x - 0.05D,
 				vScanner.y - 1.00D,
@@ -1124,6 +1219,11 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 					WarpDrive.logger.info(String.format("Entity is not valid for transportation (id %s) %s",
 					entityId, entity));
 				}
+				continue;
+			}
+			
+			// skip already attached entities
+			if (entitiesOnScanners.contains(entity)) {
 				continue;
 			}
 			
@@ -1312,7 +1412,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public Object[] state() {
 		final int energy = energy_getEnergyStored();
 		final String status = getStatusHeaderInPureText();
-		return new Object[] { status, isJammed ? reasonJammed : transporterState.getName(), energy, lockStrengthActual };
+		final String state = isJammed ? reasonJammed : tickCooldown > 0 ? String.format("Cooling down %d s", Math.round(tickCooldown / 20)) : transporterState.getName();
+		return new Object[] { status, state, energy, lockStrengthActual };
 	}
 	
 	@Override
@@ -1347,7 +1448,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				}
 			} else {// new player name
 				final String playerNameNew = (String) arguments[0];
-				if (!playerNameNew.equals(remoteLocationRequested)) {
+				if ( playerNameNew != null
+				  && !playerNameNew.equals(remoteLocationRequested) ) {
 					remoteLocationRequested = playerNameNew;
 					tickUpdateParameters = 0;
 				}

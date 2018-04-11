@@ -192,7 +192,6 @@ tile.warpdrive.decoration.bedrock_glass.name=Vitre de bedrock
 
 tile.warpdrive.passive.IridiumBlock.name=Bloc d'iridium
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Bloc de machine hyper avancé
-tile.warpdrive.passive.TransportBeacon.name=Balise de transport
 
 tile.warpdrive.machines.ChunkLoader.name=Chargeur de chunk
 tile.warpdrive.machines.Laser.name=Laser
@@ -292,6 +291,7 @@ tile.warpdrive.movement.ShipController.name=Controlleur de vaisseau
 tile.warpdrive.movement.ShipController.tooltip=Défini l'avant du vaisseau par rapport au coeur. Attache un ordinateur pour ouvrir l'interface utilisateur.\nDoit être placé horizontalement directement à coté du Coeur de vaisseau.
 tile.warpdrive.movement.ShipCore.name=Coeur de vaisseau
 tile.warpdrive.movement.ShipCore.tooltip=Défini le centre du vaisseau par rapport au controlleur. Connecte une source d'énergie pour charger le coeur\nDoit être placé horizontalement directement à coté du Controlleur de vaisseau.
+tile.warpdrive.movement.transporter_beacon.name=Balise de transporteur
 tile.warpdrive.movement.transporter_containment.name=Confinement de transporteur
 tile.warpdrive.movement.transporter_core.name=Cœur de transporteur
 tile.warpdrive.movement.transporter_scanner.name=Scanneur de transporteur

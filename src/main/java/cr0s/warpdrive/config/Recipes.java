@@ -241,11 +241,11 @@ public class Recipes {
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
 		
-		// Transport Beacon
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransportBeacon), false, " e ", "ldl", " s ",
+		// Transporter Beacon
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterBeacon), false, " e ", " m ", "sds",
 				'e', Items.ender_pearl,
-				'l', "dyeBlue",
-				'd', Items.diamond,
+				'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL),
+				'm', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
 				's', Items.stick));
 		
 		// Chunk Loader
@@ -1268,6 +1268,13 @@ public class Recipes {
 				'm', itemStackMachineCasings[0],
 				'a', Items.diamond_axe,
 				'g', "paneGlassColorless"));
+		
+		// Transporter Beacon is 1 Ender pearl, 1 Memory crystal, 1 Diamond crystal, 2 sticks
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterBeacon), false, " e ", " m ", "sds",
+				'e', Items.ender_pearl,
+				'd', ItemComponent.getItemStack(EnumComponentType.DIAMOND_CRYSTAL),
+				'm', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL),
+				's', Items.stick));
 		
 		// Transporter containment is 1 HV Machine casing, 2 Ender crystal, gives 2
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterContainment, 2), false, " e ", " m ", " e ",

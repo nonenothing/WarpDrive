@@ -1,8 +1,9 @@
 package cr0s.warpdrive.api.computer;
 
 import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 
-public interface ITransporterCore extends IEnergy, IBeamFrequency {
+public interface ITransporterCore extends IEnergy, IBeamFrequency, IStarMapRegistryTileEntity {
 	
 	Object[] transporterName(final Object[] arguments);
 	

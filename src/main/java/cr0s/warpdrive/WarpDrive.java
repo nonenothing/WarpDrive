@@ -68,23 +68,25 @@ import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.block.hull.ItemBlockHull;
 import cr0s.warpdrive.block.hull.ItemBlockHullSlab;
+import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.movement.BlockLift;
 import cr0s.warpdrive.block.movement.BlockShipController;
 import cr0s.warpdrive.block.movement.BlockShipCore;
-import cr0s.warpdrive.block.movement.BlockTransporterCore;
+import cr0s.warpdrive.block.movement.BlockTransporterBeacon;
 import cr0s.warpdrive.block.movement.BlockTransporterContainment;
+import cr0s.warpdrive.block.movement.BlockTransporterCore;
 import cr0s.warpdrive.block.movement.BlockTransporterScanner;
+import cr0s.warpdrive.block.movement.ItemBlockTransporterBeacon;
 import cr0s.warpdrive.block.movement.TileEntityLift;
 import cr0s.warpdrive.block.movement.TileEntityShipController;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
+import cr0s.warpdrive.block.movement.TileEntityTransporterBeacon;
 import cr0s.warpdrive.block.movement.TileEntityTransporterCore;
-import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.passive.BlockBedrockGlass;
 import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.block.passive.BlockGas;
 import cr0s.warpdrive.block.passive.BlockHighlyAdvancedMachine;
 import cr0s.warpdrive.block.passive.BlockIridium;
-import cr0s.warpdrive.block.passive.BlockTransportBeacon;
 import cr0s.warpdrive.block.passive.ItemBlockDecorative;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.BlockWeaponController;
@@ -208,6 +210,7 @@ public class WarpDrive {
 	public static Block blockShipScanner;
 	public static Block blockCloakingCore;
 	public static Block blockCloakingCoil;
+	public static Block blockTransporterBeacon;
 	public static Block blockTransporterCore;
 	public static Block blockTransporterContainment;
 	public static Block blockTransporterScanner;
@@ -223,7 +226,6 @@ public class WarpDrive {
 	public static Block blockGas;
 	public static Block blockIridium;
 	public static Block blockHighlyAdvancedMachine;
-	public static Block blockTransportBeacon;
 	public static Block blockChunkLoader;
 	public static Block[] blockForceFields;
 	public static Block[] blockForceFieldProjectors;
@@ -468,6 +470,12 @@ public class WarpDrive {
 		
 		GameRegistry.registerBlock(blockCloakingCoil, ItemBlockAbstractBase.class, "blockCloakingCoil");
 		
+		// TRANSPORTER BEACON
+		blockTransporterBeacon = new BlockTransporterBeacon();
+		
+		GameRegistry.registerBlock(blockTransporterBeacon, ItemBlockTransporterBeacon.class, "blockTransporterBeacon");
+		GameRegistry.registerTileEntity(TileEntityTransporterBeacon.class, MODID + ":blockTransporterBeacon");
+		
 		// TRANSPORTER CORE
 		blockTransporterCore = new BlockTransporterCore();
 		
@@ -491,11 +499,6 @@ public class WarpDrive {
 			GameRegistry.registerBlock(blockIC2reactorLaserMonitor, ItemBlockAbstractBase.class, "blockIC2reactorLaserMonitor");
 			GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, MODID + ":blockIC2reactorLaserMonitor");
 		}
-		
-		// TRANSPORT BEACON
-		blockTransportBeacon = new BlockTransportBeacon();
-		
-		GameRegistry.registerBlock(blockTransportBeacon, ItemBlockAbstractBase.class, "blockTransportBeacon");
 		
 		// POWER REACTOR, LASER, STORE
 		blockEnanReactorCore = new BlockEnanReactorCore();
@@ -861,7 +864,8 @@ public class WarpDrive {
 						mapping.remap(Item.getItemFromBlock(blockShipScanner));
 						break;
 					case "WarpDrive:transportBeacon":
-						mapping.remap(Item.getItemFromBlock(blockTransportBeacon));
+					case "WarpDrive:blockTransportBeacon":
+						mapping.remap(Item.getItemFromBlock(blockTransporterBeacon));
 						break;
 					case "WarpDrive:transporter":
 					case "WarpDrive:blockTransporter":
@@ -956,7 +960,8 @@ public class WarpDrive {
 						mapping.remap(blockShipScanner);
 						break;
 					case "WarpDrive:transportBeacon":
-						mapping.remap(blockTransportBeacon);
+					case "WarpDrive:blockTransportBeacon":
+						mapping.remap(blockTransporterBeacon);
 						break;
 					case "WarpDrive:transporter":
 					case "WarpDrive:blockTransporter":
