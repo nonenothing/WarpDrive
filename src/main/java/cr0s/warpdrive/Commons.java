@@ -132,8 +132,8 @@ public class Commons {
 			// skip redundant information
 			boolean isExisting = false;
 			for (final String lineExisting : list) {
-				if ( lineExisting.contains(split[0])
-				  || split[0].contains(lineExisting) ) {
+				if ( lineExisting.contains(line)
+				  || line.contains(lineExisting) ) {
 					isExisting = true;
 					break;
 				}
