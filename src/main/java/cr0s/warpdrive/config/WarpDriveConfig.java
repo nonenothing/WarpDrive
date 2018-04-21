@@ -203,6 +203,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_RENDERING = false;
 	public static boolean LOGGING_CHUNK_HANDLER = false;
 	public static boolean LOGGING_CHUNK_LOADING = true;
+	public static boolean LOGGING_ENTITY_FX = false;
 	public static boolean LOGGING_CLIENT_SYNCHRONIZATION = false;
 	
 	// Starmap
@@ -687,6 +688,7 @@ public class WarpDriveConfig {
 		LOGGING_RENDERING = config.get("logging", "enable_rendering_logs", LOGGING_RENDERING, "Detailed rendering logs to help debug the mod.").getBoolean(false);
 		LOGGING_CHUNK_HANDLER = config.get("logging", "enable_chunk_handler_logs", LOGGING_CHUNK_HANDLER, "Detailed chunk data logs to help debug the mod.").getBoolean(false);
 		LOGGING_CHUNK_LOADING = config.get("logging", "enable_chunk_loading_logs", LOGGING_CHUNK_LOADING, "Chunk loading logs, enable it to report chunk loaders updates").getBoolean(false);
+		LOGGING_ENTITY_FX = config.get("logging", "enable_entity_fx_logs", LOGGING_ENTITY_FX, "EntityFX logs, enable it to dump entityFX registry updates").getBoolean(false);
 		
 		// Starmap registry
 		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,

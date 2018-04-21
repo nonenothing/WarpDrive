@@ -12,6 +12,9 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 public class BlockTransporterScanner extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
@@ -69,7 +72,9 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 		return iconBuffer[metadata == 0 ? 2 : 3];
 	}
 	
-	public boolean isValid(final World worldObj, final VectorI vScanner) {
+	// return null or empty collection if it's invalid
+	public Collection<VectorI> getValidContainment(final World worldObj, final VectorI vScanner) {
+		final ArrayList<VectorI> vContainments = new ArrayList<>(8);
 		boolean isScannerPosition = true;
 		for (int x = vScanner.x - 1; x <= vScanner.x + 1; x++)  {
 			for (int z = vScanner.z - 1; z <= vScanner.z + 1; z++) {
@@ -77,19 +82,24 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 				final Block blockBase = worldObj.getBlock(x, vScanner.y, z);
 				if ( !(blockBase instanceof BlockTransporterContainment)
 				  && (!isScannerPosition || !(blockBase instanceof BlockTransporterScanner)) ) {
-					return false;
+					return null;
 				}
 				isScannerPosition = !isScannerPosition;
 				
 				// check 2 above blocks are air
 				if (!worldObj.isAirBlock(x, vScanner.y + 1, z)) {
-					return false;
+					return null;
 				}
 				if (!worldObj.isAirBlock(x, vScanner.y + 2, z)) {
-					return false;
+					return null;
+				}
+				
+				// save containment position
+				if (blockBase instanceof BlockTransporterContainment) {
+					vContainments.add(new VectorI(x, vScanner.y, z));
 				}
 			}
 		}
-		return true;
+		return vContainments;
 	}
 }

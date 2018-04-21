@@ -69,6 +69,11 @@ public class EntityFXDot extends EntityFX {
 	}
 	
 	@Override
+	public int getBrightnessForRender(float p_70070_1_) {
+		return 0xF00000;
+	}
+	
+	@Override
 	public void renderParticle(final Tessellator tessellator, final float partialTick,
 	                           final float cosYaw, final float cosPitch, final float sinYaw, final float sinSinPitch, final float cosSinPitch) {
 		double minU = particleTextureIndexX / 16.0F;

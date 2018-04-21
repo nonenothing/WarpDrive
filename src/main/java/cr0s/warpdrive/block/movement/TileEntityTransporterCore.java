@@ -32,6 +32,7 @@ import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,7 +43,6 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -53,6 +53,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
@@ -82,6 +85,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	private EnumTransporterState transporterState = EnumTransporterState.DISABLED;
 	
 	// computed properties
+	private ArrayList<VectorI> vLocalContainments = null;
 	private AxisAlignedBB aabbLocalScanners = null;
 	private boolean isBlockUpdated = false;
 	private int tickUpdateRegistry = 0;
@@ -558,6 +562,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final int zMax = zCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
 		
 		final ArrayList<VectorI> vScanners = new ArrayList<>(16);
+		final HashSet<VectorI> vContainments = new HashSet<>(64);
 		for (int x = xMin; x <= xMax; x++) {
 			for (int y = yMin; y <= yMax; y++) {
 				if (y < 0 || y > 254) {
@@ -570,29 +575,31 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 						
 						// only accept valid ones, spawn particles on others
 						final VectorI vScanner = new VectorI(x, y, z);
-						final boolean isValid = ((BlockTransporterScanner) block).isValid(worldObj, vScanner);
-						if (isValid) {
-							vScanners.add(vScanner);
-							worldObj.setBlockMetadataWithNotify(x, y, z, 1, 2);
-						} else {
+						final Collection<VectorI> vValidContainments = ((BlockTransporterScanner) block).getValidContainment(worldObj, vScanner);
+						if (vValidContainments == null || vValidContainments.isEmpty()) {
 							worldObj.setBlockMetadataWithNotify(x, y, z, 0, 2);
 							PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(vScanner.x + 0.5D, vScanner.y + 1.5D, vScanner.z + 0.5D),
 									new Vector3(0.0D, 0.0D, 0.0D),
 									1.0F, 1.0F, 1.0F,
 									1.0F, 1.0F, 1.0F,
 									32);
+						} else {
+							vScanners.add(vScanner);
+							vContainments.addAll(vValidContainments);
+							worldObj.setBlockMetadataWithNotify(x, y, z, 1, 2);
 						}
 					}
 				}
 			}
 		}
-		setLocalScanners(vScanners);
+		setLocalScanners(vScanners, vContainments);
 	}
 	
-	private void setLocalScanners(final ArrayList<VectorI> vScanners) {
+	private void setLocalScanners(final ArrayList<VectorI> vScanners, final Collection<VectorI> vContainments) {
 		// no scanner defined => force null
 		if (vScanners == null || vScanners.isEmpty()) {
 			vLocalScanners = null;
+			vLocalContainments = null;
 			aabbLocalScanners = null;
 			return;
 		}
@@ -611,9 +618,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		// save values
 		vLocalScanners = vScanners;
+		vLocalContainments = new ArrayList<>(vContainments);
 		aabbLocalScanners = AxisAlignedBB.getBoundingBox(
 				vMin.x, vMin.y, vMin.z,
 				vMax.x + 1.0D, vMax.y + 1.0D, vMax.z + 1.0D);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Collection<VectorI> getContainments() {
+		return vLocalContainments;
 	}
 	
 	private static class FocusValues {
@@ -1207,10 +1220,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			
 			final Entity entity = (Entity) object;
 			
-			// skip particle effects
-			if (entity instanceof EntityFX) {
-				continue;
-			}
+			// (particle effects are client side only, no need to filter them out)
 			
 			// skip blacklisted ids
 			final String entityId = EntityList.getEntityString(entity);
@@ -1262,10 +1272,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			
 			final Entity entity = (Entity) object;
 			
-			// skip particle effects
-			if (entity instanceof EntityFX) {
-				continue;
-			}
+			// (particle effects are client side only, no need to filter them out)
 			
 			// skip blacklisted ids
 			final String entityId = EntityList.getEntityString(entity);
@@ -1304,13 +1311,21 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			tagCompound.setLong("uuidLeast", uuid.getLeastSignificantBits());
 		}
 		
-		final NBTTagList tagListScanners = new NBTTagList();
-		if (vLocalScanners != null) {
-			for (VectorI vScanner : vLocalScanners) {
+		if ( vLocalScanners != null
+		  && vLocalContainments != null ) {
+			final NBTTagList tagListScanners = new NBTTagList();
+			for (final VectorI vScanner : vLocalScanners) {
 				final NBTTagCompound tagCompoundScanner = vScanner.writeToNBT(new NBTTagCompound());
 				tagListScanners.appendTag(tagCompoundScanner);
 			}
 			tagCompound.setTag("scanners", tagListScanners);
+			
+			final NBTTagList tagListContainments = new NBTTagList();
+			for (final VectorI vContainment : vLocalContainments) {
+				final NBTTagCompound tagCompoundContainment = vContainment.writeToNBT(new NBTTagCompound());
+				tagListContainments.appendTag(tagCompoundContainment);
+			}
+			tagCompound.setTag("containments", tagListContainments);
 		}
 		
 		tagCompound.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, beamFrequency);
@@ -1346,14 +1361,22 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			uuid = UUID.randomUUID();
 		}
 		
-		if (tagCompound.hasKey("scanners", Constants.NBT.TAG_LIST)) {
+		if ( tagCompound.hasKey("scanners", Constants.NBT.TAG_LIST)
+		  && tagCompound.hasKey("containments", Constants.NBT.TAG_LIST)) {
 			final NBTTagList tagListScanners = (NBTTagList) tagCompound.getTag("scanners");
 			final ArrayList<VectorI> vScanners = new ArrayList<>(tagListScanners.tagCount());
 			for (int indexScanner = 0; indexScanner < tagListScanners.tagCount(); indexScanner++) {
 				final VectorI vScanner = VectorI.createFromNBT(tagListScanners.getCompoundTagAt(indexScanner));
 				vScanners.add(vScanner);
 			}
-			setLocalScanners(vScanners);
+			
+			final NBTTagList tagListContainments = (NBTTagList) tagCompound.getTag("containments");
+			final ArrayList<VectorI> vContainments = new ArrayList<>(tagListContainments.tagCount());
+			for (int indexContainment = 0; indexContainment < tagListContainments.tagCount(); indexContainment++) {
+				final VectorI vContainment = VectorI.createFromNBT(tagListContainments.getCompoundTagAt(indexContainment));
+				vContainments.add(vContainment);
+			}
+			setLocalScanners(vScanners, vContainments);
 		}
 		
 		beamFrequency = tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
@@ -1388,6 +1411,20 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		} catch (IllegalArgumentException exception) {
 			transporterState = EnumTransporterState.DISABLED;
 		}
+	}
+	
+	@Override
+	public Packet getDescriptionPacket() {
+		final NBTTagCompound tagCompound = new NBTTagCompound();
+		writeToNBT(tagCompound);
+		
+		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
+	}
+	
+	@Override
+	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.func_148857_g();
+		readFromNBT(tagCompound);
 	}
 	
 	// Common OC/CC methods

@@ -2,13 +2,16 @@ package cr0s.warpdrive.network;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.movement.TileEntityTransporterCore;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EntityFXRegistry;
 import cr0s.warpdrive.data.GlobalPosition;
 import cr0s.warpdrive.data.MovingEntity;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
-import cr0s.warpdrive.render.EntityFXBeam;
+import cr0s.warpdrive.render.AbstractEntityFX;
 import cr0s.warpdrive.render.EntityFXDot;
+import cr0s.warpdrive.render.EntityFXEnergizing;
 import io.netty.buffer.ByteBuf;
 
 import net.minecraft.block.Block;
@@ -16,6 +19,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
@@ -143,6 +147,10 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			spawnParticlesInArea(world, globalPosition.getVectorI(), false,
 					0.4F, 0.7F, 0.9F,
 					0.10F, 0.15F, 0.10F);
+		} else {
+			spawnParticlesInTransporterRoom(world, globalPosition.getVectorI(), false,
+			                                0.4F, 0.7F, 0.9F,
+			                                0.10F, 0.15F, 0.10F);
 		}
 		
 		// get actual entity
@@ -150,23 +158,29 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			final Entity entity = world.getEntityByID(idEntities.get(indexEntity));
 			
 			// energizing
-			// @TODO cylinder fade in + shower
 			if (entity != null) {
-				final Vector3 v3Position = v3EntityPositions.get(indexEntity).translate(ForgeDirection.DOWN, entity.getEyeHeight());
-				final Vector3 v3Target = v3Position.clone().translate(ForgeDirection.UP, entity.height);
-				final EntityFX effect = new EntityFXBeam(world, v3Position, v3Target,
-				                          0.6F + 0.1F * world.rand.nextFloat(),
-				                          0.6F + 0.15F * world.rand.nextFloat(),
-				                          0.8F + 0.10F * world.rand.nextFloat(),
-				                          20, 0);
-				FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
+				// check existing particle at position
+				final Vector3 v3Position = v3EntityPositions.get(indexEntity).clone().translate(ForgeDirection.DOWN, entity.getEyeHeight());
+				AbstractEntityFX effect = EntityFXRegistry.get(world, v3Position, 0.5D);
+				if (effect == null) {
+					// compute height with a margin
+					final Vector3 v3Target = v3Position.clone().translate(ForgeDirection.UP, entity.height + 0.5F);
+					// add particle to world
+					effect = new EntityFXEnergizing(world, v3Position, v3Target,
+					                                0.35F + 0.05F * world.rand.nextFloat(),
+					                                0.50F + 0.15F * world.rand.nextFloat(),
+					                                0.85F + 0.10F * world.rand.nextFloat(),
+					                                20, entity.width);
+					FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
+					EntityFXRegistry.add(effect);
+				} else {
+					effect.refresh();
+				}
 			}
 		}
-		
-		// cooldown
-		// @TODO cylinder fade out
 	}
 	
+	@SideOnly(Side.CLIENT)
 	private void spawnParticlesInArea(final World world, final VectorI vCenter, final boolean isFalling,
 	                                  final float redBase, final float greenBase, final float blueBase,
 	                                  final float redFactor, final float greenFactor, final float blueFactor) {
@@ -182,6 +196,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 		
 		final Vector3 v3Motion = new Vector3(0.0D, 0.0D, 0.0D);
 		final Vector3 v3Acceleration = new Vector3(0.0D, isFalling ? -0.001D : 0.001D, 0.0D);
+		final double yRange = aabb.maxY - aabb.minY;
 		
 		// adjust quantity to lockStrength
 		final int quantityInArea = (int) Commons.clamp(1, 5, Math.round(Commons.interpolate(0.2D, 1.0D, 0.8D, 5.0D, lockStrength)));
@@ -189,9 +204,9 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			// start preferably from top or bottom side
 			double y;
 			if (isFalling) {
-				y = aabb.maxY - Math.pow(world.rand.nextDouble(), 3.0D) * (aabb.maxY - aabb.minY);
+				y = aabb.maxY - Math.pow(world.rand.nextDouble(), 3.0D) * yRange;
 			} else {
-				y = aabb.minY + Math.pow(world.rand.nextDouble(), 3.0D) * (aabb.maxY - aabb.minY);
+				y = aabb.minY + Math.pow(world.rand.nextDouble(), 3.0D) * yRange;
 			}
 			final Vector3 v3Position = new Vector3(
 					aabb.minX + world.rand.nextDouble() * (aabb.maxX - aabb.minX),
@@ -211,6 +226,57 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 					v3Position.y = y;
 				}
 			}
+			
+			// add particle
+			final EntityFX effect = new EntityFXDot(world, v3Position,
+			                                        v3Motion, v3Acceleration, 0.98D,
+			                                        30);
+			effect.setRBGColorF(redBase   + redFactor   * world.rand.nextFloat(),
+			                    greenBase + greenFactor * world.rand.nextFloat(),
+			                    blueBase  + blueFactor  * world.rand.nextFloat() );
+			effect.setAlphaF(1.0F);
+			FMLClientHandler.instance().getClient().effectRenderer.addEffect(effect);
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	private void spawnParticlesInTransporterRoom(final World world, final VectorI vTransporter, final boolean isFalling,
+	                                             final float redBase, final float greenBase, final float blueBase,
+	                                             final float redFactor, final float greenFactor, final float blueFactor) {
+		
+		final TileEntity tileEntity = vTransporter.getTileEntity(world);
+		if (!(tileEntity instanceof TileEntityTransporterCore)) {
+			WarpDrive.logger.error(String.format("Missing transporter core at %s: %s",
+			                                     vTransporter, tileEntity));
+			return;
+		}
+		
+		final Vector3 v3Motion = new Vector3(0.0D, 0.0D, 0.0D);
+		final Vector3 v3Acceleration = new Vector3(0.0D, isFalling ? -0.001D : 0.001D, 0.0D);
+		final double yRange = 2.5D;
+		
+		final Collection<VectorI> vContainments = ((TileEntityTransporterCore) tileEntity).getContainments();
+		if (vContainments == null) {
+			WarpDrive.logger.error(String.format("No containments blocks identified for transporter core at %s",
+			                                     vTransporter));
+			return;
+		}
+		for (final VectorI vContainment : vContainments) {
+			if (world.rand.nextFloat() < 0.85F) {
+				continue;
+			}
+			
+			// start preferably from top or bottom side
+			double y;
+			if (isFalling) {
+				y = vContainment.y + 0.5D - Math.pow(world.rand.nextDouble(), 3.0D) * yRange;
+			} else {
+				y = vContainment.y + 0.5D + Math.pow(world.rand.nextDouble(), 3.0D) * yRange;
+			}
+			final Vector3 v3Position = new Vector3(
+					vContainment.x + world.rand.nextDouble(),
+					y,
+					vContainment.z + world.rand.nextDouble());
 			
 			// add particle
 			final EntityFX effect = new EntityFXDot(world, v3Position,
