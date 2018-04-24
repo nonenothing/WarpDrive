@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -262,6 +264,36 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		return methodsArray;
 	}
 	
+	protected VectorI computer_getVectorI(final VectorI vDefault, final Object[] arguments) {
+		try {
+			if (arguments.length == 3) {
+				final int x = Commons.toInt(arguments[0]);
+				final int y = Commons.toInt(arguments[1]);
+				final int z = Commons.toInt(arguments[2]);
+				return new VectorI(x, y, z);
+			}
+		} catch (NumberFormatException e) {
+			// ignore
+		}
+		return vDefault;
+	}
+	
+	protected UUID computer_getUUID(final UUID uuidDefault, final Object[] arguments) {
+		try {
+			if (arguments.length == 1) {
+				if (arguments[0] instanceof UUID) {
+					return (UUID) arguments[0];
+				}
+				if (arguments[0] instanceof String) {
+					return UUID.fromString((String) arguments[0]);
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// ignore
+		}
+		return uuidDefault;
+	}
+	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
@@ -308,10 +340,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public void detach(IComputerAccess computer) {
-		int id = computer.getID();
-		if (connectedComputers.containsKey(id)) {
-			connectedComputers.remove(id);
-		}
+		final int id = computer.getID();
+		connectedComputers.remove(id);
 	}
 	
 	@Override

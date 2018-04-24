@@ -1465,14 +1465,14 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public Object[] remoteLocation(final Object[] arguments) {
 		if (arguments.length == 3) {
 			if (remoteLocationRequested instanceof VectorI) {// already using direct coordinates
-				final VectorI vNew = getVectorI((VectorI) remoteLocationRequested, arguments);
+				final VectorI vNew = computer_getVectorI((VectorI) remoteLocationRequested, arguments);
 				if (!vNew.equals(remoteLocationRequested)) {
 					remoteLocationRequested = vNew;
 					tickUpdateParameters = 0;
 				}
 				
 			} else {
-				final VectorI vNew = getVectorI(null, arguments);
+				final VectorI vNew = computer_getVectorI(null, arguments);
 				if (vNew != null) {
 					remoteLocationRequested = vNew;
 					tickUpdateParameters = 0;
@@ -1480,7 +1480,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 		} else if (arguments.length == 1) {
 			// is it a UUID?
-			final UUID uuidNew = getUUID(null, arguments);
+			final UUID uuidNew = computer_getUUID(null, arguments);
 			if (uuidNew != null) {
 				if (remoteLocationRequested instanceof UUID) {
 					if (!uuidNew.equals(remoteLocationRequested)) {// replacing existing UUID
@@ -1507,36 +1507,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			return new Integer[] { vRemoteLocation.x, vRemoteLocation.y, vRemoteLocation.z };
 		}
 		return new Object[] { remoteLocationRequested == null ? null : remoteLocationRequested.toString() };
-	}
-	
-	private VectorI getVectorI(final VectorI vDefault, final Object[] arguments) {
-		try {
-			if (arguments.length == 3) {
-				final int x = Commons.toInt(arguments[0]);
-				final int y = Commons.toInt(arguments[1]);
-				final int z = Commons.toInt(arguments[2]);
-				return new VectorI(x, y, z);
-			}
-		} catch (NumberFormatException e) {
-			// ignore
-		}
-		return vDefault;
-	}
-	
-	private UUID getUUID(final UUID uuidDefault, final Object[] arguments) {
-		try {
-			if (arguments.length == 1) {
-				if (arguments[0] instanceof UUID) {
-					return (UUID) arguments[0];
-				}
-				if (arguments[0] instanceof String) {
-					return UUID.fromString((String) arguments[0]);
-				}
-			}
-		} catch (IllegalArgumentException e) {
-			// ignore
-		}
-		return uuidDefault;
 	}
 	
 	@Override

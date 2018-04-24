@@ -100,7 +100,7 @@ public class RenderBlockShipScanner implements ISimpleBlockRenderingHandler {
 		// check vertical offset
 		final Block blockAbove = blockAccess.getBlock(x, y + 1, z);
 		final boolean isHidden = !blockAbove.isAir(blockAccess, x, y + 1, z)
-		                         && blockAbove.isBlockSolid(blockAccess, x, y + 1, z, blockAccess.getBlockMetadata(x, y + 1, z));
+		                      && blockAbove.isBlockSolid(blockAccess, x, y + 1, z, blockAccess.getBlockMetadata(x, y + 1, z));
 		
 		// render borders
 		final Tessellator tessellator = Tessellator.instance;

@@ -103,12 +103,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(final ForgeDirection from) {
 		return modeSide[from.ordinal()] == MODE_INPUT;
 	}
 	
 	@Override
-	public boolean energy_canOutput(ForgeDirection to) {
+	public boolean energy_canOutput(final ForgeDirection to) {
 		return modeSide[to.ordinal()] == MODE_OUTPUT;
 	}
 	

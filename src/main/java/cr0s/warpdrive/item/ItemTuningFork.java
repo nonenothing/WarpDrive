@@ -147,13 +147,13 @@ public class ItemTuningFork extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
+	public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
+		final Block block = world.getBlock(x, y, z);
 		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip = "";
