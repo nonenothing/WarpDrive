@@ -7,10 +7,12 @@ import java.util.HashMap;
 
 public enum EnumTransporterBeaconState implements IStringSerializable {
 	
-	DISABLED      (0, "disabled"),    // disabled
-	IDLE          (1, "idle"),        // enabling, waiting for lock
-	ACQUIRING     (2, "acquiring"),   // acquiring lock
-	ENERGIZING    (3, "energizing");   // transferring entities
+	// item form
+	PACKED_INACTIVE   (0, "packed_inactive"),
+	PACKED_ACTIVE     (1, "packed_active"),
+	// block form
+	DEPLOYED_INACTIVE (2, "deployed_inactive"),
+	DEPLOYED_ACTIVE   (3, "deployed_active");
 	
 	private final int metadata;
 	private final String unlocalizedName;

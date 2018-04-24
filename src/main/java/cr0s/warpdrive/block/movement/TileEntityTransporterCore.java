@@ -226,8 +226,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 						1.0F, 1.0F, 1.0F,
 						32);
 			}
-			if ( lockStrengthActual > 0.0F
-			  || tickEnergizing > 0
+			if ( lockStrengthActual > 0.01F
+			  || (transporterState == EnumTransporterState.ENERGIZING && tickEnergizing > 0)
 			  || tickCooldown > 0 ) {
 				PacketHandler.sendTransporterEffectPacket(worldObj, globalPositionLocal, globalPositionRemote, lockStrengthActual,
 				                                          movingEntitiesLocal.values(), movingEntitiesRemote.values(),
@@ -656,11 +656,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			final WorldServer worldBeacon = globalPositionBeacon.getWorldServerIfLoaded();
 			if (worldBeacon == null) {
 				globalPositionBeacon = null;
+				isLockRequested = false;
+				isEnergizeRequested = false;
 			} else {
 				final TileEntity tileEntity = worldBeacon.getTileEntity(globalPositionBeacon.x, globalPositionBeacon.y, globalPositionBeacon.z);
 				if ( !(tileEntity instanceof ITransporterBeacon)
 				  || !((ITransporterBeacon) tileEntity).isActive() ) {
 					globalPositionBeacon = null;
+					isLockRequested = false;
+					isEnergizeRequested = false;
 				}
 			}
 		}
@@ -1431,9 +1435,13 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public String[] transporterName(final Object[] arguments) {
 		if (arguments.length == 1) {
-			transporterName = arguments[0].toString();
+			final String transporterNameNew = arguments[0].toString();
+			if (transporterName.equals(transporterNameNew)) {
+				transporterName = transporterNameNew;
+				uuid = UUID.randomUUID();
+			}
 		}
-		return new String[] { transporterName };
+		return new String[] { transporterName, uuid == null ? null : uuid.toString() };
 	}
 	
 	@Override

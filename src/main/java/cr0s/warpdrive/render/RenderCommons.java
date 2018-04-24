@@ -294,6 +294,7 @@ public class RenderCommons {
 		return renderer.renderStandardBlock(blockDefault, x, y, z);
 	}
 	
+	// @FIXME: below method is unfinished, missing box and crossedSquares, also, it changes the OpenGL context
 	public static void renderInventoryBlock(final Block block, final int metadata, final RenderBlocks renderer) {
 		final Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();

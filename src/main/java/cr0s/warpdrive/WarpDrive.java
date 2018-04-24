@@ -142,6 +142,7 @@ import cr0s.warpdrive.render.RenderBlockShipScanner;
 import cr0s.warpdrive.render.RenderBlockForceField;
 import cr0s.warpdrive.render.RenderBlockOmnipanel;
 import cr0s.warpdrive.render.RenderBlockStandard;
+import cr0s.warpdrive.render.RenderBlockTransporterBeacon;
 import cr0s.warpdrive.render.RenderOverlayAir;
 import cr0s.warpdrive.render.RenderOverlayCamera;
 import cr0s.warpdrive.render.RenderOverlayLocation;
@@ -319,6 +320,9 @@ public class WarpDrive {
 			
 			RenderBlockShipScanner.renderId = RenderingRegistry.getNextAvailableRenderId();
 			RenderingRegistry.registerBlockHandler(RenderBlockShipScanner.instance);
+			
+			RenderBlockTransporterBeacon.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockTransporterBeacon.instance);
 		}
 	}
 	

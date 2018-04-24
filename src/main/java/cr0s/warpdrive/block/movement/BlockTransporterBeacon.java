@@ -2,9 +2,9 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.WarpDrive;
 
-import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
+import cr0s.warpdrive.data.EnumTransporterBeaconState;
+import cr0s.warpdrive.render.RenderBlockTransporterBeacon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -41,31 +41,16 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[4];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-item");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-off");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-deploying");
-		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-deployed");
+		iconBuffer[EnumTransporterBeaconState.PACKED_INACTIVE  .getMetadata()] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-packed_inactive");
+		iconBuffer[EnumTransporterBeaconState.PACKED_ACTIVE    .getMetadata()] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-packed_active");
+		iconBuffer[EnumTransporterBeaconState.DEPLOYED_INACTIVE.getMetadata()] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-deployed_inactive");
+		iconBuffer[EnumTransporterBeaconState.DEPLOYED_ACTIVE  .getMetadata()] = iconRegister.registerIcon("warpdrive:movement/transporter_beacon-deployed_active");
 	}
-	
-	/* not used by torch rendering (type 2)
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
-		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
-		if (side == 0 || side == 1) {
-			return iconBuffer[0];
-		}
-		if (metadata >= 0 && metadata < 4) {
-			return iconBuffer[metadata];
-		}
-		return iconBuffer[3];
-	}
-	/**/
 	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public IIcon getIcon(final int side, final int metadata) {
-		return iconBuffer[3];
+		return iconBuffer[metadata & 3];
 	}
 	
 	@Override
@@ -80,7 +65,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	
 	@Override
 	public int getRenderType() {
-		return 2;
+		return RenderBlockTransporterBeacon.renderId;
 	}
 	
 	@Override

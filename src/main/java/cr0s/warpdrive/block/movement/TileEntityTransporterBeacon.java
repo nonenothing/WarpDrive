@@ -6,6 +6,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTransporterBeaconState;
 import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -90,7 +91,11 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		isActive = isActiveNew;
 		
 		// report updated status
-		final int metadataNew = 0; // @TODO block rendering !isDeployed || isLowPower ? 1 : !isConnected ? 0 : 2;
+		final EnumTransporterBeaconState enumTransporterBeaconState = isDeployed
+		                                                              ? (isActive ? EnumTransporterBeaconState.DEPLOYED_ACTIVE : EnumTransporterBeaconState.DEPLOYED_INACTIVE)
+		                                                              : (isActive ? EnumTransporterBeaconState.PACKED_ACTIVE : EnumTransporterBeaconState.PACKED_INACTIVE);
+		final int metadataNew = enumTransporterBeaconState.getMetadata();
+		
 		updateMetadata(metadataNew);
 	}
 	
@@ -197,19 +202,13 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(final ForgeDirection from) {
 		// only from bottom
-		if (from != ForgeDirection.DOWN) {
-			return false;
-		}
-		
-		// only when offline
-		final int metadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		return (metadata == 0);
+		return (from == ForgeDirection.DOWN);
 	}
 	
 	@Override
-	public boolean energy_canOutput(ForgeDirection to) {
+	public boolean energy_canOutput(final ForgeDirection to) {
 		return false;
 	}
 	
