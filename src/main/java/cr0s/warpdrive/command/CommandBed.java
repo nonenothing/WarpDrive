@@ -18,7 +18,7 @@ public class CommandBed extends CommandBase {
 	
 	@Override
 	public String getCommandName() {
-		return "bed";
+		return "wbed";
 	}
 	
 	@Override
