@@ -31,8 +31,15 @@ function ship_read(parData)
   if data.ship_summon == nil then data.ship_summon = false end
 end
 
+function ship_name(parName)
+  if ship == nil or ship.interfaced() == nil then
+    return ''
+  end
+  return ship.shipName(parName)
+end
+
 function ship_boot()
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     return
   end
   
@@ -411,7 +418,7 @@ end
 
 function ship_page_controls()
   w.page_begin(w.data_getName() .. " - Ship controls")
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -522,7 +529,7 @@ end
 
 function ship_page_crew()
   w.page_begin(w.data_getName() .. " - Ship crew")
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -580,7 +587,7 @@ end
 
 function ship_page_navigation()
   w.page_begin(w.data_getName() .. " - Ship navigation")
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -635,7 +642,7 @@ function ship_register()
       function(deviceType, address, wrap) ship = wrap end,
       function() end)
   w.event_register("shipCoreCooldownDone"  , function() w.status_showWarning("Ship core cooldown done")   return false end )
-  w.data_register("ship", ship_read, nil)
+  w.data_register("ship", ship_read, nil, ship_name)
 end
 
 ----------- connections status

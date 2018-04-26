@@ -358,7 +358,7 @@ function reactor_register()
   w.event_register("reactorPulse"       , function(eventName, param) reactor_pulse(param)                        return false end )
   w.event_register("reactorDeactivation", function(                ) w.status_showWarning("Reactor deactivated") return false end )
   w.event_register("reactorActivation"  , function(                ) w.status_showWarning("Reactor activated")   return false end )
-  w.data_register("reactor", reactor_read, nil)
+  w.data_register("reactor", reactor_read, nil, nil)
 end
 
 ----------- connections status

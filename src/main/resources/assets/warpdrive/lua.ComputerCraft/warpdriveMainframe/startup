@@ -761,7 +761,7 @@ core_movement = { 0, 0, 0 }
 core_rotationSteps = 0
 
 function core_boot()
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     return
   end
   

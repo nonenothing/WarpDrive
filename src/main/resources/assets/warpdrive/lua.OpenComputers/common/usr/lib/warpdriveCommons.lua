@@ -28,7 +28,6 @@ local colors = {-- loosely based on CC colors
 
 -- properties
 local data = { }
-local data_shouldUpdateName = true
 local data_name = nil
 local data_handlers = { }
 
@@ -50,8 +49,6 @@ local page_callbackKey
 
 local event_refreshPeriod_s = 5.0
 local event_refreshTimerId = -1
-
-local ship = nil
 
 local styles = {
   normal   = { front = colors.black    , back = colors.lightGray },
@@ -392,10 +389,10 @@ local function format_string(value, nbchar)
     str = "" .. value
   end
   if nbchar ~= nil then
-    if #str > nbchar then
-      str = string.sub(str, 1, nbchar - 1) .. "~"
+    if #str > math.abs(nbchar) then
+      str = string.sub(str, 1, math.abs(nbchar) - 1) .. "~"
     else
-      str = string.sub(str .. "                                             ", 1, nbchar)
+      str = string.sub(str .. "                                                  ", 1, nbchar)
     end
   end
   return str
@@ -528,10 +525,12 @@ local function input_readText(currentValue)
   term.setCursorBlink(true)
   repeat
     w.status_tick()
+    -- update display clearing extra characters
     w.setColorNormal()
     w.setCursorPos(x, y)
-    w.write(input .. "                              ")
-    input = string.sub(input, -30)
+    w.write(w.format_string(input, 37))
+    -- truncate input and set caret position
+    input = string.sub(input, -36)
     w.setCursorPos(x + #input, y)
     
     local params = { event.pull() }
@@ -801,6 +800,11 @@ local function event_handler(eventName, param)
   elseif eventName == "component_removed" then
   elseif eventName == "component_available" then
   elseif eventName == "component_unavailable" then
+  elseif eventName == "gpu_bound" then-- OpenOS internal event?
+  elseif eventName == "term_available" then
+    needRedraw = true
+  elseif eventName == "term_unavailable" then
+    needRedraw = true
   -- not supported: task_complete, rednet_message, modem_message
   elseif event_handlers[eventName] ~= nil then
     needRedraw = event_handlers[eventName](eventName, param)
@@ -841,7 +845,7 @@ local function data_inspect(key, value)
 end
 
 local function data_read()
-  w.data_updateName()
+  w.data_shouldUpdateName()
   
   data = { }
   if fs.exists("/etc/shipdata.txt") then
@@ -890,39 +894,55 @@ local function data_getName()
 end
 
 local function data_setName()
-  if ship ~= nil then
-    w.page_begin("<==== Set ship name ====>")
-    w.writeLn("")
-    w.write("Enter ship name: ")
-  else
-    w.page_begin("<==== Set name ====>")
-    w.writeLn("")
-    w.write("Enter computer name: ")
+  -- check if any named component is connected
+  local component = "computer"
+  for name, handlers in pairs(data_handlers) do
+    if handlers.name ~= nil then
+      component = name
+    end
   end
   
+  -- ask for a new name
+  w.page_begin("<==== Set " .. component .. " name ====>")
+  w.writeLn("")
+  w.write("Enter " .. component .. " name: ")
   data_name = w.input_readText(data_name)
+  
   -- OpenComputers only allows to label filesystems => out
-  if ship ~= nil then
-    ship.shipName(data_name)
+  
+  -- update connected components
+  for name, handlers in pairs(data_handlers) do
+    if handlers.name ~= nil then
+      handlers.name(data_name)
+    end
   end
+  
   -- w.reboot() -- not needed
 end
 
-local function data_updateName()
-  data_shouldUpdateName = false
+local function data_shouldUpdateName()
+  local shouldUpdateName = false
+  
+  -- check computer name
   data_name = "" .. computer.address()
-  if data_name == nil then
-    data_shouldUpdateName = true
-    data_name = "" .. computer.address()
-  end
-  if ship ~= nil then
-    local shipName = ship.shipName()
-    if shipName == "default" then
-      data_shouldUpdateName = true
-    else
-      data_name = shipName
+  local nameDefault = data_name
+  
+  -- check connected components names
+  for name, handlers in pairs(data_handlers) do
+    if handlers.name ~= nil then
+      local componentName = handlers.name()
+      if componentName == "default" or componentName == "" then
+        shouldUpdateName = true
+      elseif shouldUpdateName then
+        data_name = componentName
+      elseif data_name ~= componentName then
+        shouldUpdateName = data_name ~= nameDefault
+        data_name = componentName
+      end
     end
   end
+  
+  return shouldUpdateName
 end
 
 local function data_splitString(source, sep)
@@ -933,14 +953,18 @@ local function data_splitString(source, sep)
   return fields
 end
 
-local function data_register(name, callbackRead, callbackSave)
+local function data_register(name, callbackRead, callbackSave, callbackName)
+  -- read/save callbacks are always defined
   if callbackRead == nil then
     callbackRead = function() end
   end
   if callbackSave == nil then
     callbackSave = function() end
   end
-  data_handlers[name] = { read = callbackRead, save = callbackSave }
+  
+  -- name callback is nill when not defined
+  
+  data_handlers[name] = { read = callbackRead, save = callbackSave, name = callbackName }
 end
 
 ----------- Devices
@@ -966,7 +990,8 @@ local function boot()
     os.exit()
   end
   if component.gpu.getDepth() < 4 then
-    print("Tier 2 GPU required")
+    print("A tier 2 or higher GPU required")
+    print("A tier 2 or higher screen required")
     os.exit()
   end
   print("loading...")
@@ -993,15 +1018,12 @@ local function boot()
       handlers.register(deviceType, address, w.device_get(address))
     end
     
-    if deviceType == "warpdriveShipController" then
-      ship = w.device_get(address)
-    end
     w.writeLn("")
   end
   
-  -- update with ship name if available
-  w.data_updateName()
-  if data_shouldUpdateName then
+  -- synchronize computer and connected components names
+  local shouldUpdateName = w.data_shouldUpdateName()
+  if shouldUpdateName then
     w.data_setName()
   end
   
@@ -1197,7 +1219,7 @@ w = {
   data_save = data_save,
   data_getName = data_getName,
   data_setName = data_setName,
-  data_updateName = data_updateName,
+  data_shouldUpdateName = data_shouldUpdateName,
   data_splitString = data_splitString,
   data_register = data_register,
   device_get = device_get,
