@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class MovingEntity {
@@ -76,5 +77,14 @@ public class MovingEntity {
 		return v3OriginalPosition.distanceTo_square(entity);
 	}
 	
-	
+	public int getMass() {
+		final Entity entity = getEntity();
+		if (entity == null) {
+			return 0;
+		}
+		
+		final NBTTagCompound tagCompound = new NBTTagCompound();
+		entity.writeToNBT(tagCompound);
+		return tagCompound.toString().length();
+	}
 }

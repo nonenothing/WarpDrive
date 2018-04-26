@@ -452,7 +452,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		}
 		if (arguments.length == 1) {
 			final String shipNamePrevious = tileEntityShipCore.shipName;
-			tileEntityShipCore.shipName = ((String) arguments[0]).replace("/", "").replace(".", "").replace("\\", ".");
+			tileEntityShipCore.shipName = Commons.sanitizeFileName((String) arguments[0]);
 			if ( tileEntityShipCore.shipName == null
 			  || !tileEntityShipCore.shipName.equals(shipNamePrevious) ) {
 				WarpDrive.logger.info(String.format("Ship renamed from '%s' to '%s' with player(s) %s",

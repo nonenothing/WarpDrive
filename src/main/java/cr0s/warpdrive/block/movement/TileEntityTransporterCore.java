@@ -92,7 +92,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	private int tickUpdateParameters = 0;
 	private boolean isConnected = false;
 	private GlobalPosition globalPositionBeacon = null;
-	private int energyCostForTransfer = 0;
+	private double energyCostForAcquiring = 0.0D;
+	private double energyCostForEnergizing = 0.0D;
 	private double lockStrengthOptimal = -1.0D;
 	private double lockStrengthSpeed = 0.0D;
 	private boolean isJammed = false;
@@ -167,7 +168,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			if (energyRequired > 0) {
 				isPowered = energy_consume(energyRequired, false);
 				if (!isPowered) {
-					reasonJammed = "Insufficient energy for transfer";
+					reasonJammed = "Insufficient energy for operation";
 					transporterState = EnumTransporterState.IDLE;
 					tickCooldown = Math.max(tickCooldown, WarpDriveConfig.TRANSPORTER_JAMMED_COOLDOWN_TICKS);
 				}
@@ -209,13 +210,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			WarpDrive.starMap.updateInRegistry(this);
 		}
 		
-		// periodically update parameters from main thread
-		tickUpdateParameters--;
-		if (tickUpdateParameters <= 0) {
-			tickUpdateParameters = WarpDriveConfig.TRANSPORTER_UPDATE_PARAMETERS_TICKS;
-			updateParameters();
-		}
-		
 		// state feedback
 		updateMetadata(!isConnected ? 0 : !isEnabled ? 1 : !isPowered ? 2 : 3);
 		if (isConnected && isEnabled) {
@@ -233,6 +227,13 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				                                          movingEntitiesLocal.values(), movingEntitiesRemote.values(),
 				                                          tickEnergizing, tickCooldown, 64);
 			}
+		}
+		
+		// periodically update parameters from main thread
+		tickUpdateParameters--;
+		if (tickUpdateParameters <= 0) {
+			tickUpdateParameters = WarpDriveConfig.TRANSPORTER_SETUP_UPDATE_PARAMETERS_TICKS;
+			updateParameters();
 		}
 		
 		// execute state transitions
@@ -273,11 +274,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 					// force parameters validation for next tick
 					tickUpdateParameters = 0;
 					
-					// reset entities to grab
-					movingEntitiesLocal.clear();
-					movingEntitiesRemote.clear();
-					
-					tickEnergizing = WarpDriveConfig.TRANSPORTER_TRANSFER_WARMUP_TICKS;
+					tickEnergizing = WarpDriveConfig.TRANSPORTER_ENERGIZING_CHARGING_TICKS;
 					transporterState = EnumTransporterState.ENERGIZING;
 				}
 			}
@@ -285,19 +282,13 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		case ENERGIZING:
 			if (!isLockRequested) {
-				movingEntitiesLocal.clear();
-				movingEntitiesRemote.clear();
 				transporterState = EnumTransporterState.IDLE;
 				
 			} else if (!isEnergizeRequested) {
-				movingEntitiesLocal.clear();
-				movingEntitiesRemote.clear();
 				transporterState = EnumTransporterState.ACQUIRING;
 				
 			} else if (isJammed) {// (jammed while energizing)
 				tickCooldown += WarpDriveConfig.TRANSPORTER_JAMMED_COOLDOWN_TICKS;
-				movingEntitiesLocal.clear();
-				movingEntitiesRemote.clear();
 				transporterState = EnumTransporterState.IDLE;
 				
 			} else if (tickCooldown <= 0) {// (not cooling down)
@@ -334,18 +325,18 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	private void state_energizing() {
 		// get entities
-		final int countEntities = updateEntityToTransfer();
+		final EntityValues entityValues = updateEntitiesToEnergize();
 		
 		// post event on first tick
-		if (tickEnergizing == WarpDriveConfig.TRANSPORTER_TRANSFER_WARMUP_TICKS) {
-			sendEvent("transporterEnergizing", countEntities);
+		if (tickEnergizing == WarpDriveConfig.TRANSPORTER_ENERGIZING_CHARGING_TICKS) {
+			sendEvent("transporterEnergizing", entityValues.count);
 		}
 		
 		// cancel if not entity was found
-		if (countEntities == 0) {
+		if (entityValues.count == 0) {
 			// cancel transfer, cooldown, don't loose strength
 			isEnergizeRequested = false;
-			tickCooldown += WarpDriveConfig.TRANSPORTER_TRANSFER_COOLDOWN_TICKS;
+			tickCooldown += WarpDriveConfig.TRANSPORTER_ENERGIZING_COOLDOWN_TICKS;
 			transporterState = EnumTransporterState.ACQUIRING;
 			return;
 		}
@@ -366,11 +357,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		energizeEntities(lockStrengthActual, movingEntitiesRemote, worldObj, vLocalScanners);
 		
 		// clear entities, cancel transfer, cooldown, loose a bit of strength
-		movingEntitiesLocal.clear();
-		movingEntitiesRemote.clear();
 		isEnergizeRequested = false;
-		tickCooldown += WarpDriveConfig.TRANSPORTER_TRANSFER_COOLDOWN_TICKS;
-		lockStrengthActual = Math.max(0.0D, lockStrengthActual - WarpDriveConfig.TRANSPORTER_TRANSFER_LOCKING_LOST);
+		tickUpdateParameters = 0;
+		tickCooldown += WarpDriveConfig.TRANSPORTER_ENERGIZING_COOLDOWN_TICKS;
+		lockStrengthActual = Math.max(0.0D, lockStrengthActual - WarpDriveConfig.TRANSPORTER_ENERGIZING_LOCKING_LOST);
 		transporterState = EnumTransporterState.ACQUIRING;
 		
 		// inform beacon provider
@@ -501,12 +491,12 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public AxisAlignedBB getStarMapArea() {
 		return AxisAlignedBB.getBoundingBox(
-			Math.min(xCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS     , aabbLocalScanners == null ? xCoord : aabbLocalScanners.minX),
-			Math.min(yCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_Y_BELOW_BLOCKS, aabbLocalScanners == null ? yCoord : aabbLocalScanners.minY),
-			Math.min(zCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS     , aabbLocalScanners == null ? zCoord : aabbLocalScanners.minZ),
-			Math.max(xCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS     , aabbLocalScanners == null ? xCoord : aabbLocalScanners.maxX),
-			Math.max(yCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_Y_ABOVE_BLOCKS, aabbLocalScanners == null ? yCoord : aabbLocalScanners.maxY),
-			Math.max(zCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS     , aabbLocalScanners == null ? zCoord : aabbLocalScanners.maxZ));
+			Math.min(xCoord - WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS     , aabbLocalScanners == null ? xCoord : aabbLocalScanners.minX),
+			Math.min(yCoord - WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_Y_BELOW_BLOCKS, aabbLocalScanners == null ? yCoord : aabbLocalScanners.minY),
+			Math.min(zCoord - WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS     , aabbLocalScanners == null ? zCoord : aabbLocalScanners.minZ),
+			Math.max(xCoord + WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS     , aabbLocalScanners == null ? xCoord : aabbLocalScanners.maxX),
+			Math.max(yCoord + WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_Y_ABOVE_BLOCKS, aabbLocalScanners == null ? yCoord : aabbLocalScanners.maxY),
+			Math.max(zCoord + WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS     , aabbLocalScanners == null ? zCoord : aabbLocalScanners.maxZ) );
 	}
 	
 	@Override
@@ -554,12 +544,12 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	private void updateScanners() {
 		// scan the whole area for scanners
-		final int xMin = xCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
-		final int xMax = xCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
-		final int yMin = yCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_Y_BELOW_BLOCKS;
-		final int yMax = yCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_Y_ABOVE_BLOCKS;
-		final int zMin = zCoord - WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
-		final int zMax = zCoord + WarpDriveConfig.TRANSPORTER_SCANNER_GRAB_XZ_BLOCKS;
+		final int xMin = xCoord - WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS;
+		final int xMax = xCoord + WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS;
+		final int yMin = yCoord - WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_Y_BELOW_BLOCKS;
+		final int yMax = yCoord + WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_Y_ABOVE_BLOCKS;
+		final int zMin = zCoord - WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS;
+		final int zMax = zCoord + WarpDriveConfig.TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS;
 		
 		final ArrayList<VectorI> vScanners = new ArrayList<>(16);
 		final HashSet<VectorI> vContainments = new HashSet<>(64);
@@ -636,9 +626,20 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		double speed;
 	}
 	
+	private static class EntityValues {
+		int count;
+		long mass;
+	}
+	
 	private void updateParameters() {
 		isJammed = false;
 		reasonJammed = "";
+		
+		// reset entities to grab
+		if (transporterState != EnumTransporterState.ENERGIZING) {
+			movingEntitiesLocal.clear();
+			movingEntitiesRemote.clear();
+		}
 		
 		// check connection
 		if (!isConnected) {
@@ -768,17 +769,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			return;
 		}
 		
-		// compute range as max distance between transporter, source and destination
+		// compute range
 		final double rangeActualSquared = v3Local_universal.clone().subtract(v3Remote_universal).getMagnitudeSquared();
 		final int rangeActual = (int) Math.ceil(Math.sqrt(rangeActualSquared));
-		
-		// compute energy cost from range
-		energyCostForTransfer = (int) Math.ceil(Math.max(0, Commons.interpolate(
-				0,
-				WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_AT_MIN_RANGE,
-				WarpDriveConfig.TRANSPORTER_RANGE_BASE_BLOCKS,
-				WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_AT_MAX_RANGE, 
-		        rangeActual)));
 		
 		// compute focalization bonuses
 		final FocusValues focusValuesLocal  = getFocusValueAtCoordinates(worldObj, globalPositionLocal.getVectorI());
@@ -786,7 +779,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final double focusBoost = Commons.interpolate(
 				1.0D,
 				0.0D,
-				WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_FACTOR_MAX,
+				WarpDriveConfig.TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR,
 				WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR,
 				energyFactor);
 		lockStrengthOptimal = (focusValuesLocal.strength + focusValuesRemote.strength) / 2.0D + focusBoost;
@@ -799,6 +792,24 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		// retrieve remote scanner positions
 		vRemoteScanners = focusValuesRemote.vScanners;
+		
+		// update entities in range
+		final EntityValues entityValues = updateEntitiesToEnergize();
+		
+		// compute energy cost from range
+		energyCostForAcquiring = Math.max(0, WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[0]
+		                                   + WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[1]
+		                                     * vLocalScanners.size()
+		                                     * ( Math.log(1.0D + WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[2] * rangeActual)
+		                                       + Math.pow(WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[3] + rangeActual,
+		                                                  WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[4]) ) );
+		
+		energyCostForEnergizing = Math.max(0, WarpDriveConfig.TRANSPORTER_ENERGIZING_ENERGY_FACTORS[0]
+		                                    + WarpDriveConfig.TRANSPORTER_ENERGIZING_ENERGY_FACTORS[1]
+		                                      * entityValues.mass
+		                                      * ( Math.log(1.0D + WarpDriveConfig.TRANSPORTER_ENERGIZING_ENERGY_FACTORS[2] * rangeActual)
+		                                        + Math.pow(WarpDriveConfig.TRANSPORTER_ENERGIZING_ENERGY_FACTORS[3] + rangeActual,
+		                                                   WarpDriveConfig.TRANSPORTER_ENERGIZING_ENERGY_FACTORS[4]) ) );
 		
 		if (WarpDriveConfig.LOGGING_TRANSPORTER) {
 			WarpDrive.logger.info(String.format("Transporter parameters at (%d %d %d) are range (actual %d max %d) lockStrength (actual %.5f optimal %.5f speed %.5f)",
@@ -856,15 +867,20 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		if (!this.uuid.equals(uuid)) {
-			WarpDrive.logger.error(String.format("%s Invalid UUID in beacon call to transporter as %s, %s",
-			                                     this, tileEntity, uuid));
+			if (!isJammed && WarpDriveConfig.LOGGING_TRANSPORTER) {
+				WarpDrive.logger.info(String.format("%s Conflicting beacon requests received %s is not %s",
+				                                    this, tileEntity, uuid));
+			}
+			isJammed = true;
+			reasonJammed = "Conflicting beacon requests received";
+			tickCooldown = Math.max(tickCooldown, WarpDriveConfig.TRANSPORTER_JAMMED_COOLDOWN_TICKS);
 			return false;
 		}
 		
 		if ( globalPositionBeacon == null
 		  || !globalPositionBeacon.equals(tileEntity) ) {
 			globalPositionBeacon = new GlobalPosition(tileEntity);
-			energyFactor = Math.max(4.0D, energyFactor);    // ensure minimum energy factor for beacon transfer
+			energyFactor = Math.max(4.0D, energyFactor);    // ensure minimum energy factor for beacon activation
 			isJammed = true;
 			reasonJammed = "Beacon request received";
 			lockStrengthActual = 0;
@@ -1017,10 +1033,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			return 0;
 			
 		case ACQUIRING:
-			return (int) Math.ceil(WarpDriveConfig.TRANSPORTER_ACQUIRING_ENERGY_FACTOR * energyCostForTransfer * energyFactor);
+			return (int) Math.ceil(energyCostForAcquiring * energyFactor);
 			
 		case ENERGIZING:
-			return (int) Math.ceil(energyCostForTransfer * energyFactor);
+			return (int) Math.ceil(energyCostForEnergizing * energyFactor / WarpDriveConfig.TRANSPORTER_ENERGIZING_CHARGING_TICKS);
 			
 		default:
 			return 0;
@@ -1035,7 +1051,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// add bonus if transport was successful
-		final double strengthToUse = isPreTeleportation ? strength : Math.random() * WarpDriveConfig.TRANSPORTER_TRANSFER_SUCCESS_LOCK_BONUS + strength;
+		final double strengthToUse = isPreTeleportation ? strength : Math.random() * WarpDriveConfig.TRANSPORTER_ENERGIZING_SUCCESS_LOCK_BONUS + strength;
 		
 		final double strengthSafe = 0.95D;
 		final double strengthMaxDamage = 0.65D;
@@ -1044,7 +1060,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			return;
 		}
 		final double damageNormalized = (strengthSafe - strengthToUse) / (strengthSafe - strengthMaxDamage);
-		final double damageMax = isPreTeleportation ? WarpDriveConfig.TRANSPORTER_TRANSFER_FAILURE_MAX_DAMAGE : WarpDriveConfig.TRANSPORTER_TRANSFER_SUCCESS_MAX_DAMAGE ;
+		final double damageMax = isPreTeleportation ? WarpDriveConfig.TRANSPORTER_ENERGIZING_FAILURE_MAX_DAMAGE : WarpDriveConfig.TRANSPORTER_ENERGIZING_SUCCESS_MAX_DAMAGE;
 		// final double damageAmount = Commons.clamp(1.0D, 1000.0D, Math.pow(10.0D, 10.0D * damageNormalized));
 		final double damageAmount = Commons.clamp(1.0D, 1000.0D, damageMax * damageNormalized);
 		
@@ -1077,29 +1093,42 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 	}
 	
-	private int updateEntityToTransfer() {
+	private EntityValues updateEntitiesToEnergize() {
 		final int countScanners = Math.min(vLocalScanners.size(), vRemoteScanners != null ? vRemoteScanners.size() : vLocalScanners.size());
-		int countEntities = 0;
+		
+		final EntityValues entityValues = new EntityValues();
+		
+		// return default values unless we're acquiring or energizing
+		if ( transporterState != EnumTransporterState.ENERGIZING
+		  && transporterState != EnumTransporterState.ACQUIRING ) {
+			entityValues.count = countScanners;
+			entityValues.mass = 8000 * countScanners;
+			return entityValues;
+		}
 		
 		// collect all candidates at local location
-		countEntities += updateEntitiesOnScanners(worldObj, vLocalScanners, countScanners, movingEntitiesLocal);
+		final EntityValues entityValuesLocal = updateEntitiesOnScanners(worldObj, vLocalScanners, countScanners, movingEntitiesLocal);
 		
 		// collect all candidates at remote location
 		final World worldRemote = Commons.getOrCreateWorldServer(globalPositionRemote.dimensionId);
+		final EntityValues entityValuesRemote;
 		if (vRemoteScanners != null) {
-			countEntities += updateEntitiesOnScanners(worldRemote, vRemoteScanners, countScanners, movingEntitiesRemote);
+			entityValuesRemote = updateEntitiesOnScanners(worldRemote, vRemoteScanners, countScanners, movingEntitiesRemote);
 		} else {
-			countEntities += updateEntitiesInArea(worldRemote, globalPositionRemote, countScanners, movingEntitiesRemote);
+			entityValuesRemote = updateEntitiesInArea(worldRemote, globalPositionRemote, countScanners, movingEntitiesRemote);
 		}
-		return countEntities;
+		entityValues.count = entityValuesLocal.count + entityValuesRemote.count;
+		entityValues.mass  = entityValuesLocal.mass  + entityValuesRemote.mass;
+		return entityValues;
 	}
 	
-	private static int updateEntitiesOnScanners(final World world, final ArrayList<VectorI> vScanners, final int countScanners, final HashMap<Integer, MovingEntity> movingEntities) {
-		final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
-		                        * WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
+	private static EntityValues updateEntitiesOnScanners(final World world, final ArrayList<VectorI> vScanners, final int countScanners,
+	                                                     final HashMap<Integer, MovingEntity> movingEntities) {
+		final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
+		                        * WarpDriveConfig.TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
 		// remember entities allocated so we don't double grab them
 		final HashSet<Entity> entitiesOnScanners = new HashSet<>(countScanners);
-		int countEntities = 0;
+		final EntityValues entityValues = new EntityValues();
 		
 		// allocate an entity to each scanner
 		for (int index = 0; index < countScanners; index++) {
@@ -1140,18 +1169,20 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				movingEntities.put(index, MovingEntity.INVALID);
 			} else {
 				movingEntities.put(index, movingEntity);
-				countEntities++;
+				entityValues.count++;
+				entityValues.mass += movingEntity.getMass();
 			}
 		}
 		
-		return countEntities;
+		return entityValues;
 	}
 	
-	private static int updateEntitiesInArea(final World world, final GlobalPosition globalPosition, final int countScanners, final HashMap<Integer, MovingEntity> movingEntities) {
-		final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
-		                        * WarpDriveConfig.TRANSPORTER_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
+	private static EntityValues updateEntitiesInArea(final World world, final GlobalPosition globalPosition, final int countScanners,
+	                                                 final HashMap<Integer, MovingEntity> movingEntities) {
+		final double tolerance2 = WarpDriveConfig.TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS
+		                        * WarpDriveConfig.TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS;
 		final LinkedHashSet<Entity> entities = getCandidateEntitiesInArea(world, globalPosition);
-		int countEntities = 0;
+		final EntityValues entityValues = new EntityValues();
 		
 		// allocate an entity to each scanner
 		for (int index = 0; index < countScanners; index++) {
@@ -1198,11 +1229,12 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				movingEntities.put(index, MovingEntity.INVALID);
 			} else {
 				movingEntities.put(index, movingEntity);
-				countEntities++;
+				entityValues.count++;
+				entityValues.mass += movingEntity.getMass();
 			}
 		}
 		
-		return countEntities;
+		return entityValues;
 	}
 	
 	private static Entity getCandidateEntityOnScanner(final World world, final VectorI vScanner, final HashSet<Entity> entitiesOnScanners) {
@@ -1406,7 +1438,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 		}
 		
-		energyFactor = Commons.clamp(1, WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_FACTOR_MAX, tagCompound.getDouble("energyFactor"));
+		energyFactor = Commons.clamp(1, WarpDriveConfig.TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR, tagCompound.getDouble("energyFactor"));
 		lockStrengthActual = tagCompound.getDouble("lockStrengthActual");
 		tickCooldown = tagCompound.getInteger("tickCooldown");
 		
@@ -1421,6 +1453,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public Packet getDescriptionPacket() {
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
+		tagCompound.removeTag("uuidMost");
+		tagCompound.removeTag("uuidLeast");
+		tagCompound.removeTag(IBeamFrequency.BEAM_FREQUENCY_TAG);
+		tagCompound.removeTag("name");
 		
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
 	}
@@ -1436,7 +1472,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public String[] transporterName(final Object[] arguments) {
 		if (arguments.length == 1) {
 			final String transporterNameNew = arguments[0].toString();
-			if (transporterName.equals(transporterNameNew)) {
+			if (!transporterName.equals(transporterNameNew)) {
 				transporterName = transporterNameNew;
 				uuid = UUID.randomUUID();
 			}
@@ -1458,7 +1494,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final int energy = energy_getEnergyStored();
 		final String status = getStatusHeaderInPureText();
 		final String state = isJammed ? reasonJammed : tickCooldown > 0 ? String.format("Cooling down %d s", Math.round(tickCooldown / 20)) : transporterState.getName();
-		return new Object[] { status, state, energy, lockStrengthActual };
+		return new Object[] { status, state, isConnected, isEnabled, isJammed, energy, lockStrengthActual };
 	}
 	
 	@Override
@@ -1522,7 +1558,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public Double[] energyFactor(final Object[] arguments) {
 		try {
 			if (arguments.length >= 1) {
-				energyFactor = Commons.clamp(1, WarpDriveConfig.TRANSPORTER_TRANSFER_ENERGY_FACTOR_MAX, Commons.toDouble(arguments[0]));
+				energyFactor = Commons.clamp(1, WarpDriveConfig.TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR, Commons.toDouble(arguments[0]));
 			}
 		} catch (NumberFormatException exception) {
 			// ignore
@@ -1538,7 +1574,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Integer[] getEnergyRequired() {
-		return new Integer[] { getEnergyRequired(EnumTransporterState.ENERGIZING) };
+		return new Integer[] { getEnergyRequired(EnumTransporterState.ACQUIRING), getEnergyRequired(EnumTransporterState.ENERGIZING) };
 	}
 	
 	@Override
@@ -1660,8 +1696,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public String toString() {
-		return String.format("%s Beam \'%d\' @ %s (%d %d %d)",
+		return String.format("%s \'%s\' Beam %d @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
+		                     transporterName,
 		                     beamFrequency,
 		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 		                     xCoord, yCoord, zCoord);

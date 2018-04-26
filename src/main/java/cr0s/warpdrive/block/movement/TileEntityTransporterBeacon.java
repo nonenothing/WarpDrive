@@ -181,11 +181,10 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	// TileEntityAbstractBase overrides
 	private String getSignatureStatus() {
 		if (uuidTransporterCore == null) {
-			return "No transporter room linked";
+			return StatCollector.translateToLocalFormatted("warpdrive.transporter_beacon.status.invalid");
 		}
-		return StatCollector.translateToLocalFormatted("Linked to transporter room %s",
-		                                               nameTransporterCore)
-				+ "\n" + "§8" + uuidTransporterCore;
+		return StatCollector.translateToLocalFormatted("warpdrive.transporter_beacon.status.valid",
+		                                               nameTransporterCore, uuidTransporterCore);
 	}
 	
 	@Override

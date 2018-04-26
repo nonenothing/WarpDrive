@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IItemTransporterBeacon;
 import cr0s.warpdrive.api.computer.ITransporterCore;
@@ -14,7 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import java.util.UUID;
@@ -131,8 +132,13 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 		final int maxDamage = itemStack.getMaxDamage();
 		final int metadataEnergy = maxDamage - maxDamage * energy / WarpDriveConfig.TRANSPORTER_BEACON_MAX_ENERGY_STORED;
 		final EnumTransporterBeaconState enumTransporterBeaconState = isActive ? EnumTransporterBeaconState.PACKED_ACTIVE : EnumTransporterBeaconState.PACKED_INACTIVE;
-		itemStack.setItemDamage((metadataEnergy & ~0x7) + enumTransporterBeaconState.getMetadata());
-		return itemStack;
+		final int metadataNew = (metadataEnergy & ~0x7) + enumTransporterBeaconState.getMetadata();
+		if (metadataNew != itemStack.getItemDamage()) {
+			itemStack.setItemDamage(metadataNew);
+			return itemStack;
+		} else {
+			return null;
+		}
 	}
 	
 	// ITransporterBeacon overrides
@@ -154,25 +160,60 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 			}
 			
 			// consume energy
-			final int energy =  isHeld ? getEnergy(itemStack) - WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK : -1;
-			if (energy >= 0) {
+			final int energy =  getEnergy(itemStack) - WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK;
+			if ( isHeld
+			  && energy >= 0 ) {
 				ItemStack itemStackNew;
 				itemStackNew = setEnergy(itemStack, energy);
-				itemStackNew = updateDamage(itemStackNew, energy, true);
+				updateDamage(itemStackNew, energy, true);
 				((EntityPlayer) entity).inventory.setInventorySlotContents(indexSlot, itemStackNew);
 				
 			} else if (itemStack.getItemDamage() != EnumTransporterBeaconState.PACKED_INACTIVE.getMetadata()) {
 				final ItemStack itemStackNew = updateDamage(itemStack, energy, false);
-				((EntityPlayer) entity).inventory.setInventorySlotContents(indexSlot, itemStackNew);
+				if (itemStackNew != null) {
+					((EntityPlayer) entity).inventory.setInventorySlotContents(indexSlot, itemStackNew);
+				}
 			}
 		}
 		super.onUpdate(itemStack, world, entity, indexSlot, isHeld);
 	}
 	
 	@Override
+	public boolean onItemUseFirst(final ItemStack itemStack, final EntityPlayer entityPlayer,
+	                              final World world, final int x, final int y, final int z,
+	                              final int side, final float hitX, final float hitY, final float hitZ) {
+		// itemStack is constantly updated for energy updates
+		// in net.minecraft.network.NetHandlerPlayServer.processPlayerBlockPlacement(NetHandlerPlayServer.java:657), a NPE appears randomly due to bad multithreading in upstream
+		// consequently, we prevent to use the item on any tile entity other than a TransporterCore
+		
+		// allows block placement while sneaking
+		if (entityPlayer.isSneaking()) {
+			return false;
+		}
+		
+		// allows non-tile entities or transporter core
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if ( tileEntity == null
+		  || tileEntity instanceof ITransporterCore ) {
+			return false;
+		}
+		
+		// allow if beacon is disabled
+		if (!isActive(itemStack)) {
+			return false;
+		}
+		
+		// forbid everything else
+		return true;
+	}
+	
+	@Override
 	public boolean onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer, final World world,
 	                         final int x, final int y, final int z, final int side,
 	                         final float hitX, final float hitY, final float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
 		if (itemStack.stackSize == 0) {
 			return false;
 		}
@@ -188,18 +229,59 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 			return false;
 		}
 		
+		final UUID uuidBeacon = getTransporterSignature(itemStack);
+		final String nameBeacon = getTransporterName(itemStack);
+		final UUID uuidTransporter = ((ITransporterCore) tileEntity).getUUID();
 		if (entityPlayer.isSneaking()) {// update transporter signature
-			ItemStack itemStackNew = setTransporterName(itemStack, ((ITransporterCore) tileEntity).getStarMapName());
-			setTransporterSignature(itemStackNew, ((ITransporterCore) tileEntity).getUUID());
-			world.playSoundEffect(x + 0.5D, y + 0.5D, z + 0.5D,
-			                      "mob.zombie.unfect",
-			                      1.0F,
-			                      world.rand.nextFloat() * 0.2F + 1.8F);
+			final String nameTransporter = ((ITransporterCore) tileEntity).getStarMapName();
+			
+			if ( uuidTransporter == null
+			  || nameTransporter == null
+			  || nameTransporter.isEmpty() ) {
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.get_missing"));
+				
+			} else if (uuidTransporter.equals(uuidBeacon)) {
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.get_same",
+				                                                                             nameTransporter));
+				
+			} else {
+				ItemStack itemStackNew = setTransporterName(itemStack, nameTransporter);
+				setTransporterSignature(itemStackNew, uuidTransporter);
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.get",
+				                                                                             nameTransporter));
+				world.playSoundEffect(x + 0.5D, y + 0.5D, z + 0.5D,
+				                      "mob.zombie.unfect",
+				                      1.0F,
+				                      world.rand.nextFloat() * 0.2F + 1.8F);
+			}
 			
 		} else {// apply signature to transporter
-			final UUID uuid = getTransporterSignature(itemStack);
-			if (uuid != null) {
-				((ITransporterCore) tileEntity).remoteLocation(new Object[] { uuid });
+			final Object[] remoteLocation = ((ITransporterCore) tileEntity).remoteLocation(new Object[] { });
+			final UUID uuidRemoteLocation;
+			if ( remoteLocation == null
+			  || remoteLocation.length != 1
+			  || !(remoteLocation[0] instanceof String) ) {
+				uuidRemoteLocation = null;
+			} else {
+				uuidRemoteLocation = UUID.fromString((String) remoteLocation[0]);
+			}
+			
+			if (uuidBeacon == null) {
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.set_missing",
+				                                                                             nameBeacon));
+				
+			} else if (uuidBeacon.equals(uuidTransporter)) {
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.set_self",
+				                                                                             nameBeacon));
+				
+			} else if (uuidBeacon.equals(uuidRemoteLocation)) {
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.set_same",
+				                                                                             nameBeacon));
+				
+			} else {
+				((ITransporterCore) tileEntity).remoteLocation(new Object[] { uuidBeacon });
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.set",
+				                                                                             nameBeacon));
 				world.playSoundEffect(x + 0.5D, y + 0.5D, z + 0.5D,
 				                      "mob.zombie.infect",
 				                      1.0F,
