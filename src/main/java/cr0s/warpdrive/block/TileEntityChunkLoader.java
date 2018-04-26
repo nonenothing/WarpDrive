@@ -175,7 +175,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[] { isEnabled };
@@ -189,7 +189,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	public Object[] radius(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			final int radius = Commons.toInt(arguments[0]);
 			setBounds(radius, radius, radius, radius);
 		}

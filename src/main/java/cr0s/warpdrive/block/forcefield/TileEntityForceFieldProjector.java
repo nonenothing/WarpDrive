@@ -1093,7 +1093,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		switch (methodName) {
 		case "min":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
 				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
@@ -1103,7 +1103,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return new Double[] { v3Min.x, v3Min.y, v3Min.z };
 		
 		case "max":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
 				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
@@ -1113,7 +1113,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return new Double[] { v3Max.x, v3Max.y, v3Max.z };
 		
 		case "rotation":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setRotation(Commons.toFloat(arguments[0]), rotationPitch, rotationRoll);
 			} else if (arguments.length == 2) {
 				setRotation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), rotationRoll);
@@ -1126,7 +1126,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return state();
 		
 		case "translation":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
 				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));

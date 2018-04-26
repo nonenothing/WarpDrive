@@ -216,7 +216,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	// Common OC/CC methods
 	@Override
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
 		}

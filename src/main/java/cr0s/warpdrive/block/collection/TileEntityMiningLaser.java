@@ -447,7 +447,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] onlyOres(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				mineAllBlocks = ! Commons.toBool(arguments[0]);
 				markDirty();
@@ -462,7 +462,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] offset(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				layerOffset = Math.min(256, Math.abs(Commons.toInt(arguments[0])));
 				markDirty();
@@ -477,7 +477,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] silktouch(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				enableSilktouch = Commons.toBool(arguments[0]);
 				markDirty();

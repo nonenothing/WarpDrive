@@ -659,7 +659,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	private Object[] radius(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				radiusX = Commons.clamp(1, WarpDriveConfig.TREE_FARM_totalMaxRadius, Commons.toInt(arguments[0]));
 				radiusZ = radiusX;
 				markDirty();
@@ -676,7 +676,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] breakLeaves(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				breakLeaves = Commons.toBool(arguments[0]);
 				markDirty();
@@ -688,7 +688,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] silktouch(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				enableSilktouch = Commons.toBool(arguments[0]);
 				markDirty();
@@ -700,7 +700,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] tapTrees(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				tapTrees = Commons.toBool(arguments[0]);
 				markDirty();

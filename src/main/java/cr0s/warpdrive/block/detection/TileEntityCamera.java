@@ -148,7 +148,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("videoChannel")) {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setVideoChannel(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { videoChannel };

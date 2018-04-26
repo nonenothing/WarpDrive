@@ -380,7 +380,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	// Common OC/CC methods
 	@Override
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean enableRequest;
 			try {
 				enableRequest = Commons.toBool(arguments[0]);
@@ -419,7 +419,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] instabilityTarget(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			double instabilityTargetRequested;
 			try {
 				instabilityTargetRequested = Commons.toDouble(arguments[0]);
@@ -437,7 +437,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] release(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean releaseRequested;
 			try {
 				releaseRequested = Commons.toBool(arguments[0]);
@@ -457,7 +457,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] releaseRate(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			int releaseRateRequested;
 			try {
 				releaseRateRequested = Commons.toInt(arguments[0]);
@@ -505,7 +505,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] stabilizerEnergy(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			int stabilizerEnergyRequested;
 			try {
 				stabilizerEnergyRequested = Commons.toInt(arguments[0]);

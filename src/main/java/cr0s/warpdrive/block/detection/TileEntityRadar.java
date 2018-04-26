@@ -132,7 +132,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	private Object[] getEnergyRequired(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				return new Object[] { calculateEnergyRequired(Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {
@@ -143,7 +143,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	private Object[] getScanDuration(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				return new Object[] { 0.050D * calculateScanDuration(Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {

@@ -450,7 +450,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (tileEntityShipCore == null) {
 			return null;
 		}
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			final String shipNamePrevious = tileEntityShipCore.shipName;
 			tileEntityShipCore.shipName = Commons.sanitizeFileName((String) arguments[0]);
 			if ( tileEntityShipCore.shipName == null
@@ -534,7 +534,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public Object[] command(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setCommand(arguments[0].toString());
 			}
 		} catch (Exception exception) {
@@ -546,7 +546,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			if (WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.info(this + " enable(" + isEnabled + ")");
@@ -595,7 +595,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public Object[] rotationSteps(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setRotationSteps((byte) Commons.toInt(arguments[0]));
 			}
 		} catch (Exception exception) {
@@ -607,7 +607,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] targetName(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			this.nameTarget = (String) arguments[0];
 		}
 		return new Object[] { nameTarget };

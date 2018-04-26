@@ -280,7 +280,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	protected UUID computer_getUUID(final UUID uuidDefault, final Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				if (arguments[0] instanceof UUID) {
 					return (UUID) arguments[0];
 				}

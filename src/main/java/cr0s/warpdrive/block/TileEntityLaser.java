@@ -637,7 +637,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return new Integer[] { xCoord, yCoord, zCoord };
 			
 		case "beamFrequency":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setBeamFrequency(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { beamFrequency };

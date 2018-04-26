@@ -158,7 +158,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
@@ -190,7 +190,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 				return enable(arguments);
 			
 			case "controlChannel":
-				if (arguments.length == 1) {
+				if (arguments.length == 1 && arguments[0] != null) {
 					setControlChannel(Commons.toInt(arguments[0]));
 				}
 				return new Integer[] { controlChannel };

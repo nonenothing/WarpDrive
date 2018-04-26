@@ -471,7 +471,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	// Common OC/CC methods
 	public Object[] tier(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			int tier_new;
 			try {
 				tier_new = Commons.toInt(arguments[0]);
@@ -493,7 +493,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
 		}

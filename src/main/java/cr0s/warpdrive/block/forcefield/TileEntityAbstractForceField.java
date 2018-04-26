@@ -155,7 +155,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
@@ -182,7 +182,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				return enable(arguments);
 				
 			case "beamFrequency":
-				if (arguments.length == 1) {
+				if (arguments.length == 1 && arguments[0] != null) {
 					setBeamFrequency(Commons.toInt(arguments[0]));
 				}
 				return new Integer[] { beamFrequency };

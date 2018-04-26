@@ -1470,7 +1470,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	// Common OC/CC methods
 	@Override
 	public String[] transporterName(final Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			final String transporterNameNew = arguments[0].toString();
 			if (!transporterName.equals(transporterNameNew)) {
 				transporterName = transporterNameNew;
@@ -1482,7 +1482,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Boolean[] enable(final Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
 		}
@@ -1514,7 +1514,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 					tickUpdateParameters = 0;
 				}
 			}
-		} else if (arguments.length == 1) {
+		} else if (arguments.length == 1 && arguments[0] != null) {
 			// is it a UUID?
 			final UUID uuidNew = computer_getUUID(null, arguments);
 			if (uuidNew != null) {
@@ -1547,7 +1547,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Boolean[] lock(final Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isLockRequested = Commons.toBool(arguments[0]);
 			markDirty();
 		}
@@ -1579,7 +1579,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Boolean[] energize(final Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnergizeRequested = Commons.toBool(arguments[0]);
 			markDirty();
 		}
@@ -1658,7 +1658,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		switch (methodName) {
 		case "beamFrequency":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setBeamFrequency(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { beamFrequency };
