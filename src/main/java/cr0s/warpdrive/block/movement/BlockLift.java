@@ -24,7 +24,7 @@ public class BlockLift extends BlockAbstractContainer {
 	
 	public BlockLift() {
 		super(Material.iron);
-		setBlockName("warpdrive.movement.Lift");
+		setBlockName("warpdrive.movement.lift");
 	}
 	
 	@SideOnly(Side.CLIENT)

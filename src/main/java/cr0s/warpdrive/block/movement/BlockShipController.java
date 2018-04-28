@@ -29,7 +29,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	
 	public BlockShipController() {
 		super(Material.iron);
-		setBlockName("warpdrive.movement.ShipController");
+		setBlockName("warpdrive.movement.ship_controller");
 	}
 	
 	@SideOnly(Side.CLIENT)

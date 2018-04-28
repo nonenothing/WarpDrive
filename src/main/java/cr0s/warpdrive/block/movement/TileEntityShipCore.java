@@ -1037,7 +1037,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	public String getBoundingBoxStatus() {
 		return super.getStatusPrefix()
-		       + StatCollector.translateToLocalFormatted(showBoundingBox ? "tile.warpdrive.movement.ShipCore.bounding_box.enabled" : "tile.warpdrive.movement.ShipCore.bounding_box.disabled");
+		       + StatCollector.translateToLocalFormatted(showBoundingBox ? "tile.warpdrive.movement.ship_core.bounding_box.enabled" : "tile.warpdrive.movement.ship_core.bounding_box.disabled");
 	}
 	
 	private void updateShipMassAndVolume() {

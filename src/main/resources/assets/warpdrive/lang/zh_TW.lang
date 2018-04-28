@@ -206,10 +206,15 @@ tile.warpdrive.forcefield.relay2.tooltip=支持在其網絡內共享最多1個�
 tile.warpdrive.forcefield.relay3.name=Superior Force Field Relay
 tile.warpdrive.forcefield.relay3.tooltip=支持在其網絡內共享最多1個力場升級
 
-tile.warpdrive.movement.Lift.name=升降機
-tile.warpdrive.movement.ShipController.name=船艦制禦器
-tile.warpdrive.movement.ShipCore.name=波動核心
+tile.warpdrive.movement.lift.name=升降機
+tile.warpdrive.movement.ship_controller.name=船艦制禦器
+tile.warpdrive.movement.ship_controller.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core.
+tile.warpdrive.movement.ship_core.name=波動核心
+tile.warpdrive.movement.ship_core.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=Bounding box display have been disabled.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\n§bSneak right-click the Ship core§7 again to disable it.
 tile.warpdrive.movement.transporter_beacon.name=傳送坐標
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
 tile.warpdrive.movement.transporter_containment.name=Transporter Containment
 tile.warpdrive.movement.transporter_core.name=運輸
 tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
@@ -448,13 +453,25 @@ warpdrive.videoChannel.statusLine.validCamera視頻頻道 %1$d 對於攝像機 %
 warpdrive.videoChannel.statusLine.invalid=§c視頻頻道 %1$d 是無效的。
 warpdrive.videoChannel.statusLine.invalidOrNotLoaded=§c視頻頻道 %1$d 是無效的或者錄像機太過遙遠。 
 warpdrive.videoChannel.statusLine.undefined=§7未定義的視頻通道。\n§bUse 調音叉§r 來設定。
+
 warpdrive.cloakingCore.invalidAssembly=§c裝配無效！
 warpdrive.cloakingCore.disabled=僞裝無效！
 warpdrive.cloakingCore.lowPower=§c僞裝失效了，我們需要更多的能量！艦長！
 warpdrive.cloakingCore.cloaking=A 層 %1$d 僞裝目前正確覆蓋 %2$d 區域！
+
 warpdrive.IC2reactorLaserMonitor.noReactor=沒有反應堆！
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d 反應器連接。
+
 warpdrive.transporter.status=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingIC2=§b空間呼吸§r 正在從您的庫存消耗IC2的壓縮空氣囊。
 warpdrive.tooltip.itemTag.flyInSpace=§b空間噴氣背包§r.

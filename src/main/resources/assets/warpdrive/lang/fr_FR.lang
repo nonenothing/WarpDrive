@@ -72,7 +72,7 @@ item.warpdrive.forcefield.shape.tube.name=Forme de tube
 item.warpdrive.forcefield.shape.tube.tooltip=
 item.warpdrive.forcefield.shape.tunnel.name=Forme de tunnel
 item.warpdrive.forcefield.shape.tunnel.tooltip=
-item.warpdrive.forcefield.shape.tooltip.usage=§bClique droit sur un projecteur§r pour appliquer la forme
+item.warpdrive.forcefield.shape.tooltip.usage=§bClique droit sur un projecteur§r pour appliquer la forme\n§bShift-clique droit§7 pour l'enlever
 
 item.warpdrive.forcefield.upgrade.none.name=Pas d'augmentation
 item.warpdrive.forcefield.upgrade.none.tooltip=§4Item invalide
@@ -286,12 +286,15 @@ tile.warpdrive.forcefield.relay2.tooltip=Supporte jusqu'à 1 augmentation de cha
 tile.warpdrive.forcefield.relay3.name=Relais supérieur de champ de force
 tile.warpdrive.forcefield.relay3.tooltip=Supporte jusqu'à 1 augmentation de champ de force partagée avec son réseau
 
-tile.warpdrive.movement.Lift.name=Ascenseur
-tile.warpdrive.movement.ShipController.name=Controlleur de vaisseau
-tile.warpdrive.movement.ShipController.tooltip=Défini l'avant du vaisseau par rapport au coeur. Attache un ordinateur pour ouvrir l'interface utilisateur.\nDoit être placé horizontalement directement à coté du Coeur de vaisseau.
-tile.warpdrive.movement.ShipCore.name=Coeur de vaisseau
-tile.warpdrive.movement.ShipCore.tooltip=Défini le centre du vaisseau par rapport au controlleur. Connecte une source d'énergie pour charger le coeur\nDoit être placé horizontalement directement à coté du Controlleur de vaisseau.
+tile.warpdrive.movement.lift.name=Ascenseur
+tile.warpdrive.movement.ship_controller.name=Controlleur de vaisseau
+tile.warpdrive.movement.ship_controller.tooltip=Défini l'avant du vaisseau par rapport au coeur. Attache un ordinateur pour ouvrir l'interface utilisateur.\nDoit être placé directement en face avant du Coeur de vaisseau.
+tile.warpdrive.movement.ship_core.name=Coeur de vaisseau
+tile.warpdrive.movement.ship_core.tooltip=Défini le centre du vaisseau par rapport au controlleur. Connecte une source d'énergie pour charger le coeur\nDoit être placé directement derrière le Controlleur de vaisseau.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=L'affichage des déliminations a été désactivé.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=L'affichage des déliminations est maintement activé. Seul toi peut les voir.\n§bShift-clique droit§7 le coeur de vaisseau à nouveau pour le désactiver.
 tile.warpdrive.movement.transporter_beacon.name=Balise de transporteur
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
 tile.warpdrive.movement.transporter_containment.name=Confinement de transporteur
 tile.warpdrive.movement.transporter_core.name=Cœur de transporteur
 tile.warpdrive.movement.transporter_scanner.name=Scanneur de transporteur
@@ -679,6 +682,15 @@ warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
 warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
 
 warpdrive.transporter.status=De (%1$.0f %2$.0f %3$.0f) à (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingHelmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.
 warpdrive.tooltip.itemTag.flyInSpace=Jetpack compatible avec une utilisation §bspatiale§r.

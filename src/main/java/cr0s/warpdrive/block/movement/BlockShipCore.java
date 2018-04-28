@@ -42,7 +42,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	
 	public BlockShipCore() {
 		super(Material.iron);
-		setBlockName("warpdrive.movement.ShipCore");
+		setBlockName("warpdrive.movement.ship_core");
 	}
 	
 	@SideOnly(Side.CLIENT)
