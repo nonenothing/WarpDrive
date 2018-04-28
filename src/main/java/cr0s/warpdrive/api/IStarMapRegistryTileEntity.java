@@ -1,5 +1,6 @@
 package cr0s.warpdrive.api;
 
+import cr0s.warpdrive.data.EnumStarMapEntryType;
 import cr0s.warpdrive.data.VectorI;
 
 import java.util.UUID;
@@ -10,7 +11,7 @@ import net.minecraft.util.AxisAlignedBB;
 public interface IStarMapRegistryTileEntity {
 	
 	// get the registry type
-	String getStarMapType();
+	EnumStarMapEntryType getStarMapType();
 	
 	// get the unique id
 	UUID getUUID();

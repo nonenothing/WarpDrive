@@ -2,7 +2,7 @@ package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+import cr0s.warpdrive.data.EnumStarMapEntryType;
 import cr0s.warpdrive.data.VectorI;
 
 import java.util.UUID;
@@ -23,8 +23,8 @@ public class TileEntityAcceleratorController extends TileEntityAbstractEnergy im
 	
 	// IStarMapRegistryTileEntity overrides
 	@Override
-	public String getStarMapType() {
-		return EnumStarMapEntryType.ACCELERATOR.getName();
+	public EnumStarMapEntryType getStarMapType() {
+		return EnumStarMapEntryType.ACCELERATOR;
 	}
 	
 	@Override

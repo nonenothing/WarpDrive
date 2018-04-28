@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,13 +57,17 @@ public class StarMapRegistry {
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
+		final ArrayList<StarMapRegistryItem> listToRemove = new ArrayList<>(3);
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			if (registryItem.sameIdOrCoordinates(tileEntity)) {
-				// already registered
+			if ( registryItem.type.getName().equals(tileEntity.getStarMapType())
+			  && registryItem.uuid.equals(tileEntity.getUUID()) ) {// already registered
 				registryItem.update(tileEntity);    // @TODO probably not thread safe
 				return;
+			} else if (registryItem.sameCoordinates(tileEntity)) {
+				listToRemove.add(registryItem);
 			}
 		}
+		setRegistryItems.removeAll(listToRemove);
 		
 		// not found => add
 		countAdd++;
@@ -86,7 +89,7 @@ public class StarMapRegistry {
 		}
 		
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			if (registryItem.isSameTileEntity(tileEntity)) {
+			if (registryItem.sameCoordinates(tileEntity)) {
 				// found it, remove and exit
 				countRemove++;
 				setRegistryItems.remove(registryItem);

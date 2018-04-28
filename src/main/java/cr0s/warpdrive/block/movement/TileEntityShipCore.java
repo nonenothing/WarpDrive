@@ -12,7 +12,7 @@ import cr0s.warpdrive.data.EnumShipControllerCommand;
 import cr0s.warpdrive.data.EnumShipCoreState;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.Jumpgate;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+import cr0s.warpdrive.data.EnumStarMapEntryType;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
@@ -1198,8 +1198,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	// IStarMapRegistryTileEntity overrides
 	@Override
-	public String getStarMapType() {
-		return EnumStarMapEntryType.SHIP.getName();
+	public EnumStarMapEntryType getStarMapType() {
+		return EnumStarMapEntryType.SHIP;
 	}
 	
 	@Override

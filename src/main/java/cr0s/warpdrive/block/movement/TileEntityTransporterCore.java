@@ -21,7 +21,7 @@ import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.GlobalPosition;
 import cr0s.warpdrive.data.MovingEntity;
 import cr0s.warpdrive.data.StarMapRegistry;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+import cr0s.warpdrive.data.EnumStarMapEntryType;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
@@ -479,8 +479,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	// IStarMapRegistryTileEntity overrides
 	@Override
-	public String getStarMapType() {
-		return EnumStarMapEntryType.TRANSPORTER.getName();
+	public EnumStarMapEntryType getStarMapType() {
+		return EnumStarMapEntryType.TRANSPORTER;
 	}
 	
 	@Override
