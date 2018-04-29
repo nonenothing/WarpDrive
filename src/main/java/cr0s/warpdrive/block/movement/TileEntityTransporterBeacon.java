@@ -14,6 +14,9 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
+
+import java.util.UUID;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -23,12 +26,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.UUID;
-
 public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implements ITransporterBeacon {
-	
-	private static final int TICK_DEPLOYING = 20;
-	private static final int TICK_LOW_POWER = 20 * 5;
 	
 	// persistent properties
 	private boolean isEnabled = true;
@@ -44,6 +42,12 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		
 		IC2_sinkTier = 2;
 		isEnergyLostWhenBroken = false;
+		
+		peripheralName = "warpdriveTransporterCore";
+		addMethods(new String[] {
+				"enable",
+				"isActive"
+		});
 	}
 	
 	@Override
@@ -59,36 +63,37 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 			return;
 		}
 		
-		if (!isEnabled) {
-			isActive = false;
-			return;
-		}
-		
 		// deploy
-		final boolean isDeployed = tickDeploying > TICK_DEPLOYING;
+		final boolean isDeployed = tickDeploying > WarpDriveConfig.TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS;
 		if (!isDeployed) {
 			tickDeploying++;
 		}
 		
-		// get current status
-		final boolean isConnected = uuidTransporterCore != null && (uuidTransporterCore.getLeastSignificantBits() != 0 || uuidTransporterCore.getMostSignificantBits() != 0);
-		final boolean isPowered = energy_consume(WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK, true);
-		final boolean isLowPower = energy_getEnergyStored() < WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK * TICK_LOW_POWER;
-		
-		// reach transporter
-		boolean isActiveNew = false;
-		if (isPowered) {
-			if (isConnected) {// only consume is transporter is reachable
-				isActiveNew = pingTransporter();
-				if (isActiveNew) {
+		if (!isEnabled) {
+			isActive = false;
+		} else {
+			// get current status
+			final boolean isConnected = uuidTransporterCore != null
+			                         && ( uuidTransporterCore.getLeastSignificantBits() != 0
+			                           || uuidTransporterCore.getMostSignificantBits() != 0 );
+			final boolean isPowered = energy_consume(WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK, true);
+			// final boolean isLowPower = energy_getEnergyStored() < WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK * TICK_LOW_POWER;
+			
+			// reach transporter
+			boolean isActiveNew = false;
+			if (isPowered) {
+				if (isConnected) {// only consume is transporter is reachable
+					isActiveNew = pingTransporter();
+					if (isActiveNew) {
+						energy_consume(WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK, false);
+					}
+					
+				} else {// always consume
 					energy_consume(WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK, false);
 				}
-				
-			} else {// always consume
-				energy_consume(WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK, false);
 			}
+			isActive = isActiveNew;
 		}
-		isActive = isActiveNew;
 		
 		// report updated status
 		final EnumTransporterBeaconState enumTransporterBeaconState = isDeployed
@@ -123,11 +128,23 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		return tileEntityTransporterCore.updateBeacon(this, uuidTransporterCore);
 	}
 	
+	@Override
+	public void energizeDone() {
+		isEnabled = false;
+	}
+	
 	// Common OC/CC methods
 	@Override
 	public Boolean[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
+			final boolean isEnabled_old = isEnabled;
 			isEnabled = Commons.toBool(arguments[0]);
+			
+			// enabling up => redeploy
+			if (!isEnabled_old && isEnabled) {
+				tickDeploying = 0;
+			}
+			
 			markDirty();
 		}
 		return new Boolean[] { isEnabled };
@@ -141,11 +158,6 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	@Override
 	public boolean isActive() {
 		return isActive;
-	}
-	
-	@Override
-	public void energizeDone() {
-		isEnabled = false;
 	}
 	
 	// OpenComputers callback methods
@@ -262,10 +274,11 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ %s (%d %d %d) %8d EU",
+		return String.format("%s @ %s (%d %d %d) %8d EU linked to %s %s",
 		                     getClass().getSimpleName(),
 		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 		                     xCoord, yCoord, zCoord,
-		                     energy_getEnergyStored());
+		                     energy_getEnergyStored(),
+		                     nameTransporterCore, uuidTransporterCore);
 	}
 }

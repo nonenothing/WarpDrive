@@ -257,13 +257,17 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 			
 		} else {// apply signature to transporter
 			final Object[] remoteLocation = ((ITransporterCore) tileEntity).remoteLocation(new Object[] { });
-			final UUID uuidRemoteLocation;
+			UUID uuidRemoteLocation;
 			if ( remoteLocation == null
 			  || remoteLocation.length != 1
 			  || !(remoteLocation[0] instanceof String) ) {
 				uuidRemoteLocation = null;
 			} else {
-				uuidRemoteLocation = UUID.fromString((String) remoteLocation[0]);
+				try {
+					uuidRemoteLocation = UUID.fromString((String) remoteLocation[0]);
+				} catch (IllegalArgumentException exception) {// it's a player name
+					uuidRemoteLocation = null;
+				}
 			}
 			
 			if (uuidBeacon == null) {

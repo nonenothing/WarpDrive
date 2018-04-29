@@ -1,5 +1,7 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.block.movement.TileEntityTransporterBeacon;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -71,6 +73,16 @@ public class GlobalPosition {
 	
 	public VectorI getVectorI() {
 		return new VectorI(x, y, z);
+	}
+	
+	public int distance2To(final TileEntity tileEntity) {
+		if (tileEntity.getWorldObj().provider.dimensionId != dimensionId) {
+			return Integer.MAX_VALUE;
+		}
+		final int newX = tileEntity.xCoord - x;
+		final int newY = tileEntity.yCoord - y;
+		final int newZ = tileEntity.zCoord - z;
+		return newX * newX + newY * newY + newZ * newZ;
 	}
 	
 	public double distance2To(final Entity entity) {

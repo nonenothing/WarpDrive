@@ -90,6 +90,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	private boolean isBlockUpdated = false;
 	private int tickUpdateRegistry = 0;
 	private int tickUpdateParameters = 0;
+	private int tickComputerPulse = 0;
 	private boolean isConnected = false;
 	private GlobalPosition globalPositionBeacon = null;
 	private double energyCostForAcquiring = 0.0D;
@@ -226,6 +227,14 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				PacketHandler.sendTransporterEffectPacket(worldObj, globalPositionLocal, globalPositionRemote, lockStrengthActual,
 				                                          movingEntitiesLocal.values(), movingEntitiesRemote.values(),
 				                                          tickEnergizing, tickCooldown, 64);
+			}
+		}
+		
+		tickComputerPulse--;
+		if (tickComputerPulse < 0) {
+			tickComputerPulse = 20;
+			if (lockStrengthActual > 0.01F) {
+				sendEvent("transporterPulse", lockStrengthActual);
 			}
 		}
 		
@@ -774,8 +783,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final int rangeActual = (int) Math.ceil(Math.sqrt(rangeActualSquared));
 		
 		// compute focalization bonuses
-		final FocusValues focusValuesLocal  = getFocusValueAtCoordinates(worldObj, globalPositionLocal.getVectorI());
-		final FocusValues focusValuesRemote = getFocusValueAtCoordinates(worldRemote, globalPositionRemote.getVectorI());
+		final FocusValues focusValuesLocal  = getFocusValueAtCoordinates(worldObj, globalPositionLocal.getVectorI(), 0);
+		final FocusValues focusValuesRemote = getFocusValueAtCoordinates(worldRemote, globalPositionRemote.getVectorI(), WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS);
 		final double focusBoost = Commons.interpolate(
 				1.0D,
 				0.0D,
@@ -860,14 +869,23 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	boolean updateBeacon(final TileEntity tileEntity, final UUID uuid) {
-		if (tileEntity == null || uuid == null) {
+		if ( tileEntity == null
+		  || !this.uuid.equals(uuid) ) {
 			WarpDrive.logger.error(String.format("%s Invalid parameters in beacon call to transporter as %s, %s",
 			                                     this, tileEntity, uuid));
+			// just ignore it
 			return false;
 		}
 		
-		if (!this.uuid.equals(uuid)) {
-			if (!isJammed && WarpDriveConfig.LOGGING_TRANSPORTER) {
+		// check for overlapping beacon requests
+		if ( globalPositionBeacon != null
+		  && !globalPositionBeacon.equals(tileEntity) ) {
+			final int radius2 = WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS * WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
+			if (globalPositionBeacon.distance2To(tileEntity) <= radius2) {// it's a beacon party! we're happy with it...
+				return true;
+			}
+			
+			if (!isJammed && WarpDriveConfig.LOGGING_TRANSPORTER) {// only log first jamming occurrence
 				WarpDrive.logger.info(String.format("%s Conflicting beacon requests received %s is not %s",
 				                                    this, tileEntity, uuid));
 			}
@@ -877,8 +895,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			return false;
 		}
 		
-		if ( globalPositionBeacon == null
-		  || !globalPositionBeacon.equals(tileEntity) ) {
+		// check for new beacon
+		if (globalPositionBeacon == null) {
 			globalPositionBeacon = new GlobalPosition(tileEntity);
 			energyFactor = Math.max(4.0D, energyFactor);    // ensure minimum energy factor for beacon activation
 			isJammed = true;
@@ -889,22 +907,23 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 		}
 		
+		isLockRequested = true;
 		return true;
 	}
 	
-	private static FocusValues getFocusValueAtCoordinates(final World world, final VectorI vLocation) {
+	private static FocusValues getFocusValueAtCoordinates(final World world, final VectorI vLocation, final int radius) {
 		// scan the area
 		int countBeacons = 0;
 		int countTransporters = 0;
 		int sumRangeUpgrades = 0;
 		int sumFocusUpgrades = 0;
 		
-		final int xMin = vLocation.x - WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
-		final int xMax = vLocation.x + WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
-		final int yMin = vLocation.y - WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
-		final int yMax = vLocation.y + WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
-		final int zMin = vLocation.z - WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
-		final int zMax = vLocation.z + WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS;
+		final int xMin = vLocation.x - radius;
+		final int xMax = vLocation.x + radius;
+		final int yMin = vLocation.y - radius;
+		final int yMax = vLocation.y + radius;
+		final int zMin = vLocation.z - radius;
+		final int zMax = vLocation.z + radius;
 		
 		ArrayList<VectorI> vScanners = null;
 		for (int x = xMin; x <= xMax; x++) {
@@ -917,8 +936,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 					final Block block = world.getBlock(x, y, z);
 					if (block instanceof BlockTransporterBeacon) {
 						// count active beacons
-						final boolean isActive = world.getBlockMetadata(x, y, z) == 0;
-						if (isActive) {
+						final TileEntity tileEntity = world.getTileEntity(x, y, z);
+						if ( tileEntity instanceof TileEntityTransporterBeacon
+						  && ((TileEntityTransporterBeacon) tileEntity).isActive() ) {
 							countBeacons++;
 						}
 						
@@ -949,8 +969,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			result.strength = WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER + sumFocusUpgrades * WarpDriveConfig.TRANSPORTER_LOCKING_SPEED_UPGRADE;
 		} else if (countBeacons > 0) {
 			result.countRangeUpgrades = 0;
-			result.speed = WarpDriveConfig.TRANSPORTER_LOCKING_SPEED_AT_FOCUS;
-			result.strength = WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_AT_FOCUS;
+			result.speed = WarpDriveConfig.TRANSPORTER_LOCKING_SPEED_AT_BEACON;
+			result.strength = WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_AT_BEACON;
 		} else {
 			result.countRangeUpgrades = 0;
 			result.speed = WarpDriveConfig.TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS;
@@ -1467,6 +1487,13 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		readFromNBT(tagCompound);
 	}
 	
+	@Override
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
+		tagCompound.removeTag("isEnabled");
+		return tagCompound;
+	}
+	
 	// Common OC/CC methods
 	@Override
 	public String[] transporterName(final Object[] arguments) {
@@ -1696,9 +1723,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public String toString() {
-		return String.format("%s \'%s\' Beam %d @ %s (%d %d %d)",
+		return String.format("%s \'%s\' %s Beam %d @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
-		                     transporterName,
+		                     transporterName, uuid,
 		                     beamFrequency,
 		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
 		                     xCoord, yCoord, zCoord);

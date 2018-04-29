@@ -370,12 +370,12 @@ public class WarpDriveConfig {
 	public static double[] TRANSPORTER_LOCKING_ENERGY_FACTORS = { 50.0, 3.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
 	public static double   TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK = Math.pow(0.01D, 1.0D / 300.0D); // natural decay down to 1% over 300 ticks
 	public static double   TRANSPORTER_LOCKING_STRENGTH_IN_WILDERNESS = 0.25D;
-	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_FOCUS = 0.5D;
-	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER = 1.0D;
+	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_BEACON = 0.50D;
+	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER = 1.00D;
 	public static double   TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR = 0.5D;
 	public static double   TRANSPORTER_LOCKING_STRENGTH_UPGRADE = 0.15D;
 	public static double   TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS = 0.25D;
-	public static double   TRANSPORTER_LOCKING_SPEED_AT_FOCUS = 0.75D;
+	public static double   TRANSPORTER_LOCKING_SPEED_AT_BEACON = 0.75D;
 	public static double   TRANSPORTER_LOCKING_SPEED_AT_TRANSPORTER = 1.0D;
 	public static double   TRANSPORTER_LOCKING_SPEED_UPGRADE = 0.25D;
 	public static int      TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS = 5 * 20;
@@ -394,6 +394,7 @@ public class WarpDriveConfig {
 	public static int      TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS = 2;
 	public static int      TRANSPORTER_BEACON_MAX_ENERGY_STORED = 60000;
 	public static int      TRANSPORTER_BEACON_ENERGY_PER_TICK = 60000 / (300 * 20);  // 10 EU/t over 5 minutes
+	public static int      TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS = 1 * 20;
 	
 	// Enantiomorphic power reactor
 	public static int ENAN_REACTOR_MAX_ENERGY_STORED = 100000000;

@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 
 import cr0s.warpdrive.block.BlockAbstractContainer;
@@ -8,6 +9,8 @@ import cr0s.warpdrive.render.RenderBlockTransporterBeacon;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -87,4 +90,32 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		return new TileEntityTransporterBeacon();
 	}
 	
+	@Override
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
+		
+		// get context
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
+		if (!(tileEntity instanceof TileEntityTransporterBeacon)) {
+			return false;
+		}
+		final TileEntityTransporterBeacon tileEntityTransporterBeacon = (TileEntityTransporterBeacon) tileEntity;
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		
+		// sneaking with an empty hand
+		if ( entityPlayer.isSneaking()
+		  && itemStackHeld == null ) {
+			final boolean isEnabledOld = tileEntityTransporterBeacon.enable(new Object[] { })[0];
+			final boolean isEnabledNew = tileEntityTransporterBeacon.enable(new Object[] { !isEnabledOld })[0];
+			if (isEnabledOld == !isEnabledNew) {
+				Commons.addChatMessage(entityPlayer, "Toggle success!");
+			}
+			return true;
+		}
+		
+		return super.onBlockActivated(world, x, y, z, entityPlayer, side, hitX, hitY, hitZ);
+	}
 }
