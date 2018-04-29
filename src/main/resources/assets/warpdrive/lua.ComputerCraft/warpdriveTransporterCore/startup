@@ -1,0 +1,424 @@
+
+if warpdriveCommons then os.unloadAPI("warpdriveCommons") end
+if not os.loadAPI("warpdrive/warpdriveCommons") then error("missing warpdriveCommons") end
+local w = warpdriveCommons.w
+
+local data
+
+----------- Transporter room support
+
+local transporter
+
+function transporter_read(parData)
+  data = parData
+end
+
+function transporter_name(parName)
+  if transporter == nil or transporter.interfaced() == nil then
+    return ''
+  end
+  return transporter.transporterName(parName)
+end
+
+function transporter_boot()
+  if transporter ~= nil then
+    w.writeLn("Booting Transporter...")
+    local  _, _, _, _, _ = transporter.state()
+  end
+end
+
+function transporter_key(character, keycode)
+  if character == 's' or character == 'S' then -- S
+    transporter_start()
+    return true
+  elseif character == 'p' or character == 'P' then -- P
+    transporter_stop()
+    return true
+  elseif character == 'l' or character == 'L' then -- L
+    transporter_lock()
+    return true
+  elseif character == 'e' or character == 'E' then -- E
+    transporter_energize()
+    return true
+  elseif character == '-' then -- -
+    local energyFactor = transporter.energyFactor()
+    transporter.energyFactor(energyFactor - 0.2)
+    return true
+  elseif character == '+' then -- +
+    local energyFactor = transporter.energyFactor()
+    transporter.energyFactor(energyFactor + 0.2)
+    return true
+  elseif character == 'c' or character == 'C' then -- C
+    transporter_config()
+    return true
+  end
+  return false
+end
+
+function transporter_page()
+  w.page_begin(w.data_getName() .. " - Transporter room controls")
+  
+  w.setCursorPos(1, 2)
+  if transporter == nil or transporter.interfaced() == nil then
+    w.setColorDisabled()
+    w.write("Transporter core not detected")
+  else
+    w.setColorDisabled()
+    w.setCursorPos(1, 2)
+    local _, signature = transporter.transporterName()
+    if (signature ~= nil) then
+      w.writeCentered(2, "Signature is " .. signature)
+    end
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 3)
+    w.write("Beam frequency  = ")
+    local beamFrequency = transporter.beamFrequency()
+    w.write(w.format_integer(beamFrequency, 6))
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 4)
+    w.write("Remote location = ")
+    local remoteLocation = { transporter.remoteLocation() }
+    if remoteLocation[3] ~= nil then
+      w.write(w.format_integer(remoteLocation[1], 6) .. ", " .. w.format_integer(remoteLocation[2], 3) .. ", " .. w.format_integer(remoteLocation[3], 6))
+    elseif remoteLocation[1] ~= nil then
+      w.writeCentered(5, remoteLocation[1])
+    else
+      w.write("-not defined-")
+    end
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 6)
+    local energyFactor_PC = transporter.energyFactor() * 100
+    w.write("Energy factor   = " .. w.format_float(math.floor(energyFactor_PC * 10) / 10, 6) .. " %")
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 7)
+    w.write("Energy required = ")
+    local energyAcquiring, energyEnergizing = transporter.getEnergyRequired()
+    if energyAcquiring ~= nil then
+      w.write(w.format_integer(energyAcquiring) .. " EU/t then " .. w.format_integer(energyEnergizing) .. " EU/t")
+    else
+      w.write("???")
+    end
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 8)
+    w.write("Energy stored   = ")
+    local energy = { transporter.energy() }
+    transporter_page_writeEnergy(energy)
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 9)
+    w.write("  -----------------------------------------------")
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 10)
+    w.write("Room is ")
+    local isEnabled = transporter.enable()
+    if isEnabled then w.setColorSuccess() else w.setColorNormal() end
+    w.write(w.format_boolean(isEnabled, "enabled", "disabled"))
+    w.setColorNormal()
+    w.write(".")
+    
+    w.setColorNormal()
+    w.setCursorPos(28, 10)
+    w.write("Locking is ")
+    local isLockRequested = transporter.lock()
+    if isLockRequested then w.setColorSuccess() else w.setColorNormal() end
+    w.write(w.format_boolean(isLockRequested, "requested", "on hold"))
+    w.setColorNormal()
+    w.write(".")
+  
+    w.setColorNormal()
+    w.setCursorPos(1, 11)
+    w.write("Lock strength is ")
+    local lockStrength = transporter.getLockStrength()
+    transporter_page_writeLockStrength(lockStrength)
+    
+    w.setColorNormal()
+    w.setCursorPos(28, 11)
+    w.write("Energize is ")
+    local isEnergizeRequested = transporter.energize()
+    if isEnergizeRequested then w.setColorSuccess() else w.setColorNormal() end
+    w.write(w.format_boolean(isEnergizeRequested, "requested", "on hold"))
+    w.setColorNormal()
+    w.write(".")
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 13)
+    w.write("Status is ")
+    local _, state, _, _, isJammed = transporter.state()
+    if isJammed then
+      w.setColorBad()
+    end
+    w.write(state)
+    w.setColorNormal()
+    w.write(".")
+  end
+  
+  w.setColorControl()
+  w.setCursorPos(1, 16)
+  w.writeFullLine(" Start/stoP transporter (S/P), Configuration (C)")
+  w.writeFullLine(" Lock (L), Energize (E), Energy factor (+/-)")
+end
+
+function transporter_page_writeEnergy(energy)
+  w.setColorNormal()
+  w.setCursorPos(19, 8)
+  if energy[2] ~= nil then
+    w.write(w.format_integer(energy[1], 7) .. " / " .. energy[2] .. " EU ")
+  else
+    w.write(w.format_string("???", 20))
+  end
+end
+
+function transporter_page_writeLockStrength(lockStrength)
+  w.setCursorPos(18, 11)
+  if lockStrength > 0.01 then
+    local percent = math.floor(lockStrength * 1000) / 10
+    if percent >= 80.0 then
+      w.setColorSuccess()
+    else
+      w.setColorWarning()
+    end
+    w.write(w.format_float(percent) .. " %  ")
+  else
+    w.setColorDisabled()
+    w.write(w.format_string("-none-", 7))
+  end
+  w.setColorNormal()
+  w.write(".")
+end
+
+function transporter_setEnergyFactor()
+  if transporter ~= nil then
+    data.transporter_energyFactor = transporter.energyFactor(data.transporter_energyFactor)
+  end
+end
+
+function transporter_start()
+  if transporter ~= nil then
+    transporter.enable(true)
+  end
+end
+
+function transporter_stop()
+  if transporter ~= nil then
+    transporter.enable(false)
+  end
+end
+
+function transporter_lock()
+  if transporter ~= nil then
+    transporter.lock(not transporter.lock())
+  end
+end
+
+function transporter_energize()
+  if transporter ~= nil then
+    transporter.energize(not transporter.energize())
+  end
+end
+
+local transporter_configPageLoaded = false
+function transporter_pulse(actual)
+  local lockStrength = actual
+  if transporter == nil or transporter.interfaced() == nil then
+    w.reboot()
+  end
+  if w.page_getCallbackDisplay() == transporter_page and (not transporter_configPageLoaded) then
+    transporter_page_writeLockStrength(lockStrength)
+    
+    local energy = { transporter.energy() }
+    transporter_page_writeEnergy(energy)
+  end
+end
+
+function transporter_config()
+  transporter_configPageLoaded = true
+  w.page_begin(w.data_getName() .. " - Transporter room configuration")
+  
+  w.setCursorPos(1, 2)
+  if transporter == nil or transporter.interfaced() == nil then
+    w.setColorDisabled()
+    w.write("Transporter core not detected")
+  else
+    w.setColorNormal()
+    w.setCursorPos(1, 4)
+    local energyFactor_PC = transporter.energyFactor() * 100
+    w.write("Energy factor (" .. math.floor(energyFactor_PC * 10) / 10 .. " %): ")
+    energyFactor_PC = w.input_readNumber(energyFactor_PC)
+    energyFactor_PC = transporter.energyFactor(energyFactor_PC / 100) * 100
+    w.setCursorPos(1, 5)
+    w.write("Energy factor set to " .. math.floor(energyFactor_PC * 10) / 10 .. " %")
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 7)
+    local remoteLocation = { transporter.remoteLocation() }
+    local remoteLocation_default = "-"
+    if remoteLocation[3] ~= nil then
+      w.write("Remote location is currently set to " .. remoteLocation[1] .. ", " .. remoteLocation[2] .. ", " .. remoteLocation[3])
+    elseif remoteLocation[1] ~= nil then
+      w.writeLn("Remote location is currently set to ")
+      w.write(remoteLocation[1])
+      remoteLocation_default = remoteLocation[1]
+    else
+      w.write("Remote location is currently undefined")
+      remoteLocation[1] = "???"
+    end
+    
+    w.setColorControl()
+    w.setCursorPos(1, 16)
+    w.writeFullLine(" Enter - as player name to use coordinates")
+    w.writeFullLine(" Press Enter to save your selection")
+    
+    w.setColorNormal()
+    w.setCursorPos(1, 10)
+    w.write("Signature, player name or dash: ")
+    w.setCursorPos(1, 11)
+    local remoteLocation_new = w.input_readText(remoteLocation_default)
+    if remoteLocation_new ~= "-" then
+      remoteLocation = { transporter.remoteLocation(remoteLocation_new) }
+    else
+      if #remoteLocation == 1 then
+        remoteLocation[1] = "0";
+        remoteLocation[2] = "0";
+        remoteLocation[3] = "0";
+      end
+  
+      w.setColorNormal()
+      w.setCursorPos(1, 11)
+      w.writeFullLine(" ")
+      w.setColorControl()
+      w.setCursorPos(1, 16)
+      w.writeFullLine(" Enter absolute X coordinate")
+      w.setColorNormal()
+      w.writeFullLine(" ")
+      
+      w.setCursorPos(1, 10)
+      w.write("Remote location X coordinate (" .. remoteLocation[1] .. "): ")
+      remoteLocation[1] = w.input_readNumber(remoteLocation[1])
+      
+      w.setColorControl()
+      w.setCursorPos(1, 16)
+      w.writeFullLine(" Enter Y < 0 to target below planet")
+      w.writeFullLine(" Enter Y > 256 to target space above")
+      
+      w.setColorNormal()
+      w.setCursorPos(1, 11)
+      w.write("Remote location Y coordinate (" .. remoteLocation[2] .. "): ")
+      remoteLocation[2] = w.input_readNumber(remoteLocation[2])
+      
+      w.setColorControl()
+      w.setCursorPos(1, 16)
+      w.writeFullLine(" Enter absolute Z coordinate")
+      w.setColorNormal()
+      w.writeFullLine(" ")
+      
+      w.setCursorPos(1, 12)
+      w.write("Remote location Z coordinate (" .. remoteLocation[3] .. "): ")
+      remoteLocation[3] = w.input_readNumber(remoteLocation[3])
+      
+      remoteLocation = { transporter.remoteLocation(remoteLocation[1], remoteLocation[2], remoteLocation[3]) }
+    end
+    
+    w.setCursorPos(1, 12)
+    if remoteLocation[3] ~= nil then
+      w.write("Remote location updated to " .. remoteLocation[1] .. ", " .. remoteLocation[2] .. ", " .. remoteLocation[3])
+    elseif remoteLocation[1] ~= nil then
+      w.write("Remote location updated to " .. remoteLocation[1])
+    else
+      w.write("Remote location updated to invalid (?)")
+    end
+  end
+  transporter_configPageLoaded = false
+end
+
+function transporter_register()
+  w.device_register("warpdriveTransporterCore",
+      function(deviceType, address, wrap) transporter = wrap end,
+      function() end)
+  w.event_register("transporterPulse"     , function(eventName, param) transporter_pulse(param)                                               return false end )
+  w.event_register("transporterEnergizing", function(eventName, param) w.status_showWarning("Transporting "          .. param .. " entities") return false end )
+  w.event_register("transporterSuccess"   , function(eventName, param) w.status_showWarning("Transported "           .. param) return false end )
+  w.event_register("transporterFailure"   , function(eventName, param) w.status_showWarning("Failed transportation " .. param) return false end )
+  w.data_register("transporter", transporter_read, nil, transporter_name)
+end
+
+----------- connections status
+
+function connections_key(character, keycode)
+  if character == 'n' or character == 'N' then -- N
+    w.data_setName()
+    return true
+  end
+  return false
+end
+
+function connections_page(isBooting)
+  w.page_begin(w.data_getName() .. " - Connections")
+  
+  w.writeLn("")
+  
+  local monitors = w.device_getMonitors()
+  if #monitors == 0 then
+    w.setColorDisabled()
+    w.writeLn("No Monitor detected")
+  elseif #monitors == 1 then
+    w.setColorSuccess()
+    w.writeLn("1 monitor detected")
+  else
+    w.setColorSuccess()
+    w.writeLn(#monitors .. " Monitors detected")
+  end
+  
+  if transporter == nil or transporter.interfaced() == nil then
+    w.setColorDisabled()
+    w.writeLn("No Transporter core detected")
+  else
+    w.setColorSuccess()
+    w.writeLn("Transporter core detected")
+    if isBooting then
+      transporter_boot()
+    end
+  end
+  
+  w.writeLn("")
+  w.setColorNormal()
+  w.writeLn("This is a keyboard controlled user interface.")
+  w.write("Key controls are written like so: ")
+  w.setColorControl()
+  w.write("Action (key)")
+  w.setColorNormal()
+  w.writeLn(".")
+  w.write("For example, typing ")
+  w.setColorControl()
+  w.write(" 1 ")
+  w.setColorNormal()
+  w.writeLn(" will open Transporter room controls.")
+  
+  w.setCursorPos(1, 17)
+  w.setColorControl()
+  w.writeFullLine(" Change computer Name (N)")
+end
+
+----------- Boot sequence
+
+w.page_setEndText(" Home (0), Transporter room (1)")
+w.page_register('0', connections_page, connections_key)
+w.page_register('1', transporter_page, transporter_key)
+transporter_register()
+
+w.boot()
+local success, message = pcall(w.run)
+if not success then
+  print("failed with message")
+  print(message)
+  w.sleep(3.0)
+  print("rebooting...")
+  w.reboot()
+else
+  w.close()
+end
