@@ -65,6 +65,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import cpw.mods.fml.common.Optional;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -679,7 +680,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 		}
 		
-		// compute remote universal coordinates
+		// compute remote global position
 		GlobalPosition globalPositionRemoteNew = null;
 		if (globalPositionBeacon != null) {
 			globalPositionRemoteNew = globalPositionBeacon;
@@ -731,7 +732,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		if ( globalPositionRemoteNew == null
 		  || !globalPositionRemoteNew.equals(globalPositionRemote) ) {
 			globalPositionRemote = globalPositionRemoteNew;
-			lockStrengthActual = 0;
+			lockStrengthActual = 0.0D;
 			if (transporterState == EnumTransporterState.ENERGIZING) {
 				transporterState = EnumTransporterState.ACQUIRING;
 			}
@@ -767,15 +768,21 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 		}
 		
-		// get remote world
-		final WorldServer worldRemote = Commons.getOrCreateWorldServer(celestialObjectRemote.dimensionId);
-		if (worldRemote == null) {
-			WarpDrive.logger.error(String.format("Unable to initialize dimension %d for %s",
-			                                     celestialObjectRemote.dimensionId,
-			                                     this));
-			isJammed = true;
-			reasonJammed = String.format("Unable to initialize dimension %d", celestialObjectRemote.dimensionId);
-			return;
+		// get remote world, only load while acquiring or energizing
+		final WorldServer worldRemote;
+		if ( transporterState == EnumTransporterState.ACQUIRING
+		  || transporterState == EnumTransporterState.ENERGIZING ) {
+			worldRemote = Commons.getOrCreateWorldServer(celestialObjectRemote.dimensionId);
+			if (worldRemote == null) {
+				WarpDrive.logger.error(String.format("Unable to initialize dimension %d for %s",
+				                                     celestialObjectRemote.dimensionId,
+				                                     this));
+				isJammed = true;
+				reasonJammed = String.format("Unable to initialize dimension %d", celestialObjectRemote.dimensionId);
+				return;
+			}
+		} else {
+			worldRemote = DimensionManager.getWorld(celestialObjectRemote.dimensionId);
 		}
 		
 		// compute range
@@ -901,7 +908,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			energyFactor = Math.max(4.0D, energyFactor);    // ensure minimum energy factor for beacon activation
 			isJammed = true;
 			reasonJammed = "Beacon request received";
-			lockStrengthActual = 0;
+			lockStrengthActual = 0.0D;
 			if (transporterState == EnumTransporterState.ENERGIZING) {
 				transporterState = EnumTransporterState.ACQUIRING;
 			}
@@ -912,6 +919,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private static FocusValues getFocusValueAtCoordinates(final World world, final VectorI vLocation, final int radius) {
+		//  return default values if world isn't loaded
+		if (world == null) {
+			final FocusValues result = new FocusValues();
+			result.countRangeUpgrades = 0;
+			result.speed = WarpDriveConfig.TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS;
+			result.strength = WarpDriveConfig.TRANSPORTER_LOCKING_STRENGTH_IN_WILDERNESS;
+			return result;
+		}
+		
 		// scan the area
 		int countBeacons = 0;
 		int countTransporters = 0;
@@ -986,6 +1002,11 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private static boolean isJammedTrajectory(final World world, final VectorI vSource, final VectorI vDestination, final int beamFrequency) {
+		// return default value if world isn't loaded
+		if (world == null) {
+			return false;
+		}
+		
 		final VectorI vPath = vDestination.clone().translateBack(vSource);
 		final int length = (int) Math.ceil(3 * Math.sqrt(vPath.getMagnitudeSquared()));
 		final Vector3 v3Delta = new Vector3(vPath.x / (double) length, vPath.y / (double) length, vPath.z / (double) length);
