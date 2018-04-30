@@ -664,7 +664,7 @@ function connections_page(isBooting)
     w.writeLn(#monitors .. " Monitors detected")
   end
   
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No ship controller detected")
   else
@@ -700,16 +700,23 @@ w.page_register('3', ship_page_navigation, ship_key_navigation)
 ship_register()
 
 w.boot()
-w.run()
-
-if data.ship_summon then
-  data.ship_summon = false
-  w.data_save()
+local success, message = pcall(w.run)
+if not success then
+  print("failed with message")
+  print(message)
+  w.sleep(3.0)
+  print("rebooting...")
+  w.reboot()
+else
+  if data.ship_summon then
+    data.ship_summon = false
+    w.data_save()
+  end
+  
+  if ship ~= nil then
+    ship.command("OFFLINE")
+    ship.enable(false)
+  end
+  
+  w.close()
 end
-
-if ship ~= nil then
-  ship.command("OFFLINE")
-  ship.enable(false)
-end
-
-w.close()

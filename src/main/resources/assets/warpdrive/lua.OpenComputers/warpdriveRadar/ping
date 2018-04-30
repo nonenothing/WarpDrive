@@ -60,7 +60,7 @@ until (count ~= nil and count ~= -1) or delay > 10
 
 if count ~= nil and count > 0 then
   for i=0, count-1 do
-    success, type, name, x, y, z = radar.getResult(i)
+    local success, type, name, x, y, z = radar.getResult(i)
     if success then
       print(type .. " " .. name .. " @ (" .. x .. " " .. y .. " " .. z .. ")")
     else

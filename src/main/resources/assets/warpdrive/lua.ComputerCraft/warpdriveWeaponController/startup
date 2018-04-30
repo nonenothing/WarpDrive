@@ -515,7 +515,7 @@ function laser_station_page()
       w.write(w.format_integer(camVideoChannel, 5))
       w.setColorNormal()
       w.write(" @ " .. w.format_integer(camX, 7) .. " " .. w.format_integer(camY, 3) .. " " .. w.format_integer(camZ, 7)
-        .. " " .. w.format_address(laserstation.cameraAddress, 10, 100))
+        .. " " .. w.format_address(laserstation.cameraAddress))
     end
     
     w.setCursorPos(1, 5)

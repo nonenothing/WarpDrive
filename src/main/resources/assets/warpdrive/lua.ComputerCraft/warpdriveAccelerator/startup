@@ -11,7 +11,7 @@ local lhc_parameters = {}
 local accelerator = nil
 
 function lhc_boot(isDetailed)
-  if accelerator == nil then
+  if accelerator == nil or accelerator.interfaced() == nil then
     return
   end
   
@@ -369,7 +369,7 @@ function connections_page(isBooting)
     w.writeLn(#monitors .. " Monitors detected")
   end
   
-  if accelerator == nil then
+  if accelerator == nil or accelerator.interfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No accelerator controller detected")
   else
