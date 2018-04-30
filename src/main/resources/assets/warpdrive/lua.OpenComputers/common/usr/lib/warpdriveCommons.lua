@@ -763,7 +763,7 @@ end
 
 local function event_refresh_start()
   if event_refreshTimerId == -1 then
-    event_refreshTimerId = event.timer(event_refreshPeriod_s, function () w.event_refresh_tick() end)
+    event_refreshTimerId = event.timer(event_refreshPeriod_s, function () w.event_refresh_tick() end, math.huge)
   end
 end
 
