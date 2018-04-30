@@ -425,8 +425,8 @@ function ship_page_controls()
     if isValid ~= true then
       w.status_showWarning(message)
     else
-      local command = ship.command()
-      if command ~= "MANUAL" and command ~= "HYPERDRIVE" then
+      local isEnabled = ship.enable()
+      if not isEnabled then
         ship.command("MANUAL")
         ship_updateMovementStats()
       end
