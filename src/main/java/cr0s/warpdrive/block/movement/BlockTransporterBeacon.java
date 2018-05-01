@@ -82,7 +82,9 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@Override
 	public int getLightValue(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
-		return metadata == 0 ? 0 : 6;
+		final EnumTransporterBeaconState enumTransporterBeaconState = EnumTransporterBeaconState.get(metadata);
+		return enumTransporterBeaconState == EnumTransporterBeaconState.PACKED_ACTIVE
+		    || enumTransporterBeaconState == EnumTransporterBeaconState.DEPLOYED_ACTIVE ? 6 : 0;
 	}
 	
 	@Override
