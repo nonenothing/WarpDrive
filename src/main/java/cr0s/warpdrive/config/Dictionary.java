@@ -116,7 +116,7 @@ public class Dictionary {
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
 				config.get("block_tags", "malisisdoors:null"                               , "Anchor").getString(); // improper registration of block causing NPE
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
-				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor SkipMining NoBlink").getString();
+				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor StopMining NoBlink").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();

@@ -305,8 +305,9 @@ public class WarpDriveConfig {
 	// - overall consumption in 'all, space' is ML_EU_PER_LAYER_SPACE + ((ML_MAX_RADIUS * 2 + 1) ^ 2) * ML_EU_PER_BLOCK_SPACE => ~ 43150 EU/layer
 	// - overall consumption in 'ores, space' is ML_EU_PER_LAYER_SPACE + ((ML_MAX_RADIUS * 2 + 1) ^ 2) * ML_EU_PER_BLOCK_SPACE * ML_EU_MUL_ORESONLY / 25 => ~ 28630 EU/layer
 	// - at radius 5, one layer takes 403 ticks (2 * ML_SCAN_DELAY_TICKS + ML_MINE_DELAY_TICKS * (ML_MAX_RADIUS * 2 + 1) ^ 2)
-	public static int MINING_LASER_MAX_MEDIUMS_COUNT = 1;
-	public static int MINING_LASER_RADIUS_BLOCKS = 5;
+	public static int MINING_LASER_MAX_MEDIUMS_COUNT = 3;
+	public static int MINING_LASER_RADIUS_NO_LASER_MEDIUM = 4;
+	public static int MINING_LASER_RADIUS_PER_LASER_MEDIUM = 1;
 	public static int MINING_LASER_WARMUP_DELAY_TICKS = 20;
 	public static int MINING_LASER_SCAN_DELAY_TICKS = 20;
 	public static int MINING_LASER_MINE_DELAY_TICKS = 3;
@@ -320,10 +321,10 @@ public class WarpDriveConfig {
 	public static double MINING_LASER_FORTUNE_ENERGY_FACTOR = 1.5;
 	
 	// Tree farm
+	public static int TREE_FARM_MAX_MEDIUMS_COUNT = 5;
 	public static int TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = 3;
 	public static int TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = 2;
 	public static int TREE_FARM_totalMaxRadius = 0;
-	public static int TREE_FARM_MAX_MEDIUMS_COUNT = 5;
 	public static int TREE_FARM_MAX_LOG_DISTANCE = 8;
 	public static int TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
 	
@@ -858,10 +859,12 @@ public class WarpDriveConfig {
 				config.get("laser_cannon", "block_hit_explosion_max_strength", LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completely").getDouble());
 		
 		// Mining Laser
-		MINING_LASER_MAX_MEDIUMS_COUNT = Commons.clamp(1, 64,
+		MINING_LASER_MAX_MEDIUMS_COUNT = Commons.clamp(1, 10,
 				config.get("mining_laser", "max_mediums_count", MINING_LASER_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
-		MINING_LASER_RADIUS_BLOCKS = Commons.clamp(1, 64,
-				config.get("mining_laser", "radius_blocks", MINING_LASER_RADIUS_BLOCKS, "Mining radius").getInt());
+		MINING_LASER_RADIUS_NO_LASER_MEDIUM = Commons.clamp(0, 15,
+		                                                    config.get("mining_laser", "radius_no_laser_medium", MINING_LASER_RADIUS_NO_LASER_MEDIUM, "Mining radius without any laser medium, measured in blocks").getInt());
+		MINING_LASER_RADIUS_PER_LASER_MEDIUM = Commons.clamp(1, 8,
+		                                                     config.get("mining_laser", "radius_per_laser_medium", MINING_LASER_RADIUS_PER_LASER_MEDIUM, "Bonus to mining radius per laser medium, measured in blocks").getInt());
 		
 		MINING_LASER_WARMUP_DELAY_TICKS = Commons.clamp(1, 300,
 				config.get("mining_laser", "warmup_delay_ticks", MINING_LASER_WARMUP_DELAY_TICKS, "Warmup duration (buffer on startup when energy source is weak)").getInt());
@@ -897,9 +900,9 @@ public class WarpDriveConfig {
 		// Tree Farm
 		TREE_FARM_MAX_MEDIUMS_COUNT = Commons.clamp(1, 10,
 				config.get("tree_farm", "max_mediums_count", TREE_FARM_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
-		TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = Commons.clamp(1, 30,
+		TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = Commons.clamp(0, 15,
 				config.get("tree_farm", "max_scan_radius_no_laser_medium", TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM, "Maximum scan radius without any laser medium, on X and Z axis, measured in blocks").getInt());
-		TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = Commons.clamp(0, 5,
+		TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = Commons.clamp(1, 8,
 				config.get("tree_farm", "max_scan_radius_per_laser_medium", TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM, "Bonus to maximum scan radius per laser medium, on X and Z axis, measured in blocks").getInt());
 		TREE_FARM_totalMaxRadius = TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + TREE_FARM_MAX_MEDIUMS_COUNT * TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
 		

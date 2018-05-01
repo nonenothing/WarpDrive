@@ -80,7 +80,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 				// at least one found
 				int energyStored = 0;
 				int maxStorage = 0;
-				int count = 1;
+				int count = 0;
 				while ( (tileEntity instanceof TileEntityLaserMedium)
 				     && count <= laserMedium_maxCount) {
 					// add current one

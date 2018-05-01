@@ -47,7 +47,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private boolean enoughPower = false;
 	private int currentLayer;
 	
-	private int radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS;
+	private int radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_NO_LASER_MEDIUM;
 	private final ArrayList<VectorI> valuablesInLayer = new ArrayList<>();
 	private int valuableIndex = 0;
 	
@@ -91,7 +91,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		}
 		
 		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(worldObj, xCoord, zCoord);
-		radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + cache_laserMedium_count - 1;
+		radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_NO_LASER_MEDIUM
+		               + cache_laserMedium_count * WarpDriveConfig.MINING_LASER_RADIUS_PER_LASER_MEDIUM;
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {
