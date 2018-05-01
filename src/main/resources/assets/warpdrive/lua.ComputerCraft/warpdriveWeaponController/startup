@@ -279,7 +279,7 @@ function laser_battery_config()
     w.setCursorPos(1, 7)
     w.clearLine()
     w.write("Battery beam frequency (" .. w.format_integer(headFrequency, 5) .. "): ")
-    frequency = w.input_readNumber(headFrequency)
+    frequency = w.input_readInteger(headFrequency)
     if frequency ~= 0 and (frequency < 0 or frequency > 65000) then
       w.status_showWarning("This is not a valid beam frequency. Try again.")
     end
@@ -593,7 +593,7 @@ function laser_station_config()
   repeat
     w.setCursorPos(1, 7)
     w.write("Camera video frequency (" .. w.format_integer(camVideoChannel, 5) .. "): ")
-    channel = w.input_readNumber(camVideoChannel)
+    channel = w.input_readInteger(camVideoChannel)
     if channel ~= 0 and (channel < 0 or channel > 268435455) then
       w.status_showWarning("This is not a valid video channel. Try again.")
     end

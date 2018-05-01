@@ -351,7 +351,7 @@ local function format_integer(value, nbchar)
   local str = "?"
   if value ~= nil then
     if type(value) == "number" then
-      str = string.format("%d", value)
+      str = string.format("%d", math.floor(value))
     else
       str = type(value)
     end
@@ -403,9 +403,9 @@ end
 
 ----------- Input controls
 
-local function input_readNumber(currentValue)
+local function input_readInteger(currentValue)
   local inputAbort = false
-  local input = w.format_string(currentValue)
+  local input = w.format_integer(currentValue)
   if input == "0" then
     input = ""
   end
@@ -1230,7 +1230,7 @@ w = {
   format_boolean = format_boolean,
   format_string = format_string,
   format_address = format_address,
-  input_readNumber = input_readNumber,
+  input_readInteger = input_readInteger,
   input_readText = input_readText,
   input_readConfirmation = input_readConfirmation,
   input_readEnum = input_readEnum,

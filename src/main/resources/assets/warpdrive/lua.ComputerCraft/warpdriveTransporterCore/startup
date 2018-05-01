@@ -249,7 +249,7 @@ function transporter_config()
     w.setCursorPos(1, 4)
     local energyFactor_PC = transporter.energyFactor() * 100
     w.write("Energy factor (" .. math.floor(energyFactor_PC * 10) / 10 .. " %): ")
-    energyFactor_PC = w.input_readNumber(energyFactor_PC)
+    energyFactor_PC = w.input_readInteger(energyFactor_PC)
     energyFactor_PC = transporter.energyFactor(energyFactor_PC / 100) * 100
     w.setCursorPos(1, 5)
     w.write("Energy factor set to " .. math.floor(energyFactor_PC * 10) / 10 .. " %")
@@ -259,7 +259,7 @@ function transporter_config()
     local remoteLocation = { transporter.remoteLocation() }
     local remoteLocation_default = "-"
     if remoteLocation[3] ~= nil then
-      w.write("Remote location is currently set to " .. remoteLocation[1] .. ", " .. remoteLocation[2] .. ", " .. remoteLocation[3])
+      w.write("Remote location is currently set to " .. w.format_integer(remoteLocation[1]) .. ", " .. w.format_integer(remoteLocation[2]) .. ", " .. w.format_integer(remoteLocation[3]))
     elseif remoteLocation[1] ~= nil then
       w.writeLn("Remote location is currently set to ")
       w.write(remoteLocation[1])
@@ -298,8 +298,8 @@ function transporter_config()
       w.writeFullLine(" ")
       
       w.setCursorPos(1, 10)
-      w.write("Remote location X coordinate (" .. remoteLocation[1] .. "): ")
-      remoteLocation[1] = w.input_readNumber(remoteLocation[1])
+      w.write("Remote location X coordinate (" .. w.format_integer(remoteLocation[1]) .. "): ")
+      remoteLocation[1] = w.input_readInteger(remoteLocation[1])
       
       w.setColorControl()
       w.setCursorPos(1, 16)
@@ -308,8 +308,8 @@ function transporter_config()
       
       w.setColorNormal()
       w.setCursorPos(1, 11)
-      w.write("Remote location Y coordinate (" .. remoteLocation[2] .. "): ")
-      remoteLocation[2] = w.input_readNumber(remoteLocation[2])
+      w.write("Remote location Y coordinate (" .. w.format_integer(remoteLocation[2]) .. "): ")
+      remoteLocation[2] = w.input_readInteger(remoteLocation[2])
       
       w.setColorControl()
       w.setCursorPos(1, 16)
@@ -318,8 +318,8 @@ function transporter_config()
       w.writeFullLine(" ")
       
       w.setCursorPos(1, 12)
-      w.write("Remote location Z coordinate (" .. remoteLocation[3] .. "): ")
-      remoteLocation[3] = w.input_readNumber(remoteLocation[3])
+      w.write("Remote location Z coordinate (" .. w.format_integer(remoteLocation[3]) .. "): ")
+      remoteLocation[3] = w.input_readInteger(remoteLocation[3])
       
       remoteLocation = { transporter.remoteLocation(remoteLocation[1], remoteLocation[2], remoteLocation[3]) }
     end

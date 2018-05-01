@@ -357,7 +357,7 @@ local function format_integer(value, nbchar)
   local str = "?"
   if value ~= nil then
     if type(value) == "number" then
-      str = string.format("%d", value)
+      str = string.format("%d", math.floor(value))
     else
       str = type(value)
     end
@@ -409,9 +409,9 @@ end
 
 ----------- Input controls
 
-local function input_readNumber(currentValue)
+local function input_readInteger(currentValue)
   local inputAbort = false
-  local input = w.format_string(currentValue)
+  local input = w.format_integer(currentValue)
   if input == "0" then
     input = ""
   end
@@ -438,19 +438,19 @@ local function input_readNumber(currentValue)
       local keycode = params[4]
       
       if keycode >= 2 and keycode <= 10 then -- 1 to 9
-        input = input .. w.format_string(keycode - 1)
+        input = input .. w.format_integer(keycode - 1)
         ignoreNextChar = true
       elseif keycode == 11 or keycode == 82 then -- 0 & keypad 0
         input = input .. "0"
         ignoreNextChar = true
       elseif keycode >= 79 and keycode <= 81 then -- keypad 1 to 3
-        input = input .. w.format_string(keycode - 78)
+        input = input .. w.format_integer(keycode - 78)
         ignoreNextChar = true
       elseif keycode >= 75 and keycode <= 77 then -- keypad 4 to 6
-        input = input .. w.format_string(keycode - 71)
+        input = input .. w.format_integer(keycode - 71)
         ignoreNextChar = true
       elseif keycode >= 71 and keycode <= 73 then -- keypad 7 to 9
-        input = input .. w.format_string(keycode - 64)
+        input = input .. w.format_integer(keycode - 64)
         ignoreNextChar = true
       elseif keycode == 14 then -- Backspace
         input = string.sub(input, 1, string.len(input) - 1)
@@ -1201,7 +1201,7 @@ w = {
   format_boolean = format_boolean,
   format_string = format_string,
   format_address = format_address,
-  input_readNumber = input_readNumber,
+  input_readInteger = input_readInteger,
   input_readText = input_readText,
   input_readConfirmation = input_readConfirmation,
   input_readEnum = input_readEnum,
