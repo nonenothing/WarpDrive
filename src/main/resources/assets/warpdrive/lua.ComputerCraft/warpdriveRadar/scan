@@ -96,6 +96,7 @@ function scanAndDraw()
     
     return 0
   end
+  
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)

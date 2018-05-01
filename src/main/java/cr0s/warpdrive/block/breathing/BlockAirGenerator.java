@@ -87,7 +87,7 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
 		return Item.getItemFromBlock(this);
 	}
 	

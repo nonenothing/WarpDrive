@@ -122,7 +122,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	}
 	
 	@Override
-	public Item getItemDropped(int metadata, Random random, int fortune) {
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
 		return null;
 	}
 	

@@ -28,7 +28,7 @@ function laser_save(parData)
     data.laser_stations[keyStation] = {
       name = laserstation.name,
       cameraAddress = laserstation.cameraAddress,
-      batteries = {}}
+      batteries = {} }
     for keyBattery, laserbattery in pairs(laser_stations[keyStation].batteries) do
       data.laser_stations[keyStation].batteries[keyBattery] = {
         name = laserbattery.name,

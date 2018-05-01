@@ -77,7 +77,7 @@ public class BlockBedrockGlass extends Block {
 	}
 	
 	@Override
-	public Item getItemDropped(int var1, Random random, int var3) {
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
 		return null;
 	}
 	

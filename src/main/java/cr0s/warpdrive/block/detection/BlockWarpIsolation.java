@@ -35,23 +35,17 @@ public class BlockWarpIsolation extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return iconBuffer[0];
 	}
-
-	/**
-	 * Returns the quantity of items to drop on block destruction.
-	 */
+	
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(final Random random) {
 		return 1;
 	}
-
-	/**
-	 * Returns the ID of the items to drop on destruction.
-	 */
+	
 	@Override
-	public Item getItemDropped(int par1, Random par2Random, int par3) {
-		return Item.getItemFromBlock(this);
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
+			return Item.getItemFromBlock(this);
 	}
 }

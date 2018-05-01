@@ -89,11 +89,8 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 		return 1;
 	}
 	
-	/**
-	 * Returns the item to drop on destruction.
-	 */
 	@Override
-	public Item getItemDropped(int par1, Random random, int par3) {
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
 		return Item.getItemFromBlock(this);
 	}
 	

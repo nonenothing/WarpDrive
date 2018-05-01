@@ -167,7 +167,7 @@ function transporter_page_writeEnergy(energy)
   w.setColorNormal()
   w.setCursorPos(19, 8)
   if energy[2] ~= nil then
-    w.write(w.format_integer(energy[1], 7) .. " / " .. energy[2] .. " EU")
+    w.write(w.format_integer(energy[1], 7) .. " / " .. energy[2] .. " EU  ")
   else
     w.write(w.format_string("???", 20))
   end
@@ -182,7 +182,7 @@ function transporter_page_writeLockStrength(lockStrength)
     else
       w.setColorWarning()
     end
-    w.write(w.format_float(percent) .. " %")
+    w.write(w.format_float(percent) .. " %  ")
   else
     w.setColorDisabled()
     w.write(w.format_string("-none-", 7))
@@ -286,7 +286,7 @@ function transporter_config()
         remoteLocation[2] = "0";
         remoteLocation[3] = "0";
       end
-  
+      
       w.setColorNormal()
       w.setCursorPos(1, 11)
       w.writeFullLine(" ")

@@ -29,7 +29,7 @@ public class BlockHighlyAdvancedMachine extends Block {
 	}
 	
 	@Override
-	public Item getItemDropped(int var1, Random var2, int var3) {
+	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
 		return Item.getItemFromBlock(this);
 	}
 	
