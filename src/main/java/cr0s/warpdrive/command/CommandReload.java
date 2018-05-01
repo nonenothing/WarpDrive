@@ -22,7 +22,7 @@ public class CommandReload extends CommandBase {
 		if (sender == null) { return; } 
 		
 		WarpDriveConfig.reload();
-		Commons.addChatMessage(sender, "§aWarpDrive configuration has been reloaded.\n§aUse at your own risk!");
+		Commons.addChatMessage(sender, "§aWarpDrive configuration has been reloaded.\n§cUse at your own risk!");
 	}
 	
 	@Override
