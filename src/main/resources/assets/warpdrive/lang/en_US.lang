@@ -246,6 +246,7 @@ tile.warpdrive.detection.cloaking_core.name=Cloaking Core
 tile.warpdrive.detection.monitor.name=Monitor
 tile.warpdrive.detection.radar.name=Radar
 tile.warpdrive.detection.warp_isolation.name=Warp-field Isolation Block
+tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
 tile.warpdrive.detection.siren.tooltip=Triggered by redstone
 tile.warpdrive.detection.siren0.name=Industrial Siren

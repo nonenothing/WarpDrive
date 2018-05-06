@@ -40,6 +40,7 @@ import cr0s.warpdrive.block.detection.BlockMonitor;
 import cr0s.warpdrive.block.detection.BlockRadar;
 import cr0s.warpdrive.block.detection.BlockSiren;
 import cr0s.warpdrive.block.detection.BlockWarpIsolation;
+import cr0s.warpdrive.block.detection.ItemBlockWarpIsolation;
 import cr0s.warpdrive.block.detection.TileEntityCamera;
 import cr0s.warpdrive.block.detection.TileEntityCloakingCore;
 import cr0s.warpdrive.block.detection.TileEntityMonitor;
@@ -356,7 +357,7 @@ public class WarpDrive {
 		// WARP ISOLATION
 		blockWarpIsolation = new BlockWarpIsolation();
 		
-		GameRegistry.registerBlock(blockWarpIsolation, ItemBlockAbstractBase.class, "blockWarpIsolation");
+		GameRegistry.registerBlock(blockWarpIsolation, ItemBlockWarpIsolation.class, "blockWarpIsolation");
 		
 		// AIR GENERATOR
 		blockAirGenerator = new BlockAirGenerator();
