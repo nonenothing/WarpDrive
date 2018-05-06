@@ -239,20 +239,14 @@ end
 
 function ship_page_setMovement()
   w.page_begin("<==== Set ship movement ====>")
-  w.setCursorPos(1, 14)
-  w.setColorControl()
-  w.writeFullLine(" Enter jump distance on each axis (0-9)")
-  w.writeFullLine(" Enter 0 to keep position on that axis")
-  w.writeFullLine(" Use - or n keys to move in opposite direction")
-  w.writeFullLine(" Press Enter to save your selection")
   w.setColorNormal()
   w.setCursorPos(1, 3)
   ship_writeMovement("Current movement is ")
   w.setCursorPos(1, 5)
   
-  ship_movement[1] = ship_page_setDistanceAxis(4, "Forward" , "Front", "Back", ship_movement[1], math.abs(ship_front + ship_back + 1))
-  ship_movement[2] = ship_page_setDistanceAxis(6, "Vertical", "Up"   , "Down", ship_movement[2], math.abs(ship_up + ship_down + 1))
-  ship_movement[3] = ship_page_setDistanceAxis(8, "Lateral" , "Right", "Left", ship_movement[3], math.abs(ship_left + ship_right + 1))
+  ship_movement[1] = ship_page_setDistanceAxis(4, "Forward/back", "Forward", "Backward", ship_movement[1], math.abs(ship_front + ship_back + 1))
+  ship_movement[2] = ship_page_setDistanceAxis(6, "Up/down"     , "Up"     , "Down"    , ship_movement[2], math.abs(ship_up + ship_down + 1))
+  ship_movement[3] = ship_page_setDistanceAxis(8, "Right/left"  , "Right"  , "Left"    , ship_movement[3], math.abs(ship_left + ship_right + 1))
   ship_movement = { ship.movement(ship_movement[1], ship_movement[2], ship_movement[3]) }
   ship_updateMovementStats()
 end
@@ -264,11 +258,11 @@ function ship_page_setDistanceAxis(line, axis, positive, negative, userEntry, sh
     maxJumpDistance = 0
   end
   local maximumDistance = math.floor(shipLength + maxJumpDistance)
-  w.setColorDisabled()
-  w.setCursorPos(3, line + 1)
-  w.write(positive .. " is " .. math.floor( shipLength + 1) .. " to " ..  maximumDistance .. " blocks      ")
-  w.setCursorPos(3, line + 2)
-  w.write(negative .. " is " .. math.floor(-shipLength - 1) .. " to " .. -maximumDistance .. " blocks      ")
+  w.setColorControl()
+  w.setCursorPos(1, line + 2)
+  w.writeFullLine("Enter between " .. math.floor( shipLength + 1) .. " and " ..  maximumDistance .. " to move " ..  positive)
+  w.writeFullLine("Enter 0 to keep position on this axis")
+  w.writeFullLine("Enter between " .. -maximumDistance .. " and " .. math.floor(-shipLength - 1) .. " to move " ..  negative)
   
   w.setColorNormal()
   repeat
@@ -279,9 +273,11 @@ function ship_page_setDistanceAxis(line, axis, positive, negative, userEntry, sh
       w.status_showWarning("Wrong distance. Try again.")
     end
   until userEntry == 0 or (math.abs(userEntry) > shipLength and math.abs(userEntry) <= maximumDistance)
-  w.setCursorPos(1, line + 1)
-  w.clearLine()
   w.setCursorPos(1, line + 2)
+  w.clearLine()
+  w.setCursorPos(1, line + 3)
+  w.clearLine()
+  w.setCursorPos(1, line + 4)
   w.clearLine()
   
   return userEntry
@@ -454,7 +450,7 @@ function ship_page_controls()
   
   w.setCursorPos(1, 16)
   w.setColorControl()
-  w.writeFullLine(" set ship Name (N), Dimensions (D), Movement (M)")
+  w.writeFullLine(" set ship Name (N), dImensions (I), Movement (M)")
   if ship_isInHyper then
     w.writeFullLine(" Jump to move ship (M/J), exit Hyperspace (H)")
   else
@@ -463,18 +459,18 @@ function ship_page_controls()
 end
 
 function ship_key_controls(character, keycode)
-  if character == 'm' or character == 'M' then -- M
+  if character == 'm' or character == 'M' then
     ship_page_setMovement()
     ship_page_setRotation()
     ship_warp()
     return true
-  elseif character == 'd' or character == 'D' then -- D
+  elseif character == 'i' or character == 'I' then
     ship_page_setDimensions()
     return true
-  elseif character == 'j' or character == 'J' then -- J
+  elseif character == 'j' or character == 'J' then
     ship_warp()
     return true
-  elseif character == 'h' or character == 'H' then -- H
+  elseif character == 'h' or character == 'H' then
     -- rs.setOutput(alarm_side, true)
     local isConfirmed
     if ship_isInHyper then
