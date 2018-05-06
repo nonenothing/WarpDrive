@@ -235,36 +235,36 @@ tile.warpdrive.breathing.air_generator2.name=Geavanceerde zuurstofgenerator
 tile.warpdrive.breathing.air_generator3.name=Superieure zuurstof
 tile.warpdrive.breathing.air_shield.name=Energie-gebaseerd Luchtschild
 
-tile.warpdrive.building.ShipScanner.name=Schip Scanner
+tile.warpdrive.building.ship_scanner.name=Schip Scanner
 
-tile.warpdrive.collection.LaserTreeFarm.name=Laser-boomboerderij
-tile.warpdrive.collection.MiningLaser.name=Mijnlaser
+tile.warpdrive.collection.laser_tree_farm.name=Laser-boomboerderij
+tile.warpdrive.collection.mining_laser.name=Mijnlaser
 
-tile.warpdrive.detection.Camera.name=Camera
-tile.warpdrive.detection.CloakingCoil.name=Dekmantelveld-spoel
-tile.warpdrive.detection.CloakingCore.name=Dekmantelveld-kern
-tile.warpdrive.detection.Monitor.name=Monitor
-tile.warpdrive.detection.Radar.name=Radar
-tile.warpdrive.detection.WarpIsolation.name=Warp-veld isolatieblok
+tile.warpdrive.detection.camera.name=Camera
+tile.warpdrive.detection.cloaking_coil.name=Dekmantelveld-spoel
+tile.warpdrive.detection.cloaking_core.name=Dekmantelveld-kern
+tile.warpdrive.detection.monitor.name=Monitor
+tile.warpdrive.detection.radar.name=Radar
+tile.warpdrive.detection.warp_isolation.name=Warp-veld isolatieblok
 
-tile.warpdrive.detection.Siren.tooltip=Aangezet door redstone
-tile.warpdrive.detection.Siren0.name=Industrieële Sirene
-tile.warpdrive.detection.Siren0.tooltip=Je kan deze Sirene vanaf 32 m verderop horen
-tile.warpdrive.detection.Siren4.name=Normale Luchtsirene
-tile.warpdrive.detection.Siren4.tooltip=Je kan deze Luchtsirene vanaf 32 meter verderop horen.
-tile.warpdrive.detection.Siren5.name=Geavanceerde Luchtsirene
-tile.warpdrive.detection.Siren5.tooltip=Je kan deze Luchtsirene vanaf 64 meter verderop nog horen.
-tile.warpdrive.detection.Siren6.name=Superieure Luchtsirene
-tile.warpdrive.detection.Siren6.tooltip=Je kan deze Luchtsirene vanaf 128 m verderop horen.
+tile.warpdrive.detection.siren.tooltip=Aangezet door redstone
+tile.warpdrive.detection.siren0.name=Industrieële Sirene
+tile.warpdrive.detection.siren0.tooltip=Je kan deze Sirene vanaf 32 m verderop horen
+tile.warpdrive.detection.siren4.name=Normale Luchtsirene
+tile.warpdrive.detection.siren4.tooltip=Je kan deze Luchtsirene vanaf 32 meter verderop horen.
+tile.warpdrive.detection.siren5.name=Geavanceerde Luchtsirene
+tile.warpdrive.detection.siren5.tooltip=Je kan deze Luchtsirene vanaf 64 meter verderop nog horen.
+tile.warpdrive.detection.siren6.name=Superieure Luchtsirene
+tile.warpdrive.detection.siren6.tooltip=Je kan deze Luchtsirene vanaf 128 m verderop horen.
 
-tile.warpdrive.energy.EnanReactorCore.name=Enantiomorfe Reactor Kern
-tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorfe Stabilizatielaser
-tile.warpdrive.energy.EnergyBank.0.name=Nullpunt Module
-tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subruimte Condensator
-tile.warpdrive.energy.EnergyBank.1.name=Normale Subruimte Condensator
-tile.warpdrive.energy.EnergyBank.2.name=Geavanceerde Subruimte Condensator
-tile.warpdrive.energy.EnergyBank.3.name=Superieure Subruimte Condensator
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reactor Laser Monitor
+tile.warpdrive.energy.enan_reactor_core.name=Enantiomorfe Reactor Kern
+tile.warpdrive.energy.enan_reactor_laser.name=Enantiomorfe Stabilizatielaser
+tile.warpdrive.energy.energy_bank.0.name=Nullpunt Module
+tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subruimte Condensator
+tile.warpdrive.energy.energy_bank.1.name=Normale Subruimte Condensator
+tile.warpdrive.energy.energy_bank.2.name=Geavanceerde Subruimte Condensator
+tile.warpdrive.energy.energy_bank.3.name=Superieure Subruimte Condensator
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reactor Laser Monitor
 
 tile.warpdrive.forcefield.block1.name=Normale Krachtvelds-blok
 tile.warpdrive.forcefield.block2.name=Geavanceerde Krachtvelds-blok
@@ -670,15 +670,15 @@ warpdrive.video_channel.statusLine.invalid=§cVideokanaal %1$d is ongeldig.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideokanaal %1$d is ongeldig of camera is te ver weg!
 warpdrive.video_channel.statusLine.undefined=§7niet gedefinieerd videokanaal.\n§bGebruik een Afstemmingsvork§r om het te zetten.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
-warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
-warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
-warpdrive.cloakingCore.disabled=Dekmantelveld is uitgeschakeld
-warpdrive.cloakingCore.lowPower=§cDekmantelveld is uit, We hebben meer stroom nodig kapitein!
-warpdrive.cloakingCore.cloaking=Een Niveau %1$d dekmantelveld bedekt huidig %2$d blokken!
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloaking_core.disabled=Dekmantelveld is uitgeschakeld
+warpdrive.cloaking_core.lowPower=§cDekmantelveld is uit, We hebben meer stroom nodig kapitein!
+warpdrive.cloaking_core.cloaking=Een Niveau %1$d dekmantelveld bedekt huidig %2$d blokken!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=Geen reactor gevonden!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) aangesloten.
+warpdrive.ic2_reactor_laser_monitor.noReactor=Geen reactor gevonden!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d reactor(s) aangesloten.
 
 warpdrive.transporter.status=Van (%1$.0f %2$.0f %3$.0f) naar (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

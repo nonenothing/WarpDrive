@@ -31,7 +31,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	
 	public BlockRadar() {
 		super(Material.iron);
-		setBlockName("warpdrive.detection.Radar");
+		setBlockName("warpdrive.detection.radar");
 	}
 	
 	@SideOnly(Side.CLIENT)

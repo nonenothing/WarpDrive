@@ -235,36 +235,36 @@ tile.warpdrive.breathing.air_generator2.name=先进空气供给机
 tile.warpdrive.breathing.air_generator3.name=卓越空气供给机
 tile.warpdrive.breathing.air_shield.name=能量空气护罩
 
-tile.warpdrive.building.ShipScanner.name=船体扫描仪
+tile.warpdrive.building.ship_scanner.name=船体扫描仪
 
-tile.warpdrive.collection.LaserTreeFarm.name=激光林场
-tile.warpdrive.collection.MiningLaser.name=采掘激光
+tile.warpdrive.collection.laser_tree_farm.name=激光林场
+tile.warpdrive.collection.mining_laser.name=采掘激光
 
-tile.warpdrive.detection.Camera.name=摄像机
-tile.warpdrive.detection.CloakingCoil.name=隐形线圈
-tile.warpdrive.detection.CloakingCore.name=隐形核心
-tile.warpdrive.detection.Monitor.name=监控器
-tile.warpdrive.detection.Radar.name=雷达
-tile.warpdrive.detection.WarpIsolation.name=曲率领域隔离方块
+tile.warpdrive.detection.camera.name=摄像机
+tile.warpdrive.detection.cloaking_coil.name=隐形线圈
+tile.warpdrive.detection.cloaking_core.name=隐形核心
+tile.warpdrive.detection.monitor.name=监控器
+tile.warpdrive.detection.radar.name=雷达
+tile.warpdrive.detection.warp_isolation.name=曲率领域隔离方块
 
-tile.warpdrive.detection.Siren.tooltip=红石触发
-tile.warpdrive.detection.Siren0.name=工业警报器
-tile.warpdrive.detection.Siren0.tooltip=探测半径32米
-tile.warpdrive.detection.Siren4.name=基础空袭警报器
-tile.warpdrive.detection.Siren4.tooltip=探测半径32米
-tile.warpdrive.detection.Siren5.name=高级空袭警报器
-tile.warpdrive.detection.Siren5.tooltip=探测半径64米
-tile.warpdrive.detection.Siren6.name=卓越空袭警报器
-tile.warpdrive.detection.Siren6.tooltip=探测半径128米
+tile.warpdrive.detection.siren.tooltip=红石触发
+tile.warpdrive.detection.siren0.name=工业警报器
+tile.warpdrive.detection.siren0.tooltip=探测半径32米
+tile.warpdrive.detection.siren4.name=基础空袭警报器
+tile.warpdrive.detection.siren4.tooltip=探测半径32米
+tile.warpdrive.detection.siren5.name=高级空袭警报器
+tile.warpdrive.detection.siren5.tooltip=探测半径64米
+tile.warpdrive.detection.siren6.name=卓越空袭警报器
+tile.warpdrive.detection.siren6.tooltip=探测半径128米
 
-tile.warpdrive.energy.EnanReactorCore.name=镜像体反应堆芯
-tile.warpdrive.energy.EnanReactorLaser.name=镜像体反应堆稳定激光
-tile.warpdrive.energy.EnergyBank.0.name=零点模块
-tile.warpdrive.energy.EnergyBank.0.tooltip=创造子空间电容
-tile.warpdrive.energy.EnergyBank.1.name=基础子空间电容
-tile.warpdrive.energy.EnergyBank.2.name=先进子空间电容
-tile.warpdrive.energy.EnergyBank.3.name=卓越子空间电容
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2反应堆激光监控器
+tile.warpdrive.energy.enan_reactor_core.name=镜像体反应堆芯
+tile.warpdrive.energy.enan_reactor_laser.name=镜像体反应堆稳定激光
+tile.warpdrive.energy.energy_bank.0.name=零点模块
+tile.warpdrive.energy.energy_bank.0.tooltip=创造子空间电容
+tile.warpdrive.energy.energy_bank.1.name=基础子空间电容
+tile.warpdrive.energy.energy_bank.2.name=先进子空间电容
+tile.warpdrive.energy.energy_bank.3.name=卓越子空间电容
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2反应堆激光监控器
 
 tile.warpdrive.forcefield.block1.name=基础力场方块
 tile.warpdrive.forcefield.block2.name=先进力场方块
@@ -670,16 +670,16 @@ warpdrive.video_channel.statusLine.invalid=§c视频通道 %1$d 无效.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§c视频通道 %1$d 无效或者是相机的距离太远!
 warpdrive.video_channel.statusLine.undefined=§7未定义的视频通道.\n§b使用一个音叉§r 去设置它.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§c完整度降低至 %1$d%%: %2$s 线圈失去联系且预计将失去 %3$s 线圈
-warpdrive.cloakingCore.missingInner=§c完整度降低至 %1$d%%: %2$s 线圈失去联系
-warpdrive.cloakingCore.missingOuter=§c完整度降低至 %1$d%%: 预计丢失 %2$s 线圈
-warpdrive.cloakingCore.valid=系统认证
-warpdrive.cloakingCore.disabled=伪装被禁用
-warpdrive.cloakingCore.lowPower=§c伪装失效，我们需要更多的能量.
-warpdrive.cloakingCore.cloaking=一个层级 %1$d 伪装目前覆盖 %2$d方块!
+warpdrive.cloaking_core.missingInnerAndOuter=§c完整度降低至 %1$d%%: %2$s 线圈失去联系且预计将失去 %3$s 线圈
+warpdrive.cloaking_core.missingInner=§c完整度降低至 %1$d%%: %2$s 线圈失去联系
+warpdrive.cloaking_core.missingOuter=§c完整度降低至 %1$d%%: 预计丢失 %2$s 线圈
+warpdrive.cloaking_core.valid=系统认证
+warpdrive.cloaking_core.disabled=伪装被禁用
+warpdrive.cloaking_core.lowPower=§c伪装失效，我们需要更多的能量.
+warpdrive.cloaking_core.cloaking=一个层级 %1$d 伪装目前覆盖 %2$d方块!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=未发现反应堆!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d反应堆已连接.
+warpdrive.ic2_reactor_laser_monitor.noReactor=未发现反应堆!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d反应堆已连接.
 
 warpdrive.transporter.status=从 (%1$.0f %2$.0f %3$.0f) 到 (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

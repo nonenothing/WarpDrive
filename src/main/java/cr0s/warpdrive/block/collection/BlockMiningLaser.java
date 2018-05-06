@@ -31,7 +31,7 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	
 	public BlockMiningLaser() {
 		super(Material.iron);
-		setBlockName("warpdrive.collection.MiningLaser");
+		setBlockName("warpdrive.collection.mining_laser");
 	}
 	
 	@SideOnly(Side.CLIENT)

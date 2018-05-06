@@ -37,7 +37,7 @@ public class BlockSiren extends BlockAbstractContainer {
 		super(Material.iron);
 		hasSubBlocks = true;
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.detection.Siren");
+		setBlockName("warpdrive.detection.siren");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -423,16 +423,16 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		// build status message
 		final float integrity = countIntegrity / 13.0F; 
 		if (messageInnerCoils.length() > 0 && messageOuterCoils.length() > 0) {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloakingCore.missingInnerAndOuter", 
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missingInnerAndOuter",
 					Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils); 
 		} else if (messageInnerCoils.length() > 0) {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloakingCore.missingInner",
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missingInner",
 			        Math.round(100.0F * integrity), messageInnerCoils);
 		} else if (messageOuterCoils.length() > 0) {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloakingCore.missingOuter",
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missingOuter",
 					Math.round(100.0F * integrity), messageOuterCoils);
 		} else {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloakingCore.valid");
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.valid");
 		}
 		
 		// Update cloaking field parameters defined by coils
@@ -457,11 +457,11 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		if (!isValid) {
 			unlocalizedStatus = messageValidityIssues;
 		} else if (!isEnabled) {
-			unlocalizedStatus = "warpdrive.cloakingCore.disabled";
+			unlocalizedStatus = "warpdrive.cloaking_core.disabled";
 		} else if (!isCloaking) {
-			unlocalizedStatus = "warpdrive.cloakingCore.lowPower";
+			unlocalizedStatus = "warpdrive.cloaking_core.lowPower";
 		} else {
-			unlocalizedStatus = "warpdrive.cloakingCore.cloaking";
+			unlocalizedStatus = "warpdrive.cloaking_core.cloaking";
 		}
 		return super.getStatusHeader()
 		    + "\n" + StatCollector.translateToLocalFormatted(unlocalizedStatus,

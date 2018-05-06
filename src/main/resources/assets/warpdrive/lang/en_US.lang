@@ -235,36 +235,36 @@ tile.warpdrive.breathing.air_generator2.name=Advanced Air Generator
 tile.warpdrive.breathing.air_generator3.name=Superior Air Generator
 tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
-tile.warpdrive.building.ShipScanner.name=Ship Scanner
+tile.warpdrive.building.ship_scanner.name=Ship Scanner
 
-tile.warpdrive.collection.LaserTreeFarm.name=Laser Tree Farm
-tile.warpdrive.collection.MiningLaser.name=Mining Laser
+tile.warpdrive.collection.laser_tree_farm.name=Laser Tree Farm
+tile.warpdrive.collection.mining_laser.name=Mining Laser
 
-tile.warpdrive.detection.Camera.name=Camera
-tile.warpdrive.detection.CloakingCoil.name=Cloaking Coil
-tile.warpdrive.detection.CloakingCore.name=Cloaking Core
-tile.warpdrive.detection.Monitor.name=Monitor
-tile.warpdrive.detection.Radar.name=Radar
-tile.warpdrive.detection.WarpIsolation.name=Warp-field Isolation Block
+tile.warpdrive.detection.camera.name=Camera
+tile.warpdrive.detection.cloaking_coil.name=Cloaking Coil
+tile.warpdrive.detection.cloaking_core.name=Cloaking Core
+tile.warpdrive.detection.monitor.name=Monitor
+tile.warpdrive.detection.radar.name=Radar
+tile.warpdrive.detection.warp_isolation.name=Warp-field Isolation Block
 
-tile.warpdrive.detection.Siren.tooltip=Triggered by redstone
-tile.warpdrive.detection.Siren0.name=Industrial Siren
-tile.warpdrive.detection.Siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
-tile.warpdrive.detection.Siren4.name=Basic Air Raid Siren
-tile.warpdrive.detection.Siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
-tile.warpdrive.detection.Siren5.name=Advanced Air Raid Siren
-tile.warpdrive.detection.Siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
-tile.warpdrive.detection.Siren6.name=Superior Air Raid Siren
-tile.warpdrive.detection.Siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
+tile.warpdrive.detection.siren.tooltip=Triggered by redstone
+tile.warpdrive.detection.siren0.name=Industrial Siren
+tile.warpdrive.detection.siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
+tile.warpdrive.detection.siren4.name=Basic Air Raid Siren
+tile.warpdrive.detection.siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
+tile.warpdrive.detection.siren5.name=Advanced Air Raid Siren
+tile.warpdrive.detection.siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
+tile.warpdrive.detection.siren6.name=Superior Air Raid Siren
+tile.warpdrive.detection.siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
 
-tile.warpdrive.energy.EnanReactorCore.name=Enantiomorphic Reactor Core
-tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorphic Reactor Stabilization Laser
-tile.warpdrive.energy.EnergyBank.0.name=Zero-Point Module
-tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subspace Capacitor
-tile.warpdrive.energy.EnergyBank.1.name=Basic Subspace Capacitor
-tile.warpdrive.energy.EnergyBank.2.name=Advanced Subspace Capacitor
-tile.warpdrive.energy.EnergyBank.3.name=Superior Subspace Capacitor
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reactor Laser Monitor
+tile.warpdrive.energy.enan_reactor_core.name=Enantiomorphic Reactor Core
+tile.warpdrive.energy.enan_reactor_laser.name=Enantiomorphic Reactor Stabilization Laser
+tile.warpdrive.energy.energy_bank.0.name=Zero-Point Module
+tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subspace Capacitor
+tile.warpdrive.energy.energy_bank.1.name=Basic Subspace Capacitor
+tile.warpdrive.energy.energy_bank.2.name=Advanced Subspace Capacitor
+tile.warpdrive.energy.energy_bank.3.name=Superior Subspace Capacitor
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reactor Laser Monitor
 
 tile.warpdrive.forcefield.block1.name=Basic Force Field Block
 tile.warpdrive.forcefield.block2.name=Advanced Force Field Block
@@ -670,16 +670,16 @@ warpdrive.video_channel.statusLine.invalid=§cVideo channel %1$d is invalid.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideo channel %1$d is invalid or camera is too far away!
 warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
-warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
-warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
-warpdrive.cloakingCore.valid=System is valid
-warpdrive.cloakingCore.disabled=Cloak is disabled
-warpdrive.cloakingCore.lowPower=§cCloak is down, we need more power Captain!
-warpdrive.cloakingCore.cloaking=A tier %1$d cloak is currently covering %2$d blocks!
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloaking_core.valid=System is valid
+warpdrive.cloaking_core.disabled=Cloak is disabled
+warpdrive.cloaking_core.lowPower=§cCloak is down, we need more power Captain!
+warpdrive.cloaking_core.cloaking=A tier %1$d cloak is currently covering %2$d blocks!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=No reactor found!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) connected.
+warpdrive.ic2_reactor_laser_monitor.noReactor=No reactor found!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d reactor(s) connected.
 
 warpdrive.transporter.status=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

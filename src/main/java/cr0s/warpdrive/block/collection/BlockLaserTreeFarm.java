@@ -33,7 +33,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	
 	public BlockLaserTreeFarm() {
 		super(Material.iron);
-		setBlockName("warpdrive.collection.LaserTreeFarm");
+		setBlockName("warpdrive.collection.laser_tree_farm");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -31,7 +31,7 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 	
 	public BlockEnergyBank() {
 		super(Material.iron);
-		setBlockName("warpdrive.energy.EnergyBank.");
+		setBlockName("warpdrive.energy.energy_bank.");
 		hasSubBlocks = true;
 	}
 	

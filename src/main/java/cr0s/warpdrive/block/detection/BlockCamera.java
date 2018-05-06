@@ -26,7 +26,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	
 	public BlockCamera() {
 		super(Material.iron);
-		setBlockName("warpdrive.detection.Camera");
+		setBlockName("warpdrive.detection.camera");
 	}
 	
 	@SideOnly(Side.CLIENT)

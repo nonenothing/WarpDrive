@@ -28,7 +28,7 @@ public class BlockMonitor extends BlockAbstractContainer {
 	public BlockMonitor() {
 		super(Material.iron);
 		isRotating = true;
-		setBlockName("warpdrive.detection.Monitor");
+		setBlockName("warpdrive.detection.monitor");
 	}
 	
 	@SideOnly(Side.CLIENT)

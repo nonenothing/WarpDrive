@@ -27,7 +27,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	public BlockCloakingCore() {
 		super(Material.iron);
-		setBlockName("warpdrive.detection.CloakingCore");
+		setBlockName("warpdrive.detection.cloaking_core");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -23,7 +23,7 @@ public class BlockWarpIsolation extends Block {
 		setHardness(3.5F);
 		setStepSound(Block.soundTypeMetal);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		setBlockName("warpdrive.detection.WarpIsolation");
+		setBlockName("warpdrive.detection.warp_isolation");
 	}
 	
 	@SideOnly(Side.CLIENT)

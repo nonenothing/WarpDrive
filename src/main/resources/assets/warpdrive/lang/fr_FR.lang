@@ -235,36 +235,36 @@ tile.warpdrive.breathing.air_generator2.name=Générateur d'air avancé
 tile.warpdrive.breathing.air_generator3.name=Générateur d'air supérieur
 tile.warpdrive.breathing.air_shield.name=Bouclier d'air d'énergie
 
-tile.warpdrive.building.ShipScanner.name=Scanneur de vaisseau
+tile.warpdrive.building.ship_scanner.name=Scanneur de vaisseau
 
-tile.warpdrive.collection.LaserTreeFarm.name=Laser de plantation arboricole
-tile.warpdrive.collection.MiningLaser.name=Laser d'exploitation minière
+tile.warpdrive.collection.laser_tree_farm.name=Laser de plantation arboricole
+tile.warpdrive.collection.mining_laser.name=Laser d'exploitation minière
 
-tile.warpdrive.detection.Camera.name=Caméra
-tile.warpdrive.detection.CloakingCoil.name=Bobine d'invisibilité
-tile.warpdrive.detection.CloakingCore.name=Noyau d'invisibilité
-tile.warpdrive.detection.Monitor.name=Moniteur
-tile.warpdrive.detection.Radar.name=Radar
-tile.warpdrive.detection.WarpIsolation.name=Bloc d'isolation de champ de Warp
+tile.warpdrive.detection.camera.name=Caméra
+tile.warpdrive.detection.cloaking_coil.name=Bobine d'invisibilité
+tile.warpdrive.detection.cloaking_core.name=Noyau d'invisibilité
+tile.warpdrive.detection.monitor.name=Moniteur
+tile.warpdrive.detection.radar.name=Radar
+tile.warpdrive.detection.warp_isolation.name=Bloc d'isolation de champ de Warp
 
-tile.warpdrive.detection.Siren.tooltip=Déclenchement par redstone
-tile.warpdrive.detection.Siren0.name=Sirène industrielle
-tile.warpdrive.detection.Siren0.tooltip=Emet une alarme industrielle audible à 32 m.
-tile.warpdrive.detection.Siren4.name=Sirène de raid aérien basique 
-tile.warpdrive.detection.Siren4.tooltip=Sonne l'alerte de raid aérien audible à 32 m.
-tile.warpdrive.detection.Siren5.name=Sirène de raid aérien avancée
-tile.warpdrive.detection.Siren5.tooltip=Sonne l'alerte de raid aérien audible à 64 m.
-tile.warpdrive.detection.Siren6.name=Sirène de raid aérien supérieure
-tile.warpdrive.detection.Siren6.tooltip=Sonne l'alerte de raid aérien audible à 128 m.
+tile.warpdrive.detection.siren.tooltip=Déclenchement par redstone
+tile.warpdrive.detection.siren0.name=Sirène industrielle
+tile.warpdrive.detection.siren0.tooltip=Emet une alarme industrielle audible à 32 m.
+tile.warpdrive.detection.siren4.name=Sirène de raid aérien basique
+tile.warpdrive.detection.siren4.tooltip=Sonne l'alerte de raid aérien audible à 32 m.
+tile.warpdrive.detection.siren5.name=Sirène de raid aérien avancée
+tile.warpdrive.detection.siren5.tooltip=Sonne l'alerte de raid aérien audible à 64 m.
+tile.warpdrive.detection.siren6.name=Sirène de raid aérien supérieure
+tile.warpdrive.detection.siren6.tooltip=Sonne l'alerte de raid aérien audible à 128 m.
 
-tile.warpdrive.energy.EnanReactorCore.name=Noyau de réacteur Enantiomorphic
-tile.warpdrive.energy.EnanReactorLaser.name=Laser de stabilisation pour réacteur Enantiomorphic
-tile.warpdrive.energy.EnergyBank.0.name=Extracteur du potentiel de point zéro
-tile.warpdrive.energy.EnergyBank.0.tooltip=Condensateur subspatial creatif
-tile.warpdrive.energy.EnergyBank.1.name=Condensateur subspatial élémentaire
-tile.warpdrive.energy.EnergyBank.2.name=Condensateur subspatial avancé
-tile.warpdrive.energy.EnergyBank.3.name=Condensateur subspatial supérieur
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=Laser de monitoring pour réacteur IC2
+tile.warpdrive.energy.enan_reactor_core.name=Noyau de réacteur Enantiomorphic
+tile.warpdrive.energy.enan_reactor_laser.name=Laser de stabilisation pour réacteur Enantiomorphic
+tile.warpdrive.energy.energy_bank.0.name=Extracteur du potentiel de point zéro
+tile.warpdrive.energy.energy_bank.0.tooltip=Condensateur subspatial creatif
+tile.warpdrive.energy.energy_bank.1.name=Condensateur subspatial élémentaire
+tile.warpdrive.energy.energy_bank.2.name=Condensateur subspatial avancé
+tile.warpdrive.energy.energy_bank.3.name=Condensateur subspatial supérieur
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=Laser de monitoring pour réacteur IC2
 
 tile.warpdrive.forcefield.block1.name=Bloc de champ de force élémentaire
 tile.warpdrive.forcefield.block2.name=Bloc de champ de force avancé
@@ -670,16 +670,16 @@ warpdrive.video_channel.statusLine.invalid=§cLe canal vidéo %1$d est invalide.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cLe canal vidéo %1$d est invalide ou la caméra est trop loin!
 warpdrive.video_channel.statusLine.undefined=§7Le canal vidéo est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s, et bobine(s) de projection manquante(nt) en direction de %3$s
-warpdrive.cloakingCore.missingInner=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s
-warpdrive.cloakingCore.missingOuter=§cIntegrité réduite à %1$d%%: bobine(s) de projection manquante(nt) en direction de %2$s
-warpdrive.cloakingCore.valid=Le système est valide
-warpdrive.cloakingCore.disabled=Le champ d'invisibilité est désactivé
-warpdrive.cloakingCore.lowPower=§cLe champ d'invisibilité est en panne. Il nous faut plus d'énergie, Capitaine!
-warpdrive.cloakingCore.cloaking=Un champ de niveau %1$d couvre actuellement %2$d blocs!
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s, et bobine(s) de projection manquante(nt) en direction de %3$s
+warpdrive.cloaking_core.missingInner=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s
+warpdrive.cloaking_core.missingOuter=§cIntegrité réduite à %1$d%%: bobine(s) de projection manquante(nt) en direction de %2$s
+warpdrive.cloaking_core.valid=Le système est valide
+warpdrive.cloaking_core.disabled=Le champ d'invisibilité est désactivé
+warpdrive.cloaking_core.lowPower=§cLe champ d'invisibilité est en panne. Il nous faut plus d'énergie, Capitaine!
+warpdrive.cloaking_core.cloaking=Un champ de niveau %1$d couvre actuellement %2$d blocs!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=Pas de réacteur IC2 trouvé!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d réacteur(s) connecté(s).
+warpdrive.ic2_reactor_laser_monitor.noReactor=Pas de réacteur IC2 trouvé!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d réacteur(s) connecté(s).
 
 warpdrive.transporter.status=De (%1$.0f %2$.0f %3$.0f) à (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

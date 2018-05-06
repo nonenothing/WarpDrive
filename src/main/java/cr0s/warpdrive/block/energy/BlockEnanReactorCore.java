@@ -22,7 +22,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	
 	public BlockEnanReactorCore() {
 		super(Material.iron);
-		setBlockName("warpdrive.energy.EnanReactorCore");
+		setBlockName("warpdrive.energy.enan_reactor_core");
 	}
 	
 	@Override

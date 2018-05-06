@@ -27,7 +27,7 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	public BlockIC2reactorLaserMonitor() {
 		super(Material.iron);
-		setBlockName("warpdrive.energy.IC2ReactorLaserMonitor");
+		setBlockName("warpdrive.energy.ic2_reactor_laser_monitor");
 	}
 	
 	@Override

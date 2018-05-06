@@ -33,7 +33,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	
 	public BlockShipScanner() {
 		super(Material.iron);
-		setBlockName("warpdrive.building.ShipScanner");
+		setBlockName("warpdrive.building.ship_scanner");
 	}
 	
 	@SideOnly(Side.CLIENT)
