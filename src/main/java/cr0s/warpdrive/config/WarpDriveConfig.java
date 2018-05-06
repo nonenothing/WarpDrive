@@ -365,8 +365,8 @@ public class WarpDriveConfig {
 	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS = 8;
 	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_Y_BELOW_BLOCKS = 3;
 	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_Y_ABOVE_BLOCKS = 1;
-	public static int      TRANSPORTER_RANGE_BASE_BLOCKS = 128;
-	public static int      TRANSPORTER_RANGE_UPGRADE_BLOCKS = 16;
+	public static int      TRANSPORTER_RANGE_BASE_BLOCKS = 256;
+	public static int      TRANSPORTER_RANGE_UPGRADE_BLOCKS = 64;
 	public static int      TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY = 8;
 	public static double[] TRANSPORTER_LOCKING_ENERGY_FACTORS = { 50.0, 3.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
 	public static double   TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK = Math.pow(0.01D, 1.0D / 300.0D); // natural decay down to 1% over 300 ticks

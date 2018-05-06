@@ -686,7 +686,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			globalPositionRemoteNew = globalPositionBeacon;
 			
 		} else if (remoteLocationRequested instanceof VectorI) {
-			final VectorI vRequest = (VectorI) remoteLocationRequested;
+			final VectorI vRequest = ((VectorI) remoteLocationRequested).clone();
 			if (vRequest.y < 0) {
 				final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(worldObj, xCoord, zCoord);
 				if (celestialObjectChild == null) {
@@ -844,7 +844,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		//  check maximum range
 		if (rangeActual > rangeMax) {
 			isJammed = true;
-			reasonJammed = String.format("Out of range: %d > %d", rangeActual, rangeMax);
+			reasonJammed = String.format("Out of range: %d > %d m", rangeActual, rangeMax);
 			return;
 		}
 		

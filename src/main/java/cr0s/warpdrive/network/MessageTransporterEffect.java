@@ -160,7 +160,11 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			// energizing
 			if (entity != null) {
 				// check existing particle at position
-				final Vector3 v3Position = v3EntityPositions.get(indexEntity).clone().translate(ForgeDirection.DOWN, entity.getEyeHeight());
+				final Vector3 v3Position = v3EntityPositions.get(indexEntity).clone();
+				if ( entity instanceof EntityPlayer
+				  && entity == Minecraft.getMinecraft().thePlayer) {
+					v3Position.translate(ForgeDirection.DOWN, entity.getEyeHeight());
+				}
 				AbstractEntityFX effect = EntityFXRegistry.get(world, v3Position, 0.5D);
 				if (effect == null) {
 					// compute height with a margin
