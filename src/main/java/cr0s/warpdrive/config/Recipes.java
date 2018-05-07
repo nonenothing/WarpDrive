@@ -611,8 +611,8 @@ public class Recipes {
 				'd', Blocks.diamond_block);
 		}
 		
-		ItemStack[] itemStackMachineCasings = { itemStackMachineCasingLV, itemStackMachineCasingMV, itemStackMachineCasingHV, itemStackMachineCasingEV };
-		ItemStack[] itemStackMotors  = { itemStackMotorLV, itemStackMotorMV, itemStackMotorHV, itemStackMotorEV };
+		final ItemStack[] itemStackMachineCasings = { itemStackMachineCasingLV, itemStackMachineCasingMV, itemStackMachineCasingHV, itemStackMachineCasingEV };
+		final ItemStack[] itemStackMotors  = { itemStackMotorLV, itemStackMotorMV, itemStackMotorHV, itemStackMotorEV };
 		
 		// Base tuning crystals
 		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL), false, " e ", "BBB", "qrq",
@@ -639,10 +639,18 @@ public class Recipes {
 				'g', Blocks.glowstone));
 		
 		// Intermediary component for reactor core
-		GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE), false, "shs", "hmh", "shs",
-				's', Items.nether_star,
-				'h', "blockHull3_plain",
-				'm', itemStackMachineCasings[2]));
+		if (!WarpDriveConfig.ACCELERATOR_ENABLE) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE), false, "shs", "hmh", "shs",
+			                                           's', Items.nether_star,
+			                                           'h', "blockHull3_plain",
+			                                           'm', itemStackMachineCasings[2]));
+		} else {
+			GameRegistry.addRecipe(new RecipeParticleShapedOre(ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE), false, "chc", "hph", "cec",
+			                                                   'p', ItemElectromagneticCell.getItemStackNoCache(ParticleRegistry.PROTON, 1000),
+			                                                   'h', "blockHull3_plain",
+			                                                   'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
+			                                                   'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL)));
+		}
 		
 		
 		// Computer interface is 2 gold ingot, 2 wired modems (or redstone), 1 lead/tin ingot
@@ -1277,9 +1285,15 @@ public class Recipes {
 				's', Items.stick));
 		
 		// Transporter containment is 1 HV Machine casing, 2 Ender crystal, gives 2
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterContainment, 2), false, " e ", " m ", " e ",
-				'm', itemStackMachineCasings[2],
-				'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL)));
+		if (!WarpDriveConfig.ACCELERATOR_ENABLE) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterContainment, 2), false, " e ", " m ", " e ",
+			                                           'm', itemStackMachineCasings[2],
+			                                           'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL)));
+		} else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterContainment, 2), false, " e ", " m ", " e ",
+			                                           'm', "blockElectromagnet2",
+			                                           'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL)));
+		}
 		
 		// Transporter core is 1 HV Machine casing, 1 Emerald crystal, 1 Capacitive crystal, 1 Diamond crystal, 1 Power interface, 1 Computer interface
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterCore), false, " E ", "pmd", " c ",
@@ -1290,11 +1304,19 @@ public class Recipes {
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE)));
 		
 		// Transporter scanner is 1 HV Machine casing, 1 Emerald crystal, 3 Capacitive crystal, 2 Ender crystal
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterScanner), false, " E ", "eme", "CCC",
-				'm', itemStackMachineCasings[2],
-				'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
-				'E', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-				'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+		if (!WarpDriveConfig.ACCELERATOR_ENABLE) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterScanner), false, " E ", "eme", "CCC",
+			                                           'm', itemStackMachineCasings[2],
+			                                           'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
+			                                           'E', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
+			                                           'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+		} else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockTransporterScanner), false, " E ", "eme", "CCC",
+			                                           'm', "blockElectromagnet2",
+			                                           'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
+			                                           'E', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
+			                                           'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+		}
 		
 		// IC2 needs to be loaded for the following 2 recipes
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
@@ -1378,12 +1400,21 @@ public class Recipes {
 				'm', itemStackMachineCasings[3] ));
 		
 		// Enantiomorphic reactor core is 1 EV Machine casing, 4 Capacitive crystal, 1 Computer interface, 1 Power interface, 2 Lenses
-		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorCore), false, "CpC", "lml", "CcC",
-				'm', ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE),
-				'l', ItemComponent.getItemStack(EnumComponentType.LENS),
-				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
-				'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL))); 
+		if (!WarpDriveConfig.ACCELERATOR_ENABLE) {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorCore), false, "CpC", "lml", "CcC",
+			                                           'm', ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE),
+			                                           'l', ItemComponent.getItemStack(EnumComponentType.LENS),
+			                                           'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			                                           'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+			                                           'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL)));
+		} else {
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorCore), false, " p ", "lCl", "cpm",
+			                                           'C', ItemComponent.getItemStack(EnumComponentType.REACTOR_CORE),
+			                                           'l', ItemComponent.getItemStack(EnumComponentType.LENS),
+			                                           'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			                                           'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+			                                           'm', itemStackMachineCasings[2]));
+		}
 		
 		// Enantiomorphic reactor stabilization laser is 1 HV Machine casing, 2 Advanced hull, 1 Computer interface, 1 Power interface, 1 Lense, 1 Redstone, 2 glass pane
 		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnanReactorLaser), false, "ghr", "ldm", "ghc",
