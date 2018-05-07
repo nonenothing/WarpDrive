@@ -331,11 +331,17 @@ public class Commons {
 	}
 	
 	public static double toDouble(final Object object) {
+		if (object == null) {
+			return 0.0D;
+		}
 		assert(!(object instanceof Object[]));
 		return Double.parseDouble(object.toString());
 	}
 	
 	public static float toFloat(final Object object) {
+		if (object == null) {
+			return 0.0F;
+		}
 		assert(!(object instanceof Object[]));
 		return Float.parseFloat(object.toString());
 	}
