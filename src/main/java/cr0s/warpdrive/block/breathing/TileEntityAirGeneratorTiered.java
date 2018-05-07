@@ -41,7 +41,7 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	@Override
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
-		Block block = getBlockType();
+		final Block block = getBlockType();
 		if (block instanceof BlockAirGeneratorTiered) {
 			tier = ((BlockAirGeneratorTiered) block).tier;
 			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[tier - 1];
@@ -152,7 +152,7 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		                     xCoord, yCoord, zCoord);
 	}
 	
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
@@ -162,14 +162,14 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 			return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

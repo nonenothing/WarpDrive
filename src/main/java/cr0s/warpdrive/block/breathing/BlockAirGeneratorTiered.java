@@ -51,7 +51,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		if (side == (metadata & 7)) {
 			if ((metadata & 8) == 0) { // Inactive state
@@ -66,7 +66,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 3) {
 			return iconBuffer[ICON_SIDE_ACTIVATED];
 		}
@@ -80,7 +80,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	}
 		
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return 1;
 	}
 	
@@ -95,28 +95,29 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer, final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityAirGeneratorTiered) {
-			TileEntityAirGeneratorTiered airGenerator = (TileEntityAirGeneratorTiered)tileEntity;
-			ItemStack itemStackHeld = entityPlayer.getHeldItem();
+			final TileEntityAirGeneratorTiered airGenerator = (TileEntityAirGeneratorTiered)tileEntity;
+			final ItemStack itemStackHeld = entityPlayer.getHeldItem();
 			if (itemStackHeld == null) {
 				Commons.addChatMessage(entityPlayer, airGenerator.getStatus());
 				return true;
 			} else {
-				Item itemHeld = itemStackHeld.getItem();
+				final Item itemHeld = itemStackHeld.getItem();
 				if (itemHeld instanceof IAirContainerItem) {
-					IAirContainerItem airCanister = (IAirContainerItem) itemHeld;
+					final IAirContainerItem airCanister = (IAirContainerItem) itemHeld;
 					if (airCanister.canContainAir(itemStackHeld) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
+						final ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
-								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+								final EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
 								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 							}
 							((EntityPlayerMP)entityPlayer).sendContainerToPlayer(entityPlayer.inventoryContainer);

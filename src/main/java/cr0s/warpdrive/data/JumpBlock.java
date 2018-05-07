@@ -88,7 +88,7 @@ public class JumpBlock {
 		}
 	}
 	
-	public JumpBlock(Filler filler, int x, int y, int z) {
+	public JumpBlock(final Filler filler, final int x, final int y, final int z) {
 		if (filler.block == null) {
 			WarpDrive.logger.info("Forcing glass for invalid filler with null block at " + x + " " + y + " " + z);
 			filler.block = Blocks.glass;
@@ -105,7 +105,7 @@ public class JumpBlock {
 		if (externals == null) {
 			return null;
 		}
-		NBTBase nbtExternal = externals.get(modId);
+		final NBTBase nbtExternal = externals.get(modId);
 		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 			WarpDrive.logger.info("Returning " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
 		}
@@ -147,7 +147,7 @@ public class JumpBlock {
 	private static final byte[] mrotWoodLog        = {  0,  1,  2,  3,  8,  9, 10, 11,  4,  5,  6,  7, 12, 13, 14, 15 };
 	
 	// Return updated metadata from rotating a vanilla block
-	private int getMetadataRotation(NBTTagCompound nbtTileEntity, final byte rotationSteps) {
+	private int getMetadataRotation(final NBTTagCompound nbtTileEntity, final byte rotationSteps) {
 		if (rotationSteps == 0) {
 			return blockMeta;
 		}
@@ -197,8 +197,8 @@ public class JumpBlock {
 		} else if (block instanceof BlockLog) {
 			mrot = mrotWoodLog;
 		} else if (block instanceof BlockSkull) {
-			mrot = mrotNone;
-			short facing = nbtTileEntity.getShort("Rot");
+			// mrot = mrotNone;
+			final short facing = nbtTileEntity.getShort("Rot");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setShort("Rot", mrotSign[facing]);
@@ -226,19 +226,13 @@ public class JumpBlock {
 		}
 	}
 	
-	public ChunkCoordinates deploy(World targetWorld, ITransformation transformation) {
+	public ChunkCoordinates deploy(final World targetWorld, final ITransformation transformation) {
 		try {
-			NBTTagCompound nbtToDeploy = null;
-			if (blockTileEntity != null) {
-				nbtToDeploy = new NBTTagCompound();
-				blockTileEntity.writeToNBT(nbtToDeploy);
-			} else if (blockNBT != null) {
-				nbtToDeploy = (NBTTagCompound) blockNBT.copy();
-			}
+			final NBTTagCompound nbtToDeploy = getBlockNBT();
 			int newBlockMeta = blockMeta;
 			if (externals != null) {
 				for (final Entry<String, NBTBase> external : externals.entrySet()) {
-					IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
+					final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
 						newBlockMeta = blockTransformer.rotate(block, blockMeta, nbtToDeploy, transformation);
 					}
@@ -264,24 +258,24 @@ public class JumpBlock {
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 						WarpDrive.logger.info(this + " deploy: TileEntity has mainXYZ");
 					}
-					ChunkCoordinates mainTarget = transformation.apply(nbtToDeploy.getInteger("mainX"), nbtToDeploy.getInteger("mainY"), nbtToDeploy.getInteger("mainZ"));
+					final ChunkCoordinates mainTarget = transformation.apply(nbtToDeploy.getInteger("mainX"), nbtToDeploy.getInteger("mainY"), nbtToDeploy.getInteger("mainZ"));
 					nbtToDeploy.setInteger("mainX", mainTarget.posX);
 					nbtToDeploy.setInteger("mainY", mainTarget.posY);
 					nbtToDeploy.setInteger("mainZ", mainTarget.posZ);
 				}
 				
 				if (nbtToDeploy.hasKey("screenData")) {// IC2NuclearControl 2.2.5a
-					NBTTagCompound nbtScreenData = nbtToDeploy.getCompoundTag("screenData");
+					final NBTTagCompound nbtScreenData = nbtToDeploy.getCompoundTag("screenData");
 					if ( nbtScreenData.hasKey("minX") && nbtScreenData.hasKey("minY") && nbtScreenData.hasKey("minZ")
 					  && nbtScreenData.hasKey("maxX") && nbtScreenData.hasKey("maxY") && nbtScreenData.hasKey("maxZ")) {
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 							WarpDrive.logger.info(this + " deploy: TileEntity has screenData.min/maxXYZ");
 						}
-						ChunkCoordinates minTarget = transformation.apply(nbtScreenData.getInteger("minX"), nbtScreenData.getInteger("minY"), nbtScreenData.getInteger("minZ"));
+						final ChunkCoordinates minTarget = transformation.apply(nbtScreenData.getInteger("minX"), nbtScreenData.getInteger("minY"), nbtScreenData.getInteger("minZ"));
 						nbtScreenData.setInteger("minX", minTarget.posX);
 						nbtScreenData.setInteger("minY", minTarget.posY);
 						nbtScreenData.setInteger("minZ", minTarget.posZ);
-						ChunkCoordinates maxTarget = transformation.apply(nbtScreenData.getInteger("maxX"), nbtScreenData.getInteger("maxY"), nbtScreenData.getInteger("maxZ"));
+						final ChunkCoordinates maxTarget = transformation.apply(nbtScreenData.getInteger("maxX"), nbtScreenData.getInteger("maxY"), nbtScreenData.getInteger("maxZ"));
 						nbtScreenData.setInteger("maxX", maxTarget.posX);
 						nbtScreenData.setInteger("maxY", maxTarget.posY);
 						nbtScreenData.setInteger("maxZ", maxTarget.posZ);
@@ -329,12 +323,12 @@ public class JumpBlock {
 			}
 			return target;
 			
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			String coordinates;
 			try {
 				coordinates = " at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta;
-			} catch (Exception dropMe) {
+			} catch (final Exception dropMe) {
 				coordinates = " (unknown coordinates)";
 			}
 			WarpDrive.logger.error("moveBlockSimple exception at " + coordinates);
@@ -342,10 +336,10 @@ public class JumpBlock {
 		return null;
 	}
 	
-	public static void refreshBlockStateOnClient(World world, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public static void refreshBlockStateOnClient(final World world, final int x, final int y, final int z) {
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity != null) {
-			Class<?> teClass = tileEntity.getClass();
+			final Class<?> teClass = tileEntity.getClass();
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 				WarpDrive.logger.info(String.format("Refreshing clients @ %s (%d %d %d) with %s derived from %s",
 				                                    world.provider.getDimensionName(),
@@ -354,11 +348,11 @@ public class JumpBlock {
 				                                    teClass.getSuperclass()));
 			}
 			try {
-				String superClassName = teClass.getSuperclass().getName();
-				boolean isIC2 = superClassName.contains("ic2.core.block");
+				final String superClassName = teClass.getSuperclass().getName();
+				final boolean isIC2 = superClassName.contains("ic2.core.block");
 				if (isIC2 || superClassName.contains("advsolar.common.tiles")) {// IC2
-					Method onUnloaded = teClass.getMethod("onUnloaded");
-					Method onLoaded = teClass.getMethod("onLoaded");
+					final Method onUnloaded = teClass.getMethod("onUnloaded");
+					final Method onLoaded = teClass.getMethod("onLoaded");
 					if (onUnloaded != null && onLoaded != null) {
 						onUnloaded.invoke(tileEntity);
 						onLoaded.invoke(tileEntity);
@@ -385,17 +379,17 @@ public class JumpBlock {
 					}
 				} else {// IC2 extensions without network optimization (transferring all fields) 
 					try {
-						Method getNetworkedFields = teClass.getMethod("getNetworkedFields");
-						List<String> fields = (List<String>) getNetworkedFields.invoke(tileEntity);
+						final Method getNetworkedFields = teClass.getMethod("getNetworkedFields");
+						final List<String> fields = (List<String>) getNetworkedFields.invoke(tileEntity);
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 							WarpDrive.logger.info("Tile has " + fields.size() + " networked fields: " + fields);
 						}
 						for (final String field : fields) {
 							NetworkHelper_updateTileEntityField(tileEntity, field);
 						}
-					} catch (NoSuchMethodException exception) {
+					} catch (final NoSuchMethodException exception) {
 						// WarpDrive.logger.info("Tile has no getNetworkedFields method");
-					} catch (NoClassDefFoundError exception) {
+					} catch (final NoClassDefFoundError exception) {
 						if (WarpDriveConfig.LOGGING_JUMP) {
 							WarpDrive.logger.info("TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z + " is missing a class definition");
 							if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
@@ -404,7 +398,7 @@ public class JumpBlock {
 						}
 					}
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName() + " at " + x + " " + y + " " + z);
 				exception.printStackTrace();
 			}
@@ -421,7 +415,7 @@ public class JumpBlock {
 			return;
 		}
 		blockMeta = tagCompound.getByte("blockMeta");
-		blockTileEntity = null;
+		weakTileEntity = null;
 		if (tagCompound.hasKey("blockNBT")) {
 			blockNBT = tagCompound.getCompoundTag("blockNBT");
 			
@@ -430,7 +424,7 @@ public class JumpBlock {
 				blockNBT.removeTag("computerID");
 			}
 			if (blockNBT.hasKey("oc:computer")) {
-				NBTTagCompound tagComputer = blockNBT.getCompoundTag("oc:computer");
+				final NBTTagCompound tagComputer = blockNBT.getCompoundTag("oc:computer");
 				tagComputer.removeTag("components");
 				tagComputer.removeTag("node");
 				blockNBT.setTag("oc:computer", tagComputer);
@@ -456,12 +450,9 @@ public class JumpBlock {
 	public void writeToNBT(final NBTTagCompound tagCompound) {
 		tagCompound.setString("block", Block.blockRegistry.getNameForObject(block));
 		tagCompound.setByte("blockMeta", (byte) blockMeta);
-		if (blockTileEntity != null) {
-			final NBTTagCompound nbtTileEntity = new NBTTagCompound();
-			blockTileEntity.writeToNBT(nbtTileEntity);
+		final NBTTagCompound nbtTileEntity = getBlockNBT();
+		if (nbtTileEntity != null) {
 			tagCompound.setTag("blockNBT", nbtTileEntity);
-		} else if (blockNBT != null) {
-			tagCompound.setTag("blockNBT", blockNBT);
 		}
 		tagCompound.setInteger("x", x);
 		tagCompound.setInteger("y", y);
@@ -507,7 +498,7 @@ public class JumpBlock {
 		
 		// OpenComputers case
 		if (tagCompound.hasKey("oc:computer")) {
-			NBTTagCompound tagComputer = tagCompound.getCompoundTag("oc:computer");
+			final NBTTagCompound tagComputer = tagCompound.getCompoundTag("oc:computer");
 			tagComputer.removeTag("chunkX");
 			tagComputer.removeTag("chunkZ");
 			tagComputer.removeTag("components");
@@ -520,11 +511,11 @@ public class JumpBlock {
 		if (tagCompound.hasKey("oc:items")) {
 			NBTTagList tagListItems = tagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
 			for (int indexItemSlot = 0; indexItemSlot < tagListItems.tagCount(); indexItemSlot++) {
-				NBTTagCompound tagCompoundItemSlot = tagListItems.getCompoundTagAt(indexItemSlot);
-				NBTTagCompound tagCompoundItem = tagCompoundItemSlot.getCompoundTag("item");
-				NBTTagCompound tagCompoundTag = tagCompoundItem.getCompoundTag("tag");
-				NBTTagCompound tagCompoundOCData = tagCompoundTag.getCompoundTag("oc:data");
-				NBTTagCompound tagCompoundNode = tagCompoundOCData.getCompoundTag("node");
+				final NBTTagCompound tagCompoundItemSlot = tagListItems.getCompoundTagAt(indexItemSlot);
+				final NBTTagCompound tagCompoundItem = tagCompoundItemSlot.getCompoundTag("item");
+				final NBTTagCompound tagCompoundTag = tagCompoundItem.getCompoundTag("tag");
+				final NBTTagCompound tagCompoundOCData = tagCompoundTag.getCompoundTag("oc:data");
+				final NBTTagCompound tagCompoundNode = tagCompoundOCData.getCompoundTag("node");
 				if (tagCompoundNode.hasKey("address")) {
 					tagCompoundNode.removeTag("address");
 				}
@@ -533,7 +524,7 @@ public class JumpBlock {
 		
 		// OpenComputers keyboard
 		if (tagCompound.hasKey("oc:keyboard")) {
-			NBTTagCompound tagCompoundKeyboard = tagCompound.getCompoundTag("oc:keyboard");
+			final NBTTagCompound tagCompoundKeyboard = tagCompound.getCompoundTag("oc:keyboard");
 			tagCompoundKeyboard.removeTag("node");
 		}
 		
@@ -556,7 +547,7 @@ public class JumpBlock {
 	public static void emptyEnergyStorage(final NBTTagCompound tagCompound) {
 		// BuildCraft
 		if (tagCompound.hasKey("battery", NBT.TAG_COMPOUND)) {
-			NBTTagCompound tagCompoundBattery = tagCompound.getCompoundTag("battery");
+			final NBTTagCompound tagCompoundBattery = tagCompound.getCompoundTag("battery");
 			if (tagCompoundBattery.hasKey("energy", NBT.TAG_INT)) {
 				tagCompoundBattery.setInteger("energy", 0);
 			}
@@ -617,25 +608,25 @@ public class JumpBlock {
 				WarpDrive.logger.info("Patched IC2 API, new instance is '" + NetworkManager_instance + "'");
 			}
 			// IC2 hack ends here
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			throw new RuntimeException(exception);
 		}
 	}
 	
-	private static void NetworkHelper_updateTileEntityField(TileEntity tileEntity, String field) {
+	private static void NetworkHelper_updateTileEntityField(final TileEntity tileEntity, final String field) {
 		try {
 			if (NetworkManager_instance == null) {
 				NetworkHelper_init();
 			}
 			NetworkManager_updateTileEntityField.invoke(NetworkManager_instance, tileEntity, field);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			throw new RuntimeException(exception);
 		}
 	}
 	// IC2 support ends here
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.World.setBlock to remove lighting computations
-	public static boolean setBlockNoLight(World w, int x, int y, int z, Block block, int blockMeta, int par6) {
+	public static boolean setBlockNoLight(final World w, final int x, final int y, final int z, final Block block, final int blockMeta, final int par6) {
 		// return w.setBlock(x, y, z, block, blockMeta, par6);
 		
 		if (x >= -30000000 && z >= -30000000 && x < 30000000 && z < 30000000) {
@@ -644,7 +635,7 @@ public class JumpBlock {
 			} else if (y >= 256) {
 				return false;
 			} else {
-				Chunk chunk = w.getChunkFromChunkCoords(x >> 4, z >> 4);
+				final Chunk chunk = w.getChunkFromChunkCoords(x >> 4, z >> 4);
 				Block block1 = null;
 				// net.minecraftforge.common.util.BlockSnapshot blockSnapshot = null;
 				
@@ -658,7 +649,7 @@ public class JumpBlock {
 				// 	w.capturedBlockSnapshots.add(blockSnapshot);
 				// }
 				
-				boolean flag = myChunkSBIDWMT(chunk, x & 15, y, z & 15, block, blockMeta);
+				final boolean flag = myChunkSBIDWMT(chunk, x & 15, y, z & 15, block, blockMeta);
 				
 				// Disable rollback on item use
 				// if (!flag && blockSnapshot != null) {
@@ -688,8 +679,8 @@ public class JumpBlock {
 	}
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.Chunk.func_150807_a to remove lighting computations
-	private static boolean myChunkSBIDWMT(Chunk c, int x, int y, int z, Block block, int blockMeta) {
-		int i1 = z << 4 | x;
+	private static boolean myChunkSBIDWMT(final Chunk c, final int x, final int y, final int z, final Block block, final int blockMeta) {
+		final int i1 = z << 4 | x;
 		
 		if (y >= c.precipitationHeightMap[i1] - 1) {
 			c.precipitationHeightMap[i1] = -999;
@@ -697,13 +688,13 @@ public class JumpBlock {
 		
 		// Removed light recalculations
 		// int j1 = c.heightMap[i1];
-		Block block1 = c.getBlock(x, y, z);
-		int k1 = c.getBlockMetadata(x, y, z);
+		final Block block1 = c.getBlock(x, y, z);
+		final int k1 = c.getBlockMetadata(x, y, z);
 		
 		if (block1 == block && k1 == blockMeta) {
 			return false;
 		} else {
-			ExtendedBlockStorage[] storageArrays = c.getBlockStorageArray();
+			final ExtendedBlockStorage[] storageArrays = c.getBlockStorageArray();
 			ExtendedBlockStorage extendedblockstorage = storageArrays[y >> 4];
 			// Removed light recalculations
 			// boolean flag = false;
@@ -718,8 +709,8 @@ public class JumpBlock {
 				// flag = y >= j1;
 			}
 			
-			int l1 = c.xPosition * 16 + x;
-			int i2 = c.zPosition * 16 + z;
+			final int l1 = c.xPosition * 16 + x;
+			final int i2 = c.zPosition * 16 + z;
 			
 			// Removed light recalculations
 			// int k2 = block1.getLightOpacity(c.worldObj, l1, y, i2);
@@ -737,12 +728,12 @@ public class JumpBlock {
 				if (!c.worldObj.isRemote) {
 					block1.breakBlock(c.worldObj, l1, y, i2, block1, k1);
 					// After breakBlock a phantom TE might have been created with incorrect meta. This attempts to kill that phantom TE so the normal one can be created properly later
-					TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
+					final TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
 					if (te != null && te.shouldRefresh(block1, c.getBlock(x & 0x0F, y, z & 0x0F), k1, c.getBlockMetadata(x & 0x0F, y, z & 0x0F), c.worldObj, l1, y, i2)) {
 						c.removeTileEntity(x & 0x0F, y, z & 0x0F);
 					}
 				} else if (block1.hasTileEntity(k1)) {
-					TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
+					final TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
 					if (te != null && te.shouldRefresh(block1, block, k1, blockMeta, c.worldObj, l1, y, i2)) {
 						c.worldObj.removeTileEntity(l1, y, i2);
 					}
@@ -774,7 +765,7 @@ public class JumpBlock {
 				}
 				/**/
 				
-				TileEntity tileentity;
+				final TileEntity tileentity;
 				
 				// Removed onBlockAdded event
 				// if (!c.worldObj.isRemote) {

@@ -49,7 +49,7 @@ public class JumpShip {
 	}
 	
 	public static JumpShip createFromFile(final String fileName, final StringBuilder reason) {
-		NBTTagCompound schematic = Commons.readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
+		final NBTTagCompound schematic = Commons.readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
 		if (schematic == null) {
 			reason.append(String.format("Schematic not found or unknown error reading it: '%s'.", fileName));
 			return null;
@@ -233,14 +233,14 @@ public class JumpShip {
 			coreX, coreY, coreZ);
 	}
 	
-	public boolean checkBorders(StringBuilder reason) {
+	public boolean checkBorders(final StringBuilder reason) {
 		// Abort jump if blocks with TE are connecting to the ship (avoid crash when splitting multi-blocks)
 		for (int x = minX - 1; x <= maxX + 1; x++) {
-			boolean xBorder = (x == minX - 1) || (x == maxX + 1);
+			final boolean xBorder = (x == minX - 1) || (x == maxX + 1);
 			for (int z = minZ - 1; z <= maxZ + 1; z++) {
-				boolean zBorder = (z == minZ - 1) || (z == maxZ + 1);
+				final boolean zBorder = (z == minZ - 1) || (z == maxZ + 1);
 				for (int y = minY - 1; y <= maxY + 1; y++) {
-					boolean yBorder = (y == minY - 1) || (y == maxY + 1);
+					final boolean yBorder = (y == minY - 1) || (y == maxY + 1);
 					if ((y < 0) || (y > 255)) {
 						continue;
 					}
@@ -248,7 +248,7 @@ public class JumpShip {
 						continue;
 					}
 					
-					Block block = worldObj.getBlock(x, y, z);
+					final Block block = worldObj.getBlock(x, y, z);
 					
 					// Skipping any air block & ignored blocks
 					if (worldObj.isAirBlock(x, y, z) || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
@@ -261,7 +261,7 @@ public class JumpShip {
 					}
 					
 					// Skipping blocks without tile entities
-					TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
+					final TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
 					if (tileEntity == null) {
 						continue;
 					}
@@ -280,27 +280,27 @@ public class JumpShip {
 	/**
 	 * Saving ship to memory
 	 */
-	public boolean save(StringBuilder reason) {
-		VectorI vPosition = new VectorI();
+	public boolean save(final StringBuilder reason) {
+		final VectorI vPosition = new VectorI();
 		try {
-			int estimatedVolume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
-			JumpBlock[][] placeTimeJumpBlocks = { new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume] };
-			int[] placeTimeIndexes = { 0, 0, 0, 0, 0 }; 
+			final int estimatedVolume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
+			final JumpBlock[][] placeTimeJumpBlocks = { new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume], new JumpBlock[estimatedVolume] };
+			final int[] placeTimeIndexes = { 0, 0, 0, 0, 0 };
 			
 			int actualVolume = 0;
 			int newMass = 0;
-			int xc1 = minX >> 4;
-			int xc2 = maxX >> 4;
-			int zc1 = minZ >> 4;
-			int zc2 = maxZ >> 4;
+			final int xc1 = minX >> 4;
+			final int xc2 = maxX >> 4;
+			final int zc1 = minZ >> 4;
+			final int zc2 = maxZ >> 4;
 			
 			for (int xc = xc1; xc <= xc2; xc++) {
-				int x1 = Math.max(minX, xc << 4);
-				int x2 = Math.min(maxX, (xc << 4) + 15);
+				final int x1 = Math.max(minX, xc << 4);
+				final int x2 = Math.min(maxX, (xc << 4) + 15);
 				
 				for (int zc = zc1; zc <= zc2; zc++) {
-					int z1 = Math.max(minZ, zc << 4);
-					int z2 = Math.min(maxZ, (zc << 4) + 15);
+					final int z1 = Math.max(minZ, zc << 4);
+					final int z2 = Math.min(maxZ, (zc << 4) + 15);
 					
 					for (int y = minY; y <= maxY; y++) {
 						vPosition.y = y;
@@ -308,7 +308,7 @@ public class JumpShip {
 							vPosition.x = x;
 							for (int z = z1; z <= z2; z++) {
 								vPosition.z = z;
-								Block block = worldObj.getBlock(x, y, z);
+								final Block block = worldObj.getBlock(x, y, z);
 								
 								// Skipping vanilla air & ignored blocks
 								if (block == Blocks.air || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
@@ -336,11 +336,11 @@ public class JumpShip {
 								final TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
 								final JumpBlock jumpBlock = new JumpBlock(worldObj, x, y, z, block, blockMeta, tileEntity);
 								
-								if (jumpBlock.blockTileEntity != null && jumpBlock.externals != null) {
+								if (tileEntity != null && jumpBlock.externals != null) {
 									for (final Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
-										IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
+										final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 										if (blockTransformer != null) {
-											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity, reason)) {
+											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, tileEntity, reason)) {
 												if (reason.length() > 0) {
 													reason.append("\n");
 												}
@@ -380,7 +380,7 @@ public class JumpShip {
 				}
 			}
 			actualMass = newMass;
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			final String msg = String.format("Exception while saving ship, probably a corrupted block at (%d %d %d).",
 			                                 vPosition.x, vPosition.y, vPosition.z);
@@ -395,7 +395,7 @@ public class JumpShip {
 		return true;
 	}
 	
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		coreX = tagCompound.getInteger("coreX");
 		coreY = tagCompound.getInteger("coreY");
 		coreZ = tagCompound.getInteger("coreZ");
@@ -430,7 +430,7 @@ public class JumpShip {
 		tagCompound.setInteger("minY", minY);
 		tagCompound.setInteger("actualMass", actualMass);
 		final NBTTagList tagListJumpBlocks = new NBTTagList();
-		for (JumpBlock jumpBlock : jumpBlocks) {
+		for (final JumpBlock jumpBlock : jumpBlocks) {
 			final NBTTagCompound tagCompoundBlock = new NBTTagCompound();
 			jumpBlock.writeToNBT(tagCompoundBlock);
 			tagListJumpBlocks.appendTag(tagCompoundBlock);

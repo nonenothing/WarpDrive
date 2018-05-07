@@ -179,7 +179,7 @@ public class WorldGenStructure {
 	}
 	
 	public void generateFromFile(final World world, final String filename, final int targetX, final int targetY, final int targetZ, final byte rotationSteps) {
-		StringBuilder reason = new StringBuilder();
+		final StringBuilder reason = new StringBuilder();
 		final JumpShip jumpShip = JumpShip.createFromFile(filename, reason);
 		if (jumpShip == null) {
 			WarpDrive.logger.error(String.format("%s Failed to read schematic %s: %s", this, filename, reason.toString()));
@@ -190,10 +190,10 @@ public class WorldGenStructure {
 	
 	public void deployShip(final World world, final JumpShip jumpShip, final int targetX, final int targetY, final int targetZ, final byte rotationSteps) {
 		
-		Transformation transformation = new Transformation(jumpShip, world, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
+		final Transformation transformation = new Transformation(jumpShip, world, targetX - jumpShip.coreX, targetY - jumpShip.coreY, targetZ - jumpShip.coreZ, rotationSteps);
 		for (int index = 0; index < jumpShip.jumpBlocks.length; index++) {
 			// Deploy single block
-			JumpBlock jumpBlock = jumpShip.jumpBlocks[index];
+			final JumpBlock jumpBlock = jumpShip.jumpBlocks[index];
 			
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
@@ -213,8 +213,8 @@ public class WorldGenStructure {
 					WarpDrive.logger.info("At index " + index + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
 					                      + " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
 				}
-				ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-				Block blockAtTarget = world.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);
+				final ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
+				final Block blockAtTarget = world.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);
 				if (blockAtTarget == Blocks.air || Dictionary.BLOCKS_EXPANDABLE.contains(blockAtTarget)) {
 					jumpBlock.deploy(world, transformation);
 				} else {

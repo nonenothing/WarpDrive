@@ -41,7 +41,6 @@ import cr0s.warpdrive.data.EnumDisplayAlignment;
 import cr0s.warpdrive.data.EnumTooltipCondition;
 import cr0s.warpdrive.network.PacketHandler;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -435,7 +434,7 @@ public class WarpDriveConfig {
 	public static Block getModBlock(final String mod, final String id) {
 		try {
 			return GameRegistry.findBlock(mod, id);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.info(String.format("Failed to get mod block for %s:%s", mod, id));
 			exception.printStackTrace();
 		}
@@ -483,12 +482,12 @@ public class WarpDriveConfig {
 	
 	private static ItemStack getModItemStackOrNull(final String mod, final String id, final int meta) {
 		try {
-			ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
+			final ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
 			if (meta != -1) {
 				item.setItemDamage(meta);
 			}
 			return item;
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
 			return null;
 		}
@@ -1058,7 +1057,7 @@ public class WarpDriveConfig {
 		config.save();
 	}
 	
-	public static void registerBlockTransformer(final String modId, IBlockTransformer blockTransformer) {
+	public static void registerBlockTransformer(final String modId, final IBlockTransformer blockTransformer) {
 		blockTransformers.put(modId, blockTransformer);
 		WarpDrive.logger.info(modId + " blockTransformer registered");
 	}
@@ -1130,79 +1129,97 @@ public class WarpDriveConfig {
 		}
 		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
 		
-		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
+		final boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {
 			CompatBotania.register();
 		}
-		boolean isBiblioCraftLoaded = Loader.isModLoaded("BiblioCraft");
+		
+		final boolean isBiblioCraftLoaded = Loader.isModLoaded("BiblioCraft");
 		if (isBiblioCraftLoaded) {
 			CompatBiblioCraft.register();
 		}
-		boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
+		
+		final boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
 		if (isBuildCraftLoaded) {
 			CompatBuildCraft.register();
 		}
-		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
+		
+		final boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
 		if (isCarpentersBlocksLoaded) {
 			CompatCarpentersBlocks.register();
 		}
-		boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
+		
+		final boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
 		if (isCustomNpcsLoaded) {
 			CompatCustomNpcs.register();
 		}
-		boolean isDraconicEvolutionLoaded = Loader.isModLoaded("DraconicEvolution");
+		
+		final boolean isDraconicEvolutionLoaded = Loader.isModLoaded("DraconicEvolution");
 		if (isDraconicEvolutionLoaded) {
 			CompatDraconicEvolution.register();
 		}
-		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
+		
+		final boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
 			CompatEvilCraft.register();
 		}
-		boolean isJABBAloaded = Loader.isModLoaded("JABBA");
+		
+		final boolean isJABBAloaded = Loader.isModLoaded("JABBA");
 		if (isJABBAloaded) {
 			CompatJABBA.register();
 		}
-		boolean isMekanismLoaded = Loader.isModLoaded("Mekanism");
+		
+		final boolean isMekanismLoaded = Loader.isModLoaded("Mekanism");
 		if (isMekanismLoaded) {
 			CompatMekanism.register();
 		}
-		boolean isMetallurgyLoaded = Loader.isModLoaded("Metallurgy");
+		
+		final boolean isMetallurgyLoaded = Loader.isModLoaded("Metallurgy");
 		if (isMetallurgyLoaded) {
 			CompatMetallurgy.register();
 		}
-		boolean isNaturaLoaded = Loader.isModLoaded("Natura");
+		
+		final boolean isNaturaLoaded = Loader.isModLoaded("Natura");
 		if (isNaturaLoaded) {
 			CompatNatura.register();
 		}
-		boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
+		
+		final boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
 		if (isPneumaticCraftLoaded) {
 			CompatPneumaticCraft.register();
 		}
-		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
+		
+		final boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
 		if (isRedstonePasteLoaded) {
 			CompatRedstonePaste.register();
 		}
-		boolean isSGCraftLoaded = Loader.isModLoaded("SGCraft");
+		
+		final boolean isSGCraftLoaded = Loader.isModLoaded("SGCraft");
 		if (isSGCraftLoaded) {
 			CompatSGCraft.register();
 		}
-		boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
+		
+		final boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
 		if (isStargateTech2Loaded) {
 			CompatStargateTech2.register();
 		}
-		boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
+		
+		final boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
 		if (isTConstructLoaded) {
 			CompatTConstruct.register();
 		}
-		boolean isTechgunsLoaded = Loader.isModLoaded("Techguns");
+		
+		final boolean isTechgunsLoaded = Loader.isModLoaded("Techguns");
 		if (isTechgunsLoaded) {
 			CompatTechguns.register();
 		}
-		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
+		
+		final boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
 		}
-		boolean isThermalDynamicsLoaded = Loader.isModLoaded("ThermalDynamics");
+		
+		final boolean isThermalDynamicsLoaded = Loader.isModLoaded("ThermalDynamics");
 		if (isThermalDynamicsLoaded) {
 			CompatThermalDynamics.register();
 		}
@@ -1224,7 +1241,7 @@ public class WarpDriveConfig {
 			
 			IC2_rubberWood = getModBlock("IC2", "blockRubWood");
 			IC2_Resin = getModItemStack("IC2", "itemHarz", -1);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading IndustrialCraft2 classes");
 			exception.printStackTrace();
 		}
@@ -1237,7 +1254,7 @@ public class WarpDriveConfig {
 			CCT_Turtle = getModBlock("ComputerCraft", "CC-Turtle");
 			CCT_Expanded = getModBlock("ComputerCraft", "CC-TurtleExpanded");
 			CCT_Advanced = getModBlock("ComputerCraft", "CC-TurtleAdvanced");
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading ComputerCraft classes");
 			exception.printStackTrace();
 		}
@@ -1246,9 +1263,9 @@ public class WarpDriveConfig {
 	public static DocumentBuilder getXmlDocumentBuilder() {
 		if (xmlDocumentBuilder == null) {
 			
-			ErrorHandler xmlErrorHandler = new ErrorHandler() {
+			final ErrorHandler xmlErrorHandler = new ErrorHandler() {
 				@Override
-				public void warning(SAXParseException exception) throws SAXException {
+				public void warning(final SAXParseException exception) {
 					WarpDrive.logger.warn(String.format("XML warning at line %d: %s",
 					                                    exception.getLineNumber(),
 					                                    exception.getLocalizedMessage() ));
@@ -1256,7 +1273,7 @@ public class WarpDriveConfig {
 				}
 				
 				@Override
-				public void fatalError(SAXParseException exception) throws SAXException {
+				public void fatalError(final SAXParseException exception) {
 					WarpDrive.logger.warn(String.format("XML fatal error at line %d: %s",
 					                      exception.getLineNumber(),
 					                      exception.getLocalizedMessage() ));
@@ -1264,7 +1281,7 @@ public class WarpDriveConfig {
 				}
 				
 				@Override
-				public void error(SAXParseException exception) throws SAXException {
+				public void error(final SAXParseException exception) {
 					WarpDrive.logger.warn(String.format("XML error at line %d: %s",
 					                                    exception.getLineNumber(),
 					                                    exception.getLocalizedMessage() ));
@@ -1273,7 +1290,7 @@ public class WarpDriveConfig {
 				}
 			};
 			
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			documentBuilderFactory.setIgnoringComments(false);
 			documentBuilderFactory.setNamespaceAware(true);
 			documentBuilderFactory.setValidating(true);
@@ -1281,7 +1298,7 @@ public class WarpDriveConfig {
 			
 			try {
 				xmlDocumentBuilder = documentBuilderFactory.newDocumentBuilder();
-			} catch (ParserConfigurationException exception) {
+			} catch (final ParserConfigurationException exception) {
 				exception.printStackTrace();
 			}
 			xmlDocumentBuilder.setErrorHandler(xmlErrorHandler);
@@ -1295,7 +1312,7 @@ public class WarpDriveConfig {
 	 * Target folder should be already created
 	 **/
 	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, File folderTarget) {
-		File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
+		final File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
 		if (files == null) {
 			throw new RuntimeException(String.format("Critical error accessing configuration directory, searching for %s*%s files: %s", prefix, suffix, configDirectory));
 		}
@@ -1310,16 +1327,16 @@ public class WarpDriveConfig {
 	 * Copy a default configuration file from the mod's resources to the specified configuration folder
 	 * Target folder should be already created
 	 **/
-	private static void unpackResourceToFolder(final String filename, final String resourcePathSource, File folderTarget) {
-		String resourceName = resourcePathSource + "/" + filename;
+	private static void unpackResourceToFolder(final String filename, final String resourcePathSource, final File folderTarget) {
+		final String resourceName = resourcePathSource + "/" + filename;
 		
-		File destination = new File(folderTarget, filename);
+		final File destination = new File(folderTarget, filename);
 		
 		try {
-			InputStream inputStream = WarpDrive.class.getClassLoader().getResourceAsStream(resourceName);
-			BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(destination));
+			final InputStream inputStream = WarpDrive.class.getClassLoader().getResourceAsStream(resourceName);
+			final BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(destination));
 			
-			byte[] byteBuffer = new byte[Math.max(8192, inputStream.available())];
+			final byte[] byteBuffer = new byte[Math.max(8192, inputStream.available())];
 			int bytesRead;
 			while ((bytesRead = inputStream.read(byteBuffer)) >= 0) {
 				outputStream.write(byteBuffer, 0, bytesRead);
@@ -1327,7 +1344,7 @@ public class WarpDriveConfig {
 			
 			inputStream.close();
 			outputStream.close();
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Failed to unpack resource \'" + resourceName + "\' into " + destination);
 			exception.printStackTrace();
 		}

@@ -189,7 +189,9 @@ public class StateAir {
 	public boolean setAirSource(final World world, final ForgeDirection direction, final short pressure) {
 		assert(block != null);
 		
-		final boolean isPlaceable = (dataAir & BLOCK_MASK) == BLOCK_AIR_PLACEABLE || (dataAir & BLOCK_MASK) == BLOCK_AIR_FLOW || (dataAir & BLOCK_MASK) == BLOCK_AIR_SOURCE;
+		final boolean isPlaceable = (dataAir & BLOCK_MASK) == BLOCK_AIR_PLACEABLE
+		                         || (dataAir & BLOCK_MASK) == BLOCK_AIR_FLOW
+		                         || (dataAir & BLOCK_MASK) == BLOCK_AIR_SOURCE;
 		final boolean updateRequired = (block != WarpDrive.blockAirSource)
 		         || pressureGenerator != pressure
 		         || pressureVoid != 0
@@ -202,7 +204,7 @@ public class StateAir {
 			updateBlockType(world);
 			try {
 				setGeneratorAndUpdateVoid(world, pressure, direction.getOpposite());
-			} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+			} catch (final ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
 				// no operation
 			}
 			setConcentration(world, (byte) CONCENTRATION_MAX);
@@ -512,7 +514,7 @@ public class StateAir {
 			for (int dy = -1; dy <= 1; dy++) {
 				for (int dz = -1; dz <= 1; dz++) {
 					for (int dx = -1; dx <= 1; dx++) {
-						StateAir stateAir = new StateAir(null);
+						final StateAir stateAir = new StateAir(null);
 						stateAir.refresh(entityPlayer.worldObj,
 						                 MathHelper.floor_double(entityPlayer.posX) + dx,
 						                 MathHelper.floor_double(entityPlayer.posY) + dy,
@@ -527,20 +529,20 @@ public class StateAir {
 				for (int indexZ = 2; indexZ >= 0; indexZ--) {
 					message.append("\n");
 					for (int indexX = 0; indexX <= 2; indexX++) {
-						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final StateAir stateAir = stateAirs[indexX][indexY][indexZ];
 						final String stringValue = String.format("%2d", 100 + stateAir.concentration).substring(1);
 						message.append(String.format("§3%s ", stringValue));
 					}
 					message.append("§f| ");
 					for (int indexX = 0; indexX <= 2; indexX++) {
-						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final StateAir stateAir = stateAirs[indexX][indexY][indexZ];
 						final String stringValue = String.format("%X", 0x100 + stateAir.pressureGenerator).substring(1);
 						final String stringDirection = directionToChar(stateAir.directionGenerator);
 						message.append(String.format("§e%s §a%s ", stringValue, stringDirection));
 					}
 					message.append("§f| ");
 					for (int indexX = 0; indexX <= 2; indexX++) {
-						StateAir stateAir = stateAirs[indexX][indexY][indexZ];
+						final StateAir stateAir = stateAirs[indexX][indexY][indexZ];
 						final String stringValue = String.format("%X", 0x100 + stateAir.pressureVoid).substring(1);
 						final String stringDirection = directionToChar(stateAir.directionVoid);
 						message.append(String.format("§e%s §d%s ", stringValue, stringDirection));
@@ -551,7 +553,7 @@ public class StateAir {
 				}
 			}
 			Commons.addChatMessage(entityPlayer, message.toString());
-		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+		} catch (final ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
 			// no operation
 		}
 	}
