@@ -73,7 +73,9 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS) {
-			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1], true)) {
+			final ForgeDirection direction = ForgeDirection.getOrientation(metadata & 7);
+			final boolean isActive = releaseAir(direction);
+			if (isActive) {
 				if ((metadata & 8) == 0) {
 					worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata | 8, 2); // set enabled texture
 				}
@@ -83,43 +85,50 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 				}
 			}
 			
-			final ForgeDirection direction = ForgeDirection.getOrientation(metadata & 7);
-			releaseAir(direction);
-			
 			cooldownTicks = 0;
 		}
 	}
 	
-	private void releaseAir(final ForgeDirection direction) {
+	private boolean releaseAir(final ForgeDirection direction) {
 		final int x = xCoord + direction.offsetX;
 		final int y = yCoord + direction.offsetY;
 		final int z = zCoord + direction.offsetZ;
 		
+		// reject cables or signs in front of the fan (it's inconsistent and not really supported)
+		if (!worldObj.isAirBlock(x, y, z)) {
+			return false;
+		}
+		
+		// get the state object
+		// assume it works when chunk isn't loaded
 		final StateAir stateAir = ChunkHandler.getStateAir(worldObj, x, y, z);
-		if (stateAir == null) {// chunk isn't loaded
-			return;
+		if (stateAir == null) {
+			return true;
 		}
 		stateAir.updateBlockCache(worldObj);
-		if (stateAir.isAir()) {// can be air
-			final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);
+		
+		// only accept air block (i.e. rejecting the dictionary blacklist)
+		if (!stateAir.isAir()) {
+			return false;
+		}
+		
+		if (isEnabled) {
 			final int energy_cost = !stateAir.isAirSource() ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[tier - 1];
-			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
-				if (stateAir.setAirSource(worldObj, direction, range)) {
-					// (needs to renew air or was not maxed out)
-					energy_consume(energy_cost, false);
-				} else {
-					// (just maintaining)
-					energy_consume(energy_cost, false);
-				}
-				
-			} else {// low energy => remove air block
-				if (stateAir.concentration > 4) {
-					stateAir.setConcentration(worldObj, (byte) (stateAir.concentration - 4));
-				} else if (stateAir.concentration > 1) {
-					stateAir.removeAirSource(worldObj);
-				}
+			if (energy_consume(energy_cost, true)) {// enough energy
+				final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);
+				stateAir.setAirSource(worldObj, direction, range);
+				energy_consume(energy_cost, false);
+				return true;
 			}
 		}
+		
+		// disabled or low energy => remove air block
+		if (stateAir.concentration > 4) {
+			stateAir.setConcentration(worldObj, (byte) (stateAir.concentration / 2));
+		} else if (stateAir.concentration > 0) {
+			stateAir.removeAirSource(worldObj);
+		}
+		return false;
 	}
 	
 	@Override
