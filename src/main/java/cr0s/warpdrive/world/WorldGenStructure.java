@@ -210,8 +210,8 @@ public class WorldGenStructure {
 			} else {
 				index++;
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION && WarpDrive.isDev) {
-					WarpDrive.logger.info("At index " + index + ", deploying block " + Block.blockRegistry.getNameForObject(jumpBlock.block) + ":" + jumpBlock.blockMeta
-					                      + " tileEntity " + jumpBlock.blockTileEntity + " NBT " + jumpBlock.blockNBT);
+					WarpDrive.logger.info(String.format("At index %d, deploying %s ",
+					                                    index, jumpBlock));
 				}
 				final ChunkCoordinates targetLocation = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
 				final Block blockAtTarget = world.getBlock(targetLocation.posX, targetLocation.posY, targetLocation.posZ);

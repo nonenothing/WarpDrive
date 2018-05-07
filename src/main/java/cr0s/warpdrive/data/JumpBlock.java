@@ -7,6 +7,7 @@ import cr0s.warpdrive.compat.CompatForgeMultipart;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.Filler;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,7 @@ public class JumpBlock {
 	
 	public Block block;
 	public int blockMeta;
-	public TileEntity blockTileEntity;
+	public WeakReference<TileEntity> weakTileEntity;
 	public NBTTagCompound blockNBT;
 	public int x;
 	public int y;
@@ -73,7 +74,14 @@ public class JumpBlock {
 	public JumpBlock(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
 		this.block = block;
 		this.blockMeta = blockMeta;
-		blockTileEntity = tileEntity;
+		if (tileEntity == null) {
+			weakTileEntity = null;
+			blockNBT = null;
+		} else {
+			weakTileEntity = new WeakReference<>(tileEntity);
+			blockNBT = new NBTTagCompound();
+			tileEntity.writeToNBT(blockNBT);
+		}
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -95,10 +103,39 @@ public class JumpBlock {
 		}
 		block = filler.block;
 		blockMeta = filler.metadata;
+		weakTileEntity = null;
 		blockNBT = (filler.tagCompound != null) ? (NBTTagCompound) filler.tagCompound.copy() : null;
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+	
+	public TileEntity getTileEntity(final World worldSource) {
+		if (weakTileEntity == null) {
+			return null;
+		}
+		final TileEntity tileEntity = weakTileEntity.get();
+		if (tileEntity != null) {
+			return tileEntity;
+		}
+		WarpDrive.logger.error(String.format("Tile entity lost in %s",
+		                                     this));
+		return worldSource.getTileEntity(x, y, z);
+	}
+	
+	private NBTTagCompound getBlockNBT() {
+		if (weakTileEntity == null) {
+			return blockNBT == null ? null : (NBTTagCompound) blockNBT.copy();
+		}
+		final TileEntity tileEntity = weakTileEntity.get();
+		if (tileEntity != null) {
+			final NBTTagCompound tagCompound = new NBTTagCompound();
+			tileEntity.writeToNBT(tagCompound);
+			return tagCompound;
+		}
+		WarpDrive.logger.error(String.format("Tile entity lost in %s",
+		                                     this));
+		return blockNBT == null ? null : (NBTTagCompound) blockNBT.copy();
 	}
 	
 	public NBTBase getExternal(final String modId) {
@@ -624,6 +661,16 @@ public class JumpBlock {
 		}
 	}
 	// IC2 support ends here
+	
+	@Override
+	public String toString() {
+		return String.format("%s @ (%d %d %d) %s:%d %s nbt %s",
+		                     getClass().getSimpleName(),
+		                     x, y, z,
+		                     Block.blockRegistry.getNameForObject(block), blockMeta,
+		                     weakTileEntity == null ? null : weakTileEntity.get(),
+		                     blockNBT);
+	}
 	
 	// This code is a straight copy from Vanilla net.minecraft.world.World.setBlock to remove lighting computations
 	public static boolean setBlockNoLight(final World w, final int x, final int y, final int z, final Block block, final int blockMeta, final int par6) {

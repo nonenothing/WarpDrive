@@ -1047,17 +1047,18 @@ public class JumpSequencer extends AbstractSequencer {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 					WarpDrive.logger.info("Moving externals for block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 				}
+				final TileEntity tileEntitySource = jumpBlock.getTileEntity(sourceWorld);
 				for (final Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
 					final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 					if (blockTransformer != null) {
 						if ( shipMovementType != EnumShipMovementType.INSTANTIATE
 						  && shipMovementType != EnumShipMovementType.RESTORE ) {
 							blockTransformer.removeExternals(sourceWorld, jumpBlock.x, jumpBlock.y, jumpBlock.z,
-							                                 jumpBlock.block, jumpBlock.blockMeta, jumpBlock.blockTileEntity);
+							                                 jumpBlock.block, jumpBlock.blockMeta, tileEntitySource);
 						}
 						
 						final ChunkCoordinates target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-						final TileEntity newTileEntity = jumpBlock.blockTileEntity == null ? null : targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
+						final TileEntity newTileEntity = jumpBlock.weakTileEntity == null ? null : targetWorld.getTileEntity(target.posX, target.posY, target.posZ);
 						blockTransformer.restoreExternals(targetWorld, target.posX, target.posY, target.posZ,
 						                                  jumpBlock.block, jumpBlock.blockMeta, newTileEntity, transformation, external.getValue());
 					}
@@ -1140,7 +1141,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 			
 			if (sourceWorld != null) {
-				if (jumpBlock.blockTileEntity != null) {
+				if (jumpBlock.weakTileEntity != null) {
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 						WarpDrive.logger.info("Removing tile entity at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
 					}
