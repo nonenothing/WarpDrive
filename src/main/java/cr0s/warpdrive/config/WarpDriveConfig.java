@@ -23,6 +23,7 @@ import cr0s.warpdrive.compat.CompatMekanism;
 import cr0s.warpdrive.compat.CompatMetallurgy;
 import cr0s.warpdrive.compat.CompatNatura;
 import cr0s.warpdrive.compat.CompatOpenComputers;
+import cr0s.warpdrive.compat.CompatParziStarWars;
 import cr0s.warpdrive.compat.CompatPneumaticCraft;
 import cr0s.warpdrive.compat.CompatRedstonePaste;
 import cr0s.warpdrive.compat.CompatSGCraft;
@@ -1187,6 +1188,11 @@ public class WarpDriveConfig {
 		final boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
 		if (isPneumaticCraftLoaded) {
 			CompatPneumaticCraft.register();
+		}
+		
+		final boolean isParziStarWarsLoaded = Loader.isModLoaded("starwarsmod");
+		if (isParziStarWarsLoaded) {
+			CompatParziStarWars.register();
 		}
 		
 		final boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
