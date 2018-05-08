@@ -163,20 +163,20 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] isActive(Context context, Arguments arguments) {
+	public Object[] isActive(final Context context, final Arguments arguments) {
 		return isActive(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

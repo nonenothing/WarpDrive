@@ -159,7 +159,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// consume power and apply general lock strength increase and decay
-		boolean isPowered;
+		final boolean isPowered;
 		if (!isEnabled) {
 			transporterState = EnumTransporterState.DISABLED;
 			isPowered = false;
@@ -1257,7 +1257,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			// grab another entity
 			if ( movingEntity == null
 			  && !entities.isEmpty() ) {
-				Iterator<Entity> entityIterable = entities.iterator();
+				final Iterator<Entity> entityIterable = entities.iterator();
 				final Entity entity = entityIterable.next();
 				if (entity != null) {
 					movingEntity = new MovingEntity(entity);
@@ -1485,7 +1485,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		try {
 			transporterState = EnumTransporterState.valueOf(tagCompound.getString("state"));
-		} catch (IllegalArgumentException exception) {
+		} catch (final IllegalArgumentException exception) {
 			transporterState = EnumTransporterState.DISABLED;
 		}
 	}
@@ -1608,7 +1608,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			if (arguments.length >= 1) {
 				energyFactor = Commons.clamp(1, WarpDriveConfig.TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR, Commons.toDouble(arguments[0]));
 			}
-		} catch (NumberFormatException exception) {
+		} catch (final NumberFormatException exception) {
 			// ignore
 		}
 		
@@ -1637,7 +1637,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] beamFrequency(Context context, Arguments arguments) {
+	public Object[] beamFrequency(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setBeamFrequency(arguments.checkInteger(0));
 		}
@@ -1646,62 +1646,62 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] transporterName(Context context, Arguments arguments) {
+	public Object[] transporterName(final Context context, final Arguments arguments) {
 		return transporterName(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] state(Context context, Arguments arguments) {
+	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] remoteLocation(Context context, Arguments arguments) {
+	public Object[] remoteLocation(final Context context, final Arguments arguments) {
 		return remoteLocation(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] lock(Context context, Arguments arguments) {
+	public Object[] lock(final Context context, final Arguments arguments) {
 		return lock(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energyFactor(Context context, Arguments arguments) {
+	public Object[] energyFactor(final Context context, final Arguments arguments) {
 		return energyFactor(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getLockStrength(Context context, Arguments arguments) {
+	public Object[] getLockStrength(final Context context, final Arguments arguments) {
 		return getLockStrength();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energize(Context context, Arguments arguments) {
+	public Object[] energize(final Context context, final Arguments arguments) {
 		return energize(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
