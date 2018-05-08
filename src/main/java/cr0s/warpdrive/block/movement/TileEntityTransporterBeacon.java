@@ -43,7 +43,7 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		IC2_sinkTier = 2;
 		isEnergyLostWhenBroken = false;
 		
-		peripheralName = "warpdriveTransporterCore";
+		peripheralName = "warpdriveTransporterBeacon";
 		addMethods(new String[] {
 				"enable",
 				"isActive"
