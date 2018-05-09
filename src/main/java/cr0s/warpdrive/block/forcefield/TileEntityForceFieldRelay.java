@@ -54,17 +54,12 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
-		return super.getStatus()
-		    .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		setUpgrade(EnumForceFieldUpgrade.get(tagCompound.getByte("upgrade")));
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
@@ -81,7 +76,7 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
+	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
 		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}

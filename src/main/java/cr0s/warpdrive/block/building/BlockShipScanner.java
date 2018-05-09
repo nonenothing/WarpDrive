@@ -22,9 +22,11 @@ import javax.annotation.Nullable;
 
 public class BlockShipScanner extends BlockAbstractContainer {
 	
+	public static int passCurrent;
+	
 	public BlockShipScanner(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.building.ShipScanner");
+		setUnlocalizedName("warpdrive.building.ship_scanner");
 		GameRegistry.registerTileEntity(TileEntityShipScanner.class, WarpDrive.PREFIX + registryName);
 	}
 	

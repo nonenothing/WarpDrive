@@ -4,6 +4,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.event.ChunkLoadingHandler;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -59,7 +60,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		isRefreshNeeded = true;
 	}
 	
-	public synchronized void refreshLoading(final boolean force) {
+	private void refreshLoading(final boolean force) {
 		final boolean shouldChunkLoad = shouldChunkLoad();
 		if (shouldChunkLoad) {
 			if (ticket == null) {
@@ -104,6 +105,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		     * (chunkMax.chunkZPos - chunkMin.chunkZPos + 1);
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);

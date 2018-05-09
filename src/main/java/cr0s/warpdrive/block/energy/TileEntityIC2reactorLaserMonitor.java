@@ -155,9 +155,10 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 		updateBlockState(blockStateNew, null, null);
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setInteger("ticks", ticks);
 		return tagCompound;
 	}
@@ -192,11 +193,11 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 		final IReactor reactor = findReactor();
 		if (reactor != null) {
 			return super.getStatus() 
-					.appendSibling(new TextComponentTranslation("warpdrive.IC2reactorLaserMonitor.multipleReactors",
+					.appendSibling(new TextComponentTranslation("warpdrive.ic2_reactor_laser_monitor.multipleReactors",
 						1));
 		} else {
 			return super.getStatus()
-					.appendSibling(new TextComponentTranslation("warpdrive.IC2reactorLaserMonitor.noReactor"));
+					.appendSibling(new TextComponentTranslation("warpdrive.ic2_reactor_laser_monitor.noReactor"));
 		}
 	}
 }

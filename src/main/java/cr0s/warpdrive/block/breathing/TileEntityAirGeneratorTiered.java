@@ -14,10 +14,13 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 
 import net.minecraftforge.fml.common.Optional;
 
@@ -43,7 +46,7 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	@Override
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
-		Block block = getBlockType();
+		final Block block = getBlockType();
 		if (block instanceof BlockAirGeneratorTiered) {
 			tier = ((BlockAirGeneratorTiered) block).tier;
 			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[tier - 1];
@@ -65,9 +68,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		final int metadata = getBlockMetadata();
+		final IBlockState blockState = worldObj.getBlockState(pos);
 		if (CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
-			final IBlockState blockState = worldObj.getBlockState(pos);
 			if (blockState.getValue(BlockProperties.ACTIVE)) {
 				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 			}
@@ -76,8 +78,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS) {
-			IBlockState blockState = worldObj.getBlockState(pos);
-			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1], true)) {
+			final boolean isActive = releaseAir(blockState.getValue(BlockProperties.FACING));
+			if (isActive) {
 				if (!blockState.getValue(BlockProperties.ACTIVE)) {
 					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, true)); // set enabled texture
 				}
@@ -92,36 +94,44 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	private void releaseAir(final EnumFacing direction) {
-		final int x = pos.getX() + direction.getFrontOffsetX();
-		final int y = pos.getY() + direction.getFrontOffsetY();
-		final int z = pos.getZ() + direction.getFrontOffsetZ();
+	private boolean releaseAir(final EnumFacing direction) {
+		final BlockPos posDirection = pos.offset(direction);
 		
-		final StateAir stateAir = ChunkHandler.getStateAir(worldObj, x, y, z);
-		if (stateAir == null) {// chunk isn't loaded
-			return;
+		// reject cables or signs in front of the fan (it's inconsistent and not really supported)
+		if (!worldObj.isAirBlock(posDirection)) {
+			return false;
+		}
+		
+		// get the state object
+		// assume it works when chunk isn't loaded
+		final StateAir stateAir = ChunkHandler.getStateAir(worldObj, posDirection.getX(), posDirection.getY(), posDirection.getZ());
+		if (stateAir == null) {
+			return true;
 		}
 		stateAir.updateBlockCache(worldObj);
-		if (stateAir.isAir()) {// can be air
-			final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);
+		
+		// only accept air block (i.e. rejecting the dictionary blacklist)
+		if (!stateAir.isAir()) {
+			return false;
+		}
+		
+		if (isEnabled) {
 			final int energy_cost = !stateAir.isAirSource() ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[tier - 1];
-			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
-				if (stateAir.setAirSource(worldObj, direction, range)) {
-					// (needs to renew air or was not maxed out)
-					energy_consume(energy_cost, false);
-				} else {
-					// (just maintaining)
-					energy_consume(energy_cost, false);
-				}
-				
-			} else {// low energy => remove air block
-				if (stateAir.concentration > 4) {
-					stateAir.setConcentration(worldObj, (byte) (stateAir.concentration - 4));
-				} else if (stateAir.concentration > 1) {
-					stateAir.removeAirSource(worldObj);
-				}
+			if (energy_consume(energy_cost, true)) {// enough energy
+				final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);
+				stateAir.setAirSource(worldObj, direction, range);
+				energy_consume(energy_cost, false);
+				return true;
 			}
 		}
+		
+		// disabled or low energy => remove air block
+		if (stateAir.concentration > 4) {
+			stateAir.setConcentration(worldObj, (byte) (stateAir.concentration / 2));
+		} else if (stateAir.concentration > 0) {
+			stateAir.removeAirSource(worldObj);
+		}
+		return false;
 	}
 	
 	@Override
@@ -130,10 +140,12 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = writeItemDropNBT(tagCompound);
 		tagCompound.setBoolean("isEnabled", isEnabled);
-		return super.writeToNBT(tagCompound);
+		return tagCompound;
 	}
 	
 	@Override
@@ -154,8 +166,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 	
-	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+	public Object[] enable(final Object[] arguments) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[] { isEnabled };
@@ -164,14 +176,14 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 			return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

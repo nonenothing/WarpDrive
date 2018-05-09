@@ -111,12 +111,12 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return modeSide[from.ordinal()] == EnumDisabledInputOutput.INPUT;
 	}
 	
 	@Override
-	public boolean energy_canOutput(EnumFacing to) {
+	public boolean energy_canOutput(final EnumFacing to) {
 		return modeSide[to.ordinal()] == EnumDisabledInputOutput.OUTPUT;
 	}
 	
@@ -134,16 +134,11 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 		energy_resetConnections(facing);
 	}
 	
-	@Override
-	public ITextComponent getStatus() {
-		return super.getStatus()
-		       .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
-	}
-	
 	// Forge overrides
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setByte(TAG_TIER, tier);
 		final byte[] bytes = new byte[EnumFacing.values().length];
 		for (final EnumFacing enumFacing : EnumFacing.values()) {
@@ -168,9 +163,9 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
-		return nbtTagCompound;
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
+		return tagCompound;
 	}
 
 	@Nonnull

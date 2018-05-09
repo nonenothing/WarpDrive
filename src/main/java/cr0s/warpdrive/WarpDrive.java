@@ -4,10 +4,6 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
 import cr0s.warpdrive.block.BlockLaserMedium;
-import cr0s.warpdrive.block.ItemBlockAbstractBase;
-import cr0s.warpdrive.block.TileEntityChunkLoader;
-import cr0s.warpdrive.block.TileEntityLaser;
-import cr0s.warpdrive.block.TileEntityLaserMedium;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
@@ -17,7 +13,6 @@ import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
-import cr0s.warpdrive.block.atomic.TileEntityAcceleratorController;
 import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
 import cr0s.warpdrive.block.breathing.BlockAirGenerator;
@@ -50,11 +45,15 @@ import cr0s.warpdrive.block.hull.BlockHullStairs;
 import cr0s.warpdrive.block.movement.BlockLift;
 import cr0s.warpdrive.block.movement.BlockShipController;
 import cr0s.warpdrive.block.movement.BlockShipCore;
-import cr0s.warpdrive.block.movement.BlockTransporter;
+import cr0s.warpdrive.block.movement.BlockTransporterBeacon;
+import cr0s.warpdrive.block.movement.BlockTransporterContainment;
+import cr0s.warpdrive.block.movement.BlockTransporterCore;
+import cr0s.warpdrive.block.movement.BlockTransporterScanner;
 import cr0s.warpdrive.block.decoration.BlockBedrockGlass;
+import cr0s.warpdrive.block.decoration.BlockDecorative;
+import cr0s.warpdrive.block.decoration.BlockGas;
 import cr0s.warpdrive.block.passive.BlockHighlyAdvancedMachine;
 import cr0s.warpdrive.block.passive.BlockIridium;
-import cr0s.warpdrive.block.passive.BlockTransportBeacon;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.BlockWeaponController;
 import cr0s.warpdrive.command.CommandDebug;
@@ -96,7 +95,6 @@ import cr0s.warpdrive.item.ItemIC2reactorLaserFocus;
 import cr0s.warpdrive.item.ItemShipToken;
 import cr0s.warpdrive.item.ItemTuningDriver;
 import cr0s.warpdrive.item.ItemTuningFork;
-import cr0s.warpdrive.item.ItemUpgrade;
 import cr0s.warpdrive.item.ItemWarpArmor;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.ClientCameraHandler;
@@ -114,16 +112,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.Biome;
 
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
@@ -141,7 +133,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.RecipeSorter;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.Logger;
@@ -177,7 +168,10 @@ public class WarpDrive {
 	public static Block blockShipScanner;
 	public static Block blockCloakingCore;
 	public static Block blockCloakingCoil;
-	public static Block blockTransporter;
+	public static Block blockTransporterBeacon;
+	public static Block blockTransporterCore;
+	public static Block blockTransporterContainment;
+	public static Block blockTransporterScanner;
 	public static Block blockIC2reactorLaserMonitor;
 	public static Block blockEnanReactorCore;
 	public static Block blockEnanReactorLaser;
@@ -193,7 +187,6 @@ public class WarpDrive {
 	public static Block blockLamp_flat;
 	public static Block blockLamp_long;
 	public static Block blockHighlyAdvancedMachine;
-	public static Block blockTransportBeacon;
 	public static Block blockChunkLoader;
 	public static Block[] blockForceFields;
 	public static Block[] blockForceFieldProjectors;
@@ -218,7 +211,6 @@ public class WarpDrive {
 	public static Item itemIC2reactorLaserFocus;
 	public static ItemComponent itemComponent;
 	public static ItemShipToken itemShipToken;
-	public static ItemUpgrade itemUpgrade;
 	public static ItemTuningFork itemTuningFork;
 	public static ItemTuningDriver itemTuningDriver;
 	public static ItemForceFieldShape itemForceFieldShape;
@@ -318,13 +310,15 @@ public class WarpDrive {
 		blockLift = new BlockLift("blockLift");
 		blockShipController = new BlockShipController("blockShipController");
 		blockShipCore = new BlockShipCore("blockShipCore");
-		blockTransporter = new BlockTransporter("blockTransporter");
+		blockTransporterBeacon = new BlockTransporterBeacon("blockTransporterBeacon");
+		blockTransporterContainment = new BlockTransporterContainment("blockTransporterContainment");
+		blockTransporterCore = new BlockTransporterCore("blockTransporterCore");
+		blockTransporterScanner = new BlockTransporterScanner("blockTransporterScanner");
 		
 		// passive blocks
 		blockBedrockGlass = new BlockBedrockGlass("blockBedrockGlass");
 		blockHighlyAdvancedMachine = new BlockHighlyAdvancedMachine("blockHighlyAdvancedMachine");
 		blockIridium = new BlockIridium("blockIridium");
-		blockTransportBeacon = new BlockTransportBeacon("blockTransportBeacon");
 		
 		// weapon blocks
 		blockLaserCamera = new BlockLaserCamera("blockLaserCamera");
@@ -425,10 +419,6 @@ public class WarpDrive {
 		itemAirTanks = new ItemAirTank[4];
 		for (int index = 0; index < 4; index++) {
 			itemAirTanks[index] = new ItemAirTank((byte) index, "itemAirTank" + index);
-		}
-		
-		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
-			itemUpgrade = new ItemUpgrade("itemUpgrade");
 		}
 		
     // tool items
@@ -668,13 +658,12 @@ public class WarpDrive {
 						mapping.remap(Item.getItemFromBlock(blockShipScanner));
 						break;
 					case "WarpDrive:transportBeacon":
-						mapping.remap(Item.getItemFromBlock(blockTransportBeacon));
+					case "WarpDrive:blockTransportBeacon":
+						mapping.remap(Item.getItemFromBlock(blockTransporterBeacon));
 						break;
 					case "WarpDrive:transporter":
-						mapping.remap(Item.getItemFromBlock(blockTransporter));
-						break;
-					case "WarpDrive:upgrade":
-						mapping.remap(itemUpgrade);
+					case "WarpDrive:blockTransporter":
+						mapping.remap(Item.getItemFromBlock(blockTransporterCore));
 						break;
 					case "WarpDrive:warpCore":
 						mapping.remap(Item.getItemFromBlock(blockShipCore));
@@ -765,10 +754,12 @@ public class WarpDrive {
 						mapping.remap(blockShipScanner);
 						break;
 					case "WarpDrive:transportBeacon":
-						mapping.remap(blockTransportBeacon);
+					case "WarpDrive:blockTransportBeacon":
+						mapping.remap(blockTransporterBeacon);
 						break;
 					case "WarpDrive:transporter":
-						mapping.remap(blockTransporter);
+					case "WarpDrive:blockTransporter":
+						mapping.remap(blockTransporterCore);
 						break;
 					case "WarpDrive:warpCore":
 						mapping.remap(blockShipCore);

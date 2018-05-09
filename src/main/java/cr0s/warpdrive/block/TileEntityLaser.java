@@ -19,6 +19,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -520,29 +521,9 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			beamFrequency = parBeamFrequency;
 		}
 		final Vector3 vRGB = IBeamFrequency.getBeamColor(beamFrequency);
-		r = (float)vRGB.x;
-		g = (float)vRGB.y;
-		b = (float)vRGB.z;
-	}
-	
-	protected ITextComponent getBeamFrequencyStatus() {
-		if (beamFrequency == -1) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
-		} else if (beamFrequency < 0) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency );
-		} else {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency );
-		}
-	}
-	
-	@Override
-	public ITextComponent getStatus() {
-		if (worldObj == null || !worldObj.isRemote) {
-			return super.getStatus()
-					.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
-		} else {
-			return super.getStatus();
-		}
+		r = (float) vRGB.x;
+		g = (float) vRGB.y;
+		b = (float) vRGB.z;
 	}
 	
 	private void playSoundCorrespondsEnergy(int energy) {
@@ -556,17 +537,18 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		setBeamFrequency(tag.getInteger(BEAM_FREQUENCY_TAG));
-		legacyVideoChannel = tag.getInteger("cameraFrequency") + tag.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
+		legacyVideoChannel = tagCompound.getInteger("cameraFrequency") + tagCompound.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
+		return tagCompound;
 	}
 	
 	@Override
@@ -657,13 +639,13 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			return emitBeam(arguments);
 			
 		case "position":
-			return new Integer[]{ pos.getY(), pos.getY(), pos.getZ() };
+			return new Integer[] { pos.getY(), pos.getY(), pos.getZ() };
 			
 		case "beamFrequency":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setBeamFrequency(Commons.toInt(arguments[0]));
 			}
-			return new Integer[]{ beamFrequency };
+			return new Integer[] { beamFrequency };
 			
 		case "getScanResult":
 			return getScanResult();

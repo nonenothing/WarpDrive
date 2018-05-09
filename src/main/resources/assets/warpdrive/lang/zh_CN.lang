@@ -192,7 +192,6 @@ tile.warpdrive.decoration.bedrock_glass.name=基岩玻璃
 
 tile.warpdrive.passive.IridiumBlock.name=铱块
 tile.warpdrive.passive.HighlyAdvancedMachine.name=高新机械块
-tile.warpdrive.passive.TransportBeacon.name=运输信标
 
 tile.warpdrive.machines.ChunkLoader.name=区块加载器
 tile.warpdrive.machines.Laser.name=激光
@@ -236,36 +235,37 @@ tile.warpdrive.breathing.air_generator2.name=先进空气供给机
 tile.warpdrive.breathing.air_generator3.name=卓越空气供给机
 tile.warpdrive.breathing.air_shield.name=能量空气护罩
 
-tile.warpdrive.building.ShipScanner.name=船体扫描仪
+tile.warpdrive.building.ship_scanner.name=船体扫描仪
 
-tile.warpdrive.collection.LaserTreeFarm.name=激光林场
-tile.warpdrive.collection.MiningLaser.name=采掘激光
+tile.warpdrive.collection.laser_tree_farm.name=激光林场
+tile.warpdrive.collection.mining_laser.name=采掘激光
 
-tile.warpdrive.detection.Camera.name=摄像机
-tile.warpdrive.detection.CloakingCoil.name=隐形线圈
-tile.warpdrive.detection.CloakingCore.name=隐形核心
-tile.warpdrive.detection.Monitor.name=监控器
-tile.warpdrive.detection.Radar.name=雷达
-tile.warpdrive.detection.WarpIsolation.name=曲率领域隔离方块
+tile.warpdrive.detection.camera.name=摄像机
+tile.warpdrive.detection.cloaking_coil.name=隐形线圈
+tile.warpdrive.detection.cloaking_core.name=隐形核心
+tile.warpdrive.detection.monitor.name=监控器
+tile.warpdrive.detection.radar.name=雷达
+tile.warpdrive.detection.warp_isolation.name=曲率领域隔离方块
+tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
-tile.warpdrive.detection.Siren.tooltip=红石触发
-tile.warpdrive.detection.Siren0.name=工业警报器
-tile.warpdrive.detection.Siren0.tooltip=探测半径32米
-tile.warpdrive.detection.Siren4.name=基础空袭警报器
-tile.warpdrive.detection.Siren4.tooltip=探测半径32米
-tile.warpdrive.detection.Siren5.name=高级空袭警报器
-tile.warpdrive.detection.Siren5.tooltip=探测半径64米
-tile.warpdrive.detection.Siren6.name=卓越空袭警报器
-tile.warpdrive.detection.Siren6.tooltip=探测半径128米
+tile.warpdrive.detection.siren.tooltip=红石触发
+tile.warpdrive.detection.siren0.name=工业警报器
+tile.warpdrive.detection.siren0.tooltip=探测半径32米
+tile.warpdrive.detection.siren4.name=基础空袭警报器
+tile.warpdrive.detection.siren4.tooltip=探测半径32米
+tile.warpdrive.detection.siren5.name=高级空袭警报器
+tile.warpdrive.detection.siren5.tooltip=探测半径64米
+tile.warpdrive.detection.siren6.name=卓越空袭警报器
+tile.warpdrive.detection.siren6.tooltip=探测半径128米
 
-tile.warpdrive.energy.EnanReactorCore.name=镜像体反应堆芯
-tile.warpdrive.energy.EnanReactorLaser.name=镜像体反应堆稳定激光
-tile.warpdrive.energy.EnergyBank.0.name=零点模块
-tile.warpdrive.energy.EnergyBank.0.tooltip=创造子空间电容
-tile.warpdrive.energy.EnergyBank.1.name=基础子空间电容
-tile.warpdrive.energy.EnergyBank.2.name=先进子空间电容
-tile.warpdrive.energy.EnergyBank.3.name=卓越子空间电容
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2反应堆激光监控器
+tile.warpdrive.energy.enan_reactor_core.name=镜像体反应堆芯
+tile.warpdrive.energy.enan_reactor_laser.name=镜像体反应堆稳定激光
+tile.warpdrive.energy.energy_bank.0.name=零点模块
+tile.warpdrive.energy.energy_bank.0.tooltip=创造子空间电容
+tile.warpdrive.energy.energy_bank.1.name=基础子空间电容
+tile.warpdrive.energy.energy_bank.2.name=先进子空间电容
+tile.warpdrive.energy.energy_bank.3.name=卓越子空间电容
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2反应堆激光监控器
 
 tile.warpdrive.forcefield.block1.name=基础力场方块
 tile.warpdrive.forcefield.block2.name=先进力场方块
@@ -287,14 +287,18 @@ tile.warpdrive.forcefield.relay2.tooltip=支持一个力场升级在其网络内
 tile.warpdrive.forcefield.relay3.name=卓越力场继电器
 tile.warpdrive.forcefield.relay3.tooltip=支持一个力场升级在其网络内共享
 
-tile.warpdrive.movement.Lift.name=电梯
-tile.warpdrive.movement.ShipController.name=飞船控制仪
-tile.warpdrive.movement.ShipController.tooltip=放在核心前来控制和设定飞船, 在相连的电脑上打开交互界面.\n必须水平紧贴核心才能连接.
-tile.warpdrive.movement.ShipCore.name=飞船核心
-tile.warpdrive.movement.ShipCore.tooltip=相对于控制器以设定飞船中心.连接供能设备充能.\n必须水平紧贴控制器才能连接.
-tile.warpdrive.movement.ShipCore.bounding_box.disabled=边界显示已禁用.
-tile.warpdrive.movement.ShipCore.bounding_box.enabled=边界显示启用. 只有你可见.\n再次潜行右击核心可关闭.
-tile.warpdrive.movement.Transporter.name=传送台
+tile.warpdrive.movement.lift.name=电梯
+tile.warpdrive.movement.ship_controller.name=飞船控制仪
+tile.warpdrive.movement.ship_controller.tooltip=放在核心前来控制和设定飞船, 在相连的电脑上打开交互界面.\n必须水平紧贴核心才能连接.
+tile.warpdrive.movement.ship_core.name=飞船核心
+tile.warpdrive.movement.ship_core.tooltip=相对于控制器以设定飞船中心.连接供能设备充能.\n必须水平紧贴控制器才能连接.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=边界显示已禁用.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=边界显示启用. 只有你可见.\n再次潜行右击核心可关闭.
+tile.warpdrive.movement.transporter_beacon.name=运输信标
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=传送台
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=激光+相机
 tile.warpdrive.weapon.WeaponController.name=武器控制器
@@ -667,18 +671,27 @@ warpdrive.video_channel.statusLine.invalid=§c视频通道 %1$d 无效.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§c视频通道 %1$d 无效或者是相机的距离太远!
 warpdrive.video_channel.statusLine.undefined=§7未定义的视频通道.\n§b使用一个音叉§r 去设置它.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§c完整度降低至 %1$d%%: %2$s 线圈失去联系且预计将失去 %3$s 线圈
-warpdrive.cloakingCore.missingInner=§c完整度降低至 %1$d%%: %2$s 线圈失去联系
-warpdrive.cloakingCore.missingOuter=§c完整度降低至 %1$d%%: 预计丢失 %2$s 线圈
-warpdrive.cloakingCore.valid=系统认证
-warpdrive.cloakingCore.disabled=伪装被禁用
-warpdrive.cloakingCore.lowPower=§c伪装失效，我们需要更多的能量.
-warpdrive.cloakingCore.cloaking=一个层级 %1$d 伪装目前覆盖 %2$d方块!
+warpdrive.cloaking_core.missingInnerAndOuter=§c完整度降低至 %1$d%%: %2$s 线圈失去联系且预计将失去 %3$s 线圈
+warpdrive.cloaking_core.missingInner=§c完整度降低至 %1$d%%: %2$s 线圈失去联系
+warpdrive.cloaking_core.missingOuter=§c完整度降低至 %1$d%%: 预计丢失 %2$s 线圈
+warpdrive.cloaking_core.valid=系统认证
+warpdrive.cloaking_core.disabled=伪装被禁用
+warpdrive.cloaking_core.lowPower=§c伪装失效，我们需要更多的能量.
+warpdrive.cloaking_core.cloaking=一个层级 %1$d 伪装目前覆盖 %2$d方块!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=未发现反应堆!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d反应堆已连接.
+warpdrive.ic2_reactor_laser_monitor.noReactor=未发现反应堆!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d反应堆已连接.
 
-warpdrive.transporter.status=从%1$.0f %2$.0f %3$.0f到 %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=从 (%1$.0f %2$.0f %3$.0f) 到 (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingHelmet=§b太空中呼吸§r消耗背包中的IC压缩空气
 warpdrive.tooltip.itemTag.flyInSpace=§b太空喷气背包§r.

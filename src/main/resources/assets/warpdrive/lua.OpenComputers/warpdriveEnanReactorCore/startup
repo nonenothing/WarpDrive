@@ -93,7 +93,7 @@ function reactor_page()
   w.page_begin(w.data_getName() .. " - Reactor status")
   
   w.setCursorPos(1, 2)
-  if reactor == nil then
+  if reactor == nil or reactor.interfaced() == nil then
     w.setColorDisabled()
     w.write("Reactor not detected")
   else
@@ -102,7 +102,7 @@ function reactor_page()
     local instabilities = { reactor.instability() }
     for key, instability in pairs(instabilities) do
       w.setCursorPos(12, 2 + key)
-      local stability = math.floor((100.0 - instability) * 10) / 10
+      local stability = math.floor((100.0 - instability) * 10) / 10.0
       if stability >= data.reactor_targetStability then
         w.setColorSuccess()
       else
@@ -116,14 +116,14 @@ function reactor_page()
     w.setCursorPos(1, 7)
     w.write("Energy   : ")
     if energy[2] ~= nil then
-      w.write(w.format_integer(energy[1], 10) .. " / " .. energy[2] .. " RF +" .. w.format_integer(reactor_output, 5) .. " RF/t")
+      w.write(w.format_integer(energy[1], 10) .. " / " .. w.format_integer(energy[2]) .. " RF +" .. w.format_integer(reactor_output, 5) .. " RF/t")
     else
       w.write("???")
     end
     w.setCursorPos(1, 8)
     w.write("Outputing: ")
     if energy[3] ~= nil then
-      w.write(energy[3] .. " RF/t")
+      w.write(w.format_integer(energy[3]) .. " RF/t")
     end
     
     w.setColorNormal()
@@ -149,7 +149,7 @@ function reactor_page()
         side = side % 4
         w.setColorNormal()
         w.setCursorPos(4, 3 + side)
-        w.write("Side " .. side .. ":")
+        w.write("Side " .. w.format_integer(side) .. ":")
         w.setCursorPos(30, 3 + side)
         local energy = reactorlaser.wrap.energy()
         if not reactorlaser.wrap.hasReactor() then
@@ -259,7 +259,7 @@ local reactor_configPageLoaded = false
 local reactor_pulseStep = 0
 function reactor_pulse(output)
   reactor_output = output
-  if reactor == nil then
+  if reactor == nil or reactor.interfaced() == nil then
     w.reboot()
   end
   local instabilities = { reactor.instability() }
@@ -290,7 +290,7 @@ function reactor_pulse(output)
       end
       if energy[3] ~= nil then
         w.setCursorPos(12, 8)
-        w.write(energy[3] .. " RF/t    ")
+        w.write(w.format_integer(energy[3]) .. " RF/t     ")
       end
     
     elseif reactor_pulseStep == 4 then
@@ -324,28 +324,28 @@ function reactor_config()
   w.page_begin(w.data_getName() .. " - Reactor configuration")
   
   w.setCursorPos(1, 2)
-  if reactor == nil then
+  if reactor == nil or reactor.interfaced() == nil then
     w.setColorDisabled()
     w.write("Reactor not detected")
   else
     w.setColorNormal()
     w.setCursorPos(1, 4)
-    w.write("Reactor output rate (" .. data.reactor_rate .. " RF): ")
-    data.reactor_rate = w.input_readNumber(data.reactor_rate)
+    w.write("Reactor output rate (" .. w.format_integer(data.reactor_rate) .. " RF): ")
+    data.reactor_rate = w.input_readInteger(data.reactor_rate)
     reactor_setMode()
     w.setCursorPos(1, 5)
     w.write("Reactor output rate set")
     
     w.setCursorPos(1, 7)
-    w.write("Laser energy level (" .. data.reactor_laserAmount .. "): ")
-    data.reactor_laserAmount = w.input_readNumber(data.reactor_laserAmount)
+    w.write("Laser energy level (" .. w.format_integer(data.reactor_laserAmount) .. "): ")
+    data.reactor_laserAmount = w.input_readInteger(data.reactor_laserAmount)
     reactor_setLaser()
     w.setCursorPos(1, 8)
     w.write("Laser energy level set")
     
     w.setCursorPos(1, 10)
-    w.write("Reactor target stability (" .. data.reactor_targetStability .. "%): ")
-    data.reactor_targetStability = w.input_readNumber(data.reactor_targetStability)
+    w.write("Reactor target stability (" .. w.format_integer(data.reactor_targetStability) .. "%): ")
+    data.reactor_targetStability = w.input_readInteger(data.reactor_targetStability)
     reactor_setTargetStability()
     w.setCursorPos(1, 11)
     w.write("Reactor target stability set")
@@ -363,7 +363,7 @@ function reactor_register()
   w.event_register("reactorPulse"       , function(eventName, param) reactor_pulse(param)                        return false end )
   w.event_register("reactorDeactivation", function(                ) w.status_showWarning("Reactor deactivated") return false end )
   w.event_register("reactorActivation"  , function(                ) w.status_showWarning("Reactor activated")   return false end )
-  w.data_register("reactor", reactor_read, nil)
+  w.data_register("reactor", reactor_read, nil, nil)
 end
 
 ----------- connections status
@@ -373,7 +373,7 @@ function connections_page(isBooting)
   
   w.writeLn("")
   
-  if reactor == nil then
+  if reactor == nil or reactor.interfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No Enantiomorphic reactor detected")
   else

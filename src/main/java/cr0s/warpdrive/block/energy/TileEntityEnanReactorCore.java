@@ -16,8 +16,9 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -86,7 +87,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			"stabilizerEnergy",
 			"state"
 		});
-		CC_scripts = Arrays.asList("startup");
+		CC_scripts = Collections.singletonList("startup");
 	}
 	
 	@Override
@@ -232,16 +233,34 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	private boolean shouldExplode() {
 		boolean exploding = false;
+		final StringBuilder laserStatus = new StringBuilder();
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
 			exploding = exploding || (instabilityValues[reactorFace.indexStability] >= 100);
+			int laserEnergy = 0;
+			final TileEntity tileEntity = worldObj.getTileEntity(
+					pos.add(reactorFace.x, reactorFace.y, reactorFace.z));
+			if (tileEntity instanceof TileEntityEnanReactorLaser) {
+				try {
+					laserEnergy = (int) ((TileEntityEnanReactorLaser) tileEntity).energy()[0];
+				} catch (Exception exception) {
+					exception.printStackTrace();
+					WarpDrive.logger.error(String.format("%s tileEntity is %s", this, tileEntity));
+				}
+			}
+			laserStatus.append(String.format("\n- face %s has reached instability %.2f while laser has %d energy available",
+			                                 reactorFace.name,
+			                                 instabilityValues[reactorFace.indexStability],
+			                                 laserEnergy));
 		}
 		exploding &= (worldObj.rand.nextInt(4) == 2);
 		
 		if (exploding) {
-			WarpDrive.logger.info(this
-			                      + String.format(" Explosion triggered, Instability is [%.2f, %.2f, %.2f, %.2f], Energy stored is %d, Laser received is %.2f, %s",
-			                                      instabilityValues[0], instabilityValues[1], instabilityValues[2], instabilityValues[3],
-			                                      containedEnergy, lasersReceived, isEnabled ? "ENABLED" : "DISABLED"));
+			WarpDrive.logger.info(String.format("%s Explosion triggered\nEnergy stored is %d, Laser received is %.2f, reactor is %s%s",
+			                                    this,
+			                                    containedEnergy,
+			                                    lasersReceived,
+			                                    isEnabled ? "ENABLED" : "DISABLED",
+			                                    laserStatus.toString()));
 			isEnabled = false;
 		}
 		return exploding;
@@ -349,7 +368,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	// Common OC/CC methods
 	@Override
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean enableRequest;
 			try {
 				enableRequest = Commons.toBool(arguments[0]);
@@ -388,7 +407,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] instabilityTarget(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			double instabilityTargetRequested;
 			try {
 				instabilityTargetRequested = Commons.toDouble(arguments[0]);
@@ -406,7 +425,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] release(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean releaseRequested;
 			try {
 				releaseRequested = Commons.toBool(arguments[0]);
@@ -426,7 +445,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] releaseRate(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			int releaseRateRequested;
 			try {
 				releaseRateRequested = Commons.toInt(arguments[0]);
@@ -474,7 +493,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] stabilizerEnergy(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			int stabilizerEnergyRequested;
 			try {
 				stabilizerEnergyRequested = Commons.toInt(arguments[0]);
@@ -662,6 +681,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	// Forge overrides
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);

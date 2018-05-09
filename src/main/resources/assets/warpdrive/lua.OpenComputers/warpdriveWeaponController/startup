@@ -28,7 +28,7 @@ function laser_save(parData)
     data.laser_stations[keyStation] = {
       name = laserstation.name,
       cameraAddress = laserstation.cameraAddress,
-      batteries = {}}
+      batteries = {} }
     for keyBattery, laserbattery in pairs(laser_stations[keyStation].batteries) do
       data.laser_stations[keyStation].batteries[keyBattery] = {
         name = laserbattery.name,
@@ -278,7 +278,7 @@ function laser_battery_config()
     w.setCursorPos(1, 7)
     w.clearLine()
     w.write("Battery beam frequency (" .. w.format_integer(headFrequency, 5) .. "): ")
-    frequency = w.input_readNumber(headFrequency)
+    frequency = w.input_readInteger(headFrequency)
     if frequency ~= 0 and (frequency < 0 or frequency > 65000) then
       w.status_showWarning("This is not a valid beam frequency. Try again.")
     end
@@ -526,7 +526,7 @@ function laser_station_page()
       w.write("Laser batteries:")
       for key, battery in pairs(laserstation.batteries) do
         w.setCursorPos(1, 5 + key)
-        laserbattery = laser_battery_getByName(battery.name)
+        local laserbattery = laser_battery_getByName(battery.name)
         if battery.enabled then
           w.setColorSuccess()
         else
@@ -592,7 +592,7 @@ function laser_station_config()
   repeat
     w.setCursorPos(1, 7)
     w.write("Camera video frequency (" .. w.format_integer(camVideoChannel, 5) .. "): ")
-    channel = w.input_readNumber(camVideoChannel)
+    channel = w.input_readInteger(camVideoChannel)
     if channel ~= 0 and (channel < 0 or channel > 268435455) then
       w.status_showWarning("This is not a valid video channel. Try again.")
     end
@@ -609,7 +609,7 @@ function laser_station_config()
   w.setCursorPos(1, 11)
   w.write("Battery enabling: ")
   for key, battery in pairs(laserstation.batteries) do
-    laserbattery = laser_battery_getByName(battery.name)
+    local laserbattery = laser_battery_getByName(battery.name)
     local msg = laser_battery_getDescription(laserbattery)
     
     w.setCursorPos(1, 11 + (key % 5))
@@ -823,7 +823,7 @@ function laser_register()
       function() end)
   w.event_register("laserScanning", function() laser_sendEvent() return false end )
   w.event_register("laserSend"    , function()                   return false end )
-  w.data_register("laser", laser_read, laser_save)
+  w.data_register("laser", laser_read, laser_save, nil)
 end
 
 ----------- connections status

@@ -35,7 +35,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	
 	public BlockShipCore(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.movement.ShipCore");
+		setUnlocalizedName("warpdrive.movement.ship_core");
 		GameRegistry.registerTileEntity(TileEntityShipCore.class, WarpDrive.PREFIX + registryName);
 	}
 	
@@ -89,8 +89,9 @@ public class BlockShipCore extends BlockAbstractContainer {
 		return itemStacks;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public float getPlayerRelativeBlockHardness(IBlockState blockState, EntityPlayer entityPlayer, World world, BlockPos blockPos) {
+	public float getPlayerRelativeBlockHardness(final IBlockState blockState, @Nonnull final EntityPlayer entityPlayer, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		boolean willBreak = true;
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityShipCore) {

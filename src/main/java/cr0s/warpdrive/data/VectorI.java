@@ -266,23 +266,23 @@ public class VectorI implements Cloneable {
 	}
 	
 	
-	public static VectorI createFromNBT(NBTTagCompound nbtTagCompound) {
+	public static VectorI createFromNBT(final NBTTagCompound tagCompound) {
 		VectorI vector = new VectorI();
-		vector.readFromNBT(nbtTagCompound);
+		vector.readFromNBT(tagCompound);
 		return vector;
 	}
 	
-	public void readFromNBT(NBTTagCompound nbtTagCompound) {
-		x = nbtTagCompound.getInteger("x");
-		y = nbtTagCompound.getInteger("y");
-		z = nbtTagCompound.getInteger("z");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		x = tagCompound.getInteger("x");
+		y = tagCompound.getInteger("y");
+		z = tagCompound.getInteger("z");
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound.setInteger("x", x);
-		nbtTagCompound.setInteger("y", y);
-		nbtTagCompound.setInteger("z", z);
-		return nbtTagCompound;
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("x", x);
+		tagCompound.setInteger("y", y);
+		tagCompound.setInteger("z", z);
+		return tagCompound;
 	}
 	
 	// Square roots are evil, avoid them at all cost
@@ -301,11 +301,11 @@ public class VectorI implements Cloneable {
 		return (newX * newX + newY * newY + newZ * newZ);
 	}
 	
-	public int distance2To(final Entity entity) {
-		int newX = (int) (Math.round(entity.posX)) - x;
-		int newY = (int) (Math.round(entity.posY)) - y;
-		int newZ = (int) (Math.round(entity.posZ)) - z;
-		return (newX * newX + newY * newY + newZ * newZ);
+	public double distance2To(final Entity entity) {
+		final double newX = entity.posX - x;
+		final double newY = entity.posY - y;
+		final double newZ = entity.posZ - z;
+		return newX * newX + newY * newY + newZ * newZ;
 	}
 	
 	public int distance2To(final TileEntity tileEntity) {

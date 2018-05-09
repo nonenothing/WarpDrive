@@ -23,8 +23,6 @@ public class BlockAbstractAccelerator extends BlockAbstractBase implements IBloc
 		this.tier = tier;
 		setHardness(4 + tier);
 		setResistance((2 + 2 * tier) * 5 / 3);
-		setSoundType(SoundType.METAL);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 	}
 	
 	@Override

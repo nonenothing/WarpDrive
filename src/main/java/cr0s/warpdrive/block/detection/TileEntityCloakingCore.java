@@ -15,6 +15,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 
 import net.minecraft.block.state.IBlockState;
@@ -41,9 +42,9 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public byte tier = 1; // cloaking field tier, 1 or 2
 	
 	// inner coils color map
-	private final float[] innerCoilColor_r = { 1.00f, 1.00f, 1.00f, 1.00f, 0.75f, 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f }; 
-	private final float[] innerCoilColor_g = { 0.00f, 0.25f, 0.75f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.50f, 0.25f, 0.00f, 0.00f }; 
-	private final float[] innerCoilColor_b = { 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f, 1.00f, 1.00f, 1.00f, 0.75f }; 
+	private final float[] innerCoilColor_r = { 1.00f, 1.00f, 1.00f, 1.00f, 0.75f, 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f };
+	private final float[] innerCoilColor_g = { 0.00f, 0.25f, 0.75f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 0.50f, 0.25f, 0.00f, 0.00f };
+	private final float[] innerCoilColor_b = { 0.25f, 0.00f, 0.00f, 0.00f, 0.00f, 0.00f, 0.50f, 1.00f, 1.00f, 1.00f, 1.00f, 0.75f };
 	
 	// Spatial cloaking field parameters
 	private final boolean[] isValidInnerCoils = { false, false, false, false, false, false };
@@ -337,18 +338,19 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		tier = tag.getByte("tier");
-		isEnabled = tag.getBoolean("enabled");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		tier = tagCompound.getByte("tier");
+		isEnabled = tagCompound.getBoolean("enabled");
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setByte("tier", tier);
-		tag.setBoolean("enabled", isEnabled);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setByte("tier", tier);
+		tagCompound.setBoolean("enabled", isEnabled);
+		return tagCompound;
 	}
 	
 	public boolean validateAssembly() {
@@ -420,16 +422,16 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		// build status message
 		final float integrity = countIntegrity / 13.0F; 
 		if (messageInnerCoils.length() > 0 && messageOuterCoils.length() > 0) {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloakingCore.missingInnerAndOuter", 
+			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missingInnerAndOuter", 
 					Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils).toString(); 
 		} else if (messageInnerCoils.length() > 0) {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloakingCore.missingInner",
+			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missingInner",
 			        Math.round(100.0F * integrity), messageInnerCoils).toString();
 		} else if (messageOuterCoils.length() > 0) {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloakingCore.missingOuter",
+			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missingOuter",
 					Math.round(100.0F * integrity), messageOuterCoils).toString();
 		} else {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloakingCore.valid").toString();
+			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.valid").toString();
 		}
 		
 		// Update cloaking field parameters defined by coils
@@ -445,30 +447,30 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
+	public ITextComponent getStatusHeader() {
 		if (worldObj == null) {
-			return super.getStatus();
+			return super.getStatusHeader();
 		}
 		
 		final String unlocalizedStatus;
 		if (!isValid) {
 			unlocalizedStatus = messageValidityIssues;
 		} else if (!isEnabled) {
-			unlocalizedStatus = "warpdrive.cloakingCore.disabled";
+			unlocalizedStatus = "warpdrive.cloaking_core.disabled";
 		} else if (!isCloaking) {
-			unlocalizedStatus = "warpdrive.cloakingCore.lowPower";
+			unlocalizedStatus = "warpdrive.cloaking_core.lowPower";
 		} else {
-			unlocalizedStatus = "warpdrive.cloakingCore.cloaking";
+			unlocalizedStatus = "warpdrive.cloaking_core.cloaking";
 		}
-		return super.getStatus()
-				.appendSibling(new TextComponentString("\n")).appendSibling(new TextComponentTranslation(unlocalizedStatus,
+		return super.getStatusHeader()
+		    .appendSibling(new TextComponentString("\n")).appendSibling(new TextComponentTranslation(unlocalizedStatus,
 						tier,
 						volume));
 	}
 	
 	// Common OC/CC methods
 	public Object[] tier(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			int tier_new;
 			try {
 				tier_new = Commons.toInt(arguments[0]);
@@ -490,7 +492,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
 		}

@@ -78,13 +78,13 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		return super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		return super.writeToNBT(tagCompound);
 	}
 	
 	private int calculateEnergyRequired(final int parRadius) {
@@ -134,7 +134,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	private Object[] getEnergyRequired(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				return new Object[] { calculateEnergyRequired(Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {
@@ -145,7 +145,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	private Object[] getScanDuration(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				return new Object[] { 0.050D * calculateScanDuration(Commons.toInt(arguments[0])) };
 			}
 		} catch (Exception exception) {

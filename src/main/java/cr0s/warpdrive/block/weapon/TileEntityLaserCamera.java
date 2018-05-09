@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.data.EnumCameraType;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -88,63 +87,32 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		}
 	}
 	
-	private ITextComponent getVideoChannelStatus() {
-		if (videoChannel == -1) {
-			return new TextComponentTranslation("warpdrive.video_channel.statusLine.undefined");
-		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
-		} else {
-			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
-			if (camera == null) {
-				WarpDrive.cameras.printRegistry(worldObj);
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
-			} else if (camera.isTileEntity(this)) {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.valid", videoChannel);
-			} else {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.validCamera",
-						videoChannel,
-						camera.position.getX(),
-						camera.position.getY(),
-						camera.position.getZ());
-			}
-		}
+	@Override
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		setVideoChannel(tagCompound.getInteger("cameraFrequency") + tagCompound.getInteger(VIDEO_CHANNEL_TAG));
 	}
 	
+	@Nonnull
 	@Override
-	public ITextComponent getStatus() {
-		if (worldObj == null || worldObj.isRemote) {
-			return super.getStatus()
-					.appendSibling(new TextComponentString("\n")).appendSibling(getVideoChannelStatus());
-		} else {
-			return super.getStatus();
-		}
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		setVideoChannel(tag.getInteger("cameraFrequency") + tag.getInteger(VIDEO_CHANNEL_TAG));
-	}
-	
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
+		return tagCompound;
 	}
 	
 	@Nonnull
 	@Override
 	public NBTTagCompound getUpdateTag() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		// (beam frequency is server side only)
 		tagCompound.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
 		return tagCompound;
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.getNbtCompound();
+	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		// (beam frequency is server side only)
 		setVideoChannel(tagCompound.getInteger(VIDEO_CHANNEL_TAG));
 	}
@@ -178,7 +146,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("videoChannel")) {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setVideoChannel(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { videoChannel };

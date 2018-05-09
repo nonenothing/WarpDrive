@@ -1,6 +1,6 @@
 if not term.isColor() then
   print("Advanced computer required")
-  exit()
+  error()
 end
 
 local sides = peripheral.getNames()
@@ -22,7 +22,7 @@ if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
     print("Usage: mine <layerOffset> <onlyOres> <silktouch>")
     print()
-    print("Miner always mine below it, down to bedrock.")
+    print("Miner always mines below it, down to bedrock.")
     print("Set layerOffset to define starting level.")
     print("Power consumption will be much lower in space.")
     print("Mining only ores is faster but more expensive...")

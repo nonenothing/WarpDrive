@@ -3,13 +3,17 @@ package cr0s.warpdrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
+import cr0s.warpdrive.world.SpaceTeleporter;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -22,13 +26,18 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -140,8 +149,30 @@ public class Commons {
 	// add tooltip information with text formatting and line splitting
 	// will ensure it fits on minimum screen width
 	public static void addTooltip(final List<String> list, final String tooltip) {
+		// skip empty tooltip
+		if (tooltip.isEmpty()) {
+			return;
+		}
+		
+		// apply requested formatting
 		final String[] split = updateEscapeCodes(tooltip).split("\n");
+		
+		// add new lines
 		for (final String line : split) {
+			// skip redundant information
+			boolean isExisting = false;
+			for (final String lineExisting : list) {
+				if ( lineExisting.contains(line)
+				  || line.contains(lineExisting) ) {
+					isExisting = true;
+					break;
+				}
+			}
+			if (isExisting) {
+				continue;
+			}
+			
+			// apply screen formatting/cesure
 			String lineRemaining = line;
 			String formatNextLine = "";
 			while (!lineRemaining.isEmpty()) {
@@ -234,6 +265,10 @@ public class Commons {
 		return result.toString();
 	}
 	
+	public static String sanitizeFileName(final String name) {
+		return name.replace("/", "").replace(".", "").replace("\\", ".");
+	}
+	
 	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
 		final ItemStack ret = itemStack.copy();
 		ret.stackSize = newSize;
@@ -317,25 +352,31 @@ public class Commons {
 	
 	// data manipulation methods
 	
-	public static int toInt(double d) {
+	public static int toInt(final double d) {
 		return (int) Math.round(d);
 	}
 	
-	public static int toInt(Object object) {
+	public static int toInt(final Object object) {
 		return toInt(toDouble(object));
 	}
 	
-	public static double toDouble(Object object) {
+	public static double toDouble(final Object object) {
+		if (object == null) {
+			return 0.0D;
+		}
 		assert(!(object instanceof Object[]));
 		return Double.parseDouble(object.toString());
 	}
 	
-	public static float toFloat(Object object) {
+	public static float toFloat(final Object object) {
+		if (object == null) {
+			return 0.0F;
+		}
 		assert(!(object instanceof Object[]));
 		return Float.parseFloat(object.toString());
 	}
 	
-	public static boolean toBool(Object object) {
+	public static boolean toBool(final Object object) {
 		if (object == null) {
 			 return false;
 		}
@@ -405,7 +446,7 @@ public class Commons {
 		return yValues[yValues.length - 1];
 	}
 	
-	private static double interpolate(final double xMin, final double yMin, final double xMax, final double yMax, final double x) {
+	public static double interpolate(final double xMin, final double yMin, final double xMax, final double yMax, final double x) {
 		return yMin + (x - xMin) * (yMax - yMin) / (xMax - xMin);
 	}
 	
@@ -530,6 +571,20 @@ public class Commons {
 		return null;
 	}
 	
+	public static BlockPos createBlockPosFromNBT(final NBTTagCompound tagCompound) {
+		final int x = tagCompound.getInteger("x");
+		final int y = tagCompound.getInteger("y");
+		final int z = tagCompound.getInteger("z");
+		return new BlockPos(x, y, z);
+	}
+	
+	public static NBTTagCompound writeBlockPosToNBT(final BlockPos blockPos, final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("x", blockPos.getX());
+		tagCompound.setInteger("y", blockPos.getY());
+		tagCompound.setInteger("z", blockPos.getZ());
+		return tagCompound;
+	}
+	
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
 		final List<EntityPlayerMP> onlinePlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
 		for (final EntityPlayerMP onlinePlayer : onlinePlayers) {
@@ -568,6 +623,70 @@ public class Commons {
 		if (WarpDriveConfig.isNotEnoughItemsLoaded) {
 			NEI_hideItemStack(itemStack);
 		}
+	}
+	
+	public static void moveEntity(final Entity entity, final World worldDestination, final Vector3 v3Destination) {
+		// change to another dimension if needed
+		if (worldDestination != entity.worldObj) {
+			final World worldSource = entity.worldObj;
+			final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+			final WorldServer from = server.worldServerForDimension(worldSource.provider.getDimension());
+			final WorldServer to = server.worldServerForDimension(worldDestination.provider.getDimension());
+			final SpaceTeleporter teleporter = new SpaceTeleporter(to, 0,
+			                                                       MathHelper.floor_double(v3Destination.x),
+			                                                       MathHelper.floor_double(v3Destination.y),
+			                                                       MathHelper.floor_double(v3Destination.z));
+			
+			if (entity instanceof EntityPlayerMP) {
+				final EntityPlayerMP player = (EntityPlayerMP) entity;
+				server.getPlayerList().transferPlayerToDimension(player, worldDestination.provider.getDimension(), teleporter);
+				player.sendPlayerAbilities();
+			} else {
+				server.getPlayerList().transferEntityToWorld(entity, worldSource.provider.getDimension(), from, to, teleporter);
+			}
+		}
+		
+		// update position
+		if (entity instanceof EntityPlayerMP) {
+			final EntityPlayerMP player = (EntityPlayerMP) entity;
+			player.setPositionAndUpdate(v3Destination.x, v3Destination.y, v3Destination.z);
+		} else {
+			// @TODO: force client refresh of non-player entities
+			entity.setPosition(v3Destination.x, v3Destination.y, v3Destination.z);
+		}
+	}
+	
+	public static WorldServer getOrCreateWorldServer(final int dimensionId) {
+		WorldServer worldServer = DimensionManager.getWorld(dimensionId);
+		
+		if (worldServer == null) {
+			try {
+				final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+				worldServer = server.worldServerForDimension(dimensionId);
+			} catch (Exception exception) {
+				WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d",
+				                                     exception.getMessage(),
+				                                     dimensionId));
+				if (WarpDrive.isDev) {
+					exception.printStackTrace();
+				}
+				worldServer = null;
+			}
+		}
+		
+		return worldServer;
+	}
+	
+	// server side version of EntityLivingBase.rayTrace
+	private static final double BLOCK_REACH_DISTANCE = 5.0D;    // this is a client side hardcoded value, applicable to creative players
+	public static RayTraceResult getInteractingBlock(final World world, final EntityPlayer entityPlayer) {
+		return getInteractingBlock(world, entityPlayer, BLOCK_REACH_DISTANCE);
+	}
+	public static RayTraceResult getInteractingBlock(final World world, final EntityPlayer entityPlayer, final double distance) {
+		final Vec3d vec3Position = new Vec3d(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
+		final Vec3d vec3Look = entityPlayer.getLook(1.0F);
+		final Vec3d vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
+		return world.rayTraceBlocks(vec3Position, vec3Target, false, false, true);
 	}
 	
 	public static EnumFacing getDirection(final int index) {

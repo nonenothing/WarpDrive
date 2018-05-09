@@ -30,15 +30,15 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	protected byte tier = -1;
 	protected int beamFrequency = -1;
 	public boolean isEnabled = true;
+	protected boolean isConnected = false;
 	
 	// computed properties
 	protected Vector3 vRGB;
-	protected boolean isConnected = false;
 	
 	public TileEntityAbstractForceField() {
 		super();
-
-		addMethods(new String[]{
+		
+		addMethods(new String[] {
 			"enable",
 			"beamFrequency"
 		});
@@ -108,25 +108,9 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 			ForceFieldRegistry.updateInRegistry(this);
 		}
 	}
-
-	private ITextComponent getBeamFrequencyStatus() {
-		if (beamFrequency == -1) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
-		} else if (beamFrequency < 0) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
-		} else {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
-		}
-	}
 	
 	@Override
-	public ITextComponent getStatus() {
-		return super.getStatus()
-			.appendSibling(new TextComponentString("\n")).appendSibling(getBeamFrequencyStatus());
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+		public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		tier = tagCompound.getByte("tier");
 		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
@@ -134,6 +118,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		isConnected = tagCompound.getBoolean("isConnected");
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
@@ -154,8 +139,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.getNbtCompound();
+	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
@@ -177,7 +162,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
@@ -204,10 +189,10 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				return enable(arguments);
 				
 			case "beamFrequency":
-				if (arguments.length == 1) {
+				if (arguments.length == 1 && arguments[0] != null) {
 					setBeamFrequency(Commons.toInt(arguments[0]));
 				}
-				return new Integer[]{ beamFrequency };
+				return new Integer[] { beamFrequency };
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();

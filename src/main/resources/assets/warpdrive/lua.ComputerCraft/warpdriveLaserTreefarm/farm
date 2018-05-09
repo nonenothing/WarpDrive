@@ -1,6 +1,6 @@
 if not term.isColor() then
   print("Advanced computer required")
-  exit()
+  error()
 end
 
 local sides = peripheral.getNames()
@@ -22,7 +22,7 @@ if #args > 0 then
   if args[1] == "help" or args[1] == "?" then
     print("Usage: farm <breakLeaves> <tapTrees> <silktouch>")
     print()
-    print("Farmer always farm above it.")
+    print("Farmer always farms above it.")
     print("Use 'true' or '1' to enable an option.")
     print("Use 'false' or '0' to disable an option.")
     print("Default is to break leaves and tap rubber trees.")
@@ -81,7 +81,7 @@ if noExit then
   local areActive
   repeat
     areActive = false
-    for key,treefarm in pairs(treefarms) do
+    for key, treefarm in pairs(treefarms) do
       local status, isActive, energy, totalHarvested, currentValuable, totalValuables = treefarm.state()
       
       term.setBackgroundColor(colors.black)

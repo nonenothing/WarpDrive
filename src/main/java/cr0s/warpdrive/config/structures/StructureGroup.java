@@ -1,10 +1,10 @@
 package cr0s.warpdrive.config.structures;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IStringSerializable;
 
 import java.util.Random;
 
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

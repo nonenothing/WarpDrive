@@ -18,8 +18,9 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityForceField extends TileEntityAbstractBase {
+	
 	private VectorI vProjector;
-
+	
 	// cache parameters used for rendering, force projector check for others
 	private int cache_beamFrequency;
 	public IBlockState cache_blockStateCamouflage;
@@ -30,16 +31,16 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	private int gracePeriod_calls = 3;
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		if (tag.hasKey("projector")) {
-			vProjector = VectorI.createFromNBT(tag.getCompoundTag("projector"));
-			cache_beamFrequency = tag.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
-			if (tag.hasKey("camouflageBlock")) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		if (tagCompound.hasKey("projector")) {
+			vProjector = VectorI.createFromNBT(tagCompound.getCompoundTag("projector"));
+			cache_beamFrequency = tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
+			if (tagCompound.hasKey("camouflageBlock")) {
 				try {
-					cache_blockStateCamouflage = Block.getBlockFromName(tag.getString("camouflageBlock")).getStateFromMeta(tag.getByte("camouflageMeta"));
-					cache_colorMultiplierCamouflage = tag.getInteger("camouflageColorMultiplier");
-					cache_lightCamouflage = tag.getByte("camouflageLight");
+					cache_blockStateCamouflage = Block.getBlockFromName(tagCompound.getString("camouflageBlock")).getStateFromMeta(tagCompound.getByte("camouflageMeta"));
+					cache_colorMultiplierCamouflage = tagCompound.getInteger("camouflageColorMultiplier");
+					cache_lightCamouflage = tagCompound.getByte("camouflageLight");
 					if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(cache_blockStateCamouflage.getBlock())) {
 						cache_blockStateCamouflage = null;
 						cache_colorMultiplierCamouflage = 0;
@@ -62,6 +63,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 		}
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
@@ -86,8 +88,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.getNbtCompound();
+	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
@@ -146,7 +148,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	}
 	
 	public ForceFieldSetup getForceFieldSetup() {
-		TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector();
+		final TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector();
 		if (tileEntityForceFieldProjector == null) {
 			return null;
 		}

@@ -28,6 +28,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 		return group + ":" + name;
 	}
 	
+	@Nonnull
 	@Override
 	public String getName() {
 		return name;

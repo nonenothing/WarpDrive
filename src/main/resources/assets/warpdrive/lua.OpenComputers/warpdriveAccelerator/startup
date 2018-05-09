@@ -4,13 +4,12 @@ local w = require("warpdriveCommons")
 
 ----------- Accelerator support
 
-local lhc_isEnabled = false
 local lhc_controlPoints = {}
 local lhc_parameters = {}
 local accelerator = nil
 
 function lhc_boot(isDetailed)
-  if accelerator == nil then
+  if accelerator == nil or accelerator.interfaced() == nil then
     return
   end
   
@@ -28,8 +27,8 @@ function lhc_boot(isDetailed)
   -- getting control points
   lhc_controlPoints = {}
   local count = accelerator.getControlPointsCount()
-  lhc_controlChannels = { }
-  countParameters = 0
+  local lhc_controlChannels = { }
+  local countParameters = 0
   
   if count ~= nil and count > 0 then
     for i = 0, count - 1 do
@@ -133,9 +132,9 @@ function lhc_page_parameter()
   description = w.input_readText(description)
   
   w.writeLn("")
-  w.writeLn("Current threshold is " .. (threshold * 100) .. "%")
+  w.writeLn("Current threshold is " .. w.format_integer(threshold * 100) .. "%")
   w.write("Enter parameter threshold: ")
-  local new_threshold = w.input_readNumber(threshold * 100) / 100
+  local new_threshold = w.input_readInteger(threshold * 100) / 100
   threshold = math.min(2.0, math.max(0.0, new_threshold))
   lhc_parameters[indexSelected] = { controlChannel, isEnabled, threshold, description }
   accelerator.parameter(controlChannel, isEnabled, threshold, description)
@@ -256,7 +255,6 @@ function lhc_page()
     else
       local indexFirstLine, indexSelected = lhc_parameter_getIndexes()
       w.writeLn(indexSelected .. "/" .. #lhc_parameters)
-      local indexCurrent = indexFirstLine
       local indexLastLine = math.min(indexFirstLine + lhc_parameter_lines, #lhc_parameters)
       for indexCurrent = indexFirstLine, indexLastLine do
         if indexCurrent == indexSelected then
@@ -356,7 +354,7 @@ function connections_page(isBooting)
   
   w.writeLn("")
   
-  if accelerator == nil then
+  if accelerator == nil or accelerator.interfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No accelerator controller detected")
   else
@@ -389,5 +387,14 @@ w.page_register('1', lhc_page, lhc_key)
 lhc_register()
 
 w.boot()
-w.run()
+local success, message = pcall(w.run)
+if not success then
+  print("failed with message")
+  print(message)
+  w.sleep(3.0)
+  print("rebooting...")
+  w.reboot()
+else
+  w.close()
+end
 w.close()

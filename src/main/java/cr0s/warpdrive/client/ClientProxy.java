@@ -62,7 +62,10 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockLaserTreeFarm);
 		IModelInitialisation(WarpDrive.blockLift);
 		IModelInitialisation(WarpDrive.blockShipScanner);
-		IModelInitialisation(WarpDrive.blockTransporter);
+		IModelInitialisation(WarpDrive.blockTransporterBeacon);
+		IModelInitialisation(WarpDrive.blockTransporterContainment);
+		IModelInitialisation(WarpDrive.blockTransporterCore);
+		IModelInitialisation(WarpDrive.blockTransporterScanner);
 		IModelInitialisation(WarpDrive.blockBedrockGlass);
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
 			IModelInitialisation(WarpDrive.blockIC2reactorLaserMonitor);
@@ -76,7 +79,6 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.blockLamp_flat);
 		IModelInitialisation(WarpDrive.blockLamp_long);
 		IModelInitialisation(WarpDrive.blockHighlyAdvancedMachine);
-		IModelInitialisation(WarpDrive.blockTransportBeacon);
 		IModelInitialisation(WarpDrive.blockChunkLoader);
 		for (int index = 0; index < 3; index++) {
 			IModelInitialisation(WarpDrive.blockForceFields[index]);
@@ -130,10 +132,6 @@ public class ClientProxy extends CommonProxy {
 		IModelInitialisation(WarpDrive.itemAirTanks[1]);
 		IModelInitialisation(WarpDrive.itemAirTanks[2]);
 		IModelInitialisation(WarpDrive.itemAirTanks[3]);
-		
-		if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
-			IModelInitialisation(WarpDrive.itemUpgrade);
-		}
 		
 		IModelInitialisation(WarpDrive.itemTuningFork);
 		IModelInitialisation(WarpDrive.itemTuningDriver);

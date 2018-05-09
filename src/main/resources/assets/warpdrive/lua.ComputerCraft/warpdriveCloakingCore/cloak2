@@ -1,6 +1,6 @@
 if not term.isColor() then
   print("Advanced computer required")
-  exit()
+  error()
 end
 
 local sides = peripheral.getNames()
@@ -14,7 +14,7 @@ for _, side in pairs(sides) do
 end
 
 
-if cloakingCore == nil then
+if cloakingcore == nil or cloakingcore.interfaced() == nil then
   term.setBackgroundColor(colors.red)
   term.setTextColor(colors.white)
   term.write("No cloaking core detected")

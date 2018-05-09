@@ -12,6 +12,8 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -111,6 +113,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound.setBoolean("isEnabled", isEnabled);
@@ -137,7 +140,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[]{isEnabled};

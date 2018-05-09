@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -28,31 +29,34 @@ public class GlobalPosition {
 		this.z = blockPos.getZ();
 	}
 	
-	public GlobalPosition(TileEntity tileEntity) {
+	public GlobalPosition(final TileEntity tileEntity) {
 		this(tileEntity.getWorld().provider.getDimension(), tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
 	}
 	
+	public GlobalPosition(final Entity entity) {
+		this(entity.worldObj.provider.getDimension(),
+			(int) Math.floor(entity.posX),
+			(int) Math.floor(entity.posY),
+			(int) Math.floor(entity.posZ));
+	}
+	
 	public WorldServer getWorldServerIfLoaded() {
-		WorldServer world = DimensionManager.getWorld(dimensionId);
+		final WorldServer world = DimensionManager.getWorld(dimensionId);
 		// skip unloaded worlds
 		if (world == null) {
 			return null;
 		}
 		
 		boolean isLoaded = false;
-		if (world.getChunkProvider() instanceof ChunkProviderServer) {
-			ChunkProviderServer chunkProviderServer = world.getChunkProvider();
-			try {
-				long i = ChunkPos.chunkXZ2Int(x >> 4, z >> 4);
-				Chunk chunk = chunkProviderServer.id2ChunkMap.get(i);
-				if (chunk != null) {
-					isLoaded = !chunk.unloaded;
-				}
-			} catch (NoSuchFieldError exception) {
-				isLoaded = chunkProviderServer.chunkExists(x >> 4, z >> 4);
+		final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
+		try {
+			long i = ChunkPos.chunkXZ2Int(x >> 4, z >> 4);
+			Chunk chunk = chunkProviderServer.id2ChunkMap.get(i);
+			if (chunk != null) {
+				isLoaded = !chunk.unloaded;
 			}
-		} else {
-			isLoaded = world.getChunkProvider().chunkExists(x >> 4, z >> 4);
+		} catch (NoSuchFieldError exception) {
+			isLoaded = chunkProviderServer.chunkExists(x >> 4, z >> 4);
 		}
 		// skip unloaded chunks
 		if (!isLoaded) {
@@ -65,9 +69,41 @@ public class GlobalPosition {
 		return getWorldServerIfLoaded() != null;
 	}
 	
+	public CelestialObject getCelestialObject(final boolean isRemote) {
+		return CelestialObjectManager.get(isRemote, dimensionId, x, z);
+	}
+	
 	public Vector3 getUniversalCoordinates(final boolean isRemote) {
-		CelestialObject celestialObject = CelestialObjectManager.get(isRemote, dimensionId, x, z);
+		final CelestialObject celestialObject = CelestialObjectManager.get(isRemote, dimensionId, x, z);
 		return StarMapRegistry.getUniversalCoordinates(celestialObject, x, y, z);
+	}
+	
+	public VectorI getVectorI() {
+		return new VectorI(x, y, z);
+	}
+	
+	public BlockPos getBlockPos() {
+		return new BlockPos(x, y, z);
+	}
+	
+	public int distance2To(final TileEntity tileEntity) {
+		if (tileEntity.getWorld().provider.getDimension() != dimensionId) {
+			return Integer.MAX_VALUE;
+		}
+		final int newX = tileEntity.getPos().getX() - x;
+		final int newY = tileEntity.getPos().getY() - y;
+		final int newZ = tileEntity.getPos().getZ() - z;
+		return newX * newX + newY * newY + newZ * newZ;
+	}
+	
+	public double distance2To(final Entity entity) {
+		if (entity.worldObj.provider.getDimension() != dimensionId) {
+			return Double.MAX_VALUE;
+		}
+		final double newX = entity.posX - x;
+		final double newY = entity.posY - y;
+		final double newZ = entity.posZ - z;
+		return newX * newX + newY * newY + newZ * newZ;
 	}
 	
 	public GlobalPosition(final NBTTagCompound tagCompound) {
@@ -87,6 +123,25 @@ public class GlobalPosition {
 	public boolean equals(final TileEntity tileEntity) {
 		return dimensionId == tileEntity.getWorld().provider.getDimension()
 			&& x == tileEntity.getPos().getX() && y == tileEntity.getPos().getY() && z == tileEntity.getPos().getZ();
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if (object instanceof GlobalPosition) {
+			GlobalPosition globalPosition = (GlobalPosition) object;
+			return (dimensionId == globalPosition.dimensionId) && (x == globalPosition.x) && (y == globalPosition.y) && (z == globalPosition.z);
+		} else if (object instanceof VectorI) {
+			VectorI vector = (VectorI) object;
+			return (x == vector.x) && (y == vector.y) && (z == vector.z);
+		} else if (object instanceof TileEntity) {
+			TileEntity tileEntity = (TileEntity) object;
+			return (dimensionId == tileEntity.getWorld().provider.getDimension())
+			    && (x == tileEntity.getPos().getX())
+			    && (y == tileEntity.getPos().getY())
+			    && (z == tileEntity.getPos().getZ());
+		}
+		
+		return false;
 	}
 	
 	@Override

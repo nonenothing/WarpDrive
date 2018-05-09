@@ -63,88 +63,88 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 		}
 	}
 	
-	public static int getVideoChannel(ItemStack itemStack) {
+	public static int getVideoChannel(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningDriver)) {
 			return -1;
 		}
 		if (!itemStack.hasTagCompound()) {
 			return -1;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt.hasKey(IVideoChannel.VIDEO_CHANNEL_TAG)) {
-			return nbt.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound.hasKey(IVideoChannel.VIDEO_CHANNEL_TAG)) {
+			return tagCompound.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
 		}
 		return -1;
 	}
 	
-	public static ItemStack setVideoChannel(ItemStack itemStack, int videoChannel) {
+	public static ItemStack setVideoChannel(final ItemStack itemStack, final int videoChannel) {
 		if (!(itemStack.getItem() instanceof ItemTuningDriver) || videoChannel == -1) {
 			return itemStack;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt == null) {
-			nbt = new NBTTagCompound();
+		NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
+			tagCompound = new NBTTagCompound();
 		}
-		nbt.setInteger(IVideoChannel.VIDEO_CHANNEL_TAG, videoChannel);
-		itemStack.setTagCompound(nbt);
+		tagCompound.setInteger(IVideoChannel.VIDEO_CHANNEL_TAG, videoChannel);
+		itemStack.setTagCompound(tagCompound);
 		return itemStack;
 	}
 	
-	public static int getBeamFrequency(ItemStack itemStack) {
+	public static int getBeamFrequency(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningDriver)) {
 			return -1;
 		}
 		if (!itemStack.hasTagCompound()) {
 			return -1;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt.hasKey(IBeamFrequency.BEAM_FREQUENCY_TAG)) {
-			return nbt.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound.hasKey(IBeamFrequency.BEAM_FREQUENCY_TAG)) {
+			return tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
 		}
 		return -1;
 	}
 	
-	public static ItemStack setBeamFrequency(ItemStack itemStack, int beamFrequency) {
+	public static ItemStack setBeamFrequency(final ItemStack itemStack, final int beamFrequency) {
 		if (!(itemStack.getItem() instanceof ItemTuningDriver) || beamFrequency == -1) {
 			return itemStack;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt == null) {
-			nbt = new NBTTagCompound();
+		NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
+			tagCompound = new NBTTagCompound();
 		}
-		nbt.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, beamFrequency);
-		itemStack.setTagCompound(nbt);
+		tagCompound.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, beamFrequency);
+		itemStack.setTagCompound(tagCompound);
 		return itemStack;
 	}
 	
-	public static int getControlChannel(ItemStack itemStack) {
+	public static int getControlChannel(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningDriver)) {
 			return -1;
 		}
 		if (!itemStack.hasTagCompound()) {
 			return -1;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt.hasKey(IControlChannel.CONTROL_CHANNEL_TAG)) {
-			return nbt.getInteger(IControlChannel.CONTROL_CHANNEL_TAG);
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound.hasKey(IControlChannel.CONTROL_CHANNEL_TAG)) {
+			return tagCompound.getInteger(IControlChannel.CONTROL_CHANNEL_TAG);
 		}
 		return -1;
 	}
 	
-	public static ItemStack setControlChannel(ItemStack itemStack, int controlChannel) {
+	public static ItemStack setControlChannel(final ItemStack itemStack, final int controlChannel) {
 		if (!(itemStack.getItem() instanceof ItemTuningDriver) || controlChannel == -1) {
 			return itemStack;
 		}
-		NBTTagCompound nbt = itemStack.getTagCompound();
-		if (nbt == null) {
-			nbt = new NBTTagCompound();
+		NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
+			tagCompound = new NBTTagCompound();
 		}
-		nbt.setInteger(IControlChannel.CONTROL_CHANNEL_TAG, controlChannel);
-		itemStack.setTagCompound(nbt);
+		tagCompound.setInteger(IControlChannel.CONTROL_CHANNEL_TAG, controlChannel);
+		itemStack.setTagCompound(tagCompound);
 		return itemStack;
 	}
 	
-	public static ItemStack setValue(ItemStack itemStack, final int dye) {
+	public static ItemStack setValue(final ItemStack itemStack, final int dye) {
 		switch (itemStack.getItemDamage()) {
 		case MODE_VIDEO_CHANNEL  : return setVideoChannel(itemStack, dye);
 		case MODE_BEAM_FREQUENCY : return setBeamFrequency(itemStack, dye);
@@ -153,23 +153,15 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 		}
 	}
 	
-	// server side version of EntityLivingBase.rayTrace
-	private static final double BLOCK_REACH_DISTANCE = 5.0D;    // this is a client side hardcoded value, applicable to creative players
-	private static RayTraceResult getInteractingBlock(World world, EntityPlayer entityPlayer, final double distance) {
-		Vec3d vec3Position = new Vec3d(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
-		Vec3d vec3Look = entityPlayer.getLook(1.0F);
-		Vec3d vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
-		return world.rayTraceBlocks(vec3Position, vec3Target, false, false, true);
-	}
-	
 	@Nonnull
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(@Nonnull ItemStack itemStack, World world, EntityPlayer entityPlayer, EnumHand hand) {
-		if (world.isRemote || !(itemStack.getItem() instanceof ItemTuningDriver)) {
+	public ActionResult<ItemStack> onItemRightClick(@Nonnull final ItemStack itemStack, final World world, final EntityPlayer entityPlayer, final EnumHand hand) {
+		if ( world.isRemote
+		  || !(itemStack.getItem() instanceof ItemTuningDriver) ) {
 			return new ActionResult<>(EnumActionResult.PASS, itemStack);
 		}
 		// check if a block is in players reach 
-		RayTraceResult movingObjectPosition = getInteractingBlock(world, entityPlayer, BLOCK_REACH_DISTANCE);
+		final RayTraceResult movingObjectPosition = Commons.getInteractingBlock(world, entityPlayer);
 		if (movingObjectPosition.typeOfHit != Type.MISS) {
 			return new ActionResult<>(EnumActionResult.PASS, itemStack);
 		}

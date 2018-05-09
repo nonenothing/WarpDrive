@@ -31,7 +31,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	
 	public BlockLaserTreeFarm(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.collection.LaserTreeFarm");
+		setUnlocalizedName("warpdrive.collection.laser_tree_farm");
 		GameRegistry.registerTileEntity(TileEntityLaserTreeFarm.class, WarpDrive.PREFIX + registryName);
 
 		setDefaultState(getDefaultState().withProperty(MODE, EnumLaserTreeFarmMode.INACTIVE));

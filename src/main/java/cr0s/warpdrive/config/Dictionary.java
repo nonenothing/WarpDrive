@@ -50,6 +50,7 @@ public class Dictionary {
 	public static HashSet<Block> BLOCKS_STOPMINING = null;
 	public static HashMap<Block, Integer> BLOCKS_PLACE = null;
 	public static HashSet<Block> BLOCKS_NOCAMOUFLAGE = null;
+	public static HashSet<Block> BLOCKS_NOBLINK = null;
 	
 	// Entities dictionary
 	public static HashSet<String> ENTITIES_ANCHOR = null;
@@ -82,13 +83,14 @@ public class Dictionary {
 					+ "- Expandable: this block will be squished/ignored in case of collision.\n"
 					+ "- Mining: this block is mineable (default: all 'ore' blocks from the ore dictionary).\n"
 					+ "- SkipMining: this block is ignored from mining (default: bedrock).\n"
-					+ "- StopMining: this block will prevent mining through it (default: forcefields).\n"
+					+ "- StopMining: this block will prevent mining through it (default: command/creative, bedrock, force fields).\n"
 					+ "- PlaceEarliest: this block will be removed last and placed first (default: ship hull and projectors).\n"
 					+ "- PlaceEarlier: this block will be placed fairly soon (default: forcefield blocks).\n"
 					+ "- PlaceNormal: this block will be removed and placed with non-tile entities.\n"
 					+ "- PlaceLater: this block will be placed fairly late (default: IC2 Reactor core).\n"
 					+ "- PlaceLatest: this block will be removed first and placed last (default: IC2 Reactor chamber).\n"
-					+ "- NoCamouflage: this block isn't valid for camouflage.");
+					+ "- NoCamouflage: this block isn't valid for camouflage.\n"
+					+ "- NoBlink: this block will prevent teleportation through it (default: bedrock, force fields)");
 			
 			ConfigCategory categoryBlockTags = config.getCategory("block_tags");
 			String[] taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
@@ -106,7 +108,7 @@ public class Dictionary {
 				
 				// anchors
 				config.get("block_tags", "minecraft:barrier"                               , "Anchor SkipMining").getString();
-				config.get("block_tags", "minecraft:bedrock"                               , "Anchor SkipMining").getString();
+				config.get("block_tags", "minecraft:bedrock"                               , "Anchor SkipMining NoBlink").getString();
 				config.get("block_tags", "minecraft:chain_command_block"                   , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:command_block"                         , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:end_gateway"                           , "Anchor StopMining").getString();
@@ -115,13 +117,14 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:portal"                                , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:repeating_command_block"               , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:structure_block"                       , "Anchor StopMining").getString();
-				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining").getString();
+				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining NoBlink").getString();
 				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
 				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
 				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
 				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
+				config.get("block_tags", "malisisdoors:null"                               , "Anchor").getString(); // improper registration of block causing NPE
 				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
-				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor SkipMining").getString();
+				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor StopMining NoBlink").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
@@ -139,8 +142,8 @@ public class Dictionary {
 				config.get("block_tags", "IC2:blockAlloy"                                  , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "IC2:blockAlloyGlass"                             , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "minecraft:obsidian"                              , "PlaceEarliest Mining").getString();
-				config.get("block_tags", "AdvancedRepulsionSystems:field"                  , "PlaceEarlier StopMining").getString();
-				// config.get("block_tags", "MFFS:field"                                      , "PlaceEarlier StopMining"	).getString();
+				config.get("block_tags", "AdvancedRepulsionSystems:field"                  , "PlaceEarlier StopMining NoBlink").getString();
+				// config.get("block_tags", "MFFS:field"                                                   , "PlaceEarlier StopMining NoBlink").getString();
 				config.get("block_tags", "IC2:blockGenerator"                              , "PlaceLater").getString();
 				config.get("block_tags", "IC2:blockReactorChamber"                         , "PlaceLatest").getString();
 				config.get("block_tags", "ImmersiveEngineering:metalDevice"                , "PlaceLatest").getString();	// FIXME: need to fine tune at metadata level
@@ -152,19 +155,19 @@ public class Dictionary {
 				config.get("block_tags", "CarpentersBlocks:blockCarpentersLever"           , "PlaceLatest").getString();
 				config.get("block_tags", "CarpentersBlocks:blockCarpentersPressurePlate"   , "PlaceLatest").getString();
 				config.get("block_tags", "CarpentersBlocks:blockCarpentersTorch"           , "PlaceLatest").getString();
-				// config.get("block_tags", "SGCraft:stargateBase"                            , "PlaceEarliest").getString();
-				// config.get("block_tags", "SGCraft:stargateBase"                            , "PlaceEarliest").getString();
-				// config.get("block_tags", "SGCraft:stargateRing"                            , "PlaceEarlier").getString();
-				// config.get("block_tags", "SGCraft:stargateController"                      , "PlaceLatest").getString();
+				// config.get("block_tags", "SGCraft:stargateBase"                                         , "PlaceEarliest").getString();
+				// config.get("block_tags", "SGCraft:stargateBase"                                         , "PlaceEarliest").getString();
+				// config.get("block_tags", "SGCraft:stargateRing"                                         , "PlaceEarlier").getString();
+				// config.get("block_tags", "SGCraft:stargateController"                                   , "PlaceLatest").getString();
 				config.get("block_tags", "OpenComputers:case1"                             , "PlaceLatest").getString();
 				config.get("block_tags", "OpenComputers:case2"                             , "PlaceLatest").getString(); 
 				config.get("block_tags", "OpenComputers:case3"                             , "PlaceLatest").getString(); 
 				config.get("block_tags", "OpenComputers:caseCreative"                      , "PlaceLatest").getString(); 
 				config.get("block_tags", "OpenComputers:keyboard"                          , "PlaceLatest").getString();
 				config.get("block_tags", "PneumaticCraft:pressureChamberValve"             , "PlaceEarlier").getString();
-				config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.shield"                      , "PlaceNormal StopMining").getString();
+				config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining NoBlink").getString();
+				config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining NoBlink").getString();
+				config.get("block_tags", "StargateTech2:block.shield"                      , "PlaceNormal StopMining NoBlink").getString();
 				config.get("block_tags", "StargateTech2:block.busAdapter"                  , "PlaceLatest StopMining").getString();
 				config.get("block_tags", "StargateTech2:block.busCable"                    , "PlaceNormal StopMining").getString();
 				
@@ -185,26 +188,26 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:redstone_block"                        , "Mining").getString();
 				
 				// mining an 'end' moon
-				config.get("block_tags", "WarpDrive:blockIridium"                , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
+				config.get("block_tags", "WarpDrive:blockIridium"                          , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
 				
 				// force field camouflage blacklisting
-				config.get("block_tags", "deepresonance:energyCollectorBlock"          , "NoCamouflage").getString();
-				config.get("block_tags", "deepresonance:resonatingCrystalBlock"        , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:bloodInfuser"                      , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:darkOre"                           , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:sanguinaryEnvironmentalAccumulator", "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:spiritReanimator"                  , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierWood"             , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierOneBlock"         , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierTwoBlock"         , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierThreeBlock"       , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierFourBlock"        , "NoCamouflage").getString();
-				config.get("block_tags", "Thaumcraft:blockCustomPlant"                 , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Cache"                      , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Device"                     , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Machine"                    , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Sponge"                     , "NoCamouflage").getString();
-				config.get("block_tags", "witchery:leechchest"                         , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:energyCollectorBlock"              , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:resonatingCrystalBlock"            , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:bloodInfuser"                          , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:darkOre"                               , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:sanguinaryEnvironmentalAccumulator"    , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:spiritReanimator"                      , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierWood"                 , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierOneBlock"             , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierTwoBlock"             , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierThreeBlock"           , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:baseTierFourBlock"            , "NoCamouflage").getString();
+				config.get("block_tags", "Thaumcraft:blockCustomPlant"                     , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Cache"                          , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Device"                         , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Machine"                        , "NoCamouflage").getString();
+				config.get("block_tags", "ThermalExpansion:Sponge"                         , "NoCamouflage").getString();
+				config.get("block_tags", "witchery:leechchest"                             , "NoCamouflage").getString();
 				
 				taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			}
@@ -223,7 +226,8 @@ public class Dictionary {
 					+ "Tags shall be separated by at least one space, comma or tabulation.\n" + "Invalid tags will be ignored silently. Tags and block names are case sensitive.\n"
 					+ "In case of conflicts, the latest tag overwrite the previous ones.\n" + "- Anchor: ship can't move with this entity aboard (default: none).\n"
 					+ "- NoMass: this entity doesn't count when calculating ship volume/mass (default: Galacticraft air bubble).\n"
-					+ "- LeftBehind: this entity won't move with your ship (default: Galacticraft air bubble).\n"
+					+ "- LeftBehind: this entity won't move with your ship nor transporter (default: Galacticraft air bubble).\n"
+//					+ "- NoTransport: this entity is ignored by the transporter (default: -none-).\n"
 					+ "- NonLivingTarget: this non-living entity can be targeted/removed by weapons (default: ItemFrame, Painting).\n"
 					+ "- LivingWithoutAir: this living entity doesn't need air to live (default: vanilla zombies and skeletons).");
 			
@@ -369,6 +373,7 @@ public class Dictionary {
 		BLOCKS_STOPMINING = new HashSet<>(taggedBlocks.size());
 		BLOCKS_PLACE = new HashMap<>(taggedBlocks.size());
 		BLOCKS_NOCAMOUFLAGE = new HashSet<>(taggedBlocks.size());
+		BLOCKS_NOBLINK = new HashSet<>(taggedBlocks.size());
 		for (final Entry<String, String> taggedBlock : taggedBlocks.entrySet()) {
 			final Block block = Block.getBlockFromName(taggedBlock.getKey());
 			if (block == null) {
@@ -393,6 +398,7 @@ public class Dictionary {
 				case "PlaceLater"   : BLOCKS_PLACE.put(block, 3); break;
 				case "PlaceLatest"  : BLOCKS_PLACE.put(block, 4); break;
 				case "NoCamouflage" : BLOCKS_NOCAMOUFLAGE.add(block); break;
+				case "NoBlink"      : BLOCKS_NOBLINK.add(block); break;
 				default:
 					WarpDrive.logger.error("Unsupported tag '" + tag + "' for block " + block);
 					break;

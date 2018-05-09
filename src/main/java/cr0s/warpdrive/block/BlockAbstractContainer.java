@@ -6,6 +6,8 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.data.BlockProperties;
 
 import net.minecraft.block.SoundType;
@@ -14,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Optional;
@@ -21,11 +24,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -94,11 +99,11 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity != null && itemStack.getTagCompound() != null) {
-			NBTTagCompound nbtTagCompound = itemStack.getTagCompound().copy();
-			nbtTagCompound.setInteger("x", blockPos.getX());
-			nbtTagCompound.setInteger("y", blockPos.getY());
-			nbtTagCompound.setInteger("z", blockPos.getZ());
-			tileEntity.readFromNBT(nbtTagCompound);
+			final NBTTagCompound tagCompound = itemStack.getTagCompound().copy();
+			tagCompound.setInteger("x", blockPos.getX());
+			tagCompound.setInteger("y", blockPos.getY());
+			tagCompound.setInteger("z", blockPos.getZ());
+			tileEntity.readFromNBT(tagCompound);
 			world.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 		}
 	}
@@ -118,9 +123,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		if (tileEntity == null) {
 			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 		} else if (tileEntity instanceof TileEntityAbstractBase) {
-			NBTTagCompound nbtTagCompound = new NBTTagCompound();
-			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
-			itemStack.setTagCompound(nbtTagCompound);
+			final NBTTagCompound tagCompound = new NBTTagCompound();
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);
+			itemStack.setTagCompound(tagCompound);
 		}
 		world.setBlockToAir(blockPos);
 		super.dropBlockAsItemWithChance(world, blockPos, blockState, chance, fortune);
@@ -131,10 +136,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
 		ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
 		TileEntity tileEntity = world.getTileEntity(blockPos);
-		NBTTagCompound nbtTagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {
-			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(nbtTagCompound);
-			itemStack.setTagCompound(nbtTagCompound);
+			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);
+			itemStack.setTagCompound(tagCompound);
 		}
 		return itemStack;
 	}
@@ -231,5 +236,103 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			case 3:	return EnumRarity.RARE;
 			default: return rarity;
 		}
+	}
+	
+	@Override
+	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
+	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
+	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+		if (world.isRemote) {
+			return false;
+		}
+		
+		if (hand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		
+		// get context
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
+		if (!(tileEntity instanceof TileEntityAbstractBase)) {
+			return false;
+		}
+		final TileEntityAbstractBase tileEntityAbstractBase = (TileEntityAbstractBase) tileEntity;
+		
+		EnumComponentType enumComponentType = null;
+		if ( itemStackHeld != null
+		  && itemStackHeld.getItem() instanceof ItemComponent ) {
+			enumComponentType = EnumComponentType.get(itemStackHeld.getItemDamage());
+		}
+		
+		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
+		if (entityPlayer.isSneaking()) {
+			// using an upgrade item or an empty hand means dismount upgrade
+			if ( tileEntityAbstractBase.isUpgradeable()
+			  && ( itemStackHeld == null
+			    || enumComponentType != null ) ) {
+				// find a valid upgrade to dismount
+				if ( itemStackHeld == null
+				  || !tileEntityAbstractBase.hasUpgrade(enumComponentType) ) {
+					enumComponentType = (EnumComponentType) tileEntityAbstractBase.getFirstUpgradeOfType(EnumComponentType.class, null);
+				}
+				
+				if (enumComponentType == null) {
+					// no more upgrades to dismount
+					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.noUpgradeToDismount"));
+					return true;
+				}
+				
+				if (!entityPlayer.capabilities.isCreativeMode) {
+					// dismount the current upgrade item
+					final ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					entityItem.setNoPickupDelay();
+					world.spawnEntityInWorld(entityItem);
+				}
+				
+				tileEntityAbstractBase.dismountUpgrade(enumComponentType);
+				// upgrade dismounted
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.dismounted", enumComponentType.name()));
+				return true;
+			}
+			
+		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status
+			Commons.addChatMessage(entityPlayer, tileEntityAbstractBase.getStatus());
+			return true;
+			
+		} else if ( tileEntityAbstractBase.isUpgradeable()
+		         && enumComponentType != null ) {// no sneaking and an upgrade in hand => mounting an upgrade
+			// validate type
+			if (tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType) <= 0) {
+				// invalid upgrade type
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.invalidUpgrade"));
+				return true;
+			}
+			if (!tileEntityAbstractBase.canUpgrade(enumComponentType)) {
+				// too many upgrades
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.tooManyUpgrades",
+				                                                                  tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType)));
+				return true;
+			}
+			
+			if (!entityPlayer.capabilities.isCreativeMode) {
+				// validate quantity
+				if (itemStackHeld.stackSize < 1) {
+					// not enough upgrade items
+					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.notEnoughUpgrades"));
+					return true;
+				}
+				
+				// update player inventory
+				itemStackHeld.stackSize -= 1;
+			}
+			
+			// mount the new upgrade item
+			tileEntityAbstractBase.mountUpgrade(enumComponentType);
+			// upgrade mounted
+			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.mounted", enumComponentType.name()));
+			return true;
+		}
+		
+		return false;
 	}
 }

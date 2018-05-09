@@ -23,7 +23,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	
 	public BlockCamera(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.detection.Camera");
+		setUnlocalizedName("warpdrive.detection.camera");
 		GameRegistry.registerTileEntity(TileEntityCamera.class, WarpDrive.PREFIX + registryName);
 	}
 	

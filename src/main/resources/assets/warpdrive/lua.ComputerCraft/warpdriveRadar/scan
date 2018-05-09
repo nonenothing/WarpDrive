@@ -1,16 +1,20 @@
-
 if not term.isColor() then
   print("Advanced computer required")
-  exit()
+  error()
 end
 
-function error(message)
+function showError(message)
   term.setBackgroundColor(colors.black)
   term.setTextColor(colors.red)
   term.write(message)
   term.setBackgroundColor(colors.black)
   term.setTextColor(colors.white)
   print()
+end
+
+function showErrorAndExit(message)
+  showError(message)
+  error()
 end
 
 local radar
@@ -21,15 +25,13 @@ for _, side in pairs(sides) do
     radar = peripheral.wrap(side)
   end
 end
-if radar == nil then
-  error("No radar detected")
-  exit()
+if radar == nil or radar.interfaced() == nil then
+  showErrorAndExit("No radar detected")
 end
 
 local argv = { ... }
 if #argv ~= 1 then
-  error("Usage: scan <scanRadius>")
-  exit()
+  showErrorAndExit("Usage: scan <scanRadius>")
 end
 
 local radius = tonumber(argv[1])
@@ -94,6 +96,7 @@ function scanAndDraw()
     
     return 0
   end
+  
   radar.radius(radius)
   radar.start()
   local scanDuration = radar.getScanDuration(radius)

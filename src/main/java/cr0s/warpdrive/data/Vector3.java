@@ -1,5 +1,7 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.render.AbstractEntityFX;
+
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -38,6 +40,12 @@ public class Vector3 implements Cloneable {
 		x = entity.posX;
 		y = entity.posY;
 		z = entity.posZ;
+	}
+	
+	public Vector3(final AbstractEntityFX entityFX) {
+		x = entityFX.getX();
+		y = entityFX.getY();
+		z = entityFX.getZ();
 	}
 	
 	public Vector3(final TileEntity tileEntity) {
@@ -149,6 +157,13 @@ public class Vector3 implements Cloneable {
 		double var2 = entity.posX - x;
 		double var4 = entity.posY - y;
 		double var6 = entity.posZ - z;
+		return var2 * var2 + var4 * var4 + var6 * var6;
+	}
+	
+	public double distanceTo_square(final AbstractEntityFX entityFX) {
+		double var2 = entityFX.getX() - x;
+		double var4 = entityFX.getY() - y;
+		double var6 = entityFX.getZ() - z;
 		return var2 * var2 + var4 * var4 + var6 * var6;
 	}
 	
@@ -495,23 +510,23 @@ public class Vector3 implements Cloneable {
 	}
 	
 	
-	public static Vector3 createFromNBT(NBTTagCompound nbtTagCompound) {
+	public static Vector3 createFromNBT(final NBTTagCompound tagCompound) {
 		Vector3 vector = new Vector3();
-		vector.readFromNBT(nbtTagCompound);
+		vector.readFromNBT(tagCompound);
 		return vector;
 	}
 	
-	public void readFromNBT(NBTTagCompound nbtTagCompound) {
-		x = nbtTagCompound.getDouble("x");
-		y = nbtTagCompound.getDouble("y");
-		z = nbtTagCompound.getDouble("z");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		x = tagCompound.getDouble("x");
+		y = tagCompound.getDouble("y");
+		z = tagCompound.getDouble("z");
 	}
 	
-	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound.setDouble("x", x);
-		nbtTagCompound.setDouble("y", y);
-		nbtTagCompound.setDouble("z", z);
-		return nbtTagCompound;
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setDouble("x", x);
+		tagCompound.setDouble("y", y);
+		tagCompound.setDouble("z", z);
+		return tagCompound;
 	}
 	
 	public static Vector3 UP() {

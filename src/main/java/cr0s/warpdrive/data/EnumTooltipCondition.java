@@ -1,10 +1,9 @@
 package cr0s.warpdrive.data;
 
-import cr0s.warpdrive.api.IStringSerializable;
-
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.IStringSerializable;
 
 public enum EnumTooltipCondition implements IStringSerializable {
 	

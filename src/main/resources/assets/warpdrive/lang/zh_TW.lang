@@ -149,43 +149,43 @@ tile.warpdrive.passive.IridiumBlock.name=銥塊
 tile.warpdrive.passive.HighlyAdvancedMachine.name=高級機床
 tile.warpdrive.passive.Network.name=網絡方塊
 tile.warpdrive.passive.Plain.name=戰機方塊
-tile.warpdrive.passive.TransportBeacon.name=傳送坐標
 
 tile.warpdrive.machines.AirGenerator.name=空氣發生器
 tile.warpdrive.machines.ChunkLoader.name=方塊裝載器
 tile.warpdrive.machines.Laser.name=鐳射
 tile.warpdrive.machines.LaserMedium.name=鐳射單元 (粒子加速器)
 
-tile.warpdrive.building.ShipScanner.name=船隻掃描儀
+tile.warpdrive.building.ship_scanner.name=船隻掃描儀
 
-tile.warpdrive.collection.LaserTreeFarm.name=激光樹農場
-tile.warpdrive.collection.MiningLaser.name=采礦鐳射
+tile.warpdrive.collection.laser_tree_farm.name=激光樹農場
+tile.warpdrive.collection.mining_laser.name=采礦鐳射
 
-tile.warpdrive.detection.Camera.name=相機
-tile.warpdrive.detection.CloakingCoil.name=偽裝線圈
-tile.warpdrive.detection.CloakingCore.name=僞裝核心
-tile.warpdrive.detection.Monitor.name=監控
-tile.warpdrive.detection.Radar.name=雷達
-tile.warpdrive.detection.WarpIsolation.name=躍遷力場隔絕方塊
+tile.warpdrive.detection.camera.name=相機
+tile.warpdrive.detection.cloaking_coil.name=偽裝線圈
+tile.warpdrive.detection.cloaking_core.name=僞裝核心
+tile.warpdrive.detection.monitor.name=監控
+tile.warpdrive.detection.radar.name=雷達
+tile.warpdrive.detection.warp_isolation.name=躍遷力場隔絕方塊
+tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
-tile.warpdrive.detection.Siren.tooltip=由紅石觸發
-tile.warpdrive.detection.Siren0.name=警報器
-tile.warpdrive.detection.Siren0.tooltip=距離32格範圍内有警報器發出了警報。
-tile.warpdrive.detection.Siren4.name=空襲警報器
-tile.warpdrive.detection.Siren4.tooltip=距離32格範圍内有空襲警報器發出了警報。
-tile.warpdrive.detection.Siren5.name=進階空襲警報器
-tile.warpdrive.detection.Siren5.tooltip=距離64格範圍内有空襲警報器發出了警報。
-tile.warpdrive.detection.Siren6.name=高階空襲警報器
-tile.warpdrive.detection.Siren6.tooltip=距離128格範圍内有空襲警報器發出了警報。
+tile.warpdrive.detection.siren.tooltip=由紅石觸發
+tile.warpdrive.detection.siren0.name=警報器
+tile.warpdrive.detection.siren0.tooltip=距離32格範圍内有警報器發出了警報。
+tile.warpdrive.detection.siren4.name=空襲警報器
+tile.warpdrive.detection.siren4.tooltip=距離32格範圍内有空襲警報器發出了警報。
+tile.warpdrive.detection.siren5.name=進階空襲警報器
+tile.warpdrive.detection.siren5.tooltip=距離64格範圍内有空襲警報器發出了警報。
+tile.warpdrive.detection.siren6.name=高階空襲警報器
+tile.warpdrive.detection.siren6.tooltip=距離128格範圍内有空襲警報器發出了警報。
 
-tile.warpdrive.energy.EnanReactorCore.name=核反應堆核
-tile.warpdrive.energy.EnanReactorLaser.name=反應堆穩定激光
-tile.warpdrive.energy.EnergyBank.0.name=零點模具
-tile.warpdrive.energy.EnergyBank.0.tooltip=創造子空間電容
-tile.warpdrive.energy.EnergyBank.1.name=基本子空間電容
-tile.warpdrive.energy.EnergyBank.2.name=進階子空間電容
-tile.warpdrive.energy.EnergyBank.3.name=高級子空間電容器
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 反應堆激光監視器
+tile.warpdrive.energy.enan_reactor_core.name=核反應堆核
+tile.warpdrive.energy.enan_reactor_laser.name=反應堆穩定激光
+tile.warpdrive.energy.energy_bank.0.name=零點模具
+tile.warpdrive.energy.energy_bank.0.tooltip=創造子空間電容
+tile.warpdrive.energy.energy_bank.1.name=基本子空間電容
+tile.warpdrive.energy.energy_bank.2.name=進階子空間電容
+tile.warpdrive.energy.energy_bank.3.name=高級子空間電容器
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 反應堆激光監視器
 
 tile.warpdrive.forcefield.block1.name=基本力場方塊
 tile.warpdrive.forcefield.block2.name=進階力場方塊
@@ -207,10 +207,18 @@ tile.warpdrive.forcefield.relay2.tooltip=支持在其網絡內共享最多1個�
 tile.warpdrive.forcefield.relay3.name=Superior Force Field Relay
 tile.warpdrive.forcefield.relay3.tooltip=支持在其網絡內共享最多1個力場升級
 
-tile.warpdrive.movement.Lift.name=升降機
-tile.warpdrive.movement.ShipController.name=船艦制禦器
-tile.warpdrive.movement.ShipCore.name=波動核心
-tile.warpdrive.movement.Transporter.name=運輸
+tile.warpdrive.movement.lift.name=升降機
+tile.warpdrive.movement.ship_controller.name=船艦制禦器
+tile.warpdrive.movement.ship_controller.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core.
+tile.warpdrive.movement.ship_core.name=波動核心
+tile.warpdrive.movement.ship_core.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=Bounding box display have been disabled.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\n§bSneak right-click the Ship core§7 again to disable it.
+tile.warpdrive.movement.transporter_beacon.name=傳送坐標
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=運輸
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=鐳射&攝像機
 tile.warpdrive.weapon.WeaponController.name=火控系統
@@ -446,13 +454,25 @@ warpdrive.videoChannel.statusLine.validCamera視頻頻道 %1$d 對於攝像機 %
 warpdrive.videoChannel.statusLine.invalid=§c視頻頻道 %1$d 是無效的。
 warpdrive.videoChannel.statusLine.invalidOrNotLoaded=§c視頻頻道 %1$d 是無效的或者錄像機太過遙遠。 
 warpdrive.videoChannel.statusLine.undefined=§7未定義的視頻通道。\n§bUse 調音叉§r 來設定。
-warpdrive.cloakingCore.invalidAssembly=§c裝配無效！
-warpdrive.cloakingCore.disabled=僞裝無效！
-warpdrive.cloakingCore.lowPower=§c僞裝失效了，我們需要更多的能量！艦長！
-warpdrive.cloakingCore.cloaking=A 層 %1$d 僞裝目前正確覆蓋 %2$d 區域！
-warpdrive.IC2reactorLaserMonitor.noReactor=沒有反應堆！
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d 反應器連接。
-warpdrive.transporter.status=From %1$.0f %2$.0f %3$.0f to %4$.0f %5$.0f %6$.0f
+
+warpdrive.cloaking_core.invalidAssembly=§c裝配無效！
+warpdrive.cloaking_core.disabled=僞裝無效！
+warpdrive.cloaking_core.lowPower=§c僞裝失效了，我們需要更多的能量！艦長！
+warpdrive.cloaking_core.cloaking=A 層 %1$d 僞裝目前正確覆蓋 %2$d 區域！
+
+warpdrive.ic2_reactor_laser_monitor.noReactor=沒有反應堆！
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d 反應器連接。
+
+warpdrive.transporter.status=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingIC2=§b空間呼吸§r 正在從您的庫存消耗IC2的壓縮空氣囊。
 warpdrive.tooltip.itemTag.flyInSpace=§b空間噴氣背包§r.

@@ -1,7 +1,6 @@
 package cr0s.warpdrive.config;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IStringSerializable;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -9,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Random;
 import java.util.TreeMap;
+
+import net.minecraft.util.IStringSerializable;
 
 /**
  * Collection of elements with ratios and weights. Helps to select element with controlled odds.

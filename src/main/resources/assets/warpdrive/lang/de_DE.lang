@@ -197,7 +197,6 @@ tile.warpdrive.decoration.lamp_long.name=Long Lamp !!!
 
 tile.warpdrive.passive.IridiumBlock.name=Iridium Block
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Stark weiterentwickelter Maschinen Block
-tile.warpdrive.passive.TransportBeacon.name=Transport Leuchtfeuer
 
 tile.warpdrive.machines.ChunkLoader.name=Chunk Loader
 tile.warpdrive.machines.Laser.name=Laser
@@ -241,36 +240,37 @@ tile.warpdrive.breathing.air_generator2.name=Weiterentwickeltes Luftgenerator
 tile.warpdrive.breathing.air_generator3.name=Überlegenes Luftgenerator
 tile.warpdrive.breathing.air_shield.name=Energie-Luftschild
 
-tile.warpdrive.building.ShipScanner.name=Raumschiff Scanner
+tile.warpdrive.building.ship_scanner.name=Raumschiff Scanner
 
-tile.warpdrive.collection.LaserTreeFarm.name=Laser Baumfarm
-tile.warpdrive.collection.MiningLaser.name=Bergbau Laser
+tile.warpdrive.collection.laser_tree_farm.name=Laser Baumfarm
+tile.warpdrive.collection.mining_laser.name=Bergbau Laser
 
-tile.warpdrive.detection.Camera.name=Kamera
-tile.warpdrive.detection.CloakingCoil.name=Tarnfeld Spule
-tile.warpdrive.detection.CloakingCore.name=Tarnfeld Kern
-tile.warpdrive.detection.Monitor.name=Monitor
-tile.warpdrive.detection.Radar.name=Radar
-tile.warpdrive.detection.WarpIsolation.name=Warp-Feld Isolations Block
+tile.warpdrive.detection.camera.name=Kamera
+tile.warpdrive.detection.cloaking_coil.name=Tarnfeld Spule
+tile.warpdrive.detection.cloaking_core.name=Tarnfeld Kern
+tile.warpdrive.detection.monitor.name=Monitor
+tile.warpdrive.detection.radar.name=Radar
+tile.warpdrive.detection.warp_isolation.name=Warp-Feld Isolations Block
+tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
-tile.warpdrive.detection.Siren.tooltip=Ausgelöst durch ein Redstone Signal.
-tile.warpdrive.detection.Siren0.name=Industrielle Sirene
-tile.warpdrive.detection.Siren0.tooltip=Lässt einen industriellen Alarm bis zu 32 m weit ertönen.
-tile.warpdrive.detection.Siren4.name=Standard Luftschutzsirene
-tile.warpdrive.detection.Siren4.tooltip=Lässt einen Luftschutzalarm bis zu 32 m weit ertönen.
-tile.warpdrive.detection.Siren5.name=Weiterentwickelte Luftschutzsirene
-tile.warpdrive.detection.Siren5.tooltip=Lässt einen Luftschutzalarm bis zu 64 m weit ertönen.
-tile.warpdrive.detection.Siren6.name=Überlegene Luftschutzsirene
-tile.warpdrive.detection.Siren6.tooltip=Lässt einen Luftschutzalarm bis zu 128 m weit ertönen.
+tile.warpdrive.detection.siren.tooltip=Ausgelöst durch ein Redstone Signal.
+tile.warpdrive.detection.siren0.name=Industrielle Sirene
+tile.warpdrive.detection.siren0.tooltip=Lässt einen industriellen Alarm bis zu 32 m weit ertönen.
+tile.warpdrive.detection.siren4.name=Standard Luftschutzsirene
+tile.warpdrive.detection.siren4.tooltip=Lässt einen Luftschutzalarm bis zu 32 m weit ertönen.
+tile.warpdrive.detection.siren5.name=Weiterentwickelte Luftschutzsirene
+tile.warpdrive.detection.siren5.tooltip=Lässt einen Luftschutzalarm bis zu 64 m weit ertönen.
+tile.warpdrive.detection.siren6.name=Überlegene Luftschutzsirene
+tile.warpdrive.detection.siren6.tooltip=Lässt einen Luftschutzalarm bis zu 128 m weit ertönen.
 
-tile.warpdrive.energy.EnanReactorCore.name=Enantiomorpher Reaktorkern
-tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorper Reaktor Stabilisierungs Laser
-tile.warpdrive.energy.EnergyBank.0.name=Null-Punkt-Modul
-tile.warpdrive.energy.EnergyBank.0.tooltip=Kreativ Subraum Kondensator
-tile.warpdrive.energy.EnergyBank.1.name=Standard Subraum Kondensator
-tile.warpdrive.energy.EnergyBank.2.name=Weiterentwickelter Subraum Kondensator
-tile.warpdrive.energy.EnergyBank.3.name=Überlegener Subraum Kondensator
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reaktor Laser Monitor
+tile.warpdrive.energy.enan_reactor_core.name=Enantiomorpher Reaktorkern
+tile.warpdrive.energy.enan_reactor_laser.name=Enantiomorper Reaktor Stabilisierungs Laser
+tile.warpdrive.energy.energy_bank.0.name=Null-Punkt-Modul
+tile.warpdrive.energy.energy_bank.0.tooltip=Kreativ Subraum Kondensator
+tile.warpdrive.energy.energy_bank.1.name=Standard Subraum Kondensator
+tile.warpdrive.energy.energy_bank.2.name=Weiterentwickelter Subraum Kondensator
+tile.warpdrive.energy.energy_bank.3.name=Überlegener Subraum Kondensator
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reaktor Laser Monitor
 
 tile.warpdrive.forcefield.block1.name=Standard Kraftfeld
 tile.warpdrive.forcefield.block2.name=Weiterentwickeltes Kraftfeld
@@ -292,14 +292,18 @@ tile.warpdrive.forcefield.relay2.tooltip=Unterstützt bis zu 1 Upgrade im Netzwe
 tile.warpdrive.forcefield.relay3.name=Überlegenes Kraftfeld Relais
 tile.warpdrive.forcefield.relay3.tooltip=Unterstützt bis zu 1 Upgrade im Netzwerk
 
-tile.warpdrive.movement.Lift.name=Lift
-tile.warpdrive.movement.ShipController.name=Raumschiff Steuerung
-tile.warpdrive.movement.ShipController.tooltip=Definiert dein Schiff relativ zum Kern. Schließe einen Computer an, um das Interface zu öffnen.\nSollte horizontal neben dem Kern plaziert werden.
-tile.warpdrive.movement.ShipCore.name=Raumschiff Kern
-tile.warpdrive.movement.ShipCore.tooltip=Definiert dein Schiff relativ zur Steuerung. Schließe eine Energiequelle an, um den Kern zu laden.\nSollte horizontal neben der Steuerung plaziert werden.
-tile.warpdrive.movement.ShipCore.bounding_box.disabled=Bounding box display have been disabled.
-tile.warpdrive.movement.ShipCore.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
-tile.warpdrive.movement.Transporter.name=Transporter
+tile.warpdrive.movement.lift.name=Lift
+tile.warpdrive.movement.ship_controller.name=Raumschiff Steuerung
+tile.warpdrive.movement.ship_controller.tooltip=Definiert dein Schiff relativ zum Kern. Schließe einen Computer an, um das Interface zu öffnen.\nSollte horizontal neben dem Kern plaziert werden.
+tile.warpdrive.movement.ship_core.name=Raumschiff Kern
+tile.warpdrive.movement.ship_core.tooltip=Definiert dein Schiff relativ zur Steuerung. Schließe eine Energiequelle an, um den Kern zu laden.\nSollte horizontal neben der Steuerung plaziert werden.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=Bounding box display have been disabled.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
+tile.warpdrive.movement.transporter_beacon.name=Transporter Leuchtfeuer
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=Transporter Core
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=Laser und Kamera
 tile.warpdrive.weapon.WeaponController.name=Waffen Steuerung
@@ -672,18 +676,27 @@ warpdrive.video_channel.statusLine.invalid=§cVideokanal %1$d ist ungültig.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideokanal %1$d ist ungültig oder die Kamera ist zu weit weg!
 warpdrive.video_channel.statusLine.undefined=§7Nicht definierter Videokanal.\n§bNutze eine Stimmgabel§r um ihn einzustellen.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s !!!
-warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s !!!
-warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s !!!
-warpdrive.cloakingCore.valid=System is valid !!!
-warpdrive.cloakingCore.disabled=Tarnfeld ist deaktiviert!
-warpdrive.cloakingCore.lowPower=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
-warpdrive.cloakingCore.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Blöcke!
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s !!!
+warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s !!!
+warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s !!!
+warpdrive.cloaking_core.valid=System is valid !!!
+warpdrive.cloaking_core.disabled=Tarnfeld ist deaktiviert!
+warpdrive.cloaking_core.lowPower=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
+warpdrive.cloaking_core.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Blöcke!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=Kein Reaktor gefunden!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d Reaktor(en) verbunden.
+warpdrive.ic2_reactor_laser_monitor.noReactor=Kein Reaktor gefunden!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d Reaktor(en) verbunden.
 
-warpdrive.transporter.status=Von %1$.0f %2$.0f %3$.0f zu %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=Von (%1$.0f %2$.0f %3$.0f) zu (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bRaumatmung§r verbraucht Luftkanister oder IC2 Druckluftzellen.
 warpdrive.tooltip.itemTag.flyInSpace=§bRaumtaugliches Jetpack§r.

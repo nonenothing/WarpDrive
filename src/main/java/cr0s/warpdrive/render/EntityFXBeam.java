@@ -24,7 +24,7 @@ public class EntityFXBeam extends Particle {
     
     private static final int ROTATION_SPEED = 20;
     private static final float END_MODIFIER = 1.0F;
-    private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/blocks/energy_grey.png");;
+    private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/particle/energy_grey.png");
     
     private float length = 0.0F;
     private float rotYaw = 0.0F;
@@ -42,11 +42,11 @@ public class EntityFXBeam extends Particle {
         this.motionY = 0.0D;
         this.motionZ = 0.0D;
         
-        float xd = (float)(this.posX - target.x);
-        float yd = (float)(this.posY - target.y);
-        float zd = (float)(this.posZ - target.z);
-	    this.length = (float) position.distanceTo(target);
-	    final double lengthXZ = MathHelper.sqrt_double(xd * xd + zd * zd);
+        final float xd = (float) (this.posX - target.x);
+        final float yd = (float) (this.posY - target.y);
+        final float zd = (float) (this.posZ - target.z);
+        this.length = (float) position.distanceTo(target);
+        final double lengthXZ = MathHelper.sqrt_double(xd * xd + zd * zd);
         this.rotYaw = (float) (Math.atan2(xd, zd) * 180.0D / Math.PI);
         this.rotPitch = (float) (Math.atan2(yd, lengthXZ) * 180.0D / Math.PI);
         this.prevYaw = this.rotYaw;

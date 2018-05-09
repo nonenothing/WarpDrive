@@ -14,6 +14,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.block.state.IBlockState;
@@ -30,7 +31,7 @@ import net.minecraftforge.fml.common.Optional;
 
 public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
-	final double LIFT_GRAB_RADIUS = 0.4;
+	private static final double LIFT_GRAB_RADIUS = 0.4D;
 	
 	// persistent properties
 	private EnumLiftMode mode = EnumLiftMode.INACTIVE;
@@ -143,9 +144,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 					xMin, firstUncoveredY, zMin,
 					xMax, pos.getY(), zMax);
 			final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
-			for (Entity entity : list) {
-				if ( entity != null
-				  && entity instanceof EntityLivingBase
+			for (final Entity entity : list) {
+				if ( entity instanceof EntityLivingBase
 				  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 					entity.setPositionAndUpdate(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
 					PacketHandler.sendBeamPacket(worldObj,
@@ -163,17 +163,16 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 					xMin, Math.min(firstUncoveredY + 4.0D, pos.getY()), zMin,
 					xMax, pos.getY() + 2.0D, zMax);
 			final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
-			for (Entity entity : list) {
-				if ( entity != null
-				  && entity instanceof EntityLivingBase
-				  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-				entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
-					PacketHandler.sendBeamPacket(worldObj,
-							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
-							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
-					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
-					energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
-					isTransferDone = true;
+			for (final Entity entity : list) {
+	  			if ( entity instanceof EntityLivingBase
+	  			  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+	  		    	entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
+	  				PacketHandler.sendBeamPacket(worldObj,
+	  						new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
+	  						new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
+	  				worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
+	  				energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+	  				isTransferDone = true;
 				}
 			}
 		}
@@ -182,7 +181,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		if (tagCompound.hasKey("mode")) {
 			final byte byteValue = tagCompound.getByte("mode");
@@ -199,6 +198,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 		}
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
@@ -228,7 +228,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	// Common OC/CC methods
 	@Override
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
 		}

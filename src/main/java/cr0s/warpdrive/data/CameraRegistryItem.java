@@ -24,6 +24,6 @@ public class CameraRegistryItem {
 			&& tileEntity instanceof IVideoChannel
 			&& dimensionId == tileEntity.getWorld().provider.getDimension()
 			&& position.equals(tileEntity.getPos())
-			&& videoChannel == ((IVideoChannel)tileEntity).getVideoChannel();
+			&& videoChannel == ((IVideoChannel) tileEntity).getVideoChannel();
 	}
 }

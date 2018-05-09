@@ -23,6 +23,7 @@ import cr0s.warpdrive.compat.CompatMekanism;
 import cr0s.warpdrive.compat.CompatMetallurgy;
 import cr0s.warpdrive.compat.CompatNatura;
 import cr0s.warpdrive.compat.CompatOpenComputers;
+import cr0s.warpdrive.compat.CompatParziStarWars;
 import cr0s.warpdrive.compat.CompatPneumaticCraft;
 import cr0s.warpdrive.compat.CompatRedstonePaste;
 import cr0s.warpdrive.compat.CompatSGCraft;
@@ -57,7 +58,6 @@ import net.minecraftforge.fml.server.FMLServerHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -203,6 +203,7 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_RENDERING = false;
 	public static boolean LOGGING_CHUNK_HANDLER = false;
 	public static boolean LOGGING_CHUNK_LOADING = true;
+	public static boolean LOGGING_ENTITY_FX = false;
 	public static boolean LOGGING_CLIENT_SYNCHRONIZATION = false;
 	
 	// Starmap
@@ -304,8 +305,9 @@ public class WarpDriveConfig {
 	// - overall consumption in 'all, space' is ML_EU_PER_LAYER_SPACE + ((ML_MAX_RADIUS * 2 + 1) ^ 2) * ML_EU_PER_BLOCK_SPACE => ~ 43150 EU/layer
 	// - overall consumption in 'ores, space' is ML_EU_PER_LAYER_SPACE + ((ML_MAX_RADIUS * 2 + 1) ^ 2) * ML_EU_PER_BLOCK_SPACE * ML_EU_MUL_ORESONLY / 25 => ~ 28630 EU/layer
 	// - at radius 5, one layer takes 403 ticks (2 * ML_SCAN_DELAY_TICKS + ML_MINE_DELAY_TICKS * (ML_MAX_RADIUS * 2 + 1) ^ 2)
-	public static int MINING_LASER_MAX_MEDIUMS_COUNT = 1;
-	public static int MINING_LASER_RADIUS_BLOCKS = 5;
+	public static int MINING_LASER_MAX_MEDIUMS_COUNT = 3;
+	public static int MINING_LASER_RADIUS_NO_LASER_MEDIUM = 4;
+	public static int MINING_LASER_RADIUS_PER_LASER_MEDIUM = 1;
 	public static int MINING_LASER_WARMUP_DELAY_TICKS = 20;
 	public static int MINING_LASER_SCAN_DELAY_TICKS = 20;
 	public static int MINING_LASER_MINE_DELAY_TICKS = 3;
@@ -319,10 +321,10 @@ public class WarpDriveConfig {
 	public static double MINING_LASER_FORTUNE_ENERGY_FACTOR = 1.5;
 	
 	// Tree farm
+	public static int TREE_FARM_MAX_MEDIUMS_COUNT = 5;
 	public static int TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = 3;
 	public static int TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = 2;
 	public static int TREE_FARM_totalMaxRadius = 0;
-	public static int TREE_FARM_MAX_MEDIUMS_COUNT = 5;
 	public static int TREE_FARM_MAX_LOG_DISTANCE = 8;
 	public static int TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM = 4;
 	
@@ -356,10 +358,44 @@ public class WarpDriveConfig {
 	public static int IC2_REACTOR_COOLING_INTERVAL_TICKS = 10;
 	
 	// Transporter
-	public static int TRANSPORTER_MAX_ENERGY_STORED = 1000000;
-	public static boolean TRANSPORTER_USE_RELATIVE_COORDS = true;
-	public static double TRANSPORTER_ENERGY_PER_BLOCK = 100.0;
-	public static double TRANSPORTER_MAX_BOOST_MUL = 4.0;
+	public static int      TRANSPORTER_MAX_ENERGY_STORED = 2000000;
+	public static int      TRANSPORTER_ENERGY_STORED_UPGRADE_BONUS = TRANSPORTER_MAX_ENERGY_STORED / 2;
+	public static int      TRANSPORTER_ENERGY_STORED_UPGRADE_MAX_QUANTITY = 8;
+	public static int      TRANSPORTER_SETUP_UPDATE_PARAMETERS_TICKS = 1 * 20;
+	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_XZ_BLOCKS = 8;
+	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_Y_BELOW_BLOCKS = 3;
+	public static int      TRANSPORTER_SETUP_SCANNER_RANGE_Y_ABOVE_BLOCKS = 1;
+	public static int      TRANSPORTER_RANGE_BASE_BLOCKS = 256;
+	public static int      TRANSPORTER_RANGE_UPGRADE_BLOCKS = 64;
+	public static int      TRANSPORTER_RANGE_UPGRADE_MAX_QUANTITY = 8;
+	public static double[] TRANSPORTER_LOCKING_ENERGY_FACTORS = { 50.0, 3.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
+	public static double   TRANSPORTER_LOCKING_STRENGTH_FACTOR_PER_TICK = Math.pow(0.01D, 1.0D / 300.0D); // natural decay down to 1% over 300 ticks
+	public static double   TRANSPORTER_LOCKING_STRENGTH_IN_WILDERNESS = 0.25D;
+	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_BEACON = 0.50D;
+	public static double   TRANSPORTER_LOCKING_STRENGTH_AT_TRANSPORTER = 1.00D;
+	public static double   TRANSPORTER_LOCKING_STRENGTH_BONUS_AT_MAX_ENERGY_FACTOR = 0.5D;
+	public static double   TRANSPORTER_LOCKING_STRENGTH_UPGRADE = 0.15D;
+	public static double   TRANSPORTER_LOCKING_SPEED_IN_WILDERNESS = 0.25D;
+	public static double   TRANSPORTER_LOCKING_SPEED_AT_BEACON = 0.75D;
+	public static double   TRANSPORTER_LOCKING_SPEED_AT_TRANSPORTER = 1.0D;
+	public static double   TRANSPORTER_LOCKING_SPEED_UPGRADE = 0.25D;
+	public static int      TRANSPORTER_LOCKING_SPEED_OPTIMAL_TICKS = 5 * 20;
+	public static int      TRANSPORTER_LOCKING_UPGRADE_MAX_QUANTITY = 2;
+	public static int      TRANSPORTER_JAMMED_COOLDOWN_TICKS = 2 * 20;
+	public static double[] TRANSPORTER_ENERGIZING_ENERGY_FACTORS = { 10000.0, 5.0, 0.0, 10.0, 1.0 / Math.sqrt(2.0) };
+	public static double   TRANSPORTER_ENERGIZING_MAX_ENERGY_FACTOR = 10.0D;
+	public static int      TRANSPORTER_ENERGIZING_FAILURE_MAX_DAMAGE = 5;
+	public static double   TRANSPORTER_ENERGIZING_SUCCESS_LOCK_BONUS = 0.20D;
+	public static int      TRANSPORTER_ENERGIZING_SUCCESS_MAX_DAMAGE = 100;
+	public static double   TRANSPORTER_ENERGIZING_LOCKING_LOST = 0.5D;
+	public static int      TRANSPORTER_ENERGIZING_CHARGING_TICKS = 3 * 20;
+	public static int      TRANSPORTER_ENERGIZING_COOLDOWN_TICKS = 10 * 20;
+	public static double   TRANSPORTER_ENERGIZING_ENTITY_MOVEMENT_TOLERANCE_BLOCKS = 1.0D;
+	public static int      TRANSPORTER_ENTITY_GRAB_RADIUS_BLOCKS = 2;
+	public static int      TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS = 2;
+	public static int      TRANSPORTER_BEACON_MAX_ENERGY_STORED = 60000;
+	public static int      TRANSPORTER_BEACON_ENERGY_PER_TICK = 60000 / (300 * 20);  // 10 EU/t over 5 minutes
+	public static int      TRANSPORTER_BEACON_DEPLOYING_DELAY_TICKS = 1 * 20;
 	
 	// Enantiomorphic power reactor
 	public static int ENAN_REACTOR_MAX_ENERGY_STORED = 100000000;
@@ -399,7 +435,7 @@ public class WarpDriveConfig {
 	public static Block getModBlock(final String mod, final String id) {
 		try {
 			return Block.REGISTRY.getObject(new ResourceLocation(mod, id));
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.info(String.format("Failed to get mod block for %s:%s", mod, id));
 			exception.printStackTrace();
 		}
@@ -447,7 +483,7 @@ public class WarpDriveConfig {
 	
 	private static ItemStack getModItemStackOrNull(final String mod, final String id, final int meta) {
 		try {
-			Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
+			final Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
 			if (item == null) {
 				WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
 				return null;
@@ -457,7 +493,7 @@ public class WarpDriveConfig {
 				itemStack.setItemDamage(meta);
 			}
 			return itemStack;
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
 			return null;
 		}
@@ -675,6 +711,7 @@ public class WarpDriveConfig {
 		LOGGING_RENDERING = config.get("logging", "enable_rendering_logs", LOGGING_RENDERING, "Detailed rendering logs to help debug the mod.").getBoolean(false);
 		LOGGING_CHUNK_HANDLER = config.get("logging", "enable_chunk_handler_logs", LOGGING_CHUNK_HANDLER, "Detailed chunk data logs to help debug the mod.").getBoolean(false);
 		LOGGING_CHUNK_LOADING = config.get("logging", "enable_chunk_loading_logs", LOGGING_CHUNK_LOADING, "Chunk loading logs, enable it to report chunk loaders updates").getBoolean(false);
+		LOGGING_ENTITY_FX = config.get("logging", "enable_entity_fx_logs", LOGGING_ENTITY_FX, "EntityFX logs, enable it to dump entityFX registry updates").getBoolean(false);
 		
 		// Starmap registry
 		STARMAP_REGISTRY_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
@@ -844,10 +881,12 @@ public class WarpDriveConfig {
 				config.get("laser_cannon", "block_hit_explosion_max_strength", LASER_CANNON_BLOCK_HIT_EXPLOSION_MAX_STRENGTH, "Maximum explosion strength, set to 0 to disable explosion completely").getDouble());
 		
 		// Mining Laser
-		MINING_LASER_MAX_MEDIUMS_COUNT = Commons.clamp(1, 64,
+		MINING_LASER_MAX_MEDIUMS_COUNT = Commons.clamp(1, 10,
 				config.get("mining_laser", "max_mediums_count", MINING_LASER_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
-		MINING_LASER_RADIUS_BLOCKS = Commons.clamp(1, 64,
-				config.get("mining_laser", "radius_blocks", MINING_LASER_RADIUS_BLOCKS, "Mining radius").getInt());
+		MINING_LASER_RADIUS_NO_LASER_MEDIUM = Commons.clamp(0, 15,
+		                                                    config.get("mining_laser", "radius_no_laser_medium", MINING_LASER_RADIUS_NO_LASER_MEDIUM, "Mining radius without any laser medium, measured in blocks").getInt());
+		MINING_LASER_RADIUS_PER_LASER_MEDIUM = Commons.clamp(1, 8,
+		                                                     config.get("mining_laser", "radius_per_laser_medium", MINING_LASER_RADIUS_PER_LASER_MEDIUM, "Bonus to mining radius per laser medium, measured in blocks").getInt());
 		
 		MINING_LASER_WARMUP_DELAY_TICKS = Commons.clamp(1, 300,
 				config.get("mining_laser", "warmup_delay_ticks", MINING_LASER_WARMUP_DELAY_TICKS, "Warmup duration (buffer on startup when energy source is weak)").getInt());
@@ -883,9 +922,9 @@ public class WarpDriveConfig {
 		// Tree Farm
 		TREE_FARM_MAX_MEDIUMS_COUNT = Commons.clamp(1, 10,
 				config.get("tree_farm", "max_mediums_count", TREE_FARM_MAX_MEDIUMS_COUNT, "Maximum number of laser mediums").getInt());
-		TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = Commons.clamp(1, 30,
+		TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM = Commons.clamp(0, 15,
 				config.get("tree_farm", "max_scan_radius_no_laser_medium", TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM, "Maximum scan radius without any laser medium, on X and Z axis, measured in blocks").getInt());
-		TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = Commons.clamp(0, 5,
+		TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM = Commons.clamp(1, 8,
 				config.get("tree_farm", "max_scan_radius_per_laser_medium", TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM, "Bonus to maximum scan radius per laser medium, on X and Z axis, measured in blocks").getInt());
 		TREE_FARM_totalMaxRadius = TREE_FARM_MAX_SCAN_RADIUS_NO_LASER_MEDIUM + TREE_FARM_MAX_MEDIUMS_COUNT * TREE_FARM_MAX_SCAN_RADIUS_PER_LASER_MEDIUM;
 		
@@ -964,11 +1003,10 @@ public class WarpDriveConfig {
 		// Transporter
 		TRANSPORTER_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
 				config.get("transporter", "max_energy_stored", TRANSPORTER_MAX_ENERGY_STORED, "Maximum energy stored").getInt());
-		TRANSPORTER_USE_RELATIVE_COORDS = config.get("transporter", "use_relative_coords", TRANSPORTER_USE_RELATIVE_COORDS, "Should transporter use relative coordinates?").getBoolean(true);
-		TRANSPORTER_ENERGY_PER_BLOCK = Commons.clamp(1.0D, TRANSPORTER_MAX_ENERGY_STORED / 10.0D,
-				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK, "Energy cost per block distance").getDouble(100.0D));
-		TRANSPORTER_MAX_BOOST_MUL = Commons.clamp(1.0D, 1000.0D,
-				config.get("transporter", "max_boost", TRANSPORTER_MAX_BOOST_MUL, "Maximum energy boost allowed").getDouble(4.0));
+//		TRANSPORTER_ENERGY_PER_BLOCK = Commons.clamp(1.0D, TRANSPORTER_MAX_ENERGY_STORED / 10.0D,
+//				config.get("transporter", "energy_per_block", TRANSPORTER_ENERGY_PER_BLOCK, "Energy cost per block distance").getDouble(100.0D));
+//		TRANSPORTER_MAX_BOOST_MUL = Commons.clamp(1.0D, 1000.0D,
+//				config.get("transporter", "max_boost", TRANSPORTER_MAX_BOOST_MUL, "Maximum energy boost allowed").getDouble(4.0));
 		
 		// Enantiomorphic reactor
 		ENAN_REACTOR_MAX_ENERGY_STORED = Commons.clamp(1, Integer.MAX_VALUE,
@@ -1042,7 +1080,7 @@ public class WarpDriveConfig {
 		config.save();
 	}
 	
-	public static void registerBlockTransformer(final String modId, IBlockTransformer blockTransformer) {
+	public static void registerBlockTransformer(final String modId, final IBlockTransformer blockTransformer) {
 		blockTransformers.put(modId, blockTransformer);
 		WarpDrive.logger.info(modId + " blockTransformer registered");
 	}
@@ -1102,79 +1140,102 @@ public class WarpDriveConfig {
 		}
 		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
 		
-		boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
+		final boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {
 			CompatBotania.register();
 		}
-		boolean isBiblioCraftLoaded = Loader.isModLoaded("BiblioCraft");
+		
+		final boolean isBiblioCraftLoaded = Loader.isModLoaded("BiblioCraft");
 		if (isBiblioCraftLoaded) {
 			CompatBiblioCraft.register();
 		}
-		boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
+		
+		final boolean isBuildCraftLoaded = Loader.isModLoaded("BuildCraft|Core");
 		if (isBuildCraftLoaded) {
 			CompatBuildCraft.register();
 		}
-		boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
+		
+		final boolean isCarpentersBlocksLoaded = Loader.isModLoaded("CarpentersBlocks");
 		if (isCarpentersBlocksLoaded) {
 			CompatCarpentersBlocks.register();
 		}
-		boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
+		
+		final boolean isCustomNpcsLoaded = Loader.isModLoaded("customnpcs");
 		if (isCustomNpcsLoaded) {
 			CompatCustomNpcs.register();
 		}
-		boolean isDraconicEvolutionLoaded = Loader.isModLoaded("DraconicEvolution");
+		
+		final boolean isDraconicEvolutionLoaded = Loader.isModLoaded("DraconicEvolution");
 		if (isDraconicEvolutionLoaded) {
 			CompatDraconicEvolution.register();
 		}
-		boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
+		
+		final boolean isEvilCraftLoaded = Loader.isModLoaded("evilcraft");
 		if (isEvilCraftLoaded) {
 			CompatEvilCraft.register();
 		}
-		boolean isJABBAloaded = Loader.isModLoaded("JABBA");
+		
+		final boolean isJABBAloaded = Loader.isModLoaded("JABBA");
 		if (isJABBAloaded) {
 			CompatJABBA.register();
 		}
-		boolean isMekanismLoaded = Loader.isModLoaded("Mekanism");
+		
+		final boolean isMekanismLoaded = Loader.isModLoaded("Mekanism");
 		if (isMekanismLoaded) {
 			CompatMekanism.register();
 		}
-		boolean isMetallurgyLoaded = Loader.isModLoaded("Metallurgy");
+		
+		final boolean isMetallurgyLoaded = Loader.isModLoaded("Metallurgy");
 		if (isMetallurgyLoaded) {
 			CompatMetallurgy.register();
 		}
-		boolean isNaturaLoaded = Loader.isModLoaded("Natura");
+		
+		final boolean isNaturaLoaded = Loader.isModLoaded("Natura");
 		if (isNaturaLoaded) {
 			CompatNatura.register();
 		}
-		boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
+		
+		final boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
 		if (isPneumaticCraftLoaded) {
 			CompatPneumaticCraft.register();
 		}
-		boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
+		
+		final boolean isParziStarWarsLoaded = Loader.isModLoaded("starwarsmod");
+		if (isParziStarWarsLoaded) {
+			CompatParziStarWars.register();
+		}
+		
+		final boolean isRedstonePasteLoaded = Loader.isModLoaded("RedstonePasteMod");
 		if (isRedstonePasteLoaded) {
 			CompatRedstonePaste.register();
 		}
-		boolean isSGCraftLoaded = Loader.isModLoaded("SGCraft");
+		
+		final boolean isSGCraftLoaded = Loader.isModLoaded("SGCraft");
 		if (isSGCraftLoaded) {
 			CompatSGCraft.register();
 		}
-		boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
+		
+		final boolean isStargateTech2Loaded = Loader.isModLoaded("StargateTech2");
 		if (isStargateTech2Loaded) {
 			CompatStargateTech2.register();
 		}
-		boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
+		
+		final boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
 		if (isTConstructLoaded) {
 			CompatTConstruct.register();
 		}
-		boolean isTechgunsLoaded = Loader.isModLoaded("Techguns");
+		
+		final boolean isTechgunsLoaded = Loader.isModLoaded("Techguns");
 		if (isTechgunsLoaded) {
 			CompatTechguns.register();
 		}
-		boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
+		
+		final boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
 		}
-		boolean isThermalDynamicsLoaded = Loader.isModLoaded("ThermalDynamics");
+		
+		final boolean isThermalDynamicsLoaded = Loader.isModLoaded("ThermalDynamics");
 		if (isThermalDynamicsLoaded) {
 			CompatThermalDynamics.register();
 		}
@@ -1196,7 +1257,7 @@ public class WarpDriveConfig {
 			
 			IC2_rubberWood = getModBlock("IC2", "blockRubWood");
 			IC2_Resin = getModItemStack("IC2", "itemHarz", -1);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading IndustrialCraft2 classes");
 			exception.printStackTrace();
 		}
@@ -1209,7 +1270,7 @@ public class WarpDriveConfig {
 			CCT_Turtle = getModBlock("ComputerCraft", "CC-Turtle");
 			CCT_Expanded = getModBlock("ComputerCraft", "CC-TurtleExpanded");
 			CCT_Advanced = getModBlock("ComputerCraft", "CC-TurtleAdvanced");
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading ComputerCraft classes");
 			exception.printStackTrace();
 		}
@@ -1218,9 +1279,9 @@ public class WarpDriveConfig {
 	public static DocumentBuilder getXmlDocumentBuilder() {
 		if (xmlDocumentBuilder == null) {
 			
-			ErrorHandler xmlErrorHandler = new ErrorHandler() {
+			final ErrorHandler xmlErrorHandler = new ErrorHandler() {
 				@Override
-				public void warning(SAXParseException exception) throws SAXException {
+				public void warning(final SAXParseException exception) {
 					WarpDrive.logger.warn(String.format("XML warning at line %d: %s",
 					                                    exception.getLineNumber(),
 					                                    exception.getLocalizedMessage() ));
@@ -1228,7 +1289,7 @@ public class WarpDriveConfig {
 				}
 				
 				@Override
-				public void fatalError(SAXParseException exception) throws SAXException {
+				public void fatalError(final SAXParseException exception) {
 					WarpDrive.logger.warn(String.format("XML fatal error at line %d: %s",
 					                      exception.getLineNumber(),
 					                      exception.getLocalizedMessage() ));
@@ -1236,7 +1297,7 @@ public class WarpDriveConfig {
 				}
 				
 				@Override
-				public void error(SAXParseException exception) throws SAXException {
+				public void error(final SAXParseException exception) {
 					WarpDrive.logger.warn(String.format("XML error at line %d: %s",
 					                                    exception.getLineNumber(),
 					                                    exception.getLocalizedMessage() ));
@@ -1245,7 +1306,7 @@ public class WarpDriveConfig {
 				}
 			};
 			
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			documentBuilderFactory.setIgnoringComments(false);
 			documentBuilderFactory.setNamespaceAware(true);
 			documentBuilderFactory.setValidating(true);
@@ -1253,7 +1314,7 @@ public class WarpDriveConfig {
 			
 			try {
 				xmlDocumentBuilder = documentBuilderFactory.newDocumentBuilder();
-			} catch (ParserConfigurationException exception) {
+			} catch (final ParserConfigurationException exception) {
 				exception.printStackTrace();
 			}
 			xmlDocumentBuilder.setErrorHandler(xmlErrorHandler);
@@ -1267,7 +1328,7 @@ public class WarpDriveConfig {
 	 * Target folder should be already created
 	 **/
 	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, File folderTarget) {
-		File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
+		final File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
 		if (files == null) {
 			throw new RuntimeException(String.format("Critical error accessing configuration directory, searching for %s*%s files: %s", prefix, suffix, configDirectory));
 		}
@@ -1282,16 +1343,16 @@ public class WarpDriveConfig {
 	 * Copy a default configuration file from the mod's resources to the specified configuration folder
 	 * Target folder should be already created
 	 **/
-	private static void unpackResourceToFolder(final String filename, final String resourcePathSource, File folderTarget) {
-		String resourceName = resourcePathSource + "/" + filename;
+	private static void unpackResourceToFolder(final String filename, final String resourcePathSource, final File folderTarget) {
+		final String resourceName = resourcePathSource + "/" + filename;
 		
-		File destination = new File(folderTarget, filename);
+		final File destination = new File(folderTarget, filename);
 		
 		try {
-			InputStream inputStream = WarpDrive.class.getClassLoader().getResourceAsStream(resourceName);
-			BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(destination));
+			final InputStream inputStream = WarpDrive.class.getClassLoader().getResourceAsStream(resourceName);
+			final BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(destination));
 			
-			byte[] byteBuffer = new byte[Math.max(8192, inputStream.available())];
+			final byte[] byteBuffer = new byte[Math.max(8192, inputStream.available())];
 			int bytesRead;
 			while ((bytesRead = inputStream.read(byteBuffer)) >= 0) {
 				outputStream.write(byteBuffer, 0, bytesRead);
@@ -1299,7 +1360,7 @@ public class WarpDriveConfig {
 			
 			inputStream.close();
 			outputStream.close();
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Failed to unpack resource \'" + resourceName + "\' into " + destination);
 			exception.printStackTrace();
 		}

@@ -525,7 +525,6 @@ public class AcceleratorSetup extends GlobalPosition {
 		final int energyMean = amount_internal / energyBanks.size();
 		int energyConsumed = 0;
 		int energyLeft = amount_internal - energyMean * energyBanks.size();
-		assert(energyConsumed + energyLeft == amount_internal);
 		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
 			final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyMean + energyLeft);
 			tileEntityEnergyBank.energy_consume(energyToConsume);

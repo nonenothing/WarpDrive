@@ -20,10 +20,11 @@ public class EntityFXBoundingBox extends Particle {
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("warpdrive", "textures/particle/bounding_box.png");
 	
-	private Vector3 min = new Vector3();
-	private Vector3 max = new Vector3();
+	private Vector3 min;
+	private Vector3 max;
 	
-	public EntityFXBoundingBox(World world, Vector3 position, Vector3 min, Vector3 max, float red, float green, float blue, int age) {
+	public EntityFXBoundingBox(final World world, final Vector3 position, final Vector3 min, final Vector3 max,
+	                           final float red, final float green, final float blue, final int age) {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		this.setRBGColorF(red, green, blue);
 		this.setSize(0.02F, 0.02F);
@@ -37,7 +38,7 @@ public class EntityFXBoundingBox extends Particle {
 		
 		// kill the particle if it's too far away
 		/*
-		EntityLivingBase entityRender = Minecraft.getMinecraft().renderViewEntity;
+		final Entity entityRender = Minecraft.getMinecraft().getRenderViewEntity();
 		int visibleDistance = 300;
 
 		if (!Minecraft.getMinecraft().gameSettings.fancyGraphics) {

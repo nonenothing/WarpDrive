@@ -2,11 +2,14 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
+	
 	private int ticks = 0;
 	
 	public TileEntityLaserMedium() {
@@ -35,13 +38,14 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		return super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
+		return super.writeToNBT(tagCompound);
 	}
 	
 	// IEnergySink methods implementation

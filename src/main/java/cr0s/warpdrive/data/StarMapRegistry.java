@@ -5,13 +5,13 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import net.minecraft.block.Block;
@@ -60,13 +60,17 @@ public class StarMapRegistry {
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
+		final ArrayList<StarMapRegistryItem> listToRemove = new ArrayList<>(3);
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			if (registryItem.sameIdOrCoordinates(tileEntity)) {
-				// already registered
+			if ( registryItem.type.getName().equals(tileEntity.getStarMapType())
+			  && registryItem.uuid.equals(tileEntity.getUUID()) ) {// already registered
 				registryItem.update(tileEntity);    // @TODO probably not thread safe
 				return;
+			} else if (registryItem.sameCoordinates(tileEntity)) {
+				listToRemove.add(registryItem);
 			}
 		}
+		setRegistryItems.removeAll(listToRemove);
 		
 		// not found => add
 		countAdd++;
@@ -88,7 +92,7 @@ public class StarMapRegistry {
 		}
 		
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			if (registryItem.isSameTileEntity(tileEntity)) {
+			if (registryItem.sameCoordinates(tileEntity)) {
 				// found it, remove and exit
 				countRemove++;
 				setRegistryItems.remove(registryItem);
@@ -96,6 +100,25 @@ public class StarMapRegistry {
 			}
 		}
 		// not found => ignore it
+	}
+	
+	public StarMapRegistryItem getByUUID(final EnumStarMapEntryType enumStarMapEntryType, final UUID uuid) {
+		for (final Integer dimensionId : registry.keySet()) {
+			final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(dimensionId);
+			if (setStarMapRegistryItems == null) {
+				continue;
+			}
+			
+			for (final StarMapRegistryItem starMapRegistryItem : setStarMapRegistryItems) {
+				if ( enumStarMapEntryType == null
+				  || starMapRegistryItem.type == enumStarMapEntryType ) {
+					if (starMapRegistryItem.uuid.equals(uuid)) {
+						return starMapRegistryItem;
+					}
+				}
+			}
+		}
+		return null;
 	}
 	
 	public String find(final String nameShip) {

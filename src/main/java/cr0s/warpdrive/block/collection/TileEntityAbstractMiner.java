@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cr0s.warpdrive.data.SoundEvents;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -100,15 +103,16 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	
 	// NBT DATA
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		enableSilktouch = tag.getBoolean("enableSilktouch");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		enableSilktouch = tagCompound.getBoolean("enableSilktouch");
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setBoolean("enableSilktouch", enableSilktouch);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setBoolean("enableSilktouch", enableSilktouch);
+		return tagCompound;
 	}
 }

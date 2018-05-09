@@ -35,7 +35,6 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	BlockAbstractAir(final String registryName) {
 		super(registryName, Material.FIRE);
 		setHardness(0.0F);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setUnlocalizedName("warpdrive.breathing.air");
 	}
 	

@@ -9,6 +9,7 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.StateAir;
+import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
@@ -20,7 +21,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.math.BlockPos;
@@ -106,13 +106,7 @@ public class LivingHandler {
 			final double newEntityY = entityLivingBase.posY + 0.1D;
 			final double newEntityZ = celestialObject.dimensionCenterX + Math.signum(relativeZ) * newAbsoluteZ;
 			// entity.isAirBorne = true;
-			// @TODO: force client refresh of non-player entities
-			if (entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP player = (EntityPlayerMP) entityLivingBase;
-				player.setPositionAndUpdate(newEntityX, newEntityY, newEntityZ);
-			} else {
-				entityLivingBase.setPosition(newEntityX, newEntityY, newEntityZ);
-			}
+			Commons.moveEntity(entityLivingBase, entityLivingBase.worldObj, new Vector3(newEntityX, newEntityY, newEntityZ));
 			
 			// spam chat if it's a player
 			if (entityLivingBase instanceof EntityPlayer && !entityLivingBase.isDead && entityLivingBase.deathTime <= 0) {
@@ -165,26 +159,13 @@ public class LivingHandler {
 			if ( celestialObjectChild != null
 			  && !celestialObject.isHyperspace()
 			  && celestialObjectChild.isInOrbit(entityLivingBase.worldObj.provider.getDimension(), x, z) ) {
-
-				WorldServer worldTarget = DimensionManager.getWorld(celestialObjectChild.dimensionId);
 				
+				final WorldServer worldTarget = Commons.getOrCreateWorldServer(celestialObjectChild.dimensionId);
 				if (worldTarget == null) {
-					try {
-						final MinecraftServer server = entityLivingBase.worldObj.getMinecraftServer();
-						worldTarget = server.worldServerForDimension(celestialObjectChild.dimensionId);
-					} catch (Exception exception) {
-						WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d for %s",
-						                                     exception.getMessage(),
-						                                     celestialObjectChild.dimensionId,
-						                                     entityLivingBase));
-						if (WarpDrive.isDev) {
-							exception.printStackTrace();
-						}
-						worldTarget = null;
-					}
-				}
-				
-				if (worldTarget != null) {
+					WarpDrive.logger.error(String.format("Unable to initialize dimension %d for %s",
+					                                     celestialObjectChild.dimensionId,
+					                                     entityLivingBase));
+				} else {
 					final VectorI vEntry = celestialObjectChild.getEntryOffset();
 					final int xTarget = x + vEntry.x;
 					final int yTarget = worldTarget.getActualHeight() + 5;

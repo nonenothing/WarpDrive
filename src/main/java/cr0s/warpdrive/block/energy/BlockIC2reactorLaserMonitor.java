@@ -27,7 +27,7 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	public BlockIC2reactorLaserMonitor(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.energy.IC2ReactorLaserMonitor");
+		setUnlocalizedName("warpdrive.energy.ic2_reactor_laser_monitor");
 		GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, WarpDrive.PREFIX + registryName);
 		
 		setDefaultState(blockState.getBaseState()

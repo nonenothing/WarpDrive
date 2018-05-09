@@ -434,14 +434,14 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			}
 			
 			// Compute target area
-			Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.core.getX(), targetY - jumpShip.core.getY(), targetZ - jumpShip.core.getZ(), rotationSteps);
-			BlockPos targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
-			BlockPos targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
-			BlockPos targetLocationMin = new BlockPos(
+			final Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.core.getX(), targetY - jumpShip.core.getY(), targetZ - jumpShip.core.getZ(), rotationSteps);
+			final BlockPos targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
+			final BlockPos targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
+			final BlockPos targetLocationMin = new BlockPos(
 			                Math.min(targetLocation1.getX(), targetLocation2.getX()) - 1,
 			    Math.max(0, Math.min(targetLocation1.getY(), targetLocation2.getY()) - 1),
 			                Math.min(targetLocation1.getZ(), targetLocation2.getZ()) - 1);
-			BlockPos targetLocationMax = new BlockPos(
+			final BlockPos targetLocationMax = new BlockPos(
 			                  Math.max(targetLocation1.getX(), targetLocation2.getX()) + 1,
 			    Math.min(255, Math.max(targetLocation1.getY(), targetLocation2.getY()) + 1),
 			                  Math.max(targetLocation1.getZ(), targetLocation2.getZ()) + 1);
@@ -504,7 +504,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		schematicFileName = tagCompound.getString("schematic");
 		targetX = tagCompound.getInteger("targetX");
@@ -534,6 +534,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);

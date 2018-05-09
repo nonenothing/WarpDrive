@@ -15,6 +15,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -52,7 +53,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	private boolean enoughPower = false;
 	private int currentLayer;
 	
-	private int radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS;
+	private int radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_NO_LASER_MEDIUM;
 	private final ArrayList<BlockPos> valuablesInLayer = new ArrayList<>();
 	private int valuableIndex = 0;
 	
@@ -97,7 +98,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		}
 		
 		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ());
-		radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_BLOCKS + cache_laserMedium_count - 1;
+		radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_NO_LASER_MEDIUM
+		               + cache_laserMedium_count * WarpDriveConfig.MINING_LASER_RADIUS_PER_LASER_MEDIUM;
 		
 		delayTicks--;
 		if (currentState == STATE_WARMUP) {
@@ -374,22 +376,23 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		layerOffset = tag.getInteger("layerOffset");
-		mineAllBlocks = tag.getBoolean("mineAllBlocks");
-		currentState = tag.getInteger("currentState");
-		currentLayer = tag.getInteger("currentLayer");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		layerOffset = tagCompound.getInteger("layerOffset");
+		mineAllBlocks = tagCompound.getBoolean("mineAllBlocks");
+		currentState = tagCompound.getInteger("currentState");
+		currentLayer = tagCompound.getInteger("currentLayer");
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setInteger("layerOffset", layerOffset);
-		tag.setBoolean("mineAllBlocks", mineAllBlocks);
-		tag.setInteger("currentState", currentState);
-		tag.setInteger("currentLayer", currentLayer);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setInteger("layerOffset", layerOffset);
+		tagCompound.setBoolean("mineAllBlocks", mineAllBlocks);
+		tagCompound.setInteger("currentState", currentState);
+		tagCompound.setInteger("currentLayer", currentLayer);
+		return tagCompound;
 	}
 	
 	// OpenComputer callback methods
@@ -461,7 +464,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] onlyOres(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				mineAllBlocks = ! Commons.toBool(arguments[0]);
 				markDirty();
@@ -476,7 +479,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] offset(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				layerOffset = Math.min(256, Math.abs(Commons.toInt(arguments[0])));
 				markDirty();
@@ -491,7 +494,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	private Object[] silktouch(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				enableSilktouch = Commons.toBool(arguments[0]);
 				markDirty();

@@ -7,11 +7,9 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
-import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumDisabledInputOutput;
 import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.event.ModelBakeEventHandler;
-import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.render.BakedModelEnergyBank;
 import ic2.api.energy.tile.IExplosionPowerOverride;
 
@@ -27,7 +25,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -55,24 +52,24 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 })
 public class BlockEnergyBank extends BlockAbstractContainer implements IExplosionPowerOverride {
 	
-	public static final IProperty<EnumDisabledInputOutput> CONFIG = PropertyEnum.create("config" , EnumDisabledInputOutput.class);
+	public static final IProperty<EnumDisabledInputOutput> CONFIG = PropertyEnum.create("config", EnumDisabledInputOutput.class);
 	
-	public static final IUnlistedProperty<EnumDisabledInputOutput> DOWN  = Properties.toUnlisted(PropertyEnum.create("down" , EnumDisabledInputOutput.class));
-	public static final IUnlistedProperty<EnumDisabledInputOutput> UP    = Properties.toUnlisted(PropertyEnum.create("up"   , EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> DOWN = Properties.toUnlisted(PropertyEnum.create("down", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> UP = Properties.toUnlisted(PropertyEnum.create("up", EnumDisabledInputOutput.class));
 	public static final IUnlistedProperty<EnumDisabledInputOutput> NORTH = Properties.toUnlisted(PropertyEnum.create("north", EnumDisabledInputOutput.class));
 	public static final IUnlistedProperty<EnumDisabledInputOutput> SOUTH = Properties.toUnlisted(PropertyEnum.create("south", EnumDisabledInputOutput.class));
-	public static final IUnlistedProperty<EnumDisabledInputOutput> WEST  = Properties.toUnlisted(PropertyEnum.create("west" , EnumDisabledInputOutput.class));
-	public static final IUnlistedProperty<EnumDisabledInputOutput> EAST  = Properties.toUnlisted(PropertyEnum.create("east" , EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> WEST = Properties.toUnlisted(PropertyEnum.create("west", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> EAST = Properties.toUnlisted(PropertyEnum.create("east", EnumDisabledInputOutput.class));
 	
 	public BlockEnergyBank(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.energy.EnergyBank.");
+		setUnlocalizedName("warpdrive.energy.energy_bank.");
 		hasSubBlocks = true;
 		
 		setDefaultState(getDefaultState()
-		                .withProperty(BlockProperties.TIER, EnumTier.BASIC)
-		                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)
-		);
+				                .withProperty(BlockProperties.TIER, EnumTier.BASIC)
+				                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)
+		               );
 		GameRegistry.registerTileEntity(TileEntityEnergyBank.class, WarpDrive.PREFIX + registryName);
 	}
 	
@@ -89,7 +86,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-		       .withProperty(BlockProperties.TIER, EnumTier.get(metadata % 4));
+				       .withProperty(BlockProperties.TIER, EnumTier.get(metadata % 4));
 	}
 	
 	@Override
@@ -109,12 +106,12 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		}
 		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
 		return ((IExtendedBlockState) blockState)
-		       .withProperty(DOWN, tileEntityEnergyBank.getMode(EnumFacing.DOWN))
-		       .withProperty(UP, tileEntityEnergyBank.getMode(EnumFacing.UP))
-		       .withProperty(NORTH, tileEntityEnergyBank.getMode(EnumFacing.NORTH))
-		       .withProperty(SOUTH, tileEntityEnergyBank.getMode(EnumFacing.SOUTH))
-		       .withProperty(WEST, tileEntityEnergyBank.getMode(EnumFacing.WEST))
-		       .withProperty(EAST, tileEntityEnergyBank.getMode(EnumFacing.EAST));
+				       .withProperty(DOWN, tileEntityEnergyBank.getMode(EnumFacing.DOWN))
+				       .withProperty(UP, tileEntityEnergyBank.getMode(EnumFacing.UP))
+				       .withProperty(NORTH, tileEntityEnergyBank.getMode(EnumFacing.NORTH))
+				       .withProperty(SOUTH, tileEntityEnergyBank.getMode(EnumFacing.SOUTH))
+				       .withProperty(WEST, tileEntityEnergyBank.getMode(EnumFacing.WEST))
+				       .withProperty(EAST, tileEntityEnergyBank.getMode(EnumFacing.EAST));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -127,7 +124,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityEnergyBank((byte)(metadata % 4));
+		return new TileEntityEnergyBank((byte) (metadata % 4));
 	}
 	
 	@Nullable
@@ -229,94 +226,20 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 			switch (tileEntityEnergyBank.getMode(side)) {
 			case INPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", side.name())) );
+				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToInput", side.name())));
 				return true;
 			case OUTPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", side.name())) );
+				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToOutput", side.name())));
 				return true;
 			case DISABLED:
 			default:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				    .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", side.name())) );
+				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changedToDisabled", side.name())));
 				return true;
 			}
 		}
 		
-		EnumComponentType enumComponentType = null;
-		if ( itemStackHeld != null
-		  && itemStackHeld.getItem() instanceof ItemComponent ) {
-			enumComponentType = EnumComponentType.get(itemStackHeld.getItemDamage());
-		}
-		
-		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
-		if (entityPlayer.isSneaking()) {
-			// using an upgrade item or an empty hand means dismount upgrade
-			if ( itemStackHeld == null
-			  || enumComponentType != null ) {
-				// find a valid upgrade to dismount
-				if ( itemStackHeld == null
-				  || !tileEntityEnergyBank.hasUpgrade(enumComponentType) ) {
-					enumComponentType = (EnumComponentType) tileEntityEnergyBank.getFirstUpgradeOfType(EnumComponentType.class, null);
-				}
-				
-				if (enumComponentType == null) {
-					// no more upgrades to dismount
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.noUpgradeToDismount"));
-					return true;
-				}
-				
-				if (!entityPlayer.capabilities.isCreativeMode) {
-					// dismount the current upgrade item
-					final ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
-					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
-					entityItem.setNoPickupDelay();
-					world.spawnEntityInWorld(entityItem);
-				}
-				
-				tileEntityEnergyBank.dismountUpgrade(enumComponentType);
-				// upgrade dismounted
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.dismounted", enumComponentType.name()));
-				return true;
-			}
-			
-		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status
-			Commons.addChatMessage(entityPlayer, tileEntityEnergyBank.getStatus());
-			return true;
-			
-		} else if (enumComponentType != null) {// no sneaking and an upgrade in hand => mounting an upgrade
-			// validate type
-			if (tileEntityEnergyBank.getUpgradeMaxCount(enumComponentType) <= 0) {
-				// invalid upgrade type
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.invalidUpgrade"));
-				return true;
-			}
-			if (!tileEntityEnergyBank.canUpgrade(enumComponentType)) {
-				// too many upgrades
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.tooManyUpgrades",
-					tileEntityEnergyBank.getUpgradeMaxCount(enumComponentType)));
-				return true;
-			}
-			
-			if (!entityPlayer.capabilities.isCreativeMode) {
-				// validate quantity
-				if (itemStackHeld.stackSize < 1) {
-					// not enough upgrade items
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.notEnoughUpgrades"));
-					return true;
-				}
-				
-				// update player inventory
-				itemStackHeld.stackSize -= 1;
-			}
-			
-			// mount the new upgrade item
-			tileEntityEnergyBank.mountUpgrade(enumComponentType);
-			// upgrade mounted
-			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.mounted", enumComponentType.name()));
-			return true;
-		}
-		
-		return false;
+		return super.onBlockActivated(world, blockPos, blockState, entityPlayer, hand, itemStackHeld, side, hitX, hitY, hitZ);
 	}
 }

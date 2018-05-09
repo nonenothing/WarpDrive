@@ -7,7 +7,6 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -17,17 +16,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 
 /**
- * Registry of all known forcefield in the loaded worlds, grouped by frequency
+ * Registry of all known force field blocks in the loaded worlds, grouped by frequency
  * 
  * @author LemADEC
  */
 public class ForceFieldRegistry {
+	
 	private static final HashMap<Integer, CopyOnWriteArraySet<GlobalPosition>> registry = new HashMap<>();
 	private static int countAdd = 0;
 	private static int countRemove = 0;
 	private static int countRead = 0;
 	
-	public static Set<TileEntity> getTileEntities(final int beamFrequency, WorldServer worldSource, final int x, final int y, final int z) {
+	public static Set<TileEntity> getTileEntities(final int beamFrequency, final WorldServer worldSource, final int x, final int y, final int z) {
 		countRead++;
 		if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
 			if (countRead % 1000 == 0) {
@@ -44,8 +44,8 @@ public class ForceFieldRegistry {
 		Set<TileEntity> setToIterate = new HashSet<>();
 		int range2;
 		int maxRange2 = ForceFieldSetup.FORCEFIELD_RELAY_RANGE * ForceFieldSetup.FORCEFIELD_RELAY_RANGE;
-		for (GlobalPosition globalPosition : setGlobalPositions) {
-			WorldServer world = globalPosition.getWorldServerIfLoaded();
+		for (final GlobalPosition globalPosition : setGlobalPositions) {
+			final WorldServer world = globalPosition.getWorldServerIfLoaded();
 			if (world != null) {
 				// skip if it's in another dimension
 				if (world != worldSource) {
@@ -53,8 +53,9 @@ public class ForceFieldRegistry {
 				}
 				
 				// confirm frequency and split by groups
-				TileEntity tileEntity = world.getTileEntity(new BlockPos(globalPosition.x, globalPosition.y, globalPosition.z));
-				if ((tileEntity instanceof IBeamFrequency) && ((IBeamFrequency)tileEntity).getBeamFrequency() == beamFrequency) {
+				final TileEntity tileEntity = world.getTileEntity(new BlockPos(globalPosition.x, globalPosition.y, globalPosition.z));
+				if ( (tileEntity instanceof IBeamFrequency)
+				  && ((IBeamFrequency)tileEntity).getBeamFrequency() == beamFrequency ) {
 					if (tileEntity instanceof TileEntityForceFieldRelay) {
 						// add relays in range as start point
 						range2 = (globalPosition.x - x) * (globalPosition.x - x) + (globalPosition.y - y) * (globalPosition.y - y) + (globalPosition.z - z) * (globalPosition.z - z);
@@ -123,7 +124,7 @@ public class ForceFieldRegistry {
 		return setEntries;
 	}
 	
-	public static void updateInRegistry(IBeamFrequency tileEntity) {
+	public static void updateInRegistry(final IBeamFrequency tileEntity) {
 		assert(tileEntity instanceof TileEntity);
 		
 		countRead++;
@@ -131,7 +132,7 @@ public class ForceFieldRegistry {
 		if (setGlobalPositions == null) {
 			setGlobalPositions = new CopyOnWriteArraySet<>();
 		}
-		for (GlobalPosition globalPosition : setGlobalPositions) {
+		for (final GlobalPosition globalPosition : setGlobalPositions) {
 			if (globalPosition.equals(tileEntity)) {
 				// already registered
 				return;
@@ -139,7 +140,7 @@ public class ForceFieldRegistry {
 		}
 		// not found => add
 		countAdd++;
-		setGlobalPositions.add(new GlobalPosition((TileEntity)tileEntity));
+		setGlobalPositions.add(new GlobalPosition((TileEntity) tileEntity));
 		registry.put(tileEntity.getBeamFrequency(), setGlobalPositions);
 		if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
 			printRegistry("added");
@@ -155,12 +156,11 @@ public class ForceFieldRegistry {
 			// noting to remove
 			return;
 		}
-		for (final Iterator<GlobalPosition> iterator = setGlobalPositions.iterator(); iterator.hasNext();) {
-			GlobalPosition globalPosition = iterator.next();
+		for (final GlobalPosition globalPosition : setGlobalPositions) {
 			if (globalPosition.equals(tileEntity)) {
 				// found it, remove and exit
 				countRemove++;
-				iterator.remove();
+				setGlobalPositions.remove(globalPosition);
 				return;
 			}
 		}
@@ -168,17 +168,20 @@ public class ForceFieldRegistry {
 	}
 	
 	public static void printRegistry(final String trigger) {
-		WarpDrive.logger.info("Forcefield registry (" + registry.size() + " entries after " + trigger + "):");
+		WarpDrive.logger.info("Force field registry (" + registry.size() + " entries after " + trigger + "):");
 		
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<GlobalPosition>> entry : registry.entrySet()) {
-			String message = "";
+			final StringBuilder message = new StringBuilder();
 			for (GlobalPosition globalPosition : entry.getValue()) {
-				if (!message.isEmpty()) {
-					message += ", ";
+				if (message.length() > 0) {
+					message.append(", ");
 				}
-				message += globalPosition.dimensionId + ": " + globalPosition.x + " " + globalPosition.y + " " + globalPosition.z;
+				message.append(globalPosition.dimensionId).append(": ").append(globalPosition.x).append(" ").append(globalPosition.y).append(" ").append(globalPosition.z);
 			}
-			WarpDrive.logger.info("- " + entry.getValue().size() + " entries at frequency " + entry.getKey() + ": " + message);
+			WarpDrive.logger.info(String.format("- %d entries at frequency %d : %s",
+			                                    entry.getValue().size(),
+			                                    entry.getKey(),
+			                                    message));
 		}
 	}
 }

@@ -7,8 +7,15 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.ShipMovementCosts;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.*;
-import cr0s.warpdrive.data.StarMapRegistryItem.EnumStarMapEntryType;
+import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.EnumShipControllerCommand;
+import cr0s.warpdrive.data.EnumShipCoreState;
+import cr0s.warpdrive.data.EnumShipMovementType;
+import cr0s.warpdrive.data.Jumpgate;
+import cr0s.warpdrive.data.EnumStarMapEntryType;
+import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.Vector3;
+import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
 import cr0s.warpdrive.render.EntityFXBoundingBox;
 import cr0s.warpdrive.world.SpaceTeleporter;
@@ -1047,7 +1054,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	public ITextComponent getBoundingBoxStatus() {
 		return super.getStatusPrefix()
-			.appendSibling(new TextComponentTranslation(showBoundingBox ? "tile.warpdrive.movement.ShipCore.bounding_box.enabled" : "tile.warpdrive.movement.ShipCore.bounding_box.disabled"));
+			.appendSibling(new TextComponentTranslation(showBoundingBox ? "tile.warpdrive.movement.ship_core.bounding_box.enabled" : "tile.warpdrive.movement.ship_core.bounding_box.disabled"));
 	}
 	
 	private void updateShipMassAndVolume() {
@@ -1128,36 +1135,38 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		facing = EnumFacing.getFront(tag.getByte("facing"));
-		uuid = new UUID(tag.getLong("uuidMost"), tag.getLong("uuidLeast"));
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		
+		facing = EnumFacing.getFront(tagCompound.getByte("facing"));
+		uuid = new UUID(tagCompound.getLong("uuidMost"), tagCompound.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			uuid = UUID.randomUUID();
 		}
-		shipName = tag.getString("corefrequency") + tag.getString("shipName");	// coreFrequency is the legacy tag name
-		isolationRate = tag.getDouble("isolationRate");
-		cooldownTime_ticks = tag.getInteger("cooldownTime");
-		warmupTime_ticks = tag.getInteger("warmupTime");
-		jumpCount = tag.getInteger("jumpCount");
+		shipName = tagCompound.getString("corefrequency") + tagCompound.getString("shipName");	// coreFrequency is the legacy tag name
+		isolationRate = tagCompound.getDouble("isolationRate");
+		cooldownTime_ticks = tagCompound.getInteger("cooldownTime");
+		warmupTime_ticks = tagCompound.getInteger("warmupTime");
+		jumpCount = tagCompound.getInteger("jumpCount");
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		if (facing != null) {
-			tag.setByte("facing", (byte) facing.ordinal());
+			tagCompound.setByte("facing", (byte) facing.ordinal());
 		}
 		if (uuid != null) {
-			tag.setLong("uuidMost", uuid.getMostSignificantBits());
-			tag.setLong("uuidLeast", uuid.getLeastSignificantBits());
+			tagCompound.setLong("uuidMost", uuid.getMostSignificantBits());
+			tagCompound.setLong("uuidLeast", uuid.getLeastSignificantBits());
 		}
-		tag.setString("shipName", shipName);
-		tag.setDouble("isolationRate", isolationRate);
-		tag.setInteger("cooldownTime", cooldownTime_ticks);
-		tag.setInteger("warmupTime", warmupTime_ticks);
-		tag.setInteger("jumpCount", jumpCount);
-		return tag;
+		tagCompound.setString("shipName", shipName);
+		tagCompound.setDouble("isolationRate", isolationRate);
+		tagCompound.setInteger("cooldownTime", cooldownTime_ticks);
+		tagCompound.setInteger("warmupTime", warmupTime_ticks);
+		tagCompound.setInteger("jumpCount", jumpCount);
+		return tagCompound;
 	}
 	
 	@Nonnull
@@ -1206,8 +1215,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	// IStarMapRegistryTileEntity overrides
 	@Override
-	public String getStarMapType() {
-		return EnumStarMapEntryType.SHIP.getName();
+	public EnumStarMapEntryType getStarMapType() {
+		return EnumStarMapEntryType.SHIP;
 	}
 	
 	@Override

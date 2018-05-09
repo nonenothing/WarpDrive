@@ -35,7 +35,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	public BlockSiren(final String registryName) {
 		super(registryName, Material.IRON);
 		hasSubBlocks = true;
-		setUnlocalizedName("warpdrive.detection.Siren");
+		setUnlocalizedName("warpdrive.detection.siren");
 		GameRegistry.registerTileEntity(TileEntitySiren.class, WarpDrive.MODID + ":tileEntitySiren");
 		
 		setDefaultState(getDefaultState()

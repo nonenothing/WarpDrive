@@ -30,7 +30,7 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	public BlockCloakingCoil(final String registryName) {
 		super(registryName, Material.IRON);
 		setHardness(3.5F);
-		setUnlocalizedName("warpdrive.detection.CloakingCoil");
+		setUnlocalizedName("warpdrive.detection.cloaking_coil");
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.ACTIVE, false)

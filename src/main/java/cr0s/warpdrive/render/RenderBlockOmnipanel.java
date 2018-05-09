@@ -5,7 +5,7 @@ public class RenderBlockOmnipanel {
 	
 }
 
-/* @TODO MC1.10
+/* @TODO MC1.10 ISBRH
 import cr0s.warpdrive.block.BlockAbstractOmnipanel;
 
 import net.minecraft.block.Block;

@@ -14,6 +14,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -169,9 +170,10 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		nameTarget = tagCompound.getString("nameTarget");
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		
 		final NBTTagList tagListPlayers = new NBTTagList();
 		for (final String namePlayer : players) {
@@ -197,25 +199,25 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
 		
-		nbtTagCompound.removeTag("players");
+		tagCompound.removeTag("players");
 		
-		nbtTagCompound.removeTag("isEnabled");
-		nbtTagCompound.removeTag("command");
-		nbtTagCompound.removeTag("front");
-		nbtTagCompound.removeTag("right");
-		nbtTagCompound.removeTag("up");
-		nbtTagCompound.removeTag("back");
-		nbtTagCompound.removeTag("left");
-		nbtTagCompound.removeTag("down");
-		nbtTagCompound.removeTag("moveFront");
-		nbtTagCompound.removeTag("moveUp");
-		nbtTagCompound.removeTag("moveRight");
-		nbtTagCompound.removeTag("rotationSteps");
-		nbtTagCompound.removeTag("nameTarget");
-		return nbtTagCompound;
+		tagCompound.removeTag("isEnabled");
+		tagCompound.removeTag("command");
+		tagCompound.removeTag("front");
+		tagCompound.removeTag("right");
+		tagCompound.removeTag("up");
+		tagCompound.removeTag("back");
+		tagCompound.removeTag("left");
+		tagCompound.removeTag("down");
+		tagCompound.removeTag("moveFront");
+		tagCompound.removeTag("moveUp");
+		tagCompound.removeTag("moveRight");
+		tagCompound.removeTag("rotationSteps");
+		tagCompound.removeTag("nameTarget");
+		return tagCompound;
 	}
 	
 	@Override
@@ -451,9 +453,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (tileEntityShipCore == null) {
 			return null;
 		}
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			final String shipNamePrevious = tileEntityShipCore.shipName;
-			tileEntityShipCore.shipName = ((String) arguments[0]).replace("/", "").replace(".", "").replace("\\", ".");
+			tileEntityShipCore.shipName = Commons.sanitizeFileName((String) arguments[0]);
 			if ( tileEntityShipCore.shipName == null
 			  || !tileEntityShipCore.shipName.equals(shipNamePrevious) ) {
 				WarpDrive.logger.info(String.format("Ship renamed from '%s' to '%s' with player(s) %s",
@@ -535,7 +537,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public Object[] command(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setCommand(arguments[0].toString());
 			}
 		} catch (Exception exception) {
@@ -547,7 +549,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			if (WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.info(this + " enable(" + isEnabled + ")");
@@ -596,7 +598,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public Object[] rotationSteps(Object[] arguments) {
 		try {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setRotationSteps((byte) Commons.toInt(arguments[0]));
 			}
 		} catch (Exception exception) {
@@ -608,7 +610,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] targetName(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			this.nameTarget = (String) arguments[0];
 		}
 		return new Object[] { nameTarget };

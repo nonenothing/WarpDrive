@@ -2,6 +2,9 @@ package cr0s.warpdrive.config;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IXmlRepresentableUnit;
+
+import javax.annotation.Nonnull;
+
 import org.w3c.dom.Element;
 
 import java.util.Random;
@@ -24,7 +27,7 @@ public class Loot implements IXmlRepresentableUnit {
 		DEFAULT.name           = "-default-";
 		DEFAULT.item           = Items.STICK;
 		DEFAULT.damage         = 0;
-		DEFAULT.nbtTagCompound = null;
+		DEFAULT.tagCompound    = null;
 		DEFAULT.quantityMin    = 0;
 		DEFAULT.quantityMax    = 0;
 	}
@@ -32,10 +35,11 @@ public class Loot implements IXmlRepresentableUnit {
 	private String name;
 	public Item item;
 	public int damage;
-	public NBTTagCompound nbtTagCompound = null;
+	public NBTTagCompound tagCompound = null;
 	public int quantityMin;
 	public int quantityMax;
 	
+	@Nonnull
 	@Override
 	public String getName() {
 		return name;
@@ -71,11 +75,11 @@ public class Loot implements IXmlRepresentableUnit {
 		}
 		
 		// Get nbt attribute, default to null/none
-		nbtTagCompound = null;
+		tagCompound = null;
 		final String stringNBT = element.getAttribute("nbt");
 		if (!stringNBT.isEmpty()) {
 			try {
-				nbtTagCompound = JsonToNBT.getTagFromJson(stringNBT);
+				tagCompound = JsonToNBT.getTagFromJson(stringNBT);
 			} catch (NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for item " + nameItem);
 			}
@@ -103,7 +107,7 @@ public class Loot implements IXmlRepresentableUnit {
 			}
 		}
 		
-		name = nameItem + "@" + damage + "{" + nbtTagCompound + "}";
+		name = nameItem + "@" + damage + "{" + tagCompound + "}";
 		
 		return true;
 	}
@@ -111,9 +115,9 @@ public class Loot implements IXmlRepresentableUnit {
 	public ItemStack getItemStack(final Random rand) {
 		final int quantity = quantityMin + (quantityMax > quantityMin ? rand.nextInt(quantityMax - quantityMin) : 0);
 		final ItemStack itemStack = new ItemStack(item, quantity, damage);
-		if (nbtTagCompound != null) {
-			NBTTagCompound nbtTagCompoundNew = nbtTagCompound.copy();
-			itemStack.setTagCompound(nbtTagCompoundNew);
+		if (tagCompound != null) {
+			final NBTTagCompound tagCompoundNew = tagCompound.copy();
+			itemStack.setTagCompound(tagCompoundNew);
 		}
 		return itemStack;
 	}
@@ -128,7 +132,7 @@ public class Loot implements IXmlRepresentableUnit {
 		return object instanceof Loot
 			&& (item == null || item.equals(((Loot) object).item))
 			&& damage == ((Loot) object).damage
-			&& (nbtTagCompound == null || nbtTagCompound.equals(((Loot) object).nbtTagCompound));
+			&& (tagCompound == null || tagCompound.equals(((Loot) object).tagCompound));
 	}
 	
 	@Override
@@ -138,6 +142,6 @@ public class Loot implements IXmlRepresentableUnit {
 	
 	@Override
 	public int hashCode() {
-		return Item.getIdFromItem(item) * 16 + damage + (nbtTagCompound == null ? 0 : nbtTagCompound.hashCode() * 32768 * 16);
+		return Item.getIdFromItem(item) * 16 + damage + (tagCompound == null ? 0 : tagCompound.hashCode() * 32768 * 16);
 	}
 }

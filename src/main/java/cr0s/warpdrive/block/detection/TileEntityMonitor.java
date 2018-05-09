@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -70,44 +69,18 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		}
 	}
 	
-	private ITextComponent getVideoChannelStatus() {
-		if (videoChannel == -1) {
-			return new TextComponentTranslation("warpdrive.video_channel.statusLine.undefined");
-		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
-		} else {
-			CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
-			if (camera == null) {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalidOrNotLoaded", videoChannel);
-			} else if (camera.isTileEntity(this)) {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.valid", videoChannel);
-			} else {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.validCamera",
-						videoChannel,
-						camera.position.getX(),
-						camera.position.getY(),
-						camera.position.getZ());
-			}
-		}
+	@Override
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		videoChannel = tagCompound.getInteger("frequency") + tagCompound.getInteger(VIDEO_CHANNEL_TAG);
 	}
 	
+	@Nonnull
 	@Override
-	public ITextComponent getStatus() {
-		return super.getStatus()
-		    .appendSibling(getVideoChannelStatus());
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		videoChannel = tag.getInteger("frequency") + tag.getInteger(VIDEO_CHANNEL_TAG);
-	}
-	
-	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setInteger(VIDEO_CHANNEL_TAG, videoChannel);
+		return tagCompound;
 	}
 	
 	@Nonnull
@@ -141,7 +114,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("videoChannel")) {
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setVideoChannel(Commons.toInt(arguments[0]));
 			}
 			return new Integer[] { videoChannel };

@@ -28,7 +28,6 @@ local colors = {-- loosely based on CC colors
 
 -- properties
 local data = { }
-local data_shouldUpdateName = true
 local data_name = nil
 local data_handlers = { }
 
@@ -51,8 +50,6 @@ local page_callbackKey
 local event_refreshPeriod_s = 5.0
 local event_refreshTimerId = -1
 
-local ship = nil
-
 local styles = {
   normal   = { front = colors.black    , back = colors.lightGray },
   good     = { front = colors.lime     , back = colors.lightGray },
@@ -64,25 +61,6 @@ local styles = {
   warning  = { front = colors.white    , back = colors.red       },
   success  = { front = colors.white    , back = colors.lime      },
 }
-
-local local_env = {-- mostly for OC
-  data = data,
-  data_shouldUpdateName = data_shouldUpdateName,
-  data_name = data_name,
-  data_handlers = data_handlers,
-  device_handlers = device_handlers,
-  event_handlers = event_handlers,
-  monitors = monitors,
-  monitor_textScale = monitor_textScale,
-  monitor_colorFront = monitor_colorFront,
-  monitor_colorBackground = monitor_colorBackground,
-  page_handlers = page_handlers,
-  page_endText = page_endText,
-  page_callbackDisplay = page_callbackDisplay,
-  page_callbackKey = page_callbackKey,
-  event_refreshPeriod_s = event_refreshPeriod_s,
-  ship = ship,
-  styles = styles }
 
 ----------- Terminal & monitor support
 
@@ -193,9 +171,10 @@ local function writeLn(text)
 end
 
 local function writeCentered(y, text)
+  local unused
   if text == nil then
     text = y
-    _, y = w.getCursorPos()
+    unused, y = w.getCursorPos()
   end
   
   if term.isAvailable() then
@@ -378,7 +357,7 @@ local function format_integer(value, nbchar)
   local str = "?"
   if value ~= nil then
     if type(value) == "number" then
-      str = string.format("%d", value)
+      str = string.format("%d", math.floor(value))
     else
       str = type(value)
     end
@@ -410,10 +389,10 @@ local function format_string(value, nbchar)
     str = "" .. value
   end
   if nbchar ~= nil then
-    if #str > nbchar then
-      str = string.sub(str, 1, nbchar - 1) .. "~"
+    if #str > math.abs(nbchar) then
+      str = string.sub(str, 1, math.abs(nbchar) - 1) .. "~"
     else
-      str = string.sub(str .. "                                             ", 1, nbchar)
+      str = string.sub(str .. "                                                  ", 1, nbchar)
     end
   end
   return str
@@ -430,9 +409,9 @@ end
 
 ----------- Input controls
 
-local function input_readNumber(currentValue)
+local function input_readInteger(currentValue)
   local inputAbort = false
-  local input = w.format_string(currentValue)
+  local input = w.format_integer(currentValue)
   if input == "0" then
     input = ""
   end
@@ -459,19 +438,19 @@ local function input_readNumber(currentValue)
       local keycode = params[4]
       
       if keycode >= 2 and keycode <= 10 then -- 1 to 9
-        input = input .. w.format_string(keycode - 1)
+        input = input .. w.format_integer(keycode - 1)
         ignoreNextChar = true
       elseif keycode == 11 or keycode == 82 then -- 0 & keypad 0
         input = input .. "0"
         ignoreNextChar = true
       elseif keycode >= 79 and keycode <= 81 then -- keypad 1 to 3
-        input = input .. w.format_string(keycode - 78)
+        input = input .. w.format_integer(keycode - 78)
         ignoreNextChar = true
       elseif keycode >= 75 and keycode <= 77 then -- keypad 4 to 6
-        input = input .. w.format_string(keycode - 71)
+        input = input .. w.format_integer(keycode - 71)
         ignoreNextChar = true
       elseif keycode >= 71 and keycode <= 73 then -- keypad 7 to 9
-        input = input .. w.format_string(keycode - 64)
+        input = input .. w.format_integer(keycode - 64)
         ignoreNextChar = true
       elseif keycode == 14 then -- Backspace
         input = string.sub(input, 1, string.len(input) - 1)
@@ -546,10 +525,12 @@ local function input_readText(currentValue)
   term.setCursorBlink(true)
   repeat
     w.status_tick()
+    -- update display clearing extra characters
     w.setColorNormal()
     w.setCursorPos(x, y)
-    w.write(input .. "                              ")
-    input = string.sub(input, -30)
+    w.write(w.format_string(input, 37))
+    -- truncate input and set caret position
+    input = string.sub(input, -36)
     w.setCursorPos(x + #input, y)
     
     local params = { event.pull() }
@@ -782,7 +763,7 @@ end
 
 local function event_refresh_start()
   if event_refreshTimerId == -1 then
-    event_refreshTimerId = event.timer(event_refreshPeriod_s, function () w.event_refresh_tick() end)
+    event_refreshTimerId = event.timer(event_refreshPeriod_s, function () w.event_refresh_tick() end, math.huge)
   end
 end
 
@@ -819,6 +800,11 @@ local function event_handler(eventName, param)
   elseif eventName == "component_removed" then
   elseif eventName == "component_available" then
   elseif eventName == "component_unavailable" then
+  elseif eventName == "gpu_bound" then-- OpenOS internal event?
+  elseif eventName == "term_available" then
+    needRedraw = true
+  elseif eventName == "term_unavailable" then
+    needRedraw = true
   -- not supported: task_complete, rednet_message, modem_message
   elseif event_handlers[eventName] ~= nil then
     needRedraw = event_handlers[eventName](eventName, param)
@@ -859,7 +845,7 @@ local function data_inspect(key, value)
 end
 
 local function data_read()
-  w.data_updateName()
+  w.data_shouldUpdateName()
   
   data = { }
   if fs.exists("/etc/shipdata.txt") then
@@ -908,39 +894,55 @@ local function data_getName()
 end
 
 local function data_setName()
-  if ship ~= nil then
-    w.page_begin("<==== Set ship name ====>")
-    w.writeLn("")
-    w.write("Enter ship name: ")
-  else
-    w.page_begin("<==== Set name ====>")
-    w.writeLn("")
-    w.write("Enter computer name: ")
+  -- check if any named component is connected
+  local component = "computer"
+  for name, handlers in pairs(data_handlers) do
+    if handlers.name ~= nil then
+      component = name
+    end
   end
   
+  -- ask for a new name
+  w.page_begin("<==== Set " .. component .. " name ====>")
+  w.writeLn("")
+  w.write("Enter " .. component .. " name: ")
   data_name = w.input_readText(data_name)
+  
   -- OpenComputers only allows to label filesystems => out
-  if ship ~= nil then
-    ship.shipName(data_name)
+  
+  -- update connected components
+  for name, handlers in pairs(data_handlers) do
+    if handlers.name ~= nil then
+      handlers.name(data_name)
+    end
   end
+  
   -- w.reboot() -- not needed
 end
 
-local function data_updateName()
-  data_shouldUpdateName = false
+local function data_shouldUpdateName()
+  local shouldUpdateName = false
+  
+  -- check computer name
   data_name = "" .. computer.address()
-  if data_name == nil then
-    data_shouldUpdateName = true
-    data_name = "" .. computer.address()
-  end
-  if ship ~= nil then
-    local shipName = ship.shipName()
-    if shipName == "default" then
-      data_shouldUpdateName = true
-    else
-      data_name = shipName
+  local nameDefault = data_name
+  
+  -- check connected components names
+  for name, handlers in pairs(data_handlers) do
+    if handlers.name ~= nil then
+      local componentName = handlers.name()
+      if componentName == "default" or componentName == "" then
+        shouldUpdateName = true
+      elseif shouldUpdateName then
+        data_name = componentName
+      elseif data_name ~= componentName then
+        shouldUpdateName = data_name ~= nameDefault
+        data_name = componentName
+      end
     end
   end
+  
+  return shouldUpdateName
 end
 
 local function data_splitString(source, sep)
@@ -951,14 +953,18 @@ local function data_splitString(source, sep)
   return fields
 end
 
-local function data_register(name, callbackRead, callbackSave)
+local function data_register(name, callbackRead, callbackSave, callbackName)
+  -- read/save callbacks are always defined
   if callbackRead == nil then
     callbackRead = function() end
   end
   if callbackSave == nil then
     callbackSave = function() end
   end
-  data_handlers[name] = { read = callbackRead, save = callbackSave }
+  
+  -- name callback is nill when not defined
+  
+  data_handlers[name] = { read = callbackRead, save = callbackSave, name = callbackName }
 end
 
 ----------- Devices
@@ -984,7 +990,8 @@ local function boot()
     os.exit()
   end
   if component.gpu.getDepth() < 4 then
-    print("Tier 2 GPU required")
+    print("A tier 2 or higher GPU required")
+    print("A tier 2 or higher screen required")
     os.exit()
   end
   print("loading...")
@@ -1011,15 +1018,12 @@ local function boot()
       handlers.register(deviceType, address, w.device_get(address))
     end
     
-    if deviceType == "warpdriveShipController" then
-      ship = w.device_get(address)
-    end
     w.writeLn("")
   end
   
-  -- update with ship name if available
-  w.data_updateName()
-  if data_shouldUpdateName then
+  -- synchronize computer and connected components names
+  local shouldUpdateName = w.data_shouldUpdateName()
+  if shouldUpdateName then
     w.data_setName()
   end
   
@@ -1036,7 +1040,7 @@ local function run()
   local refresh = true
   local ignoreNextChar = false
   
-  function selectPage(index)
+  local function selectPage(index)
     if page_handlers[index] ~= nil then
       page_callbackDisplay = page_handlers[index].display
       page_callbackKey = page_handlers[index].key
@@ -1197,7 +1201,7 @@ w = {
   format_boolean = format_boolean,
   format_string = format_string,
   format_address = format_address,
-  input_readNumber = input_readNumber,
+  input_readInteger = input_readInteger,
   input_readText = input_readText,
   input_readConfirmation = input_readConfirmation,
   input_readEnum = input_readEnum,
@@ -1215,7 +1219,7 @@ w = {
   data_save = data_save,
   data_getName = data_getName,
   data_setName = data_setName,
-  data_updateName = data_updateName,
+  data_shouldUpdateName = data_shouldUpdateName,
   data_splitString = data_splitString,
   data_register = data_register,
   device_get = device_get,
@@ -1226,4 +1230,4 @@ w = {
   close = close,
 }
 
-return w, local_env
+return w

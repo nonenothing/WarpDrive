@@ -16,7 +16,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	public BlockEnanReactorLaser(final String registryName) {
 		super(registryName, Material.IRON);
 		setResistance(60.0F * 5 / 3);
-		setUnlocalizedName("warpdrive.energy.EnanReactorLaser");
+		setUnlocalizedName("warpdrive.energy.enan_reactor_laser");
 		GameRegistry.registerTileEntity(TileEntityEnanReactorLaser.class, WarpDrive.PREFIX + registryName);
 	}
 

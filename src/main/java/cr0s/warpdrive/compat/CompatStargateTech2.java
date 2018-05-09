@@ -77,19 +77,19 @@ public class CompatStargateTech2 implements IBlockTransformer {
 		rotFacingcolors = Collections.unmodifiableMap(map);
 	}
 	
-	private static NBTTagCompound rotateVector(ITransformation transformation, NBTTagCompound tag) {
-		BlockPos target = transformation.apply(tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"));
-		tag.setInteger("x", target.getX());
-		tag.setInteger("y", target.getY());
-		tag.setInteger("z", target.getZ());
-		return tag;
+	private static NBTTagCompound rotateVector(final ITransformation transformation, final NBTTagCompound tagCompound) {
+		final BlockPos target = transformation.apply(tagCompound.getInteger("x"), tagCompound.getInteger("y"), tagCompound.getInteger("z"));
+		tagCompound.setInteger("x", target.getX());
+		tagCompound.setInteger("y", target.getY());
+		tagCompound.setInteger("z", target.getZ());
+		return tagCompound;
 	}
 	
-	private static NBTTagCompound rotateFacingColors(final Byte rotationSteps, final NBTTagCompound tag) {
+	private static NBTTagCompound rotateFacingColors(final Byte rotationSteps, final NBTTagCompound tagCompound) {
 		final NBTTagCompound newFacing = new NBTTagCompound();
-		final Set<String> keys = tag.getKeySet();
+		final Set<String> keys = tagCompound.getKeySet();
 		for (final String key : keys) {
-			NBTBase base = tag.getTag(key);
+			NBTBase base = tagCompound.getTag(key);
 			if (base instanceof NBTTagByte && rotFacingcolors.containsKey(key)) {
 				switch (rotationSteps) {
 				case 1:

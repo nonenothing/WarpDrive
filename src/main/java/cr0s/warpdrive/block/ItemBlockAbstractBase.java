@@ -58,11 +58,11 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		return ((IBlockBase) block).getRarity(itemStack, super.getRarity(itemStack));
 	}
 	
-	public ITextComponent getStatus(final NBTTagCompound nbtTagCompound, final IBlockState blockState) {
-		TileEntity tileEntity = block.createTileEntity(Minecraft.getMinecraft().theWorld, blockState);
+	public ITextComponent getStatus(final NBTTagCompound tagCompound, final IBlockState blockState) {
+		final TileEntity tileEntity = block.createTileEntity(Minecraft.getMinecraft().theWorld, blockState);
 		if (tileEntity instanceof TileEntityAbstractBase) {
-			if (nbtTagCompound != null) {
-				tileEntity.readFromNBT(nbtTagCompound);
+			if (tagCompound != null) {
+				tileEntity.readFromNBT(tagCompound);
 			}
 			return ((TileEntityAbstractBase) tileEntity).getStatus();
 			
@@ -82,15 +82,16 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	}
 	
 	@Override
-	public void addInformation(@Nonnull final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer, @Nonnull final List<String> list, final boolean advancedItemTooltips) {
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer,
+	                           @Nonnull final List<String> list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
-		String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
+		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.hasKey(tooltipName1)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
 		}
 		
-		String tooltipName2 = getUnlocalizedName() + ".tooltip";
+		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
 		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}

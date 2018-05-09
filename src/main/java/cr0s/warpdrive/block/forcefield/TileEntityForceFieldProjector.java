@@ -115,6 +115,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	public TileEntityForceFieldProjector() {
 		super();
+		IC2_sinkTier = 4;
+		IC2_sourceTier = 4;
 		
 		peripheralName = "warpdriveForceFieldProjector";
 		addMethods(new String[] {
@@ -916,12 +918,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	@Override
 	public ITextComponent getStatus() {
 		return super.getStatus()
-			.appendSibling(new TextComponentString("\n")).appendSibling(getShapeStatus())
-			.appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
+			.appendSibling(new TextComponentString("\n")).appendSibling(getShapeStatus());
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		isDoubleSided = tagCompound.getBoolean("isDoubleSided");
 		
@@ -947,6 +948,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		isPowered = tagCompound.getBoolean("isPowered");
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
@@ -995,8 +997,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		super.onDataPacket(networkManager, packet);
+	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
 		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
@@ -1128,7 +1129,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		
 		switch (methodName) {
 		case "min":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
 				setMin(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
@@ -1138,7 +1139,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return new Double[] { v3Min.x, v3Min.y, v3Min.z };
 		
 		case "max":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
 				setMax(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));
@@ -1148,7 +1149,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return new Double[] { v3Max.x, v3Max.y, v3Max.z };
 		
 		case "rotation":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setRotation(Commons.toFloat(arguments[0]), rotationPitch, rotationRoll);
 			} else if (arguments.length == 2) {
 				setRotation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), rotationRoll);
@@ -1161,7 +1162,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return state();
 		
 		case "translation":
-			if (arguments.length == 1) {
+			if (arguments.length == 1 && arguments[0] != null) {
 				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]), Commons.toFloat(arguments[0]));
 			} else if (arguments.length == 2) {
 				setTranslation(Commons.toFloat(arguments[0]), Commons.toFloat(arguments[1]), Commons.toFloat(arguments[0]));

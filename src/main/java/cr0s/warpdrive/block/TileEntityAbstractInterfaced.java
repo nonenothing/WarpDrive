@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -19,12 +20,14 @@ import li.cil.oc.api.network.Message;
 import li.cil.oc.api.network.Node;
 import li.cil.oc.api.network.Visibility;
 
+import javax.annotation.Nonnull;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -151,50 +154,51 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
 		if ( WarpDriveConfig.isOpenComputersLoaded
 		  && FMLCommonHandler.instance().getEffectiveSide().isServer() ) {
 			if (OC_node == null) {
 				OC_constructor();
 			}
 			if (OC_node != null && OC_node.host() == this) {
-				OC_node.load(tag.getCompoundTag("oc:node"));
-			} else if (tag.hasKey("oc:node")) {
+				OC_node.load(tagCompound.getCompoundTag("oc:node"));
+			} else if (tagCompound.hasKey("oc:node")) {
 				WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
-				OC_fileSystem.node().load(tag.getCompoundTag("oc:fs"));
+				OC_fileSystem.node().load(tagCompound.getCompoundTag("oc:fs"));
 			} else if (OC_hasResource) {
 				WarpDrive.logger.error(this + " OC filesystem failed to construct or wrong node, ignoring NBT filesystem data read...");
 			}
 		}
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		if (WarpDriveConfig.isOpenComputersLoaded) {
 			if (OC_node != null && OC_node.host() == this) {
 				final NBTTagCompound nbtNode = new NBTTagCompound();
 				OC_node.save(nbtNode);
-				tag.setTag("oc:node", nbtNode);
+				tagCompound.setTag("oc:node", nbtNode);
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
 				final NBTTagCompound nbtFileSystem = new NBTTagCompound();
 				OC_fileSystem.node().save(nbtFileSystem);
-				tag.setTag("oc:fs", nbtFileSystem);
+				tagCompound.setTag("oc:fs", nbtFileSystem);
 			}
 		}
-		return tag;
+		return tagCompound;
 	}
 	
 	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
-		nbtTagCompound.removeTag("oc:node");
-		nbtTagCompound.removeTag("oc:fs");
-		return nbtTagCompound;
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
+		tagCompound.removeTag("oc:node");
+		tagCompound.removeTag("oc:fs");
+		return tagCompound;
 	}
 	
 	@Override
@@ -262,6 +266,36 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		return methodsArray;
 	}
 	
+	protected VectorI computer_getVectorI(final VectorI vDefault, final Object[] arguments) {
+		try {
+			if (arguments.length == 3) {
+				final int x = Commons.toInt(arguments[0]);
+				final int y = Commons.toInt(arguments[1]);
+				final int z = Commons.toInt(arguments[2]);
+				return new VectorI(x, y, z);
+			}
+		} catch (NumberFormatException e) {
+			// ignore
+		}
+		return vDefault;
+	}
+	
+	protected UUID computer_getUUID(final UUID uuidDefault, final Object[] arguments) {
+		try {
+			if (arguments.length == 1 && arguments[0] != null) {
+				if (arguments[0] instanceof UUID) {
+					return (UUID) arguments[0];
+				}
+				if (arguments[0] instanceof String) {
+					return UUID.fromString((String) arguments[0]);
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// ignore
+		}
+		return uuidDefault;
+	}
+	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
@@ -300,7 +334,10 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				}
 			} catch (Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error("Failed to mount ComputerCraft scripts for " + peripheralName);
+				WarpDrive.logger.error(String.format("Failed to mount ComputerCraft scripts for %s @ %s (%d %d %d)",
+				                                     peripheralName,
+				                                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+				                                     pos.getX(), pos.getY(), pos.getZ()));
 			}
 		}
 	}
@@ -308,10 +345,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
 	public void detach(IComputerAccess computer) {
-		int id = computer.getID();
-		if (connectedComputers.containsKey(id)) {
-			connectedComputers.remove(id);
-		}
+		final int id = computer.getID();
+		connectedComputers.remove(id);
 	}
 	
 	@Override

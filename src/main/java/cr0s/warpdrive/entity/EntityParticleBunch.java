@@ -149,26 +149,21 @@ public class EntityParticleBunch extends Entity {
 	/**/
 	
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound nbtTagCompound) {
-		// energy = nbtTagCompound.getInteger("energy");
-		vectorNextPosition = Vector3.createFromNBT(nbtTagCompound.getCompoundTag("nextPosition"));
-		if (nbtTagCompound.hasKey("turningPoint")) {
-			vectorTurningPoint = Vector3.createFromNBT(nbtTagCompound.getCompoundTag("turningPoint"));
+	protected void readEntityFromNBT(@Nonnull final NBTTagCompound tagCompound) {
+		// energy = tagCompound.getInteger("energy");
+		vectorNextPosition = Vector3.createFromNBT(tagCompound.getCompoundTag("nextPosition"));
+		if (tagCompound.hasKey("turningPoint")) {
+			vectorTurningPoint = Vector3.createFromNBT(tagCompound.getCompoundTag("turningPoint"));
 		}
 	}
 	
 	@Override
-	protected void writeEntityToNBT(@Nonnull NBTTagCompound nbtTagCompound) {
-		// nbtTagCompound.setDouble("energy", energy);
-		nbtTagCompound.setTag("nextPosition", vectorNextPosition.writeToNBT(new NBTTagCompound()));
+	protected void writeEntityToNBT(@Nonnull final NBTTagCompound tagCompound) {
+		// tagCompound.setDouble("energy", energy);
+		tagCompound.setTag("nextPosition", vectorNextPosition.writeToNBT(new NBTTagCompound()));
 		if (vectorTurningPoint != null) {
-			nbtTagCompound.setTag("turningPoint", vectorTurningPoint.writeToNBT(new NBTTagCompound()));
+			tagCompound.setTag("turningPoint", vectorTurningPoint.writeToNBT(new NBTTagCompound()));
 		}
-	}
-	
-	@Override
-	public boolean writeToNBTAtomically(@Nonnull NBTTagCompound compound) {
-		return super.writeToNBTAtomically(compound);
 	}
 	
 	@Nonnull
@@ -178,20 +173,18 @@ public class EntityParticleBunch extends Entity {
 	}
 	
 	// prevent saving entity to chunk
-	// @TODO MC1.10 check boat entity
-	/*
 	@Override
-	public boolean writeMountToNBT(NBTTagCompound p_98035_1_) {
+	public boolean writeToNBTAtomically(@Nonnull final NBTTagCompound tagCompound) {
 		return false;
 	}
-	/**/
 	
 	// prevent saving entity to chunk
 	@Override
-	public boolean writeToNBTOptional(@Nonnull NBTTagCompound p_70039_1_) {
+	public boolean writeToNBTOptional(@Nonnull final NBTTagCompound tagCompound) {
 		return false;
 	}
 	
+	@Nonnull
 	@Override
 	public String toString() {
 		return String.format("%s/%d @ \'%s\' %.2f %.2f %.2f",

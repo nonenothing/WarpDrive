@@ -31,7 +31,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	
 	public BlockRadar(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.detection.Radar");
+		setUnlocalizedName("warpdrive.detection.radar");
 		GameRegistry.registerTileEntity(TileEntityRadar.class, WarpDrive.PREFIX + registryName);
 		
 		setDefaultState(getDefaultState().withProperty(MODE, EnumRadarMode.INACTIVE));

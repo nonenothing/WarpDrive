@@ -26,7 +26,7 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 	
 	public BlockMonitor(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.detection.Monitor");
+		setUnlocalizedName("warpdrive.detection.monitor");
 		GameRegistry.registerTileEntity(TileEntityMonitor.class, WarpDrive.PREFIX + registryName);
 	}
 

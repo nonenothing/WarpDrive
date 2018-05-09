@@ -1,13 +1,12 @@
 package cr0s.warpdrive.data;
 
-import cr0s.warpdrive.api.IStringSerializable;
-
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
 
 public enum EnumReactorFace implements IStringSerializable {
 	//                tier           inst name         facing             x   y   z  propertyLaser

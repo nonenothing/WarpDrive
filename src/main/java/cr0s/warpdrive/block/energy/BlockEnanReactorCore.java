@@ -20,7 +20,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	
 	public BlockEnanReactorCore(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.energy.EnanReactorCore");
+		setUnlocalizedName("warpdrive.energy.enan_reactor_core");
 		GameRegistry.registerTileEntity(TileEntityEnanReactorCore.class, WarpDrive.PREFIX + registryName);
 	}
 

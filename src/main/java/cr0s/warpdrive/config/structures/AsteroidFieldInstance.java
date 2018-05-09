@@ -19,8 +19,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		super(asteroidField, random);
 	}
 	
-	public AsteroidFieldInstance(final NBTTagCompound tag) {
-		super(tag);
+	public AsteroidFieldInstance(final NBTTagCompound tagCompound) {
+		super(tagCompound);
 		// TODO not implemented
 	}
 	

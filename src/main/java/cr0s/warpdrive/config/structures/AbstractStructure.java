@@ -3,6 +3,9 @@ package cr0s.warpdrive.config.structures;
 import cr0s.warpdrive.api.IXmlRepresentable;
 import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.XmlFileManager;
+
+import javax.annotation.Nonnull;
+
 import org.w3c.dom.Element;
 
 import java.util.HashMap;
@@ -25,6 +28,7 @@ public abstract class AbstractStructure extends WorldGenerator implements IXmlRe
 		this.name = name;
 	}
 	
+	@Nonnull
 	@Override
 	public String getName() {
 		return name;

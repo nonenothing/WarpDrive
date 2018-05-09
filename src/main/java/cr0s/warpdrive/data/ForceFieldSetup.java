@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ForceFieldSetup extends GlobalPosition {
+	
 	private static final float FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND = 100;
 	private static final float FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND = 20;
 	private static final float FORCEFIELD_MAX_SCAN_SPEED_BLOCKS_PER_SECOND = 10000;
@@ -129,6 +130,12 @@ public class ForceFieldSetup extends GlobalPosition {
 		Vector3 v3Translation = new Vector3(0.0D, 0.0D, 0.0D);
 		
 		for (final TileEntity tileEntity : tileEntities) {
+			// sanity check
+			if (tileEntity == null) {
+				WarpDrive.logger.error(String.format("Invalid tile entity returned from ForgeFieldRegistry at %s",
+				                                     this));
+				continue;
+			}
 			// only consider same dimension
 			if (tileEntity.getWorld() == null || tileEntity.getWorld().provider.getDimension() != dimensionId) {
 				continue;

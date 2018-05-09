@@ -1,15 +1,5 @@
 package cr0s.warpdrive.render;
 
-import cr0s.warpdrive.block.building.BlockShipScanner;
-import cr0s.warpdrive.block.building.TileEntityShipScanner;
-import cr0s.warpdrive.config.Dictionary;
-
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.IBlockAccess;
-
-import org.lwjgl.opengl.GL11;
 
 public class RenderBlockShipScanner {
 	
@@ -100,7 +90,7 @@ public class RenderBlockShipScanner implements ISimpleBlockRenderingHandler {
 		// check vertical offset
 		final Block blockAbove = blockAccess.getBlock(x, y + 1, z);
 		final boolean isHidden = !blockAbove.isAir(blockAccess, x, y + 1, z)
-		                         && blockAbove.isBlockSolid(blockAccess, x, y + 1, z, blockAccess.getBlockMetadata(x, y + 1, z));
+		                      && blockAbove.isBlockSolid(blockAccess, x, y + 1, z, blockAccess.getBlockMetadata(x, y + 1, z));
 		
 		// render borders
 		final Tessellator tessellator = Tessellator.instance;

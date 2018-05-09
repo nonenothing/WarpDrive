@@ -30,7 +30,7 @@ public class BlockLift extends BlockAbstractContainer {
 	
 	public BlockLift(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.movement.Lift");
+		setUnlocalizedName("warpdrive.movement.lift");
 		GameRegistry.registerTileEntity(TileEntityLift.class, WarpDrive.PREFIX + registryName);
 		
 		setDefaultState(getDefaultState().withProperty(MODE, EnumLiftMode.INACTIVE));

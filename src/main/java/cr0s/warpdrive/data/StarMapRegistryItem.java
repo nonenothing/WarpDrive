@@ -2,9 +2,7 @@ package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,48 +19,6 @@ public class StarMapRegistryItem extends GlobalPosition {
 	public int mass;
 	public double isolationRate = 0.0D;
 	public String name = "default";
-	
-	public enum EnumStarMapEntryType {
-		UNDEFINED(0, "-undefined-"),
-		SHIP(1, "ship"),	        	// a ship core
-		JUMPGATE(2, "jumpgate"),	    // a jump gate
-		PLANET(3, "planet"),		    // a planet (a transition plane allowing to move to another dimension)
-		STAR(4, "star"),    		    // a star
-		STRUCTURE(5, "structure"),	    // a structure from WorldGeneration (moon, asteroid field, etc.)
-		WARP_ECHO(6, "warp_echo"),	    // remains of a warp
-		ACCELERATOR(7, "accelerator");	// an accelerator setup
-		
-		private final int id;
-		private final String name;
-		
-		// cached values
-		public static final int length;
-		private static final HashMap<String, EnumStarMapEntryType> mapNames = new HashMap<>();
-		
-		static {
-			length = EnumStarMapEntryType.values().length;
-			for (final EnumStarMapEntryType enumStarMapEntryType : values()) {
-				mapNames.put(enumStarMapEntryType.getName(), enumStarMapEntryType);
-			}
-		}
-		
-		EnumStarMapEntryType(final int id, final String name) {
-			this.id = id;
-			this.name = name;
-		}
-		
-		public int getId() {
-			return id;
-		}
-		
-		public String getName() {
-			return name;
-		}
-		
-		public static EnumStarMapEntryType getByName(final String name) {
-			return mapNames.get(name);
-		}
-	}
 	
 	public StarMapRegistryItem(
 	                          final EnumStarMapEntryType type, final UUID uuid,
@@ -95,7 +51,7 @@ public class StarMapRegistryItem extends GlobalPosition {
 	
 	public StarMapRegistryItem(final IStarMapRegistryTileEntity tileEntity) {
 		this(
-			EnumStarMapEntryType.getByName(tileEntity.getStarMapType()), tileEntity.getUUID(),
+			tileEntity.getStarMapType(), tileEntity.getUUID(),
 			((TileEntity) tileEntity).getWorld().provider.getDimension(),
 			((TileEntity) tileEntity).getPos().getX(), ((TileEntity) tileEntity).getPos().getY(), ((TileEntity) tileEntity).getPos().getZ(),
 			tileEntity.getStarMapArea(),
@@ -103,10 +59,9 @@ public class StarMapRegistryItem extends GlobalPosition {
 			tileEntity.getStarMapName());
 	}
 	
-	public boolean sameIdOrCoordinates(final IStarMapRegistryTileEntity tileEntity) {
+	public boolean sameCoordinates(final IStarMapRegistryTileEntity tileEntity) {
 		assert(tileEntity instanceof TileEntity);
-		return uuid == tileEntity.getUUID()
-			|| dimensionId == ((TileEntity) tileEntity).getWorld().provider.getDimension()
+		return dimensionId == ((TileEntity) tileEntity).getWorld().provider.getDimension()
 			&& x == ((TileEntity) tileEntity).getPos().getX()
 			&& y == ((TileEntity) tileEntity).getPos().getY()
 			&& z == ((TileEntity) tileEntity).getPos().getZ();
@@ -114,8 +69,9 @@ public class StarMapRegistryItem extends GlobalPosition {
 	
 	public void update(final IStarMapRegistryTileEntity tileEntity) {
 		if (WarpDrive.isDev) {
-			assert (tileEntity instanceof TileEntity);
-			assert (sameIdOrCoordinates(tileEntity));
+			assert(tileEntity instanceof TileEntity);
+			assert(type == tileEntity.getStarMapType());
+			assert(uuid.equals(tileEntity.getUUID()));
 		}
 		final AxisAlignedBB aabbArea = tileEntity.getStarMapArea();
 		if (aabbArea != null) {
@@ -129,14 +85,6 @@ public class StarMapRegistryItem extends GlobalPosition {
 		mass = tileEntity.getMass();
 		isolationRate = tileEntity.getIsolationRate();
 		name = tileEntity.getStarMapName();
-	}
-	
-	public boolean isSameTileEntity(final IStarMapRegistryTileEntity tileEntity) {
-		assert(tileEntity instanceof TileEntity);
-		return dimensionId == ((TileEntity) tileEntity).getWorld().provider.getDimension()
-		  && x == ((TileEntity) tileEntity).getPos().getX()
-		  && y == ((TileEntity) tileEntity).getPos().getY()
-		  && z == ((TileEntity) tileEntity).getPos().getZ();
 	}
 	
 	public boolean contains(final BlockPos blockPos) {
@@ -207,10 +155,12 @@ public class StarMapRegistryItem extends GlobalPosition {
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
-			getClass().getSimpleName(), dimensionId,
-			x, y, z,
-			minX, minY, minZ,
-			maxX, maxY, maxZ);
+		return String.format("%s '%s' %s @ DIM%d (%d %d %d) (%d %d %d) -> (%d %d %d)",
+		                     getClass().getSimpleName(),
+			                 type, uuid,
+			                 dimensionId,
+			                 x, y, z,
+			                 minX, minY, minZ,
+			                 maxX, maxY, maxZ);
 	}
 }

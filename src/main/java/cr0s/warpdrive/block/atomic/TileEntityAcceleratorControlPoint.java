@@ -100,18 +100,19 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 		controlChannel = tagCompound.getInteger(CONTROL_CHANNEL_TAG);
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setBoolean("isEnabled", isEnabled);
-		tag.setInteger(CONTROL_CHANNEL_TAG, controlChannel);
-		return tag;
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setBoolean("isEnabled", isEnabled);
+		tagCompound.setInteger(CONTROL_CHANNEL_TAG, controlChannel);
+		return tagCompound;
 	}
 	
 	@Nonnull
@@ -123,8 +124,8 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.getNbtCompound();
+	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
@@ -161,7 +162,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
@@ -193,7 +194,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 				return enable(arguments);
 			
 			case "controlChannel":
-				if (arguments.length == 1) {
+				if (arguments.length == 1 && arguments[0] != null) {
 					setControlChannel(Commons.toInt(arguments[0]));
 				}
 				return new Integer[] { controlChannel };

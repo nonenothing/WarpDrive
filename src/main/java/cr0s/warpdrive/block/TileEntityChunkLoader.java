@@ -9,6 +9,8 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.ChunkPos;
@@ -119,6 +121,8 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		}
 		
 		isPowered = energy_consume(chunkloading_getEnergyRequired(), !isEnabled);
+		
+		updateMetadata(isEnabled ? isPowered ? 2 : 1 : 0);
 	}
 	
 	private void setBounds(final int negX, final int posX, final int negZ, final int posZ) {
@@ -153,12 +157,6 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		refreshChunkLoading();
 	}
 	
-	@Override
-	public ITextComponent getStatus() {
-		return super.getStatus()
-		       .appendSibling(new TextComponentString("\n")).appendSibling(getUpgradeStatus());
-	}
-	
 	// Forge overrides
 	
 	@Override
@@ -170,6 +168,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		isPowered = tagCompound.getBoolean("isPowered");
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
@@ -184,7 +183,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	
 	// Common OC/CC methods
 	public Object[] enable(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[] { isEnabled };
@@ -198,7 +197,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	public Object[] radius(Object[] arguments) {
-		if (arguments.length == 1) {
+		if (arguments.length == 1 && arguments[0] != null) {
 			final int radius = Commons.toInt(arguments[0]);
 			setBounds(radius, radius, radius, radius);
 		}

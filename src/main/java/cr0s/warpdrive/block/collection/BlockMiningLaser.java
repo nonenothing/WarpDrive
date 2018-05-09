@@ -31,7 +31,7 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	
 	public BlockMiningLaser(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.collection.MiningLaser");
+		setUnlocalizedName("warpdrive.collection.mining_laser");
 		GameRegistry.registerTileEntity(TileEntityMiningLaser.class, WarpDrive.PREFIX + registryName);
 
 		setDefaultState(getDefaultState().withProperty(MODE, EnumMiningLaserMode.INACTIVE));

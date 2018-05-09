@@ -6,6 +6,8 @@ import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.util.math.BlockPos;
 import org.w3c.dom.Element;
 
@@ -61,6 +63,7 @@ public class MetaOrb extends Orb {
 			this.parentFullName = parentFullName;
 		}
 		
+		@Nonnull
 		@Override
 		public String getName() {
 			return "metashell";

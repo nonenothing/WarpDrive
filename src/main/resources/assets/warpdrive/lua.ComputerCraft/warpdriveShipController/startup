@@ -31,8 +31,15 @@ function ship_read(parData)
   if data.ship_summon == nil then data.ship_summon = false end
 end
 
+function ship_name(parName)
+  if ship == nil or ship.interfaced() == nil then
+    return ''
+  end
+  return ship.shipName(parName)
+end
+
 function ship_boot()
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     return
   end
   
@@ -130,28 +137,28 @@ function ship_writeMovement(prefix)
   local message = prefix
   local count = 0
   if ship_movement[1] > 0 then
-    message = message .. ship_movement[1] .. " front"
+    message = message .. w.format_integer(ship_movement[1]) .. " front"
     count = count + 1
   elseif ship_movement[1] < 0 then
-    message = message .. (- ship_movement[1]) .. " back"
+    message = message .. w.format_integer(- ship_movement[1]) .. " back"
     count = count + 1
   end
   if ship_movement[2] > 0 then
     if count > 0 then message = message .. ", " end
-    message = message .. ship_movement[2] .. " up"
+    message = message .. w.format_integer(ship_movement[2]) .. " up"
     count = count + 1
   elseif ship_movement[2] < 0 then
     if count > 0 then message = message .. ", " end
-    message = message .. (- ship_movement[2]) .. " down"
+    message = message .. w.format_integer(- ship_movement[2]) .. " down"
     count = count + 1
   end
   if ship_movement[3] > 0 then
     if count > 0 then message = message .. ", " end
-    message = message .. ship_movement[3] .. " right"
+    message = message .. w.format_integer(ship_movement[3]) .. " right"
     count = count + 1
   elseif ship_movement[3] < 0 then
     if count > 0 then message = message .. ", " end
-    message = message .. (- ship_movement[3]) .. " left"
+    message = message .. w.format_integer(- ship_movement[3]) .. " left"
     count = count + 1
   end
   
@@ -232,20 +239,14 @@ end
 
 function ship_page_setMovement()
   w.page_begin("<==== Set ship movement ====>")
-  w.setCursorPos(1, 14)
-  w.setColorControl()
-  w.writeFullLine(" Enter jump distance on each axis (0-9)")
-  w.writeFullLine(" Enter 0 to keep position on that axis")
-  w.writeFullLine(" Use - or n keys to move in opposite direction")
-  w.writeFullLine(" Press Enter to save your selection")
   w.setColorNormal()
   w.setCursorPos(1, 3)
   ship_writeMovement("Current movement is ")
   w.setCursorPos(1, 5)
   
-  ship_movement[1] = ship_page_setDistanceAxis(4, "Forward" , "Front", "Back", ship_movement[1], math.abs(ship_front + ship_back + 1))
-  ship_movement[2] = ship_page_setDistanceAxis(6, "Vertical", "Up"   , "Down", ship_movement[2], math.abs(ship_up + ship_down + 1))
-  ship_movement[3] = ship_page_setDistanceAxis(8, "Lateral" , "Right", "Left", ship_movement[3], math.abs(ship_left + ship_right + 1))
+  ship_movement[1] = ship_page_setDistanceAxis(4, "Forward/back", "Forward", "Backward", ship_movement[1], math.abs(ship_front + ship_back + 1))
+  ship_movement[2] = ship_page_setDistanceAxis(6, "Up/down"     , "Up"     , "Down"    , ship_movement[2], math.abs(ship_up + ship_down + 1))
+  ship_movement[3] = ship_page_setDistanceAxis(8, "Right/left"  , "Right"  , "Left"    , ship_movement[3], math.abs(ship_left + ship_right + 1))
   ship_movement = { ship.movement(ship_movement[1], ship_movement[2], ship_movement[3]) }
   ship_updateMovementStats()
 end
@@ -256,25 +257,27 @@ function ship_page_setDistanceAxis(line, axis, positive, negative, userEntry, sh
     w.status_showSuccess("" .. maxJumpDistance)
     maxJumpDistance = 0
   end
-  local maximumDistance = shipLength + maxJumpDistance
-  w.setColorDisabled()
-  w.setCursorPos(3, line + 1)
-  w.write(positive .. " is " .. ( shipLength + 1) .. " to " ..  maximumDistance .. " blocks      ")
-  w.setCursorPos(3, line + 2)
-  w.write(negative .. " is " .. (-shipLength - 1) .. " to " .. -maximumDistance .. " blocks      ")
+  local maximumDistance = math.floor(shipLength + maxJumpDistance)
+  w.setColorControl()
+  w.setCursorPos(1, line + 2)
+  w.writeFullLine("Enter between " .. math.floor( shipLength + 1) .. " and " ..  maximumDistance .. " to move " ..  positive)
+  w.writeFullLine("Enter 0 to keep position on this axis")
+  w.writeFullLine("Enter between " .. -maximumDistance .. " and " .. math.floor(-shipLength - 1) .. " to move " ..  negative)
   
   w.setColorNormal()
   repeat
     w.setCursorPos(1, line)
     w.write(axis .. " movement: ")
-    userEntry = w.input_readNumber(userEntry)
+    userEntry = w.input_readInteger(userEntry)
     if userEntry ~= 0 and (math.abs(userEntry) <= shipLength or math.abs(userEntry) > maximumDistance) then
       w.status_showWarning("Wrong distance. Try again.")
     end
   until userEntry == 0 or (math.abs(userEntry) > shipLength and math.abs(userEntry) <= maximumDistance)
-  w.setCursorPos(1, line + 1)
-  w.clearLine()
   w.setCursorPos(1, line + 2)
+  w.clearLine()
+  w.setCursorPos(1, line + 3)
+  w.clearLine()
+  w.setCursorPos(1, line + 4)
   w.clearLine()
   
   return userEntry
@@ -332,18 +335,18 @@ function ship_page_setDimensions()
   
   w.setCursorPos(1, 3)
   w.setColorNormal()
-  w.write(" Front (".. ship_front ..") : ")
-  ship_front = w.input_readNumber(ship_front)
-  w.write(" Right (".. ship_right ..") : ")
-  ship_right = w.input_readNumber(ship_right)
-  w.write(" Up    (".. ship_up ..") : ")
-  ship_up = w.input_readNumber(ship_up)
-  w.write(" Back  (".. ship_back ..") : ")
-  ship_back = w.input_readNumber(ship_back)
-  w.write(" Left  (".. ship_left ..") : ")
-  ship_left = w.input_readNumber(ship_left)
-  w.write(" Down  (".. ship_down ..") : ")
-  ship_down = w.input_readNumber(ship_down)
+  w.write(" Front (".. w.format_integer(ship_front) ..") : ")
+  ship_front = w.input_readInteger(ship_front)
+  w.write(" Right (".. w.format_integer(ship_right) ..") : ")
+  ship_right = w.input_readInteger(ship_right)
+  w.write(" Up    (".. w.format_integer(ship_up) ..") : ")
+  ship_up = w.input_readInteger(ship_up)
+  w.write(" Back  (".. w.format_integer(ship_back) ..") : ")
+  ship_back = w.input_readInteger(ship_back)
+  w.write(" Left  (".. w.format_integer(ship_left) ..") : ")
+  ship_left = w.input_readInteger(ship_left)
+  w.write(" Down  (".. w.format_integer(ship_down) ..") : ")
+  ship_down = w.input_readInteger(ship_down)
   w.write("Setting dimensions...")
   ship_front, ship_right, ship_up = ship.dim_positive(ship_front, ship_right, ship_up)
   ship_back, ship_left, ship_down = ship.dim_negative(ship_back, ship_left, ship_down)
@@ -360,7 +363,7 @@ function ship_page_summon() -- no longer used
     w.setColorControl()
     w.writeFullLine("Press enter to exit")
     w.setColorNormal()
-    w.input_readNumber("")
+    w.input_readInteger("")
     return
   end
   local arrayPlayers = w.data_splitString(stringPlayers, ",")
@@ -373,7 +376,7 @@ function ship_page_summon() -- no longer used
   w.setColorNormal()
   
   w.write(":")
-  local input = w.input_readNumber("")
+  local input = w.input_readInteger("")
   if input == "" then
     ship.targetName("")
   else
@@ -411,43 +414,43 @@ end
 
 function ship_page_controls()
   w.page_begin(w.data_getName() .. " - Ship controls")
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
     if isValid ~= true then
       w.status_showWarning(message)
     else
-      local command = ship.command()
-      if command ~= "MANUAL" and command ~= "HYPERDRIVE" then
+      local isEnabled = ship.enable()
+      if not isEnabled then
         ship.command("MANUAL")
         ship_updateMovementStats()
       end
       -- w.writeLn("")
       w.writeLn("Ship:")
-      w.writeLn(" Current position = " .. ship_x .. ", " .. ship_y .. ", " .. ship_z)
+      w.writeLn(" Current position = " .. w.format_integer(ship_x) .. ", " .. w.format_integer(ship_y) .. ", " .. w.format_integer(ship_z))
       local energy, energyMax = ship.energy()
       if energy == nil then energy = 0 end
       if energyMax == nil or energyMax == 0 then energyMax = 1 end
-      w.writeLn(" Energy           = " .. math.floor(energy / energyMax * 100) .. " % (" .. energy .. " EU)")
+      w.writeLn(" Energy           = " .. math.floor(energy / energyMax * 100) .. " % (" .. w.format_integer(energy) .. " EU)")
       
       w.writeLn("")
       -- w.writeLn("")
       w.writeLn("Dimensions:")
       w.writeLn(" Front, Right, Up = " .. w.format_integer(ship_front) .. ", " .. w.format_integer(ship_right) .. ", " .. w.format_integer(ship_up) .. " blocks")
       w.writeLn(" Back, Left, Down = " .. w.format_integer(ship_back) .. ", " .. w.format_integer(ship_left) .. ", " .. w.format_integer(ship_down) .. " blocks")
-      w.writeLn(" Size             = " .. ship_shipSize .. " blocks")
+      w.writeLn(" Size             = " .. w.format_integer(ship_shipSize) .. " blocks")
       w.writeLn("")
       w.writeLn("Warp data:")
       ship_writeMovement(" Movement         = ")
-      w.writeLn(" Distance         = " .. ship_actualDistance .. " m (" .. ship_energyRequired .. " EU, " .. math.floor(energy / ship_energyRequired) .. " jumps)")
+      w.writeLn(" Distance         = " .. w.format_integer(ship_actualDistance) .. " m (" .. w.format_integer(ship_energyRequired) .. " EU, " .. math.floor(energy / ship_energyRequired) .. " jumps)")
       w.writeLn(" Target position  = " .. w.format_integer(ship_xTarget) .. ", " .. w.format_integer(ship_yTarget) .. ", " .. w.format_integer(ship_zTarget))
     end
   end
   
   w.setCursorPos(1, 16)
   w.setColorControl()
-  w.writeFullLine(" set ship Name (N), Dimensions (D), Movement (M)")
+  w.writeFullLine(" set ship Name (N), dImensions (I), Movement (M)")
   if ship_isInHyper then
     w.writeFullLine(" Jump to move ship (M/J), exit Hyperspace (H)")
   else
@@ -456,18 +459,18 @@ function ship_page_controls()
 end
 
 function ship_key_controls(character, keycode)
-  if character == 'm' or character == 'M' then -- M
+  if character == 'm' or character == 'M' then
     ship_page_setMovement()
     ship_page_setRotation()
     ship_warp()
     return true
-  elseif character == 'd' or character == 'D' then -- D
+  elseif character == 'i' or character == 'I' then
     ship_page_setDimensions()
     return true
-  elseif character == 'j' or character == 'J' then -- J
+  elseif character == 'j' or character == 'J' then
     ship_warp()
     return true
-  elseif character == 'h' or character == 'H' then -- H
+  elseif character == 'h' or character == 'H' then
     -- rs.setOutput(alarm_side, true)
     local isConfirmed
     if ship_isInHyper then
@@ -522,7 +525,7 @@ end
 
 function ship_page_crew()
   w.page_begin(w.data_getName() .. " - Ship crew")
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -580,7 +583,7 @@ end
 
 function ship_page_navigation()
   w.page_begin(w.data_getName() .. " - Ship navigation")
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.status_showWarning("No ship controller detected")
   else
     local isValid, message = ship.isAssemblyValid()
@@ -635,7 +638,7 @@ function ship_register()
       function(deviceType, address, wrap) ship = wrap end,
       function() end)
   w.event_register("shipCoreCooldownDone"  , function() w.status_showWarning("Ship core cooldown done")   return false end )
-  w.data_register("ship", ship_read, nil)
+  w.data_register("ship", ship_read, nil, ship_name)
 end
 
 ----------- connections status
@@ -657,7 +660,7 @@ function connections_page(isBooting)
     w.writeLn(#monitors .. " Monitors detected")
   end
   
-  if ship == nil then
+  if ship == nil or ship.interfaced() == nil then
     w.setColorDisabled()
     w.writeLn("No ship controller detected")
   else
@@ -693,16 +696,23 @@ w.page_register('3', ship_page_navigation, ship_key_navigation)
 ship_register()
 
 w.boot()
-w.run()
-
-if data.ship_summon then
-  data.ship_summon = false
-  w.data_save()
+local success, message = pcall(w.run)
+if not success then
+  print("failed with message")
+  print(message)
+  w.sleep(3.0)
+  print("rebooting...")
+  w.reboot()
+else
+  if data.ship_summon then
+    data.ship_summon = false
+    w.data_save()
+  end
+  
+  if ship ~= nil then
+    ship.command("OFFLINE")
+    ship.enable(false)
+  end
+  
+  w.close()
 end
-
-if ship ~= nil then
-  ship.command("OFFLINE")
-  ship.enable(false)
-end
-
-w.close()

@@ -169,9 +169,10 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		}
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		tagCompound.setInteger("reactorFace", reactorFace.ordinal());
 		tagCompound.setInteger("energyStabilizationRequest", energyStabilizationRequest);
 		return tagCompound;

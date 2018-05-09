@@ -18,6 +18,8 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -36,6 +38,8 @@ import net.minecraftforge.fml.common.Optional;
 })
 public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyProvider, IEnergyReceiver, IEnergyHandler, IEnergySink, IEnergySource, cr0s.warpdrive.api.computer.IEnergy {
 	
+	public static final String ENERGY_TAG = "energy";
+	
 	private boolean addedToEnergyNet = false;
 	private long energyStored_internal = 0;
 	public static final double EU_PER_INTERNAL = 1.0D;
@@ -44,6 +48,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	public static final int IC2_sourceTier_max = 20;
 	protected int IC2_sinkTier = 3;
 	protected int IC2_sourceTier = 3;
+	protected boolean isEnergyLostWhenBroken = true;
 	
 	private static final int SCAN_INTERVAL_TICKS = 20;
 	private int scanTickCount = SCAN_INTERVAL_TICKS;
@@ -152,7 +157,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		energyStored_internal -= amount_internal;
 	}
 	
-	public ITextComponent getEnergyStatus() {
+	private ITextComponent getEnergyStatus() {
 		if (energy_getMaxStorage() == 0) {
 			return new TextComponentString("");
 		}
@@ -439,23 +444,26 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// Forge overrides
 	@Override
-	public void readFromNBT(NBTTagCompound tag) {
-		super.readFromNBT(tag);
-		energyStored_internal = tag.getLong("energy");
+	public void readFromNBT(final NBTTagCompound tagCompound) {
+		super.readFromNBT(tagCompound);
+		energyStored_internal = tagCompound.getLong(ENERGY_TAG);
+	}
+	
+	@Nonnull
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
+		tagCompound.setLong(ENERGY_TAG, energy_getEnergyStored());
+		return tagCompound;
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-		tag = super.writeToNBT(tag);
-		tag.setLong("energy", energy_getEnergyStored());
-		return tag;
-	}
-	
-	@Override
-	public NBTTagCompound writeItemDropNBT(NBTTagCompound nbtTagCompound) {
-		nbtTagCompound = super.writeItemDropNBT(nbtTagCompound);
-		nbtTagCompound.removeTag("energy");
-		return nbtTagCompound;
+	public NBTTagCompound writeItemDropNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeItemDropNBT(tagCompound);
+		if (isEnergyLostWhenBroken) {
+			tagCompound.removeTag(ENERGY_TAG);
+		}
+		return tagCompound;
 	}
 	
 	// WarpDrive overrides
@@ -484,8 +492,8 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		for (EnumFacing from : EnumFacing.VALUES) {
 			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
-				TileEntity tileEntity = worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));
-				if (tileEntity != null && tileEntity instanceof IEnergyReceiver) {
+				final TileEntity tileEntity = worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));
+				if (tileEntity instanceof IEnergyReceiver) {
 					IEnergyReceiver energyReceiver = (IEnergyReceiver) tileEntity;
 					if (energyReceiver.canConnectEnergy(from.getOpposite())) {
 						energyReceiverFound = true;

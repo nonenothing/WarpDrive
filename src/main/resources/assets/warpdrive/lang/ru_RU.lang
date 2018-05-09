@@ -195,7 +195,6 @@ tile.warpdrive.decoration.lamp_long.name=Long Lamp
 
 tile.warpdrive.passive.IridiumBlock.name=Блок иридия
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Высокотехнологичный корпус механизма
-tile.warpdrive.passive.TransportBeacon.name=Маяк для транспортера
 
 tile.warpdrive.machines.ChunkLoader.name=Загрузчик чанков
 tile.warpdrive.machines.Laser.name=Лазер
@@ -239,36 +238,37 @@ tile.warpdrive.breathing.air_generator2.name=Advanced Генератор воз�
 tile.warpdrive.breathing.air_generator3.name=Superior Генератор воздуха
 tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
-tile.warpdrive.building.ShipScanner.name=Сканер кораблей
+tile.warpdrive.building.ship_scanner.name=Сканер кораблей
 
-tile.warpdrive.collection.LaserTreeFarm.name=Лазерная ферма деревьев
-tile.warpdrive.collection.MiningLaser.name=Лазерная буровая установка
+tile.warpdrive.collection.laser_tree_farm.name=Лазерная ферма деревьев
+tile.warpdrive.collection.mining_laser.name=Лазерная буровая установка
 
-tile.warpdrive.detection.Camera.name=Камера видеонаблюдения
-tile.warpdrive.detection.CloakingCoil.name=Маскировочная катушка
-tile.warpdrive.detection.CloakingCore.name=Маскировщик
-tile.warpdrive.detection.Monitor.name=Монитор
-tile.warpdrive.detection.Radar.name=Варп-радар
-tile.warpdrive.detection.WarpIsolation.name=Блок изоляции варп-поля
+tile.warpdrive.detection.camera.name=Камера видеонаблюдения
+tile.warpdrive.detection.cloaking_coil.name=Маскировочная катушка
+tile.warpdrive.detection.cloaking_core.name=Маскировщик
+tile.warpdrive.detection.monitor.name=Монитор
+tile.warpdrive.detection.radar.name=Варп-радар
+tile.warpdrive.detection.warp_isolation.name=Блок изоляции варп-поля
+tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
-tile.warpdrive.detection.Siren.tooltip=Triggered by redstone
-tile.warpdrive.detection.Siren0.name=Industrial Siren
-tile.warpdrive.detection.Siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
-tile.warpdrive.detection.Siren4.name=Basic Air Raid Siren
-tile.warpdrive.detection.Siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
-tile.warpdrive.detection.Siren5.name=Advanced Air Raid Siren
-tile.warpdrive.detection.Siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
-tile.warpdrive.detection.Siren6.name=Superior Air Raid Siren
-tile.warpdrive.detection.Siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
+tile.warpdrive.detection.siren.tooltip=Triggered by redstone
+tile.warpdrive.detection.siren0.name=Industrial Siren
+tile.warpdrive.detection.siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
+tile.warpdrive.detection.siren4.name=Basic Air Raid Siren
+tile.warpdrive.detection.siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
+tile.warpdrive.detection.siren5.name=Advanced Air Raid Siren
+tile.warpdrive.detection.siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
+tile.warpdrive.detection.siren6.name=Superior Air Raid Siren
+tile.warpdrive.detection.siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
 
-tile.warpdrive.energy.EnanReactorCore.name=Ядро энантиоморфного реактора
-tile.warpdrive.energy.EnanReactorLaser.name=Лазер стабилизации энантиоморфного реактора
-tile.warpdrive.energy.EnergyBank.0.name=Zero-Point Module
-tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subspace Capacitor
-tile.warpdrive.energy.EnergyBank.1.name=Basic Subspace Capacitor
-tile.warpdrive.energy.EnergyBank.2.name=Advanced Subspace Capacitor
-tile.warpdrive.energy.EnergyBank.3.name=Superior Subspace Capacitor
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=Лазерный монитор реактора IC2
+tile.warpdrive.energy.enan_reactor_core.name=Ядро энантиоморфного реактора
+tile.warpdrive.energy.enan_reactor_laser.name=Лазер стабилизации энантиоморфного реактора
+tile.warpdrive.energy.energy_bank.0.name=Zero-Point Module
+tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subspace Capacitor
+tile.warpdrive.energy.energy_bank.1.name=Basic Subspace Capacitor
+tile.warpdrive.energy.energy_bank.2.name=Advanced Subspace Capacitor
+tile.warpdrive.energy.energy_bank.3.name=Superior Subspace Capacitor
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=Лазерный монитор реактора IC2
 
 tile.warpdrive.forcefield.block1.name=Basic Force Field Block
 tile.warpdrive.forcefield.block2.name=Advanced Force Field Block
@@ -290,12 +290,18 @@ tile.warpdrive.forcefield.relay2.tooltip=Supports up to 1 force field upgrade sh
 tile.warpdrive.forcefield.relay3.name=Superior Force Field Relay
 tile.warpdrive.forcefield.relay3.tooltip=Supports up to 1 force field upgrade shared within its network
 
-tile.warpdrive.movement.Lift.name=Лифт
-tile.warpdrive.movement.ShipController.name=Контроллер корабля
-tile.warpdrive.movement.ShipController.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core.
-tile.warpdrive.movement.ShipCore.name=Ядро корабля
-tile.warpdrive.movement.ShipCore.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
-tile.warpdrive.movement.Transporter.name=Транспортер
+tile.warpdrive.movement.lift.name=Лифт
+tile.warpdrive.movement.ship_controller.name=Контроллер корабля
+tile.warpdrive.movement.ship_controller.tooltip=Defines your ship front relative to the core. Attach a computer to open the user interface.\nShall be placed horizontally directly next to the Ship core.
+tile.warpdrive.movement.ship_core.name=Ядро корабля
+tile.warpdrive.movement.ship_core.tooltip=Defines your ship center relative to the controller. Connecting an energy source will charge the core.\nShall be placed horizontally directly next to the Ship controller.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=Bounding box display have been disabled.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\n§bSneak right-click the Ship core§7 again to disable it.
+tile.warpdrive.movement.transporter_beacon.name=Маяк для транспортера
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=Транспортер
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=Камера с прикрепленным лазером
 tile.warpdrive.weapon.WeaponController.name=Контроллер оружия
@@ -668,18 +674,27 @@ warpdrive.video_channel.statusLine.invalid=§cВидеоканал %1$d неде
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cВидеоканал %1$d недействителен или камера слишком далеко.
 warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
-warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
-warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
-warpdrive.cloakingCore.valid=System is valid
-warpdrive.cloakingCore.disabled=Маскировка выключена
-warpdrive.cloakingCore.lowPower=§cМаскировка выключилась, нужно больше энергии, капитан!
-warpdrive.cloakingCore.cloaking=Маскировка %1$d уровня покрывает %2$d блоков.
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloaking_core.valid=System is valid
+warpdrive.cloaking_core.disabled=Маскировка выключена
+warpdrive.cloaking_core.lowPower=§cМаскировка выключилась, нужно больше энергии, капитан!
+warpdrive.cloaking_core.cloaking=Маскировка %1$d уровня покрывает %2$d блоков.
 
-warpdrive.IC2reactorLaserMonitor.noReactor=Реактор не найден!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d реактор(ов) подключено.
+warpdrive.ic2_reactor_laser_monitor.noReactor=Реактор не найден!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d реактор(ов) подключено.
 
-warpdrive.transporter.status=Из %1$.0f %2$.0f %3$.0f в %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=Из (%1$.0f %2$.0f %3$.0f) в (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
 warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r.

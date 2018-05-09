@@ -3,8 +3,11 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.CameraRegistryItem;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -234,9 +237,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	@Nonnull
 	@Override
-	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
-		super.writeToNBT(tagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+		tagCompound = super.writeToNBT(tagCompound);
 		if (!installedUpgrades.isEmpty()) {
 			final NBTTagCompound nbtTagCompoundUpgrades = new NBTTagCompound();
 			for (final Entry<Object, Integer> entry : installedUpgrades.entrySet()) {
@@ -285,12 +289,68 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return new TextComponentString("");
 	}
 	
+	protected ITextComponent getBeamFrequencyStatus(final int beamFrequency) {
+		if (beamFrequency == -1) {
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
+		} else if (beamFrequency < 0) {
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
+		} else {
+			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
+		}
+	}
+	
+	protected ITextComponent getVideoChannelStatus(final int videoChannel) {
+		if (videoChannel == -1) {
+			return new TextComponentTranslation("warpdrive.video_channel.statusLine.undefined");
+		} else if (videoChannel < 0) {
+			return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
+		} else {
+			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
+			if (camera == null) {
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalidOrNotLoaded", videoChannel);
+			} else if (camera.isTileEntity(this)) {
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.valid", videoChannel);
+			} else {
+				return new TextComponentTranslation("warpdrive.video_channel.statusLine.validCamera",
+				                                    videoChannel,
+				                                    camera.position.getX(),
+				                                    camera.position.getY(),
+				                                    camera.position.getZ());
+			}
+		}
+	}
+	
 	public ITextComponent getStatusHeader() {
 		return new TextComponentString("");
 	}
 	
 	public ITextComponent getStatus() {
-		return getStatusPrefix().appendSibling( getStatusHeader() );
+		final ITextComponent message = getStatusPrefix().appendSibling( getStatusHeader() );
+		
+		if (this instanceof IBeamFrequency) {
+			// only show in item form or from server side
+			if ( worldObj == null
+			  || !worldObj.isRemote ) {
+				message.appendSibling(new TextComponentString("\n"))
+				       .appendSibling( getBeamFrequencyStatus(((IBeamFrequency) this).getBeamFrequency()) );
+			}
+		}
+		
+		if (this instanceof IVideoChannel) {
+			// only show in item form or from client side
+			if ( worldObj == null
+			  || worldObj.isRemote ) {
+				message.appendSibling(new TextComponentString("\n"))
+				       .appendSibling( getVideoChannelStatus(((IVideoChannel) this).getVideoChannel()) );
+			}
+		}
+		
+		if (isUpgradeable()) {
+			message.appendSibling(new TextComponentString("\n"))
+			       .appendSibling( getUpgradeStatus() );
+		}
+		
+		return message;
 	}
 	
 	public String getStatusHeaderInPureText() {
@@ -300,6 +360,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	// upgrade system
 	private final HashMap<Object, Integer> installedUpgrades = new HashMap<>(10);
 	private final HashMap<Object, Integer> maxUpgrades = new HashMap<>(10);
+	public boolean isUpgradeable() {
+		return !maxUpgrades.isEmpty();
+	}
 	public boolean hasUpgrade(final Object upgrade) {
 		return getUpgradeCount(upgrade) > 0;
 	}

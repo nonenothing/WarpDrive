@@ -30,7 +30,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	public BlockCloakingCore(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.detection.CloakingCore");
+		setUnlocalizedName("warpdrive.detection.cloaking_core");
 		GameRegistry.registerTileEntity(TileEntityCloakingCore.class, WarpDrive.PREFIX + registryName);
 		
 		setDefaultState(getDefaultState().withProperty(BlockProperties.ACTIVE, false));

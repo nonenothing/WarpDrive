@@ -192,7 +192,6 @@ tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 
 tile.warpdrive.passive.IridiumBlock.name=Iridium Blok
 tile.warpdrive.passive.HighlyAdvancedMachine.name=Heel geavanceerd machineblok
-tile.warpdrive.passive.TransportBeacon.name=Transport-baken
 
 tile.warpdrive.machines.ChunkLoader.name=Chunk-lader
 tile.warpdrive.machines.Laser.name=Laser
@@ -236,36 +235,37 @@ tile.warpdrive.breathing.air_generator2.name=Geavanceerde zuurstofgenerator
 tile.warpdrive.breathing.air_generator3.name=Superieure zuurstof
 tile.warpdrive.breathing.air_shield.name=Energie-gebaseerd Luchtschild
 
-tile.warpdrive.building.ShipScanner.name=Schip Scanner
+tile.warpdrive.building.ship_scanner.name=Schip Scanner
 
-tile.warpdrive.collection.LaserTreeFarm.name=Laser-boomboerderij
-tile.warpdrive.collection.MiningLaser.name=Mijnlaser
+tile.warpdrive.collection.laser_tree_farm.name=Laser-boomboerderij
+tile.warpdrive.collection.mining_laser.name=Mijnlaser
 
-tile.warpdrive.detection.Camera.name=Camera
-tile.warpdrive.detection.CloakingCoil.name=Dekmantelveld-spoel
-tile.warpdrive.detection.CloakingCore.name=Dekmantelveld-kern
-tile.warpdrive.detection.Monitor.name=Monitor
-tile.warpdrive.detection.Radar.name=Radar
-tile.warpdrive.detection.WarpIsolation.name=Warp-veld isolatieblok
+tile.warpdrive.detection.camera.name=Camera
+tile.warpdrive.detection.cloaking_coil.name=Dekmantelveld-spoel
+tile.warpdrive.detection.cloaking_core.name=Dekmantelveld-kern
+tile.warpdrive.detection.monitor.name=Monitor
+tile.warpdrive.detection.radar.name=Radar
+tile.warpdrive.detection.warp_isolation.name=Warp-veld isolatieblok
+tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
-tile.warpdrive.detection.Siren.tooltip=Aangezet door redstone
-tile.warpdrive.detection.Siren0.name=Industrieële Sirene
-tile.warpdrive.detection.Siren0.tooltip=Je kan deze Sirene vanaf 32 m verderop horen
-tile.warpdrive.detection.Siren4.name=Normale Luchtsirene
-tile.warpdrive.detection.Siren4.tooltip=Je kan deze Luchtsirene vanaf 32 meter verderop horen.
-tile.warpdrive.detection.Siren5.name=Geavanceerde Luchtsirene
-tile.warpdrive.detection.Siren5.tooltip=Je kan deze Luchtsirene vanaf 64 meter verderop nog horen.
-tile.warpdrive.detection.Siren6.name=Superieure Luchtsirene
-tile.warpdrive.detection.Siren6.tooltip=Je kan deze Luchtsirene vanaf 128 m verderop horen.
+tile.warpdrive.detection.siren.tooltip=Aangezet door redstone
+tile.warpdrive.detection.siren0.name=Industrieële Sirene
+tile.warpdrive.detection.siren0.tooltip=Je kan deze Sirene vanaf 32 m verderop horen
+tile.warpdrive.detection.siren4.name=Normale Luchtsirene
+tile.warpdrive.detection.siren4.tooltip=Je kan deze Luchtsirene vanaf 32 meter verderop horen.
+tile.warpdrive.detection.siren5.name=Geavanceerde Luchtsirene
+tile.warpdrive.detection.siren5.tooltip=Je kan deze Luchtsirene vanaf 64 meter verderop nog horen.
+tile.warpdrive.detection.siren6.name=Superieure Luchtsirene
+tile.warpdrive.detection.siren6.tooltip=Je kan deze Luchtsirene vanaf 128 m verderop horen.
 
-tile.warpdrive.energy.EnanReactorCore.name=Enantiomorfe Reactor Kern
-tile.warpdrive.energy.EnanReactorLaser.name=Enantiomorfe Stabilizatielaser
-tile.warpdrive.energy.EnergyBank.0.name=Nullpunt Module
-tile.warpdrive.energy.EnergyBank.0.tooltip=Creative Subruimte Condensator
-tile.warpdrive.energy.EnergyBank.1.name=Normale Subruimte Condensator
-tile.warpdrive.energy.EnergyBank.2.name=Geavanceerde Subruimte Condensator
-tile.warpdrive.energy.EnergyBank.3.name=Superieure Subruimte Condensator
-tile.warpdrive.energy.IC2ReactorLaserMonitor.name=IC2 Reactor Laser Monitor
+tile.warpdrive.energy.enan_reactor_core.name=Enantiomorfe Reactor Kern
+tile.warpdrive.energy.enan_reactor_laser.name=Enantiomorfe Stabilizatielaser
+tile.warpdrive.energy.energy_bank.0.name=Nullpunt Module
+tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subruimte Condensator
+tile.warpdrive.energy.energy_bank.1.name=Normale Subruimte Condensator
+tile.warpdrive.energy.energy_bank.2.name=Geavanceerde Subruimte Condensator
+tile.warpdrive.energy.energy_bank.3.name=Superieure Subruimte Condensator
+tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reactor Laser Monitor
 
 tile.warpdrive.forcefield.block1.name=Normale Krachtvelds-blok
 tile.warpdrive.forcefield.block2.name=Geavanceerde Krachtvelds-blok
@@ -287,14 +287,18 @@ tile.warpdrive.forcefield.relay2.tooltip=Kan tot maar 1 krachtveld-upgrade delen
 tile.warpdrive.forcefield.relay3.name=Superieure Krachtvelds-relais
 tile.warpdrive.forcefield.relay3.tooltip=Kan tot maar 1 krachtveld-upgrade delen in zijn netwerk
 
-tile.warpdrive.movement.Lift.name=Lift
-tile.warpdrive.movement.ShipController.name=Schips-Bestuurder
-tile.warpdrive.movement.ShipController.tooltip=Difineert uw schips-voorkant ten opzigte van kern. Sluit een computer aan om de interface te openen.\nMoet horizontaal naast een Schips-Kern worden geplaatst.
-tile.warpdrive.movement.ShipCore.name=Schip-Kern
-tile.warpdrive.movement.ShipCore.tooltip=Definieert uw schips-middelpunt ten opzichte van ships-bestuurder. Sluit een stroombron aan om de kern op te laden.\nMoet horizontaal naast een Schips-bestuurder worden geplaatst.
-tile.warpdrive.movement.ShipCore.bounding_box.disabled=Bounding box display have been disabled.
-tile.warpdrive.movement.ShipCore.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\nSneak right-click the Ship core again to disable it.
-tile.warpdrive.movement.Transporter.name=Transporteur
+tile.warpdrive.movement.lift.name=Lift
+tile.warpdrive.movement.ship_controller.name=Schips-Bestuurder
+tile.warpdrive.movement.ship_controller.tooltip=Difineert uw schips-voorkant ten opzigte van kern. Sluit een computer aan om de interface te openen.\nMoet horizontaal naast een Schips-Kern worden geplaatst.
+tile.warpdrive.movement.ship_core.name=Schip-Kern
+tile.warpdrive.movement.ship_core.tooltip=Definieert uw schips-middelpunt ten opzichte van ships-bestuurder. Sluit een stroombron aan om de kern op te laden.\nMoet horizontaal naast een Schips-bestuurder worden geplaatst.
+tile.warpdrive.movement.ship_core.bounding_box.disabled=Bounding box display have been disabled.
+tile.warpdrive.movement.ship_core.bounding_box.enabled=Bounding box display is now enabled. Only you can see it.\n§bSneak right-click the Ship core§7 again to disable it.
+tile.warpdrive.movement.transporter_beacon.name=Transport-baken
+tile.warpdrive.movement.transporter_beacon.tooltip=§bRight click a Transporter Core§7 to set its remote location\n§bSneak§7 to retrieve its signature\n§bPlace as a block§7 to trigger emergency transportation
+tile.warpdrive.movement.transporter_containment.name=Transporter Containment
+tile.warpdrive.movement.transporter_core.name=Transporter Core
+tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
 tile.warpdrive.weapon.LaserCamera.name=Laser met Camera
 tile.warpdrive.weapon.WeaponController.name=Wapens-Bestuurder
@@ -667,17 +671,26 @@ warpdrive.video_channel.statusLine.invalid=§cVideokanaal %1$d is ongeldig.
 warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideokanaal %1$d is ongeldig of camera is te ver weg!
 warpdrive.video_channel.statusLine.undefined=§7niet gedefinieerd videokanaal.\n§bGebruik een Afstemmingsvork§r om het te zetten.
 
-warpdrive.cloakingCore.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
-warpdrive.cloakingCore.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
-warpdrive.cloakingCore.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
-warpdrive.cloakingCore.disabled=Dekmantelveld is uitgeschakeld
-warpdrive.cloakingCore.lowPower=§cDekmantelveld is uit, We hebben meer stroom nodig kapitein!
-warpdrive.cloakingCore.cloaking=Een Niveau %1$d dekmantelveld bedekt huidig %2$d blokken!
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloaking_core.disabled=Dekmantelveld is uitgeschakeld
+warpdrive.cloaking_core.lowPower=§cDekmantelveld is uit, We hebben meer stroom nodig kapitein!
+warpdrive.cloaking_core.cloaking=Een Niveau %1$d dekmantelveld bedekt huidig %2$d blokken!
 
-warpdrive.IC2reactorLaserMonitor.noReactor=Geen reactor gevonden!
-warpdrive.IC2reactorLaserMonitor.multipleReactors=%1$d reactor(s) aangesloten.
+warpdrive.ic2_reactor_laser_monitor.noReactor=Geen reactor gevonden!
+warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d reactor(s) aangesloten.
 
-warpdrive.transporter.status=Van %1$.0f %2$.0f %3$.0f naar %4$.0f %5$.0f %6$.0f
+warpdrive.transporter.status=Van (%1$.0f %2$.0f %3$.0f) naar (%4$.0f %5$.0f %6$.0f)
+warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
+warpdrive.transporter_beacon.status.valid=Linked to transporter room %1$s\n§8%2$s
+warpdrive.transporter_signature.get_missing=§cTransporter room has no signature yet!
+warpdrive.transporter_signature.get_same=§cTransporter beacon is already linked to %1$s.
+warpdrive.transporter_signature.get=Transporter beacon is now linked to %1$s.
+warpdrive.transporter_signature.set_missing=§cTransporter beacon needs to be linked first!
+warpdrive.transporter_signature.set_self=§cTransporter room can't target itself!
+warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
+warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
 warpdrive.tooltip.itemTag.breathingHelmet=§Ademhalen in de ruimte§r consumeert de inhoud van een Zuurstoffles en/of IC2 Gecompresseerde Luchtcellen uit je inventory.
 warpdrive.tooltip.itemTag.flyInSpace=§bJetpack Die werkt in de ruimte§r.

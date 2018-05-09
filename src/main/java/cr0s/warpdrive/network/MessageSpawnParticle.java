@@ -184,8 +184,8 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 					        directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				}
 				assert(particle != null);
-				particle.multipleParticleScaleBy(0.5F + world.rand.nextFloat() * 1.5F);
 				particle.setParticleTextureIndex(81);
+				particle.setAlphaF(0.5F);
 				break;
 			} 
 			
