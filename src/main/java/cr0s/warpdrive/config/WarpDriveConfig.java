@@ -143,11 +143,6 @@ public class WarpDriveConfig {
 	public static String G_SCHEMALOCATION = "warpDrive_schematics";
 	public static int G_BLOCKS_PER_TICK = 3500;
 	
-	public static boolean RECIPES_ENABLE_DYNAMIC = true;
-	public static boolean RECIPES_ENABLE_IC2 = false;
-	public static boolean RECIPES_ENABLE_HARD_IC2 = false;
-	public static boolean RECIPES_ENABLE_VANILLA = false;
-	
 	// Client
 	public static float CLIENT_LOCATION_SCALE = 1.0F;
 	public static String CLIENT_LOCATION_FORMAT_TITLE = "§l%1$s";
@@ -588,13 +583,6 @@ public class WarpDriveConfig {
 		G_BLOCKS_PER_TICK = Commons.clamp(100, 100000,
 				config.get("general", "blocks_per_tick", G_BLOCKS_PER_TICK,
 						"Number of blocks to move per ticks, too high will cause lag spikes on ship jumping or deployment, too low may break the ship wirings").getInt());
-		
-		// Recipes
-		RECIPES_ENABLE_DYNAMIC = config.get("recipes", "enable_dynamic", RECIPES_ENABLE_DYNAMIC,
-				"Mixed recipes dynamically integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2 experimental, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
-		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
-		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCraft2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
-		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
 		
 		// Client
 		CLIENT_LOCATION_SCALE = Commons.clamp(0.25F, 4.0F, (float) config.get("client", "location_scale", CLIENT_LOCATION_SCALE,

@@ -720,19 +720,7 @@ public class WarpDrive {
 		
 		WarpDriveConfig.onFMLPostInitialization();
 		
-		if (WarpDriveConfig.RECIPES_ENABLE_DYNAMIC) {
-			Recipes.initDynamic();
-		} else {
-			if (WarpDriveConfig.isIndustrialCraft2Loaded && WarpDriveConfig.RECIPES_ENABLE_IC2) {
-				Recipes.initIC2();
-			}
-			if (WarpDriveConfig.isIndustrialCraft2Loaded && WarpDriveConfig.RECIPES_ENABLE_HARD_IC2) {
-				Recipes.initHardIC2();
-			}
-			if (WarpDriveConfig.RECIPES_ENABLE_VANILLA) {
-				Recipes.initVanilla();
-			}
-		}
+		Recipes.initDynamic();
 		
 		// Registers
 		starMap = new StarMapRegistry();
