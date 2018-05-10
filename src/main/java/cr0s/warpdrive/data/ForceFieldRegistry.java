@@ -33,16 +33,16 @@ public class ForceFieldRegistry {
 				WarpDrive.logger.info("ForceFieldRegistry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
 			}
 		}
-		CopyOnWriteArraySet<GlobalPosition> setGlobalPositions = registry.get(beamFrequency);
+		final CopyOnWriteArraySet<GlobalPosition> setGlobalPositions = registry.get(beamFrequency);
 		if (setGlobalPositions == null || worldSource == null) {
 			return new CopyOnWriteArraySet<>();
 		}
 		// find all relevant tiles by world and frequency, keep relays in range as starting point
-		Set<TileEntity> setNonRelays = new HashSet<>();
-		Set<TileEntity> setRelays = new HashSet<>();
+		final Set<TileEntity> setNonRelays = new HashSet<>();
+		final Set<TileEntity> setRelays = new HashSet<>();
 		Set<TileEntity> setToIterate = new HashSet<>();
 		int range2;
-		int maxRange2 = ForceFieldSetup.FORCEFIELD_RELAY_RANGE * ForceFieldSetup.FORCEFIELD_RELAY_RANGE;
+		final int maxRange2 = ForceFieldSetup.FORCEFIELD_RELAY_RANGE * ForceFieldSetup.FORCEFIELD_RELAY_RANGE;
 		for (final GlobalPosition globalPosition : setGlobalPositions) {
 			final WorldServer world = globalPosition.getWorldServerIfLoaded();
 			if (world != null) {
@@ -79,7 +79,7 @@ public class ForceFieldRegistry {
 		
 		// no relays in range => just add that one block
 		if (setToIterate.isEmpty()) {
-			Set<TileEntity> setResult = new HashSet<>();
+			final Set<TileEntity> setResult = new HashSet<>();
 			setResult.add(worldSource.getTileEntity(x, y, z));
 			return setResult;
 		}
@@ -171,7 +171,7 @@ public class ForceFieldRegistry {
 		
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<GlobalPosition>> entry : registry.entrySet()) {
 			final StringBuilder message = new StringBuilder();
-			for (GlobalPosition globalPosition : entry.getValue()) {
+			for (final GlobalPosition globalPosition : entry.getValue()) {
 				if (message.length() > 0) {
 					message.append(", ");
 				}

@@ -269,7 +269,6 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
 		final NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
-		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}
 	
 	@Override

@@ -34,7 +34,7 @@ public class BlockDecorative extends Block {
 	}
 	
 	@Override
-	public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTabs, final List list) {
 		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
 			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
 		}
@@ -51,7 +51,7 @@ public class BlockDecorative extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int damage) {
+	public IIcon getIcon(final int side, final int damage) {
 		if (damage >= 0 && damage < EnumDecorativeType.length) {
 			return icons[damage];
 		}
@@ -59,13 +59,13 @@ public class BlockDecorative extends Block {
 	}
 	
 	@Override
-	public int damageDropped(int damage) {
+	public int damageDropped(final int damage) {
 		return damage;
 	}
 	
-	public static ItemStack getItemStack(EnumDecorativeType enumDecorativeType) {
+	public static ItemStack getItemStack(final EnumDecorativeType enumDecorativeType) {
 		if (enumDecorativeType != null) {
-			int damage = enumDecorativeType.ordinal();
+			final int damage = enumDecorativeType.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.blockDecorative, 1, damage);
 			}
@@ -74,7 +74,7 @@ public class BlockDecorative extends Block {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumDecorativeType enumDecorativeType, int amount) {
+	public static ItemStack getItemStackNoCache(final EnumDecorativeType enumDecorativeType, final int amount) {
 		return new ItemStack(WarpDrive.blockDecorative, amount, enumDecorativeType.ordinal());
 	}
 }

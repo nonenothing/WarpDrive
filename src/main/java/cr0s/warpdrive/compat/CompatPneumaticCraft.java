@@ -20,7 +20,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		try {
 			classTileEntityBase = Class.forName("pneumaticCraft.common.tileentity.TileEntityBase");
 			WarpDriveConfig.registerBlockTransformer("PneumaticCraft", new CompatPneumaticCraft());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -31,7 +31,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -52,8 +52,8 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	private static final byte[] mrotDoor           = {  0,  1,  5,  4,  2,  3,  6,  7, 11, 10,  8,  9, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if ( rotationSteps == 0
 		  && !nbtTileEntity.hasKey("valveX")
 		  && !nbtTileEntity.hasKey("multiBlockX")) {
@@ -62,7 +62,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// hoppers
 		if (nbtTileEntity.hasKey("inputDir")) {
-			int inputDir = nbtTileEntity.getInteger("inputDir");
+			final int inputDir = nbtTileEntity.getInteger("inputDir");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("inputDir", mrotForgeDirection[inputDir]);
@@ -80,7 +80,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// Aphorism signs
 		if (nbtTileEntity.hasKey("textRotation")) {
-			int textRotation = nbtTileEntity.getInteger("textRotation");
+			final int textRotation = nbtTileEntity.getInteger("textRotation");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("textRotation", mrotTextRotation[textRotation]);
@@ -98,7 +98,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// door base
 		if (nbtTileEntity.hasKey("orientation")) {
-			int orientation = nbtTileEntity.getInteger("orientation");
+			final int orientation = nbtTileEntity.getInteger("orientation");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("orientation", mrotTextRotation[orientation]);
@@ -130,7 +130,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// pressure chamber wall, pressure chamber window, pressure chamber interface
 		if (nbtTileEntity.hasKey("valveX")) {
-			ChunkCoordinates target = transformation.apply(
+			final ChunkCoordinates target = transformation.apply(
 				nbtTileEntity.getInteger("valveX"),
 				nbtTileEntity.getInteger("valveY"),
 				nbtTileEntity.getInteger("valveZ"));
@@ -142,27 +142,27 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 		
 		// pressure chamber valve
 		if (nbtTileEntity.hasKey("multiBlockX")) {
-			ChunkCoordinates sourceMin = new ChunkCoordinates(
+			final ChunkCoordinates sourceMin = new ChunkCoordinates(
 				nbtTileEntity.getInteger("multiBlockX"),
 				nbtTileEntity.getInteger("multiBlockY"),
 				nbtTileEntity.getInteger("multiBlockZ"));
-			int multiBlockSize = nbtTileEntity.getInteger("multiBlockSize");
-			ChunkCoordinates sourceMax = new ChunkCoordinates(
+			final int multiBlockSize = nbtTileEntity.getInteger("multiBlockSize");
+			final ChunkCoordinates sourceMax = new ChunkCoordinates(
 				sourceMin.posX + multiBlockSize - 1,
 				sourceMin.posY + multiBlockSize - 1,
 				sourceMin.posZ + multiBlockSize - 1);
-			ChunkCoordinates target1 = transformation.apply(sourceMin);
-			ChunkCoordinates target2 = transformation.apply(sourceMax);
+			final ChunkCoordinates target1 = transformation.apply(sourceMin);
+			final ChunkCoordinates target2 = transformation.apply(sourceMax);
 			nbtTileEntity.setInteger("multiBlockX", Math.min(target1.posX, target2.posX));
 			nbtTileEntity.setInteger("multiBlockY", Math.min(target1.posY, target2.posY));
 			nbtTileEntity.setInteger("multiBlockZ", Math.min(target1.posZ, target2.posZ));
 			
-			NBTTagList tagListOld = nbtTileEntity.getTagList("Valves", 10);
-			NBTTagList tagListNew = new NBTTagList();
+			final NBTTagList tagListOld = nbtTileEntity.getTagList("Valves", 10);
+			final NBTTagList tagListNew = new NBTTagList();
 			for (int index = 0; index < tagListOld.tagCount(); index++) {
-				NBTTagCompound tagCompound = tagListOld.getCompoundTagAt(index);
+				final NBTTagCompound tagCompound = tagListOld.getCompoundTagAt(index);
 				if (tagCompound != null) {
-					ChunkCoordinates coordinates = transformation.apply(
+					final ChunkCoordinates coordinates = transformation.apply(
 						tagCompound.getInteger("xCoord"),
 						tagCompound.getInteger("yCoord"),
 						tagCompound.getInteger("zCoord"));

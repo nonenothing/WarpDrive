@@ -40,7 +40,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0 || side == 1) {
 			return iconBuffer[0];
@@ -56,7 +56,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0 || side == 1) {
 			return iconBuffer[0];
 		}

@@ -23,7 +23,7 @@ public class RenderOverlayLocation {
 	
 	private void renderLocation(final int widthScreen, final int heightScreen) {
 		// get player
-		EntityPlayer entityPlayer = minecraft.thePlayer;
+		final EntityPlayer entityPlayer = minecraft.thePlayer;
 		if (entityPlayer == null) {
 			return;
 		}
@@ -68,7 +68,7 @@ public class RenderOverlayLocation {
 	}
 	
 	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent.Pre event) {
+	public void onRender(final RenderGameOverlayEvent.Pre event) {
 		if (event.type == ElementType.HOTBAR) {
 			renderLocation(event.resolution.getScaledWidth(), event.resolution.getScaledHeight());
 		}

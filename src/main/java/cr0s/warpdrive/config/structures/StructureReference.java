@@ -14,19 +14,19 @@ public class StructureReference extends AbstractStructure {
 	}
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		super.loadFromXmlElement(element);
 		
 		return true;
 	}
 	
 	@Override
-	public boolean generate(World world, Random random, int x, int y, int z) {
+	public boolean generate(final World world, final Random random, final int x, final int y, final int z) {
 		return instantiate(random).generate(world, random, x, y, z);
 	}
 	
 	@Override
-	public AbstractStructureInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(final Random random) {
 		return StructureManager.getStructure(random, group, name).instantiate(random);
 	}
 }

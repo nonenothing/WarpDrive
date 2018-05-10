@@ -23,7 +23,7 @@ public enum EnumPermissionNode {
 		}
 	}
 	
-	EnumPermissionNode(String unlocalizedName) {
+	EnumPermissionNode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

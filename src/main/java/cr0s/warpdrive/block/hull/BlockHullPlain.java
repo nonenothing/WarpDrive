@@ -1,7 +1,6 @@
 package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -49,22 +48,22 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 16];
 	}
 	
 	@Override
-	public int damageDropped(int p_149692_1_) {
+	public int damageDropped(final int p_149692_1_) {
 		return p_149692_1_;
 	}
 	
-	public static String getDyeColorName(int metadata) {
+	public static String getDyeColorName(final int metadata) {
 		return ItemDye.field_150921_b[~metadata & 15];
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (int i = 0; i < 16; ++i) {
 			list.add(new ItemStack(item, 1, i));
 		}
@@ -81,30 +80,32 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	}
 	
 	@Override
-	public MapColor getMapColor(int metadata) {
+	public MapColor getMapColor(final int metadata) {
 		return MapColor.getMapColorForBlockColored(metadata);
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
 	
 	@Override
-	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(final World world, final int x, final int y, final int z,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(final World world, final int x, final int y, final int z,
+	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(x, y, z);
 		} else {
-			int metadata = world.getBlockMetadata(x, y, z);
+			final int metadata = world.getBlockMetadata(x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockHulls_plain[tier - 2][enumHullPlainType.ordinal()], metadata, 2);
 		}
 		return 0;

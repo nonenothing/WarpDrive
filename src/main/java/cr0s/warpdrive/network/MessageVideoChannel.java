@@ -33,7 +33,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	}
 	
 	@Override
-	public void fromBytes(ByteBuf buffer) {
+	public void fromBytes(final ByteBuf buffer) {
 		x = buffer.readInt();
 		y = buffer.readInt();
 		z = buffer.readInt();
@@ -41,7 +41,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeInt(x);
 		buffer.writeInt(y);
 		buffer.writeInt(z);
@@ -49,8 +49,8 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handle(World worldObj) {
-		TileEntity tileEntity = worldObj.getTileEntity(x, y, z);
+	private void handle(final World world) {
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity != null) {
 			if (tileEntity instanceof IVideoChannel) {
 				((IVideoChannel) tileEntity).setVideoChannel(videoChannel);
@@ -64,7 +64,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(MessageVideoChannel videoChannelMessage, MessageContext context) {
+	public IMessage onMessage(final MessageVideoChannel videoChannelMessage, final MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring video channel packet");

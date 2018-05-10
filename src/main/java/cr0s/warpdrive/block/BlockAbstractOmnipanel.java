@@ -22,7 +22,7 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 	public static final float CENTER_MIN = 7.0F / 16.0F;
 	public static final float CENTER_MAX = 9.0F / 16.0F;
 	
-	public BlockAbstractOmnipanel(Material material) {
+	public BlockAbstractOmnipanel(final Material material) {
 		super(material);
 	}
 	
@@ -48,12 +48,12 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		return blockAccess.getBlock(x, y, z) != this && super.shouldSideBeRendered(blockAccess, x, y, z, side);
 	}
 	
 	@Override
-	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axisAlignedBB, List list, Entity entity) {
+	public void addCollisionBoxesToList(final World world, final int x, final int y, final int z, final AxisAlignedBB axisAlignedBB, final List list, final Entity entity) {
 		// get direct connections
 		final int maskConnectY_neg = getConnectionMask(world, x, y - 1, z, ForgeDirection.DOWN);
 		final int maskConnectY_pos = getConnectionMask(world, x, y + 1, z, ForgeDirection.UP);
@@ -200,7 +200,7 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 	}
 	
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+	public void setBlockBoundsBasedOnState(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		// get direct connections
 		final int maskConnectY_neg = getConnectionMask(blockAccess, x, y - 1, z, ForgeDirection.DOWN);
 		final int maskConnectY_pos = getConnectionMask(blockAccess, x, y + 1, z, ForgeDirection.UP);
@@ -238,7 +238,7 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 		return true;
 	}
 	
-	public int getConnectionMask(IBlockAccess blockAccess, int x, int y, int z, ForgeDirection forgeDirection) {
+	public int getConnectionMask(final IBlockAccess blockAccess, final int x, final int y, final int z, final ForgeDirection forgeDirection) {
 		final Block block = blockAccess.getBlock(x, y, z);
 		return (block.func_149730_j() || block == this || block.getMaterial() == Material.glass || block instanceof BlockPane ? 1 : 0)
 		     + (block.isSideSolid(blockAccess, x, y, z, forgeDirection.getOpposite()) ? 2 : 0);

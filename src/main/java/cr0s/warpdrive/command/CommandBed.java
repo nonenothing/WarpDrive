@@ -22,13 +22,13 @@ public class CommandBed extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
 		if (commandSender == null) { return; }
 		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
 		EntityPlayerMP[] entityPlayerMPs = null;
-		if (params.length == 0) {
+		if (args.length == 0) {
 			if (commandSender instanceof EntityPlayerMP) {
 				entityPlayerMPs = new EntityPlayerMP[1];
 				entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
@@ -38,9 +38,9 @@ public class CommandBed extends CommandBase {
 				return;
 			}
 			
-		} else if (params.length == 1) {
-			if ( params[0].equalsIgnoreCase("help")
-			  || params[0].equalsIgnoreCase("?") ) {
+		} else if (args.length == 1) {
+			if ( args[0].equalsIgnoreCase("help")
+			  || args[0].equalsIgnoreCase("?") ) {
 				Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 				return;
 			}
@@ -50,7 +50,7 @@ public class CommandBed extends CommandBase {
 				return;
 			}
 			
-			EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, params[0]);
+			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else if (commandSender instanceof EntityPlayerMP) {
@@ -58,7 +58,7 @@ public class CommandBed extends CommandBase {
 				entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
 			} else {
 				Commons.addChatMessage(commandSender, String.format("§c/%s: player not found '%s'",
-				                                                    getCommandName(), params[0]));
+				                                                    getCommandName(), args[0]));
 				return;
 			}
 		}
@@ -69,7 +69,7 @@ public class CommandBed extends CommandBase {
 			if (bedLocation == null) {
 				Commons.addChatMessage(entityPlayerMP, String.format("§cTeleportation failed:\nyou need to set your bed location in %s",
 				                                                     entityPlayerMP.worldObj.provider.getDimensionName()));
-				if (params.length != 0) {
+				if (args.length != 0) {
 					Commons.addChatMessage(commandSender, String.format("§cTeleportation failed for player %s:\nplayer needs to set his/her bed location in %s",
 					                                                    entityPlayerMP.getCommandSenderName(),
 					                                                    entityPlayerMP.worldObj.provider.getDimensionName()));
@@ -81,7 +81,7 @@ public class CommandBed extends CommandBase {
 			if (!(block instanceof BlockBed)) {
 				Commons.addChatMessage(entityPlayerMP, String.format("§cTeleportation failed:\nyour bed is no longer there in %s",
 				                                                     entityPlayerMP.worldObj.provider.getDimensionName()));
-				if (params.length != 0) {
+				if (args.length != 0) {
 					Commons.addChatMessage(commandSender, String.format("§cTeleportation failed for player %s:\nbed is no longer there in %s",
 					                                                    entityPlayerMP.getCommandSenderName(),
 					                                                    entityPlayerMP.worldObj.provider.getDimensionName()));
@@ -93,7 +93,7 @@ public class CommandBed extends CommandBase {
 			
 			Commons.addChatMessage(entityPlayerMP, String.format("Teleporting to (%d %d %d)",
 			                                                     bedLocation.posX, bedLocation.posY, bedLocation.posZ));
-			if (params.length != 0) {
+			if (args.length != 0) {
 				Commons.addChatMessage(commandSender, String.format("Teleporting player %s to %s @ (%d %d %d)",
 				                                                    entityPlayerMP.getCommandSenderName(),
 				                                                    entityPlayerMP.worldObj.provider.getDimensionName(),

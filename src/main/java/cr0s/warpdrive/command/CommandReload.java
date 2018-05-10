@@ -18,15 +18,15 @@ public class CommandReload extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender sender, String[] params) {
-		if (sender == null) { return; } 
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
+		if (commandSender == null) { return; }
 		
 		WarpDriveConfig.reload();
-		Commons.addChatMessage(sender, "§aWarpDrive configuration has been reloaded.\n§cUse at your own risk!");
+		Commons.addChatMessage(commandSender, "§aWarpDrive configuration has been reloaded.\n§cUse at your own risk!");
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
+	public String getCommandUsage(final ICommandSender commandSender) {
 		return "/wreload";
 	}
 }

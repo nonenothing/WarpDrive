@@ -578,11 +578,12 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 						final Collection<VectorI> vValidContainments = ((BlockTransporterScanner) block).getValidContainment(worldObj, vScanner);
 						if (vValidContainments == null || vValidContainments.isEmpty()) {
 							worldObj.setBlockMetadataWithNotify(x, y, z, 0, 2);
-							PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(vScanner.x + 0.5D, vScanner.y + 1.5D, vScanner.z + 0.5D),
-									new Vector3(0.0D, 0.0D, 0.0D),
-									1.0F, 1.0F, 1.0F,
-									1.0F, 1.0F, 1.0F,
-									32);
+							PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5,
+							                                      new Vector3(x + 0.5D, y + 1.5D, z + 0.5D),
+							                                      new Vector3(0.0D, 0.0D, 0.0D),
+							                                      1.0F, 1.0F, 1.0F,
+							                                      1.0F, 1.0F, 1.0F,
+							                                      32);
 						} else {
 							vScanners.add(vScanner);
 							vContainments.addAll(vValidContainments);
@@ -1321,11 +1322,12 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		
 		// only accept a single entity in the area
 		if (countEntities > 1) {
-			PacketHandler.sendSpawnParticlePacket(world, "jammed", (byte) 5, new Vector3(vScanner.x + 0.5D, vScanner.y + 1.5D, vScanner.z + 0.5D),
-					new Vector3(0.0D, 0.0D, 0.0D),
-					1.0F, 1.0F, 1.0F,
-					1.0F, 1.0F, 1.0F,
-					32);
+			PacketHandler.sendSpawnParticlePacket(world, "jammed", (byte) 5,
+			                                      new Vector3(vScanner.x + 0.5D, vScanner.y + 1.5D, vScanner.z + 0.5D),
+			                                      new Vector3(0.0D, 0.0D, 0.0D),
+			                                      1.0F, 1.0F, 1.0F,
+			                                      1.0F, 1.0F, 1.0F,
+			                                      32);
 			return null;
 		}
 		return entityReturn;

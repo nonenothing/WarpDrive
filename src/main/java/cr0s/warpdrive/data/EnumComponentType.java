@@ -38,7 +38,7 @@ public enum EnumComponentType {
 		}
 	}
 	
-	EnumComponentType(String unlocalizedName) {
+	EnumComponentType(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

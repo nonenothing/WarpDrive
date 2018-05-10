@@ -20,8 +20,8 @@ public abstract class AbstractSequencer {
 			Thread.yield();
 		}
 		for (final Iterator<Entry<AbstractSequencer, Boolean>> iterator = sequencers.entrySet().iterator(); iterator.hasNext(); ) {
-			Entry<AbstractSequencer, Boolean> entry = iterator.next();
-			boolean doContinue = entry.getKey().onUpdate();
+			final Entry<AbstractSequencer, Boolean> entry = iterator.next();
+			final boolean doContinue = entry.getKey().onUpdate();
 			if (!doContinue) {
 				iterator.remove();
 			}

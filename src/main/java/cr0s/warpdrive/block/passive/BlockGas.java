@@ -33,7 +33,7 @@ public class BlockGas extends Block {
 	}
 	
 	@Override
-	public void getSubBlocks(Item item, CreativeTabs creativeTabs, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTabs, final List list) {
 		for (int index = 0; index < 12; index++) {
 			list.add(new ItemStack(item, 1, index));
 		}
@@ -45,27 +45,27 @@ public class BlockGas extends Block {
 	}
 
 	@Override
-	public boolean isAir(IBlockAccess var1, int var2, int var3, int var4) {
+	public boolean isAir(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return true;
 	}
 
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World var1, int var2, int var3, int var4) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(final World world, final int x, final int y, final int z) {
 		return null;
 	}
 
 	@Override
-	public boolean isReplaceable(IBlockAccess var1, int var2, int var3, int var4) {
+	public boolean isReplaceable(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return true;
 	}
 
 	@Override
-	public boolean canPlaceBlockAt(World var1, int var2, int var3, int var4) {
+	public boolean canPlaceBlockAt(final World world, final int x, final int y, final int z) {
 		return true;
 	}
 
 	@Override
-	public boolean canCollideCheck(int var1, boolean var2) {
+	public boolean canCollideCheck(final int metadata, final boolean hitIfLiquid) {
 		return false;
 	}
 
@@ -94,7 +94,7 @@ public class BlockGas extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return iconBuffer[metadata % iconBuffer.length];
 	}
 
@@ -109,13 +109,13 @@ public class BlockGas extends Block {
 	}
 
 	@Override
-	public int quantityDropped(Random par1Random) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final Block blockSide = blockAccess.getBlock(x, y, z);
 		if (blockSide.isAssociatedBlock(this)) {
 			return false;
@@ -129,7 +129,7 @@ public class BlockGas extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
+	public void onBlockAdded(final World world, final int x, final int y, final int z) {
 		// Gas blocks are only allowed in space
 		if (CelestialObjectManager.hasAtmosphere(world, x, z)) {
 			world.setBlockToAir(x, y, z);

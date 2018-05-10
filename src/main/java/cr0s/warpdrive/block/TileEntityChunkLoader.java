@@ -60,7 +60,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	@Override
-	public boolean dismountUpgrade(Object upgrade) {
+	public boolean dismountUpgrade(final Object upgrade) {
 		final boolean isSuccess = super.dismountUpgrade(upgrade);
 		if (isSuccess) {
 			final int maxRange = getMaxRange();
@@ -70,7 +70,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	@Override
-	public boolean mountUpgrade(Object upgrade) {
+	public boolean mountUpgrade(final Object upgrade) {
 		final boolean isSuccess = super.mountUpgrade(upgrade);
 		if (isSuccess) {
 			final int maxRange = getMaxRange();
@@ -174,21 +174,21 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	// Common OC/CC methods
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
 		return new Object[] { isEnabled };
 	}
 	
-	public Object[] bounds(Object[] arguments) {
+	public Object[] bounds(final Object[] arguments) {
 		if (arguments.length == 4) {
 			setBounds(Commons.toInt(arguments[0]), Commons.toInt(arguments[1]), Commons.toInt(arguments[2]), Commons.toInt(arguments[3]));
 		}
 		return new Object[] { radiusXneg, radiusXpos, radiusZneg, radiusZpos };
 	}
 	
-	public Object[] radius(Object[] arguments) {
+	public Object[] radius(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			final int radius = Commons.toInt(arguments[0]);
 			setBounds(radius, radius, radius, radius);
@@ -207,38 +207,38 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] bounds(Context context, Arguments arguments) {
+	public Object[] bounds(final Context context, final Arguments arguments) {
 		return bounds(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] radius(Context context, Arguments arguments) {
+	public Object[] radius(final Context context, final Arguments arguments) {
 		return radius(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] upgrades(Context context, Arguments arguments) {
+	public Object[] upgrades(final Context context, final Arguments arguments) {
 		return upgrades();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

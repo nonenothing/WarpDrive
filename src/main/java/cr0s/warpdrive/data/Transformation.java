@@ -21,7 +21,7 @@ public class Transformation implements ITransformation {
 	private final int maxY;
 	private final int maxZ;
 	
-	public Transformation(JumpShip ship, World targetWorld, int moveX, int moveY, int moveZ, byte rotationSteps) {
+	public Transformation(final JumpShip ship, final World targetWorld, final int moveX, final int moveY, final int moveZ, final byte rotationSteps) {
 		sourceCore = new VectorI(ship.coreX, ship.coreY, ship.coreZ);
 		minX = ship.minX;
 		minY = ship.minY;
@@ -69,8 +69,8 @@ public class Transformation implements ITransformation {
 		if (rotationSteps == 0) {
 			return Vec3.createVectorHelper(sourceX + move.x, sourceY + move.y, sourceZ + move.z);
 		} else {
-			double dX = sourceX - sourceCore.x - 0.5D;
-			double dZ = sourceZ - sourceCore.z - 0.5D;
+			final double dX = sourceX - sourceCore.x - 0.5D;
+			final double dZ = sourceZ - sourceCore.z - 0.5D;
 			switch (rotationSteps) {
 			case 1:
 				return Vec3.createVectorHelper(targetCore.x + 0.5D - dZ, sourceY + move.y, targetCore.z + 0.5D + dX);
@@ -89,8 +89,8 @@ public class Transformation implements ITransformation {
 		if (rotationSteps == 0) {
 			return new ChunkCoordinates(sourceX + move.x, sourceY + move.y, sourceZ + move.z);
 		} else {
-			int dX = sourceX - sourceCore.x;
-			int dZ = sourceZ - sourceCore.z;
+			final int dX = sourceX - sourceCore.x;
+			final int dZ = sourceZ - sourceCore.z;
 			switch (rotationSteps) {
 			case 1:
 				return new ChunkCoordinates(targetCore.x - dZ, sourceY + move.y, targetCore.z + dX);
@@ -114,7 +114,7 @@ public class Transformation implements ITransformation {
 		return apply(chunkCoordinates.posX, chunkCoordinates.posY, chunkCoordinates.posZ);
 	}
 
-	public void rotate(Entity entity) {
+	public void rotate(final Entity entity) {
 		if (rotationSteps == 0) {
 			return;
 		}

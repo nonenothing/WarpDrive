@@ -56,7 +56,7 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 			blockCarpentersTorch = Class.forName("com.carpentersblocks.block.BlockCarpentersTorch");
 			
 			WarpDriveConfig.registerBlockTransformer("CarpentersBlocks", new CompatCarpentersBlocks());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -67,7 +67,7 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -101,8 +101,8 @@ public class CompatCarpentersBlocks implements IBlockTransformer {
 	private static final byte[] rotStair  = {  3,  2,  0,  1,  7,  6,  4,  5, 11, 10,  8,  9, 15, 14, 12, 13, 19, 18, 16, 17, 23, 22, 20, 21, 27, 26, 24, 25, 31, 30, 28, 29, 35, 34, 32, 33, 39, 38, 36, 37, 43, 42, 40, 41, 44, 45, 49, 48, 46, 47, 51, 50, 55, 54, 52, 53, 59, 58, 56, 57, 60, 64, 63, 61, 62 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}

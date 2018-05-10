@@ -3,12 +3,10 @@ package cr0s.warpdrive.block.atomic;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.BlockAbstractBase;
-import cr0s.warpdrive.config.WarpDriveConfig;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EnumCreatureType;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.IBlockAccess;
 
@@ -41,7 +39,7 @@ public class BlockAbstractAccelerator extends BlockAbstractBase implements IBloc
 	}
 	
 	@Override
-	public int damageDropped(int metadata) {
+	public int damageDropped(final int metadata) {
 		return 0;
 	}
 	
@@ -51,7 +49,7 @@ public class BlockAbstractAccelerator extends BlockAbstractBase implements IBloc
 	}
 	
 	@Override
-	public boolean canCreatureSpawn(EnumCreatureType type, IBlockAccess blockAccess, int x, int y, int z) {
+	public boolean canCreatureSpawn(final EnumCreatureType type, final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return false;
 	}
 }

@@ -17,7 +17,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	
 	protected boolean isRotating = false;
 	
-	protected BlockAbstractBase(Material material) {
+	protected BlockAbstractBase(final Material material) {
 		super(material);
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
@@ -26,7 +26,8 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final int x, final int y, final int z,
+	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		if (isRotating) {
 			final int metadata = Commons.getFacingFromEntity(entityLiving);
@@ -37,7 +38,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	}
 	
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(final World world, final int x, final int y, final int z, final ForgeDirection axis) {
 		if (isRotating) {
 			world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
 			return true;

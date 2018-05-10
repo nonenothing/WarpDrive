@@ -23,14 +23,14 @@ public class MessageClientValidation implements IMessage, IMessageHandler<Messag
 	}
 	
 	@Override
-	public void fromBytes(ByteBuf buffer) {
+	public void fromBytes(final ByteBuf buffer) {
 		final int size = buffer.readInt();
 		mapClass = buffer.toString(buffer.readerIndex(), size, Charset.forName("UTF8"));
 		buffer.readerIndex(buffer.readerIndex() + size);
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		final String mapClassFull = ClassTransformer.getClientValidation();
 		final String mapClassTruncated = mapClassFull.substring(0, Math.min(32700, mapClassFull.length()));
 		final byte[] bytesString = mapClassTruncated.getBytes(Charset.forName("UTF8"));
@@ -53,14 +53,14 @@ public class MessageClientValidation implements IMessage, IMessageHandler<Messag
 				printWriter.println(mapClass);
 				printWriter.close();
 			}
-		} catch (IOException exception) {
+		} catch (final IOException exception) {
 			exception.printStackTrace();
 			WarpDrive.logger.error("Exception while saving client validation to disk");
 		}
 	}
 	
 	@Override
-	public IMessage onMessage(MessageClientValidation targetingMessage, MessageContext context) {
+	public IMessage onMessage(final MessageClientValidation targetingMessage, final MessageContext context) {
 		if (WarpDrive.isDev) {
 			WarpDrive.logger.info("Received client validation packet from %s",
 			                      context.getServerHandler().playerEntity.getCommandSenderName());

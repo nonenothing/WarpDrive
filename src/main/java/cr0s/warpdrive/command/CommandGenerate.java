@@ -29,14 +29,14 @@ public class CommandGenerate extends CommandBase {
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender par1ICommandSender) {
+	public String getCommandUsage(final ICommandSender commandSender) {
 		return "/" + getCommandName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
 	}
 
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
-		World world = commandSender.getEntityWorld();
-		ChunkCoordinates coordinates = commandSender.getPlayerCoordinates();
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
+		final World world = commandSender.getEntityWorld();
+		final ChunkCoordinates coordinates = commandSender.getPlayerCoordinates();
 		
 		if (world == null || coordinates == null) {
 			Commons.addChatMessage(commandSender, "* generate: unknown world or coordinates, probably an invalid command sender in action here.");
@@ -46,18 +46,18 @@ public class CommandGenerate extends CommandBase {
 		int y = coordinates.posY;
 		int z = coordinates.posZ;
 		
-		if (params.length <= 0 || params.length == 3 || params.length > 5) {
+		if (args.length <= 0 || args.length == 3 || args.length > 5) {
 			Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 			return;
 		}
 		
-		if (params.length > 3) {
-			x = AdjustAxis(x, params[params.length - 3]);
-			y = AdjustAxis(y, params[params.length - 2]);
-			z = AdjustAxis(z, params[params.length - 1]);
+		if (args.length > 3) {
+			x = AdjustAxis(x, args[args.length - 3]);
+			y = AdjustAxis(y, args[args.length - 2]);
+			z = AdjustAxis(z, args[args.length - 1]);
 		}
 		
-		String structure = params[0];
+		final String structure = args[0];
 		
 		// Reject command, if player is not in space
 		if (!CelestialObjectManager.isInSpace(world, x, z) && (!"ship".equals(structure))) {
@@ -66,7 +66,7 @@ public class CommandGenerate extends CommandBase {
 		}
 		
 		if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-			String name = (params.length > 1) ? params[1] : null;
+			final String name = (args.length > 1) ? args[1] : null;
 			switch (structure) {
 				case "ship":
 					WarpDrive.logger.info("/generate: generating NPC ship at " + x + ", " + y + ", " + z);
@@ -92,15 +92,15 @@ public class CommandGenerate extends CommandBase {
 					generateStructure(commandSender, StructureManager.GROUP_STARS, name, world, x, y, z);
 					break;
 				case "jumpgate":
-					if (params.length != 2) {
+					if (args.length != 2) {
 						Commons.addChatMessage(commandSender, "Missing jumpgate name");
 					} else {
 						WarpDrive.logger.info("/generate: creating jumpgate at " + x + ", " + y + ", " + z);
 
-						if (WarpDrive.jumpgates.addGate(params[1], x, y, z)) {
+						if (WarpDrive.jumpgates.addGate(args[1], x, y, z)) {
 							JumpgateGenerator.generate(world, x, Math.min(y, 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), z);
 						} else {
-							WarpDrive.logger.info("/generate: jumpgate '" + params[1] + "' already exists.");
+							WarpDrive.logger.info("/generate: jumpgate '" + args[1] + "' already exists.");
 						}
 					}
 					break;
@@ -123,8 +123,9 @@ public class CommandGenerate extends CommandBase {
 		}
 	}
 	
-	private void generateStructure(ICommandSender commandSender, final String group, final String name, World world, final int x, final int y, final int z) {
-		AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
+	private void generateStructure(final ICommandSender commandSender, final String group, final String name,
+	                               final World world, final int x, final int y, final int z) {
+		final AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
 		if (structure == null) {
 			Commons.addChatMessage(commandSender, "Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group));
 		} else {
@@ -137,8 +138,8 @@ public class CommandGenerate extends CommandBase {
 				while (newY < 256 && !world.isAirBlock(x, newY, z)) {
 					newY++;
 				}
-				EntityPlayerMP player = (EntityPlayerMP)commandSender;
-				player.setPosition(player.posX, newY, player.posZ);
+				final EntityPlayerMP entityPlayerMP = (EntityPlayerMP) commandSender;
+				entityPlayerMP.setPosition(entityPlayerMP.posX, newY, entityPlayerMP.posZ);
 			}
 		}
 	}

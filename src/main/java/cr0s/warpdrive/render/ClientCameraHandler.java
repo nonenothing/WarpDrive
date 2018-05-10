@@ -29,19 +29,19 @@ public class ClientCameraHandler {
 	public static int check2_x, check2_y, check2_z;
 	
 	public ClientCameraHandler() {
-		Minecraft mc = Minecraft.getMinecraft();
+		final Minecraft mc = Minecraft.getMinecraft();
 		
 		if (WarpDriveConfig.LOGGING_CAMERA) {
 			WarpDrive.logger.info("FOV is " + mc.gameSettings.fovSetting + " Sensitivity is " + mc.gameSettings.mouseSensitivity);
 		}
 	}
 	
-	public static void setupViewpoint(final EnumCameraType enumCameraType, EntityPlayer parEntityPlayer, final float initialYaw, final float initialPitch,
+	public static void setupViewpoint(final EnumCameraType enumCameraType, final EntityPlayer entityPlayer, final float initialYaw, final float initialPitch,
 	                                  final int monitor_x, final int monitor_y, final int monitor_z, final Block blockMonitor,
 	                                  final int camera_x, final int camera_y, final int camera_z, final Block blockCamera) {
-		Minecraft mc = Minecraft.getMinecraft();
+		final Minecraft mc = Minecraft.getMinecraft();
 		
-		if (parEntityPlayer == null) {
+		if (entityPlayer == null) {
 			WarpDrive.logger.error("setupViewpoint with null player => denied");
 			return;
 		}
@@ -50,8 +50,8 @@ public class ClientCameraHandler {
 		originalFOV = mc.gameSettings.fovSetting;
 		originalSensitivity = mc.gameSettings.mouseSensitivity;
 		overlayType = enumCameraType;
-		entityPlayer = parEntityPlayer;
-		dimensionId = entityPlayer.worldObj.provider.dimensionId;
+		ClientCameraHandler.entityPlayer = entityPlayer;
+		dimensionId = ClientCameraHandler.entityPlayer.worldObj.provider.dimensionId;
 		check1_x = monitor_x;
 		check1_y = monitor_y;
 		check1_z = monitor_z;
@@ -62,8 +62,8 @@ public class ClientCameraHandler {
 		check2_blockId = blockCamera;
 		
 		// Spawn camera entity
-		EntityCamera entityCamera = new EntityCamera(entityPlayer.worldObj, camera_x, camera_y, camera_z, entityPlayer);
-		entityPlayer.worldObj.spawnEntityInWorld(entityCamera);
+		final EntityCamera entityCamera = new EntityCamera(ClientCameraHandler.entityPlayer.worldObj, camera_x, camera_y, camera_z, ClientCameraHandler.entityPlayer);
+		ClientCameraHandler.entityPlayer.worldObj.spawnEntityInWorld(entityCamera);
 		// entityCamera.setPositionAndUpdate(camera_x + 0.5D, camera_y + 0.5D, camera_z + 0.5D);
 		entityCamera.setLocationAndAngles(camera_x + 0.5D, camera_y + 0.5D, camera_z + 0.5D, initialYaw, initialPitch);
 		
@@ -80,7 +80,7 @@ public class ClientCameraHandler {
 	}
 	
 	private static void refreshViewPoint() {
-		Minecraft mc = Minecraft.getMinecraft();
+		final Minecraft mc = Minecraft.getMinecraft();
 		
 		switch (zoomIndex) {
 		case 0:
@@ -111,7 +111,7 @@ public class ClientCameraHandler {
 	}
 	
 	public static void zoom() {
-		Minecraft mc = Minecraft.getMinecraft();
+		final Minecraft mc = Minecraft.getMinecraft();
 		
 		zoomIndex = (zoomIndex + 1) % 4;
 		refreshViewPoint();
@@ -121,7 +121,7 @@ public class ClientCameraHandler {
 	}
 	
 	public static void resetViewpoint() {
-		Minecraft mc = Minecraft.getMinecraft();
+		final Minecraft mc = Minecraft.getMinecraft();
 		if (entityPlayer != null) {
 			mc.renderViewEntity = entityPlayer;
 			entityPlayer = null;
@@ -143,15 +143,15 @@ public class ClientCameraHandler {
 		dimensionId = -666;
 	}
 	
-	public static boolean isValidContext(World worldObj) {
-		if (worldObj == null || worldObj.provider.dimensionId != dimensionId) {
+	public static boolean isValidContext(final World world) {
+		if (world == null || world.provider.dimensionId != dimensionId) {
 			return false;
 		}
-		if (!worldObj.getBlock(check1_x, check1_y, check1_z).isAssociatedBlock(check1_blockId)) {
+		if (!world.getBlock(check1_x, check1_y, check1_z).isAssociatedBlock(check1_blockId)) {
 			WarpDrive.logger.error("checking viewpoint, found invalid block1 at (" + check1_x + ", " + check1_y + ", " + check1_z + ")");
 			return false;
 		}
-		if (!worldObj.getBlock(check2_x, check2_y, check2_z).isAssociatedBlock(check2_blockId)) {
+		if (!world.getBlock(check2_x, check2_y, check2_z).isAssociatedBlock(check2_blockId)) {
 			WarpDrive.logger.error("checking viewpoint, found invalid block2 at (" + check2_x + ", " + check2_y + ", " + check2_z + ")");
 			return false;
 		}
@@ -159,7 +159,7 @@ public class ClientCameraHandler {
 	}
 	
 	@SubscribeEvent
-	public void onEvent(ClientDisconnectionFromServerEvent event) {
+	public void onEvent(final ClientDisconnectionFromServerEvent event) {
 		if (isOverlayEnabled) {
 			resetViewpoint();
 		}

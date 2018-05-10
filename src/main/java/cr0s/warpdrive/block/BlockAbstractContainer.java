@@ -36,7 +36,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	protected boolean hasSubBlocks = false;
 	private static boolean isInvalidEMPreported = false;
 	
-	protected BlockAbstractContainer(Material material) {
+	protected BlockAbstractContainer(final Material material) {
 		super(material);
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
@@ -45,16 +45,16 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public void onBlockAdded(World world, int x, int y, int z) {
+	public void onBlockAdded(final World world, final int x, final int y, final int z) {
 		super.onBlockAdded(world, x, y, z);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final int x, final int y, final int z, final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		if (isRotating) {
 			final int metadata = Commons.getFacingFromEntity(entityLiving);
@@ -63,7 +63,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			}
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (itemStack.hasTagCompound()) {
 			final NBTTagCompound tagCompound = (NBTTagCompound) itemStack.getTagCompound().copy();
 			tagCompound.setInteger("x", x);
@@ -75,15 +75,15 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
+	public boolean removedByPlayer(final World world, final EntityPlayer player, final int x, final int y, final int z, final boolean willHarvest) {
 		return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
 	}
 	
 	@Override
-	protected void dropBlockAsItem(World world, int x, int y, int z, ItemStack itemStack) {
+	protected void dropBlockAsItem(final World world, final int x, final int y, final int z, final ItemStack itemStack) {
 		if (itemStack.getItem() == Item.getItemFromBlock(this)) {
 			itemStack.setItemDamage(getDamageValue(world, x, y, z));
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity == null) {
 				WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + x + " " + y + " " + z);
 			} else if (tileEntity instanceof TileEntityAbstractBase) {
@@ -97,9 +97,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
-		ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public ItemStack getPickBlock(final MovingObjectPosition target, final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer) {
+		final ItemStack itemStack = super.getPickBlock(target, world, x, y, z, entityPlayer);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);
@@ -109,7 +109,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
+	public boolean rotateBlock(final World world, final int x, final int y, final int z, final ForgeDirection axis) {
 		if (isRotating) {
 			world.setBlockMetadataWithNotify(x, y, z, axis.ordinal(), 3);
 			return true;
@@ -128,7 +128,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	@Optional.Method(modid = "DefenseTech")
-	public void onEMP(World world, int x, int y, int z, defense.api.IExplosion explosiveEMP) {
+	public void onEMP(final World world, final int x, final int y, final int z, final defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
 			                                    world.provider.getDimensionName(), x, y, z,
@@ -154,7 +154,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	@Optional.Method(modid = "icbmclassic")
-	public void onEMP(World world, int x, int y, int z, resonant.api.explosion.IExplosion explosiveEMP) {
+	public void onEMP(final World world, final int x, final int y, final int z, final resonant.api.explosion.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
 			                                    world.provider.getDimensionName(), x, y, z,
@@ -178,10 +178,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
-	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public void onEMP(final World world, final int x, final int y, final int z, final float efficiency) {
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityAbstractEnergy) {
-			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
+			final TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
 			if (tileEntityAbstractEnergy.energy_getMaxStorage() > 0) {
 				tileEntityAbstractEnergy.energy_consume(Math.round(tileEntityAbstractEnergy.energy_getEnergyStored() * efficiency), false);
 			}
@@ -204,9 +204,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
-	
 	@Override
-	public boolean onBlockActivated(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer,
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
 	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;

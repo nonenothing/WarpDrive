@@ -164,7 +164,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		particleEnergy_energyCost_perTick = countMagnets[0] * 1.00 + countMagnets[1] * 2.00 + countMagnets[2] * 3.00;
 	}
 	
-	private void fillTrajectoryPoints(WorldServer world) {
+	private void fillTrajectoryPoints(final WorldServer world) {
 		// find closest connected VoidShell
 		Set<Block> whitelist = ImmutableSet.of(
 			WarpDrive.blockElectromagnetPlain[0],
@@ -177,7 +177,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockVoidShellGlass);
 		final Set<VectorI> connections = Commons.getConnectedBlocks(world, new VectorI(x, y, z), ForgeDirection.VALID_DIRECTIONS, whitelist, 3);
 		VectorI firstVoidShell = null;
-		for (VectorI connection : connections) {
+		for (final VectorI connection : connections) {
 			final Block block = connection.getBlock(world);
 			if (block instanceof BlockVoidShellPlain) {
 				firstVoidShell = connection.clone();
@@ -195,7 +195,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			WarpDrive.blockVoidShellPlain,
 			WarpDrive.blockVoidShellGlass);
 		TrajectoryPoint trajectoryPoint = null;
-		for (ForgeDirection direction : Commons.HORIZONTAL_DIRECTIONS) {
+		for (final ForgeDirection direction : Commons.HORIZONTAL_DIRECTIONS) {
 			final VectorI next = firstVoidShell.clone(direction);
 			if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
 				trajectoryPoint = new TrajectoryPoint(world, firstVoidShell.translate(direction), direction);
@@ -218,7 +218,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		trajectoryPoint = new TrajectoryPoint(world, trajectoryPoint.translate(trajectoryPoint.directionBackward), trajectoryPoint.directionBackward);
 		acceleratorToAdd.add(trajectoryPoint);
 		
-		HashSet<TrajectoryPoint> transferToAdd = new HashSet<>();
+		final HashSet<TrajectoryPoint> transferToAdd = new HashSet<>();
 		while(!acceleratorToAdd.isEmpty()) {
 			// add all accelerators found
 			for (final TrajectoryPoint trajectoryToAdd : acceleratorToAdd) {
@@ -432,14 +432,14 @@ public class AcceleratorSetup extends GlobalPosition {
 		
 		// check connections
 		if (checkDirectConnection || checkCornerConnection) {
-			for (ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
+			for (final ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
 				final Block blockConnected = vector.translate(forgeDirection).getBlock(world);
 				if (blockConnected instanceof BlockVoidShellPlain) {
 					if (isTrajectoryPoint(vector)) {
 						return true;
 					}
 				} else if (checkCornerConnection && blockConnected instanceof BlockElectromagnetPlain) {
-					for (ForgeDirection forgeDirection2 : ForgeDirection.VALID_DIRECTIONS) {
+					for (final ForgeDirection forgeDirection2 : ForgeDirection.VALID_DIRECTIONS) {
 						final Block blockSubConnected = vector.translate(forgeDirection2).getBlock(world);
 						if (blockSubConnected instanceof BlockVoidShellPlain) {
 							if (isTrajectoryPoint(vector)) {
@@ -452,7 +452,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 		
 		if (checkRangedConnection) {
-			for (ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
+			for (final ForgeDirection forgeDirection : ForgeDirection.VALID_DIRECTIONS) {
 				final Block blockConnected = vector.translate(forgeDirection, 2).getBlock(world);
 				if (blockConnected instanceof BlockVoidShellPlain) {
 					if (isTrajectoryPoint(vector)) {

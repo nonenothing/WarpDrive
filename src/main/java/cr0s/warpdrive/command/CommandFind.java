@@ -19,24 +19,24 @@ public class CommandFind extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
 		if (commandSender == null) { return; }
 		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
 		String nameToken = "";
-		if (params.length == 0) {
+		if (args.length == 0) {
 			Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 			return;
-		} else if (params.length == 1) {
-			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
+		} else if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
 				Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 				return;
 			}
-			nameToken = params[0];
+			nameToken = args[0];
 		} else {
 			final StringBuilder nameBuilder = new StringBuilder();
-			for (final String param : params) {
+			for (final String param : args) {
 				if (nameBuilder.length() > 0) {
 					nameBuilder.append(" ");
 				}

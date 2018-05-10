@@ -34,12 +34,14 @@ public class BlockAcceleratorControlPoint extends BlockAbstractAccelerator imple
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 2];
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}

@@ -195,10 +195,10 @@ public class LivingHandler {
 		}
 	}
 	
-	private void updatePlayerCloakState(EntityLivingBase entity) {
+	private void updatePlayerCloakState(final EntityLivingBase entity) {
 		try {
-			EntityPlayerMP player = (EntityPlayerMP) entity;
-			Integer cloakTicks = player_cloakTicks.get(player.getCommandSenderName());
+			final EntityPlayerMP player = (EntityPlayerMP) entity;
+			final Integer cloakTicks = player_cloakTicks.get(player.getCommandSenderName());
 			
 			if (cloakTicks == null) {
 				player_cloakTicks.put(player.getCommandSenderName(), 0);
@@ -212,7 +212,7 @@ public class LivingHandler {
 			} else {
 				player_cloakTicks.put(player.getCommandSenderName(), cloakTicks + 1);
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -304,7 +304,7 @@ public class LivingHandler {
 					if (yLoop <= 0 || yLoop > 255) {
 						continue;
 					}
-					Block block = world.getBlock(xLoop, yLoop, zLoop);
+					final Block block = world.getBlock(xLoop, yLoop, zLoop);
 					if (block instanceof BlockForceField) {
 						event.setCanceled(true);
 						return;

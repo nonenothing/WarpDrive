@@ -51,13 +51,13 @@ public class ItemTuningFork extends Item implements IWarpTool {
 		}
 	}
 	
-	public static String getDyeColorName(int metadata) {
+	public static String getDyeColorName(final int metadata) {
 		return ItemDye.field_150921_b[metadata];
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		if (damage < icons.length) {
 			return icons[damage];
 		}
@@ -65,36 +65,36 @@ public class ItemTuningFork extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
 			list.add(new ItemStack(item, 1, dyeColor));
 		}
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < 16) {
 			return getUnlocalizedName() + "." + ItemDye.field_150923_a[damage];
 		}
 		return getUnlocalizedName();
 	}
 	
-	public static int getVideoChannel(ItemStack itemStack) {
+	public static int getVideoChannel(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
 		return (itemStack.getItemDamage() % 16) + 100;
 	}
 	
-	public static int getBeamFrequency(ItemStack itemStack) {
+	public static int getBeamFrequency(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
 		return ((itemStack.getItemDamage() % 16) + 1) * 10;
 	}
 	
-	public static int getControlChannel(ItemStack itemStack) {
+	public static int getControlChannel(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
@@ -102,18 +102,20 @@ public class ItemTuningFork extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+	public boolean onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer,
+	                         final World world, final int x, final int y, final int z,
+	                         final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity == null) {
 			return false;
 		}
 		
-		boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
-		boolean hasBeamFrequency = tileEntity instanceof IBeamFrequency;
-		boolean hasControlChannel = tileEntity instanceof IControlChannel;
+		final boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
+		final boolean hasBeamFrequency = tileEntity instanceof IBeamFrequency;
+		final boolean hasControlChannel = tileEntity instanceof IControlChannel;
 		if (!hasVideoChannel && !hasBeamFrequency && !hasControlChannel) {
 			return false;
 		}

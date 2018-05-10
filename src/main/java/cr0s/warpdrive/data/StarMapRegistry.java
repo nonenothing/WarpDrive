@@ -262,7 +262,7 @@ public class StarMapRegistry {
 		default:
 			try {
 				return Integer.parseInt(stringDimension);
-			} catch(Exception exception) {
+			} catch (final Exception exception) {
 				// exception.printStackTrace();
 				WarpDrive.logger.info("Invalid dimension '" + stringDimension + "', expecting integer or overworld/nether/end/theend/space/hyper/hyperspace");
 			}
@@ -279,7 +279,7 @@ public class StarMapRegistry {
 			celestialObject,
 			tileEntity.xCoord, tileEntity.yCoord, tileEntity.zCoord);
 		// printRegistry();
-		int radius2 = radius * radius;
+		final int radius2 = radius * radius;
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			for (final StarMapRegistryItem starMapRegistryItem : entryDimension.getValue()) {
 				if (starMapRegistryItem.type == EnumStarMapEntryType.ACCELERATOR) {
@@ -334,7 +334,7 @@ public class StarMapRegistry {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
-			StringBuilder message = new StringBuilder();
+			final StringBuilder message = new StringBuilder();
 			for (final StarMapRegistryItem registryItem : entryDimension.getValue()) {
 				message.append(String.format("\n- %s '%s' @ DIM%d (%d %d %d) with %.3f isolation rate",
 				                             registryItem.type, registryItem.name,
@@ -346,15 +346,15 @@ public class StarMapRegistry {
 		}
 	}
 	
-	public boolean isWarpCoreIntersectsWithOthers(TileEntityShipCore core) {
+	public boolean isWarpCoreIntersectsWithOthers(final TileEntityShipCore core) {
 		final StringBuilder reason = new StringBuilder();
-		AxisAlignedBB aabb1, aabb2;
 		cleanup();
 		
 		core.validateShipSpatialParameters(reason);
-		aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
+		final AxisAlignedBB aabb1 = AxisAlignedBB.getBoundingBox(core.minX, core.minY, core.minZ,
+		                                                         core.maxX, core.maxY, core.maxZ);
 		
-		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorldObj().provider.dimensionId);
+		final CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorldObj().provider.dimensionId);
 		if (setRegistryItems == null) {
 			return false;
 		}
@@ -372,11 +372,11 @@ public class StarMapRegistry {
 			}
 			
 			// Skip missing ship cores
-			TileEntity tileEntity = core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			final TileEntity tileEntity = core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			final TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			
 			// Skip offline ship cores
 			if (shipCore.isOffline()) {
@@ -389,7 +389,8 @@ public class StarMapRegistry {
 			}
 			
 			// Compare areas for intersection
-			aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+			final AxisAlignedBB aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ,
+			                                                         registryItem.maxX, registryItem.maxY, registryItem.maxZ);
 			if (aabb1.intersectsWith(aabb2)) {
 				return true;
 			}
@@ -418,7 +419,7 @@ public class StarMapRegistry {
 						final ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
 						try {
 							isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
-						} catch (NoSuchFieldError exception) {
+						} catch (final NoSuchFieldError exception) {
 							isLoaded = chunkProviderServer.chunkExists(registryItem.x >> 4, registryItem.z >> 4);
 						}
 					} else {
@@ -476,7 +477,7 @@ public class StarMapRegistry {
 		LocalProfiler.stop();
 	}
 	
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		if (tagCompound == null || !tagCompound.hasKey("starMapRegistryItems")) {
 			registry.clear();
 			return;
@@ -491,7 +492,7 @@ public class StarMapRegistry {
 			registryFlat[index] = starMapRegistryItem;
 			
 			// update stats
-			Integer count = sizeDimensions.computeIfAbsent(starMapRegistryItem.dimensionId, k -> (Integer) 0);
+			Integer count = sizeDimensions.computeIfAbsent(starMapRegistryItem.dimensionId, k -> 0);
 			count++;
 			sizeDimensions.put(starMapRegistryItem.dimensionId, count);
 		}

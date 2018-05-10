@@ -57,7 +57,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 	}
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		final List<Element> listChildren = XmlFileManager.getChildrenElementByTagName(element, nameElementUnit);
 		for (final Element elementChild : listChildren) {
 			@SuppressWarnings("unchecked")
@@ -86,7 +86,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 	}
 	
 	@Override
-	public int compareTo(@Nonnull Object object) {
+	public int compareTo(@Nonnull final Object object) {
 		return name.compareTo(((GenericSet) object).name);
 	}
 	
@@ -101,7 +101,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 	 * @param genericSet
 	 *            The genericSet to add from
 	 */
-	public void loadFrom(GenericSet<E> genericSet) throws InvalidXmlException {
+	public void loadFrom(final GenericSet<E> genericSet) throws InvalidXmlException {
 		units.loadFrom(genericSet.units);
 	}
 	

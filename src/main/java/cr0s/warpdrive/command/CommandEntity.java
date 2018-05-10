@@ -47,8 +47,8 @@ public class CommandEntity extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(final ICommandSender commandSender, final String[] params) {
-		if (params.length > 3) {
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
+		if (args.length > 3) {
 			Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 			return;
 		}
@@ -57,24 +57,24 @@ public class CommandEntity extends CommandBase {
 		String filter = "";
 		boolean kill = false;
 		try {
-			if (params.length > 0) {
-				final String par = params[0].toLowerCase();
+			if (args.length > 0) {
+				final String par = args[0].toLowerCase();
 				if (par.equals("-") || par.equals("world") || par.equals("global") || par.equals("*")) {
 					radius = -1;
 				} else {
 					radius = Integer.parseInt(par);
 				}
 			}
-			if (params.length > 1) {
-				if (!params[1].equalsIgnoreCase("*")) {
-					filter = params[1];
+			if (args.length > 1) {
+				if (!args[1].equalsIgnoreCase("*")) {
+					filter = args[1];
 				}
 			}
-			if (params.length > 2) {
-				final String par = params[2].toLowerCase();
+			if (args.length > 2) {
+				final String par = args[2].toLowerCase();
 				kill = par.equals("y") || par.equals("yes") || par.equals("1");
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 			return;
@@ -84,7 +84,7 @@ public class CommandEntity extends CommandBase {
 
 		Collection<Object> entities;
 		if (radius <= 0) {
-			World world;
+			final World world;
 			if (commandSender instanceof EntityPlayerMP) {
 				world = ((EntityPlayerMP) commandSender).worldObj;
 			} else if (radius <= 0) {
@@ -107,7 +107,7 @@ public class CommandEntity extends CommandBase {
 		}
 		final HashMap<String, Integer> counts = new HashMap<>(entities.size());
 		int count = 0;
-		for (Object object : entities) {
+		for (final Object object : entities) {
 			if (object instanceof Entity) {
 				String name = object.getClass().getCanonicalName();
 				if (name == null) {

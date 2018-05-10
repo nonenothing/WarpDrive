@@ -25,7 +25,7 @@ public class CompatTechguns implements IBlockTransformer {
 			classBlockBasicMachine = Class.forName("techguns.blocks.machines.BasicMachine");
 			classBlockMultiBlockMachineBlock = Class.forName("techguns.blocks.machines.MultiBlockMachineBlock");
 			WarpDriveConfig.registerBlockTransformer("Techguns", new CompatTechguns());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -39,7 +39,7 @@ public class CompatTechguns implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -84,7 +84,7 @@ public class CompatTechguns implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		
 		if (classBlockLadder.isInstance(block)) {

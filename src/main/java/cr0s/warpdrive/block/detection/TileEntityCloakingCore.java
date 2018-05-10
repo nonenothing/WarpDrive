@@ -129,7 +129,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						}
 						
 						// Refresh the field
-						CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
+						final CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
 						if (area != null) {
 							area.sendCloakPacketToPlayersEx(false); // re-cloak field
 						} else {
@@ -156,7 +156,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						if (hasEnoughPower) {// enabled, cloaking and able to
 							// IDLE
 							// Refresh the field (workaround to re-synchronize players since client may 'eat up' the packets)
-							CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
+							final CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
 							if (area != null) {
 								area.sendCloakPacketToPlayersEx(false); // re-cloak field
 							} else {
@@ -191,7 +191,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	private void setCoilsState(final boolean enabled) {
 		worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, (enabled) ? 1 : 0, 2);
 		
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if (isValidInnerCoils[direction.ordinal()]) {
 				setCoilState(DISTANCE_INNER_COILS_BLOCKS, direction, enabled);
 			}
@@ -238,7 +238,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		}
 		
 		// Directions to check (all six directions: left, right, up, down, front, back)
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if ( isValidInnerCoils[direction.ordinal()]
 			  && distanceOuterCoils_blocks[direction.ordinal()] > 0) {
 				PacketHandler.sendBeamPacketToPlayersInArea(worldObj,
@@ -266,7 +266,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 				}
 				
 				// draw a random colored beam
-				int mapIndex = worldObj.rand.nextInt(innerCoilColor_b.length);
+				final int mapIndex = worldObj.rand.nextInt(innerCoilColor_b.length);
 				r = innerCoilColor_r[mapIndex];
 				g = innerCoilColor_g[mapIndex];
 				b = innerCoilColor_b[mapIndex];
@@ -300,7 +300,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	public void updateVolumeAndEnergyRequired() {
 		int x, y, z;
-		int energyRequired_new;
+		final int energyRequired_new;
 		int volume_new = 0;
 		if (tier == 1) {// tier1 = gaz and air blocks don't count
 			for (y = minY; y <= maxY; y++) {
@@ -357,7 +357,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		final StringBuilder messageOuterCoils = new StringBuilder();
 		
 		// Directions to check (all six directions: left, right, up, down, front, back)
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			
 			// check validity of inner coil
 			int x = xCoord + DISTANCE_INNER_COILS_BLOCKS * direction.offsetX;
@@ -470,12 +470,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	// Common OC/CC methods
-	public Object[] tier(Object[] arguments) {
+	public Object[] tier(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			int tier_new;
+			final int tier_new;
 			try {
 				tier_new = Commons.toInt(arguments[0]);
-			} catch(Exception exception) {
+			} catch (final Exception exception) {
 				return new Integer[] { (int) tier };
 			}
 			if (tier_new == 2) {
@@ -492,7 +492,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		return new Object[] { isValid, Commons.removeFormatting(messageValidityIssues) };
 	}
 	
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
@@ -503,26 +503,26 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] tier(Context context, Arguments arguments) {
+	public Object[] tier(final Context context, final Arguments arguments) {
 		return tier(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] isAssemblyValid(Context context, Arguments arguments) {
+	public Object[] isAssemblyValid(final Context context, final Arguments arguments) {
 		return isAssemblyValid();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
@@ -545,7 +545,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(final ForgeDirection from) {
 		return true;
 	}
 }

@@ -152,14 +152,14 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	@Override
 	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 		worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
 	}

@@ -33,6 +33,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	private boolean isFirstTick = true;
 	private boolean isDirty = false;
 	
+	protected void onFirstUpdateTick() {
+		// No operation
+	}
+	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
@@ -46,15 +50,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
-	protected void onFirstUpdateTick() {
-		// No operation
-	}
-	
 	@Override
 	public void onBlockUpdateDetected() {
 	}
 	
-	protected void updateMetadata(int metadata) {
+	protected void updateMetadata(final int metadata) {
 		if (getBlockMetadata() != metadata) {
 			worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 2);
 		}
@@ -76,7 +76,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	// Inventory management methods
 	
 	protected boolean addToConnectedInventories(final ItemStack itemStack) {
-		List<ItemStack> itemStacks = new ArrayList<>(1);
+		final List<ItemStack> itemStacks = new ArrayList<>(1);
 		itemStacks.add(itemStack);
 		return addToInventories(itemStacks, Commons.getConnectedInventories(this));
 	}
@@ -122,7 +122,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return overflow;
 	}
 	
-	private static int addToInventory(final ItemStack itemStackSource, IInventory inventory) {
+	private static int addToInventory(final ItemStack itemStackSource, final IInventory inventory) {
 		if (itemStackSource == null || itemStackSource.getItem() == null) {
 			return 0;
 		}
@@ -137,7 +137,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					continue;
 				}
 				
-				ItemStack itemStack = inventory.getStackInSlot(i);
+				final ItemStack itemStack = inventory.getStackInSlot(i);
 				if (itemStack == null || !itemStack.isItemEqual(itemStackSource)) {
 					continue;
 				}
@@ -156,13 +156,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					continue;
 				}
 				
-				ItemStack itemStack = inventory.getStackInSlot(i);
+				final ItemStack itemStack = inventory.getStackInSlot(i);
 				if (itemStack != null) {
 					continue;
 				}
 				
 				transfer = Math.min(qtyLeft, itemStackSource.getMaxStackSize());
-				ItemStack dest = Commons.copyWithSize(itemStackSource, transfer);
+				final ItemStack dest = Commons.copyWithSize(itemStackSource, transfer);
 				inventory.setInventorySlotContents(i, dest);
 				qtyLeft -= transfer;
 				
@@ -177,17 +177,17 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// area protection
-	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, World world, final int eventX, final int eventY, final int eventZ) {
+	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, final World world, final int eventX, final int eventY, final int eventZ) {
 		return CommonProxy.isBlockBreakCanceled(uuidPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ);
 	}
 	
-	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, World world, final int eventX, final int eventY, final int eventZ, final Block block, final int metadata) {
+	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, final World world, final int eventX, final int eventY, final int eventZ, final Block block, final int metadata) {
 		return CommonProxy.isBlockPlaceCanceled(uuidPlayer, xCoord, yCoord, zCoord, world, eventX, eventY, eventZ, block, metadata);
 	}
 	
 	// saved properties
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		if (tagCompound.hasKey("upgrades")) {
 			final NBTTagCompound nbtTagCompoundUpgrades = tagCompound.getCompoundTag("upgrades");
@@ -227,7 +227,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	// status
 	protected String getUpgradeStatus() {
-		String strUpgrades = getUpgradesAsString();
+		final String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
 			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.none",
 				strUpgrades);
@@ -241,7 +241,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (worldObj == null) {
 			return "";
 		} else {
-			ItemStack itemStack = new ItemStack(Item.getItemFromBlock(getBlockType()), 1, getBlockMetadata());
+			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(getBlockType()), 1, getBlockMetadata());
 			return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"));
 		}
 	}
@@ -326,7 +326,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return getUpgradeCount(upgrade) > 0;
 	}
 	
-	private String getUpgradeAsString(Object object) {
+	private String getUpgradeAsString(final Object object) {
 		if (object instanceof Item) {
 			return Item.itemRegistry.getNameForObject(object);
 		} else if (object instanceof Block) {
@@ -338,8 +338,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
-	private Object getUpgradeFromString(String name) {
-		for (Object object : maxUpgrades.keySet()) {
+	private Object getUpgradeFromString(final String name) {
+		for (final Object object : maxUpgrades.keySet()) {
 			if (getUpgradeAsString(object).equals(name)) {
 				return object;
 			}
@@ -348,7 +348,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	public Object getFirstUpgradeOfType(final Class clazz, final Object defaultValue) {
-		for (Object object : installedUpgrades.keySet()) {
+		for (final Object object : installedUpgrades.keySet()) {
 			if (clazz != null && clazz.isInstance(object)) {
 				return object;
 			}

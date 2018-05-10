@@ -75,7 +75,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	
 	public LinkedHashSet<RenderData> setRenderData;
 	
-	public CelestialObject(final String location, final String parentId, Element elementCelestialObject) throws InvalidXmlException {
+	public CelestialObject(final String location, final String parentId, final Element elementCelestialObject) throws InvalidXmlException {
 		loadFromXmlElement(location, parentId, elementCelestialObject);
 	}
 	
@@ -189,7 +189,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				if (!stringNBT.isEmpty()) {
 					try {
 						tagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
-					} catch (NBTException exception) {
+					} catch (final NBTException exception) {
 						throw new InvalidXmlException(String.format("Invalid nbt for Celestial object %s", id));
 					}
 				}
@@ -342,7 +342,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				}
 				return Math.min(gravity, 1.0D);
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			WarpDrive.logger.error("Invalid gravity value, expecting none, legacySpace, legacyHyperspace, normal or a positive double. Found: " + stringGravity);
 			exception.printStackTrace();
 			return 1.0D;
@@ -671,7 +671,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof CelestialObject) {
-			CelestialObject celestialObject = (CelestialObject) object;
+			final CelestialObject celestialObject = (CelestialObject) object;
 			return dimensionId == celestialObject.dimensionId
 				&& dimensionCenterX == celestialObject.dimensionCenterX
 				&& dimensionCenterZ == celestialObject.dimensionCenterZ
@@ -722,12 +722,12 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			this.blue = blue;
 		}
 		
-		ColorData(final String location, final Element elementColor) throws InvalidXmlException {
+		ColorData(final String location, final Element elementColor) {
 			try {
 				red = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("red")));
 				green = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("green")));
 				blue = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("blue")));
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 				WarpDrive.logger.error("Exception while parsing Color element at " + location);
 				red = 0.5F;
@@ -772,7 +772,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				green = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("green")));
 				blue = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("blue")));
 				alpha = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("alpha")));
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 				WarpDrive.logger.error(String.format("Exception while parsing Render element RGBA attributes at %s", location));
 				red = 0.5F;
@@ -795,7 +795,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				if (!stringPeriodU.isEmpty()) {
 					try {
 						periodU = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(stringPeriodU));
-					} catch (NumberFormatException exception) {
+					} catch (final NumberFormatException exception) {
 						throw new InvalidXmlException(String.format("Invalid periodU attribute '%s' at %s", stringPeriodU, location));
 					}
 				}
@@ -805,7 +805,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				if (!stringPeriodV.isEmpty()) {
 					try {
 						periodV = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(stringPeriodV));
-					} catch (NumberFormatException exception) {
+					} catch (final NumberFormatException exception) {
 						throw new InvalidXmlException(String.format("Invalid periodV attribute '%s' at %s", stringPeriodV, location));
 					}
 				}

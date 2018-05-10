@@ -70,13 +70,13 @@ public class Particle {
 	
 	@SideOnly(Side.CLIENT)
 	public String getLocalizedName() {
-		String unlocalizedName = getUnlocalizedName();
+		final String unlocalizedName = getUnlocalizedName();
 		return unlocalizedName == null ? "" : StatCollector.translateToLocal(unlocalizedName + ".name");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public String getLocalizedTooltip() {
-		String unlocalizedName = getUnlocalizedName();
+		final String unlocalizedName = getUnlocalizedName();
 		return unlocalizedName == null ? "" : StatCollector.translateToLocal(unlocalizedName + ".tooltip");
 	}
 	

@@ -136,7 +136,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final int x, final int y, final int z, final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		
 		final TileEntity tileEntity = world.getTileEntity(x, y, z);
@@ -152,8 +152,8 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	public ArrayList<ItemStack> getDrops(final World world, final int x, final int y, final int z, final int metadata, final int fortune) {
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityShipCore) {
 			if (((TileEntityShipCore)tileEntity).jumpCount == 0) {
 				return super.getDrops(world, x, y, z, metadata, fortune);
@@ -167,7 +167,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 		}
 		
 		// get a chance to get the drops
-		ArrayList<ItemStack> itemStacks = new ArrayList<>();
+		final ArrayList<ItemStack> itemStacks = new ArrayList<>();
 		itemStacks.add(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 1));
 		if (fortune > 0 && world.rand.nextBoolean()) {
 			itemStacks.add(ItemComponent.getItemStackNoCache(EnumComponentType.CAPACITIVE_CRYSTAL, 1));
@@ -182,9 +182,9 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public float getPlayerRelativeBlockHardness(EntityPlayer entityPlayer, World world, int x, int y, int z) {
+	public float getPlayerRelativeBlockHardness(final EntityPlayer entityPlayer, final World world, final int x, final int y, final int z) {
 		boolean willBreak = true;
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityShipCore) {
 			if (((TileEntityShipCore)tileEntity).jumpCount == 0) {
 				willBreak = false;
@@ -194,7 +194,9 @@ public class BlockShipCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (entityPlayer.getHeldItem() == null) {
 			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityShipCore) {

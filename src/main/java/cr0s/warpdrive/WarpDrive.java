@@ -295,7 +295,7 @@ public class WarpDrive {
 	public static Logger logger;
 	
 	@EventHandler
-	public void onFMLPreInitialization(FMLPreInitializationEvent event) {
+	public void onFMLPreInitialization(final FMLPreInitializationEvent event) {
 		logger = event.getModLog();
 		
 		WarpDriveConfig.onFMLpreInitialization(event.getModConfigurationDirectory().getAbsolutePath());
@@ -328,7 +328,7 @@ public class WarpDrive {
 	}
 	
 	@EventHandler
-	public void onFMLInitialization(FMLInitializationEvent event) {
+	public void onFMLInitialization(final FMLInitializationEvent event) {
 		PacketHandler.init();
 		
 		WarpDriveConfig.onFMLInitialization();
@@ -528,7 +528,7 @@ public class WarpDrive {
 		blockForceFieldProjectors = new Block[3];
 		blockForceFieldRelays = new Block[3];
 		for (byte tier = 1; tier <= 3; tier++) {
-			int index = tier - 1;
+			final int index = tier - 1;
 			// FORCE FIELD
 			blockForceFields[index] = new BlockForceField(tier);
 			GameRegistry.registerBlock(blockForceFields[index], ItemBlockAbstractBase.class, "blockForceField" + tier);
@@ -613,7 +613,7 @@ public class WarpDrive {
 		blockHulls_slab = new Block[3][16];
 		
 		for (byte tier = 1; tier <= 3; tier++) {
-			int index = tier - 1;
+			final int index = tier - 1;
 			for (final EnumHullPlainType hullPlainType : EnumHullPlainType.values()) {
 				blockHulls_plain[index][hullPlainType.ordinal()] = new BlockHullPlain(tier, hullPlainType);
 				GameRegistry.registerBlock(blockHulls_plain[index][hullPlainType.ordinal()], ItemBlockHull.class, "blockHull" + tier + "_" + hullPlainType.getName());
@@ -708,7 +708,7 @@ public class WarpDrive {
 	}
 	
 	@EventHandler
-	public void onFMLPostInitialization(FMLPostInitializationEvent event) {
+	public void onFMLPostInitialization(final FMLPostInitializationEvent event) {
 		/* @TODO not sure why it would be needed, disabling for now
 		// load all owned dimensions at boot
 		for (final CelestialObject celestialObject : CelestialObjectManager.celestialObjects) {
@@ -750,17 +750,17 @@ public class WarpDrive {
 			peripheralHandler.register();
 		}
 		
-		WorldHandler worldHandler = new WorldHandler();
+		final WorldHandler worldHandler = new WorldHandler();
 		MinecraftForge.EVENT_BUS.register(worldHandler);
 		FMLCommonHandler.instance().bus().register(worldHandler);
 		
-		ChunkHandler chunkHandler = new ChunkHandler();
+		final ChunkHandler chunkHandler = new ChunkHandler();
 		MinecraftForge.EVENT_BUS.register(chunkHandler);
 		FMLCommonHandler.instance().bus().register(chunkHandler);
 	}
 	
 	@EventHandler
-	public void onFMLServerStarting(FMLServerStartingEvent event) {
+	public void onFMLServerStarting(final FMLServerStartingEvent event) {
 		event.registerServerCommand(new CommandDebug());
 		event.registerServerCommand(new CommandDump());
 		event.registerServerCommand(new CommandEntity());
@@ -774,8 +774,8 @@ public class WarpDrive {
 	}
 	
 	@Mod.EventHandler
-	public void onFMLMissingMappings(FMLMissingMappingsEvent event) {
-		for (FMLMissingMappingsEvent.MissingMapping mapping: event.get()) {
+	public void onFMLMissingMappings(final FMLMissingMappingsEvent event) {
+		for (final FMLMissingMappingsEvent.MissingMapping mapping: event.get()) {
 			if (mapping.type == GameRegistry.Type.ITEM) {
 				switch (mapping.name) {
 					case "WarpDrive:airBlock":

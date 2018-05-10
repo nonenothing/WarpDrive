@@ -483,11 +483,11 @@ public class WarpDriveConfig {
 	
 	private static ItemStack getModItemStackOrNull(final String mod, final String id, final int meta) {
 		try {
-			final ItemStack item = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
+			final ItemStack itemStack = new ItemStack((Item) Item.itemRegistry.getObject(mod + ":" + id));
 			if (meta != -1) {
-				item.setItemDamage(meta);
+				itemStack.setItemDamage(meta);
 			}
-			return item;
+			return itemStack;
 		} catch (final Exception exception) {
 			WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
 			return null;
@@ -1317,7 +1317,7 @@ public class WarpDriveConfig {
 	 * Check if a category of configuration files are missing, unpack default ones from the mod's resources to the specified target folder
 	 * Target folder should be already created
 	 **/
-	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, File folderTarget) {
+	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, final File folderTarget) {
 		final File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
 		if (files == null) {
 			throw new RuntimeException(String.format("Critical error accessing configuration directory, searching for %s*%s files: %s", prefix, suffix, configDirectory));

@@ -60,18 +60,18 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, int x, int y, int z, EntityPlayer entityPlayer) {
+	public ItemStack getPickBlock(final MovingObjectPosition target, final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer) {
 		return null;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 16];
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
@@ -87,7 +87,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		// hide in NEI
 		for (int i = 0; i < 16; i++) {
 			Commons.hideItemStack(new ItemStack(item, 1, i));
@@ -118,7 +118,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final Block blockSide = blockAccess.getBlock(x, y, z);
 		if (blockSide.isAir(blockAccess, x, y, z)) {
 			return true;
@@ -131,16 +131,16 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return !blockAccess.isSideSolid(x, y, z, direction, false);
 	}
 	
-	protected TileEntityForceFieldProjector getProjector(World world, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	protected TileEntityForceFieldProjector getProjector(final World world, final int x, final int y, final int z) {
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField) tileEntity).getProjector();
 		}
 		return null;
 	}
 	
-	private ForceFieldSetup getForceFieldSetup(World world, int x, int y, int z) {
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+	private ForceFieldSetup getForceFieldSetup(final World world, final int x, final int y, final int z) {
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField) tileEntity).getForceFieldSetup();
 		}
@@ -148,7 +148,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer entityPlayer) {
+	public void onBlockClicked(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer) {
 		if (world.isRemote) {
 			return;
 		}
@@ -159,7 +159,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(final World world, final int x, final int y, final int z) {
 		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			final List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getBoundingBox(x, y, z, x + 1, y + 0.9D, z + 1));
@@ -180,7 +180,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
+	public void onEntityCollidedWithBlock(final World world, final int x, final int y, final int z, final Entity entity) {
 		if (world.isRemote) {
 			return;
 		}
@@ -188,7 +188,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			forceFieldSetup.onEntityEffect(world, x, y, z, entity);
-			double distance2 = new Vector3(x, y, z).translate(0.5F).distanceTo_square(entity);
+			final double distance2 = new Vector3(x, y, z).translate(0.5F).distanceTo_square(entity);
 			if (entity instanceof EntityLiving && distance2 < 0.26D) {
 				boolean hasPermission = false;
 				
@@ -217,8 +217,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public int colorMultiplier(IBlockAccess blockAccess, int x, int y, int z) {
-		TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
+	public int colorMultiplier(final IBlockAccess blockAccess, final int x, final int y, final int z) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceField && ((TileEntityForceField)tileEntity).cache_blockCamouflage != null) {
 			return ((TileEntityForceField)tileEntity).cache_colorMultiplierCamouflage;
 		}
@@ -227,8 +227,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public int getLightValue(IBlockAccess blockAccess, int x, int y, int z) {
-		TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
+	public int getLightValue(final IBlockAccess blockAccess, final int x, final int y, final int z) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField)tileEntity).cache_lightCamouflage;
 		}
@@ -236,12 +236,12 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return 0;
 	}
 	
-	private void downgrade(World world, final int x, final int y, final int z) {
+	private void downgrade(final World world, final int x, final int y, final int z) {
 		if (tier > 1) {
-			TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, x, y, z);
+			final TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockForceFields[tier - 2], (world.getBlockMetadata(x, y, z) + 1) % 16, 2);
 			if (tileEntityForceFieldProjector != null) {
-				TileEntity tileEntity = world.getTileEntity(x, y, z);
+				final TileEntity tileEntity = world.getTileEntity(x, y, z);
 				if (tileEntity instanceof TileEntityForceField) {
 					((TileEntityForceField) tileEntity).setProjector(new VectorI(tileEntityForceFieldProjector));
 				}
@@ -256,8 +256,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	private double log_explosionY = -1.0D;
 	private double log_explosionZ;
 	@Override
-	public float getExplosionResistance(Entity entity, World world, int x, int y, int z, double explosionX, double explosionY, double explosionZ) {
-		boolean enableFirstHit = (log_explosionX != explosionX || log_explosionY != explosionY || log_explosionZ != explosionZ); 
+	public float getExplosionResistance(final Entity entity, final World world, final int x, final int y, final int z,
+	                                    final double explosionX, final double explosionY, final double explosionZ) {
+		final boolean enableFirstHit = (log_explosionX != explosionX || log_explosionY != explosionY || log_explosionZ != explosionZ);
 		if (enableFirstHit) {
 			log_explosionX = explosionX;
 			log_explosionY = explosionY;
@@ -266,10 +267,13 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		
 		// find explosion strength, defaults to no effect
 		double strength = 0.0D;
-		if (entity == null && (explosionX == Math.rint(explosionX)) && (explosionY == Math.rint(explosionY)) && (explosionZ == Math.rint(explosionZ)) ) {
+		if ( entity == null
+		  && explosionX == Math.rint(explosionX)
+		  && explosionY == Math.rint(explosionY)
+		  && explosionZ == Math.rint(explosionZ) ) {
 			// IC2 Reactor blowing up => block is already air
-			Block block = world.getBlock((int)explosionX, (int)explosionY, (int)explosionZ);
-			TileEntity tileEntity = world.getTileEntity((int)explosionX, (int)explosionY, (int)explosionZ);
+			final Block block = world.getBlock((int)explosionX, (int)explosionY, (int)explosionZ);
+			final TileEntity tileEntity = world.getTileEntity((int)explosionX, (int)explosionY, (int)explosionZ);
 			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
 				WarpDrive.logger.info("Block at location is " + block + " " + block.getUnlocalizedName() + " with tileEntity " + tileEntity);
 			}
@@ -331,15 +335,15 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 		
 		// apply damages to force field by consuming energy
-		Explosion explosion = new Explosion(world, entity, explosionX, explosionY, explosionZ, 4.0F);
-		Vector3 vDirection = new Vector3(x + 0.5D - explosionX, y + 0.5D - explosionY, z + 0.5D - explosionZ);
-		double magnitude = Math.max(1.0D, vDirection.getMagnitude());
+		final Explosion explosion = new Explosion(world, entity, explosionX, explosionY, explosionZ, 4.0F);
+		final Vector3 vDirection = new Vector3(x + 0.5D - explosionX, y + 0.5D - explosionY, z + 0.5D - explosionZ);
+		final double magnitude = Math.max(1.0D, vDirection.getMagnitude());
 		if (magnitude != 0) {// normalize
 			vDirection.scale(1 / magnitude);
 		}
-		double damageLevel = strength / (magnitude * magnitude) * 1.0D;
+		final double damageLevel = strength / (magnitude * magnitude) * 1.0D;
 		double damageLeft = 0;
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			damageLeft = forceFieldSetup.applyDamage(world, DamageSource.setExplosionSource(explosion), damageLevel);
 		}
@@ -354,18 +358,18 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public boolean canDropFromExplosion(Explosion p_149659_1_) {
+	public boolean canDropFromExplosion(final Explosion explosion) {
 		return false;
 	}
 	
 	@Override
-	public void onBlockExploded(World world, int x, int y, int z, Explosion explosion) {
+	public void onBlockExploded(final World world, final int x, final int y, final int z, final Explosion explosion) {
 		downgrade(world, x, y, z);
 		super.onBlockExploded(world, x, y, z, explosion);
 	}
 	
 	@Override
-	public void onEMP(World world, final int x, final int y, final int z, final float efficiency) {
+	public void onEMP(final World world, final int x, final int y, final int z, final float efficiency) {
 		if (efficiency * (1.0F - 0.20F * (tier - 1)) > world.rand.nextFloat()) {
 			downgrade(world, x, y, z);
 		}
@@ -373,22 +377,22 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion explosion) {
+	public void onBlockDestroyedByExplosion(final World world, final int x, final int y, final int z, final Explosion explosion) {
 		// (block is already set to air by caller, see IC2 iTNT for example)
 		downgrade(world, x, y, z);
 		super.onBlockDestroyedByExplosion(world, x, y, z, explosion);
 	}
 	
 	@Override
-	public float getBlockHardness(World world, final int x, final int y, final int z,
+	public float getBlockHardness(final World world, final int x, final int y, final int z,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, final int x, final int y, final int z, final DamageSource damageSource,
+	public int applyDamage(final World world, final int x, final int y, final int z, final DamageSource damageSource,
 	                       final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, x, y, z);
 		if (forceFieldSetup != null) {
 			return (int) Math.round(forceFieldSetup.applyDamage(world, damageSource, damageLevel));
 		}

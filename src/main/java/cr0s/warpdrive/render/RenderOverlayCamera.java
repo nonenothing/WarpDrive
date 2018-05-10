@@ -39,7 +39,7 @@ public class RenderOverlayCamera {
 				strHelp = "Left click to zoom / Right click to exit / Space to fire";
 			}
 			
-			Tessellator tessellator = Tessellator.instance;
+			final Tessellator tessellator = Tessellator.instance;
 			tessellator.startDrawingQuads();
 			tessellator.addVertexWithUV(       0.0D, scaledHeight, -90.0D, 0.0D, 1.0D);
 			tessellator.addVertexWithUV(scaledWidth, scaledHeight, -90.0D, 1.0D, 1.0D);
@@ -60,7 +60,7 @@ public class RenderOverlayCamera {
 			                                  (int)(scaledHeight * 0.19) - minecraft.fontRenderer.FONT_HEIGHT,
 			                                  color, true);
 			
-			String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
+			final String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
 			minecraft.fontRenderer.drawString(strZoom,
 			                                  (int) (scaledWidth * 0.91) - minecraft.fontRenderer.getStringWidth(strZoom),
 			                                  (int) (scaledHeight * 0.81),
@@ -72,7 +72,7 @@ public class RenderOverlayCamera {
 				                                  (int)(scaledHeight * 0.19),
 				                                  0xFF008F, true);
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 		
@@ -83,7 +83,7 @@ public class RenderOverlayCamera {
 	}
 	
 	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent.Pre event) {
+	public void onRender(final RenderGameOverlayEvent.Pre event) {
 		if (ClientCameraHandler.isOverlayEnabled) {
 			if (event.type == ElementType.HELMET) {
 				renderOverlay(event.resolution.getScaledWidth(), event.resolution.getScaledHeight());

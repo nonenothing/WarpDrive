@@ -52,7 +52,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
 	
@@ -69,7 +69,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final Block blockSide = blockAccess.getBlock(x, y, z);
 		if (blockSide.isAir(blockAccess, x, y, z)) {
 			return true;
@@ -88,20 +88,22 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	}
 	
 	@Override
-	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(final World world, final int x, final int y, final int z,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(final World world, final int x, final int y, final int z,
+	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(x, y, z);
 		} else {
-			int metadata = world.getBlockMetadata(x, y, z);
+			final int metadata = world.getBlockMetadata(x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockHulls_glass[tier - 2], metadata, 2);
 		}
 		return 0;

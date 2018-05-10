@@ -18,7 +18,7 @@ public class CompatEvilCraft implements IBlockTransformer {
 		try {
 			classBlockConfigurableBlockContainer = Class.forName("evilcraft.core.config.configurable.ConfigurableBlockContainer");
 			WarpDriveConfig.registerBlockTransformer("evilcraft", new CompatEvilCraft());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -29,7 +29,7 @@ public class CompatEvilCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -48,8 +48,8 @@ public class CompatEvilCraft implements IBlockTransformer {
 	private static final int[]  rotRotation       = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 || nbtTileEntity == null) {
 			return metadata;
 		}
@@ -59,7 +59,7 @@ public class CompatEvilCraft implements IBlockTransformer {
 			if (!nbtTileEntity.getBoolean("rotatable")) {
 				return metadata;
 			}
-			int rotation = nbtTileEntity.getInteger("rotation");
+			final int rotation = nbtTileEntity.getInteger("rotation");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("rotation", rotRotation[rotation]);

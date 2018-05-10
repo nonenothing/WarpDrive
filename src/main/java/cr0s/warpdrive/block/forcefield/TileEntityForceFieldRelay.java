@@ -32,14 +32,14 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 		return upgrade;
 	}
 	
-	protected void setUpgrade(EnumForceFieldUpgrade upgrade) {
+	protected void setUpgrade(final EnumForceFieldUpgrade upgrade) {
 		this.upgrade = upgrade;
 		markDirty();
 	}
 	
 	@Override
 	public String getUpgradeStatus() {
-		EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
+		final EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
 		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.unlocalizedName);
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
 			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.none",

@@ -106,7 +106,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeBoolean(isTransporterRoom);
 		
 		buffer.writeShort(globalPosition.dimensionId);
@@ -271,7 +271,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			}
 			
 			// start preferably from top or bottom side
-			double y;
+			final double y;
 			if (isFalling) {
 				y = vContainment.y + 0.5D - Math.pow(world.rand.nextDouble(), 3.0D) * yRange;
 			} else {
@@ -296,7 +296,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(MessageTransporterEffect messageSpawnParticle, MessageContext context) {
+	public IMessage onMessage(final MessageTransporterEffect messageTransporterEffect, final MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring particle packet");
@@ -305,12 +305,12 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
 			WarpDrive.logger.info("Received transporter effect isTransporterRoom %s at %s towards %d entities, with %.3f lockStrength, energizing in %d ticks, cooldown for %d ticks",
-			                      messageSpawnParticle.isTransporterRoom, messageSpawnParticle.globalPosition,
-			                      messageSpawnParticle.idEntities.size(),
-			                      messageSpawnParticle.lockStrength, messageSpawnParticle.tickEnergizing, messageSpawnParticle.tickCooldown);
+			                      messageTransporterEffect.isTransporterRoom, messageTransporterEffect.globalPosition,
+			                      messageTransporterEffect.idEntities.size(),
+			                      messageTransporterEffect.lockStrength, messageTransporterEffect.tickEnergizing, messageTransporterEffect.tickCooldown);
 		}
 		
-		messageSpawnParticle.handle(Minecraft.getMinecraft().theWorld);
+		messageTransporterEffect.handle(Minecraft.getMinecraft().theWorld);
 		
 		return null;	// no response
 	}

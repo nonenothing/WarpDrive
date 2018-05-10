@@ -16,7 +16,7 @@ public class Jumpgate {
 	}
 	
 	public Jumpgate(final String line) {
-		String[] params = line.split(":");
+		final String[] params = line.split(":");
 		
 		if (params.length < 4) {
 			return;
@@ -29,14 +29,12 @@ public class Jumpgate {
 	}
 	
 	public AxisAlignedBB getGateAABB() {
-		int xMin, yMin, zMin;
-		int xMax, yMax, zMax;
-		xMin = xCoord - (JumpgateGenerator.GATE_LENGTH_HALF * 2);
-		xMax = xCoord + (JumpgateGenerator.GATE_LENGTH_HALF * 2);
-		yMin = yCoord - (JumpgateGenerator.GATE_SIZE_HALF);
-		yMax = yCoord + (JumpgateGenerator.GATE_SIZE_HALF);
-		zMin = zCoord - (JumpgateGenerator.GATE_SIZE_HALF);
-		zMax = zCoord + (JumpgateGenerator.GATE_SIZE_HALF);
+		final int xMin = xCoord - (JumpgateGenerator.GATE_LENGTH_HALF * 2);
+		final int xMax = xCoord + (JumpgateGenerator.GATE_LENGTH_HALF * 2);
+		final int yMin = yCoord - (JumpgateGenerator.GATE_SIZE_HALF);
+		final int yMax = yCoord + (JumpgateGenerator.GATE_SIZE_HALF);
+		final int zMin = zCoord - (JumpgateGenerator.GATE_SIZE_HALF);
+		final int zMax = zCoord + (JumpgateGenerator.GATE_SIZE_HALF);
 		return AxisAlignedBB.getBoundingBox(xMin, yMin, zMin, xMax, yMax, zMax);
 	}
 	

@@ -5,10 +5,8 @@ import cr0s.warpdrive.config.InvalidXmlException;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.config.XmlFileManager;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,7 +20,6 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.DimensionManager;
-import net.minecraftforge.common.util.Constants.NBT;
 
 public class CelestialObjectManager extends XmlFileManager {
 	
@@ -335,11 +332,11 @@ public class CelestialObjectManager extends XmlFileManager {
 	}
 	
 	@Override
-	protected void parseRootElement(final String location, final Element elementCelestialObject) throws InvalidXmlException, SAXException, IOException {
+	protected void parseRootElement(final String location, final Element elementCelestialObject) throws InvalidXmlException {
 		parseCelestiaObjectElement(location, elementCelestialObject, "");
 	}
 	
-	private void parseCelestiaObjectElement(final String location, final Element elementCelestialObject, final String parentId) throws InvalidXmlException, SAXException, IOException {
+	private void parseCelestiaObjectElement(final String location, final Element elementCelestialObject, final String parentId) throws InvalidXmlException {
 		final CelestialObject celestialObjectRead = new CelestialObject(location, parentId, elementCelestialObject);
 		
 		addOrUpdateInRegistry(celestialObjectRead, false);

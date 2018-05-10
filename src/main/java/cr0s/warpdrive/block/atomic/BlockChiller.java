@@ -41,41 +41,41 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 2];
 	}
 	
 	@Override
-	public int damageDropped(int metadata) {
+	public int damageDropped(final int metadata) {
 		return 0;
 	}
 	
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(final World world, final int x, final int y, final int z) {
 		return AxisAlignedBB.getBoundingBox(
 			x + BOUNDING_TOLERANCE, y + BOUNDING_TOLERANCE, z + BOUNDING_TOLERANCE,
 			x + 1 - BOUNDING_TOLERANCE, y + 1 - BOUNDING_TOLERANCE, z + 1 - BOUNDING_TOLERANCE);
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(World world, int x, int y, int z, Entity entity) {
+	public void onEntityCollidedWithBlock(final World world, final int x, final int y, final int z, final Entity entity) {
 		super.onEntityCollidedWithBlock(world, x, y, z, entity);
 		onEntityEffect(world, x, y, z, entity);
 	}
 	
 	@Override
-	public void onEntityWalking(World world, int x, int y, int z, Entity entity) {
+	public void onEntityWalking(final World world, final int x, final int y, final int z, final Entity entity) {
 		super.onEntityWalking(world, x, y, z, entity);
 		onEntityEffect(world, x, y, z, entity);
 	}
 	
 	@Override
-	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer entityPlayer) {
+	public void onBlockClicked(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer) {
 		super.onBlockClicked(world, x, y, z, entityPlayer);
 		onEntityEffect(world, x, y, z, entityPlayer);
 	}
 	
-	private void onEntityEffect(World world, final int x, final int y, final int z, Entity entity) {
+	private void onEntityEffect(final World world, final int x, final int y, final int z, final Entity entity) {
 		if (entity.isDead || !(entity instanceof EntityLivingBase)) {
 			return;
 		}
@@ -87,9 +87,9 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		}
 		entity.attackEntityFrom(WarpDrive.damageWarm, 1 + tier);
 		
-		Vector3 v3Entity = new Vector3(entity);
-		Vector3 v3Chiller = new Vector3(x + 0.5D, y + 0.5D, z + 0.5D);
-		Vector3 v3Direction = new Vector3(entity).subtract(v3Chiller).normalize();
+		final Vector3 v3Entity = new Vector3(entity);
+		final Vector3 v3Chiller = new Vector3(x + 0.5D, y + 0.5D, z + 0.5D);
+		final Vector3 v3Direction = new Vector3(entity).subtract(v3Chiller).normalize();
 		v3Chiller.translateFactor(v3Direction, 0.6D);
 		v3Entity.translateFactor(v3Direction, -0.6D);
 		
@@ -102,14 +102,14 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(World world, int x, int y, int z, Random random) {
+	public void randomDisplayTick(final World world, final int x, final int y, final int z, final Random random) {
 		final int metadata = world.getBlockMetadata(x, y, z);
 		if (metadata == 0) {
 			return;
 		}
 		
 		// sound effect
-		int countNearby = 17
+		final int countNearby = 17
 		                - (world.getBlock(x - 1, y, z) == this ? 1 : 0)
 		                - (world.getBlock(x + 1, y, z) == this ? 1 : 0)
 		                - (world.getBlock(x, y, z - 1) == this ? 1 : 0)
@@ -133,7 +133,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		
 		// particle effect, loosely based on redstone ore
 		if (world.rand.nextInt(8) != 1) {
-			double dOffset = 0.0625D;
+			final double dOffset = 0.0625D;
 			
 			for (int l = 0; l < 6; ++l) {
 				double dX = (double)((float)x + random.nextFloat());

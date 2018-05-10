@@ -40,7 +40,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (metadata < iconBuffer.length) {
 			return iconBuffer[metadata];
@@ -51,7 +51,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return iconBuffer[1];
 	}
 	
@@ -71,14 +71,16 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityCloakingCore) {
-			TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore)tileEntity;
+			final TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore)tileEntity;
 			if (entityPlayer.getHeldItem() == null) {
 				Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 				// + " isInvalid? " + te.isInvalid() + " Valid? " + te.isValid + " Cloaking? " + te.isCloaking + " Enabled? " + te.isEnabled
@@ -100,7 +102,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	public void breakBlock(final World world, final int x, final int y, final int z, final Block block, final int metadata) {
 		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		
-		if (tileEntity != null && tileEntity instanceof TileEntityCloakingCore) {
+		if (tileEntity instanceof TileEntityCloakingCore) {
 			((TileEntityCloakingCore) tileEntity).isEnabled = false;
 			((TileEntityCloakingCore) tileEntity).disableCloakingField();
 		}

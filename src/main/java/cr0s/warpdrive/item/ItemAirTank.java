@@ -70,13 +70,13 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, getMaxDamage()));
 	}
 	
 	@Override
-	public boolean canContainAir(ItemStack itemStack) {
+	public boolean canContainAir(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return false;
@@ -85,7 +85,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public int getMaxAirStorage(ItemStack itemStack) {
+	public int getMaxAirStorage(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return 0;
@@ -94,7 +94,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public int getCurrentAirStorage(ItemStack itemStack) {
+	public int getCurrentAirStorage(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return 0;
@@ -103,7 +103,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public ItemStack consumeAir(ItemStack itemStack) {
+	public ItemStack consumeAir(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return itemStack;
@@ -113,7 +113,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public int getAirTicksPerConsumption(ItemStack itemStack) {
+	public int getAirTicksPerConsumption(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return 0;
@@ -122,7 +122,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public ItemStack getEmptyAirContainer(ItemStack itemStack) {
+	public ItemStack getEmptyAirContainer(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return itemStack;
@@ -131,7 +131,7 @@ public class ItemAirTank extends Item implements IAirContainerItem {
 	}
 	
 	@Override
-	public ItemStack getFullAirContainer(ItemStack itemStack) {
+	public ItemStack getFullAirContainer(final ItemStack itemStack) {
 		if ( itemStack == null
 		  || itemStack.getItem() != this ) {
 			return itemStack;

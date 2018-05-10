@@ -96,7 +96,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		}
 	}
 	
-	public boolean isAccessGranted(EntityPlayer entityPlayer, EnumPermissionNode enumPermissionNode) {
+	public boolean isAccessGranted(final EntityPlayer entityPlayer, final EnumPermissionNode enumPermissionNode) {
 		return false; // TODO
 	}
 	
@@ -193,7 +193,7 @@ public class ForceFieldSetup extends GlobalPosition {
 			}
 			// upgrade blocks (namely, relays)
 			if (tileEntity instanceof IForceFieldUpgrade) {
-				IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)tileEntity).getUpgradeEffector();
+				final IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)tileEntity).getUpgradeEffector();
 				if (upgradeEffector != null) {
 					Float currentValue = upgradeValues.get(upgradeEffector);
 					if (currentValue == null) {
@@ -203,7 +203,7 @@ public class ForceFieldSetup extends GlobalPosition {
 					
 					// camouflage identification
 					if (upgradeEffector == EnumForceFieldUpgrade.CAMOUFLAGE) {
-						Block blockCandidate = tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
+						final Block blockCandidate = tileEntity.getWorldObj().getBlock(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
 						if (isValidCamouflage(blockCandidate)) {
 							blockCamouflage = blockCandidate;
 							metadataCamouflage = tileEntity.getWorldObj().getBlockMetadata(tileEntity.xCoord, tileEntity.yCoord + 1, tileEntity.zCoord);
@@ -239,7 +239,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		// apply scaling
 		float speedRatio;
 		for (final Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgradeValues.entrySet()) {
-			float scaledValue = entry.getKey().getScaledValue(1.0F, entry.getValue());
+			final float scaledValue = entry.getKey().getScaledValue(1.0F, entry.getValue());
 			if (scaledValue != 0.0F) {
 				upgrades.put(entry.getKey(), scaledValue);
 				
@@ -305,7 +305,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		return entityEnergyCost * FORCEFIELD_MAX_FACTOR_ENTITY_COST * Math.exp(FORCEFIELD_TAU_FACTOR_ENTITY_COST / countEntityInteractions);
 	}
 	
-	public int onEntityEffect(final World world, final int blockX, final int blockY, final int blockZ, Entity entity) {
+	public int onEntityEffect(final World world, final int blockX, final int blockY, final int blockZ, final Entity entity) {
 		int countdown = 0;
 		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
@@ -324,11 +324,11 @@ public class ForceFieldSetup extends GlobalPosition {
 		return countdown;
 	}
 	
-	public double applyDamage(World world, final DamageSource damageSource, final double damageLevel) {
+	public double applyDamage(final World world, final DamageSource damageSource, final double damageLevel) {
 		assert(damageSource != null);
-		TileEntity tileEntity = world.getTileEntity(this.x, this.y, this.z);
+		final TileEntity tileEntity = world.getTileEntity(this.x, this.y, this.z);
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
-			double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;
+			final double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;
 			((TileEntityForceFieldProjector)tileEntity).onEnergyDamage(scaledDamage);
 			return 0.0D;
 		}

@@ -7,21 +7,21 @@ import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 
 public class CameraRegistryItem {
-	public int dimensionId = -666;
-	public ChunkPosition position = null;
-	public int videoChannel = -1;
-	public EnumCameraType type = null;
 	
-	public CameraRegistryItem(World parWorldObj, ChunkPosition parPosition, int parFrequency, EnumCameraType parType) {
-		videoChannel = parFrequency;
-		position = parPosition;
-		dimensionId = parWorldObj.provider.dimensionId;
-		type = parType;
+	public int dimensionId;
+	public ChunkPosition position;
+	public int videoChannel;
+	public EnumCameraType type;
+	
+	public CameraRegistryItem(final World world, final ChunkPosition position, final int videoChannel, final EnumCameraType enumCameraType) {
+		this.videoChannel = videoChannel;
+		this.position = position;
+		this.dimensionId = world.provider.dimensionId;
+		this.type = enumCameraType;
 	}
 	
-	public boolean isTileEntity(TileEntity tileEntity) {
-		return tileEntity != null
-			&& tileEntity instanceof IVideoChannel
+	public boolean isTileEntity(final TileEntity tileEntity) {
+		return tileEntity instanceof IVideoChannel
 			&& dimensionId == tileEntity.getWorldObj().provider.dimensionId
 			&& position.chunkPosX == tileEntity.xCoord
 			&& position.chunkPosY == tileEntity.yCoord

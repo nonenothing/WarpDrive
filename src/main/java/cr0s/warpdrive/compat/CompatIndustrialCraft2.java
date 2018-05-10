@@ -19,7 +19,7 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 		try {
 			classIC2tileEntity = Class.forName("ic2.core.block.TileEntityBlock");
 			WarpDriveConfig.registerBlockTransformer("IC2", new CompatIndustrialCraft2());
-		} catch (ClassNotFoundException exception) {
+		} catch (final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -30,7 +30,7 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	

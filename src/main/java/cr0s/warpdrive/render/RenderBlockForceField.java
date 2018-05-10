@@ -22,7 +22,7 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 	}
 	
 	@Override
-	public boolean renderWorldBlock(IBlockAccess blockAccess, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+	public boolean renderWorldBlock(final IBlockAccess blockAccess, final int x, final int y, final int z, final Block block, final int modelId, final RenderBlocks renderer) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityForceField)) {
 			return false;
@@ -38,7 +38,7 @@ public class RenderBlockForceField implements ISimpleBlockRenderingHandler {
 	}
 	
 	@Override
-	public boolean shouldRender3DInInventory(int modelId) {
+	public boolean shouldRender3DInInventory(final int modelId) {
 		return true;
 	}
 	

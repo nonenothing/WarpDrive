@@ -39,7 +39,7 @@ public class ItemForceFieldShape extends Item {
 	
 	public static ItemStack getItemStack(final EnumForceFieldShape forceFieldShape) {
 		if (forceFieldShape != null) {
-			int damage = forceFieldShape.ordinal();
+			final int damage = forceFieldShape.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldShape, 1, damage);
 			}
@@ -62,8 +62,8 @@ public class ItemForceFieldShape extends Item {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldShape.length) {
 			return getUnlocalizedName() + "." + EnumForceFieldShape.get(damage).unlocalizedName;
 		}
@@ -71,7 +71,7 @@ public class ItemForceFieldShape extends Item {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		if (damage >= 0 && damage < EnumForceFieldShape.length) {
 			return icons[damage];
 		}
@@ -79,7 +79,7 @@ public class ItemForceFieldShape extends Item {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (final EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
 			if (enumForceFieldShape != EnumForceFieldShape.NONE) {
 				list.add(new ItemStack(item, 1, enumForceFieldShape.ordinal()));
@@ -88,13 +88,13 @@ public class ItemForceFieldShape extends Item {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
+	public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
+		final Block block = world.getBlock(x, y, z);
 		return block instanceof BlockForceFieldRelay || block instanceof BlockForceFieldProjector || super.doesSneakBypassUse(world, x, y, z, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";

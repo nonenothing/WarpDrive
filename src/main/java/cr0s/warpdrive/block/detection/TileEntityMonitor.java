@@ -80,21 +80,21 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	
 	@Override
 	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 10, tagCompound);
 	}
 	
 	@Override
-	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
+		final NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 	}
 	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] videoChannel(Context context, Arguments arguments) {
+	public Object[] videoChannel(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setVideoChannel(arguments.checkInteger(0));
 		}
@@ -104,7 +104,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("videoChannel")) {

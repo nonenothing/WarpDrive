@@ -18,7 +18,7 @@ public class CompatJABBA implements IBlockTransformer {
 		try {
 			classBlockBarrel = Class.forName("mcp.mobius.betterbarrels.common.blocks.BlockBarrel");
 			WarpDriveConfig.registerBlockTransformer("JABBA", new CompatJABBA());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -29,7 +29,7 @@ public class CompatJABBA implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -48,7 +48,7 @@ public class CompatJABBA implements IBlockTransformer {
 	private static final int[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	private int[] rotate_integerArray(final byte rotationSteps, final int[] data) {
-		int[] newData = data.clone();
+		final int[] newData = data.clone();
 		for (int index = 0; index < data.length; index++) {
 			switch (rotationSteps) {
 			case 1:
@@ -68,14 +68,14 @@ public class CompatJABBA implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}
 		
 		if (nbtTileEntity.hasKey("rotation")) {
-			int rotation = nbtTileEntity.getInteger("rotation");
+			final int rotation = nbtTileEntity.getInteger("rotation");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("rotation", mrot[rotation]);
@@ -92,7 +92,7 @@ public class CompatJABBA implements IBlockTransformer {
 		}
 		
 		if (nbtTileEntity.hasKey("orientation")) {
-			int orientation = nbtTileEntity.getInteger("orientation");
+			final int orientation = nbtTileEntity.getInteger("orientation");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("orientation", mrot[orientation]);

@@ -27,7 +27,7 @@ public class BlockElectromagnetPlain extends BlockAbstractAccelerator {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return side == 0 || side == 1 ? iconTop : iconSide;
 	}
 }

@@ -20,7 +20,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemBlockAbstractBase extends ItemBlock {
 	
-	public ItemBlockAbstractBase(Block block) {
+	public ItemBlockAbstractBase(final Block block) {
 		super(block);	// sets field_150939_a to block
 		if (block instanceof BlockAbstractContainer) {
 			setHasSubtypes(((BlockAbstractContainer) block).hasSubBlocks);
@@ -29,22 +29,22 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		return field_150939_a.getIcon(2, damage);
 	}
 	
 	@Override
-	public int getColorFromItemStack(ItemStack itemStack, int indexPass) {
+	public int getColorFromItemStack(final ItemStack itemStack, final int indexPass) {
 		return Block.getBlockFromItem(itemStack.getItem()).getRenderColor(itemStack.getItemDamage());
 	}
 	
 	@Override
-	public int getMetadata(int damage) {
+	public int getMetadata(final int damage) {
 		return damage;
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		if ( itemStack == null 
 		  || !(field_150939_a instanceof BlockAbstractContainer)
 		  || !((BlockAbstractContainer) field_150939_a).hasSubBlocks ) {

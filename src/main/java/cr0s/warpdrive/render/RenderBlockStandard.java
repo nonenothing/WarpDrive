@@ -13,17 +13,17 @@ public class RenderBlockStandard implements ISimpleBlockRenderingHandler {
 	public static RenderBlockStandard instance = new RenderBlockStandard();
 	
 	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
+	public void renderInventoryBlock(final Block block, final int metadata, final int modelId, final RenderBlocks renderer) {
 		RenderCommons.renderInventoryBlock(block, metadata, renderer);
 	}
 	
 	@Override
-	public boolean renderWorldBlock(IBlockAccess blockAccess, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+	public boolean renderWorldBlock(final IBlockAccess blockAccess, final int x, final int y, final int z, final Block block, final int modelId, final RenderBlocks renderer) {
 		return renderer.renderStandardBlock(block, x, y, z);
 	}
 	
 	@Override
-	public boolean shouldRender3DInInventory(int modelId) {
+	public boolean shouldRender3DInInventory(final int modelId) {
 		return true;
 	}
 	

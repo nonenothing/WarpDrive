@@ -23,7 +23,7 @@ public class CompatThermalDynamics implements IBlockTransformer {
 			blockTDBase = Class.forName("cofh.thermaldynamics.block.BlockTDBase");
 			
 			WarpDriveConfig.registerBlockTransformer("ThermalDynamics", new CompatThermalDynamics());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -34,7 +34,7 @@ public class CompatThermalDynamics implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -52,7 +52,7 @@ public class CompatThermalDynamics implements IBlockTransformer {
 	
 	private static final Map<String, String> rotConAttachmentNames;
 	static {
-		Map<String, String> map = new HashMap<>();
+		final Map<String, String> map = new HashMap<>();
 		map.put("attachment2", "attachment5");
 		map.put("attachment5", "attachment3");
 		map.put("attachment3", "attachment4");
@@ -69,8 +69,8 @@ public class CompatThermalDynamics implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 || nbtTileEntity == null) {
 			return metadata;
 		}
@@ -79,7 +79,7 @@ public class CompatThermalDynamics implements IBlockTransformer {
 		final HashMap<String, NBTBase> mapRotated = new HashMap<>(9);
 		for (final String key : rotConAttachmentNames.keySet()) {
 			if (nbtTileEntity.hasKey(key)) {
-				NBTBase nbtBase = nbtTileEntity.getTag(key);
+				final NBTBase nbtBase = nbtTileEntity.getTag(key);
 				nbtTileEntity.removeTag(key);
 				switch (rotationSteps) {
 				case 1:

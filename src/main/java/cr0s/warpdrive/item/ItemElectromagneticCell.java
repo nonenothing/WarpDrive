@@ -80,16 +80,16 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		return icons[damage % icons.length];
 	}
 	
 	public static ItemStack getItemStackNoCache(final Particle particle, final int amount) {
-		ItemStack itemStack = new ItemStack(WarpDrive.itemElectromagneticCell, 1, 0);
+		final ItemStack itemStack = new ItemStack(WarpDrive.itemElectromagneticCell, 1, 0);
 		ParticleStack particleStack = null;
 		if (particle != null && amount != 0) {
 			particleStack = new ParticleStack(particle, amount);
-			NBTTagCompound tagCompound = new NBTTagCompound();
+			final NBTTagCompound tagCompound = new NBTTagCompound();
 			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
 			itemStack.setTagCompound(tagCompound);
 		}
@@ -98,7 +98,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		list.add(getItemStackNoCache(null, 0));
 		list.add(getItemStackNoCache(ParticleRegistry.ION, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
@@ -108,12 +108,12 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public boolean hasContainerItem(ItemStack stack) {
+	public boolean hasContainerItem(final ItemStack stack) {
 		return true;
 	}
 	
 	@Override
-	public boolean doesContainerItemLeaveCraftingGrid(ItemStack itemStack) {
+	public boolean doesContainerItemLeaveCraftingGrid(final ItemStack itemStack) {
 		return false;
 	}
 	
@@ -123,8 +123,8 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public ItemStack getContainerItem(ItemStack itemStackFilled) {
-		ParticleStack particleStack = getParticleStack(itemStackFilled);
+	public ItemStack getContainerItem(final ItemStack itemStackFilled) {
+		final ParticleStack particleStack = getParticleStack(itemStackFilled);
 		if (particleStack != null) {
 			final int amount = particleStack.getAmount() - getAmountToConsume(itemStackFilled);
 			if (amount <= 0) {
@@ -136,23 +136,23 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public void setAmountToConsume(ItemStack itemStack, int amountToConsume) {
-		ParticleStack particleStack = getParticleStack(itemStack);
+	public void setAmountToConsume(final ItemStack itemStack, final int amountToConsume) {
+		final ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			return;
 		}
-		NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+		final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
 		tagCompound.setInteger(AMOUNT_TO_CONSUME_TAG, amountToConsume);
 	}
 	
-	private int getAmountToConsume(ItemStack itemStack) {
+	private int getAmountToConsume(final ItemStack itemStack) {
 		if (itemStack.hasTagCompound()) {
 			return itemStack.getTagCompound().getInteger(AMOUNT_TO_CONSUME_TAG);
 		}
 		return 0;
 	}
 	
-	private static int getDamageLevel(ItemStack itemStack, final ParticleStack particleStack) {
+	private static int getDamageLevel(final ItemStack itemStack, final ParticleStack particleStack) {
 		if (!(itemStack.getItem() instanceof ItemElectromagneticCell)) {
 			WarpDrive.logger.error("Invalid ItemStack passed, expecting ItemElectromagneticCell: " + itemStack);
 			return itemStack.getItemDamage();
@@ -167,7 +167,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		return (1 + type * 6 + offset);
 	}
 	
-	private static void updateDamageLevel(ItemStack itemStack, final ParticleStack particleStack) {
+	private static void updateDamageLevel(final ItemStack itemStack, final ParticleStack particleStack) {
 		itemStack.setItemDamage(getDamageLevel(itemStack, particleStack));
 	}
 	
@@ -190,12 +190,12 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	@Override
 	public boolean isEmpty(final ItemStack itemStack) {
-		ParticleStack particleStack = getParticleStack(itemStack);
+		final ParticleStack particleStack = getParticleStack(itemStack);
 		return particleStack == null || particleStack.isEmpty();
 	}
 	
 	@Override
-	public int fill(ItemStack itemStack, final ParticleStack resource, final boolean doFill) {
+	public int fill(final ItemStack itemStack, final ParticleStack resource, final boolean doFill) {
 		ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			particleStack = new ParticleStack(resource.getParticle(), 0);
@@ -206,7 +206,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		if (doFill) {
 			particleStack.fill(transfer);
 			
-			NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
+			final NBTTagCompound tagCompound = itemStack.hasTagCompound() ? itemStack.getTagCompound() : new NBTTagCompound();
 			tagCompound.setTag("particle", particleStack.writeToNBT(new NBTTagCompound()));
 			if (!itemStack.hasTagCompound()) {
 				itemStack.setTagCompound(tagCompound);
@@ -217,7 +217,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public ParticleStack drain(ItemStack itemStack, final ParticleStack resource, final boolean doDrain) {
+	public ParticleStack drain(final ItemStack itemStack, final ParticleStack resource, final boolean doDrain) {
 		final ParticleStack particleStack = getParticleStack(itemStack);
 		if (particleStack == null || particleStack.getParticle() == null) {
 			return null;
@@ -225,7 +225,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		if (!particleStack.isParticleEqual(resource) || particleStack.getAmount() <= 0) {
 			return null;
 		}
-		int transfer = Math.min(resource.getAmount(), particleStack.getAmount());
+		final int transfer = Math.min(resource.getAmount(), particleStack.getAmount());
 		if (doDrain) {
 			particleStack.fill(-transfer);
 			
@@ -266,7 +266,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
@@ -275,7 +275,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
 		final ParticleStack particleStack = itemElectromagneticCell.getParticleStack(itemStack);
-		String tooltip;
+		final String tooltip;
 		if (particleStack == null || particleStack.getParticle() == null) {
 			tooltip = StatCollector.translateToLocalFormatted("item.warpdrive.atomic.electromagnetic_cell.tooltip.empty");
 			Commons.addTooltip(list, tooltip);
@@ -287,7 +287,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 				particleStack.getAmount(), particle.getLocalizedName());
 			Commons.addTooltip(list, tooltip);
 			
-			String particleTooltip = particle.getLocalizedTooltip();
+			final String particleTooltip = particle.getLocalizedTooltip();
 			if (!particleTooltip.isEmpty()) {
 				Commons.addTooltip(list, particleTooltip);
 			}

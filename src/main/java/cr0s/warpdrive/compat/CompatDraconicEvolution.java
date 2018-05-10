@@ -30,7 +30,7 @@ public class CompatDraconicEvolution implements IBlockTransformer {
 			classBlockPlacedItem = Class.forName("com.brandon3055.draconicevolution.common.blocks.PlacedItem");
 			classBlockTeleporterStand = Class.forName("com.brandon3055.draconicevolution.common.blocks.TeleporterStand");
 			WarpDriveConfig.registerBlockTransformer("DraconicEvolution", new CompatDraconicEvolution());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -41,7 +41,7 @@ public class CompatDraconicEvolution implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		if ( classBlockDraconiumBlock.isInstance(block)
 		  && metadata == 1) {
 			reason.append("Ender resurrection anchor detected!");
@@ -114,7 +114,7 @@ public class CompatDraconicEvolution implements IBlockTransformer {
 	private static final int[]  rotGenerator      = {  1,  2,  3,  0,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 && nbtTileEntity == null) {
 			return metadata;

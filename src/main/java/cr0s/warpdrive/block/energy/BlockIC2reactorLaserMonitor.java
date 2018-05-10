@@ -48,7 +48,7 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityIC2reactorLaserMonitor)) {
@@ -68,7 +68,7 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 4) {
 			return icons[1];
 		} else {
@@ -77,19 +77,21 @@ public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final int x, final int y, final int z,
+	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 		world.setBlockMetadataWithNotify(x, y, z, 6, 3);
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer, final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityIC2reactorLaserMonitor) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityIC2reactorLaserMonitor) tileEntity).getStatus());
 				return true;

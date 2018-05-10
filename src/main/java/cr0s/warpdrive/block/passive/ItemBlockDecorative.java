@@ -12,26 +12,26 @@ import net.minecraft.item.ItemStack;
 
 public class ItemBlockDecorative extends ItemBlock {
 	
-	public ItemBlockDecorative(Block block) {
+	public ItemBlockDecorative(final Block block) {
 		super(block);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.decoration.decorative");
 	}
 	
 	@Override
-	public int getMetadata(int damage) {
+	public int getMetadata(final int damage) {
 		return damage;
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTabs, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTabs, final List list) {
 		for (final EnumDecorativeType decorativeType : EnumDecorativeType.values()) {
 			list.add(new ItemStack(item, 1, decorativeType.ordinal()));
 		}
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(final ItemStack itemstack) {
 		if (itemstack == null) {
 			return getUnlocalizedName();
 		}

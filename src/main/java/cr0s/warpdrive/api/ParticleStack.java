@@ -33,7 +33,7 @@ public class ParticleStack {
 		}
 	}
 	
-	public ParticleStack(ParticleStack stack, int amount) {
+	public ParticleStack(final ParticleStack stack, final int amount) {
 		this(stack.getParticle(), amount, stack.tagCompound);
 	}
 	
@@ -44,12 +44,12 @@ public class ParticleStack {
 		if (tagCompound == null) {
 			return null;
 		}
-		String particleName = tagCompound.getString("name");
+		final String particleName = tagCompound.getString("name");
 		
 		if (particleName == null || ParticleRegistry.getParticle(particleName) == null) {
 			return null;
 		}
-		ParticleStack stack = new ParticleStack(ParticleRegistry.getParticle(particleName), tagCompound.getInteger("amount"));
+		final ParticleStack stack = new ParticleStack(ParticleRegistry.getParticle(particleName), tagCompound.getInteger("amount"));
 		
 		if (tagCompound.hasKey("tag")) {
 			stack.tagCompound = tagCompound.getCompoundTag("tag");
@@ -111,27 +111,27 @@ public class ParticleStack {
 		return new ParticleStack(getParticle(), amount, tagCompound);
 	}
 	
-	public boolean isParticleEqual(ParticleStack other) {
+	public boolean isParticleEqual(final ParticleStack other) {
 		return other != null && getParticle() == other.getParticle() && isParticleStackTagEqual(other);
 	}
 	
-	private boolean isParticleStackTagEqual(ParticleStack other) {
+	private boolean isParticleStackTagEqual(final ParticleStack other) {
 		return tagCompound == null ? other.tagCompound == null : other.tagCompound != null && tagCompound.equals(other.tagCompound);
 	}
 	
-	public static boolean areParticleStackTagsEqual(ParticleStack stack1, ParticleStack stack2) {
+	public static boolean areParticleStackTagsEqual(final ParticleStack stack1, final ParticleStack stack2) {
 		return stack1 == null && stack2 == null || (!(stack1 == null || stack2 == null) && stack1.isParticleStackTagEqual(stack2));
 	}
 	
-	public boolean containsParticle(ParticleStack other) {
+	public boolean containsParticle(final ParticleStack other) {
 		return isParticleEqual(other) && amount >= other.amount;
 	}
 	
-	public boolean isParticleStackIdentical(ParticleStack other) {
+	public boolean isParticleStackIdentical(final ParticleStack other) {
 		return isParticleEqual(other) && amount == other.amount;
 	}
 	
-	public boolean isParticleEqual(ItemStack other) {
+	public boolean isParticleEqual(final ItemStack other) {
 		if (other == null) {
 			return false;
 		}
@@ -155,7 +155,7 @@ public class ParticleStack {
 	}
 	
 	@Override
-	public final boolean equals(Object object) {
+	public final boolean equals(final Object object) {
 		return object instanceof ParticleStack && isParticleEqual((ParticleStack) object);
 	}
 }

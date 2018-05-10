@@ -53,7 +53,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
@@ -74,7 +74,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -100,7 +100,9 @@ public class BlockShipController extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}

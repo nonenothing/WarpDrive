@@ -20,7 +20,7 @@ public enum EnumHullPlainType {
 		}
 	}
 	
-	EnumHullPlainType(String unlocalizedName) {
+	EnumHullPlainType(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

@@ -90,15 +90,15 @@ public class VectorI implements Cloneable {
 		return new VectorI(x + side.offsetX, y + side.offsetY, z + side.offsetZ);
 	}
 	
-	public Block getBlock(IBlockAccess blockAccess) {
+	public Block getBlock(final IBlockAccess blockAccess) {
 		return blockAccess.getBlock(x, y, z);
 	}
 	
-	public boolean isChunkLoaded(IBlockAccess blockAccess) {
+	public boolean isChunkLoaded(final IBlockAccess blockAccess) {
 		return isChunkLoaded(blockAccess, x, z);
 	}
 	
-	static public boolean isChunkLoaded(IBlockAccess blockAccess, final int x, final int z) {
+	static public boolean isChunkLoaded(final IBlockAccess blockAccess, final int x, final int z) {
 		if (blockAccess instanceof WorldServer) {
 			return ChunkHandler.isLoaded((WorldServer) blockAccess, x, 64, z);
 			/*
@@ -118,15 +118,15 @@ public class VectorI implements Cloneable {
 		return true;
 	}
 	
-	public Block getBlock_noChunkLoading(IBlockAccess blockAccess, ForgeDirection side) {
+	public Block getBlock_noChunkLoading(final IBlockAccess blockAccess, final ForgeDirection side) {
 		return getBlock_noChunkLoading(blockAccess, x + side.offsetX, y + side.offsetY, z + side.offsetZ);
 	}
 	
-	public Block getBlock_noChunkLoading(IBlockAccess blockAccess) {
+	public Block getBlock_noChunkLoading(final IBlockAccess blockAccess) {
 		return getBlock_noChunkLoading(blockAccess, x, y, z);
 	}
 	
-	static public Block getBlock_noChunkLoading(IBlockAccess blockAccess, final int x, final int y, final int z) {
+	static public Block getBlock_noChunkLoading(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		// skip unloaded worlds
 		if (blockAccess == null) {
 			return null;
@@ -138,20 +138,20 @@ public class VectorI implements Cloneable {
 		return blockAccess.getBlock(x, y, z);
 	}
 	
-	public TileEntity getTileEntity(IBlockAccess blockAccess) {
+	public TileEntity getTileEntity(final IBlockAccess blockAccess) {
 		return blockAccess.getTileEntity(x, y, z);
 	}
 	
-	public int getBlockMetadata(IBlockAccess blockAccess) {
+	public int getBlockMetadata(final IBlockAccess blockAccess) {
 		return blockAccess.getBlockMetadata(x, y, z);
 	}
 	
-	public void setBlock(World worldObj, final Block block) {
-		worldObj.setBlock(x, y, z, block, 0, 3);
+	public void setBlock(final World world, final Block block) {
+		world.setBlock(x, y, z, block, 0, 3);
 	}
 	
-	public void setBlock(World worldObj, final Block block, final int metadata) {
-		worldObj.setBlock(x, y, z, block, metadata, 3);
+	public void setBlock(final World world, final Block block, final int metadata) {
+		world.setBlock(x, y, z, block, metadata, 3);
 	}
 	
 	
@@ -262,10 +262,10 @@ public class VectorI implements Cloneable {
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof VectorI) {
-			VectorI vector = (VectorI) object;
+			final VectorI vector = (VectorI) object;
 			return (x == vector.x) && (y == vector.y) && (z == vector.z);
 		} else if (object instanceof TileEntity) {
-			TileEntity tileEntity = (TileEntity) object;
+			final TileEntity tileEntity = (TileEntity) object;
 			return (x == tileEntity.xCoord) && (y == tileEntity.yCoord) && (z == tileEntity.zCoord);
 		}
 		
@@ -279,7 +279,7 @@ public class VectorI implements Cloneable {
 	
 	
 	public static VectorI createFromNBT(final NBTTagCompound tagCompound) {
-		VectorI vector = new VectorI();
+		final VectorI vector = new VectorI();
 		vector.readFromNBT(tagCompound);
 		return vector;
 	}
@@ -300,16 +300,16 @@ public class VectorI implements Cloneable {
 	// Square roots are evil, avoid them at all cost
 	@Deprecated
 	public double distanceTo(final VectorI vector) {
-		int newX = vector.x - x;
-		int newY = vector.y - y;
-		int newZ = vector.z - z;
+		final int newX = vector.x - x;
+		final int newY = vector.y - y;
+		final int newZ = vector.z - z;
 		return Math.sqrt(newX * newX + newY * newY + newZ * newZ);
 	}
 	
 	public int distance2To(final VectorI vector) {
-		int newX = vector.x - x;
-		int newY = vector.y - y;
-		int newZ = vector.z - z;
+		final int newX = vector.x - x;
+		final int newY = vector.y - y;
+		final int newZ = vector.z - z;
 		return (newX * newX + newY * newY + newZ * newZ);
 	}
 	
@@ -321,16 +321,16 @@ public class VectorI implements Cloneable {
 	}
 	
 	public int distance2To(final TileEntity tileEntity) {
-		int newX = tileEntity.xCoord - x;
-		int newY = tileEntity.yCoord - y;
-		int newZ = tileEntity.zCoord - z;
+		final int newX = tileEntity.xCoord - x;
+		final int newY = tileEntity.yCoord - y;
+		final int newZ = tileEntity.zCoord - z;
 		return (newX * newX + newY * newY + newZ * newZ);
 	}
 	
 	static public int distance2To(final VectorI vector1, final VectorI vector2) {
-		int newX = vector1.x - vector2.x;
-		int newY = vector1.y - vector2.y;
-		int newZ = vector1.z - vector2.z;
+		final int newX = vector1.x - vector2.x;
+		final int newY = vector1.y - vector2.y;
+		final int newZ = vector1.z - vector2.z;
 		return (newX * newX + newY * newY + newZ * newZ);
 	}
 	
@@ -356,19 +356,19 @@ public class VectorI implements Cloneable {
 	}
 	
 	public void rotateByAngle(final double yaw, final double pitch, final double roll) {
-		double yawRadians = Math.toRadians(yaw);
-		double yawCosinus = Math.cos(yawRadians);
-		double yawSinus = Math.sin(yawRadians);
-		double pitchRadians = Math.toRadians(pitch);
-		double pitchCosinus = Math.cos(pitchRadians);
-		double pitchSinus = Math.sin(pitchRadians);
-		double rollRadians = Math.toRadians(roll);
-		double rollCosinus = Math.cos(rollRadians);
-		double rollSinus = Math.sin(rollRadians);
+		final double yawRadians = Math.toRadians(yaw);
+		final double yawCosinus = Math.cos(yawRadians);
+		final double yawSinus = Math.sin(yawRadians);
+		final double pitchRadians = Math.toRadians(pitch);
+		final double pitchCosinus = Math.cos(pitchRadians);
+		final double pitchSinus = Math.sin(pitchRadians);
+		final double rollRadians = Math.toRadians(roll);
+		final double rollCosinus = Math.cos(rollRadians);
+		final double rollSinus = Math.sin(rollRadians);
 		
-		double oldX = x;
-		double oldY = y;
-		double oldZ = z;
+		final double oldX = x;
+		final double oldY = y;
+		final double oldZ = z;
 		
 		x = (int)Math.round(( oldX * yawCosinus * pitchCosinus
 			+ oldZ * (yawCosinus * pitchSinus * rollSinus - yawSinus * rollCosinus)

@@ -12,7 +12,7 @@ public class ItemWarpArmor extends ItemArmor implements IBreathingHelmet {
 	
 	public static final String[] suffixes = { "helmet", "chestplate", "leggings", "boots" };
 	
-	public ItemWarpArmor(ArmorMaterial armorMaterial, int renderIndex, int armorPart) {
+	public ItemWarpArmor(final ArmorMaterial armorMaterial, final int renderIndex, final int armorPart) {
 		super(armorMaterial, renderIndex, armorPart);
 		setUnlocalizedName("warpdrive.armor." + suffixes[armorPart]);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
@@ -20,12 +20,12 @@ public class ItemWarpArmor extends ItemArmor implements IBreathingHelmet {
 	}
 	
 	@Override
-	public String getArmorTexture(ItemStack itemStack, Entity entity, int slot, String renderingType) {
+	public String getArmorTexture(final ItemStack itemStack, final Entity entity, final int slot, final String renderingType) {
 		return "warpdrive:textures/armor/warp_armor_" + (this.armorType == 2 ? 2 : 1) + ".png";
 	}
 	
 	@Override
-	public boolean canBreath(EntityLivingBase entityLivingBase) {
+	public boolean canBreath(final EntityLivingBase entityLivingBase) {
 		return armorType == 0;
 	}
 }

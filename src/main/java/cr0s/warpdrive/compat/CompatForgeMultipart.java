@@ -26,15 +26,15 @@ public class CompatForgeMultipart implements IBlockTransformer {
 	
 	public static boolean register() {
 		try {
-			Class forgeMultipart_helper = Class.forName("codechicken.multipart.MultipartHelper");
+			final Class forgeMultipart_helper = Class.forName("codechicken.multipart.MultipartHelper");
 			methodMultipartHelper_createTileFromNBT = forgeMultipart_helper.getDeclaredMethod("createTileFromNBT", World.class, NBTTagCompound.class);
 			methodMultipartHelper_sendDescPacket = forgeMultipart_helper.getDeclaredMethod("sendDescPacket", World.class, TileEntity.class);
-			Class forgeMultipart_tileMultipart = Class.forName("codechicken.multipart.TileMultipart");
+			final Class forgeMultipart_tileMultipart = Class.forName("codechicken.multipart.TileMultipart");
 			methodTileMultipart_onChunkLoad = forgeMultipart_tileMultipart.getDeclaredMethod("onChunkLoad");
 			
 			classBlockMultipart = Class.forName("codechicken.multipart.BlockMultipart");
 			WarpDriveConfig.registerBlockTransformer("ForgeMultipart", new CompatForgeMultipart());
-		} catch(ClassNotFoundException | SecurityException | NoSuchMethodException exception) {
+		} catch(final ClassNotFoundException | SecurityException | NoSuchMethodException exception) {
 			exception.printStackTrace();
 			return false;
 		}
@@ -47,7 +47,7 @@ public class CompatForgeMultipart implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -82,13 +82,13 @@ public class CompatForgeMultipart implements IBlockTransformer {
 		                                          20, 21, 22, 23, 16, 17, 18, 19,  8,  9, 10, 11, 12, 13, 14, 15,
 		                                          24, 25, 26, 27, 28, 29, 30, 31 };
 	
-	private NBTTagCompound rotate_part(final byte rotationSteps, NBTTagCompound nbtPart) {
-		NBTTagCompound nbtNewPart = (NBTTagCompound) nbtPart.copy();
+	private NBTTagCompound rotate_part(final byte rotationSteps, final NBTTagCompound nbtPart) {
+		final NBTTagCompound nbtNewPart = (NBTTagCompound) nbtPart.copy();
 		
 		if (!nbtNewPart.hasKey("id")) {
 			WarpDrive.logger.error("Ignoring ForgeMultipart with missing id: " + nbtPart);
 		} else {
-			String id = nbtPart.getString("id");
+			final String id = nbtPart.getString("id");
 			String propertyName = null;
 			byte mask = (byte) 0xFF;
 			byte[] rot = null;
@@ -130,9 +130,9 @@ public class CompatForgeMultipart implements IBlockTransformer {
 			// actual rotation
 			if (propertyName != null && rot != null) {
 				if (nbtPart.hasKey(propertyName)) {
-					byte value = nbtPart.getByte(propertyName);
-					byte masked = (byte) (value & mask);
-					byte notmasked = (byte) (value - masked);
+					final byte value = nbtPart.getByte(propertyName);
+					final byte masked = (byte) (value & mask);
+					final byte notmasked = (byte) (value - masked);
 					switch (rotationSteps) {
 					case 1:
 						nbtNewPart.setByte(propertyName, (byte) (notmasked | rot[masked]));
@@ -153,19 +153,19 @@ public class CompatForgeMultipart implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 || nbtTileEntity == null) {
 			return metadata;
 		}
 		
 		// Parts
 		if (nbtTileEntity.hasKey("parts")) {
-			NBTTagList nbtParts = nbtTileEntity.getTagList("parts", Constants.NBT.TAG_COMPOUND);
-			NBTTagList nbtNewParts = new NBTTagList(); 
+			final NBTTagList nbtParts = nbtTileEntity.getTagList("parts", Constants.NBT.TAG_COMPOUND);
+			final NBTTagList nbtNewParts = new NBTTagList();
 			for (int index = 0; index < nbtParts.tagCount(); index++) {
-				NBTTagCompound nbtPart = nbtParts.getCompoundTagAt(index);
-				NBTTagCompound nbtNewPart = rotate_part(rotationSteps, nbtPart);
+				final NBTTagCompound nbtPart = nbtParts.getCompoundTagAt(index);
+				final NBTTagCompound nbtNewPart = rotate_part(rotationSteps, nbtPart);
 				nbtNewParts.appendTag(nbtNewPart);
 			}
 			nbtTileEntity.setTag("parts", nbtNewParts);

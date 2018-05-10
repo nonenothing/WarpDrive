@@ -65,7 +65,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringDamage.isEmpty()) {
 			try {
 				damage = Integer.parseInt(stringDamage);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid damage for item " + nameItem);
 			}
 		}
@@ -76,7 +76,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringNBT.isEmpty()) {
 			try {
 				tagCompound = (NBTTagCompound) JsonToNBT.func_150315_a(stringNBT);
-			} catch (NBTException exception) {
+			} catch (final NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for item " + nameItem);
 			}
 		}
@@ -87,7 +87,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringQuantityMin.isEmpty()) {
 			try {
 				quantityMin = Integer.parseInt(stringQuantityMin);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid minQuantity for item " + nameItem);
 			}
 		}
@@ -98,7 +98,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringQuantityMax.isEmpty()) {
 			try {
 				quantityMax = Integer.parseInt(stringQuantityMax);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid maxQuantity for item " + nameItem);
 			}
 		}
@@ -112,8 +112,8 @@ public class Loot implements IXmlRepresentableUnit {
 		final int quantity = quantityMin + (quantityMax > quantityMin ? rand.nextInt(quantityMax - quantityMin) : 0);
 		final ItemStack itemStack = new ItemStack(item, quantity, damage);
 		if (tagCompound != null) {
-			NBTTagCompound nbtTagCompoundNew = (NBTTagCompound) tagCompound.copy();
-			itemStack.setTagCompound(nbtTagCompoundNew);
+			final NBTTagCompound tagCompoundNew = (NBTTagCompound) tagCompound.copy();
+			itemStack.setTagCompound(tagCompoundNew);
 		}
 		return itemStack;
 	}
@@ -124,7 +124,7 @@ public class Loot implements IXmlRepresentableUnit {
 	}
 	
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		return object instanceof Loot
 			&& (item == null || item.equals(((Loot) object).item))
 			&& damage == ((Loot) object).damage

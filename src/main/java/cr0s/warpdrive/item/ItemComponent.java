@@ -37,9 +37,9 @@ public class ItemComponent extends Item implements IAirContainerItem {
 		itemStackCache = new ItemStack[EnumComponentType.length];
 	}
 	
-	public static ItemStack getItemStack(EnumComponentType enumComponentType) {
+	public static ItemStack getItemStack(final EnumComponentType enumComponentType) {
 		if (enumComponentType != null) {
-			int damage = enumComponentType.ordinal();
+			final int damage = enumComponentType.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemComponent, 1, damage);
 			}
@@ -48,7 +48,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumComponentType enumComponentType, int amount) {
+	public static ItemStack getItemStackNoCache(final EnumComponentType enumComponentType, final int amount) {
 		return new ItemStack(WarpDrive.itemComponent, amount, enumComponentType.ordinal());
 	}
 	
@@ -63,7 +63,7 @@ public class ItemComponent extends Item implements IAirContainerItem {
 	
 	@Override
 	public String getUnlocalizedName(final ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			return "item.warpdrive.crafting." + EnumComponentType.get(damage).unlocalizedName;
 		}

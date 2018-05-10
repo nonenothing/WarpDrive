@@ -48,7 +48,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		}
@@ -86,7 +86,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int colorMultiplier(IBlockAccess blockAccess, int x, int y, int z) {
+	public int colorMultiplier(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityShipScanner && ((TileEntityShipScanner) tileEntity).blockCamouflage != null) {
 			return ((TileEntityShipScanner) tileEntity).colorMultiplierCamouflage;
@@ -96,7 +96,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int getLightValue(IBlockAccess blockAccess, int x, int y, int z) {
+	public int getLightValue(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityShipScanner) {
 			return ((TileEntityShipScanner) tileEntity).lightCamouflage;
@@ -126,7 +126,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
 			return 1;
 		}
@@ -134,7 +134,9 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}

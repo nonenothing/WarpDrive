@@ -124,7 +124,7 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	// Create a new SirenSound object that the siren will use.
 	@SideOnly(Side.CLIENT)
 	private void setSound() {
-		String resource = WarpDrive.MODID + ":siren_" + (isRaidSiren ? "raid" : "industrial");
+		final String resource = WarpDrive.MODID + ":siren_" + (isRaidSiren ? "raid" : "industrial");
 		sound = new SirenSound(new ResourceLocation(resource), range, xCoord, yCoord, zCoord);
 	}
     

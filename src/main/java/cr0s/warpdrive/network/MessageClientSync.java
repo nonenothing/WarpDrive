@@ -36,18 +36,18 @@ public class MessageClientSync implements IMessage, IMessageHandler<MessageClien
 	}
 	
 	@Override
-	public void fromBytes(ByteBuf buffer) {
+	public void fromBytes(final ByteBuf buffer) {
 		tagCompound = ByteBufUtils.readTag(buffer);
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		ByteBufUtils.writeTag(buffer, tagCompound);
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(MessageClientSync messageClientSync, MessageContext context) {
+	public IMessage onMessage(final MessageClientSync messageClientSync, final MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring client synchronization packet");
@@ -64,7 +64,7 @@ public class MessageClientSync implements IMessage, IMessageHandler<MessageClien
 			Dictionary.ITEMS_BREATHING_HELMET = Dictionary.readItemsFromNBT(messageClientSync.tagCompound.getTagList("items_breathingHelmet", NBT.TAG_STRING));
 			Dictionary.ITEMS_FLYINSPACE       = Dictionary.readItemsFromNBT(messageClientSync.tagCompound.getTagList("items_flyInSpace"     , NBT.TAG_STRING));
 			Dictionary.ITEMS_NOFALLDAMAGE     = Dictionary.readItemsFromNBT(messageClientSync.tagCompound.getTagList("items_noFallDamage"   , NBT.TAG_STRING));
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			WarpDrive.logger.error(String.format("Fails to parse client synchronization packet %s", messageClientSync.tagCompound));
 		}

@@ -1,14 +1,9 @@
 package cr0s.warpdrive.block.collection;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -53,7 +48,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
@@ -69,7 +64,7 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		}
@@ -82,32 +77,5 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityLaserTreeFarm();
-	}
-	
-	@Override
-	public int quantityDropped(Random random) {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
-		return Item.getItemFromBlock(this);
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
-		if (entityPlayer.getHeldItem() == null) {
-			final TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity instanceof TileEntityLaserTreeFarm) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityLaserTreeFarm) tileEntity).getStatus());
-				return true;
-			}
-		}
-		
-		return false;
 	}
 }

@@ -117,8 +117,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 		}
 	}
 	
-	private boolean isPassableBlock(int yPosition) {
-		Block block = worldObj.getBlock(xCoord, yPosition, zCoord);
+	private boolean isPassableBlock(final int yPosition) {
+		final Block block = worldObj.getBlock(xCoord, yPosition, zCoord);
 		return block.isAssociatedBlock(Blocks.air)
 			|| worldObj.isAirBlock(xCoord, yPosition, zCoord)
 			|| block.getCollisionBoundingBoxFromPool(worldObj, xCoord, yPosition, zCoord) == null;
@@ -209,13 +209,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(final ForgeDirection from) {
 		return true;
 	}
 	
 	// Common OC/CC methods
 	@Override
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
@@ -224,7 +224,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Override
-	public Object[] mode(Object[] arguments) {
+	public Object[] mode(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] instanceof String) {
 			final String stringValue = (String) arguments[0];
 			if (stringValue.equalsIgnoreCase("up")) {
@@ -250,13 +250,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] mode(Context context, Arguments arguments) {
+	public Object[] mode(final Context context, final Arguments arguments) {
 		return mode(
 			new Object[] {
 				arguments.checkString(0)
@@ -266,14 +266,14 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] state(Context context, Arguments arguments) {
+	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

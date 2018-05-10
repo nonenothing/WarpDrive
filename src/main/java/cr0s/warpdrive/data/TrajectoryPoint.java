@@ -73,7 +73,7 @@ public class TrajectoryPoint extends VectorI {
 	public final VectorI vJunctionForward;
 	public final VectorI vJunctionBackward;
 	
-	public TrajectoryPoint(World world, final VectorI vPosition, final ForgeDirection directionForward) {
+	public TrajectoryPoint(final World world, final VectorI vPosition, final ForgeDirection directionForward) {
 		this(world, vPosition.x, vPosition.y, vPosition.z, directionForward);
 	}
 	
@@ -96,36 +96,36 @@ public class TrajectoryPoint extends VectorI {
 	}
 	
 	// get next point on an acceleration pipe
-	private TrajectoryPoint(World world, final int x, final int y, final int z, final ForgeDirection directionMain) {
+	private TrajectoryPoint(final World world, final int x, final int y, final int z, final ForgeDirection directionMain) {
 		super(x, y, z);
 		int typeNew = NO_TYPE;
 		
 		// check the core
-		Block blockCore = world.getBlock(x, y , z);
+		final Block blockCore = world.getBlock(x, y , z);
 		if (!(blockCore instanceof BlockVoidShellPlain)) {
 			typeNew |= ERROR_MISSING_VOID_SHELL;
 		}
 		
 		// get main blocks
-		ForgeDirection directionLeft  = directionMain.getRotation(ForgeDirection.UP);
-		ForgeDirection directionRight = directionMain.getRotation(ForgeDirection.DOWN);
-		Block blockForward   = world.getBlock(x + directionMain.offsetX, y, z + directionMain.offsetZ);
-		Block blockUp        = world.getBlock(x, y + 1, z);
-		Block blockDown      = world.getBlock(x, y - 1, z);
-		Block blockLeft      = world.getBlock(x + directionLeft .offsetX, y, z + directionLeft .offsetZ);
-		Block blockRight     = world.getBlock(x + directionRight.offsetX, y, z + directionRight.offsetZ);
+		final ForgeDirection directionLeft  = directionMain.getRotation(ForgeDirection.UP);
+		final ForgeDirection directionRight = directionMain.getRotation(ForgeDirection.DOWN);
+		final Block blockForward   = world.getBlock(x + directionMain.offsetX, y, z + directionMain.offsetZ);
+		final Block blockUp        = world.getBlock(x, y + 1, z);
+		final Block blockDown      = world.getBlock(x, y - 1, z);
+		final Block blockLeft      = world.getBlock(x + directionLeft .offsetX, y, z + directionLeft .offsetZ);
+		final Block blockRight     = world.getBlock(x + directionRight.offsetX, y, z + directionRight.offsetZ);
 		int tier = 0;
 		
 		// check main magnets
 		if (blockUp instanceof BlockElectromagnetPlain && blockDown instanceof BlockElectromagnetPlain) {
-			int tierUp = ((BlockElectromagnetPlain) blockUp).tier;
+			final int tierUp = ((BlockElectromagnetPlain) blockUp).tier;
 			if (tierUp == ((BlockElectromagnetPlain) blockDown).tier) {
 				tier = tier == 0 || tier == tierUp ? tierUp : -1;
 				typeNew |= MAGNETS_VERTICAL;
 			}
 		}
 		if (blockLeft instanceof BlockElectromagnetPlain && blockRight instanceof BlockElectromagnetPlain) {
-			int tierLeft = ((BlockElectromagnetPlain) blockLeft).tier;
+			final int tierLeft = ((BlockElectromagnetPlain) blockLeft).tier;
 			if (tierLeft == ((BlockElectromagnetPlain) blockRight).tier) {
 				tier = tier == 0 || tier == tierLeft ? tierLeft : -1;
 				typeNew |= MAGNETS_HORIZONTAL;
@@ -133,10 +133,10 @@ public class TrajectoryPoint extends VectorI {
 		}
 		
 		// checking turning
-		TurnEvaluator turnEvaluator = new TurnEvaluator(world, x, y, z, directionMain, typeNew,
-		                                               directionLeft, directionRight,
-		                                               blockForward, blockUp, blockDown, blockLeft, blockRight,
-		                                               tier);
+		final TurnEvaluator turnEvaluator = new TurnEvaluator(world, x, y, z, directionMain, typeNew,
+		                                                      directionLeft, directionRight,
+		                                                      blockForward, blockUp, blockDown, blockLeft, blockRight,
+		                                                      tier);
 		typeNew = turnEvaluator.typeNew;
 		final boolean isShellValid = turnEvaluator.isShellValid;
 		final boolean isTurning = turnEvaluator.isTurning;
@@ -149,7 +149,7 @@ public class TrajectoryPoint extends VectorI {
 		VectorI new_vControlPoint = null;
 		int new_controlChannel = -1;
 		if (isShellValid) {
-			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				final Block block = world.getBlock(
 						x + 2 * direction.offsetX,
 						y + 2 * direction.offsetY,
@@ -185,7 +185,7 @@ public class TrajectoryPoint extends VectorI {
 		boolean isInput  = false;
 		boolean isOutput = false;
 		if (isShellValid) {
-			NodeEvaluator nodeEvaluator = new NodeEvaluator(world, x, y, z, typeNew, tier, isTurning);
+			final NodeEvaluator nodeEvaluator = new NodeEvaluator(world, x, y, z, typeNew, tier, isTurning);
 			// report errors found
 			typeNew = nodeEvaluator.typeNew;
 			
@@ -222,19 +222,19 @@ public class TrajectoryPoint extends VectorI {
 				}
 			} else {
 				typeNew |= isInput ? IS_INPUT_FORWARD : IS_OUTPUT_FORWARD; // @TODO code review, probably inverted somewhere
-				Block blockForwardLeft = world.getBlock(
+				final Block blockForwardLeft = world.getBlock(
 					x + directionMain.offsetX + directionLeft.offsetX,
 					y,
 					z + directionMain.offsetZ + directionLeft.offsetZ);
-				Block blockForwardRight = world.getBlock(
+				final Block blockForwardRight = world.getBlock(
 					x + directionMain.offsetX + directionRight.offsetX,
 					y,
 					z + directionMain.offsetZ + directionRight.offsetZ);
-				Block blockBackwardLeft = world.getBlock(
+				final Block blockBackwardLeft = world.getBlock(
 					x - directionMain.offsetX + directionLeft.offsetX,
 					y,
 					z - directionMain.offsetZ + directionLeft.offsetZ);
-				Block blockBackwardRight = world.getBlock(
+				final Block blockBackwardRight = world.getBlock(
 					x - directionMain.offsetX + directionRight.offsetX,
 					y,
 					z - directionMain.offsetZ + directionRight.offsetZ);
@@ -284,7 +284,7 @@ public class TrajectoryPoint extends VectorI {
 	}
 	
 	// get next point on a transfer pipe
-	public TrajectoryPoint(World world, final TrajectoryPoint trajectoryPoint, final boolean isForward) {
+	public TrajectoryPoint(final World world, final TrajectoryPoint trajectoryPoint, final boolean isForward) {
 		int typeNew = IS_TRANSFER_PIPE;
 		// get first/next transfer pipe
 		this.x = trajectoryPoint.x + (isForward ? trajectoryPoint.vJunctionForward.x : trajectoryPoint.vJunctionBackward.x);
@@ -304,28 +304,28 @@ public class TrajectoryPoint extends VectorI {
 		}
 		
 		// check support shells
-		boolean isStraightLine = (vJunctionForward.x == -directionBackward.offsetX) && (vJunctionForward.z == -directionBackward.offsetZ);
-		Block blockForward   = world.getBlock(x + vJunctionForward.x, y, z + vJunctionForward.z);
-		Block blockBack      = world.getBlock(x + directionBackward.offsetX, y, z + directionBackward.offsetZ);
-		Block blockUp        = world.getBlock(x, y + 1, z);
-		Block blockDown      = world.getBlock(x, y - 1, z);
+		final boolean isStraightLine = (vJunctionForward.x == -directionBackward.offsetX) && (vJunctionForward.z == -directionBackward.offsetZ);
+		final Block blockForward   = world.getBlock(x + vJunctionForward.x, y, z + vJunctionForward.z);
+		final Block blockBack      = world.getBlock(x + directionBackward.offsetX, y, z + directionBackward.offsetZ);
+		final Block blockUp        = world.getBlock(x, y + 1, z);
+		final Block blockDown      = world.getBlock(x, y - 1, z);
 		
 		// check main magnets to trigger node evaluation
 		// (up and down magnets should have same tier, but different from current one)
 		boolean hasVerticalMagnets = false;
 		if (blockUp instanceof BlockElectromagnetPlain && blockDown instanceof BlockElectromagnetPlain) {
-			int tierUp = ((BlockElectromagnetPlain) blockUp).tier;
+			final int tierUp = ((BlockElectromagnetPlain) blockUp).tier;
 			if (tierUp == ((BlockElectromagnetPlain) blockDown).tier) {
 				hasVerticalMagnets = tier == tierUp;
 			}
 		}
 		
 		// check forward movement
-		boolean isForwardOk = blockForward instanceof BlockVoidShellPlain;
-		boolean isBackOk    = blockBack    instanceof BlockVoidShellPlain;
-		boolean isShellValid = !(blockUp   instanceof BlockVoidShellPlain)     // no vertical transfer
-		                    && !(blockDown instanceof BlockVoidShellPlain)     // no vertical transfer
-		                    && isForwardOk && isBackOk && tier != 0;
+		final boolean isForwardOk = blockForward instanceof BlockVoidShellPlain;
+		final boolean isBackOk    = blockBack    instanceof BlockVoidShellPlain;
+		final boolean isShellValid = !(blockUp   instanceof BlockVoidShellPlain)     // no vertical transfer
+		                          && !(blockDown instanceof BlockVoidShellPlain)     // no vertical transfer
+		                          && isForwardOk && isBackOk && tier != 0;
 		if (blockUp instanceof BlockVoidShellPlain || blockDown instanceof BlockVoidShellPlain) {
 			typeNew |= ERROR_VERTICAL_JUNCTION;
 		}
@@ -339,11 +339,11 @@ public class TrajectoryPoint extends VectorI {
 			// when transfer line is at 45deg, we can't input/output in a turning corner, so we skip that case
 			if (isStraightLine) {
 				// we just do a basic check of void shells, the full validation of magnets is done in the node evaluator
-				ForgeDirection directionMain  = directionBackward.getOpposite();
-				ForgeDirection directionLeft  = directionMain.getRotation(ForgeDirection.UP);
-				ForgeDirection directionRight = directionMain.getRotation(ForgeDirection.DOWN);
-				Block blockLeft      = world.getBlock(x + directionLeft .offsetX, y, z + directionLeft .offsetZ);
-				Block blockRight     = world.getBlock(x + directionRight.offsetX, y, z + directionRight.offsetZ);
+				final ForgeDirection directionMain  = directionBackward.getOpposite();
+				final ForgeDirection directionLeft  = directionMain.getRotation(ForgeDirection.UP);
+				final ForgeDirection directionRight = directionMain.getRotation(ForgeDirection.DOWN);
+				final Block blockLeft      = world.getBlock(x + directionLeft .offsetX, y, z + directionLeft .offsetZ);
+				final Block blockRight     = world.getBlock(x + directionRight.offsetX, y, z + directionRight.offsetZ);
 				isTurning = blockLeft instanceof BlockVoidShellPlain || blockRight instanceof BlockVoidShellPlain;
 			}
 		}
@@ -354,7 +354,7 @@ public class TrajectoryPoint extends VectorI {
 		
 		// look for an input or output node
 		if (isShellValid && hasVerticalMagnets) {
-			NodeEvaluator nodeEvaluator = new NodeEvaluator(world, x, y, z, typeNew, tier, isTurning);
+			final NodeEvaluator nodeEvaluator = new NodeEvaluator(world, x, y, z, typeNew, tier, isTurning);
 			typeNew = nodeEvaluator.typeNew;
 			if (nodeEvaluator.isInput || nodeEvaluator.isOutput) {
 				// it's a transfer node, mark it for re-evaluation
@@ -466,7 +466,7 @@ public class TrajectoryPoint extends VectorI {
 		if ((type & MASK_IS_INPUT) == 0) {
 			return null;
 		}
-		VectorI vJunctionRequired = new VectorI(
+		final VectorI vJunctionRequired = new VectorI(
 			(int) -Math.signum(vectorCurrent.x),
 		    (int) -Math.signum(vectorCurrent.y),
 		    (int) -Math.signum(vectorCurrent.z));
@@ -493,7 +493,7 @@ public class TrajectoryPoint extends VectorI {
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof VectorI) {
-			VectorI vector = (VectorI) object;
+			final VectorI vector = (VectorI) object;
 			return (x == vector.x) && (y == vector.y) && (z == vector.z);
 		}
 		
@@ -522,7 +522,7 @@ public class TrajectoryPoint extends VectorI {
 		public boolean isInput;
 		public boolean isOutput;
 		
-		public NodeEvaluator(World world, final int x, final int y, final int z, final int typeOriginal, final int tierMain, final boolean isTurning) {
+		public NodeEvaluator(final World world, final int x, final int y, final int z, final int typeOriginal, final int tierMain, final boolean isTurning) {
 			typeNew = typeOriginal;
 			isInput = false;
 			isOutput = false;
@@ -536,12 +536,12 @@ public class TrajectoryPoint extends VectorI {
 			for (int offsetX = -1; offsetX < 2; offsetX++) {
 				for (int offsetY = -1; offsetY < 2; offsetY++) {
 					for (int offsetZ = -1; offsetZ < 2; offsetZ++) {
-						Block blockCheck = world.getBlock(
+						final Block blockCheck = world.getBlock(
 							x + offsetX,
 							y + offsetY,
 							z + offsetZ);
 						if (blockCheck instanceof BlockElectromagnetPlain) {
-							int tierCheck = ((BlockElectromagnetPlain) blockCheck).tier;
+							final int tierCheck = ((BlockElectromagnetPlain) blockCheck).tier;
 							if (tierCheck == tierMain) {
 								countMainMagnet++;
 							} else if (tierCheck > tierMain) {
@@ -554,7 +554,7 @@ public class TrajectoryPoint extends VectorI {
 						} else if (blockCheck instanceof BlockParticlesCollider) {
 							countCollider++;
 						} else if (blockCheck instanceof BlockParticlesInjector) {
-							int tierCheck = ((BlockParticlesInjector) blockCheck).tier;
+							final int tierCheck = ((BlockParticlesInjector) blockCheck).tier;
 							if (tierCheck == tierMain) {
 								countMainMagnet++;
 							}
@@ -613,7 +613,7 @@ public class TrajectoryPoint extends VectorI {
 		public ForgeDirection directionForward;
 		public ForgeDirection directionBackward;
 		
-		public TurnEvaluator(World world, final int x, final int y, final int z, final ForgeDirection directionMain, final int typeOriginal,
+		public TurnEvaluator(final World world, final int x, final int y, final int z, final ForgeDirection directionMain, final int typeOriginal,
 		                     final ForgeDirection directionLeft, final ForgeDirection directionRight,
 		                     final Block blockForward, final Block blockUp, final Block blockDown, final Block blockLeft, final Block blockRight,
 		                     final int tier) {
@@ -621,8 +621,8 @@ public class TrajectoryPoint extends VectorI {
 			
 			// check turning magnets
 			isForward = blockForward instanceof BlockVoidShellPlain;
-			boolean isLeftTurn  = blockLeft    instanceof BlockVoidShellPlain;
-			boolean isRightTurn = blockRight   instanceof BlockVoidShellPlain;
+			final boolean isLeftTurn  = blockLeft    instanceof BlockVoidShellPlain;
+			final boolean isRightTurn = blockRight   instanceof BlockVoidShellPlain;
 			// boolean isJunction  = (isForward && (isLeftTurn || isRightTurn)) || (isLeftTurn && isRightTurn);
 			isShellValid = !(blockUp instanceof BlockVoidShellPlain)       // no vertical accelerators
 			            && !(blockDown instanceof BlockVoidShellPlain)     // no vertical accelerators
@@ -637,19 +637,19 @@ public class TrajectoryPoint extends VectorI {
 			isTurning = false;
 			if (isShellValid && (isLeftTurn || isRightTurn)) {
 				// validate the turning magnets
-				Block blockForwardLeft = world.getBlock(
+				final Block blockForwardLeft = world.getBlock(
 					x + directionMain.offsetX + directionLeft.offsetX,
 					y,
 					z + directionMain.offsetZ + directionLeft.offsetZ);
-				Block blockForwardRight = world.getBlock(
+				final Block blockForwardRight = world.getBlock(
 					x + directionMain.offsetX + directionRight.offsetX,
 					y,
 					z + directionMain.offsetZ + directionRight.offsetZ);
-				Block blockBackwardLeft = world.getBlock(
+				final Block blockBackwardLeft = world.getBlock(
 					x - directionMain.offsetX + directionLeft.offsetX,
 					y,
 					z - directionMain.offsetZ + directionLeft.offsetZ);
-				Block blockBackwardRight = world.getBlock(
+				final Block blockBackwardRight = world.getBlock(
 					x - directionMain.offsetX + directionRight.offsetX,
 					y,
 					z - directionMain.offsetZ + directionRight.offsetZ);
@@ -686,7 +686,7 @@ public class TrajectoryPoint extends VectorI {
 			} else {
 				assert(isLeftTurn && isRightTurn);
 				// it's probably an input/output, in that case, magnets are all around, just pick one side to detect the direction
-				Block blockUpRight   = world.getBlock(x + directionRight.offsetX, y + 1, z + directionRight.offsetZ);
+				final Block blockUpRight   = world.getBlock(x + directionRight.offsetX, y + 1, z + directionRight.offsetZ);
 				if (blockUpRight instanceof BlockElectromagnetPlain && tier != ((BlockElectromagnetPlain) blockUpRight).tier) {
 					directionForward = directionLeft;
 				} else {

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	
-	public ItemBlockForceFieldProjector(Block block) {
+	public ItemBlockForceFieldProjector(final Block block) {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
@@ -15,7 +15,7 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(final ItemStack itemstack) {
 		if (itemstack == null) {
 			return getUnlocalizedName();
 		}

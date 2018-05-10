@@ -39,17 +39,17 @@ public class BlockBedrockGlass extends Block {
 	}
 	
 	@Override
-	public boolean isAir(IBlockAccess blockAccess, int x, int y, int z) {
+	public boolean isAir(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return false;
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess var1, int x, int y, int z) {
+	public boolean isReplaceable(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return false;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(final World world, final int x, final int y, final int z) {
 		return true;
 	}
 	
@@ -67,7 +67,7 @@ public class BlockBedrockGlass extends Block {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		return false;
 	}
 	
@@ -82,7 +82,7 @@ public class BlockBedrockGlass extends Block {
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	

@@ -69,7 +69,7 @@ public class EntityFXDot extends EntityFX {
 	}
 	
 	@Override
-	public int getBrightnessForRender(float p_70070_1_) {
+	public int getBrightnessForRender(final float p_70070_1_) {
 		return 0xF00000;
 	}
 	

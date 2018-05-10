@@ -28,7 +28,7 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
 		if (commandSender == null) { return; }
 		final MinecraftServer server = MinecraftServer.getServer();
 		
@@ -43,35 +43,35 @@ public class CommandSpace extends CommandBase {
 		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
-		if (params.length == 0) {
+		if (args.length == 0) {
 			// nop
-		} else if (params.length == 1) {
-			if (params[0].equalsIgnoreCase("help") || params[0].equalsIgnoreCase("?")) {
+		} else if (args.length == 1) {
+			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
 				Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 				return;
 			}
-			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, params[0]);
+			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else if (commandSender instanceof EntityPlayer) {
-				dimensionIdTarget = StarMapRegistry.getDimensionId(params[0], (EntityPlayer) commandSender);
+				dimensionIdTarget = StarMapRegistry.getDimensionId(args[0], (EntityPlayer) commandSender);
 			} else {
-				Commons.addChatMessage(commandSender, "§c/space: player not found '" + params[0] + "'");
+				Commons.addChatMessage(commandSender, "§c/space: player not found '" + args[0] + "'");
 				return;
 			}
 			
-		} else if (params.length == 2) {
-			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, params[0]);
+		} else if (args.length == 2) {
+			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
-				Commons.addChatMessage(commandSender, "§c/space: player not found '" + params[0] + "'");
+				Commons.addChatMessage(commandSender, "§c/space: player not found '" + args[0] + "'");
 				return;
 			}
-			dimensionIdTarget = StarMapRegistry.getDimensionId(params[1], entityPlayerMPs[0]);
+			dimensionIdTarget = StarMapRegistry.getDimensionId(args[1], entityPlayerMPs[0]);
 			
 		} else {
-			Commons.addChatMessage(commandSender, "§c/space: too many arguments " + params.length);
+			Commons.addChatMessage(commandSender, "§c/space: too many arguments " + args.length);
 			return;
 		}
 		
@@ -167,7 +167,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 			// inform player
-			String message = "§aTeleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.provider.getDimensionName();
+			final String message = "§aTeleporting player " + entityPlayerMP.getCommandSenderName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.provider.getDimensionName();
 			Commons.addChatMessage(commandSender, message);
 			WarpDrive.logger.info(message);
 			if (commandSender != entityPlayerMP) {
@@ -203,7 +203,7 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
+	public String getCommandUsage(final ICommandSender commandSender) {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";
 	}
 	

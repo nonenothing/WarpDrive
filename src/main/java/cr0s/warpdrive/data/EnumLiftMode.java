@@ -24,7 +24,7 @@ public enum EnumLiftMode implements IStringSerializable {
 		}
 	}
 	
-	EnumLiftMode(String unlocalizedName) {
+	EnumLiftMode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

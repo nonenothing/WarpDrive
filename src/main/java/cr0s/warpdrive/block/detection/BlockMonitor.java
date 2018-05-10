@@ -40,19 +40,26 @@ public class BlockMonitor extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		int metadata  = blockAccess.getBlockMetadata(x, y, z);
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
+		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		return side == metadata ? iconFront : iconSide;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return side == 3 ? iconFront : iconSide;
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
+		return new TileEntityMonitor();
+	}
+	
+	@Override
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		// Monitor is only reacting client side
 		if (!world.isRemote) {
 			return false;
@@ -63,7 +70,7 @@ public class BlockMonitor extends BlockAbstractContainer {
 			
 			if (tileEntity instanceof TileEntityMonitor) {
 				final int videoChannel = ((TileEntityMonitor) tileEntity).getVideoChannel();
-				CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
+				final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
 					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor) tileEntity).getStatus());
 					return true;
@@ -82,10 +89,5 @@ public class BlockMonitor extends BlockAbstractContainer {
 		}
 		
 		return false;
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(final World world, final int metadata) {
-		return new TileEntityMonitor();
 	}
 }

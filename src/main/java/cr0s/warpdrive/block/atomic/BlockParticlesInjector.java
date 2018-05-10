@@ -30,7 +30,7 @@ public class BlockParticlesInjector extends BlockAcceleratorControlPoint {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 2];
 	}
 	

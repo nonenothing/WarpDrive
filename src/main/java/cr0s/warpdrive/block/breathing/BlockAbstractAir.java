@@ -41,33 +41,33 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	}
 	
 	@Override
-	public boolean isAir(IBlockAccess blockAccess, int x, int y, int z) {
+	public boolean isAir(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return true;
 	}
 	
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(final World world, final int x, final int y, final int z) {
 		return null;
 	}
 	
 	@Override
-	public boolean isReplaceable(IBlockAccess blockAccess, int x, int y, int z) {
+	public boolean isReplaceable(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		return true;
 	}
 	
 	@Override
-	public boolean canPlaceBlockAt(World world, int x, int y, int z) {
+	public boolean canPlaceBlockAt(final World world, final int x, final int y, final int z) {
 		return true;
 	}
 	
 	@Override
-	public boolean canCollideCheck(int metadata, boolean hitIfLiquid) {
+	public boolean canCollideCheck(final int metadata, final boolean hitIfLiquid) {
 		return false;
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		// hide in NEI
 		for (int i = 0; i < 16; i++) {
 			Commons.hideItemStack(new ItemStack(item, 1, i));
@@ -108,7 +108,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
 			return iconBuffer[metadata];
 		} else {
@@ -127,13 +127,13 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return 0;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		if (WarpDriveConfig.BREATHING_AIR_BLOCK_DEBUG) {
 			return side == 0 || side == 1;
 		}

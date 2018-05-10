@@ -392,7 +392,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		if (!isCorrupted || rand.nextBoolean()) {
 			world.setBlock(i + 12, j + 2, k + 9, WarpDrive.blockLift);
 			if (isCreative) {// fill with energy
-				TileEntity tileEntity = world.getTileEntity(i + 12, j + 2, k + 9);
+				final TileEntity tileEntity = world.getTileEntity(i + 12, j + 2, k + 9);
 				if (tileEntity instanceof TileEntityAbstractEnergy) {
 					((TileEntityAbstractEnergy) tileEntity).energy_consume(-((TileEntityAbstractEnergy) tileEntity).energy_getMaxStorage());
 				}
@@ -562,20 +562,20 @@ public class WorldGenSmallShip extends WorldGenerator {
 		
 		if (world.rand.nextBoolean()) {// Villagers
 			for (int idx = 0; idx < countMobs; idx++) {
-				EntityVillager entityVillager = new EntityVillager(world, 0);
+				final EntityVillager entityVillager = new EntityVillager(world, 0);
 				entityVillager.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
 				entityVillager.setCurrentItemOrArmor(4, new ItemStack(WarpDrive.itemWarpArmor[0], 1, 1));
 				world.spawnEntityInWorld(entityVillager);
 			}
 		} else if (world.rand.nextBoolean()) {// Zombies
 			for (int idx = 0; idx < countMobs; idx++) {
-				EntityZombie entityZombie = new EntityZombie(world);
+				final EntityZombie entityZombie = new EntityZombie(world);
 				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
 				world.spawnEntityInWorld(entityZombie);
 			}
 		} else {// Zombie pigmen
 			for (int idx = 0; idx < countMobs; idx++) {
-				EntityPigZombie entityZombie = new EntityPigZombie(world);
+				final EntityPigZombie entityZombie = new EntityPigZombie(world);
 				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
 				world.spawnEntityInWorld(entityZombie);
 			}

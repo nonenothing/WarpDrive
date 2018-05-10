@@ -27,7 +27,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 		if (ticks > 20) {
 			ticks = 0;
 			
-			int metadata = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
+			final int metadata = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
 			if (getBlockMetadata() != metadata) {
 				worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, metadata, 3);
 			}
@@ -51,7 +51,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(final ForgeDirection from) {
 		return true;
 	}
 }

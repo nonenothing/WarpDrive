@@ -18,14 +18,14 @@ public class SpaceChunkProvider extends ChunkProviderGenerate {
 	private final World world;
 	private final Random rand;
 	
-	public SpaceChunkProvider(World world, long seed) {
+	public SpaceChunkProvider(final World world, final long seed) {
 		super(world, seed, false);
 		rand = new Random(seed);
 		this.world = world;
 	}
 	
 	@Override
-	public Chunk provideChunk(int x, int z) {
+	public Chunk provideChunk(final int x, final int z) {
 		rand.setSeed(x * 341873128712L + z * 132897987541L);
 		
 		final Block[] chunkprimer = new Block[32768];
@@ -41,25 +41,25 @@ public class SpaceChunkProvider extends ChunkProviderGenerate {
 	}
 	
 	@Override
-	public void populate(IChunkProvider var1, int var2, int var3) {
+	public void populate(final IChunkProvider chunkProvider, final int var2, final int var3) {
 		// super.populate(var1, var2, var3);
 		// Generate chunk population
 		// GameRegistry.generateWorld(var2, var3, worldObj, var1, var1);
 	}
 	
 	@Override
-	public List getPossibleCreatures(EnumCreatureType var1, int var2, int var3, int var4) {
+	public List getPossibleCreatures(final EnumCreatureType enumCreatureType, final int var2, final int var3, final int var4) {
 		return null;
 	}
 	
 	@Override
-	public ChunkPosition func_147416_a(World var1, String var2, int var3, int var4, int var5) {
+	public ChunkPosition func_147416_a(final World world, final String var2, final int var3, final int var4, final int var5) {
 		// no structure generation
 		return null;
 	}
 
 	@Override
-	public void recreateStructures(int var1, int var2) {
+	public void recreateStructures(final int x, final int e) {
 		// no structure generation
 	}
 }

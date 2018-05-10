@@ -57,7 +57,7 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		if (damage < icons.length) {
 			return icons[damage];
 		}
@@ -65,8 +65,8 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		switch (damage) {
 		case MODE_VIDEO_CHANNEL  : return getUnlocalizedName() + ".video_channel";
 		case MODE_BEAM_FREQUENCY : return getUnlocalizedName() + ".beam_frequency";
@@ -231,11 +231,13 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public boolean onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
+	public boolean onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer,
+	                         final World world, final int x, final int y, final int z,
+	                         final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity == null) {
 			return false;
 		}
@@ -298,13 +300,13 @@ public class ItemTuningDriver extends Item implements IWarpTool {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
-		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, player);
+	public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer entityPlayer) {
+		final Block block = world.getBlock(x, y, z);
+		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(world, x, y, z, entityPlayer);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip;

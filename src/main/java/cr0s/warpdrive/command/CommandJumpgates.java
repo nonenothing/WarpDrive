@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayerMP;
 
 public class CommandJumpgates extends CommandBase {
 	@Override
@@ -19,13 +18,12 @@ public class CommandJumpgates extends CommandBase {
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender commandSender) {
+	public String getCommandUsage(final ICommandSender commandSender) {
 		return "Lists jumpgates";
 	}
 
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
-		EntityPlayerMP player = (EntityPlayerMP) commandSender;
-		Commons.addChatMessage(player, "Jumpgates: " + WarpDrive.jumpgates.commaList());
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
+		Commons.addChatMessage(commandSender, "Jumpgates: " + WarpDrive.jumpgates.commaList());
 	}
 }

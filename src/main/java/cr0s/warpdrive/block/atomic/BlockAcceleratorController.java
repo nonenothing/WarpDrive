@@ -37,22 +37,24 @@ public class BlockAcceleratorController extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return icons[metadata % 2];
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityAcceleratorController)) {
 			return false;
 		}
-		TileEntityAcceleratorController tileEntityAcceleratorController = (TileEntityAcceleratorController) tileEntity;
-		ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		final TileEntityAcceleratorController tileEntityAcceleratorController = (TileEntityAcceleratorController) tileEntity;
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem();
 		
 		if (itemStackHeld == null) {// no sneaking and no item in hand => show status
 			Commons.addChatMessage(entityPlayer, tileEntityAcceleratorController.getStatus());

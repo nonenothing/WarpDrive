@@ -10,13 +10,13 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 public class WorldGenStation extends WorldGenerator {
 	private final boolean corrupted;
 
-	public WorldGenStation(boolean corrupted) {
+	public WorldGenStation(final boolean corrupted) {
 		this.corrupted = corrupted;
 	}
 
 	@Override
-	public boolean generate(World world, Random rand, int i, int j, int k) {
-		WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
+	public boolean generate(final World world, final Random rand, final int i, final int j, final int k) {
+		final WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
 		genStructure.setHullPlain(world, i + 1, j + 0, k + 3);
 		genStructure.setHullPlain(world, i + 1, j + 0, k + 12);
 		genStructure.setHullPlain(world, i + 1, j + 1, k + 3);

@@ -74,7 +74,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		list.add(new ItemStack(item, 1, 0));
 		list.add(new ItemStack(item, 1, 2));
 		list.add(new ItemStack(item, 1, 6));
@@ -82,7 +82,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public int getRenderColor(int metadata) {
+	public int getRenderColor(final int metadata) {
 		metadataForRender = metadata;
 		return super.getRenderColor(metadata);
 	}
@@ -102,8 +102,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 				return iconTiledFull;
 			}
 			// inner plain face
-			ForgeDirection directionSide = ForgeDirection.getOrientation(side);
-			ForgeDirection directionSlab = ForgeDirection.getOrientation(direction);
+			final ForgeDirection directionSide = ForgeDirection.getOrientation(side);
+			final ForgeDirection directionSlab = ForgeDirection.getOrientation(direction);
 			if (directionSide == directionSlab.getOpposite()) {
 				return iconTiledFull;
 			}
@@ -153,7 +153,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public int damageDropped(int metadata) {
+	public int damageDropped(final int metadata) {
 		return metadata <= 1 ? 0    // plain horizontal
 		     : metadata <= 5 ? 2    // plain vertical
 		     : metadata <= 7 ? 6    // tiled horizontal
@@ -162,7 +162,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public String func_150002_b(int p_150002_1_) {
+	public String func_150002_b(final int p_150002_1_) {
 		return getUnlocalizedName();
 	}
 	
@@ -176,7 +176,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess blockAccess, int x, int y, int z) {
+	public void setBlockBoundsBasedOnState(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		setBlockBoundsFromMetadata(metadata);
 	}
@@ -218,7 +218,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public void addCollisionBoxesToList(World world, int x, int y, int z, AxisAlignedBB axisAlignedBB, List list, Entity entity) {
+	public void addCollisionBoxesToList(final World world, final int x, final int y, final int z,
+	                                    final AxisAlignedBB axisAlignedBB, final List list, final Entity entity) {
 		setBlockBoundsBasedOnState(world, x, y, z);
 		super.addCollisionBoxesToList(world, x, y, z, axisAlignedBB, list, entity);
 	}
@@ -262,7 +263,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public int quantityDropped(Random random) {
+	public int quantityDropped(final Random random) {
 		return field_150004_a ? 2 : 1;
 	}
 	
@@ -273,7 +274,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public boolean shouldSideBeRendered(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		if (this.field_150004_a) {
 			return super.shouldSideBeRendered(blockAccess, x, y, z, side);
 		} else if (side != 1 && side != 0 && !super.shouldSideBeRendered(blockAccess, x, y, z, side)) {
@@ -284,23 +285,23 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public MapColor getMapColor(int metadata) {
+	public MapColor getMapColor(final int metadata) {
 		return MapColor.getMapColorForBlockColored(metaHull);
 	}
 	
 	@Override
-	public int getDamageValue(World world, int x, int y, int z) {
+	public int getDamageValue(final World world, final int x, final int y, final int z) {
 		return damageDropped(world.getBlockMetadata(x, y, z)); // override BlockSlab to remove filtering
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public Item getItem(World world, int x, int y, int z) {
+	public Item getItem(final World world, final int x, final int y, final int z) {
 		return Item.getItemFromBlock(this);
 	}
 	
 	@Override
-	public byte getTier(ItemStack itemStack) {
+	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
 	
@@ -316,20 +317,22 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	}
 	
 	@Override
-	public float getBlockHardness(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public float getBlockHardness(final World world, final int x, final int y, final int z,
+	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
 		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
 	}
 	
 	@Override
-	public int applyDamage(World world, int x, int y, int z, DamageSource damageSource, int damageParameter, Vector3 damageDirection, int damageLevel) {
+	public int applyDamage(final World world, final int x, final int y, final int z,
+	                       final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		if (damageLevel <= 0) {
 			return 0;
 		}
 		if (tier == 1) {
 			world.setBlockToAir(x, y, z);
 		} else {
-			int metadata = world.getBlockMetadata(x, y, z);
+			final int metadata = world.getBlockMetadata(x, y, z);
 			world.setBlock(x, y, z, WarpDrive.blockHulls_slab[tier - 2][metaHull], metadata, 2);
 		}
 		return 0;

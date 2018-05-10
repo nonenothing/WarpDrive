@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 
 public class ItemBlockHull extends ItemBlockAbstractBase {
 	
-	public ItemBlockHull(Block block) {
+	public ItemBlockHull(final Block block) {
 		super(block);	// sets field_150939_a to block
 		setMaxDamage(0);
 		setHasSubtypes(true);
@@ -19,7 +19,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(final ItemStack itemstack) {
 		if (itemstack == null || field_150939_a instanceof BlockHullStairs) {
 			return getUnlocalizedName();
 		}

@@ -39,7 +39,7 @@ public class ItemForceFieldUpgrade extends Item {
 	
 	public static ItemStack getItemStack(final EnumForceFieldUpgrade forceFieldUpgrade) {
 		if (forceFieldUpgrade != null) {
-			int damage = forceFieldUpgrade.ordinal();
+			final int damage = forceFieldUpgrade.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldUpgrade, 1, damage);
 			}
@@ -62,8 +62,8 @@ public class ItemForceFieldUpgrade extends Item {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
 			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).unlocalizedName;
 		}
@@ -71,7 +71,7 @@ public class ItemForceFieldUpgrade extends Item {
 	}
 	
 	@Override
-	public IIcon getIconFromDamage(int damage) {
+	public IIcon getIconFromDamage(final int damage) {
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
 			return icons[damage];
 		}
@@ -79,7 +79,7 @@ public class ItemForceFieldUpgrade extends Item {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
 				list.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
@@ -88,13 +88,13 @@ public class ItemForceFieldUpgrade extends Item {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(World world, int x, int y, int z, EntityPlayer player) {
-		Block block = world.getBlock(x, y, z);
+	public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
+		final Block block = world.getBlock(x, y, z);
 		return block instanceof BlockForceFieldRelay || block instanceof BlockForceFieldProjector || super.doesSneakBypassUse(world, x, y, z, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
@@ -109,7 +109,7 @@ public class ItemForceFieldUpgrade extends Item {
 		
 		Commons.addTooltip(list, "\n");
 		
-		EnumForceFieldUpgrade forceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
+		final EnumForceFieldUpgrade forceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
 		if (forceFieldUpgrade.maxCountOnProjector > 0) {
 			Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.forcefield.upgrade.tooltip.usage.projector"));
 		}

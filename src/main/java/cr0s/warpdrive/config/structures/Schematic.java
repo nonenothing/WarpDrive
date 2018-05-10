@@ -11,13 +11,13 @@ public class Schematic extends AbstractStructure {
 	}
 	
 	@Override
-	public boolean generate(World p_76484_1_, Random p_76484_2_, int p_76484_3_, int p_76484_4_, int p_76484_5_) {
+	public boolean generate(final World world, final Random random, final int x, final int y, final int z) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public AbstractStructureInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(final Random random) {
 		// TODO Auto-generated method stub
 		return null;
 	}

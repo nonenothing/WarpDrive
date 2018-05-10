@@ -33,7 +33,7 @@ public class XmlPreprocessor {
 	 *            Element to check
 	 * @return A string, which is empty if all the mods are loaded.
 	 */
-	public static String checkModRequirements(Element element) {
+	public static String checkModRequirements(final Element element) {
 		
 		final ModCheckResults modCheckResults = new ModCheckResults();
 		
@@ -61,16 +61,16 @@ public class XmlPreprocessor {
 	/**
 	 * Goes through every child node of the given node, and remove elements failing to checkModRequirements()
 	 */
-	public static void doModReqSanitation(Node base) {
+	public static void doModReqSanitation(final Node base) {
 		
-		NodeList children = base.getChildNodes();
+		final NodeList children = base.getChildNodes();
 		
 		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
+			final Node child = children.item(i);
 			
 			if (child instanceof Element) {
-				Element elementChild = (Element) child;
-				String result = checkModRequirements(elementChild);
+				final Element elementChild = (Element) child;
+				final String result = checkModRequirements(elementChild);
 				if (!result.isEmpty()) {
 					WarpDrive.logger.info("Skipping " + base.getNodeName() + "/" + elementChild.getNodeName()
 							+ " " + elementChild.getAttribute("group") + elementChild.getAttribute("name") + elementChild.getAttribute("block")
@@ -86,9 +86,9 @@ public class XmlPreprocessor {
 	/**
 	 * Develop 'for' elements
 	 */
-	public static void doLogicPreprocessing(Node root) throws InvalidXmlException {
+	public static void doLogicPreprocessing(final Node root) throws InvalidXmlException {
 		// process child first
-		NodeList children = root.getChildNodes();
+		final NodeList children = root.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			doLogicPreprocessing(children.item(i));
 		}
@@ -97,10 +97,10 @@ public class XmlPreprocessor {
 		if (root.getNodeType() != Node.ELEMENT_NODE || !((Element) root).getTagName().equalsIgnoreCase("for")) {
 			return;
 		}
-		Element elementFor = (Element) root;
+		final Element elementFor = (Element) root;
 		
 		// get variable name
-		String variableName = elementFor.getAttribute("variable");
+		final String variableName = elementFor.getAttribute("variable");
 		if(variableName.isEmpty()) {
 			throw new InvalidXmlException("A for tag must include a variable attribute!");
 		}
@@ -114,9 +114,9 @@ public class XmlPreprocessor {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
 				}
-				NodeList allChildren = root.getChildNodes();
+				final NodeList allChildren = root.getChildNodes();
 				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex ++) {
-					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, variableValue);
+					final Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, variableValue);
 					root.getParentNode().appendChild(copy);
 				}
 			}
@@ -129,12 +129,12 @@ public class XmlPreprocessor {
 				throw new InvalidXmlException("For element with no 'in' attribute requires both 'from' and 'to' attributes! " + variableName);
 			}
 			
-			int intFrom;
-			int intTo;
+			final int intFrom;
+			final int intTo;
 			try {
 				intFrom = Integer.parseInt(stringFrom);
 				intTo = Integer.parseInt(stringTo);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException(exception);
 			}
 			
@@ -144,9 +144,9 @@ public class XmlPreprocessor {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
 				}
-				NodeList allChildren = root.getChildNodes();
+				final NodeList allChildren = root.getChildNodes();
 				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex++) {
-					Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, "" + variableValue);
+					final Node copy = copyNodeAndReplaceVariable(allChildren.item(childIndex), variableName, "" + variableValue);
 					root.getParentNode().appendChild(copy);
 				}
 			}
@@ -157,38 +157,38 @@ public class XmlPreprocessor {
 		
 		if (WarpDriveConfig.LOGGING_XML_PREPROCESSOR) {
 			try {
-				Transformer transformer = TransformerFactory.newInstance().newTransformer();
-				Result output = new StreamResult(new File("output" + outputCount + ".xml"));
-				Source input = new DOMSource(root.getOwnerDocument());
+				final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+				final Result output = new StreamResult(new File("output" + outputCount + ".xml"));
+				final Source input = new DOMSource(root.getOwnerDocument());
 				
 				transformer.transform(input, output);
 				outputCount.incrementAndGet();
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 			}
 		}
 	}
 	
-	private static Node copyNodeAndReplaceVariable(Node nodeOriginal, String variableName, String variableValue) {
-		Node nodeCopy = nodeOriginal.cloneNode(true);
+	private static Node copyNodeAndReplaceVariable(final Node nodeOriginal, final String variableName, final String variableValue) {
+		final Node nodeCopy = nodeOriginal.cloneNode(true);
 		replaceVariable(nodeCopy, "%" + variableName + "%", variableValue);
 		
 		return nodeCopy;
 	}
 	
-	private static void replaceVariable(Node node, String keyword, String value) {
-		ArrayList<String> nameToRemove = new ArrayList<>();
-		ArrayList<Attr> attrToAdd = new ArrayList<>();
+	private static void replaceVariable(final Node node, final String keyword, final String value) {
+		final ArrayList<String> nameToRemove = new ArrayList<>();
+		final ArrayList<Attr> attrToAdd = new ArrayList<>();
 		
 		// process element's attributes first
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
 			
 			// compute the changes
-			NamedNodeMap attributes = node.getAttributes();
+			final NamedNodeMap attributes = node.getAttributes();
 			for (int indexAttr = 0; indexAttr < attributes.getLength(); indexAttr++) {
-				Attr oldAttr = (Attr) attributes.item(indexAttr);
-				String oldName = oldAttr.getName();
-				String newName = oldName.replace(keyword, value);
+				final Attr oldAttr = (Attr) attributes.item(indexAttr);
+				final String oldName = oldAttr.getName();
+				final String newName = oldName.replace(keyword, value);
 				
 				if (oldName.equals(newName)) {// same name, just adjust the value
 					oldAttr.setValue(oldAttr.getValue().replace(keyword, value));
@@ -196,7 +196,7 @@ public class XmlPreprocessor {
 				} else {// different name, needs to defer the add/remove
 					nameToRemove.add(oldName);
 					
-					Attr newAttr = oldAttr.getOwnerDocument().createAttribute(newName);
+					final Attr newAttr = oldAttr.getOwnerDocument().createAttribute(newName);
 					newAttr.setValue(oldAttr.getValue().replace(keyword, value));
 					attrToAdd.add(newAttr);
 				}
@@ -213,9 +213,9 @@ public class XmlPreprocessor {
 		}
 		
 		// attributes are done, moving through child elements now
-		NodeList children = node.getChildNodes();
+		final NodeList children = node.getChildNodes();
 		for (int childIndex = 0; childIndex < children.getLength(); childIndex++) {
-			Node nodeChild = children.item(childIndex);
+			final Node nodeChild = children.item(childIndex);
 			
 			switch (nodeChild.getNodeType()) {
 			case Node.ELEMENT_NODE: // recurse through elements
@@ -239,7 +239,7 @@ public class XmlPreprocessor {
 			modResults = new TreeMap<>();
 		}
 		
-		public void addMod(String name, String error) {
+		public void addMod(final String name, final String error) {
 			modResults.put(name, error);
 		}
 		

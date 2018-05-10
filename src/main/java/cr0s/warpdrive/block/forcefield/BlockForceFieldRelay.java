@@ -47,7 +47,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity == null || !(tileEntity instanceof TileEntityForceFieldRelay)) {
 			return icons[0];
@@ -64,7 +64,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int damage) {
+	public IIcon getIcon(final int side, final int damage) {
 		if (side == 0 || side == 1) {
 			return icons[EnumForceFieldUpgrade.length];
 		}
@@ -75,31 +75,38 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	}
 	
 	@Override
-	public int damageDropped(int damage) {
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
+		return new TileEntityForceFieldRelay();
+	}
+	
+	@Override
+	public int damageDropped(final int damage) {
 		return damage;
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityForceFieldRelay)) {
 			return false;
 		}
-		TileEntityForceFieldRelay tileEntityForceFieldRelay = (TileEntityForceFieldRelay) tileEntity;
-		ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		final TileEntityForceFieldRelay tileEntityForceFieldRelay = (TileEntityForceFieldRelay) tileEntity;
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem();
 		
 		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
 		if (entityPlayer.isSneaking()) {
-			EnumForceFieldUpgrade enumForceFieldUpgrade = tileEntityForceFieldRelay.getUpgrade();
+			final EnumForceFieldUpgrade enumForceFieldUpgrade = tileEntityForceFieldRelay.getUpgrade();
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// dismount the upgrade item
-					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.delayBeforeCanPickup = 0;
 					world.spawnEntityInWorld(entityItem);
 				}
@@ -139,25 +146,20 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				
 				// dismount the current upgrade item
 				if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
-					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.delayBeforeCanPickup = 0;
 					world.spawnEntityInWorld(entityItem);
 				}
 			}
 			
 			// mount the new upgrade item
-			EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage());
+			final EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage());
 			tileEntityForceFieldRelay.setUpgrade(enumForceFieldUpgrade);
 			// upgrade mounted
 			Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.mounted", enumForceFieldUpgrade.name()));
 		}
 		
 		return false;
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(final World world, final int metadata) {
-		return new TileEntityForceFieldRelay();
 	}
 }

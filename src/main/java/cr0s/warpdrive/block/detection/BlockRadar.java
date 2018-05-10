@@ -1,14 +1,9 @@
 package cr0s.warpdrive.block.detection;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
@@ -47,8 +42,8 @@ public class BlockRadar extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
-		int metadata  = blockAccess.getBlockMetadata(x, y, z);
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
+		final int metadata  = blockAccess.getBlockMetadata(x, y, z);
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -68,7 +63,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -85,34 +80,7 @@ public class BlockRadar extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
-		return Item.getItemFromBlock(this);
-	}
-	
-	@Override
 	public byte getTier(final ItemStack itemStack) {
 		return 2;
-	}
-	
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
-		if (entityPlayer.getHeldItem() == null) {
-			final TileEntity tileEntity = world.getTileEntity(x, y, z);
-			if (tileEntity instanceof TileEntityRadar) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityRadar) tileEntity).getStatus());
-				return true;
-			}
-		}
-		
-		return false;
 	}
 }

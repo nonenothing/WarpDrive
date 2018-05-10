@@ -163,8 +163,7 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 			final int energy =  getEnergy(itemStack) - WarpDriveConfig.TRANSPORTER_BEACON_ENERGY_PER_TICK;
 			if ( isHeld
 			  && energy >= 0 ) {
-				ItemStack itemStackNew;
-				itemStackNew = setEnergy(itemStack, energy);
+				final ItemStack itemStackNew = setEnergy(itemStack, energy);
 				updateDamage(itemStackNew, energy, true);
 				((EntityPlayer) entity).inventory.setInventorySlotContents(indexSlot, itemStackNew);
 				
@@ -245,7 +244,7 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 				                                                                             nameTransporter));
 				
 			} else {
-				ItemStack itemStackNew = setTransporterName(itemStack, nameTransporter);
+				final ItemStack itemStackNew = setTransporterName(itemStack, nameTransporter);
 				setTransporterSignature(itemStackNew, uuidTransporter);
 				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.transporter_signature.get",
 				                                                                             nameTransporter));
@@ -265,7 +264,7 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 			} else {
 				try {
 					uuidRemoteLocation = UUID.fromString((String) remoteLocation[0]);
-				} catch (IllegalArgumentException exception) {// it's a player name
+				} catch (final IllegalArgumentException exception) {// it's a player name
 					uuidRemoteLocation = null;
 				}
 			}

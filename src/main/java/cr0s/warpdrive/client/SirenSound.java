@@ -23,7 +23,7 @@ public class SirenSound extends MovingSound {
        2. Produces a sound which decreases in volume the farther you get away from it.
        3. Doesn't keep playing for you once you're half the world away.
        4. Doesn't completely spazz out the instant you try to actually use it.*/
-    public SirenSound(ResourceLocation resource, float range, float x, float y, float z) {
+    public SirenSound(final ResourceLocation resource, final float range, final float x, final float y, final float z) {
         super(resource);
         
         this.resource = resource;
@@ -40,7 +40,7 @@ public class SirenSound extends MovingSound {
     
     @Override
     public void update() {
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         
         this.xPosF = (float) player.posX;
         this.yPosF = (float) player.posY;

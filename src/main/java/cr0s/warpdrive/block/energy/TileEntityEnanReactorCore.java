@@ -209,7 +209,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				WarpDrive.logger.info("Generated " + amountToGenerate);
 			}
 		} else {// decaying over 20s without producing power, you better have power for those lasers
-			int amountToDecay = (int) (WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * (1.0D - stabilityOffset) * (PR_MIN_GENERATION + containedEnergy * 0.01D));
+			final int amountToDecay = (int) (WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * (1.0D - stabilityOffset) * (PR_MIN_GENERATION + containedEnergy * 0.01D));
 			containedEnergy = Math.max(0, containedEnergy - amountToDecay);
 			lastGenerationRate = 0;
 			if (WarpDriveConfig.LOGGING_ENERGY) {
@@ -245,7 +245,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
 				try {
 					laserEnergy = (int) ((TileEntityEnanReactorLaser) tileEntity).energy()[0];
-				} catch (Exception exception) {
+				} catch (final Exception exception) {
 					exception.printStackTrace();
 					WarpDrive.logger.error(String.format("%s tileEntity is %s", this, tileEntity));
 				}
@@ -278,7 +278,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			WarpDrive.logger.info(this + " Explosion radius is " + radius + ", Chance of removal is " + chanceOfRemoval);
 		}
 		if (radius > 1) {
-			float bedrockExplosionResistance = Blocks.bedrock.getExplosionResistance(null);
+			final float bedrockExplosionResistance = Blocks.bedrock.getExplosionResistance(null);
 			for (int x = xCoord - radius; x <= xCoord + radius; x++) {
 				for (int y = yCoord - radius; y <= yCoord + radius; y++) {
 					for (int z = zCoord - radius; z <= zCoord + radius; z++) {
@@ -379,12 +379,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	// Common OC/CC methods
 	@Override
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			boolean enableRequest;
+			final boolean enableRequest;
 			try {
 				enableRequest = Commons.toBool(arguments[0]);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
 				}
@@ -410,7 +410,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		// computer is alive => start updating reactor
 		hold = false;
 		
-		ArrayList<Double> result = new ArrayList<>(16);
+		final ArrayList<Double> result = new ArrayList<>(16);
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
 			result.add(reactorFace.indexStability, instabilityValues[reactorFace.indexStability]);
 		}
@@ -418,12 +418,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public Object[] instabilityTarget(Object[] arguments) {
+	public Object[] instabilityTarget(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			double instabilityTargetRequested;
+			final double instabilityTargetRequested;
 			try {
 				instabilityTargetRequested = Commons.toDouble(arguments[0]);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on instabilityTarget(): Double expected for 1st argument " + arguments[0]);
 				}
@@ -436,12 +436,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public Object[] release(Object[] arguments) {
+	public Object[] release(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			boolean releaseRequested;
+			final boolean releaseRequested;
 			try {
 				releaseRequested = Commons.toBool(arguments[0]);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on release(): Boolean expected for 1st argument " + arguments[0]);
 				}
@@ -456,12 +456,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public Object[] releaseRate(Object[] arguments) {
+	public Object[] releaseRate(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			int releaseRateRequested;
+			final int releaseRateRequested;
 			try {
 				releaseRateRequested = Commons.toInt(arguments[0]);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on releaseRate(): Integer expected for 1st argument " + arguments[0]);
 				}
@@ -481,11 +481,11 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public Object[] releaseAbove(Object[] arguments) {
-		int releaseAboveRequested;
+	public Object[] releaseAbove(final Object[] arguments) {
+		final int releaseAboveRequested;
 		try {
 			releaseAboveRequested = Commons.toInt(arguments[0]);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			if (WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.error(this + " LUA error on releaseAbove(): Integer expected for 1st argument " + arguments[0]);
 			}
@@ -504,12 +504,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public Object[] stabilizerEnergy(Object[] arguments) {
+	public Object[] stabilizerEnergy(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			int stabilizerEnergyRequested;
+			final int stabilizerEnergyRequested;
 			try {
 				stabilizerEnergyRequested = Commons.toInt(arguments[0]);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on stabilizerEnergy(): Integer expected for 1st argument " + arguments[0]);
 				}
@@ -536,63 +536,63 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Override
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energy(Context context, Arguments arguments) {
+	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] instability(Context context, Arguments arguments) {
+	public Object[] instability(final Context context, final Arguments arguments) {
 		return instability();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] instabilityTarget(Context context, Arguments arguments) {
+	public Object[] instabilityTarget(final Context context, final Arguments arguments) {
 		return instabilityTarget(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] release(Context context, Arguments arguments) {
+	public Object[] release(final Context context, final Arguments arguments) {
 		return release(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] releaseRate(Context context, Arguments arguments) {
+	public Object[] releaseRate(final Context context, final Arguments arguments) {
 		return releaseRate(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] releaseAbove(Context context, Arguments arguments) {
+	public Object[] releaseAbove(final Context context, final Arguments arguments) {
 		return releaseAbove(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] stabilizerEnergy(Context context, Arguments arguments) {
+	public Object[] stabilizerEnergy(final Context context, final Arguments arguments) {
 		return stabilizerEnergy(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] state(Context context, Arguments arguments) {
+	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		// computer is alive => start updating reactor
 		hold = false;
 		
@@ -627,7 +627,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			case "state":
 				return state();
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			return new String[] { exception.getMessage() };
 		}
@@ -642,7 +642,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			return 0;
 		}
 		int result = 0;
-		int capacity = Math.max(0, 2 * lastGenerationRate - releasedThisTick);
+		final int capacity = Math.max(0, 2 * lastGenerationRate - releasedThisTick);
 		if (releaseMode == EnumReactorReleaseMode.UNLIMITED) {
 			result = Math.min(Math.max(0, containedEnergy), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
@@ -654,7 +654,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				WarpDrive.logger.info("PotentialOutput Above " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
 			}
 		} else if (releaseMode == EnumReactorReleaseMode.AT_RATE) {
-			int remainingRate = Math.max(0, releaseRate - releasedThisTick);
+			final int remainingRate = Math.max(0, releaseRate - releasedThisTick);
 			result = Math.min(Math.max(0, containedEnergy), Math.min(remainingRate, capacity));
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info("PotentialOutput Rated " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) remainingRate " + remainingRate + " RF/t capacity " + capacity);
@@ -664,7 +664,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public boolean energy_canOutput(ForgeDirection from) {
+	public boolean energy_canOutput(final ForgeDirection from) {
 		return from.equals(ForgeDirection.UP) || from.equals(ForgeDirection.DOWN);
 	}
 	

@@ -35,7 +35,7 @@ public class CompatStargateTech2 implements IBlockTransformer {
 			classTileTransportRing = Class.forName("lordfokas.stargatetech2.transport.TileTransportRing");
 			methodTileTransportRing_link = classTileTransportRing.getDeclaredMethod("link");
 			WarpDriveConfig.registerBlockTransformer("StargateTech2", new CompatStargateTech2());
-		} catch(ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
+		} catch(final ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -48,7 +48,7 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -67,7 +67,7 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	private static final int[] mrot = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final Map<String, String> rotFacingcolors;
 	static {
-		Map<String, String> map = new HashMap<>();
+		final Map<String, String> map = new HashMap<>();
 		map.put("color0", "color0");
 		map.put("color1", "color1");
 		map.put("color2", "color5");
@@ -89,7 +89,7 @@ public class CompatStargateTech2 implements IBlockTransformer {
 		final NBTTagCompound newFacing = new NBTTagCompound();
 		final Set<String> keys = tagCompound.func_150296_c();
 		for (final String key : keys) {
-			NBTBase base = tagCompound.getTag(key);
+			final NBTBase base = tagCompound.getTag(key);
 			if (base instanceof NBTTagByte && rotFacingcolors.containsKey(key)) {
 				switch (rotationSteps) {
 				case 1:
@@ -113,8 +113,8 @@ public class CompatStargateTech2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		
 		if (nbtTileEntity.hasKey("pairDn")) {
 			nbtTileEntity.setTag("pairDn", rotateVector(transformation, nbtTileEntity.getCompoundTag("pairDn")));
@@ -157,7 +157,7 @@ public class CompatStargateTech2 implements IBlockTransformer {
 		if (classTileTransportRing.isInstance(tileEntity)) {
 			try {
 				methodTileTransportRing_link.invoke(tileEntity);
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+			} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
 				exception.printStackTrace();
 			}
 		}

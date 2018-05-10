@@ -126,7 +126,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	@Override
 	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 1, tagCompound);
 	}
@@ -140,13 +140,13 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] beamFrequency(Context context, Arguments arguments) {
+	public Object[] beamFrequency(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setBeamFrequency(arguments.checkInteger(0));
 		}
@@ -154,12 +154,12 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	}
 	
 	// Common OC/CC methods
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
-			boolean enable;
+			final boolean enable;
 			try {
 				enable = Commons.toBool(arguments[0]);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
 				}
@@ -173,7 +173,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		try {
@@ -187,7 +187,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				}
 				return new Integer[] { beamFrequency };
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			return new String[] { exception.getMessage() };
 		}

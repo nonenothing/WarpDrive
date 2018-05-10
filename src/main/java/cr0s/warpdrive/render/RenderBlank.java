@@ -19,6 +19,6 @@ public class RenderBlank extends IRenderHandler {
     
     @SideOnly(Side.CLIENT)
     @Override
-    public void render(float partialTicks, WorldClient world, Minecraft mc) {
+    public void render(final float partialTicks, final WorldClient world, final Minecraft mc) {
     }
 }

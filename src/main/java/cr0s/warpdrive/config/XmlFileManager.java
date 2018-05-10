@@ -26,7 +26,7 @@ public abstract class XmlFileManager {
 			throw new IllegalArgumentException("File path " + dir.getPath() + " contains no " + prefixFilename + "*.xml files!");
 		}
 		
-		for (File file : files) {
+		for (final File file : files) {
 			try {
 				WarpDrive.logger.info("Loading configuration file " + file.getName());
 				final Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
@@ -48,7 +48,7 @@ public abstract class XmlFileManager {
 					final String location = String.format("%s %d/%d", nameElement, indexElement + 1, listElements.size());
 					parseRootElement(location, element);
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				WarpDrive.logger.error("Error loading file " + file.getName() + ": " + exception.getMessage());
 				exception.printStackTrace();
 			}

@@ -62,7 +62,7 @@ public class Dictionary {
 	public static HashSet<Item> ITEMS_NOFALLDAMAGE = null;
 	public static HashSet<Item> ITEMS_BREATHING_HELMET = null;
 	
-	public static void loadConfig(Configuration config) {
+	public static void loadConfig(final Configuration config) {
 		
 		// Block dictionary
 		{
@@ -90,7 +90,7 @@ public class Dictionary {
 					+ "- NoCamouflage: this block isn't valid for camouflage.\n"
 					+ "- NoBlink: this block will prevent teleportation through it (default: bedrock, force fields)");
 			
-			ConfigCategory categoryBlockTags = config.getCategory("block_tags");
+			final ConfigCategory categoryBlockTags = config.getCategory("block_tags");
 			String[] taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			if (taggedBlocksName.length == 0) {
 				// farming
@@ -222,7 +222,7 @@ public class Dictionary {
 					+ "- NonLivingTarget: this non-living entity can be targeted/removed by weapons (default: ItemFrame, Painting).\n"
 					+ "- LivingWithoutAir: this living entity doesn't need air to live (default: vanilla zombies and skeletons).");
 			
-			ConfigCategory categoryEntityTags = config.getCategory("entity_tags");
+			final ConfigCategory categoryEntityTags = config.getCategory("entity_tags");
 			String[] taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			if (taggedEntitiesName.length == 0) {
 				config.get("entity_tags", "GalacticraftCore.OxygenBubble", "NoMass LeftBehind").getString();
@@ -270,7 +270,7 @@ public class Dictionary {
 					+ "- NoFallDamage: player doesn't take fall damage while wearing this armor item (default: IC2 rubber boots).\n"
 					+ "- BreathingHelmet: player can breath from WarpDrive air canister or IC2 compressed air while wearing this armor item (default: IC2 nano helmet and Cie).\n");
 			
-			ConfigCategory categoryItemTags = config.getCategory("item_tags");
+			final ConfigCategory categoryItemTags = config.getCategory("item_tags");
 			String[] taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			if (taggedItemsName.length == 0) {
 				config.get("item_tags", "AWWayofTime:boundHelmet", "BreathingHelmet").getString();
@@ -325,7 +325,7 @@ public class Dictionary {
 		BLOCKS_ORES = new HashSet<>();
 		BLOCKS_LOGS = new HashSet<>();
 		BLOCKS_LEAVES = new HashSet<>();
-		String[] oreNames = OreDictionary.getOreNames();
+		final String[] oreNames = OreDictionary.getOreNames();
 		for (final String oreName : oreNames) {
 			final String lowerOreName = oreName.toLowerCase();
 			if (oreName.length() > 4 && oreName.substring(0, 3).equals("ore")) {
@@ -503,25 +503,25 @@ public class Dictionary {
 		
 		// scan blocks registry
 		for (final Object blockKey : Block.blockRegistry.getKeys()) {
-			Object object = Block.blockRegistry.getObject(blockKey);
+			final Object object = Block.blockRegistry.getObject(blockKey);
 			WarpDrive.logger.debug("Checking block registry for '" + blockKey + "': " + object);
 			if (!(object instanceof Block)) {
 				WarpDrive.logger.error("Block registry for '" + blockKey + "': this is not a block? " + object);
 			} else {
-				Block block = (Block) object;
+				final Block block = (Block) object;
 				// get hardness and blast resistance
 				float hardness = -2.0F;
 				if (WarpDrive.fieldBlockHardness != null) {
 					// WarpDrive.fieldBlockHardness.setAccessible(true);
 					try {
 						hardness = (float)WarpDrive.fieldBlockHardness.get(block);
-					} catch (IllegalArgumentException | IllegalAccessException exception) {
+					} catch (final IllegalArgumentException | IllegalAccessException exception) {
 						exception.printStackTrace();
 						WarpDrive.logger.error("Unable to access block hardness value '" + blockKey + "' " + block);
 					}
 				}
 				
-				float blastResistance = block.getExplosionResistance(null);
+				final float blastResistance = block.getExplosionResistance(null);
 				
 				// check actual values
 				if (hardness != -2.0F) {
@@ -566,7 +566,7 @@ public class Dictionary {
 	
 	private static String getHashMessage(final HashSet hashSet) {
 		final StringBuilder message = new StringBuilder();
-		for (Object object : hashSet) {
+		for (final Object object : hashSet) {
 			if (message.length() > 0) {
 				message.append(", ");
 			}

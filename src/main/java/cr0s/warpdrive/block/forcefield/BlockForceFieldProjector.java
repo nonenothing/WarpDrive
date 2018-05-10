@@ -57,10 +57,10 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side) {
+	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-		if (tileEntity == null || !(tileEntity instanceof TileEntityForceFieldProjector)) {
+		if (!(tileEntity instanceof TileEntityForceFieldProjector)) {
 			return icons[0];
 		}
 		
@@ -80,47 +80,54 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		return side == 3 ? icons[4] : icons[2];
+	}
+	
+	@Override
+	public TileEntity createNewTileEntity(final World world, final int metadata) {
+		return new TileEntityForceFieldProjector();
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (int i = 0; i < 2; ++i) {
 			list.add(new ItemStack(item, 1, i));
 		}
 	}
 	
 	@Override
-	public int getDamageValue(World world, int x, int y, int z) {
+	public int getDamageValue(final World world, final int x, final int y, final int z) {
 		super.getDamageValue(world, x, y, z);
-		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(x, y, z);
+		final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(x, y, z);
 		return tileEntityForceFieldProjector.isDoubleSided ? 1 : 0;
 	}
 	
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entityLiving, ItemStack itemStack) {
+	public void onBlockPlacedBy(final World world, final int x, final int y, final int z, final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
-		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(x, y, z);
+		final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector)world.getTileEntity(x, y, z);
 		if (!itemStack.hasTagCompound()) {
 			tileEntityForceFieldProjector.isDoubleSided = (itemStack.getItemDamage() == 1);
 		}
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityForceFieldProjector)) {
 			return false;
 		}
-		TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
-		ItemStack itemStackHeld = entityPlayer.getHeldItem();
-		int metadata = world.getBlockMetadata(x, y, z);
+		final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		final int metadata = world.getBlockMetadata(x, y, z);
 		
 		EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.NONE;
 		if (itemStackHeld != null && itemStackHeld.getItem() instanceof ItemForceFieldUpgrade) {
@@ -146,8 +153,8 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// dismount the current upgrade item
-					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.delayBeforeCanPickup = 0;
 					world.spawnEntityInWorld(entityItem);
 				}
@@ -162,8 +169,8 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 					if (side == (metadata & 7) || (tileEntityForceFieldProjector.isDoubleSided && ForgeDirection.OPPOSITES[side] == (metadata & 7))) {
 						if (!entityPlayer.capabilities.isCreativeMode) {
 							// dismount the shape item(s)
-							ItemStack itemStackDrop = ItemForceFieldShape.getItemStackNoCache(tileEntityForceFieldProjector.getShape(), tileEntityForceFieldProjector.isDoubleSided ? 2 : 1);
-							EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+							final ItemStack itemStackDrop = ItemForceFieldShape.getItemStackNoCache(tileEntityForceFieldProjector.getShape(), tileEntityForceFieldProjector.isDoubleSided ? 2 : 1);
+							final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 							entityItem.delayBeforeCanPickup = 0;
 							world.spawnEntityInWorld(entityItem);
 						}
@@ -204,8 +211,8 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 					
 					// dismount the current shape item(s)
 					if (tileEntityForceFieldProjector.getShape() != EnumForceFieldShape.NONE) {
-						ItemStack itemStackDrop = ItemForceFieldShape.getItemStackNoCache(tileEntityForceFieldProjector.getShape(), tileEntityForceFieldProjector.isDoubleSided ? 2 : 1);
-						EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+						final ItemStack itemStackDrop = ItemForceFieldShape.getItemStackNoCache(tileEntityForceFieldProjector.getShape(), tileEntityForceFieldProjector.isDoubleSided ? 2 : 1);
+						final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 						entityItem.delayBeforeCanPickup = 0;
 						world.spawnEntityInWorld(entityItem);
 					}
@@ -255,10 +262,5 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 		}
 		
 		return false;
-	}
-	
-	@Override
-	public TileEntity createNewTileEntity(final World world, final int metadata) {
-		return new TileEntityForceFieldProjector();
 	}
 }

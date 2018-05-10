@@ -120,7 +120,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	
 	@Override
 	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 10, tagCompound);
 	}
@@ -134,7 +134,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] videoChannel(Context context, Arguments arguments) {
+	public Object[] videoChannel(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setVideoChannel(arguments.checkInteger(0));
 		}
@@ -144,7 +144,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("videoChannel")) {

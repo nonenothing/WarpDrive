@@ -41,7 +41,7 @@ public class BlockTransporterCore extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0 || side == 1) {
 			return iconBuffer[0];
 		}

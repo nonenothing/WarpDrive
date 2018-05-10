@@ -45,7 +45,7 @@ public class BlockWeaponController extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0) {
 			return iconBuffer[ICON_BOTTOM];
 		} else if (side == 1) {
@@ -70,13 +70,15 @@ public class BlockWeaponController extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer entityPlayer, int side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
+	                                final EntityPlayer entityPlayer,
+	                                final int side, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
 		if (entityPlayer.getHeldItem() == null) {
-			TileEntity tileEntity = world.getTileEntity(x, y, z);
+			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			if (tileEntity instanceof TileEntityWeaponController) {
 				Commons.addChatMessage(entityPlayer, ((TileEntityWeaponController) tileEntity).getStatus());
 			} else {

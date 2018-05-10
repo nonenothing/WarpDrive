@@ -13,7 +13,7 @@ public class BlockAirSource extends BlockAbstractAir {
 	}
 	
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(final World world, final int x, final int y, final int z) {
 		if (!world.isRemote) {
 			final StateAir stateAir = ChunkHandler.getStateAir(world, x, y, z);
 			if ( stateAir != null

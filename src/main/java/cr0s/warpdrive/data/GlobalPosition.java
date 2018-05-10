@@ -1,7 +1,5 @@
 package cr0s.warpdrive.data;
 
-import cr0s.warpdrive.block.movement.TileEntityTransporterBeacon;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -42,10 +40,10 @@ public class GlobalPosition {
 		
 		boolean isLoaded;
 		if (world.getChunkProvider() instanceof ChunkProviderServer) {
-			ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
+			final ChunkProviderServer chunkProviderServer = (ChunkProviderServer) world.getChunkProvider();
 			try {
 				isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(x >> 4, z >> 4));
-			} catch (NoSuchFieldError exception) {
+			} catch (final NoSuchFieldError exception) {
 				isLoaded = chunkProviderServer.chunkExists(x >> 4, z >> 4);
 			}
 		} else {
@@ -117,14 +115,17 @@ public class GlobalPosition {
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof GlobalPosition) {
-			GlobalPosition globalPosition = (GlobalPosition) object;
+			final GlobalPosition globalPosition = (GlobalPosition) object;
 			return (dimensionId == globalPosition.dimensionId) && (x == globalPosition.x) && (y == globalPosition.y) && (z == globalPosition.z);
 		} else if (object instanceof VectorI) {
-			VectorI vector = (VectorI) object;
+			final VectorI vector = (VectorI) object;
 			return (x == vector.x) && (y == vector.y) && (z == vector.z);
 		} else if (object instanceof TileEntity) {
-			TileEntity tileEntity = (TileEntity) object;
-			return (dimensionId == tileEntity.getWorldObj().provider.dimensionId) && (x == tileEntity.xCoord) && (y == tileEntity.yCoord) && (z == tileEntity.zCoord);
+			final TileEntity tileEntity = (TileEntity) object;
+			return (dimensionId == tileEntity.getWorldObj().provider.dimensionId)
+			    && (x == tileEntity.xCoord)
+			    && (y == tileEntity.yCoord)
+			    && (z == tileEntity.zCoord);
 		}
 		
 		return false;

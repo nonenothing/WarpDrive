@@ -77,7 +77,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	}
 	
 	@Override
-	public void render(float partialTicks, WorldClient world, Minecraft mc) {
+	public void render(final float partialTicks, final WorldClient world, final Minecraft mc) {
 		final Vec3 vec3Player = mc.thePlayer.getPosition(partialTicks);
 		final CelestialObject celestialObject = world.provider == null ? null
 				: CelestialObjectManager.get(world, (int) vec3Player.xCoord, (int) vec3Player.zCoord);
@@ -358,7 +358,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		
 		// GL11.glEnable(GL11.GL_BLEND);    // by caller
 		final double time = Minecraft.getSystemTime() / 1000.0D;
-		for (RenderData renderData : celestialObject.setRenderData) {
+		for (final RenderData renderData : celestialObject.setRenderData) {
 			// compute texture offsets for clouds animation 
 			final float offsetU = (float) ( Math.signum(renderData.periodU) * ((time / Math.abs(renderData.periodU)) % 1.0D) );
 			final float offsetV = (float) ( Math.signum(renderData.periodV) * ((time / Math.abs(renderData.periodV)) % 1.0D) );
@@ -489,10 +489,10 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	// colorization loosely inspired from Hertzsprung-Russell diagram
 	// (we're using it for non-star objects too, so yeah...)
-	private static int getStarColorRGB(Random rand) {
+	private static int getStarColorRGB(final Random rand) {
 		final double colorType = rand.nextDouble();
-		float hue;
-		float saturation;
+		final float hue;
+		final float saturation;
 		float brightness = 1.0F - 0.8F * rand.nextFloat();  // distance effect
 		
 		if (colorType <= 0.08D) {// 8% light blue (young star)
@@ -544,7 +544,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		return Vec3.createVectorHelper(0.26796875D, 0.1796875D, 0.0D);
 	}
 	
-	public static float getSkyBrightness(float par1) {
+	public static float getSkyBrightness(final float par1) {
 		final float var2 = FMLClientHandler.instance().getClient().theWorld.getCelestialAngle(par1);
 		float var3 = 1.0F - (MathHelper.sin(var2 * (float) Math.PI * 2.0F) * 2.0F + 0.25F);
 

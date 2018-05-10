@@ -65,7 +65,7 @@ public class ItemShipToken extends Item {
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		final int metadata = itemStack.getItemDamage();
 		for (final int metadataValid : VALID_METADATAS) {
 			if (metadata == metadataValid) {
@@ -87,7 +87,7 @@ public class ItemShipToken extends Item {
 	}
 	
 	@Override
-	public void getSubItems(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubItems(final Item item, final CreativeTabs creativeTab, final List list) {
 		for (final int metadataValid : VALID_METADATAS) {
 			list.add(new ItemStack(item, 1, metadataValid));
 		}
@@ -111,7 +111,7 @@ public class ItemShipToken extends Item {
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";

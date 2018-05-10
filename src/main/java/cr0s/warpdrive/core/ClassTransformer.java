@@ -107,7 +107,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		
 		try {
 			collectClientValidation(transformedName, bytes);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			// nop
 		}
 		
@@ -128,7 +128,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 	}
 	
 	public static String getClientValidation() {
-		StringBuilder result = new StringBuilder().append(new Date().toString());
+		final StringBuilder result = new StringBuilder().append(new Date().toString());
 		for (final String key : countClass.keySet()) {
 			result.append("\n").append(key)
 			      .append("\t").append(countClass.get(key))
@@ -139,13 +139,13 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 	
 	private static String SHA1(final byte[] bytes) {
 		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-1");
-			Formatter formatter = new Formatter();
-			for (byte byteValue : md.digest(bytes)) {
+			final MessageDigest md = MessageDigest.getInstance("SHA-1");
+			final Formatter formatter = new Formatter();
+			for (final byte byteValue : md.digest(bytes)) {
 				formatter.format("%02x", byteValue);
 			}
 			return formatter.toString();
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return exception.getMessage();
 		}
 	}
@@ -155,7 +155,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		int operationCount = 1;
+		final int operationCount = 1;
 		int injectedCount = 0;
 		final Iterator methods = classNode.methods.iterator();
 		do {
@@ -178,7 +178,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof LdcInsnNode) {
 						final LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.080000000000000002D))) {
+						if (nodeAt.cst.equals(0.080000000000000002D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -214,7 +214,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		int operationCount = 2;
+		final int operationCount = 2;
 		int injectedCount = 0;
 		final Iterator methods = classNode.methods.iterator();
 		do {
@@ -237,7 +237,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof LdcInsnNode) {
 						final LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.039999999105930328D))) {
+						if (nodeAt.cst.equals(0.039999999105930328D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -251,7 +251,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 							injectedCount++;
 						}
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.98000001907348633D))) {
+						if (nodeAt.cst.equals(0.98000001907348633D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -287,7 +287,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		int operationCount = 2;
+		final int operationCount = 2;
 		int injectedCount = 0;
 		final Iterator methods = classNode.methods.iterator();
 		do {
@@ -310,7 +310,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof LdcInsnNode) {
 						final LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.04D))) {
+						if (nodeAt.cst.equals(0.04D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -324,7 +324,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 							injectedCount++;
 						}
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.98D))) {
+						if (nodeAt.cst.equals(0.98D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -360,7 +360,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		int operationCount = 3 + 2 + 0;
+		final int operationCount = 3 + 2 + 0;
 		int injectedCount = 0;
 		final Iterator methods = classNode.methods.iterator();
 		do {
@@ -384,7 +384,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof LdcInsnNode) {
 						final LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.08D))) {
+						if (nodeAt.cst.equals(0.08D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -416,7 +416,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof LdcInsnNode) {
 						final LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
 						
-						if (nodeAt.cst.equals(Double.valueOf(0.03999999910593033D))) {
+						if (nodeAt.cst.equals(0.03999999910593033D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -467,7 +467,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		int operationCount = 1;
+		final int operationCount = 1;
 		int injectedCount = 0;
 		final Iterator methods = classNode.methods.iterator();
 		do {
@@ -524,9 +524,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		int operationCount = 1;
+		final int operationCount = 1;
 		int injectedCount = 0;
-		Iterator methods = classNode.methods.iterator();
+		final Iterator methods = classNode.methods.iterator();
 		do {
 			if (!methods.hasNext()) {
 				break;
@@ -605,7 +605,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				dataOutputStream.write(bytes);
 				dataOutputStream.flush();
 				dataOutputStream.close();
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 			}
 		}
@@ -613,14 +613,14 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 	
 	private static boolean opcodeToString_firstDump = true;
 	private static String opcodeToString(final int opcode) {
-		Field[] fields = Opcodes.class.getFields();
-		for (Field field : fields) {
+		final Field[] fields = Opcodes.class.getFields();
+		for (final Field field : fields) {
 			if (field.getType() == int.class) {
 				try {
 					if (field.getInt(null) == opcode){
 						return field.getName();
 					}
-				} catch (Throwable throwable){
+				} catch (final Throwable throwable){
 					if (opcodeToString_firstDump) {
 						throwable.printStackTrace();
 						opcodeToString_firstDump = false;
@@ -631,7 +631,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		return String.format("0x%x", opcode);
 	}
 	
-	private static void decompile(AbstractInsnNode abstractNode) {
+	private static void decompile(final AbstractInsnNode abstractNode) {
 		final String opcode = opcodeToString(abstractNode.getOpcode());
 		if (abstractNode instanceof VarInsnNode) {
 			final VarInsnNode node = (VarInsnNode) abstractNode;

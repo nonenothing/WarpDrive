@@ -55,7 +55,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 	}
 
 	@Override
-	public void fromBytes(ByteBuf buffer) {
+	public void fromBytes(final ByteBuf buffer) {
 		double x = buffer.readDouble();
 		double y = buffer.readDouble();
 		double z = buffer.readDouble();
@@ -74,7 +74,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeDouble(source.x);
 		buffer.writeDouble(source.y);
 		buffer.writeDouble(source.z);
@@ -89,13 +89,13 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handle(World worldObj) {
-		FMLClientHandler.instance().getClient().effectRenderer.addEffect(new EntityFXBeam(worldObj, source.clone(), target.clone(), red, green, blue, age, energy));
+	private void handle(final World world) {
+		FMLClientHandler.instance().getClient().effectRenderer.addEffect(new EntityFXBeam(world, source.clone(), target.clone(), red, green, blue, age, energy));
 	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(MessageBeamEffect beamEffectMessage, MessageContext context) {
+	public IMessage onMessage(final MessageBeamEffect beamEffectMessage, final MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring beam packet");

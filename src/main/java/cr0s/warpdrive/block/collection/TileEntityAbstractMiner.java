@@ -43,12 +43,12 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		}
 	}
 	
-	protected void harvestBlock(VectorI valuable) {
-		Block block = worldObj.getBlock(valuable.x, valuable.y, valuable.z);
+	protected void harvestBlock(final VectorI valuable) {
+		final Block block = worldObj.getBlock(valuable.x, valuable.y, valuable.z);
 		if (block == null || block.isAir(worldObj, valuable.x, valuable.y, valuable.z)) {
 			return;
 		}
-		int blockMeta = worldObj.getBlockMetadata(valuable.x, valuable.y, valuable.z);
+		final int blockMeta = worldObj.getBlockMetadata(valuable.x, valuable.y, valuable.z);
 		if (block instanceof BlockLiquid) {
 			// Evaporate fluid
 			worldObj.playSoundEffect(valuable.x + 0.5D, valuable.y + 0.5D, valuable.z + 0.5D, "random.fizz", 0.5F,
@@ -57,7 +57,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 			// remove without updating neighbours @TODO: add proper pump upgrade
 			worldObj.setBlock(valuable.x, valuable.y, valuable.z, Blocks.air, 0, 2);
 		} else {
-			List<ItemStack> itemStacks = getItemStackFromBlock(valuable.x, valuable.y, valuable.z, block, blockMeta);
+			final List<ItemStack> itemStacks = getItemStackFromBlock(valuable.x, valuable.y, valuable.z, block, blockMeta);
 			if (addToConnectedInventories(itemStacks)) {
 				stop();
 			}
@@ -69,7 +69,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		}
 	}
 	
-	private List<ItemStack> getItemStackFromBlock(int x, int y, int z, Block block, int blockMeta) {
+	private List<ItemStack> getItemStackFromBlock(final int x, final int y, final int z, final Block block, final int blockMeta) {
 		if (block == null) {
 			WarpDrive.logger.error(this + " Invalid block at " + x + " " + y + " " + z);
 			return null;
@@ -78,11 +78,11 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 			boolean isSilkHarvestable = false;
 			try {
 				isSilkHarvestable = block.canSilkHarvest(worldObj, null, x, y, z, blockMeta);
-			} catch (Exception exception) {// protect in case the mined block is corrupted
+			} catch (final Exception exception) {// protect in case the mined block is corrupted
 				exception.printStackTrace();
 			}
 			if (isSilkHarvestable) {
-				ArrayList<ItemStack> isBlock = new ArrayList<>();
+				final ArrayList<ItemStack> isBlock = new ArrayList<>();
 				isBlock.add(new ItemStack(block, 1, blockMeta));
 				return isBlock;
 			}
@@ -90,7 +90,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		
 		try {
 			return block.getDrops(worldObj, x, y, z, blockMeta, 0);
-		} catch (Exception exception) {// protect in case the mined block is corrupted
+		} catch (final Exception exception) {// protect in case the mined block is corrupted
 			exception.printStackTrace();
 			return null;
 		}

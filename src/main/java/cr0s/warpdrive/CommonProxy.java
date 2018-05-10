@@ -42,7 +42,7 @@ public class CommonProxy {
 	}
 	
 	private static EntityPlayerMP getPlayer(final UUID uuidPlayer) {
-		for (Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
+		for (final Object object : MinecraftServer.getServer().getConfigurationManager().playerEntityList) {
 			if (object instanceof EntityPlayerMP) {
 				final EntityPlayerMP entityPlayerMP = (EntityPlayerMP) object;
 				if (entityPlayerMP.getUniqueID() == uuidPlayer) {

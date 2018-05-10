@@ -26,7 +26,7 @@ public class ClientHandler {
 	private boolean isCreativeMode;
 	
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onTooltipEvent(ItemTooltipEvent event) {
+	public void onTooltipEvent(final ItemTooltipEvent event) {
 		if (event.entityPlayer == null) {
 			return;
 		}
@@ -80,7 +80,7 @@ public class ClientHandler {
 				if (uniqueName != null) {
 					Commons.addTooltip(event.toolTip, uniqueName);
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -94,7 +94,7 @@ public class ClientHandler {
 					                                                harvestTool,
 					                                                block.getHarvestLevel(event.itemStack.getItemDamage())));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -107,7 +107,7 @@ public class ClientHandler {
 		if (WarpDriveConfig.CLIENT_TOOLTIP_HARDNESS.isEnabled(isSneaking, isCreativeMode)) {
 			try {
 				Commons.addTooltip(event.toolTip, String.format("Hardness is %.1f", (float) WarpDrive.fieldBlockHardness.get(block)));
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 			Commons.addTooltip(event.toolTip, String.format("Explosion resistance is %.1f", + block.getExplosionResistance(null)));
@@ -121,7 +121,7 @@ public class ClientHandler {
 				if (flammability > 0) {
 					Commons.addTooltip(event.toolTip, String.format("Flammable: %d, spread %d", flammability, fireSpread));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -140,7 +140,7 @@ public class ClientHandler {
 					}
 					Commons.addTooltip(event.toolTip, String.format("Temperature is %d K", fluid.getTemperature()));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -154,7 +154,7 @@ public class ClientHandler {
 				if (uniqueName != null) {
 					Commons.addTooltip(event.toolTip, uniqueName);
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -169,7 +169,7 @@ public class ClientHandler {
 					                                                event.itemStack.getMaxDamage() - event.itemStack.getItemDamage(),
 					                                                event.itemStack.getMaxDamage()));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -192,7 +192,7 @@ public class ClientHandler {
 						}
 					}
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}

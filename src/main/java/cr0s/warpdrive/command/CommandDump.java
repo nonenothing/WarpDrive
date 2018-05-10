@@ -29,7 +29,7 @@ public class CommandDump extends CommandBase {
 	}
 	
 	@Override
-	public void processCommand(ICommandSender commandSender, String[] params) {
+	public void processCommand(final ICommandSender commandSender, final String[] args) {
 		if (commandSender == null) { return; }
 		final World world = commandSender.getEntityWorld();
 		final ChunkCoordinates coordinates = commandSender.getPlayerCoordinates();
@@ -43,14 +43,14 @@ public class CommandDump extends CommandBase {
 		int z = coordinates.posZ;
 		
 		// parse arguments
-		if (params.length != 0) {
+		if (args.length != 0) {
 			Commons.addChatMessage(commandSender, getCommandUsage(commandSender));
 			return;
 		}
 		
 		// validate
 		IInventory inventory = null;
-		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			inventory = getInventory(world, x + direction.offsetX, y + direction.offsetY, z + direction.offsetZ);
 			if (inventory != null) {
 				x += direction.offsetX;
@@ -86,7 +86,7 @@ public class CommandDump extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
+	public String getCommandUsage(final ICommandSender icommandsender) {
 		return "/wdump: write loot table in console for item container below or next to player";
 	}
 	

@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -66,13 +67,13 @@ public class Commons {
 		       .replaceAll("(" + CHAR_FORMATTING + ".)", "");
 	}
 	
-	private static boolean isFormatColor(char chr) {
+	private static boolean isFormatColor(final char chr) {
 		return chr >= 48 && chr <= 57
 		    || chr >= 97 && chr <= 102
 		    || chr >= 65 && chr <= 70;
 	}
 	
-	private static boolean isFormatSpecial(char chr) {
+	private static boolean isFormatSpecial(final char chr) {
 		return chr >= 107 && chr <= 111
 		    || chr >= 75 && chr <= 79
 		    || chr == 114
@@ -148,7 +149,7 @@ public class Commons {
 			while (!lineRemaining.isEmpty()) {
 				int indexToCut = formatNextLine.length();
 				int displayLength = 0;
-				int length = lineRemaining.length();
+				final int length = lineRemaining.length();
 				while (indexToCut < length && displayLength <= 38) {
 					if (lineRemaining.charAt(indexToCut) == (char) 167 && indexToCut + 1 < length) {
 						indexToCut++;
@@ -186,18 +187,18 @@ public class Commons {
 		}
 	}
 	
-	public static Field getField(Class<?> clazz, String deobfuscatedName, String obfuscatedName) {
+	public static Field getField(final Class<?> clazz, final String deobfuscatedName, final String obfuscatedName) {
 		Field fieldToReturn = null;
 		
 		try {
 			fieldToReturn = clazz.getDeclaredField(deobfuscatedName);
-		} catch (Exception exception1) {
+		} catch (final Exception exception1) {
 			try {
 				fieldToReturn = clazz.getDeclaredField(obfuscatedName);
-			} catch (Exception exception2) {
+			} catch (final Exception exception2) {
 				exception2.printStackTrace();
-				StringBuilder map = new StringBuilder();
-				for (Field fieldDeclared : clazz.getDeclaredFields()) {
+				final StringBuilder map = new StringBuilder();
+				for (final Field fieldDeclared : clazz.getDeclaredFields()) {
 					if (map.length() > 0) {
 						map.append(", ");
 					}
@@ -239,19 +240,19 @@ public class Commons {
 		return name.replace("/", "").replace(".", "").replace("\\", ".");
 	}
 	
-	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
+	public static ItemStack copyWithSize(final ItemStack itemStack, final int newSize) {
 		final ItemStack ret = itemStack.copy();
 		ret.stackSize = newSize;
 		return ret;
 	}
 	
-	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
+	public static Collection<IInventory> getConnectedInventories(final TileEntity tileEntityConnection) {
 		final Collection<IInventory> result = new ArrayList<>(6);
 		
-		for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
 			final TileEntity tileEntity = tileEntityConnection.getWorldObj().getTileEntity(
 				tileEntityConnection.xCoord + side.offsetX, tileEntityConnection.yCoord + side.offsetY, tileEntityConnection.zCoord + side.offsetZ);
-			if (tileEntity != null && (tileEntity instanceof IInventory)) {
+			if (tileEntity instanceof IInventory) {
 				result.add((IInventory) tileEntity);
 				
 				if (tileEntity instanceof TileEntityChest) {
@@ -279,11 +280,11 @@ public class Commons {
 	public static final ForgeDirection[] HORIZONTAL_DIRECTIONS = { ForgeDirection.NORTH, ForgeDirection.SOUTH, ForgeDirection.WEST, ForgeDirection.EAST };
 	public static final ForgeDirection[] VERTICAL_DIRECTIONS = { ForgeDirection.UP, ForgeDirection.DOWN };
 	
-	public static Set<VectorI> getConnectedBlocks(World world, final VectorI start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
+	public static Set<VectorI> getConnectedBlocks(final World world, final VectorI start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
 	}
 	
-	public static Set<VectorI> getConnectedBlocks(World world, final Collection<VectorI> start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
+	public static Set<VectorI> getConnectedBlocks(final World world, final Collection<VectorI> start, final ForgeDirection[] directions, final Set<Block> whitelist, final int maxRange, final VectorI... ignore) {
 		final Set<VectorI> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore.addAll(Arrays.asList(ignore));
@@ -298,13 +299,13 @@ public class Commons {
 		int range = 0;
 		while(!toIterate.isEmpty() && range < maxRange) {
 			toIterateNext = new HashSet<>();
-			for (VectorI current : toIterate) {
+			for (final VectorI current : toIterate) {
 				if (whitelist.contains(current.getBlock_noChunkLoading(world))) {
 					iterated.add(current);
 				}
 				
-				for (ForgeDirection direction : directions) {
-					VectorI next = current.clone(direction);
+				for (final ForgeDirection direction : directions) {
+					final VectorI next = current.clone(direction);
 					if (!iterated.contains(next) && !toIgnore.contains(next) && !toIterate.contains(next) && !toIterateNext.contains(next)) {
 						if (whitelist.contains(next.getBlock_noChunkLoading(world))) {
 							toIterateNext.add(next);
@@ -384,11 +385,11 @@ public class Commons {
 		return Math.min(max, Math.max(Math.abs(value), min)) * Math.signum(value == 0.0D ? 1.0D : value);
 	}
 	
-	public static int randomRange(Random random, final int min, final int max) {
+	public static int randomRange(final Random random, final int min, final int max) {
 		return min + ((max - min > 0) ? random.nextInt(max - min + 1) : 0);
 	}
 	
-	public static double randomRange(Random random, final double min, final double max) {
+	public static double randomRange(final Random random, final double min, final double max) {
 		return min + ((max - min > 0) ? random.nextDouble() * (max - min) : 0);
 	}
 	
@@ -440,13 +441,13 @@ public class Commons {
 	
 	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
 		if (entityLiving != null) {
-			int metadata;
+			final int metadata;
 			if (entityLiving.rotationPitch > 65) {
 				metadata = 1;
 			} else if (entityLiving.rotationPitch < -65) {
 				metadata = 0;
 			} else {
-				int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+				final int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
 				switch (direction) {
 					case 0:
 						metadata = 2;
@@ -512,7 +513,7 @@ public class Commons {
 			CompressedStreamTools.writeCompressed(tagCompound, fileoutputstream);
 			
 			fileoutputstream.close();
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -534,14 +535,14 @@ public class Commons {
 			fileinputstream.close();
 			
 			return tagCompound;
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 		
 		return null;
 	}
 	
-	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
+	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(final ICommandSender sender, final String playerNameOrSelector) {
 		@SuppressWarnings("unchecked")
 		final List<EntityPlayer> onlinePlayers = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
 		for (final EntityPlayer onlinePlayer : onlinePlayers) {
@@ -584,7 +585,7 @@ public class Commons {
 		// change to another dimension if needed
 		if (worldDestination != entity.worldObj) {
 			final World worldSource = entity.worldObj;
-			final MinecraftServer server = MinecraftServer.getServer();
+			final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 			final WorldServer from = server.worldServerForDimension(worldSource.provider.dimensionId);
 			final WorldServer to = server.worldServerForDimension(worldDestination.provider.dimensionId);
 			final SpaceTeleporter teleporter = new SpaceTeleporter(to, 0, 
@@ -616,9 +617,9 @@ public class Commons {
 		
 		if (worldServer == null) {
 			try {
-				final MinecraftServer server = MinecraftServer.getServer();
+				final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 				worldServer = server.worldServerForDimension(dimensionId);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d",
 				                                     exception.getMessage(),
 				                                     dimensionId));
@@ -638,9 +639,9 @@ public class Commons {
 		return getInteractingBlock(world, entityPlayer, BLOCK_REACH_DISTANCE);
 	}
 	public static MovingObjectPosition getInteractingBlock(final World world, final EntityPlayer entityPlayer, final double distance) {
-		Vec3 vec3Position = Vec3.createVectorHelper(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
-		Vec3 vec3Look = entityPlayer.getLook(1.0F);
-		Vec3 vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
+		final Vec3 vec3Position = Vec3.createVectorHelper(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
+		final Vec3 vec3Look = entityPlayer.getLook(1.0F);
+		final Vec3 vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
 		return world.func_147447_a(vec3Position, vec3Target, false, false, true);
 	}
 }

@@ -121,7 +121,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Should return true if that direction can receive energy.
 	 */
 	@SuppressWarnings("UnusedParameters")
-	public boolean energy_canInput(ForgeDirection from) {
+	public boolean energy_canInput(final ForgeDirection from) {
 		return false;
 	}
 	
@@ -129,7 +129,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Should return true if that direction can output energy.
 	 */
 	@SuppressWarnings("UnusedParameters")
-	public boolean energy_canOutput(ForgeDirection to) {
+	public boolean energy_canOutput(final ForgeDirection to) {
 		return false;
 	}
 	
@@ -175,14 +175,14 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energy(Context context, Arguments arguments) {
+	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("energy")) {
@@ -248,7 +248,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public double injectEnergy(ForgeDirection from, double amount_EU, double voltage) {
+	public double injectEnergy(final ForgeDirection from, final double amount_EU, final double voltage) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]injectEnergy from " + from  + "(" + energy_canInput(from) + ") amount " + amount_EU + " voltage " + voltage);
 		}
@@ -269,7 +269,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean acceptsEnergyFrom(TileEntity emitter, ForgeDirection from) {
+	public boolean acceptsEnergyFrom(final TileEntity emitter, final ForgeDirection from) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]acceptsEnergyFrom emitter " + emitter + " from " + from + " => " + energy_canInput(from));
 		}
@@ -285,7 +285,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public void drawEnergy(double amount_EU) {
+	public void drawEnergy(final double amount_EU) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]drawEnergy amount_EU " + amount_EU);
 		}
@@ -294,7 +294,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean emitsEnergyTo(TileEntity receiver, ForgeDirection to) {
+	public boolean emitsEnergyTo(final TileEntity receiver, final ForgeDirection to) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]emitsEnergyTo receiver " + receiver + " to " + to + " => " + energy_canOutput(to));
 		}
@@ -333,7 +333,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	// ThermalExpansion IEnergyHandler interface
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver */
-	public int receiveEnergy(ForgeDirection from, int maxReceive_RF, boolean simulate) {
+	public int receiveEnergy(final ForgeDirection from, final int maxReceive_RF, final boolean simulate) {
 		if (!energy_canInput(from)) {
 			return 0;
 		}
@@ -357,7 +357,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyProvider */
-	public int extractEnergy(ForgeDirection from, int maxExtract_RF, boolean simulate) {
+	public int extractEnergy(final ForgeDirection from, final int maxExtract_RF, final boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]extractEnergy from " + from + " maxExtract_RF " + maxExtract_RF + " simulate " + simulate);
 		}
@@ -375,26 +375,26 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyConnection */
-	public boolean canConnectEnergy(ForgeDirection from) {
+	public boolean canConnectEnergy(final ForgeDirection from) {
 		return (energy_getMaxStorage() != 0) && (energy_canInput(from) || energy_canOutput(from)); // Warning: deadlock risk depending on child implementation
 	}
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
-	public int getEnergyStored(ForgeDirection from) {
+	public int getEnergyStored(final ForgeDirection from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getEnergyStored()) : 0;
 	}
 	
 	@Override
 	@Optional.Method(modid = "CoFHCore")	/* IEnergyReceiver and IEnergyProvider */
-	public int getMaxEnergyStored(ForgeDirection from) {
+	public int getMaxEnergyStored(final ForgeDirection from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getMaxStorage()) : 0;
 	}
 	
 	
 	// WarpDrive overrides for Thermal Expansion
 	@Optional.Method(modid = "CoFHCore")
-	private void CoFH_outputEnergy(ForgeDirection from, IEnergyReceiver energyReceiver) {
+	private void CoFH_outputEnergy(final ForgeDirection from, final IEnergyReceiver energyReceiver) {
 		if (energyReceiver == null || worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ) == null) {
 			return;
 		}
@@ -414,7 +414,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Optional.Method(modid = "CoFHCore")
 	private void CoFH_outputEnergy() {
-		for (ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
 			if (cofhEnergyReceivers[from.ordinal()] != null) {
 				CoFH_outputEnergy(from, (IEnergyReceiver) cofhEnergyReceivers[from.ordinal()]);
 			}
@@ -472,7 +472,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]CoFH_scanForEnergyHandlers");
 		}
-		for (ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
+		for (final ForgeDirection from : ForgeDirection.VALID_DIRECTIONS) {
 			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
 				final TileEntity tileEntity = worldObj.getTileEntity(xCoord + from.offsetX, yCoord + from.offsetY, zCoord + from.offsetZ);

@@ -52,7 +52,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 						cache_colorMultiplierCamouflage = 0;
 						cache_lightCamouflage = 0;
 					}
-				} catch (Exception exception) {
+				} catch (final Exception exception) {
 					exception.printStackTrace();
 				}
 			} else {
@@ -88,7 +88,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	
 	@Override
 	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
+		final NBTTagCompound tagCompound = new NBTTagCompound();
 		writeToNBT(tagCompound);
 		
 		return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tagCompound);
@@ -96,13 +96,13 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	
 	@Override
 	public void onDataPacket(final NetworkManager networkManager, final S35PacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.func_148857_g();
+		final NBTTagCompound tagCompound = packet.func_148857_g();
 		readFromNBT(tagCompound);
 	}
 	
 	public void setProjector(final VectorI vectorI) {
 		vProjector = vectorI;
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup();
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		if (forceFieldSetup != null) {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
 			if (getBlockMetadata() == forceFieldSetup.getCamouflageMetadata()) {
@@ -117,9 +117,9 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	
 	public TileEntityForceFieldProjector getProjector() {
 		if (vProjector != null) {
-			TileEntity tileEntity = vProjector.getTileEntity(worldObj);
+			final TileEntity tileEntity = vProjector.getTileEntity(worldObj);
 			if (tileEntity instanceof TileEntityForceFieldProjector) {
-				TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
+				final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
 				if (worldObj.isRemote) {
 					return tileEntityForceFieldProjector;
 					

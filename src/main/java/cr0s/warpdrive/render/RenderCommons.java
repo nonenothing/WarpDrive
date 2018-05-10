@@ -51,7 +51,7 @@ public class RenderCommons {
 	// from net.minecraft.client.gui.Gui
 	private static final float scaleUV = 0.00390625F;  // 1/256
 	protected static void drawTexturedModalRect(final int x, final int y, final int u, final int v, final int sizeX, final int sizeY, final int zLevel) {
-		Tessellator tessellator = Tessellator.instance;
+		final Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
 		tessellator.addVertexWithUV( x         , (y + sizeY), zLevel, scaleUV * u          , scaleUV * (v + sizeY));
 		tessellator.addVertexWithUV((x + sizeX), (y + sizeY), zLevel, scaleUV * (u + sizeX), scaleUV * (v + sizeY));
@@ -133,7 +133,7 @@ public class RenderCommons {
 		final byte alpha = (byte) (colorBackground >> 24 & 255);
 		GL11.glColor4b(red, blue, green, alpha);
 		
-		Tessellator tessellator = Tessellator.instance;
+		final Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
 		tessellator.addVertex(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D);
 		tessellator.addVertex(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D);
@@ -196,7 +196,7 @@ public class RenderCommons {
 		final byte alpha = (byte) (colorBackground >> 24 & 255);
 		GL11.glColor4b(red, blue, green, alpha);
 		
-		Tessellator tessellator = Tessellator.instance;
+		final Tessellator tessellator = Tessellator.instance;
 		tessellator.startDrawingQuads();
 		tessellator.addVertex(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D);
 		tessellator.addVertex(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D);
@@ -277,7 +277,7 @@ public class RenderCommons {
 					Dictionary.BLOCKS_NOCAMOUFLAGE.add(blockCamouflage);
 					return false;
 				}
-			} catch(Exception exception) {
+			} catch(final Exception exception) {
 				exception.printStackTrace();
 				
 				// blacklist the faulty block

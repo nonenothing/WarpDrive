@@ -23,7 +23,7 @@ public class ChunkLoadingHandler implements LoadingCallback {
 	
 	/* event catchers */
 	@Override
-	public void ticketsLoaded(List<Ticket> tickets, World world) {
+	public void ticketsLoaded(final List<Ticket> tickets, final World world) {
 		for (final Ticket ticket : tickets) {
 			final NBTTagCompound tagCompound = ticket.getModData();
 			if ( !tagCompound.hasKey("posX")

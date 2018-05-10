@@ -61,7 +61,7 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (side == 0) {
 			return iconBuffer[0];
 		}

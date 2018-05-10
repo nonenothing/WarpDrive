@@ -20,7 +20,7 @@ public enum EnumDecorativeType {
 		}
 	}
 	
-	EnumDecorativeType(String unlocalizedName) {
+	EnumDecorativeType(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

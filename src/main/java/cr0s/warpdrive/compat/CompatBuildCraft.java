@@ -31,7 +31,7 @@ public class CompatBuildCraft implements IBlockTransformer {
 			classTileEntityFiller = Class.forName("buildcraft.builders.TileFiller"); // id is Filler
 			classTileEntityZonePlanner = Class.forName("buildcraft.robotics.TileZonePlan"); // id is net.minecraft.src.buildcraft.commander.TileZonePlan
 			WarpDriveConfig.registerBlockTransformer("BuildCraft", new CompatBuildCraft());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -75,7 +75,7 @@ public class CompatBuildCraft implements IBlockTransformer {
 	private static final short[] mrotShort = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final Map<String, String> rotPipeNames;
 	static {
-		Map<String, String> map = new HashMap<>();
+		final Map<String, String> map = new HashMap<>();
 		map.put("redstoneInputSide[0]", "redstoneInputSide[0]");
 		map.put("redstoneInputSide[1]", "redstoneInputSide[1]");
 		map.put("redstoneInputSide[2]", "redstoneInputSide[5]");
@@ -98,7 +98,7 @@ public class CompatBuildCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		
 		if (nbtTileEntity == null) {

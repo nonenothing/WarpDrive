@@ -12,13 +12,13 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	private final Block blockSlab;
 	
-	public ItemBlockHullSlab(Block blockSlab) {
+	public ItemBlockHullSlab(final Block blockSlab) {
 		super(blockSlab);
 		this.blockSlab = blockSlab;
 	}
 	
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(final ItemStack itemstack) {
 		return getUnlocalizedName();
 	}
 	
@@ -48,7 +48,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 			
 			// try to merge slabs when right-clicking directly the inner face
 			if (metadataWorld - typeWorld == facing.getOpposite().ordinal()) {
-				AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D);
+				final AxisAlignedBB boundingBox = AxisAlignedBB.getBoundingBox(x, y, z, x + 1.0D, y + 1.0D, z + 1.0D);
 				if (world.checkNoEntityCollision(boundingBox)) {
 					if (typeWorld == 0) {// plain
 						world.setBlock(x, y, z, blockSlab, 12, 3);
@@ -117,7 +117,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	// Should return true if item can be used
 	@Override
-	public boolean func_150936_a(World world, int x, int y, int z, int side, EntityPlayer entityPlayer, ItemStack itemStack) {
+	public boolean func_150936_a(final World world, final int x, final int y, final int z, final int side, final EntityPlayer entityPlayer, final ItemStack itemStack) {
 		// check if clicked block can be interacted with
 		final int metadataItem = itemStack.getItemDamage();
 		final Block blockWorld = world.getBlock(x, y, z);
@@ -129,7 +129,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 		}
 		
 		// check the block on our side
-		ForgeDirection direction = ForgeDirection.getOrientation(side);
+		final ForgeDirection direction = ForgeDirection.getOrientation(side);
 		final int xSide = x + direction.offsetX;
 		final int ySide = y + direction.offsetY;
 		final int zSide = z + direction.offsetZ;

@@ -18,7 +18,8 @@ import cpw.mods.fml.common.IWorldGenerator;
 public class CommonWorldGenerator implements IWorldGenerator {
 
 	@Override
-	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
+	public void generate(final Random random, final int chunkX, final int chunkZ,
+	                     final World world, final IChunkProvider chunkGenerator, final IChunkProvider chunkProvider) {
 		// chunk data creation
 		ChunkHandler.onGenerated(world, chunkX, chunkZ);
 		
@@ -44,7 +45,7 @@ public class CommonWorldGenerator implements IWorldGenerator {
 			}
 			structureGroup.generate(world, random, x, y, z);
 			
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -55,20 +56,20 @@ public class CommonWorldGenerator implements IWorldGenerator {
 	 **/
 	@Deprecated
 	public static void generateSphereDirect(
-	                                       OrbInstance orbInstance, World world, int xCoord, int yCoord, int zCoord) {
-		double radiusC = orbInstance.getTotalThickness() + 0.5D; // Radius from center of block
-		double radiusSq = radiusC * radiusC; // Optimization to avoid square roots...
+			final  OrbInstance orbInstance, final World world, final int xCoord, final int yCoord, final int zCoord) {
+		final double radiusC = orbInstance.getTotalThickness() + 0.5D; // Radius from center of block
+		final double radiusSq = radiusC * radiusC; // Optimization to avoid square roots...
 		// sphere
-		int ceilRadius = (int) Math.ceil(radiusC);
+		final int ceilRadius = (int) Math.ceil(radiusC);
 		
 		// Pass the cube and check points for sphere equation x^2 + y^2 + z^2 = r^2
 		for (int x = 0; x <= ceilRadius; x++) {
-			double dX2 = (x + 0.5D) * (x + 0.5D);
+			final double dX2 = (x + 0.5D) * (x + 0.5D);
 			for (int y = 0; y <= ceilRadius; y++) {
-				double dX2Y2 = dX2 + (y + 0.5D) * (y + 0.5D);
+				final double dX2Y2 = dX2 + (y + 0.5D) * (y + 0.5D);
 				for (int z = 0; z <= ceilRadius; z++) {
-					double dZ2 = (z + 0.5D) * (z + 0.5D);
-					double dSq = dX2Y2 + dZ2; // squared distance from current position
+					final double dZ2 = (z + 0.5D) * (z + 0.5D);
+					final double dSq = dX2Y2 + dZ2; // squared distance from current position
 					
 					// Skip too far blocks
 					if (dSq > radiusSq) {
@@ -78,8 +79,8 @@ public class CommonWorldGenerator implements IWorldGenerator {
 					// Place blocks
 					// cheat by using axial symmetry so we don't create random numbers too frequently
 					
-					OrbShell orbShell = orbInstance.getShellForSqRadius(dSq);
-					Filler filler = orbShell.getRandomUnit(world.rand);
+					final OrbShell orbShell = orbInstance.getShellForSqRadius(dSq);
+					final Filler filler = orbShell.getRandomUnit(world.rand);
 					filler.setBlock(world, xCoord + x, yCoord + y, zCoord + z);
 					filler.setBlock(world, xCoord - x, yCoord + y, zCoord + z);
 					filler.setBlock(world, xCoord + x, yCoord - y, zCoord + z);

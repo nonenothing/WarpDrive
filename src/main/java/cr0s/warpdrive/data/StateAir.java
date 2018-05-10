@@ -242,7 +242,8 @@ public class StateAir {
 			// stairs are reporting slab collision box, so we can't detect them automatically
 			typeBlock = BLOCK_SEALER;
 			
-		} else if (block instanceof BlockStaticLiquid || block instanceof BlockDynamicLiquid) {// vanilla liquid (water & lava sources or flowing)
+		} else if ( block instanceof BlockStaticLiquid
+		         || block instanceof BlockDynamicLiquid ) {// vanilla liquid (water & lava sources or flowing)
 			// metadata = 0 for source, 8/9 for vertical flow
 			// 2 superposed sources would still be 0, so we can't use metadata. Instead, we're testing explicitly the block above
 			// we assume it's the same fluid, since water and lava won't mix anyway

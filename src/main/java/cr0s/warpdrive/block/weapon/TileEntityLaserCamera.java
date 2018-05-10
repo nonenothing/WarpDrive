@@ -124,7 +124,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] videoChannel(Context context, Arguments arguments) {
+	public Object[] videoChannel(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setVideoChannel(arguments.checkInteger(0));
 		}
@@ -134,7 +134,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("videoChannel")) {

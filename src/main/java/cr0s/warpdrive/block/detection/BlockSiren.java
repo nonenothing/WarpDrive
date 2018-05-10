@@ -53,7 +53,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public IIcon getIcon(int side, int metadata) {
+	public IIcon getIcon(final int side, final int metadata) {
 		if (!getIsRaid(metadata)) {
 			return iconBuffer[ICON_INDUSTRIAL];
 		}
@@ -67,7 +67,7 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(Item item, CreativeTabs creativeTab, List list) {
+	public void getSubBlocks(final Item item, final CreativeTabs creativeTab, final List list) {
 		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_INDUSTRIAL));
 		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_BASIC));
 		list.add(new ItemStack(item, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED));
@@ -97,22 +97,22 @@ public class BlockSiren extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int damageDropped(int metadata) {
+	public int damageDropped(final int metadata) {
 		return metadata;
 	}
 	
 	// Silences the siren if the block is destroyed.
 	// If this fails, the siren will still be stopped when it's invalidated.
 	@Override
-	public void onBlockPreDestroy(World world, int x, int y, int z, int meta) {
+	public void onBlockPreDestroy(final World world, final int x, final int y, final int z, final int meta) {
 		if (!world.isRemote) {
 			super.onBlockPreDestroy(world, x, y, z, meta);
 			return;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(x, y, z);
+		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntitySiren) {
-			TileEntitySiren tileEntitySiren = (TileEntitySiren) tileEntity;
+			final TileEntitySiren tileEntitySiren = (TileEntitySiren) tileEntity;
 			
 			if (tileEntitySiren.isPlaying()) {
 				tileEntitySiren.stopSound();
