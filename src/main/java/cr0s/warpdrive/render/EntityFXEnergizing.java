@@ -93,12 +93,12 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 			alpha = 0.5F - (4 - (particleMaxAge - particleAge)) * 0.1F;
 		} else {
 			// add random flickering
-			final double timeAlpha = ((getEntityId() ^ 0x47C8) & 0xFFFF) + particleAge + partialTick + 0.0167D;
+			final double timeAlpha = ((getSeed() ^ 0x47C8) & 0xFFFF) + particleAge + partialTick + 0.0167D;
 			alpha += Math.pow(Math.sin(timeAlpha * 0.37D) + Math.sin(0.178D + timeAlpha * 0.17D), 2.0D) * 0.05D;
 		}
 		
 		// texture clock is offset to de-synchronize particles
-		final double timeTexture =(getEntityId() & 0xFFFF) + particleAge + partialTick;
+		final double timeTexture = (getSeed() & 0xFFFF) + particleAge + partialTick;
 		
 		// repeated a pixel column, changing periodically, to animate the texture
 		final double uOffset = ((int) Math.floor(timeTexture * 0.5D) % 16) / 16.0D;

@@ -17,4 +17,7 @@ public abstract class AbstractEntityFX extends EntityFX {
 	public void refresh() {
 		particleMaxAge = Math.max(particleMaxAge, particleAge + 20);
 	}
+	
+	// get seed
+	protected int getSeed() { return getEntityId(); }
 }

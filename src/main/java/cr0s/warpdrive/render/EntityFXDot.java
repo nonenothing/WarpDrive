@@ -2,7 +2,6 @@ package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.data.Vector3;
 
-import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
@@ -11,7 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class EntityFXDot extends EntityFX {
+public class EntityFXDot extends AbstractEntityFX {
 	
 	private Vector3 v3Acceleration;
 	private double friction;
