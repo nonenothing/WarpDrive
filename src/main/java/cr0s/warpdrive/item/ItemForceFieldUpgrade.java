@@ -57,7 +57,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldUpgrade.length];
 		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade_" + enumForceFieldUpgrade.unlocalizedName);
+			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade-" + enumForceFieldUpgrade.unlocalizedName);
 		}
 	}
 	

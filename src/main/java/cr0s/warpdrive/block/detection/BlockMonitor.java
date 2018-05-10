@@ -34,8 +34,8 @@ public class BlockMonitor extends BlockAbstractContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
-		iconFront = iconRegister.registerIcon("warpdrive:detection/monitorFront");
-		iconSide = iconRegister.registerIcon("warpdrive:detection/monitorSide");
+		iconFront = iconRegister.registerIcon("warpdrive:detection/monitor-front");
+		iconSide = iconRegister.registerIcon("warpdrive:detection/monitor-side");
 	}
 	
 	@SideOnly(Side.CLIENT)

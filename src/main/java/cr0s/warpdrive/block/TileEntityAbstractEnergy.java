@@ -154,7 +154,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (energy_getMaxStorage() == 0) {
 			return "";
 		}
-		return StatCollector.translateToLocalFormatted("warpdrive.energy.statusLine",
+		return StatCollector.translateToLocalFormatted("warpdrive.energy.status_line",
 			Commons.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
 			Commons.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
 	}

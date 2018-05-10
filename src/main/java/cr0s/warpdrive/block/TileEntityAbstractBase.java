@@ -229,10 +229,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected String getUpgradeStatus() {
 		final String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
-			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.none",
+			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.status_line.none",
 				strUpgrades);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.statusLine.valid",
+			return StatCollector.translateToLocalFormatted("warpdrive.upgrade.status_line.valid",
 				strUpgrades);
 		}
 	}
@@ -248,28 +248,28 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	protected String getBeamFrequencyStatus(final int beamFrequency) {
 		if (beamFrequency == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.status_line.undefined");
 		} else if (beamFrequency < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.invalid", beamFrequency );
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.status_line.invalid", beamFrequency );
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.statusLine.valid", beamFrequency );
+			return StatCollector.translateToLocalFormatted("warpdrive.beam_frequency.status_line.valid", beamFrequency );
 		}
 	}
 	
 	protected String getVideoChannelStatus(final int videoChannel) {
 		if (videoChannel == -1) {
-			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.undefined");
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.undefined");
 		} else if (videoChannel < 0) {
-			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
+			return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.invalid", videoChannel);
 		} else {
 			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
 				WarpDrive.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.invalid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.invalid", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.valid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.valid", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.statusLine.validCamera",
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.validCamera",
 				                                               videoChannel,
 				                                               camera.position.chunkPosX,
 				                                               camera.position.chunkPosY,

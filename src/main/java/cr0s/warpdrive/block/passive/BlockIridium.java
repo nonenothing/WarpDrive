@@ -14,12 +14,12 @@ public class BlockIridium extends BlockAbstractBase {
 		super(Material.iron);
 		setHardness(3.4F);
 		setResistance(360.0F * 5 / 3);
-		setBlockName("warpdrive.passive.IridiumBlock");
+		setBlockName("warpdrive.passive.iridium_block");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
-		blockIcon = iconRegister.registerIcon("warpdrive:passive/iridiumSide");
+		blockIcon = iconRegister.registerIcon("warpdrive:passive/iridium_block-side");
 	}
 }

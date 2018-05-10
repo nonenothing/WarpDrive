@@ -35,15 +35,15 @@ public class BlockLaserTreeFarm extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_idle");
-		iconBuffer[ICON_FARMING_LOW_POWER ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingLowPower");
-		iconBuffer[ICON_FARMING_POWERED   ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_farmingPowered");
-		iconBuffer[ICON_SCANNING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningLowPower");
-		iconBuffer[ICON_SCANNING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_scanningPowered");
-		iconBuffer[ICON_PLANTING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingLowPower");
-		iconBuffer[ICON_PLANTING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmSide_plantingPowered");
-		iconBuffer[ICON_BOTTOM            ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmBottom");
-		iconBuffer[ICON_TOP               ] = iconRegister.registerIcon("warpdrive:collection/laserTreeFarmTop");
+		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_inactive");
+		iconBuffer[ICON_FARMING_LOW_POWER ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_farming_low_power");
+		iconBuffer[ICON_FARMING_POWERED   ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_farming_powered");
+		iconBuffer[ICON_SCANNING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_scanning_low_power");
+		iconBuffer[ICON_SCANNING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_scanning_powered");
+		iconBuffer[ICON_PLANTING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_planting_low_power");
+		iconBuffer[ICON_PLANTING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-side_planting_powered");
+		iconBuffer[ICON_BOTTOM            ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-bottom");
+		iconBuffer[ICON_TOP               ] = iconRegister.registerIcon("warpdrive:collection/laser_tree_farm-top");
 	}
 	
 	@SideOnly(Side.CLIENT)

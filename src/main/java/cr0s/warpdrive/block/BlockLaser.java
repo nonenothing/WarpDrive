@@ -26,7 +26,7 @@ public class BlockLaser extends BlockAbstractContainer {
 		super(Material.iron);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setBlockName("warpdrive.machines.Laser");
+		setBlockName("warpdrive.machines.laser");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -868,15 +868,15 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	private String getShapeStatus() {
 		final EnumForceFieldShape enumForceFieldShape = getShape();
-		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine." + enumForceFieldShape.unlocalizedName);
+		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line." + enumForceFieldShape.unlocalizedName);
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.none", 
+			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line.none",
 				strDisplayName);
 		} else if (isDoubleSided) {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.double",
+			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line.double",
 				strDisplayName);
 		} else {
-			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.statusLine.single", 
+			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line.single",
 				strDisplayName);
 		}
 	}

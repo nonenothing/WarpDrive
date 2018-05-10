@@ -13,12 +13,12 @@ public class BlockHighlyAdvancedMachine extends BlockAbstractBase {
 	public BlockHighlyAdvancedMachine() {
 		super(Material.iron);
 		setHardness(5.0F);
-		setBlockName("warpdrive.passive.HighlyAdvancedMachine");
+		setBlockName("warpdrive.passive.highly_advanced_machine");
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
-		blockIcon = iconRegister.registerIcon("warpdrive:passive/highlyAdvancedMachineSide");
+		blockIcon = iconRegister.registerIcon("warpdrive:passive/highly_advanced_machine-side");
 	}
 }

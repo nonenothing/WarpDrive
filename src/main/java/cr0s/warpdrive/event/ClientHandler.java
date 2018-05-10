@@ -31,13 +31,13 @@ public class ClientHandler {
 			return;
 		}
 		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.itemStack.getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
-			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.breathingHelmet"));
+			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.item_tag.breathing_helmet"));
 		}
 		if (Dictionary.ITEMS_FLYINSPACE.contains(event.itemStack.getItem())) {
-			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.flyInSpace"));
+			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.item_tag.fly_in_space"));
 		}
 		if (Dictionary.ITEMS_NOFALLDAMAGE.contains(event.itemStack.getItem())) {
-			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.itemTag.noFallDamage"));
+			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.item_tag.no_fall_damage"));
 		}
 		
 		isSneaking = event.entityPlayer.isSneaking();

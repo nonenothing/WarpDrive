@@ -17,7 +17,7 @@ public class BlockChunkLoader extends BlockAbstractContainer {
 	
 	public BlockChunkLoader() {
 		super(Material.iron);
-		setBlockName("warpdrive.machines.ChunkLoader");
+		setBlockName("warpdrive.machines.chunk_loader");
 	}
 	
 	@Override

@@ -1026,8 +1026,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	@Override
 	public String getStatus() {
 		return super.getStatus()
-			+ ((cooldownTime_ticks > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.cooling", cooldownTime_ticks / 20) : "")
-			+ ((isolationBlocksCount > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.statusLine.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
+			+ ((cooldownTime_ticks > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.status_line.cooling", cooldownTime_ticks / 20) : "")
+			+ ((isolationBlocksCount > 0) ? "\n" + StatCollector.translateToLocalFormatted("warpdrive.ship.status_line.isolation", isolationBlocksCount, isolationRate * 100.0) : "");
 	}
 	
 	public String getBoundingBoxStatus() {

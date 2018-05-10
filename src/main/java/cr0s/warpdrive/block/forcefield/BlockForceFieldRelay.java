@@ -37,12 +37,12 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		
 		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
-				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "_" + enumForceFieldUpgrade.unlocalizedName);
+				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "-" + enumForceFieldUpgrade.unlocalizedName);
 			} else {
-				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "_" + EnumForceFieldUpgrade.NONE.unlocalizedName);
+				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "-" + EnumForceFieldUpgrade.NONE.unlocalizedName);
 			}
 		}
-		icons[EnumForceFieldUpgrade.length] = iconRegister.registerIcon("warpdrive:forcefield/relay_top");
+		icons[EnumForceFieldUpgrade.length] = iconRegister.registerIcon("warpdrive:forcefield/relay-top");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -57,7 +57,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldShape.length];
 		for (final EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
-			icons[enumForceFieldShape.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/shape_" + enumForceFieldShape.unlocalizedName);
+			icons[enumForceFieldShape.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/shape-" + enumForceFieldShape.unlocalizedName);
 		}
 	}
 	

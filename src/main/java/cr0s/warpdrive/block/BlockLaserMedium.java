@@ -20,7 +20,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	
 	public BlockLaserMedium() {
 		super(Material.iron);
-		setBlockName("warpdrive.machines.LaserMedium");
+		setBlockName("warpdrive.machines.laser_medium");
 	}
 	
 	@SideOnly(Side.CLIENT)

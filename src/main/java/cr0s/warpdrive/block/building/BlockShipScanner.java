@@ -38,10 +38,10 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_BOTTOM  ] = iconRegister.registerIcon("warpdrive:building/shipScannerBottom");
-		iconBuffer[ICON_TOP     ] = iconRegister.registerIcon("warpdrive:building/shipScannerTop");
-		iconBuffer[ICON_SIDE    ] = iconRegister.registerIcon("warpdrive:building/shipScannerSide");
-		iconBuffer[ICON_BORDER  ] = iconRegister.registerIcon("warpdrive:building/shipScanner-border");
+		iconBuffer[ICON_BOTTOM  ] = iconRegister.registerIcon("warpdrive:building/ship_scanner-bottom");
+		iconBuffer[ICON_TOP     ] = iconRegister.registerIcon("warpdrive:building/ship_scanner-top");
+		iconBuffer[ICON_SIDE    ] = iconRegister.registerIcon("warpdrive:building/ship_scanner-side");
+		iconBuffer[ICON_BORDER  ] = iconRegister.registerIcon("warpdrive:building/ship_scanner-border");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -33,13 +33,13 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[16];
-		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_idle");
-		iconBuffer[ICON_MINING_LOW_POWER  ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningLowPower");
-		iconBuffer[ICON_MINING_POWERED    ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_miningPowered");
-		iconBuffer[ICON_SCANNING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningLowPower");
-		iconBuffer[ICON_SCANNING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/miningLaserSide_scanningPowered");
-		iconBuffer[ICON_BOTTOM            ] = iconRegister.registerIcon("warpdrive:collection/miningLaserBottom");
-		iconBuffer[ICON_TOP               ] = iconRegister.registerIcon("warpdrive:collection/miningLaserTop");
+		iconBuffer[ICON_IDLE              ] = iconRegister.registerIcon("warpdrive:collection/mining_laser-side_inactive");
+		iconBuffer[ICON_MINING_LOW_POWER  ] = iconRegister.registerIcon("warpdrive:collection/mining_laser-side_mining_low_power");
+		iconBuffer[ICON_MINING_POWERED    ] = iconRegister.registerIcon("warpdrive:collection/mining_laser-side_mining_powered");
+		iconBuffer[ICON_SCANNING_LOW_POWER] = iconRegister.registerIcon("warpdrive:collection/mining_laser-side_scanning_low_power");
+		iconBuffer[ICON_SCANNING_POWERED  ] = iconRegister.registerIcon("warpdrive:collection/mining_laser-side_scanning_powered");
+		iconBuffer[ICON_BOTTOM            ] = iconRegister.registerIcon("warpdrive:collection/mining_laser-bottom");
+		iconBuffer[ICON_TOP               ] = iconRegister.registerIcon("warpdrive:collection/mining_laser-top");
 	}
 	
 	@SideOnly(Side.CLIENT)

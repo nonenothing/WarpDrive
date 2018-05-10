@@ -31,7 +31,7 @@ public class BlockWarpIsolation extends BlockAbstractBase {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/warpIsolation");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/warp_isolation");
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -29,7 +29,7 @@ public class BlockCamera extends BlockAbstractContainer {
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
 		// Solid textures
-		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:detection/cameraSide");
+		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:detection/camera-side");
 	}
 	
 	@SideOnly(Side.CLIENT)

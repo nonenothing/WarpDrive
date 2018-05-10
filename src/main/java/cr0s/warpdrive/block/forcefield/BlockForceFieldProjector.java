@@ -42,17 +42,17 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[11];
-		icons[ 0] = iconRegister.registerIcon("warpdrive:forcefield/projectorSide_notConnected");
-		icons[ 1] = iconRegister.registerIcon("warpdrive:forcefield/projectorSide_connectedNotPowered");
-		icons[ 2] = iconRegister.registerIcon("warpdrive:forcefield/projectorSide_connectedPowered");
-		icons[ 3] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_none");
-		icons[ 4] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_sphere");
-		icons[ 5] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_cylinder_h");
-		icons[ 6] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_cylinder_v");
-		icons[ 7] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_cube");
-		icons[ 8] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_plane");
-		icons[ 9] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_tube");
-		icons[10] = iconRegister.registerIcon("warpdrive:forcefield/projectorShape_tunnel");
+		icons[ 0] = iconRegister.registerIcon("warpdrive:forcefield/projector-side_not_connected");
+		icons[ 1] = iconRegister.registerIcon("warpdrive:forcefield/projector-side_connected_not_powered");
+		icons[ 2] = iconRegister.registerIcon("warpdrive:forcefield/projector-side_connected_powered");
+		icons[ 3] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_none");
+		icons[ 4] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_sphere");
+		icons[ 5] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_cylinder_h");
+		icons[ 6] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_cylinder_v");
+		icons[ 7] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_cube");
+		icons[ 8] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_plane");
+		icons[ 9] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_tube");
+		icons[10] = iconRegister.registerIcon("warpdrive:forcefield/projector-shape_tunnel");
 	}
 	
 	@SideOnly(Side.CLIENT)
