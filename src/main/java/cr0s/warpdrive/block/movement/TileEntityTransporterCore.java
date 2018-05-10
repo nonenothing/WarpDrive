@@ -1378,7 +1378,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public boolean energy_canInput(final ForgeDirection from) {
-		return from != ForgeDirection.UP;
+		return true;
 	}
 	
 	@Override
