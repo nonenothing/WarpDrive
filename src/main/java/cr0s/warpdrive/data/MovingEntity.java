@@ -1,11 +1,15 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
@@ -77,14 +81,30 @@ public class MovingEntity {
 		return v3OriginalPosition.distanceTo_square(entity);
 	}
 	
-	public int getMass() {
+	public float getMassFactor() {
 		final Entity entity = getEntity();
 		if (entity == null) {
-			return 0;
+			return 0.0F;
 		}
 		
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		entity.writeToNBT(tagCompound);
-		return tagCompound.toString().length();
+		int mass;
+		try {
+			final DataOutputLength dataOutputLength = new DataOutputLength();
+			CompressedStreamTools.write(tagCompound, dataOutputLength);
+			if (WarpDrive.isDev) {
+				WarpDrive.logger.info(String.format("Entity %s estimated mass is %d",
+				                                    entity, dataOutputLength.getLength()));
+			}
+			mass = dataOutputLength.getLength();
+		} catch (final IOException exception) {
+			mass = (int) Math.sqrt(tagCompound.toString().length());
+			WarpDrive.logger.error(String.format("Unable to estimate mass for entity %s, defaulting to %d",
+			                                     entity, mass));
+		}
+		
+		// average player data size is 7.5 times smaller (gz compression)
+		return Commons.clamp(0.25F, 4.0F, mass / 80000.0F);
 	}
 }

@@ -1144,7 +1144,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		if ( transporterState != EnumTransporterState.ENERGIZING
 		  && transporterState != EnumTransporterState.ACQUIRING ) {
 			entityValues.count = countScanners;
-			entityValues.mass = 8000 * countScanners;
+			entityValues.mass = 2 * countScanners;
 			return entityValues;
 		}
 		
@@ -1212,7 +1212,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			} else {
 				movingEntities.put(index, movingEntity);
 				entityValues.count++;
-				entityValues.mass += movingEntity.getMass();
+				entityValues.mass += movingEntity.getMassFactor();
 			}
 		}
 		
@@ -1272,7 +1272,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			} else {
 				movingEntities.put(index, movingEntity);
 				entityValues.count++;
-				entityValues.mass += movingEntity.getMass();
+				entityValues.mass += movingEntity.getMassFactor();
 			}
 		}
 		
