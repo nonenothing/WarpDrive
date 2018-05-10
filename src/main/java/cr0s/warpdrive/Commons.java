@@ -101,10 +101,17 @@ public class Commons {
 	}
 	
 	public static void addChatMessage(final ICommandSender commandSender, final String message) {
+		// validate context
 		if (commandSender == null) {
 			WarpDrive.logger.error("Unable to send message to NULL commandSender: " + message);
 			return;
 		}
+		
+		// skip empty messages
+		if (message.isEmpty()) {
+			return;
+		}
+		
 		final String[] lines = updateEscapeCodes(message).split("\n");
 		String format = "";
 		getFormatFromString(lines[0]);

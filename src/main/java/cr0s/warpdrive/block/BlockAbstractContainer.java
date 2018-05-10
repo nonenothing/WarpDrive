@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.item.ItemComponent;
@@ -208,17 +209,20 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	public boolean onBlockActivated(final World world, final int x, final int y, final int z,
 	                                final EntityPlayer entityPlayer,
 	                                final int side, final float hitX, final float hitY, final float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
 		// get context
 		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityAbstractBase)) {
 			return false;
 		}
 		final TileEntityAbstractBase tileEntityAbstractBase = (TileEntityAbstractBase) tileEntity;
+		final boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
 		final ItemStack itemStackHeld = entityPlayer.getHeldItem();
+		
+		// video channel is reported client side, everything else is reported server side
+		if ( world.isRemote
+		  && !hasVideoChannel ) {
+			return false;
+		}
 		
 		EnumComponentType enumComponentType = null;
 		if ( itemStackHeld != null
@@ -227,7 +231,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 		
 		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
-		if (entityPlayer.isSneaking()) {
+		if ( !world.isRemote
+		  && entityPlayer.isSneaking() ) {
 			// using an upgrade item or an empty hand means dismount upgrade
 			if ( tileEntityAbstractBase.isUpgradeable()
 			  && ( itemStackHeld == null
@@ -258,11 +263,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 				return false;
 			}
 			
-		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status
+		} else if ( !entityPlayer.isSneaking()
+		         && itemStackHeld == null ) {// no sneaking and no item in hand => show status
 			Commons.addChatMessage(entityPlayer, tileEntityAbstractBase.getStatus());
 			return true;
 			
-		} else if ( tileEntityAbstractBase.isUpgradeable()
+		} else if ( !world.isRemote
+		         && tileEntityAbstractBase.isUpgradeable()
 		         && enumComponentType != null ) {// no sneaking and an upgrade in hand => mounting an upgrade
 			// validate type
 			if (tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType) <= 0) {

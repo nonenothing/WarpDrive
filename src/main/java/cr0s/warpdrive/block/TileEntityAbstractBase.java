@@ -6,6 +6,8 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.block.detection.TileEntityCamera;
+import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CameraRegistryItem;
 
@@ -264,12 +266,17 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		} else {
 			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				WarpDrive.cameras.printRegistry(worldObj);
-				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.invalid", videoChannel);
+				if (WarpDrive.isDev) {
+					if ( this instanceof TileEntityCamera
+					  || this instanceof TileEntityLaserCamera) {
+						WarpDrive.cameras.printRegistry(worldObj);
+					}
+				}
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.not_loaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.valid", videoChannel);
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.valid_camera", videoChannel);
 			} else {
-				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.validCamera",
+				return StatCollector.translateToLocalFormatted("warpdrive.video_channel.status_line.valid_monitor",
 				                                               videoChannel,
 				                                               camera.position.chunkPosX,
 				                                               camera.position.chunkPosY,
