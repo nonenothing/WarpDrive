@@ -1,7 +1,5 @@
 package cr0s.warpdrive.block.building;
 
-import java.util.Random;
-
 import cr0s.warpdrive.Commons;
 
 import net.minecraft.block.Block;
@@ -113,16 +111,6 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityShipScanner();
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
-		return Item.getItemFromBlock(this);
 	}
 	
 	@Override

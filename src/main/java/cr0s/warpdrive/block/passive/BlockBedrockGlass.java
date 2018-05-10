@@ -1,26 +1,18 @@
 package cr0s.warpdrive.block.passive;
 
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockGlass;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockBedrockGlass extends Block {
-	
-	@SideOnly(Side.CLIENT)
-	private IIcon icon;
+public class BlockBedrockGlass extends BlockAbstractBase {
 	
 	public BlockBedrockGlass() {
 		super(Material.fire);
@@ -29,8 +21,8 @@ public class BlockBedrockGlass extends Block {
 		setResistance(6000000.0F);
 		setStepSound(soundTypePiston);
 		disableStats();
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.decoration.bedrock_glass");
+		setBlockTextureName("warpdrive:decoration/bedrock_glass");
 	}
 	
 	@Override
@@ -51,18 +43,6 @@ public class BlockBedrockGlass extends Block {
 	@Override
 	public boolean canPlaceBlockAt(final World world, final int x, final int y, final int z) {
 		return true;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerBlockIcons(final IIconRegister iconRegister) {
-		icon = iconRegister.registerIcon("warpdrive:decoration/bedrock_glass");
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public IIcon getIcon(int side, int metadata) {
-		return icon;
 	}
 	
 	@SideOnly(Side.CLIENT)

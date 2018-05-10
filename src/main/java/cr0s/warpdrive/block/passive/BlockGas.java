@@ -1,6 +1,6 @@
 package cr0s.warpdrive.block.passive;
 
-import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.CelestialObjectManager;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockGas extends Block {
+public class BlockGas extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] iconBuffer;
@@ -28,7 +28,6 @@ public class BlockGas extends Block {
 	public BlockGas() {
 		super(Material.fire);
 		setHardness(0.0F);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		setBlockName("warpdrive.decoration.gas");
 	}
 	

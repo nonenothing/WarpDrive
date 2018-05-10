@@ -49,7 +49,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@Override
 	public IIcon getIcon(final IBlockAccess blockAccess, final int x, final int y, final int z, final int side) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
-		if (tileEntity == null || !(tileEntity instanceof TileEntityForceFieldRelay)) {
+		if (!(tileEntity instanceof TileEntityForceFieldRelay)) {
 			return icons[0];
 		}
 		

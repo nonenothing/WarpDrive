@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=能量升级
 
 
 item.warpdrive.tool.ship_token.name=水晶符号
-item.warpdrive.tool.ship_token.tooltip=晶体封装的飞船 '%1$s'\n§b进入扫描场§7去搭建你的飞船
+item.warpdrive.tool.ship_token.tooltip.usage=晶体封装的飞船 '%1$s'\n§b进入扫描场§7去搭建你的飞船
 item.warpdrive.tool.ship_token0.name=水晶符号#0
 item.warpdrive.tool.ship_token1.name=水晶符号#1
 item.warpdrive.tool.ship_token2.name=水晶符号#2

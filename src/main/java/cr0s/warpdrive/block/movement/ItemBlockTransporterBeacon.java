@@ -37,10 +37,10 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 		if (!(itemStack.getItem() instanceof ItemBlockTransporterBeacon)) {
 			return "";
 		}
-		if (!itemStack.hasTagCompound()) {
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
 			return "";
 		}
-		final NBTTagCompound tagCompound = itemStack.getTagCompound();
 		final String name = tagCompound.getString("name");
 		final UUID uuid = new UUID(tagCompound.getLong("uuidMost"), tagCompound.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
@@ -71,10 +71,10 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 		if (!(itemStack.getItem() instanceof ItemBlockTransporterBeacon)) {
 			return null;
 		}
-		if (!itemStack.hasTagCompound()) {
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
 			return null;
 		}
-		final NBTTagCompound tagCompound = itemStack.getTagCompound();
 		final UUID uuid = new UUID(tagCompound.getLong("uuidMost"), tagCompound.getLong("uuidLeast"));
 		if (uuid.getMostSignificantBits() == 0 && uuid.getLeastSignificantBits() == 0) {
 			return null;
@@ -105,10 +105,10 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 		if (!(itemStack.getItem() instanceof ItemBlockTransporterBeacon)) {
 			return 0;
 		}
-		if (!itemStack.hasTagCompound()) {
+		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		if (tagCompound == null) {
 			return 0;
 		}
-		final NBTTagCompound tagCompound = itemStack.getTagCompound();
 		if (tagCompound.hasKey(TileEntityAbstractEnergy.ENERGY_TAG)) {
 			return tagCompound.getInteger(TileEntityAbstractEnergy.ENERGY_TAG);
 		}

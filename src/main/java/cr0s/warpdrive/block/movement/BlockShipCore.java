@@ -7,7 +7,6 @@ import cr0s.warpdrive.data.EnumShipCoreState;
 import cr0s.warpdrive.item.ItemComponent;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -144,11 +143,6 @@ public class BlockShipCore extends BlockAbstractContainer {
 			((TileEntityShipCore) tileEntity).facing = Commons.getHorizontalDirectionFromEntity(entityLiving).getOpposite();
 			world.markBlockForUpdate(x, y, z);
 		}
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
 	}
 	
 	@Override

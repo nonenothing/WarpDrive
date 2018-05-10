@@ -3,12 +3,9 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
-import java.util.Random;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
@@ -87,16 +84,6 @@ public class BlockShipController extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityShipController();
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
-		return Item.getItemFromBlock(this);
 	}
 	
 	@Override

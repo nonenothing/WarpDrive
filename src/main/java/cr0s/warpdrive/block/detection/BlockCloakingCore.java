@@ -3,8 +3,6 @@ package cr0s.warpdrive.block.detection;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
-import java.util.Random;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
@@ -58,11 +56,6 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityCloakingCore();
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
 	}
 	
 	@Override

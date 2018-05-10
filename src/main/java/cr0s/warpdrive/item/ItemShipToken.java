@@ -17,7 +17,7 @@ import net.minecraft.util.StatCollector;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemShipToken extends Item {	
+public class ItemShipToken extends ItemAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;
@@ -114,14 +114,6 @@ public class ItemShipToken extends Item {
 	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
-		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (StatCollector.canTranslate(tooltipName1)) {
-			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName1, getSchematicName(itemStack)));
-		}
-		
-		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && StatCollector.canTranslate(tooltipName2)) {
-			Commons.addTooltip(list, StatCollector.translateToLocalFormatted(tooltipName2, getSchematicName(itemStack)));
-		}
+		Commons.addTooltip(list, StatCollector.translateToLocalFormatted("item.warpdrive.tool.ship_token.tooltip.usage", getSchematicName(itemStack)));
 	}
 }

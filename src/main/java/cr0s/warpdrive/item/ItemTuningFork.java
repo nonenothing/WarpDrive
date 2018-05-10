@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemTuningFork extends Item implements IWarpTool {
+public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon icons[];

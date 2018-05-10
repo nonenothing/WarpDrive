@@ -54,9 +54,11 @@ public class ItemBlockAbstractBase extends ItemBlock {
 	}
 	
 	@Override
-	public EnumRarity getRarity(ItemStack itemStack) {
-		if ( itemStack == null
-		  || !(field_150939_a instanceof IBlockBase) ) {
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		if (itemStack == null) {
+			return EnumRarity.common;
+		}
+		if (!(field_150939_a instanceof IBlockBase)) {
 			return super.getRarity(itemStack);
 		}
 		return ((IBlockBase) field_150939_a).getRarity(itemStack, super.getRarity(itemStack));

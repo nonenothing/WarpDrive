@@ -14,7 +14,7 @@ import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemAirTank extends Item implements IAirContainerItem {
+public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 	
 	private final static int[] capacities = { 20, 32, 64, 128 };
 	protected byte tier;

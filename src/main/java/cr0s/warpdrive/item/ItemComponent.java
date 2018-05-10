@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemComponent extends Item implements IAirContainerItem {
+public class ItemComponent extends ItemAbstractBase implements IAirContainerItem {
 	
 	@SideOnly(Side.CLIENT)
 	private IIcon[] icons;

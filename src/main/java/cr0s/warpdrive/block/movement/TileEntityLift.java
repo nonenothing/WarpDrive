@@ -137,19 +137,17 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 					xMin, firstUncoveredY, zMin,
 					xMax, yCoord, zMax);
 			final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
-			if (list != null) {
-				for (Object object : list) {
-					if ( object instanceof EntityLivingBase
-					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
-						PacketHandler.sendBeamPacket(worldObj,
-								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D),
-								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
-								1F, 1F, 0F, 40, 0, 100);
-						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
-						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
-						isTransferDone = true;
-					}
+			for (final Object object : list) {
+				if ( object instanceof EntityLivingBase
+				  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+					((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, yCoord + 1.0D, zCoord + 0.5D);
+					PacketHandler.sendBeamPacket(worldObj,
+							new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D),
+							new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
+							1F, 1F, 0F, 40, 0, 100);
+					worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
+					energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+					isTransferDone = true;
 				}
 			}
 			
@@ -158,18 +156,16 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 					xMin, Math.min(firstUncoveredY + 4.0D, yCoord), zMin,
 					xMax, yCoord + 2.0D, zMax);
 			final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
-			if (list != null) {
-				for (Object object : list) {
-					if ( object instanceof EntityLivingBase
-					  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-						((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
-						PacketHandler.sendBeamPacket(worldObj,
-								new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
-								new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D), 1F, 1F, 0F, 40, 0, 100);
-						worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
-						energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
-						isTransferDone = true;
-					}
+			for (final Object object : list) {
+				if ( object instanceof EntityLivingBase
+				  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+					((EntityLivingBase) object).setPositionAndUpdate(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D);
+					PacketHandler.sendBeamPacket(worldObj,
+							new Vector3(xCoord + 0.5D, yCoord, zCoord + 0.5D),
+							new Vector3(xCoord + 0.5D, firstUncoveredY, zCoord + 0.5D), 1F, 1F, 0F, 40, 0, 100);
+					worldObj.playSoundEffect(xCoord + 0.5D, yCoord, zCoord + 0.5D, "warpdrive:hilaser", 4F, 1F);
+					energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
+					isTransferDone = true;
 				}
 			}
 		}

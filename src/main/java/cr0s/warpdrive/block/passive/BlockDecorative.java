@@ -1,11 +1,11 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.EnumDecorativeType;
 
 import java.util.List;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,7 +16,7 @@ import net.minecraft.util.IIcon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockDecorative extends Block {
+public class BlockDecorative extends BlockAbstractBase {
 	
 	@SideOnly(Side.CLIENT)
 	private static IIcon[] icons;
@@ -26,9 +26,7 @@ public class BlockDecorative extends Block {
 	public BlockDecorative() {
 		super(Material.iron);
 		setHardness(1.5f);
-		setStepSound(Block.soundTypeMetal);
 		setBlockName("warpdrive.decoration.decorative.plain");
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
 	}

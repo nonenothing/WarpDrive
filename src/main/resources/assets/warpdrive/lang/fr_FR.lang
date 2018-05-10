@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Amélioration d'énergie
 
 
 item.warpdrive.tool.ship_token.name=Jeton de vaisseau
-item.warpdrive.tool.ship_token.tooltip=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ d'un constructeur§7 pour réclamer ton vaisseau
+item.warpdrive.tool.ship_token.tooltip.usage=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ d'un constructeur§7 pour réclamer ton vaisseau
 item.warpdrive.tool.ship_token0.name=Jeton de vaisseau #0
 item.warpdrive.tool.ship_token1.name=Jeton de vaisseau #1
 item.warpdrive.tool.ship_token2.name=Jeton de vaisseau #2

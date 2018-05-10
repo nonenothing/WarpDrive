@@ -5,8 +5,6 @@ import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
-import java.util.Random;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
@@ -79,16 +77,6 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(final World world, final int metadata) {
 		return new TileEntityAirGenerator();
-	}
-	
-	@Override
-	public int quantityDropped(Random par1Random) {
-		return 1;
-	}
-	
-	@Override
-	public Item getItemDropped(final int metadata, final Random random, final int fortune) {
-		return Item.getItemFromBlock(this);
 	}
 	
 	@Override

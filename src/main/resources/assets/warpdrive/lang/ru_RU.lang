@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Улучшение - Хранилище эн�
 
 
 item.warpdrive.tool.ship_token.name=Ship token
-item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
+item.warpdrive.tool.ship_token.tooltip.usage=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
 item.warpdrive.tool.ship_token0.name=Ship token #0
 item.warpdrive.tool.ship_token1.name=Ship token #1
 item.warpdrive.tool.ship_token2.name=Ship token #2

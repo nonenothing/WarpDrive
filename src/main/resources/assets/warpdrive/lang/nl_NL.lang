@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Energiecapaciteits-upgrade
 
 
 item.warpdrive.tool.ship_token.name=Schip kenteken
-item.warpdrive.tool.ship_token.tooltip=Schip inkapseling van het schip'%1$s'\n§bGa naar het rode bouwersveldd§7 om het schip te claimen
+item.warpdrive.tool.ship_token.tooltip.usage=Schip inkapseling van het schip'%1$s'\n§bGa naar het rode bouwersveldd§7 om het schip te claimen
 item.warpdrive.tool.ship_token0.name=Schip kenteken #0
 item.warpdrive.tool.ship_token1.name=Schip kenteken #1
 item.warpdrive.tool.ship_token2.name=Schip kenteken #2
