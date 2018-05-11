@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
@@ -45,23 +46,41 @@ public class StarMapRegistry {
 	}
 	
 	public void updateInRegistry(final IStarMapRegistryTileEntity tileEntity) {
+		// validate context
 		assert(tileEntity instanceof TileEntity);
+		if (!Commons.isSafeThread()) {
+			WarpDrive.logger.error(String.format("Non-threadsafe call to StarMapRegistry:updateInRegistry outside main thread, for %s",
+			                                     tileEntity));
+		}
 		
+		// update statistics
 		countRead++;
 		if (WarpDriveConfig.LOGGING_STARMAP) {
 			if (countRead % 1000 == 0) {
 				WarpDrive.logger.info("Starmap registry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
 			}
 		}
+		
+		// get dimension
 		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorldObj().provider.dimensionId);
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
+		
+		// get entry
 		final ArrayList<StarMapRegistryItem> listToRemove = new ArrayList<>(3);
+		final UUID uuidTileEntity = tileEntity.getUUID();
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			if ( registryItem.type.getName().equals(tileEntity.getStarMapType())
-			  && registryItem.uuid.equals(tileEntity.getUUID()) ) {// already registered
-				registryItem.update(tileEntity);    // @TODO probably not thread safe
+			if (registryItem.uuid == null) {
+				WarpDrive.logger.error(String.format("Removing invalid StarMapRegistryItem %s",
+				                                     registryItem));
+				listToRemove.add(registryItem);
+				continue;
+			}
+			
+			if ( registryItem.type.equals(tileEntity.getStarMapType())
+			  && registryItem.uuid.equals(uuidTileEntity) ) {// already registered
+				registryItem.update(tileEntity);    // in-place update only works as long as hashcode remains unchanged
 				return;
 			} else if (registryItem.sameCoordinates(tileEntity)) {
 				listToRemove.add(registryItem);
