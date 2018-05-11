@@ -101,24 +101,22 @@ public class WarpDriveConfig {
 	/*
 	 * The variables which store whether or not individual mods are loaded
 	 */
-	public static boolean isForgeMultipartLoaded = false;
+	public static boolean isAdvancedRepulsionSystemLoaded = false;
 	public static boolean isAdvancedSolarPanelLoaded = false;
-	public static boolean isAppliedEnergistics2Loaded = false;
-	public static boolean isDefenseTechLoaded = false;
-	public static boolean isICBMLoaded = false;
-	public static boolean isICBMClassicLoaded = false;
-	public static boolean isIndustrialCraft2Loaded = false;
-	public static boolean isComputerCraftLoaded = false;
-	public static boolean isOpenComputersLoaded = false;
 	public static boolean isCoFHCoreLoaded = false;
-	public static boolean isThermalExpansionLoaded = false;
-	public static boolean isArsMagica2Loaded = false;
-	public static boolean isImmersiveEngineeringLoaded = false;
+	public static boolean isComputerCraftLoaded = false;
+	public static boolean isDefenseTechLoaded = false;
+	public static boolean isEnderIOLoaded = false;
+	public static boolean isForgeMultipartLoaded = false;
 	public static boolean isGregTech5Loaded = false;
 	public static boolean isGregTech6Loaded = false;
-	public static boolean isEnderIOLoaded = false;
-	public static boolean isAdvancedRepulsionSystemLoaded = false;
+	public static boolean isICBMClassicLoaded = false;
+	public static boolean isICBMLoaded = false;
+	public static boolean isImmersiveEngineeringLoaded = false;
+	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isNotEnoughItemsLoaded = false;
+	public static boolean isOpenComputersLoaded = false;
+	public static boolean isThermalExpansionLoaded = false;
 	
 	public static ItemStack IC2_compressedAir;
 	public static ItemStack IC2_emptyCell;
@@ -553,6 +551,29 @@ public class WarpDriveConfig {
 		loadConfig(new File(configDirectory, "config.yml"));
 		loadDictionary(new File(configDirectory, "dictionary.yml"));
 		CelestialObjectManager.load(configDirectory);
+		
+		// read mod dependencies
+		isCoFHCoreLoaded = Loader.isModLoaded("cofhcore");
+		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
+		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
+		
+		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
+		isICBMLoaded = Loader.isModLoaded("icbm");
+		
+		isGregTech5Loaded = false;
+		isGregTech6Loaded = false;
+		if (Loader.isModLoaded("gregtech")) {
+			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
+			if ( (isGregTech5Loaded && isGregTech6Loaded)
+			     || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
+				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
+			}
+		}
+		
+		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
+		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
 	}
 	
 	public static void loadConfig(final File file) {
@@ -1054,69 +1075,59 @@ public class WarpDriveConfig {
 	public static void onFMLInitialization() {
 		CompatWarpDrive.register();
 		
+		// read non-explicit mod dependencies
+		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
+		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
 		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
-		if (isForgeMultipartLoaded) {
-			isForgeMultipartLoaded = CompatForgeMultipart.register();
-		}
-		
-		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
-		isICBMLoaded = Loader.isModLoaded("icbm");
 		isICBMClassicLoaded = Loader.isModLoaded("icbmclassic");
+		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
+		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
+		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		
-		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
-		if (isIndustrialCraft2Loaded) {
-			loadIC2();
-			CompatIndustrialCraft2.register();
+		// apply compatibility modules
+		if (isAdvancedRepulsionSystemLoaded) {
+			CompatAdvancedRepulsionSystems.register();
 		}
 		
-		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
+		final boolean isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
+		if (isAppliedEnergistics2Loaded) {
+			CompatAppliedEnergistics2.register();
+		}
+		
+		final boolean isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
+		if (isArsMagica2Loaded) {
+			CompatArsMagica2.register();
+		}
+		
 		if (isComputerCraftLoaded) {
 			loadCC();
 			CompatComputerCraft.register();
 		}
 		
-		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
-		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
-		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
-		if (isThermalExpansionLoaded) {
-			CompatThermalExpansion.register();
-		}
-		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
-		if (isAppliedEnergistics2Loaded) {
-			CompatAppliedEnergistics2.register();
-		}
-		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
-		if (isOpenComputersLoaded) {
-			CompatOpenComputers.register();
-		}
-		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
-		if (isArsMagica2Loaded) {
-			CompatArsMagica2.register();
-		}
-		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
-		if (isImmersiveEngineeringLoaded) {
-			CompatImmersiveEngineering.register();
-		}
-		isGregTech5Loaded = false;
-		isGregTech6Loaded = false;
-		if (Loader.isModLoaded("gregtech")) {
-			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
-			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
-			if ( (isGregTech5Loaded && isGregTech6Loaded)
-			  || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
-				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
-			}
-		}
-		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
 		if (isEnderIOLoaded) {
 			CompatEnderIO.register();
 		}
-		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
-		if (isAdvancedRepulsionSystemLoaded) {
-			CompatAdvancedRepulsionSystems.register();
+		
+		if (isForgeMultipartLoaded) {
+			isForgeMultipartLoaded = CompatForgeMultipart.register();
 		}
-		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
+		
+		if (isImmersiveEngineeringLoaded) {
+			CompatImmersiveEngineering.register();
+		}
+		
+		if (isIndustrialCraft2Loaded) {
+			loadIC2();
+			CompatIndustrialCraft2.register();
+		}
+		
+		if (isOpenComputersLoaded) {
+			CompatOpenComputers.register();
+		}
+		
+		if (isThermalExpansionLoaded) {
+			CompatThermalExpansion.register();
+		}
 		
 		final boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {

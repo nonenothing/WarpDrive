@@ -186,8 +186,20 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.oredict.RecipeSorter;
 
-@Mod(modid = WarpDrive.MODID, name = "WarpDrive", version = WarpDrive.VERSION, dependencies = "after:IC2;" + " after:CoFHCore;" + " after:ComputerCraft;"
-		+ " after:OpenComputer;" + " after:CCTurtle;" + " after:gregtech;" + " after:AppliedEnergistics;" + " after:EnderIO;" + " after:DefenseTech;" + " after:icbmclassic;")
+@Mod(modid = WarpDrive.MODID,
+     name = "WarpDrive",
+     version = WarpDrive.VERSION,
+     dependencies = "after:IC2;"
+                  + "after:CoFHCore;"
+                  + "after:ComputerCraft;"
+                  + "after:OpenComputer;"
+                  + "after:CCTurtle;"
+                  + "after:gregtech;"
+                  + "after:AppliedEnergistics;"
+                  + "after:EnderIO;"
+                  + "after:DefenseTech;"
+                  + "after:icbmclassic;"
+)
 public class WarpDrive {
 	public static final String MODID = "WarpDrive";
 	public static final String VERSION = "@version@";
@@ -303,65 +315,82 @@ public class WarpDrive {
 		RecipeSorter.register("warpdrive:particleShaped", RecipeParticleShapedOre.class, RecipeSorter.Category.SHAPED, "before:minecraft:shaped");
 		RecipeSorter.register("warpdrive:tuningDriver", RecipeTuningDriver.class, RecipeSorter.Category.SHAPELESS, "before:minecraft:shapeless");
 		
-		if (event.getSide() == Side.CLIENT) {
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayLocation());
-			
-			FMLCommonHandler.instance().bus().register(new ClientCameraHandler());
-			
-			RenderBlockStandard.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockStandard.instance);
-			
-			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
-			
-			RenderBlockOmnipanel.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockOmnipanel.instance);
-			
-			RenderBlockShipScanner.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockShipScanner.instance);
-			
-			RenderBlockTransporterBeacon.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockTransporterBeacon.instance);
-		}
-	}
-	
-	@EventHandler
-	public void onFMLInitialization(final FMLInitializationEvent event) {
-		PacketHandler.init();
-		
-		WarpDriveConfig.onFMLInitialization();
-		
 		// open access to Block.blockHardness
 		fieldBlockHardness = Commons.getField(Block.class, "blockHardness", "field_149782_v");
 		
-		// CORE CONTROLLER
-		blockShipController = new BlockShipController();
+		// common blocks
+		blockChunkLoader = new BlockChunkLoader();
+		GameRegistry.registerBlock(blockChunkLoader, ItemBlockAbstractBase.class, "blockChunkLoader");
+		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, MODID + ":blockChunkLoader");
 		
-		GameRegistry.registerBlock(blockShipController, ItemBlockAbstractBase.class, "blockShipController");
-		GameRegistry.registerTileEntity(TileEntityShipController.class, MODID + ":blockShipController");
+		blockLaser = new BlockLaser();
+		GameRegistry.registerBlock(blockLaser, ItemBlockAbstractBase.class, "blockLaser");
+		GameRegistry.registerTileEntity(TileEntityLaser.class, MODID + ":blockLaser");
 		
-		// SHIP CORE
-		blockShipCore = new BlockShipCore();
+		blockLaserMedium = new BlockLaserMedium();
+		GameRegistry.registerBlock(blockLaserMedium, ItemBlockAbstractBase.class, "blockLaserMedium");
+		GameRegistry.registerTileEntity(TileEntityLaserMedium.class, MODID + ":blockLaserMedium");
 		
-		GameRegistry.registerBlock(blockShipCore, ItemBlockAbstractBase.class, "blockShipCore");
-		GameRegistry.registerTileEntity(TileEntityShipCore.class, MODID + ":blockShipCore");
+		// atomic blocks
+		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
+			blockAcceleratorController = new BlockAcceleratorController();
+			GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
+			GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
+			
+			blockAcceleratorControlPoint = new BlockAcceleratorControlPoint();
+			GameRegistry.registerBlock(blockAcceleratorControlPoint, ItemBlockAbstractBase.class, "blockAcceleratorControlPoint");
+			GameRegistry.registerTileEntity(TileEntityAcceleratorControlPoint.class, MODID + ":blockAcceleratorControlPoint");
+			
+			blockParticlesCollider = new BlockParticlesCollider();
+			GameRegistry.registerBlock(blockParticlesCollider, ItemBlockAbstractBase.class, "blockParticlesCollider");
+			
+			blockParticlesInjector = new BlockParticlesInjector();
+			GameRegistry.registerBlock(blockParticlesInjector, ItemBlockAbstractBase.class, "blockParticlesInjector");
+			GameRegistry.registerTileEntity(TileEntityParticlesInjector.class, MODID + ":blockParticlesInjector");
+			
+			blockVoidShellPlain = new BlockVoidShellPlain();
+			GameRegistry.registerBlock(blockVoidShellPlain, ItemBlockAbstractBase.class, "blockVoidShellPlain");
+			blockVoidShellGlass = new BlockVoidShellGlass();
+			GameRegistry.registerBlock(blockVoidShellGlass, ItemBlockAbstractBase.class, "blockVoidShellGlass");
+			
+			blockElectromagnetPlain = new Block[3];
+			blockElectromagnetGlass = new Block[3];
+			blockChillers = new Block[3];
+			for (byte tier = 1; tier <= 3; tier++) {
+				final int index = tier - 1;
+				blockElectromagnetPlain[index] = new BlockElectromagnetPlain(tier);
+				GameRegistry.registerBlock(blockElectromagnetPlain[index], ItemBlockAbstractBase.class, "blockElectromagnetPlain" + tier);
+				
+				blockElectromagnetGlass[index] = new BlockElectromagnetGlass(tier);
+				GameRegistry.registerBlock(blockElectromagnetGlass[index], ItemBlockAbstractBase.class, "blockElectromagnetGlass" + tier);
+				
+				blockChillers[index] = new BlockChiller(tier);
+				GameRegistry.registerBlock(blockChillers[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
+			}
+			
+			// electromagnetic cell
+			if (WarpDriveConfig.ACCELERATOR_ENABLE) {
+				itemElectromagneticCell = new ItemElectromagneticCell();
+				GameRegistry.registerItem(itemElectromagneticCell, "itemElectromagneticCell");
+			}
+		}
 		
-		// RADAR
-		blockRadar = new BlockRadar();
+		// building blocks
+		blockShipScanner = new BlockShipScanner();
+		GameRegistry.registerBlock(blockShipScanner, ItemBlockAbstractBase.class, "blockShipScanner");
+		GameRegistry.registerTileEntity(TileEntityShipScanner.class, MODID + ":blockShipScanner");
 		
-		GameRegistry.registerBlock(blockRadar, ItemBlockAbstractBase.class, "blockRadar");
-		GameRegistry.registerTileEntity(TileEntityRadar.class, MODID + ":blockRadar");
+		// breathing blocks
+		blockAir = new BlockAir();
+		GameRegistry.registerBlock(blockAir, ItemBlockAbstractBase.class, "blockAir");
+		blockAirFlow = new BlockAirFlow();
+		GameRegistry.registerBlock(blockAirFlow, ItemBlockAbstractBase.class, "blockAirFlow");
+		blockAirSource = new BlockAirSource();
+		GameRegistry.registerBlock(blockAirSource, ItemBlockAbstractBase.class, "blockAirSource");
+		blockAirShield = new BlockAirShield();
+		GameRegistry.registerBlock(blockAirShield, ItemBlockAirShield.class, "blockAirShield");
 		
-		// WARP ISOLATION
-		blockWarpIsolation = new BlockWarpIsolation();
-		
-		GameRegistry.registerBlock(blockWarpIsolation, ItemBlockWarpIsolation.class, "blockWarpIsolation");
-		
-		// AIR GENERATOR
 		blockAirGenerator = new BlockAirGenerator();
-		
 		GameRegistry.registerBlock(blockAirGenerator, ItemBlockAbstractBase.class, "blockAirGenerator");
 		GameRegistry.registerTileEntity(TileEntityAirGenerator.class, MODID + ":blockAirGenerator");
 		
@@ -373,139 +402,50 @@ public class WarpDrive {
 			GameRegistry.registerTileEntity(TileEntityAirGeneratorTiered.class, MODID + ":blockAirGenerator" + tier);
 		}
 		
-		// AIR BLOCK
-		blockAir = new BlockAir();
-		blockAirFlow = new BlockAirFlow();
-		blockAirSource = new BlockAirSource();
-		blockAirShield = new BlockAirShield();
-		
-		GameRegistry.registerBlock(blockAir, ItemBlockAbstractBase.class, "blockAir");
-		GameRegistry.registerBlock(blockAirFlow, ItemBlockAbstractBase.class, "blockAirFlow");
-		GameRegistry.registerBlock(blockAirSource, ItemBlockAbstractBase.class, "blockAirSource");
-		GameRegistry.registerBlock(blockAirShield, ItemBlockAirShield.class, "blockAirShield");
-		
-		// BEDROCK GLASS
-		blockBedrockGlass = new BlockBedrockGlass();
-		
-		GameRegistry.registerBlock(blockBedrockGlass, ItemBlockAbstractBase.class, "blockBedrockGlass");
-		
-		// GAS BLOCK
-		blockGas = new BlockGas();
-		
-		GameRegistry.registerBlock(blockGas, ItemBlockAbstractBase.class, "blockGas");
-		
-		// LASER EMITTER
-		blockLaser = new BlockLaser();
-		
-		GameRegistry.registerBlock(blockLaser, ItemBlockAbstractBase.class, "blockLaser");
-		GameRegistry.registerTileEntity(TileEntityLaser.class, MODID + ":blockLaser");
-		
-		// LASER EMITTER WITH CAMERA
-		blockLaserCamera = new BlockLaserCamera();
-		
-		GameRegistry.registerBlock(blockLaserCamera, ItemBlockAbstractBase.class, "blockLaserCamera");
-		GameRegistry.registerTileEntity(TileEntityLaserCamera.class, MODID + ":blockLaserCamera");
-		
-		// LASER EMITTER WITH CAMERA
-		blockWeaponController = new BlockWeaponController();
-		
-		GameRegistry.registerBlock(blockWeaponController, ItemBlockAbstractBase.class, "blockWeaponController");
-		GameRegistry.registerTileEntity(TileEntityWeaponController.class, MODID + ":blockWeaponController");
-		
-		// CAMERA
-		blockCamera = new BlockCamera();
-		
-		GameRegistry.registerBlock(blockCamera, ItemBlockAbstractBase.class, "blockCamera");
-		GameRegistry.registerTileEntity(TileEntityCamera.class, MODID + ":blockCamera");
-		
-		// MONITOR
-		blockMonitor = new BlockMonitor();
-		
-		GameRegistry.registerBlock(blockMonitor, ItemBlockAbstractBase.class, "blockMonitor");
-		GameRegistry.registerTileEntity(TileEntityMonitor.class, MODID + ":blockMonitor");
-		
-		// MINING LASER
+		// collection blocks
 		blockMiningLaser = new BlockMiningLaser();
-		
 		GameRegistry.registerBlock(blockMiningLaser, ItemBlockAbstractBase.class, "blockMiningLaser");
 		GameRegistry.registerTileEntity(TileEntityMiningLaser.class, MODID + ":blockMiningLaser");
 		
-		// LASER TREE FARM
 		blockLaserTreeFarm = new BlockLaserTreeFarm();
-		
 		GameRegistry.registerBlock(blockLaserTreeFarm, ItemBlockAbstractBase.class, "blockLaserTreeFarm");
 		GameRegistry.registerTileEntity(TileEntityLaserTreeFarm.class, MODID + ":blockLaserTreeFarm");
 		
-		// LASER MEDIUM
-		blockLaserMedium = new BlockLaserMedium();
+		// decorative
+		blockDecorative = new BlockDecorative();
+		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
 		
-		GameRegistry.registerBlock(blockLaserMedium, ItemBlockAbstractBase.class, "blockLaserMedium");
-		GameRegistry.registerTileEntity(TileEntityLaserMedium.class, MODID + ":blockLaserMedium");
+		blockGas = new BlockGas();
+		GameRegistry.registerBlock(blockGas, ItemBlockAbstractBase.class, "blockGas");
 		
-		// LIFT
-		blockLift = new BlockLift();
+		// detection blocks
+		blockCamera = new BlockCamera();
+		GameRegistry.registerBlock(blockCamera, ItemBlockAbstractBase.class, "blockCamera");
+		GameRegistry.registerTileEntity(TileEntityCamera.class, MODID + ":blockCamera");
 		
-		GameRegistry.registerBlock(blockLift, ItemBlockAbstractBase.class, "blockLift");
-		GameRegistry.registerTileEntity(TileEntityLift.class, MODID + ":blockLift");
-		
-		// IRIDIUM BLOCK
-		blockIridium = new BlockIridium();
-		
-		GameRegistry.registerBlock(blockIridium, ItemBlockAbstractBase.class, "blockIridium");
-		
-		// HIGHLY ADVANCED MACHINE BLOCK
-		blockHighlyAdvancedMachine = new BlockHighlyAdvancedMachine();
-		
-		GameRegistry.registerBlock(blockHighlyAdvancedMachine, ItemBlockAbstractBase.class, "blockHighlyAdvancedMachine");
-		
-		// building blocks
-		blockShipScanner = new BlockShipScanner();
-		
-		GameRegistry.registerBlock(blockShipScanner, ItemBlockAbstractBase.class, "blockShipScanner");
-		GameRegistry.registerTileEntity(TileEntityShipScanner.class, MODID + ":blockShipScanner");
-		
-		// CLOAKING DEVICE CORE
 		blockCloakingCore = new BlockCloakingCore();
-		
 		GameRegistry.registerBlock(blockCloakingCore, ItemBlockAbstractBase.class, "blockCloakingCore");
 		GameRegistry.registerTileEntity(TileEntityCloakingCore.class, MODID + ":blockCloakingCore");
 		
-		// CLOAKING DEVICE COIL
 		blockCloakingCoil = new BlockCloakingCoil();
-		
 		GameRegistry.registerBlock(blockCloakingCoil, ItemBlockAbstractBase.class, "blockCloakingCoil");
 		
-		// TRANSPORTER BEACON
-		blockTransporterBeacon = new BlockTransporterBeacon();
+		blockMonitor = new BlockMonitor();
+		GameRegistry.registerBlock(blockMonitor, ItemBlockAbstractBase.class, "blockMonitor");
+		GameRegistry.registerTileEntity(TileEntityMonitor.class, MODID + ":blockMonitor");
 		
-		GameRegistry.registerBlock(blockTransporterBeacon, ItemBlockTransporterBeacon.class, "blockTransporterBeacon");
-		GameRegistry.registerTileEntity(TileEntityTransporterBeacon.class, MODID + ":blockTransporterBeacon");
+		blockRadar = new BlockRadar();
+		GameRegistry.registerBlock(blockRadar, ItemBlockAbstractBase.class, "blockRadar");
+		GameRegistry.registerTileEntity(TileEntityRadar.class, MODID + ":blockRadar");
 		
-		// TRANSPORTER CORE
-		blockTransporterCore = new BlockTransporterCore();
+		blockSiren = new BlockSiren();
+		GameRegistry.registerBlock(blockSiren, ItemBlockAbstractBase.class, "siren");
+		GameRegistry.registerTileEntity(TileEntitySiren.class, MODID + ":tileEntitySiren");
 		
-		GameRegistry.registerBlock(blockTransporterCore, ItemBlockAbstractBase.class, "blockTransporterCore");
-		GameRegistry.registerTileEntity(TileEntityTransporterCore.class, MODID + ":blockTransporterCore");
+		blockWarpIsolation = new BlockWarpIsolation();
+		GameRegistry.registerBlock(blockWarpIsolation, ItemBlockWarpIsolation.class, "blockWarpIsolation");
 		
-		// TRANSPORTER CONTAINMENT
-		blockTransporterContainment = new BlockTransporterContainment();
-		
-		GameRegistry.registerBlock(blockTransporterContainment, ItemBlockAbstractBase.class, "blockTransporterContainment");
-		
-		// TRANSPORTER SCANNER
-		blockTransporterScanner = new BlockTransporterScanner();
-		
-		GameRegistry.registerBlock(blockTransporterScanner, ItemBlockAbstractBase.class, "blockTransporterScanner");
-		
-		// IC2 REACTOR LASER MONITOR
-		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			blockIC2reactorLaserMonitor = new BlockIC2reactorLaserMonitor();
-			
-			GameRegistry.registerBlock(blockIC2reactorLaserMonitor, ItemBlockAbstractBase.class, "blockIC2reactorLaserMonitor");
-			GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, MODID + ":blockIC2reactorLaserMonitor");
-		}
-		
-		// POWER REACTOR, LASER, STORE
+		// energy blocks and items
 		blockEnanReactorCore = new BlockEnanReactorCore();
 		GameRegistry.registerBlock(blockEnanReactorCore, ItemBlockAbstractBase.class, "blockEnanReactorCore");
 		GameRegistry.registerTileEntity(TileEntityEnanReactorCore.class, MODID + ":blockEnanReactorCore");
@@ -518,10 +458,16 @@ public class WarpDrive {
 		GameRegistry.registerBlock(blockEnergyBank, ItemBlockAbstractBase.class, "blockEnergyBank");
 		GameRegistry.registerTileEntity(TileEntityEnergyBank.class, MODID + ":blockEnergyBank");
 		
-		// CHUNK LOADER
-		blockChunkLoader = new BlockChunkLoader();
-		GameRegistry.registerBlock(blockChunkLoader, ItemBlockAbstractBase.class, "blockChunkLoader");
-		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, MODID + ":blockChunkLoader");
+		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+			blockIC2reactorLaserMonitor = new BlockIC2reactorLaserMonitor();
+			GameRegistry.registerBlock(blockIC2reactorLaserMonitor, ItemBlockAbstractBase.class, "blockIC2reactorLaserMonitor");
+			GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, MODID + ":blockIC2reactorLaserMonitor");
+			
+			if (WarpDriveConfig.isIndustrialCraft2Loaded) {
+				itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus();
+				GameRegistry.registerItem(itemIC2reactorLaserFocus, "itemIC2reactorLaserFocus");
+			}
+		}
 		
 		// force field blocks and items
 		blockForceFields = new Block[3];
@@ -550,61 +496,6 @@ public class WarpDrive {
 		GameRegistry.registerTileEntity(TileEntitySecurityStation.class, MODID + ":blockSecurityStation");
 		*/
 		
-		itemForceFieldShape = new ItemForceFieldShape();
-		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-		
-		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
-		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
-		
-		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
-			// ACCELERATOR CONTROLLER
-			blockAcceleratorController = new BlockAcceleratorController();
-			GameRegistry.registerBlock(blockAcceleratorController, ItemBlockAbstractBase.class, "blockAcceleratorController");
-			GameRegistry.registerTileEntity(TileEntityAcceleratorController.class, MODID + ":blockAcceleratorController");
-			
-			// ACCELERATOR CONTROL POINT 
-			blockAcceleratorControlPoint = new BlockAcceleratorControlPoint();
-			GameRegistry.registerBlock(blockAcceleratorControlPoint, ItemBlockAbstractBase.class, "blockAcceleratorControlPoint");
-			GameRegistry.registerTileEntity(TileEntityAcceleratorControlPoint.class, MODID + ":blockAcceleratorControlPoint");
-			
-			// PARTICLES COLLIDER 
-			blockParticlesCollider = new BlockParticlesCollider();
-			GameRegistry.registerBlock(blockParticlesCollider, ItemBlockAbstractBase.class, "blockParticlesCollider");
-			
-			// PARTICLES INJECTOR 
-			blockParticlesInjector = new BlockParticlesInjector();
-			GameRegistry.registerBlock(blockParticlesInjector, ItemBlockAbstractBase.class, "blockParticlesInjector");
-			GameRegistry.registerTileEntity(TileEntityParticlesInjector.class, MODID + ":blockParticlesInjector");
-			
-			// VOID SHELL PLAIN/GLASS 
-			blockVoidShellPlain = new BlockVoidShellPlain();
-			GameRegistry.registerBlock(blockVoidShellPlain, ItemBlockAbstractBase.class, "blockVoidShellPlain");
-			blockVoidShellGlass = new BlockVoidShellGlass();
-			GameRegistry.registerBlock(blockVoidShellGlass, ItemBlockAbstractBase.class, "blockVoidShellGlass");
-			
-			blockElectromagnetPlain = new Block[3];
-			blockElectromagnetGlass = new Block[3];
-			blockChillers = new Block[3];
-			for (byte tier = 1; tier <= 3; tier++) {
-				final int index = tier - 1;
-				// plain electromagnets
-				blockElectromagnetPlain[index] = new BlockElectromagnetPlain(tier);
-				GameRegistry.registerBlock(blockElectromagnetPlain[index], ItemBlockAbstractBase.class, "blockElectromagnetPlain" + tier);
-				
-				// glass electromagnets
-				blockElectromagnetGlass[index] = new BlockElectromagnetGlass(tier);
-				GameRegistry.registerBlock(blockElectromagnetGlass[index], ItemBlockAbstractBase.class, "blockElectromagnetGlass" + tier);
-				
-				// chiller
-				blockChillers[index] = new BlockChiller(tier);
-				GameRegistry.registerBlock(blockChillers[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
-			}
-		}
-		
-		// decorative
-		blockDecorative = new BlockDecorative();
-		GameRegistry.registerBlock(blockDecorative, ItemBlockDecorative.class, "blockDecorative");
-		
 		// hull blocks
 		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
@@ -630,17 +521,57 @@ public class WarpDrive {
 			}
 		}
 		
-		// SIRENS
-		blockSiren = new BlockSiren();
+		// movement blocks
+		blockLift = new BlockLift();
+		GameRegistry.registerBlock(blockLift, ItemBlockAbstractBase.class, "blockLift");
+		GameRegistry.registerTileEntity(TileEntityLift.class, MODID + ":blockLift");
 		
-		GameRegistry.registerBlock(blockSiren, ItemBlockAbstractBase.class, "siren");
-		GameRegistry.registerTileEntity(TileEntitySiren.class, MODID + ":tileEntitySiren");
+		blockShipController = new BlockShipController();
+		GameRegistry.registerBlock(blockShipController, ItemBlockAbstractBase.class, "blockShipController");
+		GameRegistry.registerTileEntity(TileEntityShipController.class, MODID + ":blockShipController");
 		
-		// REACTOR LASER FOCUS
-		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus();
-			GameRegistry.registerItem(itemIC2reactorLaserFocus, "itemIC2reactorLaserFocus");
-		}
+		blockShipCore = new BlockShipCore();
+		GameRegistry.registerBlock(blockShipCore, ItemBlockAbstractBase.class, "blockShipCore");
+		GameRegistry.registerTileEntity(TileEntityShipCore.class, MODID + ":blockShipCore");
+		
+		blockTransporterBeacon = new BlockTransporterBeacon();
+		GameRegistry.registerBlock(blockTransporterBeacon, ItemBlockTransporterBeacon.class, "blockTransporterBeacon");
+		GameRegistry.registerTileEntity(TileEntityTransporterBeacon.class, MODID + ":blockTransporterBeacon");
+		
+		blockTransporterCore = new BlockTransporterCore();
+		GameRegistry.registerBlock(blockTransporterCore, ItemBlockAbstractBase.class, "blockTransporterCore");
+		GameRegistry.registerTileEntity(TileEntityTransporterCore.class, MODID + ":blockTransporterCore");
+		
+		blockTransporterContainment = new BlockTransporterContainment();
+		GameRegistry.registerBlock(blockTransporterContainment, ItemBlockAbstractBase.class, "blockTransporterContainment");
+		
+		blockTransporterScanner = new BlockTransporterScanner();
+		GameRegistry.registerBlock(blockTransporterScanner, ItemBlockAbstractBase.class, "blockTransporterScanner");
+		
+		// passive blocks
+		blockBedrockGlass = new BlockBedrockGlass();
+		GameRegistry.registerBlock(blockBedrockGlass, ItemBlockAbstractBase.class, "blockBedrockGlass");
+		
+		blockHighlyAdvancedMachine = new BlockHighlyAdvancedMachine();
+		GameRegistry.registerBlock(blockHighlyAdvancedMachine, ItemBlockAbstractBase.class, "blockHighlyAdvancedMachine");
+		
+		blockIridium = new BlockIridium();
+		GameRegistry.registerBlock(blockIridium, ItemBlockAbstractBase.class, "blockIridium");
+		
+		// weapon blocks
+		blockLaserCamera = new BlockLaserCamera();
+		GameRegistry.registerBlock(blockLaserCamera, ItemBlockAbstractBase.class, "blockLaserCamera");
+		GameRegistry.registerTileEntity(TileEntityLaserCamera.class, MODID + ":blockLaserCamera");
+		
+		blockWeaponController = new BlockWeaponController();
+		GameRegistry.registerBlock(blockWeaponController, ItemBlockAbstractBase.class, "blockWeaponController");
+		GameRegistry.registerTileEntity(TileEntityWeaponController.class, MODID + ":blockWeaponController");
+		
+		itemForceFieldShape = new ItemForceFieldShape();
+		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
+		
+		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
+		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
 		
 		// COMPONENT ITEMS
 		itemComponent = new ItemComponent();
@@ -667,12 +598,6 @@ public class WarpDrive {
 		
 		itemTuningDriver = new ItemTuningDriver();
 		GameRegistry.registerItem(itemTuningDriver, "itemTuningDriver");
-		
-		// electromagnetic cell
-		if (WarpDriveConfig.ACCELERATOR_ENABLE) {
-			itemElectromagneticCell = new ItemElectromagneticCell();
-			GameRegistry.registerItem(itemElectromagneticCell, "itemElectromagneticCell");
-		}
 		
 		// damage sources
 		damageAsphyxia = new DamageAsphyxia();
@@ -705,6 +630,38 @@ public class WarpDrive {
 		if (getClass().desiredAssertionStatus()) {
 			Recipes.patchOredictionary();
 		}
+		
+		// proxy.onForgePreInitialisation();
+		
+		if (event.getSide() == Side.CLIENT) {
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
+			MinecraftForge.EVENT_BUS.register(new RenderOverlayLocation());
+			
+			FMLCommonHandler.instance().bus().register(new ClientCameraHandler());
+			
+			RenderBlockStandard.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockStandard.instance);
+			
+			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
+			
+			RenderBlockOmnipanel.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockOmnipanel.instance);
+			
+			RenderBlockShipScanner.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockShipScanner.instance);
+			
+			RenderBlockTransporterBeacon.renderId = RenderingRegistry.getNextAvailableRenderId();
+			RenderingRegistry.registerBlockHandler(RenderBlockTransporterBeacon.instance);
+		}
+	}
+	
+	@EventHandler
+	public void onFMLInitialization(final FMLInitializationEvent event) {
+		PacketHandler.init();
+		
+		WarpDriveConfig.onFMLInitialization();
 	}
 	
 	@EventHandler
