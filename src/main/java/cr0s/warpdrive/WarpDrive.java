@@ -368,11 +368,8 @@ public class WarpDrive {
 				GameRegistry.registerBlock(blockChillers[index], ItemBlockAbstractBase.class, "blockChiller" + tier);
 			}
 			
-			// electromagnetic cell
-			if (WarpDriveConfig.ACCELERATOR_ENABLE) {
-				itemElectromagneticCell = new ItemElectromagneticCell();
-				GameRegistry.registerItem(itemElectromagneticCell, "itemElectromagneticCell");
-			}
+			itemElectromagneticCell = new ItemElectromagneticCell();
+			GameRegistry.registerItem(itemElectromagneticCell, "itemElectromagneticCell");
 		}
 		
 		// building blocks
@@ -463,10 +460,8 @@ public class WarpDrive {
 			GameRegistry.registerBlock(blockIC2reactorLaserMonitor, ItemBlockAbstractBase.class, "blockIC2reactorLaserMonitor");
 			GameRegistry.registerTileEntity(TileEntityIC2reactorLaserMonitor.class, MODID + ":blockIC2reactorLaserMonitor");
 			
-			if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-				itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus();
-				GameRegistry.registerItem(itemIC2reactorLaserFocus, "itemIC2reactorLaserFocus");
-			}
+			itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus();
+			GameRegistry.registerItem(itemIC2reactorLaserFocus, "itemIC2reactorLaserFocus");
 		}
 		
 		// force field blocks and items
@@ -475,26 +470,30 @@ public class WarpDrive {
 		blockForceFieldRelays = new Block[3];
 		for (byte tier = 1; tier <= 3; tier++) {
 			final int index = tier - 1;
-			// FORCE FIELD
+			
 			blockForceFields[index] = new BlockForceField(tier);
 			GameRegistry.registerBlock(blockForceFields[index], ItemBlockAbstractBase.class, "blockForceField" + tier);
 			GameRegistry.registerTileEntity(TileEntityForceField.class, MODID + ":blockForceField" + tier);
 			
-			// FORCE FIELD PROJECTOR
 			blockForceFieldProjectors[index] = new BlockForceFieldProjector(tier);
 			GameRegistry.registerBlock(blockForceFieldProjectors[index], ItemBlockForceFieldProjector.class, "blockProjector" + tier);
 			GameRegistry.registerTileEntity(TileEntityForceFieldProjector.class, MODID + ":blockProjector" + tier);
 			
-			// FORCE FIELD RELAY
 			blockForceFieldRelays[index] = new BlockForceFieldRelay(tier);
 			GameRegistry.registerBlock(blockForceFieldRelays[index], ItemBlockForceFieldRelay.class, "blockForceFieldRelay" + tier);
 			GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, MODID + ":blockForceFieldRelay" + tier);
 		}
-		/* TODO
+		/* @TODO security station
 		blockSecurityStation = new BlockSecurityStation();
 		GameRegistry.registerBlock(blockSecurityStation, ItemBlockAbstractBase.class, "blockSecurityStation");
 		GameRegistry.registerTileEntity(TileEntitySecurityStation.class, MODID + ":blockSecurityStation");
 		*/
+		
+		itemForceFieldShape = new ItemForceFieldShape();
+		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
+		
+		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
+		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
 		
 		// hull blocks
 		blockHulls_plain = new Block[3][EnumHullPlainType.length];
@@ -566,12 +565,6 @@ public class WarpDrive {
 		blockWeaponController = new BlockWeaponController();
 		GameRegistry.registerBlock(blockWeaponController, ItemBlockAbstractBase.class, "blockWeaponController");
 		GameRegistry.registerTileEntity(TileEntityWeaponController.class, MODID + ":blockWeaponController");
-		
-		itemForceFieldShape = new ItemForceFieldShape();
-		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-		
-		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
-		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
 		
 		// COMPONENT ITEMS
 		itemComponent = new ItemComponent();

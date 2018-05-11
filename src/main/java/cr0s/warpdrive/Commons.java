@@ -114,7 +114,6 @@ public class Commons {
 		
 		final String[] lines = updateEscapeCodes(message).split("\n");
 		String format = "";
-		getFormatFromString(lines[0]);
 		for (final String line : lines) {
 			final String formattedLine = format + line;
 			commandSender.addChatMessage(new ChatComponentText(formattedLine));

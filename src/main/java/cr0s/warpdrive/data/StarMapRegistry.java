@@ -395,7 +395,7 @@ public class StarMapRegistry {
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			final TileEntityShipCore shipCore = (TileEntityShipCore) core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
+			final TileEntityShipCore shipCore = (TileEntityShipCore) tileEntity;
 			
 			// Skip offline ship cores
 			if (shipCore.isOffline()) {

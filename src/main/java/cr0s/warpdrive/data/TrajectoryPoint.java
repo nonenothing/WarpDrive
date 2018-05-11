@@ -101,7 +101,7 @@ public class TrajectoryPoint extends VectorI {
 		int typeNew = NO_TYPE;
 		
 		// check the core
-		final Block blockCore = world.getBlock(x, y , z);
+		final Block blockCore = world.getBlock(x, y, z);
 		if (!(blockCore instanceof BlockVoidShellPlain)) {
 			typeNew |= ERROR_MISSING_VOID_SHELL;
 		}

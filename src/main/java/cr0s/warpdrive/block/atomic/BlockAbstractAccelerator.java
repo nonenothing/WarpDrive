@@ -24,26 +24,6 @@ public class BlockAbstractAccelerator extends BlockAbstractBase implements IBloc
 	}
 	
 	@Override
-	public boolean isOpaqueCube() {
-		return true;
-	}
-	
-	@Override
-	public int getRenderBlockPass() {
-		return 0;
-	}
-	
-	@Override
-	public boolean renderAsNormalBlock() {
-		return true;
-	}
-	
-	@Override
-	public int damageDropped(final int metadata) {
-		return 0;
-	}
-	
-	@Override
 	public byte getTier(final ItemStack itemStack) {
 		return tier;
 	}
