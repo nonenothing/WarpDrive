@@ -30,7 +30,7 @@ public class ClientHandler {
 		if (event.entityPlayer == null) {
 			return;
 		}
-		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.itemStack.getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
+		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.itemStack.getItem())) {
 			Commons.addTooltip(event.toolTip, StatCollector.translateToLocalFormatted("warpdrive.tooltip.item_tag.breathing_helmet"));
 		}
 		if (Dictionary.ITEMS_FLYINSPACE.contains(event.itemStack.getItem())) {
