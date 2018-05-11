@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Улучшение - Хранилище эн�
 
 
 item.warpdrive.tool.ship_token.name=Ship token
-item.warpdrive.tool.ship_token.tooltip=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
+item.warpdrive.tool.ship_token.tooltip.usage=Token exchangeable for ship '%1$s'\n§bEnter a builder's field§7 to claim it
 item.warpdrive.tool.ship_token0.name=Ship token #0
 item.warpdrive.tool.ship_token1.name=Ship token #1
 item.warpdrive.tool.ship_token2.name=Ship token #2
@@ -193,12 +193,13 @@ tile.warpdrive.decoration.lamp_bubble.name=Bubble Lamp
 tile.warpdrive.decoration.lamp_flat.name=Flat Lamp
 tile.warpdrive.decoration.lamp_long.name=Long Lamp
 
-tile.warpdrive.passive.IridiumBlock.name=Блок иридия
-tile.warpdrive.passive.HighlyAdvancedMachine.name=Высокотехнологичный корпус механизма
 
-tile.warpdrive.machines.ChunkLoader.name=Загрузчик чанков
-tile.warpdrive.machines.Laser.name=Лазер
-tile.warpdrive.machines.LaserMedium.name=Лазерный излучатель (Ускоритель частиц)
+tile.warpdrive.passive.iridium_block.name=Блок иридия
+tile.warpdrive.passive.highly_advanced_machine.name=Высокотехнологичный корпус механизма
+
+tile.warpdrive.machines.chunk_loader.name=Загрузчик чанков
+tile.warpdrive.machines.laser.name=Лазер
+tile.warpdrive.machines.laser_medium.name=Лазерный излучатель (Ускоритель частиц)
 
 tile.warpdrive.atomic.accelerator_controller.name=Accelerator Controller
 tile.warpdrive.atomic.accelerator_controller.tooltip=Controls one or more particle accelerators.\nShall be placed next to an electromagnet.
@@ -572,10 +573,10 @@ warpdrive.monitor.viewingCamera=Просмотр камеры на %2$d, %3$d, %
 warpdrive.ship.attachedPlayers=Прирепленные игроки: %1$s
 warpdrive.ship.playerAttached=Вы были прикреплены к кораблю %1$s.\nПрикрепленные игроки: %2$s
 warpdrive.ship.playerDetached=Вы были откреплены от корабля %1$s.\nПрикрепленные игроки: %2$s
-warpdrive.ship.statusLine.cooling=Осталось %1$d с до остывания.
-warpdrive.ship.statusLine.isolation=%1$d активных блоков изоляции предоставляют %2$2.1f%% поглощения.
+warpdrive.ship.status_line.cooling=Осталось %1$d с до остывания.
+warpdrive.ship.status_line.isolation=%1$d активных блоков изоляции предоставляют %2$2.1f%% поглощения.
 
-warpdrive.energy.statusLine=Содержит энергии: %1$s / %2$s EU.
+warpdrive.energy.status_line=Содержит энергии: %1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=%1$s side changed to energy Input mode!
 warpdrive.energy.side.changedToOutput=%1$s side changed to energy Output mode!
 warpdrive.energy.side.changedToDisabled=%1$s side changed to Disabled mode!
@@ -588,9 +589,9 @@ warpdrive.accelerator.guide.noChiller=No chiller could be found for this acceler
 warpdrive.beam_frequency.tooltip=Частота луча установлена на %1$d
 warpdrive.beam_frequency.get=Beam frequency %2$d has been retrieved from %1$s 
 warpdrive.beam_frequency.set=%1$s настроен на частоту луча %2$d
-warpdrive.beam_frequency.statusLine.valid=Частота луча %1$d действительна.
-warpdrive.beam_frequency.statusLine.invalid=§cЧастота луча %1$d недействительна.
-warpdrive.beam_frequency.statusLine.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set Beam frequency.
+warpdrive.beam_frequency.status_line.valid=Частота луча %1$d действительна.
+warpdrive.beam_frequency.status_line.invalid=§cЧастота луча %1$d недействительна.
+warpdrive.beam_frequency.status_line.undefined=§7Undefined beam frequency.\n§bUse a Tuning fork§r to set Beam frequency.
 
 warpdrive.breathing.alarm=Breathing alarm
 warpdrive.breathing.invalid_setup=No breathing helmet\nor incomplete armor
@@ -598,43 +599,43 @@ warpdrive.breathing.low_reserve=Low air reserve!
 warpdrive.breathing.no_air=No more air!
 
 warpdrive.control_channel.tooltip=Control channel is set to %1$d
-warpdrive.control_channel.get=Control channel %2$d has been retrieved from %1$s 
+warpdrive.control_channel.get=Control channel %2$d has been retrieved from %1$s
 warpdrive.control_channel.set=%1$s is now tuned with Control channel %2$d
-warpdrive.control_channel.statusLine.valid=Control channel %1$d is valid.
-warpdrive.control_channel.statusLine.invalid=§cControl channel %1$d is invalid.
-warpdrive.control_channel.statusLine.undefined=§7Undefined Control channel.\n§bUse a Tuning fork§r to set it.
+warpdrive.control_channel.status_line.valid=Control channel %1$d is valid.
+warpdrive.control_channel.status_line.invalid=§cControl channel %1$d is invalid.
+warpdrive.control_channel.status_line.undefined=§7Undefined Control channel.\n§bUse a Tuning fork§r to set it.
 
 warpdrive.forcefield.guide.lowPower=We're running out of power captain, reduce our consumption or get that scottish engineer to boost our power!
 
-warpdrive.forcefield.shape.statusLine.none=§cShape isn't defined.
-warpdrive.forcefield.shape.statusLine.double=Shape is a full %1$s
-warpdrive.forcefield.shape.statusLine.single=Shape is an half %1$s
-warpdrive.forcefield.shape.statusLine.sphere=sphere
-warpdrive.forcefield.shape.statusLine.cylinder_h=horizontal cylinder
-warpdrive.forcefield.shape.statusLine.cylinder_v=vertical cylinder
-warpdrive.forcefield.shape.statusLine.cube=cube
-warpdrive.forcefield.shape.statusLine.plane=plane
-warpdrive.forcefield.shape.statusLine.tube=tube
-warpdrive.forcefield.shape.statusLine.tunnel=tunnel
+warpdrive.forcefield.shape.status_line.none=§cShape isn't defined.
+warpdrive.forcefield.shape.status_line.double=Shape is a full %1$s
+warpdrive.forcefield.shape.status_line.single=Shape is an half %1$s
+warpdrive.forcefield.shape.status_line.sphere=sphere
+warpdrive.forcefield.shape.status_line.cylinder_h=horizontal cylinder
+warpdrive.forcefield.shape.status_line.cylinder_v=vertical cylinder
+warpdrive.forcefield.shape.status_line.cube=cube
+warpdrive.forcefield.shape.status_line.plane=plane
+warpdrive.forcefield.shape.status_line.tube=tube
+warpdrive.forcefield.shape.status_line.tunnel=tunnel
 
-warpdrive.forcefield.upgrade.statusLine.attraction=attraction
-warpdrive.forcefield.upgrade.statusLine.breaking=block breaking
-warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
-warpdrive.forcefield.upgrade.statusLine.cooling=cooling
-warpdrive.forcefield.upgrade.statusLine.fusion=fusion
-warpdrive.forcefield.upgrade.statusLine.heating=heating
-warpdrive.forcefield.upgrade.statusLine.inversion=inversion
-warpdrive.forcefield.upgrade.statusLine.item_port=item port
-warpdrive.forcefield.upgrade.statusLine.pumping=pumping
-warpdrive.forcefield.upgrade.statusLine.range=increased range
-warpdrive.forcefield.upgrade.statusLine.repulsion=repulsion
-warpdrive.forcefield.upgrade.statusLine.rotation=rotation
-warpdrive.forcefield.upgrade.statusLine.shock=shock
-warpdrive.forcefield.upgrade.statusLine.silencer=silencer
-warpdrive.forcefield.upgrade.statusLine.speed=speed
-warpdrive.forcefield.upgrade.statusLine.stabilization=stabilization
-warpdrive.forcefield.upgrade.statusLine.thickness=thickness
-warpdrive.forcefield.upgrade.statusLine.translation=translation
+warpdrive.forcefield.upgrade.status_line.attraction=attraction
+warpdrive.forcefield.upgrade.status_line.breaking=block breaking
+warpdrive.forcefield.upgrade.status_line.camouflage=camouflage
+warpdrive.forcefield.upgrade.status_line.cooling=cooling
+warpdrive.forcefield.upgrade.status_line.fusion=fusion
+warpdrive.forcefield.upgrade.status_line.heating=heating
+warpdrive.forcefield.upgrade.status_line.inversion=inversion
+warpdrive.forcefield.upgrade.status_line.item_port=item port
+warpdrive.forcefield.upgrade.status_line.pumping=pumping
+warpdrive.forcefield.upgrade.status_line.range=increased range
+warpdrive.forcefield.upgrade.status_line.repulsion=repulsion
+warpdrive.forcefield.upgrade.status_line.rotation=rotation
+warpdrive.forcefield.upgrade.status_line.shock=shock
+warpdrive.forcefield.upgrade.status_line.silencer=silencer
+warpdrive.forcefield.upgrade.status_line.speed=speed
+warpdrive.forcefield.upgrade.status_line.stabilization=stabilization
+warpdrive.forcefield.upgrade.status_line.thickness=thickness
+warpdrive.forcefield.upgrade.status_line.translation=translation
 
 warpdrive.particle.ion.name=ion
 warpdrive.particle.ion.tooltip=Produced by colliding a particle bunch in a normal accelerator
@@ -662,17 +663,17 @@ warpdrive.upgrade.result.notEnoughShapes.single=§cYou need at least 1 item to s
 warpdrive.upgrade.result.shapeDismounted=Shape dismounted successfully.
 warpdrive.upgrade.result.shapeMounted=Shape mounted successfully.
 
-warpdrive.upgrade.statusLine.none=§7No upgrade installed.
-warpdrive.upgrade.statusLine.valid=Upgraded with %1$s.
+warpdrive.upgrade.status_line.none=§7No upgrade installed.
+warpdrive.upgrade.status_line.valid=Upgraded with %1$s.
 
 warpdrive.video_channel.tooltip=Видеоканал установлен на %1$d
 warpdrive.video_channel.get=Video channel %2$d has been retrieved from %1$s
 warpdrive.video_channel.set=%1$s настроен на видеоканал %2$d
-warpdrive.video_channel.statusLine.valid=Видеоканал %1$d действителен.
-warpdrive.video_channel.statusLine.validCamera=Видеоканал %1$d действителен для камеры на %2$d, %3$d, %4$d.
-warpdrive.video_channel.statusLine.invalid=§cВидеоканал %1$d недействителен.
-warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cВидеоканал %1$d недействителен или камера слишком далеко.
-warpdrive.video_channel.statusLine.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
+warpdrive.video_channel.status_line.valid_camera=Видеоканал %1$d действителен.
+warpdrive.video_channel.status_line.valid_monitor=Видеоканал %1$d действителен для камеры на %2$d, %3$d, %4$d.
+warpdrive.video_channel.status_line.invalid=§cВидеоканал %1$d недействителен.
+warpdrive.video_channel.status_line.not_loaded=§cВидеоканал %1$d недействителен или камера слишком далеко.
+warpdrive.video_channel.status_line.undefined=§7Undefined Video channel.\n§bUse a Tuning fork§r to set it.
 
 warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
 warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
@@ -696,6 +697,6 @@ warpdrive.transporter_signature.set_self=§cTransporter room can't target itself
 warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
 warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
-warpdrive.tooltip.itemTag.breathingHelmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
-warpdrive.tooltip.itemTag.flyInSpace=§bSpace compatible jetpack§r.
-warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbs fall damage§r.
+warpdrive.tooltip.item_tag.breathing_helmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
+warpdrive.tooltip.item_tag.fly_in_space=§bSpace compatible jetpack§r.
+warpdrive.tooltip.item_tag.no_fall_damage=§bAbsorbs fall damage§r.

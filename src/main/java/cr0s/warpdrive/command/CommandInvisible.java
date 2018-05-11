@@ -2,11 +2,11 @@ package cr0s.warpdrive.command;
 
 import cr0s.warpdrive.WarpDrive;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -25,8 +25,8 @@ public class CommandInvisible extends CommandBase {
 	}
 		
 	@Override
-	public void execute(MinecraftServer server, ICommandSender commandSender, String[] args) throws CommandException {
-		EntityPlayer player = (EntityPlayer) commandSender;
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
+		EntityPlayer player = commandSender instanceof EntityPlayer ? (EntityPlayer) commandSender : null;
 		
 		if (args.length >= 1) {
 			WarpDrive.logger.info("/invisible: setting invisible to " + args[0]);
@@ -49,7 +49,7 @@ public class CommandInvisible extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(ICommandSender commandSender) {
+	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
 		return "/invisible [player]";
 	}
 }

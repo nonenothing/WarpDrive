@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
@@ -48,23 +49,41 @@ public class StarMapRegistry {
 	}
 	
 	public void updateInRegistry(final IStarMapRegistryTileEntity tileEntity) {
+		// validate context
 		assert(tileEntity instanceof TileEntity);
+		if (!Commons.isSafeThread()) {
+			WarpDrive.logger.error(String.format("Non-threadsafe call to StarMapRegistry:updateInRegistry outside main thread, for %s",
+			                                     tileEntity));
+		}
 		
+		// update statistics
 		countRead++;
 		if (WarpDriveConfig.LOGGING_STARMAP) {
 			if (countRead % 1000 == 0) {
 				WarpDrive.logger.info("Starmap registry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
 			}
 		}
+		
+		// get dimension
 		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			setRegistryItems = new CopyOnWriteArraySet<>();
 		}
+		
+		// get entry
 		final ArrayList<StarMapRegistryItem> listToRemove = new ArrayList<>(3);
+		final UUID uuidTileEntity = tileEntity.getUUID();
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			if ( registryItem.type.getName().equals(tileEntity.getStarMapType())
-			  && registryItem.uuid.equals(tileEntity.getUUID()) ) {// already registered
-				registryItem.update(tileEntity);    // @TODO probably not thread safe
+			if (registryItem.uuid == null) {
+				WarpDrive.logger.error(String.format("Removing invalid StarMapRegistryItem %s",
+				                                     registryItem));
+				listToRemove.add(registryItem);
+				continue;
+			}
+			
+			if ( registryItem.type.equals(tileEntity.getStarMapType())
+			  && registryItem.uuid.equals(uuidTileEntity) ) {// already registered
+				registryItem.update(tileEntity);    // in-place update only works as long as hashcode remains unchanged
 				return;
 			} else if (registryItem.sameCoordinates(tileEntity)) {
 				listToRemove.add(registryItem);
@@ -265,7 +284,7 @@ public class StarMapRegistry {
 		default:
 			try {
 				return Integer.parseInt(stringDimension);
-			} catch(Exception exception) {
+			} catch (final Exception exception) {
 				// exception.printStackTrace();
 				WarpDrive.logger.info("Invalid dimension '" + stringDimension + "', expecting integer or overworld/nether/end/theend/space/hyper/hyperspace");
 			}
@@ -282,7 +301,7 @@ public class StarMapRegistry {
 			celestialObject,
 			tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ());
 		// printRegistry();
-		int radius2 = radius * radius;
+		final int radius2 = radius * radius;
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			for (final StarMapRegistryItem starMapRegistryItem : entryDimension.getValue()) {
 				if (starMapRegistryItem.type == EnumStarMapEntryType.ACCELERATOR) {
@@ -337,7 +356,7 @@ public class StarMapRegistry {
 		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
 		
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
-			StringBuilder message = new StringBuilder();
+			final StringBuilder message = new StringBuilder();
 			for (final StarMapRegistryItem registryItem : entryDimension.getValue()) {
 				message.append(String.format("\n- %s '%s' @ DIM%d (%d %d %d) with %.3f isolation rate",
 				                             registryItem.type, registryItem.name,
@@ -349,15 +368,14 @@ public class StarMapRegistry {
 		}
 	}
 	
-	public boolean isWarpCoreIntersectsWithOthers(TileEntityShipCore core) {
+	public boolean isWarpCoreIntersectsWithOthers(final TileEntityShipCore core) {
 		final StringBuilder reason = new StringBuilder();
-		AxisAlignedBB aabb1, aabb2;
 		cleanup();
 		
 		core.validateShipSpatialParameters(reason);
-		aabb1 = new AxisAlignedBB(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
+		final AxisAlignedBB aabb1 = new AxisAlignedBB(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
 		
-		CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorld().provider.getDimension());
+		final CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			return false;
 		}
@@ -375,11 +393,11 @@ public class StarMapRegistry {
 			}
 			
 			// Skip missing ship cores
-			TileEntity tileEntity = core.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
+			final TileEntity tileEntity = core.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			TileEntityShipCore shipCore = (TileEntityShipCore) tileEntity;
+			final TileEntityShipCore shipCore = (TileEntityShipCore) tileEntity;
 			
 			// Skip offline ship cores
 			if (shipCore.isOffline()) {
@@ -391,18 +409,11 @@ public class StarMapRegistry {
 				continue;
 			}
 			
-			// Search for nearest warp cores
-			double d3 = registryItem.x - core.getPos().getX();
-			double d4 = registryItem.y - core.getPos().getY();
-			double d5 = registryItem.z - core.getPos().getZ();
-			double distance2 = d3 * d3 + d4 * d4 + d5 * d5;
-			
-			if (distance2 <= ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1) * ((2 * WarpDriveConfig.SHIP_MAX_SIDE_SIZE) - 1)) {
-				// Compare warp-fields for intersection
-				aabb2 = new AxisAlignedBB(registryItem.minX, registryItem.minY, registryItem.minZ, registryItem.maxX, registryItem.maxY, registryItem.maxZ);
-				if (aabb1.intersectsWith(aabb2)) {
-					return true;
-				}
+			// Compare areas for intersection
+			final AxisAlignedBB aabb2 = new AxisAlignedBB(registryItem.minX, registryItem.minY, registryItem.minZ,
+			                                              registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+			if (aabb1.intersectsWith(aabb2)) {
+				return true;
 			}
 		}
 		
@@ -428,9 +439,9 @@ public class StarMapRegistry {
 					if (world.getChunkProvider() instanceof ChunkProviderServer) {
 						final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 						try {
-							Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+							final Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
 							isLoaded = chunk != null && chunk.isLoaded();
-						} catch (NoSuchFieldError exception) {
+						} catch (final NoSuchFieldError exception) {
 							isLoaded = chunkProviderServer.chunkExists(registryItem.x >> 4, registryItem.z >> 4);
 						}
 					} else {
@@ -488,7 +499,7 @@ public class StarMapRegistry {
 		LocalProfiler.stop();
 	}
 	
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		if (tagCompound == null || !tagCompound.hasKey("starMapRegistryItems")) {
 			registry.clear();
 			return;
@@ -503,7 +514,7 @@ public class StarMapRegistry {
 			registryFlat[index] = starMapRegistryItem;
 			
 			// update stats
-			Integer count = sizeDimensions.computeIfAbsent(starMapRegistryItem.dimensionId, k -> (Integer) 0);
+			Integer count = sizeDimensions.computeIfAbsent(starMapRegistryItem.dimensionId, k -> 0);
 			count++;
 			sizeDimensions.put(starMapRegistryItem.dimensionId, count);
 		}

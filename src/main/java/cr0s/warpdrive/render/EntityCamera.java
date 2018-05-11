@@ -46,7 +46,7 @@ public final class EntityCamera extends EntityLivingBase {
 	
 	private boolean isCentered = true;
 	
-	public EntityCamera(World world, final int x, final int y, final int z, EntityPlayer player) {
+	public EntityCamera(final World world, final int x, final int y, final int z, final EntityPlayer player) {
 		super(world);
 		posX = x;
 		posY = y;
@@ -72,7 +72,7 @@ public final class EntityCamera extends EntityLivingBase {
 	
 	// override to skip the block bounding override on client side
 	@Override
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+	public void setPositionAndRotation(final double x, final double y, final double z, final float yaw, final float pitch) {
 		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
@@ -102,7 +102,7 @@ public final class EntityCamera extends EntityLivingBase {
 				return;
 			}
 			
-			Block block = worldObj.getBlockState(new BlockPos(cameraX, cameraY, cameraZ)).getBlock();
+			final Block block = worldObj.getBlockState(new BlockPos(cameraX, cameraY, cameraZ)).getBlock();
 			if (mc.getRenderViewEntity() != null) {
 				mc.getRenderViewEntity().rotationYaw = player.rotationYaw;
 				// mc.renderViewEntity.rotationYawHead = player.rotationYawHead;
@@ -150,7 +150,7 @@ public final class EntityCamera extends EntityLivingBase {
 				fireWaitTicks = 0;
 			}
 			
-			GameSettings gamesettings = mc.gameSettings;
+			final GameSettings gamesettings = mc.gameSettings;
 			if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
 				dy = -1;
 			} else if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
@@ -186,7 +186,7 @@ public final class EntityCamera extends EntityLivingBase {
 	}
 	
 	@Override
-	public boolean shouldRenderInPass(int pass) {
+	public boolean shouldRenderInPass(final int pass) {
 		return false;
 	}
 	
@@ -225,19 +225,19 @@ public final class EntityCamera extends EntityLivingBase {
 	}
 	
 	@Override
-	public void moveEntity(double x, double y, double z) {
+	public void moveEntity(final double x, final double y, final double z) {
 	}
 	
 	@Override
-	public void readEntityFromNBT(NBTTagCompound nbttagcompound) {
+	public void readEntityFromNBT(final NBTTagCompound tagCompound) {
 		// nothing to save, skip ancestor call
-		cameraX = nbttagcompound.getInteger("x");
-		cameraY = nbttagcompound.getInteger("y");
-		cameraZ = nbttagcompound.getInteger("z");
+		cameraX = tagCompound.getInteger("x");
+		cameraY = tagCompound.getInteger("y");
+		cameraZ = tagCompound.getInteger("z");
 	}
 	
 	@Override
-	public void writeEntityToNBT(NBTTagCompound nbttagcompound) {
+	public void writeEntityToNBT(final NBTTagCompound nbttagcompound) {
 		// nothing to save, skip ancestor call
 		nbttagcompound.setInteger("x", cameraX);
 		nbttagcompound.setInteger("y", cameraY);
@@ -251,12 +251,12 @@ public final class EntityCamera extends EntityLivingBase {
 	
 	@Nullable
 	@Override
-	public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn) {
+	public ItemStack getItemStackFromSlot(final EntityEquipmentSlot slotIn) {
 		return null;
 	}
 	
 	@Override
-	public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack) {
+	public void setItemStackToSlot(final EntityEquipmentSlot slotIn, @Nullable final ItemStack itemStack) {
 		
 	}
 }

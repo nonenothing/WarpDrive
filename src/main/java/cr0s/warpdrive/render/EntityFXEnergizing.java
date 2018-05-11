@@ -101,7 +101,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 		}
 		
 		// texture clock is offset to de-synchronize particles
-		final double timeTexture =(getSeed() & 0xFFFF) + particleAge + partialTick;
+		final double timeTexture = (getSeed() & 0xFFFF) + particleAge + partialTick;
 		
 		// repeated a pixel column, changing periodically, to animate the texture
 		final double uOffset = ((int) Math.floor(timeTexture * 0.5D) % 16) / 16.0D;

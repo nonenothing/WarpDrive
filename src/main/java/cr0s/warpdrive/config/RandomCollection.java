@@ -33,7 +33,7 @@ public class RandomCollection<E extends IStringSerializable> {
 	 * @param object
 	 *            Object to add
 	 **/
-	public void addWeight(final int weight, E object) {
+	public void addWeight(final int weight, final E object) {
 		if (weight <= 0) {
 			WarpDrive.logger.warn("Weight is negative or zero, skipping " + object + " with weight " + weight);
 			return;
@@ -57,7 +57,7 @@ public class RandomCollection<E extends IStringSerializable> {
 	 * @param object
 	 *            Object to add
 	 **/
-	public void addRatio(final double ratio, E object) {
+	public void addRatio(final double ratio, final E object) {
 		if (ratio <= 0 || ratio >= 1.0) {
 			WarpDrive.logger.warn("Ratio isn't in ]0, 1.0] bounds, skipping " + object + " with ratio " + ratio);
 			return;
@@ -78,7 +78,7 @@ public class RandomCollection<E extends IStringSerializable> {
 		list.add(object);
 	}
 	
-	public E getRandomEntry(Random random) {
+	public E getRandomEntry(final Random random) {
 		double value = random.nextDouble();
 		
 		if (totalWeight == 0.0D) {
@@ -88,8 +88,8 @@ public class RandomCollection<E extends IStringSerializable> {
 		if (value < totalRatio) { // hit ratio part of values
 			return ratioMap.ceilingEntry(value).getValue();
 		} else { // hit dynamic part of values, weighted ones
-			int weight = (int)Math.round((value - totalRatio) * totalWeight);
-			Entry<Integer, E> entry = weightMap.ceilingEntry(weight);
+			final int weight = (int)Math.round((value - totalRatio) * totalWeight);
+			final Entry<Integer, E> entry = weightMap.ceilingEntry(weight);
 			/*
 			WarpDrive.logger.info("value " + String.format("%.3f", value)
 					+ " => " + entry + " totals "
@@ -155,9 +155,9 @@ public class RandomCollection<E extends IStringSerializable> {
 	 *            Element of an XML file
 	 * @throws InvalidParameterException
 	 **/
-	public void add(E object, final String stringRatio, final String stringWeight) throws InvalidParameterException {
+	public void add(final E object, final String stringRatio, final String stringWeight) throws InvalidParameterException {
 		// detect and handle loading of an existing object
-		E existing = getNamedEntry(object.getName());
+		final E existing = getNamedEntry(object.getName());
 		if (existing != null) {
 			if (existing.equals(object)) {
 				// all good, nothing to do
@@ -174,10 +174,10 @@ public class RandomCollection<E extends IStringSerializable> {
 		
 		// ratio takes priority over weight
 		if (stringRatio != null && !stringRatio.isEmpty()) {
-			double ratio;
+			final double ratio;
 			try {
 				ratio = Double.parseDouble(stringRatio);
-			} catch (NumberFormatException exceptionRatio) {
+			} catch (final NumberFormatException exceptionRatio) {
 				throw new InvalidParameterException("Ratio must be double!");
 			}
 			addRatio(ratio, object);
@@ -187,7 +187,7 @@ public class RandomCollection<E extends IStringSerializable> {
 			if (stringWeight != null && !stringWeight.isEmpty()) {
 				try {
 					weight = Integer.parseInt(stringWeight);
-				} catch (NumberFormatException exceptionWeight) {
+				} catch (final NumberFormatException exceptionWeight) {
 					throw new InvalidParameterException("Weight must be an integer!");
 				}
 				weight = Math.max(1, weight);
@@ -196,7 +196,7 @@ public class RandomCollection<E extends IStringSerializable> {
 		}
 	}
 	
-	public void loadFrom(RandomCollection<E> objects) {
+	public void loadFrom(final RandomCollection<E> objects) {
 		int previousWeight = 0;
 		for (final Entry<Integer, E> entry : objects.weightMap.entrySet()) {
 			addWeight(entry.getKey() - previousWeight, entry.getValue());

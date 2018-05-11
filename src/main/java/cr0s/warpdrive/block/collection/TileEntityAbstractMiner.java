@@ -61,7 +61,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 			// remove without updating neighbours @TODO: add proper pump upgrade
 			worldObj.setBlockState(valuable, Blocks.AIR.getDefaultState(), 2);
 		} else {
-			List<ItemStack> itemStacks = getItemStackFromBlock(valuable, blockState);
+			final List<ItemStack> itemStacks = getItemStackFromBlock(valuable, blockState);
 			if (addToConnectedInventories(itemStacks)) {
 				stop();
 			}
@@ -73,7 +73,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		}
 	}
 	
-	private List<ItemStack> getItemStackFromBlock(BlockPos blockPos, IBlockState blockState) {
+	private List<ItemStack> getItemStackFromBlock(final BlockPos blockPos, final IBlockState blockState) {
 		if (blockState == null) {
 			WarpDrive.logger.error(this + " Invalid block at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 			return null;
@@ -82,12 +82,12 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 			boolean isSilkHarvestable = false;
 			try {
 				isSilkHarvestable = blockState.getBlock().canSilkHarvest(worldObj, blockPos, blockState, null);
-			} catch (Exception exception) {// protect in case the mined block is corrupted
+			} catch (final Exception exception) {// protect in case the mined block is corrupted
 				exception.printStackTrace();
 			}
 			if (isSilkHarvestable) {
-				ArrayList<ItemStack> isBlock = new ArrayList<>();
-				// TODO 1.10
+				final ArrayList<ItemStack> isBlock = new ArrayList<>();
+				// @TODO MC1.10 silktouch mining
 				// isBlock.add(blockState.getBlock().createStackedBlock(blockState));
 				return isBlock;
 			}
@@ -95,7 +95,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		
 		try {
 			return blockState.getBlock().getDrops(worldObj, blockPos, blockState, 0);
-		} catch (Exception exception) {// protect in case the mined block is corrupted
+		} catch (final Exception exception) {// protect in case the mined block is corrupted
 			exception.printStackTrace();
 			return null;
 		}

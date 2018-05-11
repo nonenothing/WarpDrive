@@ -38,18 +38,22 @@ public class RenderEntityParticleBunch extends RenderEntity {
 	}
 	
 	@Override
-	public void doRender(Entity entity, double x, double y, double z, float rotation, float partialTick) {
+	public void doRender(final Entity entity, final double x, final double y, final double z, final float rotation, final float partialTick) {
 		if (entity instanceof EntityParticleBunch) {
 			doRender((EntityParticleBunch) entity, x, y, z, rotation, partialTick);
 		}
 	}
 	
 	@Override
-	public void doRenderShadowAndFire(Entity entity, double x, double y, double z, float rotation, float partialTick) {
+	public void doRenderShadowAndFire(final Entity entity,
+	                                  final double x, final double y, final double z,
+	                                  final float rotation, final float partialTick) {
 		// super.doRenderShadowAndFire(entity, x, y, z, rotation, partialTick);
 	}
 	
-	public void doRender(EntityParticleBunch entityParticleBunch, double x, double y, double z, float rotation, float partialTick) {
+	public void doRender(final EntityParticleBunch entityParticleBunch,
+	                     final double x, final double y, final double z,
+	                     final float rotation, final float partialTick) {
 		// adjust render distance
 		final int maxRenderDistanceSquared;
 		if (Minecraft.getMinecraft().gameSettings.fancyGraphics) {
@@ -88,7 +92,7 @@ public class RenderEntityParticleBunch extends RenderEntity {
 						   final float redIn, final float greenIn, final float blueIn,
 						   final float redOut, final float greenOut, final float blueOut,
 						   final float scaleX, final float scaleY, final float scaleZ) {
-		Random random = new Random(seed);
+		final Random random = new Random(seed);
 		
 		// compute rotation cycle
 		final int tickRotationPeriod = 220 + 2 * random.nextInt(30);
@@ -115,8 +119,8 @@ public class RenderEntityParticleBunch extends RenderEntity {
 		final int rayCount = rayCount_base + random.nextInt(10);
 		
 		// drawing preparation
-		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer =tessellator.getBuffer();
+		final Tessellator tessellator = Tessellator.getInstance();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
 		RenderHelper.disableStandardItemLighting();
 		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);

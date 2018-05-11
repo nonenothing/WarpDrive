@@ -13,7 +13,7 @@ public class SpaceTeleporter extends Teleporter {
 	final int orientation;
 	final World world;
 	
-	public SpaceTeleporter(WorldServer worldServer, int orientation, int x, int y, int z) {
+	public SpaceTeleporter(final WorldServer worldServer, final int orientation, final int x, final int y, final int z) {
 		super(worldServer);
 		this.orientation = orientation;
 		this.x = x;
@@ -23,24 +23,24 @@ public class SpaceTeleporter extends Teleporter {
 	}
 	
 	@Override
-	public void placeInPortal(Entity entity, float rotationYaw) {
+	public void placeInPortal(final Entity entity, float rotationYaw) {
 		//EntityPlayer player = (EntityPlayer) entity;
 		//player.setWorld(world);
 		//player.setPositionAndUpdate(x, y, z);
 	}
 	
 	@Override
-	public boolean placeInExistingPortal(Entity entity, float rotationYaw) {
+	public boolean placeInExistingPortal(final Entity entity, float rotationYaw) {
 		return true;
 	}
 	
 	@Override
-	public boolean makePortal(Entity entity) {
+	public boolean makePortal(final Entity entity) {
 		return true;
 	}
 	
 	@Override
-	public void removeStalePortalLocations(long time) {
+	public void removeStalePortalLocations(final long time) {
 		// do nothing
 	}
 }

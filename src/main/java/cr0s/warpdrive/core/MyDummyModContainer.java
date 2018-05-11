@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class MyDummyModContainer extends DummyModContainer {
 	public MyDummyModContainer() {
 		super(new ModMetadata());
-		ModMetadata meta = getMetadata();
+		final ModMetadata meta = getMetadata();
 		meta.modId = "WarpDriveCore";
 		meta.name = "WarpDriveCore";
 		meta.parent = "WarpDrive";
@@ -31,24 +31,24 @@ public class MyDummyModContainer extends DummyModContainer {
 	}
 	
 	@Override
-	public boolean registerBus(EventBus bus, LoadController controller) {
+	public boolean registerBus(final EventBus bus, final LoadController controller) {
 		bus.register(this);
 		return true;
 	}
 	
 	@Subscribe
-	public void modConstruction(FMLConstructionEvent evt) {
+	public void modConstruction(final FMLConstructionEvent event) {
 	}
 	
 	@Subscribe
-	public void init(FMLInitializationEvent evt) {
+	public void init(final FMLInitializationEvent event) {
 	}
 	
 	@Subscribe
-	public void preInit(FMLPreInitializationEvent evt) {
+	public void preInit(final FMLPreInitializationEvent event) {
 	}
 	
 	@Subscribe
-	public void postInit(FMLPostInitializationEvent evt) {
+	public void postInit(final FMLPostInitializationEvent event) {
 	}
 }

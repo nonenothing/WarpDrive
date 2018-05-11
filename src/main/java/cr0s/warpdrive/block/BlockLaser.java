@@ -24,7 +24,7 @@ public class BlockLaser extends BlockAbstractContainer {
 		super(registryName, Material.IRON);
 		setHardness(50.0F);
 		setResistance(20.0F * 5 / 3);
-		setUnlocalizedName("warpdrive.machines.Laser");
+		setUnlocalizedName("warpdrive.machines.laser");
 		GameRegistry.registerTileEntity(TileEntityLaser.class, WarpDrive.PREFIX + registryName);
 	}
 

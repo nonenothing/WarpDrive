@@ -69,11 +69,12 @@ public final class EntitySphereGen extends Entity {
 	private OrbInstance orbInstance;
 	private boolean replace;
 	
-	public EntitySphereGen(World world) {
+	public EntitySphereGen(final World world) {
 		super(world);
 	}
 	
-	public EntitySphereGen(World world, int x, int y, int z, OrbInstance orbInstance, boolean replace) {
+	public EntitySphereGen(final World world, final int x, final int y, final int z,
+	                       final OrbInstance orbInstance, final boolean replace) {
 		super(world);
 		this.xCoord = x;
 		this.posX = x;
@@ -95,8 +96,8 @@ public final class EntitySphereGen extends Entity {
 	
 	public void killEntity() {
 		this.state = STATE_STOP;
-		int minY_clamped = Math.max(0, yCoord - radius);
-		int maxY_clamped = Math.min(255, yCoord + radius);
+		final int minY_clamped = Math.max(0, yCoord - radius);
+		final int maxY_clamped = Math.min(255, yCoord + radius);
 		for (int x = xCoord - radius; x <= xCoord + radius; x++) {
 			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
 				for (int y = minY_clamped; y <= maxY_clamped; y++) {
@@ -148,7 +149,7 @@ public final class EntitySphereGen extends Entity {
 	}
 	
 	private void tickPlaceBlocks() {
-		int blocksToMove = Math.min(BLOCKS_PER_TICK, blocks.size() - currentIndex);
+		final int blocksToMove = Math.min(BLOCKS_PER_TICK, blocks.size() - currentIndex);
 		LocalProfiler.start("[EntitySphereGen] Placing blocks from " + currentIndex + " to " + (currentIndex + blocksToMove) + "/" + blocks.size());
 		
 		for (int index = 0; index < blocksToMove; index++) {
@@ -170,19 +171,19 @@ public final class EntitySphereGen extends Entity {
 		LocalProfiler.start("[EntitySphereGen] Saving blocks, radius " + radius);
 		
 		// square radius from center of block
-		double sqRadiusHigh = (radius + 0.5D) * (radius + 0.5D);
-		double sqRadiusLow = (radius - 0.5D) * (radius - 0.5D);
+		final double sqRadiusHigh = (radius + 0.5D) * (radius + 0.5D);
+		final double sqRadiusLow = (radius - 0.5D) * (radius - 0.5D);
 		
 		// sphere
-		int ceilRadius = radius + 1;
+		final int ceilRadius = radius + 1;
 		
 		// Pass the cube and check points for sphere equation x^2 + y^2 + z^2 = r^2
 		for (int x = 0; x <= ceilRadius; x++) {
-			double x2 = (x + 0.5D) * (x + 0.5D);
+			final double x2 = (x + 0.5D) * (x + 0.5D);
 			for (int y = 0; y <= ceilRadius; y++) {
-				double x2y2 = x2 + (y + 0.5D) * (y + 0.5D);
+				final double x2y2 = x2 + (y + 0.5D) * (y + 0.5D);
 				for (int z = 0; z <= ceilRadius; z++) {
-					double sqRange = x2y2 + (z + 0.5D) * (z + 0.5D); // Square distance from current position to center
+					final double sqRange = x2y2 + (z + 0.5D) * (z + 0.5D); // Square distance from current position to center
 					
 					// Skip too far blocks
 					if (sqRange > sqRadiusHigh) {
@@ -191,7 +192,7 @@ public final class EntitySphereGen extends Entity {
 					final boolean isSurface = sqRange > sqRadiusLow;
 					
 					// Add blocks to memory
-					OrbShell orbShell = orbInstance.getShellForSqRadius(sqRange);
+					final OrbShell orbShell = orbInstance.getShellForSqRadius(sqRange);
 					// WarpDrive.logger.info("sqRange " + sqRange + " sqRadius " + sqRadius);
 					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord + y, zCoord + z));
 					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord + y, zCoord + z));
@@ -244,7 +245,7 @@ public final class EntitySphereGen extends Entity {
 	
 	// override to skip the block bounding override on client side
 	@Override
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+	public void setPositionAndRotation(final double x, final double y, final double z, final float yaw, final float pitch) {
 		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
@@ -256,7 +257,7 @@ public final class EntitySphereGen extends Entity {
 	}
 	
 	@Override
-	public boolean shouldRenderInPass(int pass) {
+	public boolean shouldRenderInPass(final int pass) {
 		return false;
 	}
 }

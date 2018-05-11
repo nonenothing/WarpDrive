@@ -53,8 +53,8 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		switch (damage) {
 		case MODE_VIDEO_CHANNEL  : return getUnlocalizedName() + ".video_channel";
 		case MODE_BEAM_FREQUENCY : return getUnlocalizedName() + ".beam_frequency";
@@ -221,11 +221,13 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, BlockPos blockPos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer,
+	                                  final World world, final BlockPos blockPos, final EnumHand hand,
+	                                  final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return EnumActionResult.FAIL;
 		}
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
 			return EnumActionResult.FAIL;
 		}
@@ -288,13 +290,13 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess world, BlockPos blockPos, EntityPlayer player) {
-		Block block = world.getBlockState(blockPos).getBlock();
+	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess world, final BlockPos blockPos, final EntityPlayer player) {
+		final Block block = world.getBlockState(blockPos).getBlock();
 		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
 		String tooltip;

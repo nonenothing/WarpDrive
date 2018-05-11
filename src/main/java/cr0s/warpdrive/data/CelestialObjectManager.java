@@ -8,10 +8,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -334,11 +332,11 @@ public class CelestialObjectManager extends XmlFileManager {
 	}
 	
 	@Override
-	protected void parseRootElement(final String location, final Element elementCelestialObject) throws InvalidXmlException, SAXException, IOException {
+	protected void parseRootElement(final String location, final Element elementCelestialObject) throws InvalidXmlException {
 		parseCelestiaObjectElement(location, elementCelestialObject, "");
 	}
 	
-	private void parseCelestiaObjectElement(final String location, final Element elementCelestialObject, final String parentId) throws InvalidXmlException, SAXException, IOException {
+	private void parseCelestiaObjectElement(final String location, final Element elementCelestialObject, final String parentId) throws InvalidXmlException {
 		final CelestialObject celestialObjectRead = new CelestialObject(location, parentId, elementCelestialObject);
 		
 		addOrUpdateInRegistry(celestialObjectRead, false);

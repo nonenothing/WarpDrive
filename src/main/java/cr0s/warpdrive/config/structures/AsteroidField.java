@@ -11,12 +11,12 @@ import net.minecraft.world.World;
 
 public class AsteroidField extends AbstractStructure {
 	
-	public AsteroidField(String group, String name) {
+	public AsteroidField(final String group, final String name) {
 		super(group, name);
 	}
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		return false;
 	}
 	
@@ -26,7 +26,7 @@ public class AsteroidField extends AbstractStructure {
 	}
 	
 	@Override
-	public AbstractStructureInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(final Random random) {
 		return new AsteroidFieldInstance(this, random);
 	}
 }

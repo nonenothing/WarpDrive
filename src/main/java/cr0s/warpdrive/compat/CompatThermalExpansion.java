@@ -19,7 +19,7 @@ public class CompatThermalExpansion implements IBlockTransformer {
 			tileEntityTEBase = Class.forName("cofh.thermalexpansion.block.TileTEBase");
 			
 			WarpDriveConfig.registerBlockTransformer("ThermalExpansion", new CompatThermalExpansion());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -30,7 +30,7 @@ public class CompatThermalExpansion implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -53,7 +53,7 @@ public class CompatThermalExpansion implements IBlockTransformer {
 	private static final byte[]  rotLightStyle4  = {  8,  9, 13, 12,  4,  5,  6,  7,  0,  1, 10, 11,  2,  3, 14, 15 };
 	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
-		byte[] newData = data.clone();
+		final byte[] newData = data.clone();
 		for (int index = 0; index < data.length; index++) {
 			switch (rotationSteps) {
 			case 1:
@@ -73,16 +73,16 @@ public class CompatThermalExpansion implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 || nbtTileEntity == null) {
 			return metadata;
 		}
 		
 		// lights
 		if (nbtTileEntity.hasKey("Align")) {
-			byte style = nbtTileEntity.getByte("Style");
-			byte align = nbtTileEntity.getByte("Align");
+			final byte style = nbtTileEntity.getByte("Style");
+			final byte align = nbtTileEntity.getByte("Align");
 			if (style == 4) {
 				switch (rotationSteps) {
 				case 1:
@@ -118,7 +118,7 @@ public class CompatThermalExpansion implements IBlockTransformer {
 		
 		// machines
 		if (nbtTileEntity.hasKey("Facing")) {
-			int facing = nbtTileEntity.getInteger("Facing");
+			final int facing = nbtTileEntity.getInteger("Facing");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("Facing", rotFacing[facing]);

@@ -42,7 +42,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	}
 	
 	@Override
-	public int getLightValue(IBlockAccess blockAccess, int x, int y, int z) {
+	public int getLightValue(final IBlockAccess blockAccess, final int x, final int y, final int z) {
 		final TileEntity tileEntity = blockAccess.getTileEntity(x, y, z);
 		if (tileEntity instanceof TileEntityShipScanner) {
 			return ((TileEntityShipScanner) tileEntity).lightCamouflage;

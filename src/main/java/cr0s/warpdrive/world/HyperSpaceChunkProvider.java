@@ -4,7 +4,7 @@ import net.minecraft.world.World;
 
 public class HyperSpaceChunkProvider extends SpaceChunkProvider {
 	
-	public HyperSpaceChunkProvider(World world, long seed) {
+	public HyperSpaceChunkProvider(final World world, final long seed) {
 		super(world, seed);
 	}
 }

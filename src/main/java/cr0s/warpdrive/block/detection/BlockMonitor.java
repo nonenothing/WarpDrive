@@ -54,7 +54,7 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 			
 			if (tileEntity instanceof TileEntityMonitor) {
 				final int videoChannel = ((TileEntityMonitor) tileEntity).getVideoChannel();
-				CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
+				final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 				if (camera == null || entityPlayer.isSneaking()) {
 					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor) tileEntity).getStatus());
 					return true;

@@ -70,7 +70,7 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int metadata, EntityLivingBase entityLiving) {
-		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving).getOpposite();
+		final EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving).getOpposite();
 		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
 	}
 	
@@ -86,22 +86,22 @@ public class BlockAirGenerator extends BlockAbstractContainer {
 			return true;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityAirGenerator) {
-			TileEntityAirGenerator airGenerator = (TileEntityAirGenerator)tileEntity;
+			final TileEntityAirGenerator airGenerator = (TileEntityAirGenerator)tileEntity;
 			if (itemStackHeld == null) {
 				Commons.addChatMessage(entityPlayer, airGenerator.getStatus());
 				return true;
 			} else {
-				Item itemHeld = itemStackHeld.getItem();
+				final Item itemHeld = itemStackHeld.getItem();
 				if (itemHeld instanceof IAirContainerItem) {
-					IAirContainerItem airCanister = (IAirContainerItem) itemHeld;
+					final IAirContainerItem airCanister = (IAirContainerItem) itemHeld;
 					if (airCanister.canContainAir(itemStackHeld) && airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, true)) {
 						entityPlayer.inventory.decrStackSize(entityPlayer.inventory.currentItem, 1);
-						ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
+						final ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
-								EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+								final EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
 								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 							}
 							((EntityPlayerMP)entityPlayer).sendContainerToPlayer(entityPlayer.inventoryContainer);

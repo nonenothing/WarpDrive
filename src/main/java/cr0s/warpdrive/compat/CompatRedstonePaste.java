@@ -18,7 +18,7 @@ public class CompatRedstonePaste implements IBlockTransformer {
 		try {
 			classTileEntityRedstonePaste = Class.forName("fyber.redstonepastemod.TileEntityRedstonePaste");
 			WarpDriveConfig.registerBlockTransformer("RedstonePasteMod", new CompatRedstonePaste());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -29,7 +29,7 @@ public class CompatRedstonePaste implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -60,19 +60,19 @@ public class CompatRedstonePaste implements IBlockTransformer {
 	//                                                       ok, cc, ok, cc, ok, gg, ok, gg, ok, dd, ok, dd, ok, hh, ok, hh };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}
 		
 		if (nbtTileEntity.hasKey("faces") && nbtTileEntity.hasKey("facedata") && nbtTileEntity.hasKey("facetype")) {
-			int[] oldFaces = nbtTileEntity.getIntArray("faces");
-			int[] oldFacedata = nbtTileEntity.getIntArray("facedata");
-			int[] oldFacetype = nbtTileEntity.getIntArray("facetype");
-			int[] newFaces = new int[6];
-			int[] newFacedata = new int[6];
-			int[] newFaceType = new int[6];
+			final int[] oldFaces = nbtTileEntity.getIntArray("faces");
+			final int[] oldFacedata = nbtTileEntity.getIntArray("facedata");
+			final int[] oldFacetype = nbtTileEntity.getIntArray("facetype");
+			final int[] newFaces = new int[6];
+			final int[] newFacedata = new int[6];
+			final int[] newFaceType = new int[6];
 			int newIndex;
 			for (int oldIndex = 0; oldIndex < 6; oldIndex++) {
 				switch (rotationSteps) {
@@ -156,8 +156,8 @@ public class CompatRedstonePaste implements IBlockTransformer {
 					// same wiring (none)
 					newFaces[newIndex] = oldFaces[oldIndex];
 					
-					int rawData        = oldFacedata[oldIndex] & 0x03;
-					int signalStrength = oldFacedata[oldIndex] & 0xFC;
+					final int rawData        = oldFacedata[oldIndex] & 0x03;
+					final int signalStrength = oldFacedata[oldIndex] & 0xFC;
 					
 					// rotate top/bottom or when changing corner
 					if (oldIndex == 0 || oldIndex == 1) {// top or bottom

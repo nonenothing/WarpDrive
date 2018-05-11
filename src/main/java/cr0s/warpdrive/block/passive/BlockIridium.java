@@ -14,7 +14,7 @@ public class BlockIridium extends BlockAbstractBase {
 		super(registryName, Material.IRON);
 		setHardness(3.4F);
 		setResistance(360.0F * 5 / 3);
-		setUnlocalizedName("warpdrive.passive.IridiumBlock");
+		setUnlocalizedName("warpdrive.passive.iridium_block");
 	}
 	
 	@Nonnull

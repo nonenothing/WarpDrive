@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
@@ -74,14 +75,14 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Nonnull
 	@Override
-	public EnumBlockRenderType getRenderType(IBlockState state) {
+	public EnumBlockRenderType getRenderType(final IBlockState state) {
 		return EnumBlockRenderType.MODEL;
 	}
 	
 	@Override
-	public void onBlockAdded(World world, BlockPos pos, IBlockState state) {
+	public void onBlockAdded(final World world, final BlockPos pos, final IBlockState state) {
 		super.onBlockAdded(world, pos, state);
-		TileEntity tileEntity = world.getTileEntity(pos);
+		final TileEntity tileEntity = world.getTileEntity(pos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
@@ -115,11 +116,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	}
 	
 	@Override
-	public void dropBlockAsItemWithChance(World world, @Nonnull BlockPos blockPos, @Nonnull IBlockState blockState, float chance, int fortune) {
-		// @TODO: to be tested with ship core explosion on breaking
-		ItemStack itemStack = new ItemStack(this);
+	public void dropBlockAsItemWithChance(final World world, @Nonnull final BlockPos blockPos, @Nonnull final IBlockState blockState, final float chance, final int fortune) {
+		final ItemStack itemStack = new ItemStack(this);
 		itemStack.setItemDamage(damageDropped(blockState));
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
 			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
 		} else if (tileEntity instanceof TileEntityAbstractBase) {
@@ -133,9 +133,9 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Nonnull
 	@Override
-	public ItemStack getPickBlock(@Nonnull IBlockState state, RayTraceResult target, @Nonnull World world, @Nonnull BlockPos blockPos, EntityPlayer entityPlayer) {
-		ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+	public ItemStack getPickBlock(@Nonnull final IBlockState state, final RayTraceResult target, @Nonnull final World world, @Nonnull final BlockPos blockPos, final EntityPlayer entityPlayer) {
+		final ItemStack itemStack = super.getPickBlock(state, target, world, blockPos, entityPlayer);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		final NBTTagCompound tagCompound = new NBTTagCompound();
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);
@@ -162,7 +162,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	@Optional.Method(modid = "DefenseTech")
-	public void onEMP(World world, int x, int y, int z, defense.api.IExplosion explosiveEMP) {
+	public void onEMP(final World world, final int x, final int y, final int z, final defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
 			                                    world.provider.getSaveFolder(), x, y, z,
@@ -188,7 +188,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	@Optional.Method(modid = "icbmclassic")
-	public void onEMP(World world, int x, int y, int z, resonant.api.explosion.IExplosion explosiveEMP) {
+	public void onEMP(final World world, final int x, final int y, final int z, final resonant.api.explosion.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
 			                                    world.provider.getSaveFolder(), x, y, z,
@@ -212,10 +212,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
-	public void onEMP(World world, final BlockPos blockPos, final float efficiency) {
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+	public void onEMP(final World world, final BlockPos blockPos, final float efficiency) {
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityAbstractEnergy) {
-			TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
+			final TileEntityAbstractEnergy tileEntityAbstractEnergy = (TileEntityAbstractEnergy) tileEntity;
 			if (tileEntityAbstractEnergy.energy_getMaxStorage() > 0) {
 				tileEntityAbstractEnergy.energy_consume(Math.round(tileEntityAbstractEnergy.energy_getEnergyStored() * efficiency), false);
 			}
@@ -242,10 +242,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
 	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
 	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
 		if (hand != EnumHand.MAIN_HAND) {
 			return true;
 		}
@@ -256,6 +252,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			return false;
 		}
 		final TileEntityAbstractBase tileEntityAbstractBase = (TileEntityAbstractBase) tileEntity;
+		final boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
+		
+		// video channel is reported client side, everything else is reported server side
+		if ( world.isRemote
+		  && !hasVideoChannel ) {
+			return false;
+		}
 		
 		EnumComponentType enumComponentType = null;
 		if ( itemStackHeld != null
@@ -264,7 +267,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 		
 		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
-		if (entityPlayer.isSneaking()) {
+		if ( !world.isRemote
+		  && entityPlayer.isSneaking() ) {
 			// using an upgrade item or an empty hand means dismount upgrade
 			if ( tileEntityAbstractBase.isUpgradeable()
 			  && ( itemStackHeld == null
@@ -295,11 +299,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 				return true;
 			}
 			
-		} else if (itemStackHeld == null) {// no sneaking and no item in hand => show status
+		} else if ( !entityPlayer.isSneaking()
+		         && itemStackHeld == null ) {// no sneaking and no item in hand => show status
 			Commons.addChatMessage(entityPlayer, tileEntityAbstractBase.getStatus());
 			return true;
 			
-		} else if ( tileEntityAbstractBase.isUpgradeable()
+		} else if ( !world.isRemote
+		         && tileEntityAbstractBase.isUpgradeable()
 		         && enumComponentType != null ) {// no sneaking and an upgrade in hand => mounting an upgrade
 			// validate type
 			if (tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType) <= 0) {

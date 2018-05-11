@@ -179,10 +179,10 @@ public class CloakManager {
 				if (!area.isEntityWithinArea(Minecraft.getMinecraft().thePlayer)) {
 					// WarpDrive.logger.info("CM player is outside");
 					
-					int areaX_min = Math.max(chunkX_min, area.minX) & 15;
-					int areaX_max = Math.min(chunkX_max, area.maxX) & 15;
-					int areaZ_min = Math.max(chunkZ_min, area.minZ) & 15;
-					int areaZ_max = Math.min(chunkZ_max, area.maxZ) & 15;
+					final int areaX_min = Math.max(chunkX_min, area.minX) & 15;
+					final int areaX_max = Math.min(chunkX_max, area.maxX) & 15;
+					final int areaZ_min = Math.max(chunkZ_min, area.minZ) & 15;
+					final int areaZ_max = Math.min(chunkZ_max, area.maxZ) & 15;
 					
 					for (int x = areaX_min; x <= areaX_max; x++) {
 						for (int z = areaZ_min; z <= areaZ_max; z++) {

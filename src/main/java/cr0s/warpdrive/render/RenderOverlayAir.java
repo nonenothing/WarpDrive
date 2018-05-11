@@ -32,7 +32,7 @@ public class RenderOverlayAir {
 	
 	private void renderAir(final int width, final int height) {
 		// get player
-		EntityPlayer entityPlayer = minecraft.thePlayer;
+		final EntityPlayer entityPlayer = minecraft.thePlayer;
 		if (entityPlayer == null) {
 			return;
 		}
@@ -115,7 +115,7 @@ public class RenderOverlayAir {
 	}
 	
 	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent.Pre event) {
+	public void onRender(final RenderGameOverlayEvent.Pre event) {
 		if (event.getType() == ElementType.AIR) {
 			renderAir(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());
 		}

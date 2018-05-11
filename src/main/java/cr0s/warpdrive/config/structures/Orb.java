@@ -25,20 +25,20 @@ public class Orb extends AbstractStructure {
 	}
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		super.loadFromXmlElement(element);
 		
 		final List<Element> listShells = XmlFileManager.getChildrenElementByTagName(element, "shell");
 		orbShells = new OrbShell[listShells.size()];
 		int shellIndexOut = 0;
 		for (final Element elementShell : listShells) {
-			String orbShellName = elementShell.getAttribute("name");
+			final String orbShellName = elementShell.getAttribute("name");
 			
 			orbShells[shellIndexOut] = new OrbShell(getFullName(), orbShellName);
 			try {
 				orbShells[shellIndexOut].loadFromXmlElement(elementShell);
 				shellIndexOut++;
-			} catch (InvalidXmlException exception) {
+			} catch (final InvalidXmlException exception) {
 				exception.printStackTrace();
 				WarpDrive.logger.error("Skipping invalid shell " + orbShellName);
 			}
@@ -56,12 +56,12 @@ public class Orb extends AbstractStructure {
 	}
 	
 	@Override
-	public boolean generate(World world, Random random, BlockPos blockPos) {
+	public boolean generate(final World world, final Random random, final BlockPos blockPos) {
 		return instantiate(random).generate(world, random, blockPos);
 	}
 	
 	@Override
-	public AbstractStructureInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(final Random random) {
 		return new OrbInstance(this, random);
 	}
 	
@@ -77,7 +77,7 @@ public class Orb extends AbstractStructure {
 		}
 		
 		@Override
-		public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+		public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 				WarpDrive.logger.info("  + found shell " + element.getAttribute("name"));
 			}
@@ -104,13 +104,13 @@ public class Orb extends AbstractStructure {
 			// shell thickness
 			try {
 				minThickness = Integer.parseInt(element.getAttribute("minThickness"));
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid minThickness in shell " + name + " of structure " + parentFullName);
 			}
 			
 			try {
 				maxThickness = Integer.parseInt(element.getAttribute("maxThickness"));
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid maxThickness in shell " + name + " of structure " + parentFullName);
 			}
 			
@@ -121,14 +121,14 @@ public class Orb extends AbstractStructure {
 			return true;
 		}
 		
-		public OrbShell instantiate(Random random) {
+		public OrbShell instantiate(final Random random) {
 			final OrbShell orbShell = new OrbShell(parentFullName, name);
 			orbShell.minThickness = minThickness;
 			orbShell.maxThickness = maxThickness;
 			try {
 				orbShell.loadFrom(this);
 				for (final String importGroup : getImportGroups()) {
-					GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getRandomSetFromGroup(random, importGroup);
+					final GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getRandomSetFromGroup(random, importGroup);
 					if (fillerSet == null) {
 						WarpDrive.logger.info("Ignoring invalid group " + importGroup + " in shell " + name + " of structure " + parentFullName);
 						continue;
@@ -138,7 +138,7 @@ public class Orb extends AbstractStructure {
 					}
 					orbShell.loadFrom(fillerSet);
 				}
-			} catch (InvalidXmlException exception) {
+			} catch (final InvalidXmlException exception) {
 				exception.printStackTrace();
 				WarpDrive.logger.error("Failed to instantiate shell " + name + " from structure " + parentFullName);
 			}

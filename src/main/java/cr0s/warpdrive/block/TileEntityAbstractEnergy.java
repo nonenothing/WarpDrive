@@ -128,7 +128,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Should return true if that direction can receive energy.
 	 */
 	@SuppressWarnings("UnusedParameters")
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return false;
 	}
 	
@@ -136,7 +136,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	 * Should return true if that direction can output energy.
 	 */
 	@SuppressWarnings("UnusedParameters")
-	public boolean energy_canOutput(EnumFacing to) {
+	public boolean energy_canOutput(final EnumFacing to) {
 		return false;
 	}
 	
@@ -161,7 +161,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (energy_getMaxStorage() == 0) {
 			return new TextComponentString("");
 		}
-		return new TextComponentTranslation("warpdrive.energy.statusLine",
+		return new TextComponentTranslation("warpdrive.energy.status_line",
 			Commons.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
 			Commons.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
 	}
@@ -186,14 +186,14 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energy(Context context, Arguments arguments) {
+	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		if (methodName.equals("energy")) {
@@ -259,7 +259,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public double injectEnergy(EnumFacing from, double amount_EU, double voltage) {
+	public double injectEnergy(final EnumFacing from, final double amount_EU, final double voltage) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]injectEnergy from " + from  + "(" + energy_canInput(from) + ") amount " + amount_EU + " voltage " + voltage);
 		}
@@ -280,7 +280,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean acceptsEnergyFrom(IEnergyEmitter emitter, EnumFacing from) {
+	public boolean acceptsEnergyFrom(final IEnergyEmitter emitter, final EnumFacing from) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]acceptsEnergyFrom emitter " + emitter + " from " + from + " => " + energy_canInput(from));
 		}
@@ -296,7 +296,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public void drawEnergy(double amount_EU) {
+	public void drawEnergy(final double amount_EU) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]drawEnergy amount_EU " + amount_EU);
 		}
@@ -305,7 +305,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "IC2")
-	public boolean emitsEnergyTo(IEnergyAcceptor receiver, EnumFacing to) {
+	public boolean emitsEnergyTo(final IEnergyAcceptor receiver, final EnumFacing to) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]emitsEnergyTo receiver " + receiver + " to " + to + " => " + energy_canOutput(to));
 		}
@@ -345,7 +345,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	// ThermalExpansion IEnergyHandler interface
 	@Override
 	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver */
-	public int receiveEnergy(EnumFacing from, int maxReceive_RF, boolean simulate) {
+	public int receiveEnergy(final EnumFacing from, final int maxReceive_RF, final boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]receiveEnergy from " + from + " maxReceive_RF " + maxReceive_RF + " simulate " + simulate);
 		}
@@ -372,7 +372,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "cofhcore")	/* IEnergyProvider */
-	public int extractEnergy(EnumFacing from, int maxExtract_RF, boolean simulate) {
+	public int extractEnergy(final EnumFacing from, final int maxExtract_RF, final boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]extractEnergy from " + from + " maxExtract_RF " + maxExtract_RF + " simulate " + simulate);
 		}
@@ -390,27 +390,28 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Override
 	@Optional.Method(modid = "cofhcore")	/* IEnergyConnection */
-	public boolean canConnectEnergy(EnumFacing from) {
+	public boolean canConnectEnergy(final EnumFacing from) {
 		return (energy_getMaxStorage() != 0) && (energy_canInput(from) || energy_canOutput(from)); // Warning: deadlock risk depending on child implementation
 	}
 	
 	@Override
 	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver and IEnergyProvider */
-	public int getEnergyStored(EnumFacing from) {
+	public int getEnergyStored(final EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getEnergyStored()) : 0;
 	}
 	
 	@Override
 	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver and IEnergyProvider */
-	public int getMaxEnergyStored(EnumFacing from) {
+	public int getMaxEnergyStored(final EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getMaxStorage()) : 0;
 	}
 	
 	
 	// WarpDrive overrides for Thermal Expansion
 	@Optional.Method(modid = "cofhcore")
-	private void CoFH_outputEnergy(EnumFacing from, IEnergyReceiver energyReceiver) {
-		if (energyReceiver == null || worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null) {
+	private void CoFH_outputEnergy(final EnumFacing from, final IEnergyReceiver energyReceiver) {
+		if ( energyReceiver == null
+		  || worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null ) {
 			return;
 		}
 		if (!energy_canOutput(from)) {
@@ -429,7 +430,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	@Optional.Method(modid = "cofhcore")
 	private void CoFH_outputEnergy() {
-		for (EnumFacing from : EnumFacing.VALUES) {
+		for (final EnumFacing from : EnumFacing.VALUES) {
 			if (cofhEnergyReceivers[from.ordinal()] != null) {
 				CoFH_outputEnergy(from, (IEnergyReceiver) cofhEnergyReceivers[from.ordinal()]);
 			}
@@ -489,7 +490,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]CoFH_scanForEnergyHandlers");
 		}
-		for (EnumFacing from : EnumFacing.VALUES) {
+		for (final EnumFacing from : EnumFacing.VALUES) {
 			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
 				final TileEntity tileEntity = worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));

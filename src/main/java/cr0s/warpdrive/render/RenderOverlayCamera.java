@@ -12,7 +12,6 @@ import net.minecraft.util.ResourceLocation;
 
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.event.RenderGameOverlayEvent.Pre;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -42,8 +41,8 @@ public class RenderOverlayCamera {
 				strHelp = "Left click to zoom / Right click to exit / Space to fire";
 			}
 			
-			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexBuffer = tessellator.getBuffer();
+			final Tessellator tessellator = Tessellator.getInstance();
+			final VertexBuffer vertexBuffer = tessellator.getBuffer();
 			
 			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			vertexBuffer.pos(       0.0D, scaledHeight, -90.0D).tex(0.0D, 1.0D).endVertex();
@@ -65,7 +64,7 @@ public class RenderOverlayCamera {
 			                                     (int)(scaledHeight * 0.19) - minecraft.fontRendererObj.FONT_HEIGHT,
 			                                     color, true);
 			
-			String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
+			final String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
 			minecraft.fontRendererObj.drawString(strZoom,
 			                                     (int) (scaledWidth * 0.91) - minecraft.fontRendererObj.getStringWidth(strZoom),
 			                                     (int) (scaledHeight * 0.81),
@@ -77,7 +76,7 @@ public class RenderOverlayCamera {
 				                                     (int) (scaledHeight * 0.19),
 				                                     0xFF008F, true);
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 		
@@ -88,7 +87,7 @@ public class RenderOverlayCamera {
 	}
 	
 	@SubscribeEvent
-	public void onRender(Pre event) {
+	public void onRender(final RenderGameOverlayEvent.Pre event) {
 		if (ClientCameraHandler.isOverlayEnabled) {
 			if (event.getType() == ElementType.HELMET) {
 				renderOverlay(event.getResolution().getScaledWidth(), event.getResolution().getScaledHeight());

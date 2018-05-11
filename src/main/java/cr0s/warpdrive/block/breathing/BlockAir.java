@@ -20,7 +20,7 @@ public class BlockAir extends BlockAbstractAir {
 	}
 	
 	@Override
-	public int tickRate(World world) {
+	public int tickRate(final World world) {
 		return AIR_BLOCK_TICKS;
 	}
 	
@@ -28,7 +28,7 @@ public class BlockAir extends BlockAbstractAir {
 	// 2.74% updateTick including 1.37% scheduleBlockUpdate (50%) + 1.23% spreadAirBlock (45%)
 	// 1.23% spreadAirBlock including 0.36% getAirBlock + 0.33% getBlock + 0.13% getBlockMetadata
 	@Override
-	public void updateTick(World world, BlockPos blockPos, IBlockState blockState, Random random) {
+	public void updateTick(final World world, final BlockPos blockPos, final IBlockState blockState, final Random random) {
 		if (world.isRemote) {
 			return;
 		}
@@ -46,7 +46,7 @@ public class BlockAir extends BlockAbstractAir {
 		world.scheduleBlockUpdate(blockPos, this, 30 + 2 * concentration, 0);
 	}
 	
-	private void spreadAirBlock(World world, final BlockPos blockPos, final int concentration) {
+	private void spreadAirBlock(final World world, final BlockPos blockPos, final int concentration) {
 		/* @TODO MC1.10 air overhaul
 		int air_count = 1;
 		int empty_count = 0;
@@ -55,9 +55,9 @@ public class BlockAir extends BlockAbstractAir {
 		int min_concentration = concentration + 1;
 		
 		// check air in adjacent blocks
-		Block xp_block = world.getBlock(x + 1, y, z);
-		boolean xp_isAir = world.isAirBlock(x + 1, y, z);
-		int xp_concentration = (xp_block != this) ? -1 : world.getBlockMetadata(x + 1, y, z);
+		final Block xp_block = world.getBlock(x + 1, y, z);
+		final boolean xp_isAir = world.isAirBlock(x + 1, y, z);
+		final int xp_concentration = (xp_block != this) ? -1 : world.getBlockMetadata(x + 1, y, z);
 		if (xp_isAir) {
 			air_count++;
 			if (xp_concentration >= 0) {
@@ -68,9 +68,9 @@ public class BlockAir extends BlockAbstractAir {
 				empty_count++;
 			}
 		}
-		Block xn_block = world.getBlock(x - 1, y, z);
-		boolean xn_isAir = world.isAirBlock(x - 1, y, z);
-		int xn_concentration = (xn_block != this) ? -1 : world.getBlockMetadata(x - 1, y, z);
+		final Block xn_block = world.getBlock(x - 1, y, z);
+		final boolean xn_isAir = world.isAirBlock(x - 1, y, z);
+		final int xn_concentration = (xn_block != this) ? -1 : world.getBlockMetadata(x - 1, y, z);
 		if (xn_isAir) {
 			air_count++;
 			if (xn_concentration >= 0) {
@@ -81,9 +81,9 @@ public class BlockAir extends BlockAbstractAir {
 				empty_count++;
 			}
 		}
-		Block yp_block = world.getBlock(x, y + 1, z);
-		boolean yp_isAir = world.isAirBlock(x, y + 1, z);
-		int yp_concentration = (yp_block != this) ? -1 : world.getBlockMetadata(x, y + 1, z);
+		final Block yp_block = world.getBlock(x, y + 1, z);
+		final boolean yp_isAir = world.isAirBlock(x, y + 1, z);
+		final int yp_concentration = (yp_block != this) ? -1 : world.getBlockMetadata(x, y + 1, z);
 		if (yp_isAir) {
 			air_count++;
 			if (yp_concentration >= 0) {
@@ -94,9 +94,9 @@ public class BlockAir extends BlockAbstractAir {
 				empty_count++;
 			}
 		}
-		Block yn_block = world.getBlock(x, y - 1, z);
-		boolean yn_isAir = world.isAirBlock(x, y - 1, z);
-		int yn_concentration = (yn_block != this) ? -1 : world.getBlockMetadata(x, y - 1, z);
+		final Block yn_block = world.getBlock(x, y - 1, z);
+		final boolean yn_isAir = world.isAirBlock(x, y - 1, z);
+		final int yn_concentration = (yn_block != this) ? -1 : world.getBlockMetadata(x, y - 1, z);
 		if (yn_isAir) {
 			air_count++;
 			if (yn_concentration >= 0) {
@@ -107,9 +107,9 @@ public class BlockAir extends BlockAbstractAir {
 				empty_count++;
 			}
 		}
-		Block zp_block = world.getBlock(x, y, z + 1);
-		boolean zp_isAir = world.isAirBlock(x, y, z + 1);
-		int zp_concentration = (zp_block != this) ? -1 : world.getBlockMetadata(x, y, z + 1);
+		final Block zp_block = world.getBlock(x, y, z + 1);
+		final boolean zp_isAir = world.isAirBlock(x, y, z + 1);
+		final int zp_concentration = (zp_block != this) ? -1 : world.getBlockMetadata(x, y, z + 1);
 		if (zp_isAir) {
 			air_count++;
 			if (zp_concentration >= 0) {
@@ -120,9 +120,9 @@ public class BlockAir extends BlockAbstractAir {
 				empty_count++;
 			}
 		}
-		Block zn_block = world.getBlock(x, y, z - 1);
-		boolean zn_isAir = world.isAirBlock(x, y, z - 1);
-		int zn_concentration = (zn_block != this) ? -1 : world.getBlockMetadata(x, y, z - 1);
+		final Block zn_block = world.getBlock(x, y, z - 1);
+		final boolean zn_isAir = world.isAirBlock(x, y, z - 1);
+		final int zn_concentration = (zn_block != this) ? -1 : world.getBlockMetadata(x, y, z - 1);
 		if (zn_isAir) {
 			air_count++;
 			if (zn_concentration >= 0) {

@@ -375,7 +375,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		} else {
 			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, vRemoteScanners);
 		}
-		energizeEntities(lockStrengthActual, movingEntitiesRemote, worldObj, vLocalScanners);
+		if ( vLocalScanners != null
+		  && !vLocalScanners.isEmpty() ) {
+			energizeEntities(lockStrengthActual, movingEntitiesRemote, worldObj, vLocalScanners);
+		}
 		
 		// clear entities, cancel transfer, cooldown, loose a bit of strength
 		isEnergizeRequested = false;
@@ -836,7 +839,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		// compute energy cost from range
 		energyCostForAcquiring = Math.max(0, WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[0]
 		                                   + WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[1]
-		                                     * vLocalScanners.size()
+		                                     * (vLocalScanners == null ? 1 : vLocalScanners.size())
 		                                     * ( Math.log(1.0D + WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[2] * rangeActual)
 		                                       + Math.pow(WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[3] + rangeActual,
 		                                                  WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[4]) ) );
@@ -1158,7 +1161,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private EntityValues updateEntitiesToEnergize() {
-		final int countScanners = Math.min(vLocalScanners.size(), vRemoteScanners != null ? vRemoteScanners.size() : vLocalScanners.size());
+		final int countLocalScanners = vLocalScanners == null ? 0 : vLocalScanners.size();
+		final int countScanners = vRemoteScanners == null ? countLocalScanners : Math.min(countLocalScanners, vRemoteScanners.size());
 		
 		final EntityValues entityValues = new EntityValues();
 		
@@ -1166,7 +1170,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		if ( transporterState != EnumTransporterState.ENERGIZING
 		  && transporterState != EnumTransporterState.ACQUIRING ) {
 			entityValues.count = countScanners;
-			entityValues.mass = 8000 * countScanners;
+			entityValues.mass = 2 * countScanners;
 			return entityValues;
 		}
 		
@@ -1220,7 +1224,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 			
 			// grab another entity
-			if ( movingEntity == null) {
+			if ( movingEntity == null
+			  && vScanners != null ) {
 				final Entity entityOnScanner = getCandidateEntityOnScanner(world, vScanners.get(index), entitiesOnScanners);
 				if (entityOnScanner != null) {
 					movingEntity = new MovingEntity(entityOnScanner);
@@ -1234,7 +1239,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			} else {
 				movingEntities.put(index, movingEntity);
 				entityValues.count++;
-				entityValues.mass += movingEntity.getMass();
+				entityValues.mass += movingEntity.getMassFactor();
 			}
 		}
 		
@@ -1294,7 +1299,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			} else {
 				movingEntities.put(index, movingEntity);
 				entityValues.count++;
-				entityValues.mass += movingEntity.getMass();
+				entityValues.mass += movingEntity.getMassFactor();
 			}
 		}
 		

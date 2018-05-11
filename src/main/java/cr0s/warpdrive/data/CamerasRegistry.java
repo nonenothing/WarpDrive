@@ -43,11 +43,11 @@ public class CamerasRegistry {
 	}
 	
 	private CameraRegistryItem getCamByPosition(final World world, final BlockPos position) {
-		CameraRegistryItem cam;
-		for (final Iterator<CameraRegistryItem> it = registry.iterator(); it.hasNext();) {
-			cam = it.next();
-			if (cam.position.getX() == position.getX() && cam.position.getY() == position.getY() && cam.position.getZ() == position.getZ()
-					&& cam.dimensionId == world.provider.getDimension()) {
+		for (final CameraRegistryItem cam : registry) {
+			if ( cam.position.getX() == position.getX()
+			  && cam.position.getY() == position.getY()
+			  && cam.position.getZ() == position.getZ()
+			  && cam.dimensionId == world.provider.getDimension() ) {
 				return cam;
 			}
 		}
@@ -68,8 +68,9 @@ public class CamerasRegistry {
 			}
 			return false;
 		}
-		Block block = world.getBlockState(cam.position).getBlock();
-		if ((block != WarpDrive.blockCamera) && (block != WarpDrive.blockLaserCamera)) {
+		final Block block = world.getBlockState(cam.position).getBlock();
+		if ( block != WarpDrive.blockCamera
+		  && block != WarpDrive.blockLaserCamera ) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info("Reporting a 'dead' camera in dimension " + cam.dimensionId + " at "
 						+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ());
@@ -137,7 +138,7 @@ public class CamerasRegistry {
 		}
 	}
 	
-	public void printRegistry(World world) {
+	public void printRegistry(final World world) {
 		if (world == null) {
 			return;
 		}

@@ -29,12 +29,12 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	// warning: ItemBlock is created during registration, while block is still being constructed.
 	// As such, we can't use block properties from constructor
-	public ItemBlockAbstractBase(Block block) {
+	public ItemBlockAbstractBase(final Block block) {
 		super(block);
 	}
 	
 	@Override
-	public int getMetadata(int damage) {
+	public int getMetadata(final int damage) {
 		return damage;
 	}
 	

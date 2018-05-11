@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Energiecapaciteits-upgrade
 
 
 item.warpdrive.tool.ship_token.name=Schip kenteken
-item.warpdrive.tool.ship_token.tooltip=Schip inkapseling van het schip'%1$s'\n§bGa naar het rode bouwersveldd§7 om het schip te claimen
+item.warpdrive.tool.ship_token.tooltip.usage=Schip inkapseling van het schip'%1$s'\n§bGa naar het rode bouwersveldd§7 om het schip te claimen
 item.warpdrive.tool.ship_token0.name=Schip kenteken #0
 item.warpdrive.tool.ship_token1.name=Schip kenteken #1
 item.warpdrive.tool.ship_token2.name=Schip kenteken #2
@@ -190,12 +190,13 @@ tile.warpdrive.decoration.decorative.plain.name=Oppervlaksblok
 tile.warpdrive.decoration.gas.name=Gasblok
 tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 
-tile.warpdrive.passive.IridiumBlock.name=Iridium Blok
-tile.warpdrive.passive.HighlyAdvancedMachine.name=Heel geavanceerd machineblok
 
-tile.warpdrive.machines.ChunkLoader.name=Chunk-lader
-tile.warpdrive.machines.Laser.name=Laser
-tile.warpdrive.machines.LaserMedium.name=Deeltjesversneller
+tile.warpdrive.passive.iridium_block.name=Iridium Blok
+tile.warpdrive.passive.highly_advanced_machine.name=Heel geavanceerd machineblok
+
+tile.warpdrive.machines.chunk_loader.name=Chunk-lader
+tile.warpdrive.machines.laser.name=Laser
+tile.warpdrive.machines.laser_medium.name=Deeltjesversneller
 
 tile.warpdrive.atomic.accelerator_controller.name=Versnellers-regelaar
 tile.warpdrive.atomic.accelerator_controller.tooltip=Regelt één of meer deeltjesversnellers.\nMoet naast een elektromagneet worden geplaats.
@@ -569,10 +570,10 @@ warpdrive.monitor.viewingCamera=Camera op%2$d, %3$d, %4$d met videokanaal %1$d a
 warpdrive.ship.attachedPlayers=Aangesloten Spelers: %1$s
 warpdrive.ship.playerAttached=Je bent nu aangesloten op schip %1$s.\nDe aangesloten spelers zijn %2$s
 warpdrive.ship.playerDetached=Je bent nu afgesloten op schip %1$s.\nDe aangesloten spelers zijn %2$s
-warpdrive.ship.statusLine.cooling=%1$d seconden over van afkoeling
-warpdrive.ship.statusLine.isolation=%1$d actieve isolatie-blokken geven %2$2.1f%% absorptie.
+warpdrive.ship.status_line.cooling=%1$d seconden over van afkoeling
+warpdrive.ship.status_line.isolation=%1$d actieve isolatie-blokken geven %2$2.1f%% absorptie.
 
-warpdrive.energy.statusLine=Energielevel is op %1$s / %2$s EU.
+warpdrive.energy.status_line=Energielevel is op %1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=%1$s kant verandert naar energie input modus!
 warpdrive.energy.side.changedToOutput=%1$s kant verandert naar energie output modus!
 warpdrive.energy.side.changedToDisabled=%1$s kant verandert naar inactief modus!
@@ -585,9 +586,9 @@ warpdrive.accelerator.guide.noChiller=Geen koeler gevonden voor deze versneller!
 warpdrive.beam_frequency.tooltip=Straal-frequentie is gezet naar %1$d
 warpdrive.beam_frequency.get=Straal-frequentie %2$d is opgehaald door %1$s 
 warpdrive.beam_frequency.set=%1$s is nu afgestemd op straal-frequentie %2$d
-warpdrive.beam_frequency.statusLine.valid=Straal-frueqentie %1$d is Geldig.
-warpdrive.beam_frequency.statusLine.invalid=§cStraal-frequentie %1$d is incorrect.
-warpdrive.beam_frequency.statusLine.undefined=§7Niet gedefinieerde straal-frequentie.\n§bGebruik een Affstemmingsvork§r om deze te zetten.
+warpdrive.beam_frequency.status_line.valid=Straal-frueqentie %1$d is Geldig.
+warpdrive.beam_frequency.status_line.invalid=§cStraal-frequentie %1$d is incorrect.
+warpdrive.beam_frequency.status_line.undefined=§7Niet gedefinieerde straal-frequentie.\n§bGebruik een Affstemmingsvork§r om deze te zetten.
 
 warpdrive.breathing.alarm=Ademhalings-alarm
 warpdrive.breathing.invalid_setup=Geen helm om in te ademen\of verkeerde armor!
@@ -595,43 +596,43 @@ warpdrive.breathing.low_reserve=Laag Zuurstofniveau!
 warpdrive.breathing.no_air=Geen Zuurstof meer!
 
 warpdrive.control_channel.tooltip=Controlekanaal is gezet op %1$d
-warpdrive.control_channel.get=Controlekanaal %2$d is opgehaald door %1$s 
+warpdrive.control_channel.get=Controlekanaal %2$d is opgehaald door %1$s
 warpdrive.control_channel.set=%1$s is nu afgestemd met een controlekanaal %2$d
-warpdrive.control_channel.statusLine.valid=Controlekanaal %1$d is Geldig.
-warpdrive.control_channel.statusLine.invalid=§cControlekanaal %1$d is incorrect.
-warpdrive.control_channel.statusLine.undefined=§7Niet gedefinieerde controlekanaal.\n§bGebruik een Afstemmingsvork§r om deze te zetten.
+warpdrive.control_channel.status_line.valid=Controlekanaal %1$d is Geldig.
+warpdrive.control_channel.status_line.invalid=§cControlekanaal %1$d is incorrect.
+warpdrive.control_channel.status_line.undefined=§7Niet gedefinieerde controlekanaal.\n§bGebruik een Afstemmingsvork§r om deze te zetten.
 
 warpdrive.forcefield.guide.lowPower=we verliezen stroom kapitein, verminder onze consumptie of laat die schotse ingenieur onze stroomkracht vergroten!
 
-warpdrive.forcefield.shape.statusLine.none=§cVorm is niet gedefinieerd.
-warpdrive.forcefield.shape.statusLine.double=Vorm is een volledig vorm %1$s
-warpdrive.forcefield.shape.statusLine.single=Vorm is een halve vorm %1$s
-warpdrive.forcefield.shape.statusLine.sphere=Ball
-warpdrive.forcefield.shape.statusLine.cylinder_h=Horizontale cylinder
-warpdrive.forcefield.shape.statusLine.cylinder_v=Verticale cylinder
-warpdrive.forcefield.shape.statusLine.cube=kubus
-warpdrive.forcefield.shape.statusLine.plane=Plat oppervlak
-warpdrive.forcefield.shape.statusLine.tube=tube
-warpdrive.forcefield.shape.statusLine.tunnel=tunnel
+warpdrive.forcefield.shape.status_line.none=§cVorm is niet gedefinieerd.
+warpdrive.forcefield.shape.status_line.double=Vorm is een volledig vorm %1$s
+warpdrive.forcefield.shape.status_line.single=Vorm is een halve vorm %1$s
+warpdrive.forcefield.shape.status_line.sphere=Ball
+warpdrive.forcefield.shape.status_line.cylinder_h=Horizontale cylinder
+warpdrive.forcefield.shape.status_line.cylinder_v=Verticale cylinder
+warpdrive.forcefield.shape.status_line.cube=kubus
+warpdrive.forcefield.shape.status_line.plane=Plat oppervlak
+warpdrive.forcefield.shape.status_line.tube=tube
+warpdrive.forcefield.shape.status_line.tunnel=tunnel
 
-warpdrive.forcefield.upgrade.statusLine.attraction=aantrekking
-warpdrive.forcefield.upgrade.statusLine.breaking=blokbreker
-warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
-warpdrive.forcefield.upgrade.statusLine.cooling=koeling
-warpdrive.forcefield.upgrade.statusLine.fusion=fusie
-warpdrive.forcefield.upgrade.statusLine.heating=verhitting
-warpdrive.forcefield.upgrade.statusLine.inversion=inversie
-warpdrive.forcefield.upgrade.statusLine.item_port=itempoort
-warpdrive.forcefield.upgrade.statusLine.pumping=pompen
-warpdrive.forcefield.upgrade.statusLine.range=vergroot bereik
-warpdrive.forcefield.upgrade.statusLine.repulsion=afstoting
-warpdrive.forcefield.upgrade.statusLine.rotation=rotatie
-warpdrive.forcefield.upgrade.statusLine.shock=schok
-warpdrive.forcefield.upgrade.statusLine.silencer=demper
-warpdrive.forcefield.upgrade.statusLine.speed=snelheid
-warpdrive.forcefield.upgrade.statusLine.stabilization=stabilizatie
-warpdrive.forcefield.upgrade.statusLine.thickness=dikte
-warpdrive.forcefield.upgrade.statusLine.translation=verandering
+warpdrive.forcefield.upgrade.status_line.attraction=aantrekking
+warpdrive.forcefield.upgrade.status_line.breaking=blokbreker
+warpdrive.forcefield.upgrade.status_line.camouflage=camouflage
+warpdrive.forcefield.upgrade.status_line.cooling=koeling
+warpdrive.forcefield.upgrade.status_line.fusion=fusie
+warpdrive.forcefield.upgrade.status_line.heating=verhitting
+warpdrive.forcefield.upgrade.status_line.inversion=inversie
+warpdrive.forcefield.upgrade.status_line.item_port=itempoort
+warpdrive.forcefield.upgrade.status_line.pumping=pompen
+warpdrive.forcefield.upgrade.status_line.range=vergroot bereik
+warpdrive.forcefield.upgrade.status_line.repulsion=afstoting
+warpdrive.forcefield.upgrade.status_line.rotation=rotatie
+warpdrive.forcefield.upgrade.status_line.shock=schok
+warpdrive.forcefield.upgrade.status_line.silencer=demper
+warpdrive.forcefield.upgrade.status_line.speed=snelheid
+warpdrive.forcefield.upgrade.status_line.stabilization=stabilizatie
+warpdrive.forcefield.upgrade.status_line.thickness=dikte
+warpdrive.forcefield.upgrade.status_line.translation=verandering
 
 warpdrive.particle.ion.name=ioon
 warpdrive.particle.ion.tooltip=Geproduceerd door de botsing van een aantal deeltjes in de Normale Versneller
@@ -659,17 +660,17 @@ warpdrive.upgrade.result.notEnoughShapes.single=§cJe hebt tenminste 1 items nod
 warpdrive.upgrade.result.shapeDismounted=Vorm succesvol uitgeschakeld.
 warpdrive.upgrade.result.shapeMounted=Vorm succesvol geplaatst.
 
-warpdrive.upgrade.statusLine.none=§7Geen upgrade geinstalleerd.
-warpdrive.upgrade.statusLine.valid=Geupgrade met1$s.
+warpdrive.upgrade.status_line.none=§7Geen upgrade geinstalleerd.
+warpdrive.upgrade.status_line.valid=Geupgrade met1$s.
 
 warpdrive.video_channel.tooltip=Videokanaal is gezet naar %1$d
 warpdrive.video_channel.get=Videokanaal %2$d is achterhaald door %1$s
 warpdrive.video_channel.set=%1$s is nu afgestemd op videokanaal %2$d
-warpdrive.video_channel.statusLine.valid=Videokanaal %1$d is geldig.
-warpdrive.video_channel.statusLine.validCamera=Videokanaal %1$d is geldig voor camera op %2$d, %3$d, %4$d.
-warpdrive.video_channel.statusLine.invalid=§cVideokanaal %1$d is ongeldig.
-warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cVideokanaal %1$d is ongeldig of camera is te ver weg!
-warpdrive.video_channel.statusLine.undefined=§7niet gedefinieerd videokanaal.\n§bGebruik een Afstemmingsvork§r om het te zetten.
+warpdrive.video_channel.status_line.valid_camera=Videokanaal %1$d is geldig.
+warpdrive.video_channel.status_line.valid_monitor=Videokanaal %1$d is geldig voor camera op %2$d, %3$d, %4$d.
+warpdrive.video_channel.status_line.invalid=§cVideokanaal %1$d is ongeldig.
+warpdrive.video_channel.status_line.not_loaded=§cVideokanaal %1$d is ongeldig of camera is te ver weg!
+warpdrive.video_channel.status_line.undefined=§7niet gedefinieerd videokanaal.\n§bGebruik een Afstemmingsvork§r om het te zetten.
 
 warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
 warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
@@ -692,6 +693,6 @@ warpdrive.transporter_signature.set_self=§cTransporter room can't target itself
 warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
 warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
-warpdrive.tooltip.itemTag.breathingHelmet=§Ademhalen in de ruimte§r consumeert de inhoud van een Zuurstoffles en/of IC2 Gecompresseerde Luchtcellen uit je inventory.
-warpdrive.tooltip.itemTag.flyInSpace=§bJetpack Die werkt in de ruimte§r.
-warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbeert Schade van vallen§r.
+warpdrive.tooltip.item_tag.breathing_helmet=§Ademhalen in de ruimte§r consumeert de inhoud van een Zuurstoffles en/of IC2 Gecompresseerde Luchtcellen uit je inventory.
+warpdrive.tooltip.item_tag.fly_in_space=§bJetpack Die werkt in de ruimte§r.
+warpdrive.tooltip.item_tag.no_fall_damage=§bAbsorbeert Schade van vallen§r.

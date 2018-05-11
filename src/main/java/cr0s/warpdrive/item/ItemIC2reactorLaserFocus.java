@@ -88,7 +88,7 @@ public class ItemIC2reactorLaserFocus extends ItemAbstractBase implements IReact
 		for (int index = 0; index < xOffset.length; index++) {
 			final int xComponent = x + xOffset[index];
 			final int yComponent = y + yOffset[index];
-			ItemStack stack = reactor.getItemAt(xComponent, yComponent);
+			final ItemStack stack = reactor.getItemAt(xComponent, yComponent);
 			if (stack != null) {
 				final Item item = stack.getItem();
 				if (item instanceof ItemIC2reactorLaserFocus) {

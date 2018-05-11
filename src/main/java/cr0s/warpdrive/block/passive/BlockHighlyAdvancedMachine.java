@@ -10,7 +10,7 @@ public class BlockHighlyAdvancedMachine extends BlockAbstractBase {
 	public BlockHighlyAdvancedMachine(final String registryName) {
 		super(registryName, Material.IRON);
 		setHardness(5.0F);
-		setUnlocalizedName("warpdrive.passive.HighlyAdvancedMachine");
+		setUnlocalizedName("warpdrive.passive.highly_advanced_machine");
 	}
 	
 	@Override

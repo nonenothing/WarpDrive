@@ -36,13 +36,13 @@ public class CommandGenerate extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(@Nonnull ICommandSender commandSender) {
+	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
 		return "/" + getCommandName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
 	}
 	
 	@Override
-	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
-		World world = commandSender.getEntityWorld();
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
+		final World world = commandSender.getEntityWorld();
 		BlockPos blockPos = commandSender.getPosition();
 		
 		//noinspection ConstantConditions
@@ -58,12 +58,12 @@ public class CommandGenerate extends CommandBase {
 		
 		if (args.length > 3) {
 			blockPos = new BlockPos(
-				AdjustAxis(blockPos.getX(), args[args.length - 3]),
+			    AdjustAxis(blockPos.getX(), args[args.length - 3]),
 			    AdjustAxis(blockPos.getY(), args[args.length - 2]),
 			    AdjustAxis(blockPos.getZ(), args[args.length - 1]));
 		}
 		
-		String structure = args[0];
+		final String structure = args[0];
 		
 		// Reject command, if player is not in space
 		if (!CelestialObjectManager.isInSpace(world, blockPos.getX(), blockPos.getZ()) && (!"ship".equals(structure))) {
@@ -72,7 +72,7 @@ public class CommandGenerate extends CommandBase {
 		}
 		
 		if (FMLCommonHandler.instance().getEffectiveSide().isServer()) {
-			String name = (args.length > 1) ? args[1] : null;
+			final String name = (args.length > 1) ? args[1] : null;
 			switch (structure) {
 				case "ship":
 					WarpDrive.logger.info("/generate: generating NPC ship at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
@@ -132,8 +132,8 @@ public class CommandGenerate extends CommandBase {
 		}
 	}
 	
-	private void generateStructure(ICommandSender commandSender, final String group, final String name, World world, final BlockPos blockPos) {
-		AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
+	private void generateStructure(final ICommandSender commandSender, final String group, final String name, final World world, final BlockPos blockPos) {
+		final AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
 		if (structure == null) {
 			Commons.addChatMessage(commandSender, new TextComponentString("Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group)));
 		} else {
@@ -147,8 +147,8 @@ public class CommandGenerate extends CommandBase {
 				     && !world.isAirBlock(new BlockPos(blockPos.getX(), newY, blockPos.getZ())) ) {
 					newY++;
 				}
-				EntityPlayerMP player = (EntityPlayerMP)commandSender;
-				player.setPosition(player.posX, newY, player.posZ);
+				final EntityPlayerMP entityPlayerMP = (EntityPlayerMP) commandSender;
+				entityPlayerMP.setPosition(entityPlayerMP.posX, newY, entityPlayerMP.posZ);
 			}
 		}
 	}

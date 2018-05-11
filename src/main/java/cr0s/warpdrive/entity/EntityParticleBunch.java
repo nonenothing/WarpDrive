@@ -43,14 +43,14 @@ public class EntityParticleBunch extends Entity {
 	private static final int UPDATE_TICKS_TIMEOUT = 20;
 	private int soundTicks;
 	
-	public EntityParticleBunch(World world) {
+	public EntityParticleBunch(final World world) {
 		super(world);
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 			WarpDrive.logger.info(this + " created in dimension " + worldObj.provider.getSaveFolder());
 		}
 	}
 	
-	public EntityParticleBunch(World world, final double x, final double y, final double z) {
+	public EntityParticleBunch(final World world, final double x, final double y, final double z) {
 		super(world);
 		this.posX = x + 0.5D;
 		this.posY = y + 0.5D;
@@ -64,7 +64,7 @@ public class EntityParticleBunch extends Entity {
 	// override to skip the block bounding override on client side
 	@SideOnly(Side.CLIENT)
 	@Override
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+	public void setPositionAndRotation(final double x, final double y, final double z, final float yaw, final float pitch) {
 	//	super.setPositionAndRotation(x, y, z, yaw, pitch);
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
@@ -75,7 +75,7 @@ public class EntityParticleBunch extends Entity {
 		return true;
 	}
 	
-	public void onRefreshFromSimulation(final double newEnergy, Vector3 vectorNewPosition, Vector3 vectorNewTurningPoint) {
+	public void onRefreshFromSimulation(final double newEnergy, final Vector3 vectorNewPosition, final Vector3 vectorNewTurningPoint) {
 		setPosition(vectorNextPosition.x, vectorNextPosition.y, vectorNextPosition.z);
 		setEnergy((float) newEnergy);
 		vectorNextPosition = vectorNewPosition;

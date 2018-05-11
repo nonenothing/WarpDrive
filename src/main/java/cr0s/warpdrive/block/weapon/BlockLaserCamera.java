@@ -51,7 +51,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 		}
 		
 		if (itemStackHeld == null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (!ClientCameraHandler.isOverlayEnabled) {
 				if (tileEntity instanceof TileEntityLaserCamera) {
 					Commons.addChatMessage(entityPlayer, ((TileEntityLaserCamera) tileEntity).getStatus());

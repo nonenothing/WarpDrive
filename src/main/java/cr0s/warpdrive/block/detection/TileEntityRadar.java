@@ -72,7 +72,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 					scanning_ticks = 0;
 				}
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -108,7 +108,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	public Object[] position() {
 		final CelestialObject celestialObject = CelestialObjectManager.get(worldObj, pos.getX(), pos.getZ());
 		if (celestialObject != null) {
-			Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, pos.getX(), pos.getY(), pos.getZ());
+			final Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, pos.getX(), pos.getY(), pos.getZ());
 			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
 		} else {
 			String name = worldObj.provider.getSaveFolder();
@@ -119,12 +119,12 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	private Object[] radius(Object[] arguments) {
+	private Object[] radius(final Object[] arguments) {
 		if (arguments.length == 1 && getBlockMetadata() != 2) {
-			int newRadius;
+			final int newRadius;
 			try {
 				newRadius = Commons.toInt(arguments[0]);
-			} catch(Exception exception) {
+			} catch (final Exception exception) {
 				return new Integer[] { radius };
 			}
 			radius = Commons.clamp(0, 10000, newRadius);
@@ -132,23 +132,23 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return new Integer[] { radius };
 	}
 	
-	private Object[] getEnergyRequired(Object[] arguments) {
+	private Object[] getEnergyRequired(final Object[] arguments) {
 		try {
 			if (arguments.length == 1 && arguments[0] != null) {
 				return new Object[] { calculateEnergyRequired(Commons.toInt(arguments[0])) };
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Integer[] { -1 };
 		}
 		return new Integer[] { -1 };
 	}
 	
-	private Object[] getScanDuration(Object[] arguments) {
+	private Object[] getScanDuration(final Object[] arguments) {
 		try {
 			if (arguments.length == 1 && arguments[0] != null) {
 				return new Object[] { 0.050D * calculateScanDuration(Commons.toInt(arguments[0])) };
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Integer[] { -1 };
 		}
 		return new Integer[] { -1 };
@@ -163,7 +163,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			radius = 0;
 			return new Object[] { false, "Invalid radius" };
 		}
-		int energyRequired = calculateEnergyRequired(radius);
+		final int energyRequired = calculateEnergyRequired(radius);
 		if (!energy_consume(energyRequired, false)) {
 			return new Object[] { false, "Insufficient energy" };
 		}
@@ -183,9 +183,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		if (results == null) {
 			return null;
 		}
-		Object[] objectResults = new Object[results.size()];
+		final Object[] objectResults = new Object[results.size()];
 		int index = 0;
-		for (RadarEcho radarEcho : results) {
+		for (final RadarEcho radarEcho : results) {
 			objectResults[index++] = new Object[] {
 					radarEcho.type,
 					radarEcho.name == null ? "" : radarEcho.name,
@@ -202,16 +202,16 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		return new Integer[] { -1 };
 	}
 	
-	private Object[] getResult(Object[] arguments) {
+	private Object[] getResult(final Object[] arguments) {
 		if (arguments.length == 1 && (results != null)) {
-			int index;
+			final int index;
 			try {
 				index = Commons.toInt(arguments[0]);
-			} catch(Exception exception) {
+			} catch(final Exception exception) {
 				return new Object[] { false, COMPUTER_ERROR_TAG, null, 0, 0, 0 };
 			}
 			if (index >= 0 && index < results.size()) {
-				RadarEcho radarEcho = results.get(index);
+				final RadarEcho radarEcho = results.get(index);
 				if (radarEcho != null) {
 					return new Object[] {
 							true,
@@ -228,50 +228,50 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] radius(Context context, Arguments arguments) {
+	public Object[] radius(final Context context, final Arguments arguments) {
 		return radius(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getScanDuration(Context context, Arguments arguments) {
+	public Object[] getScanDuration(final Context context, final Arguments arguments) {
 		return getScanDuration(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] start(Context context, Arguments arguments) {
+	public Object[] start(final Context context, final Arguments arguments) {
 		return start();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResults(Context context, Arguments arguments) {
+	public Object[] getResults(final Context context, final Arguments arguments) {
 		return getResults();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResultsCount(Context context, Arguments arguments) {
+	public Object[] getResultsCount(final Context context, final Arguments arguments) {
 		return getResultsCount();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getResult(Context context, Arguments arguments) {
+	public Object[] getResult(final Context context, final Arguments arguments) {
 		return getResult(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public void attach(IComputerAccess computer) {
+	public void attach(final IComputerAccess computer) {
 		super.attach(computer);
 		if (getBlockMetadata() == 0) {
 			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.ACTIVE);
@@ -280,7 +280,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public void detach(IComputerAccess computer) {
+	public void detach(final IComputerAccess computer) {
 		super.detach(computer);
 		if (connectedComputers.isEmpty()) {
 			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.INACTIVE);
@@ -289,7 +289,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
@@ -324,7 +324,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return true;
 	}
 }

@@ -29,18 +29,18 @@ public class ClientHandler {
 	
 	@SuppressWarnings("ConstantConditions") // getBlockFromItem() might return null, by design
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onTooltipEvent(ItemTooltipEvent event) {
+	public void onTooltipEvent(final ItemTooltipEvent event) {
 		if (event.getEntityPlayer() == null) {
 			return;
 		}
-		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.getItemStack().getItem()) && WarpDriveConfig.isIndustrialCraft2Loaded) {
-			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.breathingHelmet").getFormattedText());
+		if (Dictionary.ITEMS_BREATHING_HELMET.contains(event.getItemStack().getItem())) {
+			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.item_tag.breathingHelmet").getFormattedText());
 		}
 		if (Dictionary.ITEMS_FLYINSPACE.contains(event.getItemStack().getItem())) {
-			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.flyInSpace").getFormattedText());
+			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.item_tag.flyInSpace").getFormattedText());
 		}
 		if (Dictionary.ITEMS_NOFALLDAMAGE.contains(event.getItemStack().getItem())) {
-			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.itemTag.noFallDamage").getFormattedText());
+			Commons.addTooltip(event.getToolTip(), new TextComponentTranslation("warpdrive.tooltip.item_tag.noFallDamage").getFormattedText());
 		}
 		
 		isSneaking = event.getEntityPlayer().isSneaking();
@@ -83,7 +83,7 @@ public class ClientHandler {
 				if (resourceLocation != null) {
 					Commons.addTooltip(event.getToolTip(), "" + resourceLocation + "");
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -106,7 +106,7 @@ public class ClientHandler {
 					                                                     harvestTool, 
 					                                                     block.getHarvestLevel(blockState)));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -124,7 +124,7 @@ public class ClientHandler {
 		if (WarpDriveConfig.CLIENT_TOOLTIP_HARDNESS.isEnabled(isSneaking, isCreativeMode)) {
 			try {
 				Commons.addTooltip(event.getToolTip(), String.format("Hardness is %.1f", (float) WarpDrive.fieldBlockHardness.get(block)));
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 			Commons.addTooltip(event.getToolTip(), String.format("Explosion resistance is %.1f", + block.getExplosionResistance(null)));
@@ -138,7 +138,7 @@ public class ClientHandler {
 				if (flammability > 0) {
 					Commons.addTooltip(event.getToolTip(), String.format("Flammable: %d, spread %d", flammability, fireSpread));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -157,7 +157,7 @@ public class ClientHandler {
 					}
 					Commons.addTooltip(event.getToolTip(), String.format("Temperature is %d K", fluid.getTemperature()));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -171,7 +171,7 @@ public class ClientHandler {
 				if (resourceLocation != null) {
 					Commons.addTooltip(event.getToolTip(), "" + resourceLocation + "");
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -186,7 +186,7 @@ public class ClientHandler {
 					                                                event.getItemStack().getMaxDamage() - event.getItemStack().getItemDamage(),
 					                                                event.getItemStack().getMaxDamage()));
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}
@@ -209,7 +209,7 @@ public class ClientHandler {
 						}
 					}
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				// no operation
 			}
 		}

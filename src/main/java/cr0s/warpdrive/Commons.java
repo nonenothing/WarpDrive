@@ -86,13 +86,13 @@ public class Commons {
 		       .replaceAll("(" + CHAR_FORMATTING + ".)", "");
 	}
 	
-	private static boolean isFormatColor(char chr) {
+	private static boolean isFormatColor(final char chr) {
 		return chr >= 48 && chr <= 57
 		    || chr >= 97 && chr <= 102
 		    || chr >= 65 && chr <= 70;
 	}
 	
-	private static boolean isFormatSpecial(char chr) {
+	private static boolean isFormatSpecial(final char chr) {
 		return chr >= 107 && chr <= 111
 		    || chr >= 75 && chr <= 79
 		    || chr == 114
@@ -134,11 +134,18 @@ public class Commons {
 	}
 	
 	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {
+		final String message = textComponent.getFormattedText();
 		if (commandSender == null) {
-			WarpDrive.logger.error("Unable to send message to NULL sender: " + textComponent.getFormattedText());
+			WarpDrive.logger.error("Unable to send message to NULL sender: " + message);
 			return;
 		}
-		final String[] lines = updateEscapeCodes(textComponent.getFormattedText()).split("\n");
+		
+		// skip empty messages
+		if (message.isEmpty()) {
+			return;
+		}
+		
+		final String[] lines = updateEscapeCodes(message).split("\n");
 		for (final String line : lines) {
 			commandSender.addChatMessage(new TextComponentString(line));
 		}
@@ -178,7 +185,7 @@ public class Commons {
 			while (!lineRemaining.isEmpty()) {
 				int indexToCut = formatNextLine.length();
 				int displayLength = 0;
-				int length = lineRemaining.length();
+				final int length = lineRemaining.length();
 				while (indexToCut < length && displayLength <= 38) {
 					if (lineRemaining.charAt(indexToCut) == (char) 167 && indexToCut + 1 < length) {
 						indexToCut++;
@@ -216,18 +223,18 @@ public class Commons {
 		}
 	}
 	
-	public static Field getField(Class<?> clazz, String deobfuscatedName, String obfuscatedName) {
+	public static Field getField(final Class<?> clazz, final String deobfuscatedName, final String obfuscatedName) {
 		Field fieldToReturn = null;
 		
 		try {
 			fieldToReturn = clazz.getDeclaredField(deobfuscatedName);
-		} catch (Exception exception1) {
+		} catch (final Exception exception1) {
 			try {
 				fieldToReturn = clazz.getDeclaredField(obfuscatedName);
-			} catch (Exception exception2) {
+			} catch (final Exception exception2) {
 				exception2.printStackTrace();
-				StringBuilder map = new StringBuilder();
-				for (Field fieldDeclared : clazz.getDeclaredFields()) {
+				final StringBuilder map = new StringBuilder();
+				for (final Field fieldDeclared : clazz.getDeclaredFields()) {
 					if (map.length() > 0) {
 						map.append(", ");
 					}
@@ -269,19 +276,19 @@ public class Commons {
 		return name.replace("/", "").replace(".", "").replace("\\", ".");
 	}
 	
-	public static ItemStack copyWithSize(ItemStack itemStack, int newSize) {
+	public static ItemStack copyWithSize(final ItemStack itemStack, final int newSize) {
 		final ItemStack ret = itemStack.copy();
 		ret.stackSize = newSize;
 		return ret;
 	}
 	
-	public static Collection<IInventory> getConnectedInventories(TileEntity tileEntityConnection) {
+	public static Collection<IInventory> getConnectedInventories(final TileEntity tileEntityConnection) {
 		final Collection<IInventory> result = new ArrayList<>(6);
 		
 		for(final EnumFacing side : EnumFacing.VALUES) {
 			final TileEntity tileEntity = tileEntityConnection.getWorld().getTileEntity(
 				tileEntityConnection.getPos().offset(side));
-			if (tileEntity != null && (tileEntity instanceof IInventory)) {
+			if (tileEntity instanceof IInventory) {
 				result.add((IInventory) tileEntity);
 				
 				if (tileEntity instanceof TileEntityChest) {
@@ -310,7 +317,7 @@ public class Commons {
 	public static final EnumFacing[] HORIZONTAL_DIRECTIONS = { EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST };
 	public static final EnumFacing[] VERTICAL_DIRECTIONS = { EnumFacing.UP, EnumFacing.DOWN };
 	
-	public static Set<BlockPos> getConnectedBlocks(World world, final BlockPos start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
+	public static Set<BlockPos> getConnectedBlocks(final World world, final BlockPos start, final EnumFacing[] directions, final Set<Block> whitelist, final int maxRange, final BlockPos... ignore) {
 		return getConnectedBlocks(world, Collections.singletonList(start), directions, whitelist, maxRange, ignore);
 	}
 	
@@ -414,11 +421,11 @@ public class Commons {
 		return Math.min(max, Math.max(Math.abs(value), min)) * Math.signum(value == 0.0D ? 1.0D : value);
 	}
 	
-	public static int randomRange(Random random, final int min, final int max) {
+	public static int randomRange(final Random random, final int min, final int max) {
 		return min + ((max - min > 0) ? random.nextInt(max - min + 1) : 0);
 	}
 	
-	public static double randomRange(Random random, final double min, final double max) {
+	public static double randomRange(final Random random, final double min, final double max) {
 		return min + ((max - min > 0) ? random.nextDouble() * (max - min) : 0);
 	}
 	
@@ -470,13 +477,13 @@ public class Commons {
 	
 	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
 		if (entityLiving != null) {
-			int metadata;
+			final int metadata;
 			if (entityLiving.rotationPitch > 65) {
 				metadata = 1;
 			} else if (entityLiving.rotationPitch < -65) {
 				metadata = 0;
 			} else {
-				int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+				final int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
 				switch (direction) {
 					case 0:
 						metadata = 2;
@@ -542,7 +549,7 @@ public class Commons {
 			CompressedStreamTools.writeCompressed(tagCompound, fileoutputstream);
 			
 			fileoutputstream.close();
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -564,7 +571,7 @@ public class Commons {
 			fileinputstream.close();
 			
 			return tagCompound;
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 		
@@ -585,7 +592,7 @@ public class Commons {
 		return tagCompound;
 	}
 	
-	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(ICommandSender sender, final String playerNameOrSelector) {
+	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(final ICommandSender sender, final String playerNameOrSelector) {
 		final List<EntityPlayerMP> onlinePlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
 		for (final EntityPlayerMP onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
@@ -663,7 +670,7 @@ public class Commons {
 			try {
 				final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
 				worldServer = server.worldServerForDimension(dimensionId);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d",
 				                                     exception.getMessage(),
 				                                     dimensionId));

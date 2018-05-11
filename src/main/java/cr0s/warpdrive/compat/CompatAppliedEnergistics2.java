@@ -36,7 +36,7 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 			classTileQuantumBridge = Class.forName("appeng.tile.qnb.TileQuantumBridge");
 			methodTileQuantumBridge_getQEFrequency = classTileQuantumBridge.getMethod("getQEFrequency");
 			WarpDriveConfig.registerBlockTransformer("appliedenergistics2", new CompatAppliedEnergistics2());
-		} catch(ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
+		} catch(final ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -47,18 +47,18 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		if (classBlockQuantumLinkChamber.isInstance(block)) {
 			if (classTileQuantumBridge.isInstance(tileEntity)) {
 				try {
-					Object object = methodTileQuantumBridge_getQEFrequency.invoke(tileEntity);
+					final Object object = methodTileQuantumBridge_getQEFrequency.invoke(tileEntity);
 					if (((Long)object) != 0L) {
 						reason.append("Quantum field interference detected!");
 						return false;
 					} else {
 						return true;
 					}
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+				} catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
 					exception.printStackTrace();
 				}
 			}
@@ -99,7 +99,7 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;

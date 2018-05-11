@@ -21,14 +21,14 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	private final Block blockSlab;
 	
-	public ItemBlockHullSlab(Block blockSlab) {
+	public ItemBlockHullSlab(final Block blockSlab) {
 		super(blockSlab);
 		this.blockSlab = blockSlab;
 	}
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(final ItemStack itemstack) {
 		return getUnlocalizedName();
 	}
 	

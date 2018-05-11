@@ -73,7 +73,7 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		Item item = Item.getItemFromBlock(this);
+		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
 	}
 	

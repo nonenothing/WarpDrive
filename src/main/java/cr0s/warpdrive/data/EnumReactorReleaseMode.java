@@ -24,7 +24,7 @@ public enum EnumReactorReleaseMode implements IStringSerializable {
 		}
 	}
 	
-	EnumReactorReleaseMode(String unlocalizedName) {
+	EnumReactorReleaseMode(final String unlocalizedName) {
 		this.unlocalizedName = unlocalizedName;
 	}
 	

@@ -178,7 +178,7 @@ public class ForceFieldSetup extends GlobalPosition {
 			}
 			// upgrade blocks (namely, relays)
 			if (tileEntity instanceof IForceFieldUpgrade) {
-				IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)tileEntity).getUpgradeEffector();
+				final IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)tileEntity).getUpgradeEffector();
 				if (upgradeEffector != null) {
 					Float currentValue = upgradeValues.get(upgradeEffector);
 					if (currentValue == null) {
@@ -188,8 +188,8 @@ public class ForceFieldSetup extends GlobalPosition {
 					
 					// camouflage identification
 					if (upgradeEffector == EnumForceFieldUpgrade.CAMOUFLAGE) {
-						BlockPos blockPosCamouflage = tileEntity.getPos().offset(EnumFacing.UP);
-						IBlockState blockStateCandidate = tileEntity.getWorld().getBlockState(blockPosCamouflage);
+						final BlockPos blockPosCamouflage = tileEntity.getPos().offset(EnumFacing.UP);
+						final IBlockState blockStateCandidate = tileEntity.getWorld().getBlockState(blockPosCamouflage);
 						if (Commons.isValidCamouflage(blockStateCandidate)) {
 							blockStateCamouflage = blockStateCandidate;
 							colorMultiplierCamouflage = 0x808080; // blockStateCandidate.colorMultiplier(tileEntity.getWorld(), blockPosCamouflage);
@@ -224,7 +224,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		// apply scaling
 		float speedRatio;
 		for (final Map.Entry<IForceFieldUpgradeEffector, Float> entry : upgradeValues.entrySet()) {
-			float scaledValue = entry.getKey().getScaledValue(1.0F, entry.getValue());
+			final float scaledValue = entry.getKey().getScaledValue(1.0F, entry.getValue());
 			if (scaledValue != 0.0F) {
 				upgrades.put(entry.getKey(), scaledValue);
 				
@@ -311,9 +311,9 @@ public class ForceFieldSetup extends GlobalPosition {
 	
 	public double applyDamage(final World world, final DamageSource damageSource, final double damageLevel) {
 		assert(damageSource != null);
-		TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+		final TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
-			double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;
+			final double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;
 			((TileEntityForceFieldProjector)tileEntity).onEnergyDamage(scaledDamage);
 			return 0.0D;
 		}

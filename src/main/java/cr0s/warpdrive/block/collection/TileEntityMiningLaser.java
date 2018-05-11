@@ -124,12 +124,12 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 				
 				// show current layer
-				int age = Math.max(40, 5 * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS);
-				double xMax = pos.getX() + radiusCapacity + 1.0D;
-				double xMin = pos.getX() - radiusCapacity + 0.0D;
-				double zMax = pos.getZ() + radiusCapacity + 1.0D;
-				double zMin = pos.getZ() - radiusCapacity + 0.0D;
-				double y = currentLayer + 1.0D;
+				final int age = Math.max(40, 5 * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS);
+				final double xMax = pos.getX() + radiusCapacity + 1.0D;
+				final double xMin = pos.getX() - radiusCapacity + 0.0D;
+				final double zMax = pos.getZ() + radiusCapacity + 1.0D;
+				final double zMin = pos.getZ() - radiusCapacity + 0.0D;
+				final double y = currentLayer + 1.0D;
 				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMin, y, zMin), new Vector3(xMax, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
 				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMin), new Vector3(xMax, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
 				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMax), new Vector3(xMin, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
@@ -155,10 +155,10 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				// scan
 				scanLayer();
 				if (!valuablesInLayer.isEmpty()) {
-					int r = (int) Math.ceil(radiusCapacity / 2.0D);
-					int offset = (pos.getY() - currentLayer) % (2 * r);
-					int age = Math.max(20, Math.round(2.5F * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS));
-					double y = currentLayer + 1.0D;
+					final int r = (int) Math.ceil(radiusCapacity / 2.0D);
+					final int offset = (pos.getY() - currentLayer) % (2 * r);
+					final int age = Math.max(20, Math.round(2.5F * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS));
+					final double y = currentLayer + 1.0D;
 					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(pos.getX() - r + offset, y, pos.getZ() + r).translate(0.3D),
 							0.0F, 0.0F, 1.0F, age, 0, 50);
 					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(pos.getX() + r, y, pos.getZ() + r - offset).translate(0.3D),
@@ -211,18 +211,18 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 					updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.MINING_POWERED);
 				}
 				
-				BlockPos valuable = valuablesInLayer.get(valuableIndex);
+				final BlockPos valuable = valuablesInLayer.get(valuableIndex);
 				valuableIndex++;
 				
 				// Mine valuable ore
-				IBlockState blockStateValuable = worldObj.getBlockState(valuable);
+				final IBlockState blockStateValuable = worldObj.getBlockState(valuable);
 				
 				// Skip if block is too hard or its empty block (check again in case it changed)
 				if (!canDig(blockStateValuable, valuable)) {
 					delayTicks = Math.round(WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS * 0.2F);
 					return;
 				}
-				int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+				final int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
 				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable).translate(0.5D),
 						1.0F, 1.0F, 0.0F, age, 0, 50);
 				worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
@@ -238,7 +238,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		updateBlockState(null, BlockMiningLaser.MODE, EnumMiningLaserMode.INACTIVE);
 	}
 	
-	private boolean canDig(IBlockState blockState, final BlockPos blockPos) {
+	private boolean canDig(final IBlockState blockState, final BlockPos blockPos) {
 		// ignore air
 		if (worldObj.isAirBlock(blockPos)) {
 			return false;
@@ -398,39 +398,39 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] start(Context context, Arguments arguments) {
+	public Object[] start(final Context context, final Arguments arguments) {
 		return start();
 	}
 	
 	@SuppressWarnings("SameReturnValue")
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] stop(Context context, Arguments arguments) {
+	public Object[] stop(final Context context, final Arguments arguments) {
 		stop();
 		return null;
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] state(Context context, Arguments arguments) {
+	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] offset(Context context, Arguments arguments) {
+	public Object[] offset(final Context context, final Arguments arguments) {
 		return offset(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] onlyOres(Context context, Arguments arguments) {
+	public Object[] onlyOres(final Context context, final Arguments arguments) {
 		return onlyOres(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] silktouch(Context context, Arguments arguments) {
+	public Object[] silktouch(final Context context, final Arguments arguments) {
 		return silktouch(argumentsOCtoCC(arguments));
 	}
 	
@@ -463,7 +463,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		return new Object[] { status, isActive(), energy, currentLayer, 0, 0 };
 	}
 	
-	private Object[] onlyOres(Object[] arguments) {
+	private Object[] onlyOres(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				mineAllBlocks = ! Commons.toBool(arguments[0]);
@@ -471,14 +471,14 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " onlyOres set to " + !mineAllBlocks);
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				return new Object[] { !mineAllBlocks };
 			}
 		}
 		return new Object[] { !mineAllBlocks };
 	}
 	
-	private Object[] offset(Object[] arguments) {
+	private Object[] offset(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				layerOffset = Math.min(256, Math.abs(Commons.toInt(arguments[0])));
@@ -486,14 +486,14 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " offset set to " + layerOffset);
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				return new Integer[] { layerOffset };
 			}
 		}
 		return new Integer[] { layerOffset };
 	}
 	
-	private Object[] silktouch(Object[] arguments) {
+	private Object[] silktouch(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			try {
 				enableSilktouch = Commons.toBool(arguments[0]);
@@ -501,7 +501,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " silktouch set to " + enableSilktouch);
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				return new Object[] { enableSilktouch };
 			}
 		}
@@ -511,7 +511,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

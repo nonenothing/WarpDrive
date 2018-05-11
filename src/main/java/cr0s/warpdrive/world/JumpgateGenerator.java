@@ -11,7 +11,7 @@ public class JumpgateGenerator {
 	public static final int GATE_LENGTH_HALF = GATE_LENGTH / 2;
 	public static final int GATE_SIZE_HALF = GATE_SIZE / 2;
 
-	public static void generate(World worldObj, final BlockPos blockPos) {
+	public static void generate(final World worldObj, final BlockPos blockPos) {
 		int x = blockPos.getX();
 		int y = blockPos.getY();
 		int z = blockPos.getZ();

@@ -193,7 +193,7 @@ public class ChunkData {
 		tagCompoundChunk.setTag(TAG_CHUNK_MOD_DATA, tagCompound);
 		tagCompound.setInteger(TAG_VERSION, 1);
 		
-		NBTTagList nbtTagList = new NBTTagList();
+		final NBTTagList nbtTagList = new NBTTagList();
 		
 		// check all segments
 		int countEmptySegments = 0;
@@ -425,8 +425,8 @@ public class ChunkData {
 		int countBlocks = 0;
 		int countTickingBlocks = 0;
 		for (int indexSegment = 0; indexSegment < CHUNK_SIZE_SEGMENTS; indexSegment++) {
-			int[] dataAirSegment = dataAirSegments[indexSegment];
-			byte[] tickAirSegment = tickAirSegments[indexSegment];
+			final int[] dataAirSegment = dataAirSegments[indexSegment];
+			final byte[] tickAirSegment = tickAirSegments[indexSegment];
 			
 			// skip empty segments
 			if (dataAirSegment == null) {
@@ -455,7 +455,7 @@ public class ChunkData {
 				final int z = (chunkCoordIntPair.chunkZPos << 4) + (indexBlock & 0x000F);
 				try {
 					AirSpreader.execute(world, x, y, z);
-				} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+				} catch (final ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
 					// no operation
 					if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 						WarpDrive.logger.error(exceptionChunkNotLoaded.getMessage());

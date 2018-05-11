@@ -23,7 +23,7 @@ public class CompatMekanism implements IBlockTransformer {
 			tileEntityBasicBlock = Class.forName("mekanism.common.tile.TileEntityBasicBlock");
 			
 			WarpDriveConfig.registerBlockTransformer("Mekanism", new CompatMekanism());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -34,7 +34,7 @@ public class CompatMekanism implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -54,7 +54,7 @@ public class CompatMekanism implements IBlockTransformer {
 	
 	private static final Map<String, String> rotConAttachmentNames;
 	static {
-		Map<String, String> map = new HashMap<>();
+		final Map<String, String> map = new HashMap<>();
 		map.put("conTypes2", "conTypes5");
 		map.put("conTypes5", "conTypes3");
 		map.put("conTypes3", "conTypes4");
@@ -67,15 +67,15 @@ public class CompatMekanism implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0 || nbtTileEntity == null) {
 			return metadata;
 		}
 		
 		// machines
 		if (nbtTileEntity.hasKey("facing")) {
-			int facing = nbtTileEntity.getInteger("facing");
+			final int facing = nbtTileEntity.getInteger("facing");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("facing", rotFacing[facing]);
@@ -95,7 +95,7 @@ public class CompatMekanism implements IBlockTransformer {
 		final HashMap<String, NBTBase> mapRotated = new HashMap<>(9);
 		for (final String key : rotConAttachmentNames.keySet()) {
 			if (nbtTileEntity.hasKey(key)) {
-				NBTBase nbtBase = nbtTileEntity.getTag(key);
+				final NBTBase nbtBase = nbtTileEntity.getTag(key);
 				nbtTileEntity.removeTag(key);
 				switch (rotationSteps) {
 				case 1:

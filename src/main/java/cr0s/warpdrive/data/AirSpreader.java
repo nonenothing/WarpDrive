@@ -59,7 +59,7 @@ public class AirSpreader {
 		int air_count = 1;
 		int empty_count = 0;
 		
-		for (EnumFacing forgeDirection : directions) {
+		for (final EnumFacing forgeDirection : directions) {
 			final StateAir stateAir = stateAround[forgeDirection.ordinal()];
 			stateAir.refresh(world,
 			                 x + forgeDirection.getFrontOffsetX(),
@@ -206,8 +206,8 @@ public class AirSpreader {
 			assert (new_concentration <= StateAir.CONCENTRATION_MAX);
 			assert (mid_concentration <= StateAir.CONCENTRATION_MAX);
 			if (WarpDriveConfig.LOGGING_BREATHING) {
-				StringBuilder debugConcentrations = new StringBuilder();
-				for (EnumFacing forgeDirection : directions) {
+				final StringBuilder debugConcentrations = new StringBuilder();
+				for (final EnumFacing forgeDirection : directions) {
 					debugConcentrations.append(String.format(" %3d", stateAround[forgeDirection.ordinal()].concentration));
 				}
 				WarpDrive.logger.info(String.format("Updating air 0x%8x @ %6d %3d %6d %s from %3d near %s total %3d, empty %d/%d -> %3d + %d * %3d",
@@ -265,8 +265,8 @@ public class AirSpreader {
 		
 		// Check and update air to adjacent blocks
 		// (do not overwrite source block, do not decrease neighbors if we're growing)
-		for (EnumFacing forgeDirection : directions) {
-			StateAir stateAir = stateAround[forgeDirection.ordinal()];
+		for (final EnumFacing forgeDirection : directions) {
+			final StateAir stateAir = stateAround[forgeDirection.ordinal()];
 			if ( stateAir.isAirFlow()
 			  || (stateAir.isAir(forgeDirection) && !stateAir.isAirSource()) ) {
 				if ( stateAir.concentration != mid_concentration

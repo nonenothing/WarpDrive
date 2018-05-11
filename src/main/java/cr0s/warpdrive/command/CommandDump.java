@@ -55,7 +55,7 @@ public class CommandDump extends CommandBase {
 		
 		// validate
 		IInventory inventory = null;
-		for (EnumFacing direction : EnumFacing.values()) {
+		for (final EnumFacing direction : EnumFacing.values()) {
 			inventory = getInventory(world, x + direction.getFrontOffsetX(), y + direction.getFrontOffsetY(), z + direction.getFrontOffsetZ());
 			if (inventory != null) {
 				x += direction.getFrontOffsetX();
@@ -92,7 +92,7 @@ public class CommandDump extends CommandBase {
 	
 	@Nonnull
 	@Override
-	public String getCommandUsage(@Nonnull ICommandSender icommandsender) {
+	public String getCommandUsage(@Nonnull final ICommandSender icommandsender) {
 		return "/wdump: write loot table in console for item container below or next to player";
 	}
 	

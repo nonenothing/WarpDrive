@@ -13,7 +13,7 @@ public class BlockChunkLoader extends BlockAbstractContainer {
 	
 	public BlockChunkLoader(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.machines.ChunkLoader");
+		setUnlocalizedName("warpdrive.machines.chunk_loader");
 		GameRegistry.registerTileEntity(TileEntityChunkLoader.class, WarpDrive.PREFIX + registryName);
 	}
 	

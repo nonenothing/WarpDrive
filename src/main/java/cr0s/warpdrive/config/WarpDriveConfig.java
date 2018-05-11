@@ -101,24 +101,22 @@ public class WarpDriveConfig {
 	/*
 	 * The variables which store whether or not individual mods are loaded
 	 */
-	public static boolean isForgeMultipartLoaded = false;
+	public static boolean isAdvancedRepulsionSystemLoaded = false;
 	public static boolean isAdvancedSolarPanelLoaded = false;
-	public static boolean isAppliedEnergistics2Loaded = false;
-	public static boolean isDefenseTechLoaded = false;
-	public static boolean isICBMLoaded = false;
-	public static boolean isICBMClassicLoaded = false;
-	public static boolean isIndustrialCraft2Loaded = false;
-	public static boolean isComputerCraftLoaded = false;
-	public static boolean isOpenComputersLoaded = false;
 	public static boolean isCoFHCoreLoaded = false;
-	public static boolean isThermalExpansionLoaded = false;
-	public static boolean isArsMagica2Loaded = false;
-	public static boolean isImmersiveEngineeringLoaded = false;
+	public static boolean isComputerCraftLoaded = false;
+	public static boolean isDefenseTechLoaded = false;
+	public static boolean isEnderIOLoaded = false;
+	public static boolean isForgeMultipartLoaded = false;
 	public static boolean isGregTech5Loaded = false;
 	public static boolean isGregTech6Loaded = false;
-	public static boolean isEnderIOLoaded = false;
-	public static boolean isAdvancedRepulsionSystemLoaded = false;
+	public static boolean isICBMClassicLoaded = false;
+	public static boolean isICBMLoaded = false;
+	public static boolean isImmersiveEngineeringLoaded = false;
+	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isNotEnoughItemsLoaded = false;
+	public static boolean isOpenComputersLoaded = false;
+	public static boolean isThermalExpansionLoaded = false;
 	
 	public static ItemStack IC2_compressedAir;
 	public static ItemStack IC2_emptyCell;
@@ -142,11 +140,6 @@ public class WarpDriveConfig {
 	public static int G_LUA_SCRIPTS = LUA_SCRIPTS_ALL;
 	public static String G_SCHEMALOCATION = "warpDrive_schematics";
 	public static int G_BLOCKS_PER_TICK = 3500;
-	
-	public static boolean RECIPES_ENABLE_DYNAMIC = true;
-	public static boolean RECIPES_ENABLE_IC2 = false;
-	public static boolean RECIPES_ENABLE_HARD_IC2 = false;
-	public static boolean RECIPES_ENABLE_VANILLA = false;
 	
 	// Client
 	public static float CLIENT_LOCATION_SCALE = 1.0F;
@@ -563,23 +556,27 @@ public class WarpDriveConfig {
 		CelestialObjectManager.load(configDirectory);
 		
 		// read mod dependencies
-		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
-		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
-		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
-		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
 		isCoFHCoreLoaded = Loader.isModLoaded("cofhcore");
-		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
-		isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
-		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
-		isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
-		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
-		isGregTech5Loaded = false;
-		if (Loader.isModLoaded("gregtech")) {
-			String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
-		}
+		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
 		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
-		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
+		
+		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
+		isICBMLoaded = Loader.isModLoaded("icbm");
+		
+		isGregTech5Loaded = false;
+		isGregTech6Loaded = false;
+		if (Loader.isModLoaded("gregtech")) {
+			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
+			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
+			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
+			if ( (isGregTech5Loaded && isGregTech6Loaded)
+			     || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
+				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
+			}
+		}
+		
+		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
+		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
 	}
 	
 	public static void loadConfig(final File file) {
@@ -610,13 +607,6 @@ public class WarpDriveConfig {
 		G_BLOCKS_PER_TICK = Commons.clamp(100, 100000,
 				config.get("general", "blocks_per_tick", G_BLOCKS_PER_TICK,
 						"Number of blocks to move per ticks, too high will cause lag spikes on ship jumping or deployment, too low may break the ship wirings").getInt());
-		
-		// Recipes
-		RECIPES_ENABLE_DYNAMIC = config.get("recipes", "enable_dynamic", RECIPES_ENABLE_DYNAMIC,
-				"Mixed recipes dynamically integrating with other mods (Advanced Repulsion Systems, Advanced Solar Panels, IC2 experimental, GregTech 5, EnderIO, ThermalExpansion, Immersive Engineering)").getBoolean(true);
-		RECIPES_ENABLE_VANILLA = config.get("recipes", "enable_vanilla", RECIPES_ENABLE_VANILLA, "Vanilla recipes by DarkholmeTenk (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
-		RECIPES_ENABLE_IC2 = config.get("recipes", "enable_ic2", RECIPES_ENABLE_IC2, "Original recipes based on IndustrialCraft2 by Cr0s (you need to disable Dynamic recipes to use those, no longer updated)").getBoolean(false);
-		RECIPES_ENABLE_HARD_IC2 = config.get("recipes", "enable_hard_ic2", RECIPES_ENABLE_HARD_IC2, "Harder recipes based on IC2 by YuRaNnNzZZ (you need to disable Dynamic recipes to use those)").getBoolean(false);
 		
 		// Client
 		CLIENT_LOCATION_SCALE = Commons.clamp(0.25F, 4.0F, (float) config.get("client", "location_scale", CLIENT_LOCATION_SCALE,
@@ -1088,57 +1078,59 @@ public class WarpDriveConfig {
 	public static void onFMLInitialization() {
 		CompatWarpDrive.register();
 		
-		if (isForgeMultipartLoaded) {
-			isForgeMultipartLoaded = CompatForgeMultipart.register();
-		}
-		
-		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
-		isICBMLoaded = Loader.isModLoaded("icbm");
+		// read non-explicit mod dependencies
+		isAdvancedRepulsionSystemLoaded = Loader.isModLoaded("AdvancedRepulsionSystems");
+		isAdvancedSolarPanelLoaded = Loader.isModLoaded("AdvancedSolarPanel");
+		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
 		isICBMClassicLoaded = Loader.isModLoaded("icbmclassic");
+		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
+		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
+		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
 		
-		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
-		if (isIndustrialCraft2Loaded) {
-			loadIC2();
-			CompatIndustrialCraft2.register();
+		// apply compatibility modules
+		if (isAdvancedRepulsionSystemLoaded) {
+			CompatAdvancedRepulsionSystems.register();
 		}
+		
+		final boolean isAppliedEnergistics2Loaded = Loader.isModLoaded("appliedenergistics2");
+		if (isAppliedEnergistics2Loaded) {
+			CompatAppliedEnergistics2.register();
+		}
+		
+		final boolean isArsMagica2Loaded = Loader.isModLoaded("arsmagica2");
+		if (isArsMagica2Loaded) {
+			CompatArsMagica2.register();
+		}
+		
 		if (isComputerCraftLoaded) {
 			loadCC();
 			CompatComputerCraft.register();
 		}
-		if (isThermalExpansionLoaded) {
-			CompatThermalExpansion.register();
-		}
-		if (isAppliedEnergistics2Loaded) {
-			CompatAppliedEnergistics2.register();
-		}
-		if (isOpenComputersLoaded) {
-			CompatOpenComputers.register();
-		}
-		if (isArsMagica2Loaded) {
-			CompatArsMagica2.register();
-		}
-		if (isImmersiveEngineeringLoaded) {
-			CompatImmersiveEngineering.register();
-		}
-		isGregTech5Loaded = false;
-		isGregTech6Loaded = false;
-		if (Loader.isModLoaded("gregtech")) {
-			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
-			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
-			if ( (isGregTech5Loaded && isGregTech6Loaded)
-			  || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
-				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
-			}
-		}
-		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
+		
 		if (isEnderIOLoaded) {
 			CompatEnderIO.register();
 		}
-		if (isAdvancedRepulsionSystemLoaded) {
-			CompatAdvancedRepulsionSystems.register();
+		
+		if (isForgeMultipartLoaded) {
+			isForgeMultipartLoaded = CompatForgeMultipart.register();
 		}
-		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
+		
+		if (isImmersiveEngineeringLoaded) {
+			CompatImmersiveEngineering.register();
+		}
+		
+		if (isIndustrialCraft2Loaded) {
+			loadIC2();
+			CompatIndustrialCraft2.register();
+		}
+		
+		if (isOpenComputersLoaded) {
+			CompatOpenComputers.register();
+		}
+		
+		if (isThermalExpansionLoaded) {
+			CompatThermalExpansion.register();
+		}
 		
 		final boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
 		if (isBotaniaLoaded) {
@@ -1327,7 +1319,7 @@ public class WarpDriveConfig {
 	 * Check if a category of configuration files are missing, unpack default ones from the mod's resources to the specified target folder
 	 * Target folder should be already created
 	 **/
-	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, File folderTarget) {
+	private static void unpackResourcesToFolder(final String prefix, final String suffix, final String[] filenames, final String resourcePathSource, final File folderTarget) {
 		final File[] files = configDirectory.listFiles((file_notUsed, name) -> name.startsWith(prefix) && name.endsWith(suffix));
 		if (files == null) {
 			throw new RuntimeException(String.format("Critical error accessing configuration directory, searching for %s*%s files: %s", prefix, suffix, configDirectory));

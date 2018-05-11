@@ -28,7 +28,7 @@ public class GravityManager {
 	private static final double SPACE_VOID_GRAVITY_RAW_SNEAK = 0.005D; // 0.001 = no mvt
 	
 	@SuppressWarnings("unused") // Core mod
-	public static double getGravityForEntity(Entity entity) {
+	public static double getGravityForEntity(final Entity entity) {
 		
 		final double gravity = StarMapRegistry.getGravity(entity);
 		if (gravity == CelestialObject.GRAVITY_NONE) {
@@ -52,10 +52,10 @@ public class GravityManager {
 			} else {
 				final double jitter = inHyperspace ? (entity.worldObj.rand.nextDouble() - 0.5D) * 2.0D * HYPERSPACE_VOID_ENTITY_JITTER : 0.0D;
 				if (entity instanceof EntityPlayer) {
-					EntityPlayer player = (EntityPlayer) entity;
+					final EntityPlayer player = (EntityPlayer) entity;
 					
 					if (player.isSneaking()) {
-						for (ItemStack armor : player.getArmorInventoryList()) {
+						for (final ItemStack armor : player.getArmorInventoryList()) {
 							if (armor != null) {
 								if (Dictionary.ITEMS_FLYINSPACE.contains(armor.getItem())) {
 									return SPACE_VOID_GRAVITY_JETPACK_SNEAK;
@@ -76,7 +76,7 @@ public class GravityManager {
 	}
 	
 	@SuppressWarnings("unused") // Core mod
-	public static double getItemGravity(EntityItem entity) {
+	public static double getItemGravity(final EntityItem entity) {
 		final double gravity = StarMapRegistry.getGravity(entity);
 		if (gravity == CelestialObject.GRAVITY_NONE) {
 			return SPACE_VOID_GRAVITY;
@@ -98,7 +98,7 @@ public class GravityManager {
 	}
 	
 	@SuppressWarnings("unused") // Core mod
-	public static double getItemGravity2(EntityItem entity) {
+	public static double getItemGravity2(final EntityItem entity) {
 		final double gravity = StarMapRegistry.getGravity(entity);
 		if (gravity == CelestialObject.GRAVITY_NONE) {
 			return SPACE_VOID_GRAVITY;
@@ -119,7 +119,7 @@ public class GravityManager {
 		return gravity * OVERWORLD_ITEM_GRAVITY2;
 	}
 	
-	public static boolean isEntityInGraviField(Entity entity) {
+	public static boolean isEntityInGraviField(final Entity entity) {
 		final int y = MathHelper.floor_double(entity.posY);
 		final int x = MathHelper.floor_double(entity.posX);
 		final int z = MathHelper.floor_double(entity.posZ);

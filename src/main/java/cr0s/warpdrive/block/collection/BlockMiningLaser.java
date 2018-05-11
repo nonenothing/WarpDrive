@@ -62,27 +62,4 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityMiningLaser();
 	}
-	
-	@Override
-	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
-		if (hand != EnumHand.MAIN_HAND) {
-			return true;
-		}
-		
-		if (itemStackHeld == null) {
-			final TileEntity tileEntity = world.getTileEntity(blockPos);
-			if (tileEntity instanceof TileEntityMiningLaser) {
-				Commons.addChatMessage(entityPlayer, ((TileEntityMiningLaser) tileEntity).getStatus());
-				return true;
-			}
-		}
-		
-		return false;
-	}
 }

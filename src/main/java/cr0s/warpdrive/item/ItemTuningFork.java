@@ -55,8 +55,8 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
 		if (damage >= 0 && damage < 16) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName());
@@ -66,29 +66,29 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < 16) {
 			return getUnlocalizedName() + "." + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName();
 		}
 		return getUnlocalizedName();
 	}
 	
-	public static int getVideoChannel(ItemStack itemStack) {
+	public static int getVideoChannel(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
 		return (itemStack.getItemDamage() % 16) + 100;
 	}
 	
-	public static int getBeamFrequency(ItemStack itemStack) {
+	public static int getBeamFrequency(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
 		return ((itemStack.getItemDamage() % 16) + 1) * 10;
 	}
 	
-	public static int getControlChannel(ItemStack itemStack) {
+	public static int getControlChannel(final ItemStack itemStack) {
 		if (!(itemStack.getItem() instanceof ItemTuningFork)) {
 			return -1;
 		}
@@ -97,18 +97,20 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(ItemStack itemStack, EntityPlayer entityPlayer, World world, BlockPos blockPos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public EnumActionResult onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer,
+	                                  final World world, final BlockPos blockPos, final EnumHand hand,
+	                                  final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return EnumActionResult.FAIL;
 		}
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
 			return EnumActionResult.FAIL;
 		}
 		
-		boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
-		boolean hasBeamFrequency = tileEntity instanceof IBeamFrequency;
-		boolean hasControlChannel = tileEntity instanceof IControlChannel;
+		final boolean hasVideoChannel = tileEntity instanceof IVideoChannel;
+		final boolean hasBeamFrequency = tileEntity instanceof IBeamFrequency;
+		final boolean hasControlChannel = tileEntity instanceof IControlChannel;
 		if (!hasVideoChannel && !hasBeamFrequency && !hasControlChannel) {
 			return EnumActionResult.FAIL;
 		}

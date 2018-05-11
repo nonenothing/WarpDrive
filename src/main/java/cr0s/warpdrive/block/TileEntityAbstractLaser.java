@@ -155,7 +155,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		
 		// Secondary scan for laser medium below the required average
 		for (final TileEntityLaserMedium laserMedium : laserMediums) {
-			int energyStored = laserMedium.energy_getEnergyStored();
+			final int energyStored = laserMedium.energy_getEnergyStored();
 			if (energyStored < energyAverage) {
 				energyLeftOver += energyAverage - energyStored;
 			}
@@ -164,8 +164,8 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		// Third and final pass for energy consumption
 		int energyTotalConsumed = 0;
 		for (final TileEntityLaserMedium laserMedium : laserMediums) {
-			int energyStored = laserMedium.energy_getEnergyStored();
-			int energyToConsume = Math.min(energyStored, energyAverage + energyLeftOver);
+			final int energyStored = laserMedium.energy_getEnergyStored();
+			final int energyToConsume = Math.min(energyStored, energyAverage + energyLeftOver);
 			energyLeftOver -= Math.max(0, energyToConsume - energyAverage);
 			laserMedium.energy_consume(energyToConsume, false); // simulate is always false here
 			energyTotalConsumed += energyToConsume;
@@ -196,26 +196,26 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energy(Context context, Arguments arguments) {
+	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] laserMediumDirection(Context context, Arguments arguments) {
+	public Object[] laserMediumDirection(final Context context, final Arguments arguments) {
 		return laserMediumDirection();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] laserMediumCount(Context context, Arguments arguments) {
+	public Object[] laserMediumCount(final Context context, final Arguments arguments) {
 		return laserMediumCount();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

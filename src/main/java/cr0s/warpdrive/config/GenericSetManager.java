@@ -70,8 +70,8 @@ public class GenericSetManager<E extends IXmlRepresentableUnit> extends XmlFileM
 		HashMap<GenericSet<E>, ArrayList<String>> genericSetsDependencies = new HashMap<>();
 		
 		// scan for static import dependencies
-		for (XmlRandomCollection<GenericSet<E>> genericSets : genericSetsByGroup.values()) {
-			for (GenericSet<E> genericSet : genericSets.elements()) {
+		for (final XmlRandomCollection<GenericSet<E>> genericSets : genericSetsByGroup.values()) {
+			for (final GenericSet<E> genericSet : genericSets.elements()) {
 				final ArrayList<String> dependencies = genericSetsDependencies.computeIfAbsent(genericSet, k -> new ArrayList<>());
 				dependencies.addAll(genericSet.getImportGroupNames());
 			}
@@ -99,7 +99,7 @@ public class GenericSetManager<E extends IXmlRepresentableUnit> extends XmlFileM
 								WarpDrive.logger.info(String.format("Importing %s %s in %s ", nameElementSet, genericSet.getFullName(), entry.getKey().getFullName()));
 							}
 							entry.getKey().loadFrom(genericSet);
-						} catch (InvalidXmlException exception) {
+						} catch (final InvalidXmlException exception) {
 							exception.printStackTrace();
 							WarpDrive.logger.error(String.format("While importing %s into %s %s", dependency, nameElementSet, entry.getKey().getFullName()));
 						}

@@ -27,7 +27,7 @@ public class StructureManager extends XmlFileManager {
 	
 	private static final String[] REQUIRED_GROUPS = { GROUP_STARS, GROUP_MOONS, GROUP_GAS_CLOUDS, GROUP_ASTEROIDS, GROUP_ASTEROIDS_FIELDS };
 	
-	public static void load(File dir) {
+	public static void load(final File dir) {
 		structuresByGroup = new HashMap<>();
 		INSTANCE.load(dir, "structure", "structure");
 		
@@ -39,20 +39,20 @@ public class StructureManager extends XmlFileManager {
 	}
 	
 	@Override
-	protected void parseRootElement(final String location, Element elementStructure) throws InvalidXmlException, SAXException, IOException {
-		String group = elementStructure.getAttribute("group");
+	protected void parseRootElement(final String location, final Element elementStructure) throws InvalidXmlException, SAXException, IOException {
+		final String group = elementStructure.getAttribute("group");
 		if (group.isEmpty()) {
 			throw new InvalidXmlException(String.format("%s is missing a group attribute!", location));
 		}
 		
-		String name = elementStructure.getAttribute("name");
+		final String name = elementStructure.getAttribute("name");
 		if (name.isEmpty()) {
 			throw new InvalidXmlException(String.format("%s is missing a name attribute!", location));
 		}
 		
 		WarpDrive.logger.info("- found Structure " + group + ":" + name);
 		
-		XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.computeIfAbsent(group, k -> new XmlRandomCollection<>());
+		final XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.computeIfAbsent(group, k -> new XmlRandomCollection<>());
 		
 		AbstractStructure abstractStructure = xmlRandomCollection.getNamedEntry(name);
 		if (abstractStructure == null) {
@@ -71,7 +71,7 @@ public class StructureManager extends XmlFileManager {
 		xmlRandomCollection.loadFromXML(abstractStructure, elementStructure);
 	}
 	
-	public static AbstractStructure getStructure(Random random, final String group, final String name) {
+	public static AbstractStructure getStructure(final Random random, final String group, final String name) {
 		if (group == null || group.isEmpty()) {
 			return null;
 		}
@@ -81,7 +81,7 @@ public class StructureManager extends XmlFileManager {
 			return new AsteroidField(null, null);
 		}
 		
-		XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.get(group);
+		final XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.get(group);
 		if (xmlRandomCollection == null) {
 			return null;
 		}
@@ -95,7 +95,7 @@ public class StructureManager extends XmlFileManager {
 	
 	public static String getStructureNames(final String group) {
 		if (group != null && !group.isEmpty()) {
-			XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.get(group);
+			final XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.get(group);
 			if (xmlRandomCollection != null) {
 				return xmlRandomCollection.getNames();
 			}

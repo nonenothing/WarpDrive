@@ -43,6 +43,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	private boolean isFirstTick = true;
 	private boolean isDirty = false;
 	
+	protected void onFirstUpdateTick() {
+		// No operation
+	}
+	
 	@Override
 	public void update() {
 		if (isFirstTick) {
@@ -53,10 +57,6 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (isDirty) {
 			markDirty();
 		}
-	}
-	
-	protected void onFirstUpdateTick() {
-		// No operation
 	}
 	
 	@Override
@@ -109,7 +109,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	// Inventory management methods
 	protected boolean addToConnectedInventories(final ItemStack itemStack) {
-		List<ItemStack> itemStacks = new ArrayList<>(1);
+		final List<ItemStack> itemStacks = new ArrayList<>(1);
 		itemStacks.add(itemStack);
 		return addToInventories(itemStacks, Commons.getConnectedInventories(this));
 	}
@@ -155,7 +155,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return overflow;
 	}
 	
-	private static int addToInventory(final ItemStack itemStackSource, IInventory inventory) {
+	private static int addToInventory(final ItemStack itemStackSource, final IInventory inventory) {
 		if (itemStackSource == null || itemStackSource.getItem() == null) {
 			return 0;
 		}
@@ -170,7 +170,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					continue;
 				}
 				
-				ItemStack itemStack = inventory.getStackInSlot(i);
+				final ItemStack itemStack = inventory.getStackInSlot(i);
 				if (itemStack == null || !itemStack.isItemEqual(itemStackSource)) {
 					continue;
 				}
@@ -189,13 +189,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					continue;
 				}
 				
-				ItemStack itemStack = inventory.getStackInSlot(i);
+				final ItemStack itemStack = inventory.getStackInSlot(i);
 				if (itemStack != null) {
 					continue;
 				}
 				
 				transfer = Math.min(qtyLeft, itemStackSource.getMaxStackSize());
-				ItemStack dest = Commons.copyWithSize(itemStackSource, transfer);
+				final ItemStack dest = Commons.copyWithSize(itemStackSource, transfer);
 				inventory.setInventorySlotContents(i, dest);
 				qtyLeft -= transfer;
 				
@@ -210,17 +210,17 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	
 	// area protection
-	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, World world, BlockPos blockPosEvent) {
+	protected boolean isBlockBreakCanceled(final UUID uuidPlayer, final World world, final BlockPos blockPosEvent) {
 		return CommonProxy.isBlockBreakCanceled(uuidPlayer, pos, world, blockPosEvent);
 	}
 	
-	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, World world, BlockPos blockPosEvent, IBlockState blockState) {
+	protected boolean isBlockPlaceCanceled(final UUID uuidPlayer, final World world, final BlockPos blockPosEvent, final IBlockState blockState) {
 		return CommonProxy.isBlockPlaceCanceled(uuidPlayer, pos, world, blockPosEvent, blockState);
 	}
 	
 	// saved properties
 	@Override
-	public void readFromNBT(NBTTagCompound tagCompound) {
+	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
 		if (tagCompound.hasKey("upgrades")) {
 			final NBTTagCompound nbtTagCompoundUpgrades = tagCompound.getCompoundTag("upgrades");
@@ -270,19 +270,19 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected ITextComponent getUpgradeStatus() {
 		final String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
-			return new TextComponentTranslation("warpdrive.upgrade.statusLine.none",
+			return new TextComponentTranslation("warpdrive.upgrade.status_line.none",
 				strUpgrades);
 		} else {
-			return new TextComponentTranslation("warpdrive.upgrade.statusLine.valid",
+			return new TextComponentTranslation("warpdrive.upgrade.status_line.valid",
 				strUpgrades);
 		}
 	}
 	
 	protected ITextComponent getStatusPrefix() {
 		if (worldObj != null) {
-			Item item = Item.getItemFromBlock(getBlockType());
+			final Item item = Item.getItemFromBlock(getBlockType());
 			if (item != null) {
-				ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
+				final ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
 				return Commons.getChatPrefix(itemStack);
 			}
 		}
@@ -291,27 +291,27 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	protected ITextComponent getBeamFrequencyStatus(final int beamFrequency) {
 		if (beamFrequency == -1) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.beam_frequency.status_line.undefined");
 		} else if (beamFrequency < 0) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.invalid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beam_frequency.status_line.invalid", beamFrequency);
 		} else {
-			return new TextComponentTranslation("warpdrive.beam_frequency.statusLine.valid", beamFrequency);
+			return new TextComponentTranslation("warpdrive.beam_frequency.status_line.valid", beamFrequency);
 		}
 	}
 	
 	protected ITextComponent getVideoChannelStatus(final int videoChannel) {
 		if (videoChannel == -1) {
-			return new TextComponentTranslation("warpdrive.video_channel.statusLine.undefined");
+			return new TextComponentTranslation("warpdrive.video_channel.status_line.undefined");
 		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalid", videoChannel);
+			return new TextComponentTranslation("warpdrive.video_channel.status_line.invalid", videoChannel);
 		} else {
 			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
 			if (camera == null) {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.invalidOrNotLoaded", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.status_line.not_loaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.valid", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.status_line.valid", videoChannel);
 			} else {
-				return new TextComponentTranslation("warpdrive.video_channel.statusLine.validCamera",
+				return new TextComponentTranslation("warpdrive.video_channel.status_line.validCamera",
 				                                    videoChannel,
 				                                    camera.position.getX(),
 				                                    camera.position.getY(),
@@ -380,7 +380,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	private Object getUpgradeFromString(final String name) {
-		for (Object object : maxUpgrades.keySet()) {
+		for (final Object object : maxUpgrades.keySet()) {
 			if (getUpgradeAsString(object).equals(name)) {
 				return object;
 			}
@@ -389,7 +389,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	public Object getFirstUpgradeOfType(final Class clazz, final Object defaultValue) {
-		for (Object object : installedUpgrades.keySet()) {
+		for (final Object object : installedUpgrades.keySet()) {
 			if (clazz != null && clazz.isInstance(object)) {
 				return object;
 			}

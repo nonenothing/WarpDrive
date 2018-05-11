@@ -1,6 +1,5 @@
 package cr0s.warpdrive.compat;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.BlockAbstractBase;
@@ -38,7 +37,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -80,7 +79,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	private static final byte[]  rotFacing     = {  0,  1,  5,  4,  2,  3,  6,  7 };
 	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
-		byte[] newData = data.clone();
+		final byte[] newData = data.clone();
 		for (int index = 0; index < data.length; index++) {
 			switch (rotationSteps) {
 			case 1:
@@ -100,7 +99,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		
 		// Hull slabs

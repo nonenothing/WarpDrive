@@ -19,12 +19,12 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 	public static RenderBlockOmnipanel instance = new RenderBlockOmnipanel();
 	
 	@Override
-	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer) {
+	public void renderInventoryBlock(final Block block, final int metadata, final int modelId, final RenderBlocks renderer) {
 		// not supposed to happen
 	}
 	
 	@Override
-	public boolean renderWorldBlock(IBlockAccess blockAccess, int x, int y, int z, Block block, int modelId, RenderBlocks renderer) {
+	public boolean renderWorldBlock(final IBlockAccess blockAccess, final int x, final int y, final int z, final Block block, final int modelId, final RenderBlocks renderer) {
 		final Tessellator tessellator = Tessellator.instance;
 		tessellator.setBrightness(block.getMixedBrightnessForBlock(blockAccess, x, y, z));
 		
@@ -64,7 +64,7 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 		final double dV_max = icon.getMaxV();
 		
 		// get direct connections
-		BlockAbstractOmnipanel blockAbstractOmnipanel = (BlockAbstractOmnipanel) block;
+		final BlockAbstractOmnipanel blockAbstractOmnipanel = (BlockAbstractOmnipanel) block;
 		final int maskConnectY_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y - 1, z, EnumFacing.DOWN);
 		final int maskConnectY_pos = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y + 1, z, EnumFacing.UP);
 		final int maskConnectZ_neg = blockAbstractOmnipanel.getConnectionMask(blockAccess, x, y, z - 1, EnumFacing.NORTH);
@@ -558,7 +558,7 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 	}
 	
 	@Override
-	public boolean shouldRender3DInInventory(int modelId) {
+	public boolean shouldRender3DInInventory(final int modelId) {
 		return false;
 	}
 	

@@ -59,14 +59,14 @@ public class BlockShipCore extends BlockAbstractContainer {
 	
 	@Nonnull
 	@Override
-	public List<ItemStack> getDrops(IBlockAccess world, BlockPos blockPos, IBlockState blockState, int fortune) {
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+	public List<ItemStack> getDrops(final IBlockAccess world, final BlockPos blockPos, final IBlockState blockState, final int fortune) {
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityShipCore) {
 			if (((TileEntityShipCore)tileEntity).jumpCount == 0) {
 				return super.getDrops(world, blockPos, blockState, fortune);
 			}
 		}
-		ArrayList<ItemStack> itemStacks = new ArrayList<>();
+		final ArrayList<ItemStack> itemStacks = new ArrayList<>();
 		if (world instanceof WorldServer) {
 			// trigger explosion
 			final EntityTNTPrimed entityTNTPrimed = new EntityTNTPrimed(((WorldServer) world),
@@ -93,7 +93,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	@Override
 	public float getPlayerRelativeBlockHardness(final IBlockState blockState, @Nonnull final EntityPlayer entityPlayer, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		boolean willBreak = true;
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityShipCore) {
 			if (((TileEntityShipCore)tileEntity).jumpCount == 0) {
 				willBreak = false;

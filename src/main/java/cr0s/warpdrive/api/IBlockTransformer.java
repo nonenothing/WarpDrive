@@ -12,7 +12,7 @@ public interface IBlockTransformer {
 	
 	// Called when preparing to save a ship structure.
 	// Use this to prevent jump during critical events/animations.
-	boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason);
+	boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason);
 	
 	// Called when saving a ship structure.
 	// Use this to save external data in the ship schematic.

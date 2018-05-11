@@ -25,7 +25,7 @@ public class CompatBotania implements IBlockTransformer {
 			classBlockFelPumpkin    = Class.forName("vazkii.botania.common.block.BlockFelPumpkin");
 			classBlockSpecialFlower = Class.forName("vazkii.botania.common.block.BlockSpecialFlower");
 			WarpDriveConfig.registerBlockTransformer("Botania", new CompatBotania());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -38,7 +38,7 @@ public class CompatBotania implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -60,8 +60,8 @@ public class CompatBotania implements IBlockTransformer {
 	private static final int[]   mrotFelPumpkin   = {  1,  2,  3,  0,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		
 		if (classBlockAvatar.isInstance(block)) {
 			switch (rotationSteps) {

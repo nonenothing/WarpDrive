@@ -56,8 +56,8 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	}
 	
 	@Override
-	public void fromBytes(ByteBuf buffer) {
-		int typeSize = buffer.readByte();
+	public void fromBytes(final ByteBuf buffer) {
+		final int typeSize = buffer.readByte();
 		type = buffer.toString(buffer.readerIndex(), typeSize, StandardCharsets.US_ASCII);
 		buffer.skipBytes(typeSize);
 		
@@ -82,7 +82,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeByte(type.length());
 		buffer.writeBytes(type.getBytes(StandardCharsets.US_ASCII), 0, type.length());
 		buffer.writeByte(quantity);
@@ -107,8 +107,8 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handle(World world) {
-		// Directly spawn particle as per RenderGlobal.spawnParticle, bypassing range check
+	private void handle(final World world) {
+		// Directly spawn particle as per RenderGlobal.doSpawnParticle, bypassing range check
 		// adjust color as needed
 		Minecraft mc = Minecraft.getMinecraft();
 		Entity entity = mc.getRenderViewEntity();
@@ -120,9 +120,9 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		}
 		
 		Particle particle;
-		double noiseLevel = direction.getMagnitude() * 0.35D;
+		final double noiseLevel = direction.getMagnitude() * 0.35D;
 		for (int index = 0; index < quantity; index++) {
-			Vector3 directionRandomized = new Vector3(
+			final Vector3 directionRandomized = new Vector3(
 					direction.x + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
 					direction.y + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()),
 					direction.z + noiseLevel * (world.rand.nextFloat() - world.rand.nextFloat()));
@@ -136,7 +136,8 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			
 			case "fireworksSpark":
 				particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.FIREWORKS_SPARK.getParticleID(),
-						origin.x, origin.y, origin.z, directionRandomized.x, directionRandomized.y, directionRandomized.z);
+						origin.x, origin.y, origin.z,
+						directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				if (particle instanceof ParticleFirework.Spark) {
 					((ParticleFirework.Spark) particle).setColorFade(integerFromRGB(fadeRed, fadeGreen, fadeBlue));
 				}
@@ -202,7 +203,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(MessageSpawnParticle messageSpawnParticle, MessageContext context) {
+	public IMessage onMessage(final MessageSpawnParticle messageSpawnParticle, final MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring particle packet");

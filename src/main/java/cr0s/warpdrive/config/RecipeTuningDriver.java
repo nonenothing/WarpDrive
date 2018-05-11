@@ -30,7 +30,7 @@ public class RecipeTuningDriver implements IRecipe {
 		this.countDyesExpected = countDyes;
 		
 		// add lower priority vanilla Shaped recipe for NEI support
-		Object[] recipe = new Object[getRecipeSize()];
+		final Object[] recipe = new Object[getRecipeSize()];
 		recipe[0] = itemStackTool;
 		recipe[1] = itemStackConsumable;
 		for (int index = 0; index < countDyes; index++) {
@@ -41,7 +41,7 @@ public class RecipeTuningDriver implements IRecipe {
 	
 	// Returns an Item that is the result of this recipe
 	@Override
-	public ItemStack getCraftingResult(InventoryCrafting inventoryCrafting) {
+	public ItemStack getCraftingResult(final InventoryCrafting inventoryCrafting) {
 		return itemStackResult.copy();
 	}
 	
@@ -63,13 +63,13 @@ public class RecipeTuningDriver implements IRecipe {
 	
 	// check if a recipe matches current crafting inventory
 	@Override
-	public boolean matches(InventoryCrafting inventoryCrafting, World world) {
+	public boolean matches(final InventoryCrafting inventoryCrafting, final World world) {
 		ItemStack itemStackInput = null;
 		boolean isConsumableFound = false;
 		int dye = 0;
 		int countDyesFound = 0;
 		for (int indexSlot = 0; indexSlot <= inventoryCrafting.getSizeInventory(); indexSlot++) {
-			ItemStack itemStackSlot = inventoryCrafting.getStackInSlot(indexSlot);
+			final ItemStack itemStackSlot = inventoryCrafting.getStackInSlot(indexSlot);
 			
 			//noinspection StatementWithEmptyBody
 			if (itemStackSlot == null) {
