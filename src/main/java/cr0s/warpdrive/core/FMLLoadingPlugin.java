@@ -35,7 +35,7 @@ public class FMLLoadingPlugin implements IFMLLoadingPlugin, IFMLCallHook {
 	}
 	
 	@Override
-	public void injectData(Map<String, Object> data) {
+	public void injectData(final Map<String, Object> data) {
 		location = (File) data.get("coremodLocation");
 		if (debugLog) {
 			logger.info("injectData:");

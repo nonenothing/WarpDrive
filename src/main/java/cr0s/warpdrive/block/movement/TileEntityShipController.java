@@ -122,7 +122,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 						if (!tileEntityShipCore.validateShipSpatialParameters(this, reason)) {
 							tileEntityShipCore.messageToAllPlayersOnShip(new TextComponentString(reason.toString()));
 						}
-					} catch (Exception exception) {
+					} catch (final Exception exception) {
 						exception.printStackTrace();
 						WarpDrive.logger.info(this + " Exception in validateShipSpatialParameters, reason: " + reason.toString());
 					}
@@ -177,7 +177,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		
 		final NBTTagList tagListPlayers = new NBTTagList();
 		for (final String namePlayer : players) {
-			NBTTagString tagStringPlayer = new NBTTagString(namePlayer);
+			final NBTTagString tagStringPlayer = new NBTTagString(namePlayer);
 			tagListPlayers.appendTag(tagStringPlayer);
 		}
 		tagCompound.setTag("players", tagListPlayers);
@@ -231,22 +231,22 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		TileEntity tileEntity;
 		
 		tileEntity = worldObj.getTileEntity(pos.add(1, 0, 0));
-		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
 		tileEntity = worldObj.getTileEntity(pos.add(-1, 0, 0));
-		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
 		tileEntity = worldObj.getTileEntity(pos.add(0, 0, 1));
-		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
 		tileEntity = worldObj.getTileEntity(pos.add(0, 0, -1));
-		if (tileEntity != null && tileEntity instanceof TileEntityShipCore) {
+		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
@@ -284,7 +284,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			return "<nobody>";
 		}
 		
-		final StringBuilder list = new StringBuilder("");
+		final StringBuilder list = new StringBuilder();
 		
 		for (int i = 0; i < players.size(); i++) {
 			final String nick = players.get(i);
@@ -298,7 +298,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return front;
 	}
 	
-	private void setFront(int front) {
+	private void setFront(final int front) {
 		this.front = front;
 		isPendingScan = true;
 	}
@@ -307,7 +307,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return right;
 	}
 	
-	private void setRight(int right) {
+	private void setRight(final int right) {
 		this.right = right;
 		isPendingScan = true;
 	}
@@ -316,7 +316,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return up;
 	}
 	
-	private void setUp(int up) {
+	private void setUp(final int up) {
 		this.up = up;
 		isPendingScan = true;
 	}
@@ -325,7 +325,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return back;
 	}
 	
-	private void setBack(int back) {
+	private void setBack(final int back) {
 		this.back = back;
 		isPendingScan = true;
 	}
@@ -334,7 +334,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return left;
 	}
 	
-	private void setLeft(int left) {
+	private void setLeft(final int left) {
 		this.left = left;
 		isPendingScan = true;
 	}
@@ -343,7 +343,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return down;
 	}
 	
-	private void setDown(int down) {
+	private void setDown(final int down) {
 		this.down = down;
 		isPendingScan = true;
 	}
@@ -448,7 +448,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] shipName(Object[] arguments) {
+	public Object[] shipName(final Object[] arguments) {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 		if (tileEntityShipCore == null) {
 			return null;
@@ -456,8 +456,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (arguments.length == 1 && arguments[0] != null) {
 			final String shipNamePrevious = tileEntityShipCore.shipName;
 			tileEntityShipCore.shipName = Commons.sanitizeFileName((String) arguments[0]);
-			if ( tileEntityShipCore.shipName == null
-			  || !tileEntityShipCore.shipName.equals(shipNamePrevious) ) {
+			if (!tileEntityShipCore.shipName.equals(shipNamePrevious)) {
 				WarpDrive.logger.info(String.format("Ship renamed from '%s' to '%s' with player(s) %s",
 				                                    shipNamePrevious == null ? "-null-" : shipNamePrevious,
 				                                    tileEntityShipCore.shipName,
@@ -468,13 +467,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] dim_positive(Object[] arguments) {
+	public Object[] dim_positive(final Object[] arguments) {
 		try {
 			if (arguments.length == 3) {
-				int argInt0, argInt1, argInt2;
-				argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
-				argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
-				argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
+				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
+				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
+				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " Positive dimensions set to front " + argInt0 + ", right " + argInt1 + ", up " + argInt2);
 				}
@@ -482,7 +480,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				setRight(argInt1);
 				setUp(Math.min(255 - pos.getY(), argInt2));
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Integer[] { getFront(), getRight(), getUp() };
 		}
 		
@@ -490,13 +488,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] dim_negative(Object[] arguments) {
+	public Object[] dim_negative(final Object[] arguments) {
 		try {
 			if (arguments.length == 3) {
-				int argInt0, argInt1, argInt2;
-				argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
-				argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
-				argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
+				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
+				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
+				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
 				if (WarpDriveConfig.LOGGING_LUA) {
 					WarpDrive.logger.info(this + " Negative dimensions set to back " + argInt0 + ", left " + argInt1 + ", down " + argInt2);
 				}
@@ -504,7 +501,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				setLeft(argInt1);
 				setDown(Math.min(pos.getY(), argInt2));
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Integer[] { getBack(), getLeft(), getDown() };
 		}
 		
@@ -535,12 +532,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] command(Object[] arguments) {
+	public Object[] command(final Object[] arguments) {
 		try {
 			if (arguments.length == 1 && arguments[0] != null) {
 				setCommand(arguments[0].toString());
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Object[] { command.toString() };
 		}
 		
@@ -548,7 +545,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			if (WarpDriveConfig.LOGGING_LUA) {
@@ -568,12 +565,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] movement(Object[] arguments) {
+	public Object[] movement(final Object[] arguments) {
 		try {
 			if (arguments.length == 3) {
 				setMovement(Commons.toInt(arguments[0]), Commons.toInt(arguments[1]), Commons.toInt(arguments[2]));
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Integer[] { moveFront, moveUp, moveRight };
 		}
 		
@@ -596,12 +593,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] rotationSteps(Object[] arguments) {
+	public Object[] rotationSteps(final Object[] arguments) {
 		try {
 			if (arguments.length == 1 && arguments[0] != null) {
 				setRotationSteps((byte) Commons.toInt(arguments[0]));
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			return new Integer[] { (int) rotationSteps };
 		}
 		
@@ -609,7 +606,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	}
 	
 	@Override
-	public Object[] targetName(Object[] arguments) {
+	public Object[] targetName(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			this.nameTarget = (String) arguments[0];
 		}
@@ -634,110 +631,110 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] isAssemblyValid(Context context, Arguments arguments) {
+	public Object[] isAssemblyValid(final Context context, final Arguments arguments) {
 		return isAssemblyValid();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getOrientation(Context context, Arguments arguments) {
+	public Object[] getOrientation(final Context context, final Arguments arguments) {
 		return getOrientation();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] isInSpace(Context context, Arguments arguments) {
+	public Object[] isInSpace(final Context context, final Arguments arguments) {
 		return isInSpace();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] isInHyperspace(Context context, Arguments arguments) {
+	public Object[] isInHyperspace(final Context context, final Arguments arguments) {
 		return isInHyperspace();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] shipName(Context context, Arguments arguments) {
+	public Object[] shipName(final Context context, final Arguments arguments) {
 		return shipName(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] dim_positive(Context context, Arguments arguments) {
+	public Object[] dim_positive(final Context context, final Arguments arguments) {
 		return dim_positive(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] dim_negative(Context context, Arguments arguments) {
+	public Object[] dim_negative(final Context context, final Arguments arguments) {
 		return dim_negative(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] energy(Context context, Arguments arguments) {
+	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getAttachedPlayers(Context context, Arguments arguments) {
+	public Object[] getAttachedPlayers(final Context context, final Arguments arguments) {
 		return getAttachedPlayers();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] command(Context context, Arguments arguments) {
+	public Object[] command(final Context context, final Arguments arguments) {
 		return command(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getShipSize(Context context, Arguments arguments) {
+	public Object[] getShipSize(final Context context, final Arguments arguments) {
 		return getShipSize();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getMaxJumpDistance(Context context, Arguments arguments) {
+	public Object[] getMaxJumpDistance(final Context context, final Arguments arguments) {
 		return getMaxJumpDistance();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] movement(Context context, Arguments arguments) {
+	public Object[] movement(final Context context, final Arguments arguments) {
 		return movement(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] rotationSteps(Context context, Arguments arguments) {
+	public Object[] rotationSteps(final Context context, final Arguments arguments) {
 		return rotationSteps(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] targetName(Context context, Arguments arguments) {
+	public Object[] targetName(final Context context, final Arguments arguments) {
 		return targetName(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] getEnergyRequired(Context context, Arguments arguments) {
+	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method, arguments);
 		
 		switch (methodName) {

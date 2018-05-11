@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=能量升级
 
 
 item.warpdrive.tool.ship_token.name=水晶符号
-item.warpdrive.tool.ship_token.tooltip=晶体封装的飞船 '%1$s'\n§b进入扫描场§7去搭建你的飞船
+item.warpdrive.tool.ship_token.tooltip.usage=晶体封装的飞船 '%1$s'\n§b进入扫描场§7去搭建你的飞船
 item.warpdrive.tool.ship_token0.name=水晶符号#0
 item.warpdrive.tool.ship_token1.name=水晶符号#1
 item.warpdrive.tool.ship_token2.name=水晶符号#2
@@ -190,12 +190,13 @@ tile.warpdrive.decoration.decorative.plain.name=平坦方块
 tile.warpdrive.decoration.gas.name=气密方块
 tile.warpdrive.decoration.bedrock_glass.name=基岩玻璃
 
-tile.warpdrive.passive.IridiumBlock.name=铱块
-tile.warpdrive.passive.HighlyAdvancedMachine.name=高新机械块
 
-tile.warpdrive.machines.ChunkLoader.name=区块加载器
-tile.warpdrive.machines.Laser.name=激光
-tile.warpdrive.machines.LaserMedium.name=激光介质(粒子助推器)
+tile.warpdrive.passive.iridium_block.name=铱块
+tile.warpdrive.passive.highly_advanced_machine.name=高新机械块
+
+tile.warpdrive.machines.chunk_loader.name=区块加载器
+tile.warpdrive.machines.laser.name=激光
+tile.warpdrive.machines.laser_medium.name=激光介质(粒子助推器)
 
 tile.warpdrive.atomic.accelerator_controller.name=加速器操纵仪
 tile.warpdrive.atomic.accelerator_controller.tooltip=操纵一或多个粒子加速器.\n需要连接电磁体.
@@ -569,10 +570,10 @@ warpdrive.monitor.viewingCamera=观景相机位于 %2$d, %3$d, %4$d 在视频频
 warpdrive.ship.attachedPlayers=所属的玩家: %1$s
 warpdrive.ship.playerAttached=你在飞船 %1$s上.\n属于%2$s
 warpdrive.ship.playerDetached=你已经脱离了飞船 %1$s.\n属于%2$s
-warpdrive.ship.statusLine.cooling=%1$d s 冷却时间
-warpdrive.ship.statusLine.isolation=%1$d有效的隔离方块提供%2$2.1f%%吸收.
+warpdrive.ship.status_line.cooling=%1$d s 冷却时间
+warpdrive.ship.status_line.isolation=%1$d有效的隔离方块提供%2$2.1f%%吸收.
 
-warpdrive.energy.statusLine=能量水平%1$s / %2$s EU.
+warpdrive.energy.status_line=能量水平%1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=%1$s侧面更改为能量输入模式！
 warpdrive.energy.side.changedToOutput=%1$s侧面更改为能量输出模式！
 warpdrive.energy.side.changedToDisabled=%1$s侧面更改为禁用模式！
@@ -585,9 +586,9 @@ warpdrive.accelerator.guide.noChiller=这台加速器没有冷却设备!
 warpdrive.beam_frequency.tooltip=设置光束频率为%1$d
 warpdrive.beam_frequency.get=光束频率%2$d 已从 %1$s 断开
 warpdrive.beam_frequency.set=光束%1$s 正与频率 %2$d进行匹配
-warpdrive.beam_frequency.statusLine.valid=光束频率%1$d有效
-warpdrive.beam_frequency.statusLine.invalid=§c光束频率%1$d无效
-warpdrive.beam_frequency.statusLine.undefined=§7未定义的光束频率.\n§b使用一个音叉§r进行设置
+warpdrive.beam_frequency.status_line.valid=光束频率%1$d有效
+warpdrive.beam_frequency.status_line.invalid=§c光束频率%1$d无效
+warpdrive.beam_frequency.status_line.undefined=§7未定义的光束频率.\n§b使用一个音叉§r进行设置
 
 warpdrive.breathing.alarm=呼吸警报
 warpdrive.breathing.invalid_setup=无呼吸头盔\未完成盔甲
@@ -597,41 +598,41 @@ warpdrive.breathing.no_air=空气耗尽!
 warpdrive.control_channel.tooltip=控制连接设置为 %1$d
 warpdrive.control_channel.get=控制连接 %2$d 已从 %1$s 断开
 warpdrive.control_channel.set=%1$s 正与控制连接 %2$d 进行匹配
-warpdrive.control_channel.statusLine.valid=控制连接 %1$d 有效.
-warpdrive.control_channel.statusLine.invalid=§c控制连接 %1$d 无效.
-warpdrive.control_channel.statusLine.undefined=§7未定义控制连接.\n§b使用音叉§r进行设置.
+warpdrive.control_channel.status_line.valid=控制连接 %1$d 有效.
+warpdrive.control_channel.status_line.invalid=§c控制连接 %1$d 无效.
+warpdrive.control_channel.status_line.undefined=§7未定义控制连接.\n§b使用音叉§r进行设置.
 
 warpdrive.forcefield.guide.lowPower=舰长，我们的能量已耗尽，请降低能耗或者找一个苏格兰工程师恢复能量!
 
-warpdrive.forcefield.shape.statusLine.none=§c形状未定义.
-warpdrive.forcefield.shape.statusLine.double=形状是完整的%1$s
-warpdrive.forcefield.shape.statusLine.single=形状是半个%1$s
-warpdrive.forcefield.shape.statusLine.sphere=球体
-warpdrive.forcefield.shape.statusLine.cylinder_h=圆柱体(水平)
-warpdrive.forcefield.shape.statusLine.cylinder_v=圆柱体(竖直)
-warpdrive.forcefield.shape.statusLine.cube=立方体
-warpdrive.forcefield.shape.statusLine.plane=平面
-warpdrive.forcefield.shape.statusLine.tube=管道
-warpdrive.forcefield.shape.statusLine.tunnel=隧道
+warpdrive.forcefield.shape.status_line.none=§c形状未定义.
+warpdrive.forcefield.shape.status_line.double=形状是完整的%1$s
+warpdrive.forcefield.shape.status_line.single=形状是半个%1$s
+warpdrive.forcefield.shape.status_line.sphere=球体
+warpdrive.forcefield.shape.status_line.cylinder_h=圆柱体(水平)
+warpdrive.forcefield.shape.status_line.cylinder_v=圆柱体(竖直)
+warpdrive.forcefield.shape.status_line.cube=立方体
+warpdrive.forcefield.shape.status_line.plane=平面
+warpdrive.forcefield.shape.status_line.tube=管道
+warpdrive.forcefield.shape.status_line.tunnel=隧道
 
-warpdrive.forcefield.upgrade.statusLine.attraction=引力
-warpdrive.forcefield.upgrade.statusLine.breaking=采掘中
-warpdrive.forcefield.upgrade.statusLine.camouflage=伪装
-warpdrive.forcefield.upgrade.statusLine.cooling=冷却
-warpdrive.forcefield.upgrade.statusLine.fusion=融合
-warpdrive.forcefield.upgrade.statusLine.heating=加热
-warpdrive.forcefield.upgrade.statusLine.inversion=反向
-warpdrive.forcefield.upgrade.statusLine.item_port=物品端口
-warpdrive.forcefield.upgrade.statusLine.pumping=抽吸
-warpdrive.forcefield.upgrade.statusLine.range=提升范围
-warpdrive.forcefield.upgrade.statusLine.repulsion=斥力
-warpdrive.forcefield.upgrade.statusLine.rotation=旋转
-warpdrive.forcefield.upgrade.statusLine.shock=电击
-warpdrive.forcefield.upgrade.statusLine.silencer=消音
-warpdrive.forcefield.upgrade.statusLine.speed=速度
-warpdrive.forcefield.upgrade.statusLine.stabilization=稳定
-warpdrive.forcefield.upgrade.statusLine.thickness=厚度
-warpdrive.forcefield.upgrade.statusLine.translation=转化
+warpdrive.forcefield.upgrade.status_line.attraction=引力
+warpdrive.forcefield.upgrade.status_line.breaking=采掘中
+warpdrive.forcefield.upgrade.status_line.camouflage=伪装
+warpdrive.forcefield.upgrade.status_line.cooling=冷却
+warpdrive.forcefield.upgrade.status_line.fusion=融合
+warpdrive.forcefield.upgrade.status_line.heating=加热
+warpdrive.forcefield.upgrade.status_line.inversion=反向
+warpdrive.forcefield.upgrade.status_line.item_port=物品端口
+warpdrive.forcefield.upgrade.status_line.pumping=抽吸
+warpdrive.forcefield.upgrade.status_line.range=提升范围
+warpdrive.forcefield.upgrade.status_line.repulsion=斥力
+warpdrive.forcefield.upgrade.status_line.rotation=旋转
+warpdrive.forcefield.upgrade.status_line.shock=电击
+warpdrive.forcefield.upgrade.status_line.silencer=消音
+warpdrive.forcefield.upgrade.status_line.speed=速度
+warpdrive.forcefield.upgrade.status_line.stabilization=稳定
+warpdrive.forcefield.upgrade.status_line.thickness=厚度
+warpdrive.forcefield.upgrade.status_line.translation=转化
 
 warpdrive.particle.ion.name=离子
 warpdrive.particle.ion.tooltip=产生于基础粒子加速器的束流对撞中.
@@ -659,17 +660,17 @@ warpdrive.upgrade.result.notEnoughShapes.single=§c你需要至少一个物品�
 warpdrive.upgrade.result.shapeDismounted=模型卸载成功.
 warpdrive.upgrade.result.shapeMounted=模型加载成功.
 
-warpdrive.upgrade.statusLine.none=§7没有安装升级
-warpdrive.upgrade.statusLine.valid=用升级%1$s.
+warpdrive.upgrade.status_line.none=§7没有安装升级
+warpdrive.upgrade.status_line.valid=用升级%1$s.
 
 warpdrive.video_channel.tooltip-tbc=频道设置为%1$d
 warpdrive.video_channel.get=视频频道 %2$d 已从频道 %1$s 断开
 warpdrive.video_channel.set=%1$s正在切换至频道%2$d
-warpdrive.video_channel.statusLine.valid=视频通道%1$d有效
-warpdrive.video_channel.statusLine.validCamera=相机的视频通道 %1$d有效，位于%2$d, %3$d, %4$d.
-warpdrive.video_channel.statusLine.invalid=§c视频通道 %1$d 无效.
-warpdrive.video_channel.statusLine.invalidOrNotLoaded=§c视频通道 %1$d 无效或者是相机的距离太远!
-warpdrive.video_channel.statusLine.undefined=§7未定义的视频通道.\n§b使用一个音叉§r 去设置它.
+warpdrive.video_channel.status_line.valid_camera=视频通道%1$d有效
+warpdrive.video_channel.status_line.valid_monitor=相机的视频通道 %1$d有效，位于%2$d, %3$d, %4$d.
+warpdrive.video_channel.status_line.invalid=§c视频通道 %1$d 无效.
+warpdrive.video_channel.status_line.not_loaded=§c视频通道 %1$d 无效或者是相机的距离太远!
+warpdrive.video_channel.status_line.undefined=§7未定义的视频通道.\n§b使用一个音叉§r 去设置它.
 
 warpdrive.cloaking_core.missingInnerAndOuter=§c完整度降低至 %1$d%%: %2$s 线圈失去联系且预计将失去 %3$s 线圈
 warpdrive.cloaking_core.missingInner=§c完整度降低至 %1$d%%: %2$s 线圈失去联系
@@ -693,6 +694,6 @@ warpdrive.transporter_signature.set_self=§cTransporter room can't target itself
 warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
 warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
-warpdrive.tooltip.itemTag.breathingHelmet=§b太空中呼吸§r消耗背包中的IC压缩空气
-warpdrive.tooltip.itemTag.flyInSpace=§b太空喷气背包§r.
-warpdrive.tooltip.itemTag.noFallDamage=§b减少摔落伤害§r.
+warpdrive.tooltip.item_tag.breathing_helmet=§b太空中呼吸§r消耗背包中的IC压缩空气
+warpdrive.tooltip.item_tag.fly_in_space=§b太空喷气背包§r.
+warpdrive.tooltip.item_tag.no_fall_damage=§b减少摔落伤害§r.

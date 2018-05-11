@@ -40,7 +40,7 @@ public class ChunkHandler {
 	
 	/* event catchers */
 	@SubscribeEvent
-	public void onLoadWorld(WorldEvent.Load event) {
+	public void onLoadWorld(final WorldEvent.Load event) {
 		if (event.getWorld().isRemote || event.getWorld().provider.getDimension() == 0) {
 			if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 				WarpDrive.logger.info(String.format("%s world %s load.",
@@ -77,7 +77,7 @@ public class ChunkHandler {
 	
 	// (server side only)
 	@SubscribeEvent
-	public void onLoadChunkData(ChunkDataEvent.Load event) {
+	public void onLoadChunkData(final ChunkDataEvent.Load event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loading data (1)", 
 			                                    event.getWorld().isRemote ? "Client" : "Server",
@@ -92,7 +92,7 @@ public class ChunkHandler {
 	
 	// (called after data loading, or before a late generation, or on client side) 
 	@SubscribeEvent
-	public void onLoadChunk(ChunkEvent.Load event) {
+	public void onLoadChunk(final ChunkEvent.Load event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loaded (2)",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
@@ -121,7 +121,7 @@ public class ChunkHandler {
 	// (server side only)
 	// not called when chunk wasn't changed since last save?
 	@SubscribeEvent
-	public void onSaveChunkData(ChunkDataEvent.Save event) {
+	public void onSaveChunkData(final ChunkDataEvent.Save event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s save data",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
@@ -141,7 +141,7 @@ public class ChunkHandler {
 	
 	// (server side only)
 	@SubscribeEvent
-	public void onSaveWorld(WorldEvent.Save event) {
+	public void onSaveWorld(final WorldEvent.Save event) {
 		if (event.getWorld().provider.getDimension() != 0) {
 			return;
 		}
@@ -163,7 +163,7 @@ public class ChunkHandler {
 	}
 	
 	@SubscribeEvent
-	public void onUnloadWorld(WorldEvent.Unload event) {
+	public void onUnloadWorld(final WorldEvent.Unload event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s unload",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
@@ -189,7 +189,7 @@ public class ChunkHandler {
 	
 	// (not called when closing SSP game)
 	@SubscribeEvent
-	public void onUnloadChunk(ChunkEvent.Unload event) {
+	public void onUnloadChunk(final ChunkEvent.Unload event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unload",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
@@ -222,7 +222,7 @@ public class ChunkHandler {
 	}
 	/**/
 	@SubscribeEvent
-	public void onWorldTick(WorldTickEvent event) {
+	public void onWorldTick(final WorldTickEvent event) {
 		if (event.side != Side.SERVER || event.phase != Phase.END) {
 			return;
 		}
@@ -343,7 +343,7 @@ public class ChunkHandler {
 		}
 		try {
 			return chunkData.getStateAir(world, x, y, z);
-		} catch (ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
+		} catch (final ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
 			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded @ %s (%d %d %d)",
 			                                    world.provider.getSaveFolder(),
 			                                    x, y, z));
@@ -387,7 +387,7 @@ public class ChunkHandler {
 				}
 			}
 			
-		} catch (ConcurrentModificationException exception) {
+		} catch (final ConcurrentModificationException exception) {
 			WarpDrive.logger.error(String.format("%s world %s had some chunks changed outside main thread? (size %d -> %d)",
 			                                    world.isRemote ? "Client" : "Server",
 			                                    world.provider.getSaveFolder(),

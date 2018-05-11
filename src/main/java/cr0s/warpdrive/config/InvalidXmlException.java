@@ -6,19 +6,19 @@ public class InvalidXmlException extends Exception {
 		super("An unknown XML error occurred");
 	}
 
-	public InvalidXmlException(String message) {
+	public InvalidXmlException(final String message) {
 		super(message);
 	}
 
-	public InvalidXmlException(Throwable cause) {
+	public InvalidXmlException(final Throwable cause) {
 		super(cause);
 	}
 
-	public InvalidXmlException(String message, Throwable cause) {
+	public InvalidXmlException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
-	public InvalidXmlException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public InvalidXmlException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 

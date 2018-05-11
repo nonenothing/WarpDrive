@@ -41,12 +41,12 @@ public class MetaOrb extends Orb {
 	}
 	
 	@Override
-	public boolean generate(World world, Random random, BlockPos blockPos) {
+	public boolean generate(final World world, final Random random, final BlockPos blockPos) {
 		return instantiate(random).generate(world, random, blockPos);
 	}
 	
 	@Override
-	public AbstractStructureInstance instantiate(Random random) {
+	public AbstractStructureInstance instantiate(final Random random) {
 		return new MetaOrbInstance(this, random);
 	}
 	
@@ -92,7 +92,7 @@ public class MetaOrb extends Orb {
 					} else {
 						try {
 							metadata = Integer.parseInt(stringValue);
-						} catch (NumberFormatException exception) {
+						} catch (final NumberFormatException exception) {
 							throw new InvalidXmlException("Structure " + parentFullName + " has an invalid metadata " + stringValue + ", expecting an integer");
 						}
 					}
@@ -106,7 +106,7 @@ public class MetaOrb extends Orb {
 			// count
 			try {
 				minCount = Integer.parseInt(element.getAttribute("minCount"));
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minCount " + element.getAttribute("minCount") + ", expecting an integer");
 			}
 			
@@ -116,7 +116,7 @@ public class MetaOrb extends Orb {
 			
 			try {
 				maxCount = Integer.parseInt(element.getAttribute("maxCount"));
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid maxCount " + element.getAttribute("maxCount") + ", expecting an integer");
 			}
 			
@@ -132,7 +132,7 @@ public class MetaOrb extends Orb {
 				} else {
 					minRadius = Double.parseDouble(element.getAttribute("minRadius"));
 				}
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minRadius " + element.getAttribute("minRadius") + ", expecting a double");
 			}
 			
@@ -147,7 +147,7 @@ public class MetaOrb extends Orb {
 				} else {
 					relativeRadius = Double.parseDouble(element.getAttribute("relativeRadius"));
 				}
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid relativeRadius " + element.getAttribute("relativeRadius") + ", expecting a double");
 			}
 			

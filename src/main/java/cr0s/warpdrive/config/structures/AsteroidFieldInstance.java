@@ -31,7 +31,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 	}
 	
 	private static float binomialRandom(final World world) {
-		float linear = world.rand.nextFloat();
+		final float linear = world.rand.nextFloat();
 		// ideal sphere repartition = x ^ 0.5 (sqrt)
 		// Dilution but slow to compute = 0.5 * ( x ^ 0.3 + 1 + (x - 1) ^ 3 )
 		// Optimized 'pushed out' form = 1.25 - 0.625 / (0.5 + 2 * x)
@@ -73,33 +73,33 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		}
 		/**/
 		
-		float surfacePerAsteroid = 80.0F + world.rand.nextFloat() * 300;
-		int maxDistance = 30 + world.rand.nextInt(170);
-		int maxDistanceBig = Math.round(maxDistance * (0.6F + 0.2F * world.rand.nextFloat()));
-		int maxDistanceSmall = Math.round(maxDistance * 1.1F);
-		float bigRatio = 0.3F + world.rand.nextFloat() * 0.3F;
-		float surfaceBig = (float) (Math.PI * Math.pow(maxDistanceBig, 2));
-		float surfaceSmall = (float) (Math.PI * Math.pow(maxDistanceSmall, 2));
-		int numOfBigAsteroids = Math.round(bigRatio * surfaceBig / surfacePerAsteroid);
-		int numOfSmallAsteroids = Math.round((1.0F - bigRatio) * surfaceSmall / surfacePerAsteroid);
-		int numOfClouds = Math.round(numOfBigAsteroids * 1.0F / (10.0F + world.rand.nextInt(10)));
-		int maxHeight = 70 + world.rand.nextInt(50);
-		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - maxHeight,
+		final float surfacePerAsteroid = 80.0F + world.rand.nextFloat() * 300;
+		final int maxDistance = 30 + world.rand.nextInt(170);
+		final int maxDistanceBig = Math.round(maxDistance * (0.6F + 0.2F * world.rand.nextFloat()));
+		final int maxDistanceSmall = Math.round(maxDistance * 1.1F);
+		final float bigRatio = 0.3F + world.rand.nextFloat() * 0.3F;
+		final float surfaceBig = (float) (Math.PI * Math.pow(maxDistanceBig, 2));
+		final float surfaceSmall = (float) (Math.PI * Math.pow(maxDistanceSmall, 2));
+		final int numOfBigAsteroids = Math.round(bigRatio * surfaceBig / surfacePerAsteroid);
+		final int numOfSmallAsteroids = Math.round((1.0F - bigRatio) * surfaceSmall / surfacePerAsteroid);
+		final int numOfClouds = Math.round(numOfBigAsteroids * 1.0F / (10.0F + world.rand.nextInt(10)));
+		final int maxHeight = 70 + world.rand.nextInt(50);
+		final int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - maxHeight,
 		                  Math.max(blockPos.getY(), WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + maxHeight));
 		WarpDrive.logger.info("Generating asteroid field at (" + blockPos.getX() + " " + y2 + " " + blockPos.getZ() + ") qty " + numOfBigAsteroids + ", " + numOfSmallAsteroids + ", "
 		                      + numOfClouds + " over " + maxDistance + ", " + maxHeight + " surfacePerAsteroid " + String.format("%.1f", surfacePerAsteroid));
 		
 		// Setting up of big asteroids
 		for (int i = 1; i <= numOfBigAsteroids; i++) {
-			float binomial = binomialRandom(world);
-			double bearing = world.rand.nextFloat() * 2.0D * Math.PI;
-			double yawn = world.rand.nextFloat() * Math.PI;
-			float horizontalRange = Math.max(6.0F, binomial * maxDistanceBig);
-			float verticalRange = Math.max(3.0F, binomial * maxHeight);
+			final float binomial = binomialRandom(world);
+			final double bearing = world.rand.nextFloat() * 2.0D * Math.PI;
+			final double yawn = world.rand.nextFloat() * Math.PI;
+			final float horizontalRange = Math.max(6.0F, binomial * maxDistanceBig);
+			final float verticalRange = Math.max(3.0F, binomial * maxHeight);
 			
-			int aX = (int) (blockPos.getX() + Math.round(horizontalRange * Math.cos(bearing)));
-			int aY = (int) (y2 + Math.round(verticalRange * Math.cos(yawn)));
-			int aZ = (int) (blockPos.getZ() + Math.round(horizontalRange * Math.sin(bearing)));
+			final int aX = (int) (blockPos.getX() + Math.round(horizontalRange * Math.cos(bearing)));
+			final int aY = (int) (y2 + Math.round(verticalRange * Math.cos(yawn)));
+			final int aZ = (int) (blockPos.getZ() + Math.round(horizontalRange * Math.sin(bearing)));
 			
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 				WarpDrive.logger.info(String.format("Big asteroid: %.3f %.3f r %.3f r makes (%3d %3d %3d)",
@@ -107,25 +107,25 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 			}
 			
 			// Place an asteroid
-			AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+			final AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
 			moon.generate(world, world.rand, new BlockPos(aX, aY, aZ));
 		}
 		
 		// Setting up small asteroids
 		for (int i = 1; i <= numOfSmallAsteroids; i++) {
-			float binomial = binomialRandom(world);
-			double bearing = world.rand.nextFloat() * 2.0D * Math.PI;
-			double yawn = world.rand.nextFloat() * Math.PI;
-			float horizontalRange = Math.max(6.0F, binomial * maxDistanceSmall);
-			float verticalRange = Math.max(3.0F, binomial * maxHeight);
+			final float binomial = binomialRandom(world);
+			final double bearing = world.rand.nextFloat() * 2.0D * Math.PI;
+			final double yawn = world.rand.nextFloat() * Math.PI;
+			final float horizontalRange = Math.max(6.0F, binomial * maxDistanceSmall);
+			final float verticalRange = Math.max(3.0F, binomial * maxHeight);
 			
-			int aX = (int) (blockPos.getX() + Math.round(horizontalRange * Math.cos(bearing)));
-			int aY = (int) (y2 + Math.round(verticalRange * Math.cos(yawn)));
-			int aZ = (int) (blockPos.getZ() + Math.round(horizontalRange * Math.sin(bearing)));
+			final int aX = (int) (blockPos.getX() + Math.round(horizontalRange * Math.cos(bearing)));
+			final int aY = (int) (y2 + Math.round(verticalRange * Math.cos(yawn)));
+			final int aZ = (int) (blockPos.getZ() + Math.round(horizontalRange * Math.sin(bearing)));
 			
 			// Placing
 			if (world.rand.nextInt(400) != 1) {
-				AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+				final AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
 				moon.generate(world, world.rand, new BlockPos(aX, aY, aZ));
 			} else {
 				if (world.rand.nextInt(20) != 1) {
@@ -138,19 +138,19 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		
 		// Setting up gas clouds
 		for (int i = 1; i <= numOfClouds; i++) {
-			float binomial = binomialRandom(world);
-			double bearing = world.rand.nextFloat() * 2.0D * Math.PI;
-			double yawn = world.rand.nextFloat() * Math.PI;
-			float horizontalRange = Math.max(6.0F, binomial * maxDistanceBig);
-			float verticalRange = Math.max(3.0F, binomial * maxHeight);
+			final float binomial = binomialRandom(world);
+			final double bearing = world.rand.nextFloat() * 2.0D * Math.PI;
+			final double yawn = world.rand.nextFloat() * Math.PI;
+			final float horizontalRange = Math.max(6.0F, binomial * maxDistanceBig);
+			final float verticalRange = Math.max(3.0F, binomial * maxHeight);
 			
-			int aX = (int) (blockPos.getX() + Math.round(horizontalRange * Math.cos(bearing)));
-			int aY = (int) (y2 + Math.round(verticalRange * Math.cos(yawn)));
-			int aZ = (int) (blockPos.getZ() + Math.round(horizontalRange * Math.sin(bearing)));
+			final int aX = (int) (blockPos.getX() + Math.round(horizontalRange * Math.cos(bearing)));
+			final int aY = (int) (y2 + Math.round(verticalRange * Math.cos(yawn)));
+			final int aZ = (int) (blockPos.getZ() + Math.round(horizontalRange * Math.sin(bearing)));
 			
 			// Placing
 			if (world.rand.nextBoolean()) {
-				AbstractStructure gasCloud = StructureManager.getStructure(world.rand, StructureManager.GROUP_GAS_CLOUDS, null);
+				final AbstractStructure gasCloud = StructureManager.getStructure(world.rand, StructureManager.GROUP_GAS_CLOUDS, null);
 				if (gasCloud != null) {
 					gasCloud.generate(world, world.rand, new BlockPos(aX, aY, aZ));
 				}
@@ -162,17 +162,17 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 	}
 	
 	private static void generateSmallShip(final World world, final int x, final int y, final int z, final int jitter) {
-		int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
+		final int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
+		final int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
+		final int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		WarpDrive.logger.info("Generating small ship at " + x2 + " " + y2 + " " + z2);
 		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F, false).generate(world, world.rand, new BlockPos(x2, y2, z2));
 	}
 	
 	private static void generateStation(final World world, final int x, final int y, final int z, final int jitter) {
-		int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
+		final int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
+		final int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
+		final int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		WarpDrive.logger.info("Generating station at " + x2 + " " + y2 + " " + z2);
 		new WorldGenStation(world.rand.nextBoolean()).generate(world, world.rand, new BlockPos(x2, y2, z2));
 	}

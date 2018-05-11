@@ -81,7 +81,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 		
 		TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityCloakingCore) {
-			TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore) tileEntity;
+			final TileEntityCloakingCore cloakingCore = (TileEntityCloakingCore) tileEntity;
 			if (itemStackHeld == null) {
 				Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 				// + " isInvalid? " + te.isInvalid() + " Valid? " + te.isValid + " Cloaking? " + te.isCloaking + " Enabled? " + te.isEnabled
@@ -103,7 +103,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	public void breakBlock(final World world, @Nonnull final BlockPos blockPos, @Nonnull final IBlockState blockState) {
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		
-		if (tileEntity != null && tileEntity instanceof TileEntityCloakingCore) {
+		if (tileEntity instanceof TileEntityCloakingCore) {
 			((TileEntityCloakingCore) tileEntity).isEnabled = false;
 			((TileEntityCloakingCore) tileEntity).disableCloakingField();
 		}

@@ -72,15 +72,6 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		return true;
 	}
 	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
-		// hide in NEI
-		for (int i = 0; i < 16; i++) {
-			Commons.hideItemStack(new ItemStack(item, 1, i));
-		}
-	}
-	
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean canPlaceBlockAt(final World world, @Nonnull final BlockPos blockPos) {
@@ -91,6 +82,15 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@Override
 	public boolean canCollideCheck(final IBlockState blockState, final boolean hitIfLiquid) {
 		return false;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+		// hide in NEI
+		for (int i = 0; i < 16; i++) {
+			Commons.hideItemStack(new ItemStack(item, 1, i));
+		}
 	}
 	
 	@SuppressWarnings("deprecation")

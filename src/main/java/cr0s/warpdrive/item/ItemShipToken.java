@@ -52,7 +52,7 @@ public class ItemShipToken extends ItemAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		final int metadata = itemStack.getItemDamage();
 		for (final int metadataValid : VALID_METADATAS) {
 			if (metadata == metadataValid) {
@@ -63,7 +63,7 @@ public class ItemShipToken extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		for (final int metadataValid : VALID_METADATAS) {
 			list.add(new ItemStack(item, 1, metadataValid));
 		}
@@ -87,17 +87,9 @@ public class ItemShipToken extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
 		
-		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (I18n.hasKey(tooltipName1)) {
-			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1, getSchematicName(itemStack)).getFormattedText());
-		}
-		
-		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
-			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2, getSchematicName(itemStack)).getFormattedText());
-		}
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.tool.ship_token.tooltip.usage", getSchematicName(itemStack)).getFormattedText());
 	}
 }

@@ -20,8 +20,8 @@ public class WarpDrivePeripheralHandler implements IPeripheralProvider {
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public IPeripheral getPeripheral(World world, BlockPos blockPos, EnumFacing side) {
-		TileEntity tileEntity = world.getTileEntity(new BlockPos(blockPos));
+	public IPeripheral getPeripheral(final World world, final BlockPos blockPos, final EnumFacing side) {
+		final TileEntity tileEntity = world.getTileEntity(new BlockPos(blockPos));
 		if (tileEntity instanceof IPeripheral && ((IPeripheral) tileEntity).getType() != null) {
 			return (IPeripheral)tileEntity;
 		}

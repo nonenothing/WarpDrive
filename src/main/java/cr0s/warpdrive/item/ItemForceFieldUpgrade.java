@@ -19,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,7 +37,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	
 	public static ItemStack getItemStack(final EnumForceFieldUpgrade forceFieldUpgrade) {
 		if (forceFieldUpgrade != null) {
-			int damage = forceFieldUpgrade.ordinal();
+			final int damage = forceFieldUpgrade.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemForceFieldUpgrade, 1, damage);
 			}
@@ -53,8 +52,8 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public String getUnlocalizedName(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
 			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).getName();
 		}
@@ -62,8 +61,8 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> subItems) {
-		for(EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
+	public void getSubItems(@Nonnull final Item item, @Nonnull final CreativeTabs creativeTabs, @Nonnull final List<ItemStack> subItems) {
+		for(final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
 				subItems.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
 			}
@@ -73,8 +72,8 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldUpgrade.get(damage).getName());
@@ -83,24 +82,14 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	}
 	
 	@Override
-	public boolean doesSneakBypassUse(ItemStack itemStack, IBlockAccess blockAccess, BlockPos blockPos, EntityPlayer player) {
-		Block block = blockAccess.getBlockState(blockPos).getBlock();
+	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess blockAccess, final BlockPos blockPos, final EntityPlayer player) {
+		final Block block = blockAccess.getBlockState(blockPos).getBlock();
 		return block instanceof BlockForceFieldRelay || block instanceof BlockForceFieldProjector || super.doesSneakBypassUse(itemStack, blockAccess, blockPos, player);
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List<String> list, boolean advancedItemTooltips) {
+	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
 		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
-		
-		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (I18n.canTranslate(tooltipName1)) {
-			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
-		}
-		
-		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && I18n.canTranslate(tooltipName2)) {
-			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
-		}
 		
 		Commons.addTooltip(list, "\n");
 		

@@ -22,13 +22,13 @@ public class XmlRandomCollection<E extends IXmlRepresentable> extends RandomColl
 	 * @throws InvalidXmlException
 	 *            Exception encountered
 	 **/
-	public void loadFromXML(E object, Element element) throws InvalidXmlException {
+	public void loadFromXML(final E object, final Element element) throws InvalidXmlException {
 		if (!object.loadFromXmlElement(element)) {// skip invalid entries
 			return;
 		}
 		
-		String stringRatio = element.getAttribute("ratio");
-		String stringWeight = element.getAttribute("weight");
+		final String stringRatio = element.getAttribute("ratio");
+		final String stringWeight = element.getAttribute("weight");
 		
 		add(object, stringRatio, stringWeight);
 	}

@@ -4,7 +4,7 @@ public class RadarEcho extends Vector3 {
 	
 	public final String type;
 	public int mass;
-	public String name = "default";
+	public String name;
 	
 	public RadarEcho(
 			final String type,

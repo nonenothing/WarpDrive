@@ -2,7 +2,6 @@ package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.BlockAbstractBase;
-import cr0s.warpdrive.WarpDrive;
 
 import javax.annotation.Nonnull;
 

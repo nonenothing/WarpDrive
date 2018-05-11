@@ -149,14 +149,14 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				laserTicks = 0;
 				
 				for (int index = 0; index < 10; index++) {
-					int randomX = shipCore.minX + worldObj.rand.nextInt(shipCore.maxX - shipCore.minX + 1);
-					int randomY = shipCore.minY + worldObj.rand.nextInt(shipCore.maxY - shipCore.minY + 1);
-					int randomZ = shipCore.minZ + worldObj.rand.nextInt(shipCore.maxZ - shipCore.minZ + 1);
-
+					final int randomX = shipCore.minX + worldObj.rand.nextInt(shipCore.maxX - shipCore.minX + 1);
+					final int randomY = shipCore.minY + worldObj.rand.nextInt(shipCore.maxY - shipCore.minY + 1);
+					final int randomZ = shipCore.minZ + worldObj.rand.nextInt(shipCore.maxZ - shipCore.minZ + 1);
+					
 					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.HOSTILE, 4F, 1F);
-					float r = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
-					float g = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
-					float b = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
+					final float r = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
+					final float g = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
+					final float b = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
 					
 					PacketHandler.sendBeamPacket(worldObj,
 							new Vector3(this).translate(0.5D),
@@ -247,7 +247,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	private TileEntityShipCore searchShipCore() {
-		StringBuilder reason = new StringBuilder();
+		final StringBuilder reason = new StringBuilder();
 		TileEntityShipCore tileEntityShipCore = null;
 		
 		// Search for ship cores above
@@ -270,14 +270,14 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		return tileEntityShipCore;
 	}
 	
-	private boolean saveShipToSchematic(String fileName, StringBuilder reason) {
+	private boolean saveShipToSchematic(final String fileName, final StringBuilder reason) {
 		if (!shipCore.validateShipSpatialParameters(reason)) {
 			return false;
 		}
-		short width = (short) (shipCore.maxX - shipCore.minX + 1);
-		short length = (short) (shipCore.maxZ - shipCore.minZ + 1);
-		short height = (short) (shipCore.maxY - shipCore.minY + 1);
-		int size = width * length * height;
+		final short width = (short) (shipCore.maxX - shipCore.minX + 1);
+		final short length = (short) (shipCore.maxZ - shipCore.minZ + 1);
+		final short height = (short) (shipCore.maxY - shipCore.minY + 1);
+		final int size = width * length * height;
 		
 		if (width <= 0 || length <= 0 || height <= 0) {
 			reason.append("Invalid ship dimensions, nothing to scan");
@@ -285,7 +285,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		
 		// Save header
-		NBTTagCompound schematic = new NBTTagCompound();
+		final NBTTagCompound schematic = new NBTTagCompound();
 		
 		schematic.setShort("Width", width);
 		schematic.setShort("Length", length);
@@ -295,7 +295,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		schematic.setInteger("shipVolume", shipCore.shipVolume);
 		
 		// Save new format
-		JumpShip ship = new JumpShip();
+		final JumpShip ship = new JumpShip();
 		ship.worldObj = shipCore.getWorld();
 		ship.core = shipCore.getPos();
 		ship.dx = shipCore.facing.getFrontOffsetX();
@@ -310,14 +310,14 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (!ship.save(reason)) {
 			return false;
 		}
-		NBTTagCompound tagCompoundShip = new NBTTagCompound();
+		final NBTTagCompound tagCompoundShip = new NBTTagCompound();
 		ship.writeToNBT(tagCompoundShip);
 		schematic.setTag("ship", tagCompoundShip);
 		
 		// Storage collections
-		String stringBlockRegistryNames[] = new String[size];
-		byte byteMetadatas[] = new byte[size];
-		NBTTagList tileEntitiesList = new NBTTagList();
+		final String stringBlockRegistryNames[] = new String[size];
+		final byte byteMetadatas[] = new byte[size];
+		final NBTTagList tileEntitiesList = new NBTTagList();
 		
 		// Scan the whole area
 		for (int x = 0; x < width; x++) {
@@ -331,15 +331,15 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 						blockState = Blocks.AIR.getDefaultState();
 					}
 					
-					int index = x + (y * length + z) * width;
+					final int index = x + (y * length + z) * width;
 					stringBlockRegistryNames[index] = Block.REGISTRY.getNameForObject(blockState.getBlock()).toString();
 					byteMetadatas[index] = (byte) blockState.getBlock().getMetaFromState(blockState);
 					
 					if (!blockState.getBlock().isAssociatedBlock(Blocks.AIR)) {
-						TileEntity tileEntity = worldObj.getTileEntity(blockPos);
+						final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
 						if (tileEntity != null) {
 							try {
-								NBTTagCompound tagTileEntity = new NBTTagCompound();
+								final NBTTagCompound tagTileEntity = new NBTTagCompound();
 								tileEntity.writeToNBT(tagTileEntity);
 								
 								JumpBlock.removeUniqueIDs(tagTileEntity);
@@ -351,7 +351,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 								tagTileEntity.setInteger("z", tileEntity.getPos().getZ() - shipCore.minZ);
 								
 								tileEntitiesList.appendTag(tagTileEntity);
-							} catch (Exception exception) {
+							} catch (final Exception exception) {
 								exception.printStackTrace();
 							}
 						}
@@ -377,10 +377,10 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	// Begins ship scan
-	private boolean scanShip(StringBuilder reason) {
+	private boolean scanShip(final StringBuilder reason) {
 		// Enable scanner
 		setState(EnumShipScannerState.SCANNING);
-		File file = new File(WarpDriveConfig.G_SCHEMALOCATION);
+		final File file = new File(WarpDriveConfig.G_SCHEMALOCATION);
 		if (!file.exists() || !file.isDirectory()) {
 			if (!file.mkdirs()) {
 				return false;
@@ -388,10 +388,10 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		
 		// Generate unique file name
-		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
-		String shipName = shipCore.shipName.replaceAll("[^ -~]", "").replaceAll("[:/\\\\]", "");
+		final SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd_HH'h'mm'm'ss's'SSS");
+		final String shipName = shipCore.shipName.replaceAll("[^ -~]", "").replaceAll("[:/\\\\]", "");
 		do {
-			Date now = new Date();
+			final Date now = new Date();
 			schematicFileName = shipName + "_" + sdfDate.format(now);
 		} while (new File(WarpDriveConfig.G_SCHEMALOCATION + "/" + schematicFileName + ".schematic").exists());
 		
@@ -423,10 +423,10 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		// Validate context
 		{
 			// Check distance
-			double dX = pos.getX() - targetX;
-			double dY = pos.getY() - targetY;
-			double dZ = pos.getZ() - targetZ;
-			double distance = MathHelper.sqrt_double(dX * dX + dY * dY + dZ * dZ);
+			final double dX = pos.getX() - targetX;
+			final double dY = pos.getY() - targetY;
+			final double dZ = pos.getZ() - targetZ;
+			final double distance = MathHelper.sqrt_double(dX * dX + dY * dY + dZ * dZ);
 			
 			if (distance > WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS) {
 				reason.append(String.format("Cannot deploy ship more than %d blocks away from scanner.", WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS));
@@ -523,7 +523,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 					colorMultiplierCamouflage = 0;
 					lightCamouflage = 0;
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 			}
 		} else {
@@ -560,32 +560,32 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	
 	@Override
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity packet) {
-		NBTTagCompound tagCompound = packet.getNbtCompound();
+		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
 	}
 	
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] scan(Context context, Arguments arguments) {
+	public Object[] scan(final Context context, final Arguments arguments) {
 		return scan();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] filename(Context context, Arguments arguments) {
+	public Object[] filename(final Context context, final Arguments arguments) {
 		return filename();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] deploy(Context context, Arguments arguments) {
+	public Object[] deploy(final Context context, final Arguments arguments) {
 		return deploy(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] state(Context context, Arguments arguments) {
+	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
@@ -598,8 +598,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (shipCore == null) {
 			return new Object[] { false, 1, "Ship-Core not found" };
 		}
-		StringBuilder reason = new StringBuilder();
-		boolean success = scanShip(reason);
+		final StringBuilder reason = new StringBuilder();
+		final boolean success = scanShip(reason);
 		return new Object[] { success, 3, reason.toString() };
 	}
 	
@@ -615,7 +615,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		return new Object[] { true, schematicFileName };
 	}
 	
-	private Object[] deploy(Object[] arguments) {
+	private Object[] deploy(final Object[] arguments) {
 		if (arguments.length != 5) {
 			return new Object[] { 4, "Invalid arguments count, you need <.schematic file name>, <offsetX>, <offsetY>, <offsetZ>, <rotationSteps>!" };
 		}
@@ -661,7 +661,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
@@ -702,7 +702,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		                                                      pos.getX() + 1.99D, pos.getY() + 5.0D, pos.getZ() + 1.99D);
 		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		final List<EntityPlayer> entityPlayers = new ArrayList<>(10);
-		for (Object object : list) {
+		for (final Object object : list) {
 			if (object instanceof EntityPlayer) {
 				entityPlayers.add((EntityPlayer) object);
 			}

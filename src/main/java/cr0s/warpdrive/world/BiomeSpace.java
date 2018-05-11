@@ -4,7 +4,7 @@ import net.minecraft.world.biome.Biome;
 
 public class BiomeSpace extends Biome
 {
-    public BiomeSpace(BiomeProperties biomeProperties)
+    public BiomeSpace(final BiomeProperties biomeProperties)
     {
         super(biomeProperties);
         this.theBiomeDecorator.treesPerChunk = 0;

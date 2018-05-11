@@ -7,21 +7,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CameraRegistryItem {
-	public int dimensionId = -666;
-	public BlockPos position = null;
-	public int videoChannel = -1;
-	public EnumCameraType type = null;
 	
-	public CameraRegistryItem(World parWorldObj, BlockPos parPosition, int parFrequency, EnumCameraType parType) {
-		videoChannel = parFrequency;
-		position = parPosition;
-		dimensionId = parWorldObj.provider.getDimension();
-		type = parType;
+	public int dimensionId;
+	public BlockPos position;
+	public int videoChannel;
+	public EnumCameraType type;
+	
+	public CameraRegistryItem(final World world, final BlockPos position, final int videoChannel, final EnumCameraType enumCameraType) {
+		this.videoChannel = videoChannel;
+		this.position = position;
+		this.dimensionId = world.provider.getDimension();
+		this.type = enumCameraType;
 	}
 	
-	public boolean isTileEntity(TileEntity tileEntity) {
-		return tileEntity != null
-			&& tileEntity instanceof IVideoChannel
+	public boolean isTileEntity(final TileEntity tileEntity) {
+		return tileEntity instanceof IVideoChannel
 			&& dimensionId == tileEntity.getWorld().provider.getDimension()
 			&& position.equals(tileEntity.getPos())
 			&& videoChannel == ((IVideoChannel) tileEntity).getVideoChannel();

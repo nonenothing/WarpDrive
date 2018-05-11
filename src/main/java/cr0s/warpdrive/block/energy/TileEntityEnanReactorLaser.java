@@ -201,7 +201,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		final int energy;
 		try {
 			energy = Commons.toInt(arguments[0]);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			if (WarpDriveConfig.LOGGING_LUA) {
 				WarpDrive.logger.error(this + " LUA error on stabilize(): Integer expected for 1st argument " + arguments[0]);
 			}
@@ -218,26 +218,26 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 	// OpenComputers callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] hasReactor(Context context, Arguments arguments) {
+	public Object[] hasReactor(final Context context, final Arguments arguments) {
 		return hasReactor();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] stabilize(Context context, Arguments arguments) {
+	public Object[] stabilize(final Context context, final Arguments arguments) {
 		return stabilize(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] side(Context context, Arguments arguments) {
+	public Object[] side(final Context context, final Arguments arguments) {
 		return side();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

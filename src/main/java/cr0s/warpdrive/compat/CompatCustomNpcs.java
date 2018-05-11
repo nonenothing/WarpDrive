@@ -28,7 +28,7 @@ public class CompatCustomNpcs implements IBlockTransformer {
 			classTileColorable       = Class.forName("noppes.npcs.blocks.tiles.TileColorable");
 			classTileBigSign         = Class.forName("noppes.npcs.blocks.tiles.TileBigSign");
 			WarpDriveConfig.registerBlockTransformer("CustomNpcs", new CompatCustomNpcs());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -44,7 +44,7 @@ public class CompatCustomNpcs implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -77,7 +77,7 @@ public class CompatCustomNpcs implements IBlockTransformer {
 	private static final int[]   mrot8                  = {  1,  2,  3,  0,  5,  6,  7,  4,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;

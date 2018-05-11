@@ -81,10 +81,10 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 	}
 	
-	private void releaseAir(BlockPos blockPos) {
-		IBlockState blockState = worldObj.getBlockState(blockPos);
+	private void releaseAir(final BlockPos blockPos) {
+		final IBlockState blockState = worldObj.getBlockState(blockPos);
 		if (blockState.getBlock().isAir(blockState, worldObj, blockPos)) {// can be air
-			int energy_cost = (!blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0];
+			final int energy_cost = (!blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0];
 			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
 				if (worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(START_CONCENTRATION_VALUE), 2)) {
 					// (needs to renew air or was not maxed out)
@@ -94,7 +94,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 				}
 			} else {// low energy => remove air block
 				if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
-					int metadata = blockState.getBlock().getMetaFromState(blockState);
+					final int metadata = blockState.getBlock().getMetaFromState(blockState);
 					if (metadata > 4) {
 						worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(metadata - 4), 2);
 					} else if (metadata > 1) {
@@ -126,7 +126,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return true;
 	}
 	
@@ -139,7 +139,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	// Common OC/CC methods
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 		}
@@ -149,14 +149,14 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
-		return enable(argumentsOCtoCC(arguments));
+	public Object[] enable(final Context context, final Arguments arguments) {
+			return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

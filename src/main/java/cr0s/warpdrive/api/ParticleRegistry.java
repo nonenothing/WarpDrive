@@ -40,7 +40,7 @@ public class ParticleRegistry {
 		
 	}
 	
-	public static boolean registerParticle(Particle particle) {
+	public static boolean registerParticle(final Particle particle) {
 		if (particles.containsKey(particle.getRegistryName())) {
 			FMLLog.getLogger().error(String.format("Mod %s FAILED to register particle %s: it was already registered!", getActiveModId(), particle.getRegistryName()));
 			return false;
@@ -53,31 +53,31 @@ public class ParticleRegistry {
 	}
 	
 	private static String getActiveModId() {
-		ModContainer activeModContainer = Loader.instance().activeModContainer();
+		final ModContainer activeModContainer = Loader.instance().activeModContainer();
 		return activeModContainer == null ? "minecraft" : activeModContainer.getModId();
 	}
 	
-	public static boolean isParticleRegistered(Particle particle) {
+	public static boolean isParticleRegistered(final Particle particle) {
 		return particle != null && particles.containsKey(particle.getRegistryName());
 	}
 	
-	public static boolean isParticleRegistered(String particleRegistryName) {
+	public static boolean isParticleRegistered(final String particleRegistryName) {
 		return particles.containsKey(particleRegistryName);
 	}
 	
-	public static Particle getParticle(String particleRegistryName) {
+	public static Particle getParticle(final String particleRegistryName) {
 		return particles.get(particleRegistryName);
 	}
 	
-	public static String getParticleName(Particle particle) {
+	public static String getParticleName(final Particle particle) {
 		return particle.getRegistryName();
 	}
 	
-	public static String getParticleName(ParticleStack stack) {
+	public static String getParticleName(final ParticleStack stack) {
 		return stack.getParticle().getRegistryName();
 	}
 	
-	public static ParticleStack getParticleStack(String particleRegistryName, int amount) {
+	public static ParticleStack getParticleStack(final String particleRegistryName, final int amount) {
 		if (!particles.containsKey(particleRegistryName)) {
 			return null;
 		}

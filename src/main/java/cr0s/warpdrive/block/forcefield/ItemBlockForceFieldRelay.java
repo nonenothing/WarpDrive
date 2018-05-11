@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 
 public class ItemBlockForceFieldRelay extends ItemBlockAbstractBase {
 	
-	public ItemBlockForceFieldRelay(Block block) {
+	public ItemBlockForceFieldRelay(final Block block) {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(false);

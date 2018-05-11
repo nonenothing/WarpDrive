@@ -109,7 +109,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 	
 	@Nonnull
 	public static EnumForceFieldUpgrade get(final int damage) {
-		EnumForceFieldUpgrade enumForceFieldUpgrade = ID_MAP.get(damage);
+		final EnumForceFieldUpgrade enumForceFieldUpgrade = ID_MAP.get(damage);
 		return enumForceFieldUpgrade == null ? EnumForceFieldUpgrade.NONE : enumForceFieldUpgrade;
 	}
 	
@@ -158,18 +158,18 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 	
 	
 	@Override
-	public int onEntityEffect(final float scaledValue, World world, final int projectorX, final int projectorY, final int projectorZ,
-							  final BlockPos blockPos, Entity entity) {
+	public int onEntityEffect(final float scaledValue, final World world, final int projectorX, final int projectorY, final int projectorZ,
+							  final BlockPos blockPos, final Entity entity) {
 		if (scaledValue == 0.0F) {
 			return 0;
 		}
 		
 		// common particle effects properties
-		Vector3 v3Projector = new Vector3(projectorX + 0.5D, projectorY + 0.5D, projectorZ + 0.5D);
-		double distanceCollision = v3Projector.distanceTo_square(new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D));
-		double distanceEntity = v3Projector.distanceTo_square(entity);
-		Vector3 v3Entity = new Vector3(entity);
-		Vector3 v3Direction = new Vector3(entity).subtract(v3Projector).normalize();
+		final Vector3 v3Projector = new Vector3(projectorX + 0.5D, projectorY + 0.5D, projectorZ + 0.5D);
+		final double distanceCollision = v3Projector.distanceTo_square(new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D));
+		final double distanceEntity = v3Projector.distanceTo_square(entity);
+		final Vector3 v3Entity = new Vector3(entity);
+		final Vector3 v3Direction = new Vector3(entity).subtract(v3Projector).normalize();
 		v3Projector.translateFactor(v3Direction, 0.6D);
 		v3Entity.translateFactor(v3Direction, -0.6D);
 		
@@ -197,8 +197,8 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 			}
 		}
 		
-		double speed = Math.abs(scaledValue) / (entityLevel == 0 ? 2 : entityLevel) * ForceFieldSetup.FORCEFIELD_ACCELERATION_FACTOR;
-		Vector3 v3Motion = v3Direction.clone().scale(speed); // new Vector3(entity.motionX, entity.motionY, entity.motionZ);
+		final double speed = Math.abs(scaledValue) / (entityLevel == 0 ? 2 : entityLevel) * ForceFieldSetup.FORCEFIELD_ACCELERATION_FACTOR;
+		final Vector3 v3Motion = v3Direction.clone().scale(speed); // new Vector3(entity.motionX, entity.motionY, entity.motionZ);
 		/*
 		if (WarpDriveConfig.LOGGING_FORCEFIELD && WarpDrive.isDev) {
 			WarpDrive.logger.info(this + " scaledValue " + scaledValue + " entityLevel " + entityLevel + " speed " + speed

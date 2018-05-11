@@ -33,7 +33,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		// required on receiving side
 	}
 	
-	public MessageCloak(CloakedArea area, final boolean decloak) {
+	public MessageCloak(final CloakedArea area, final boolean decloak) {
 		this.coreX = area.blockPosCore.getX();
 		this.coreY = area.blockPosCore.getY();
 		this.coreZ = area.blockPosCore.getZ();
@@ -48,7 +48,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	}
 	
 	@Override
-	public void fromBytes(ByteBuf buffer) {
+	public void fromBytes(final ByteBuf buffer) {
 		coreX = buffer.readInt();
 		coreY = buffer.readInt();
 		coreZ = buffer.readInt();
@@ -63,7 +63,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	}
 
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeInt(coreX);
 		buffer.writeInt(coreY);
 		buffer.writeInt(coreZ);
@@ -78,7 +78,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	}
 	
 	@SideOnly(Side.CLIENT)
-	private void handle(EntityPlayerSP player) {
+	private void handle(final EntityPlayerSP player) {
 		if (decloak) {
 			// reveal the area
 			WarpDrive.cloaks.removeCloakedArea(player.worldObj.provider.getDimension(), new BlockPos(coreX, coreY, coreZ));
@@ -90,7 +90,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public IMessage onMessage(MessageCloak cloakMessage, MessageContext context) {
+	public IMessage onMessage(final MessageCloak cloakMessage, final MessageContext context) {
 		// skip in case player just logged in
 		if (Minecraft.getMinecraft().theWorld == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring cloak packet");
@@ -103,7 +103,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 				+ ") -> (" + cloakMessage.maxX + " " + cloakMessage.maxY + " " + cloakMessage.maxZ + ") tier " + cloakMessage.tier);
 		}
 		
-		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+		final EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
 		if ( cloakMessage.minX <= player.posX && (cloakMessage.maxX + 1) > player.posX
 		  && cloakMessage.minY <= player.posY && (cloakMessage.maxY + 1) > player.posY
 		  && cloakMessage.minZ <= player.posZ && (cloakMessage.maxZ + 1) > player.posZ) {

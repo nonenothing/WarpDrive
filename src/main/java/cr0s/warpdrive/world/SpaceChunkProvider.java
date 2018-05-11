@@ -21,7 +21,7 @@ public class SpaceChunkProvider extends ChunkProviderOverworld {
 	private final World world;
 	private final Random rand;
 	
-	public SpaceChunkProvider(World world, long seed) {
+	public SpaceChunkProvider(final World world, final long seed) {
 		super(world, seed, false, null);
 		rand = new Random(seed);
 		this.world = world;
@@ -29,7 +29,7 @@ public class SpaceChunkProvider extends ChunkProviderOverworld {
 	
 	@Nonnull
 	@Override
-	public Chunk provideChunk(int x, int z) {
+	public Chunk provideChunk(final int x, final int z) {
 		rand.setSeed(x * 341873128712L + z * 132897987541L);
 		
 		ChunkPrimer chunkprimer = new ChunkPrimer();
@@ -47,28 +47,28 @@ public class SpaceChunkProvider extends ChunkProviderOverworld {
 	}
 	
 	@Override
-	public void populate(int x, int z) {
+	public void populate(final int x, final int z) {
 		// super.populate(x, z);
 	}
 	
 	@Override
-	public boolean generateStructures(@Nonnull Chunk chunkIn, int x, int z) {
+	public boolean generateStructures(@Nonnull final Chunk chunk, final int x, final int z) {
 		return false;
 	}
 	
 	@Override
-	public @Nonnull List<Biome.SpawnListEntry> getPossibleCreatures(@Nonnull EnumCreatureType creatureType, @Nonnull BlockPos pos) {
+	public @Nonnull List<Biome.SpawnListEntry> getPossibleCreatures(@Nonnull final EnumCreatureType creatureType, @Nonnull final BlockPos pos) {
 		return new ArrayList<>();
 	}
 	
 	@Nullable
 	@Override
-	public BlockPos getStrongholdGen(@Nonnull World worldIn, String structureName, @Nonnull BlockPos position) {
+	public BlockPos getStrongholdGen(@Nonnull final World world, final String structureName, @Nonnull final BlockPos position) {
 		return null;
 	}
 	
 	@Override
-	public void recreateStructures(Chunk chunkIn, int x, int z) {
+	public void recreateStructures(final Chunk chunk, final int x, final int z) {
 		// no structure generation
 	}
 }

@@ -52,7 +52,7 @@ public class RenderCommons {
 	private static final float scaleUV = 0.00390625F;  // 1/256
 	protected static void drawTexturedModalRect(final int x, final int y, final int u, final int v, final int sizeX, final int sizeY, final int zLevel) {
 		final Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexBuffer = tessellator.getBuffer();
+		final VertexBuffer vertexBuffer = tessellator.getBuffer();
 		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		vertexBuffer.pos( x         , (y + sizeY), zLevel).tex(scaleUV * u          , scaleUV * (v + sizeY)).endVertex();
 		vertexBuffer.pos((x + sizeX), (y + sizeY), zLevel).tex(scaleUV * (u + sizeX), scaleUV * (v + sizeY)).endVertex();

@@ -46,7 +46,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 						cache_colorMultiplierCamouflage = 0;
 						cache_lightCamouflage = 0;
 					}
-				} catch (Exception exception) {
+				} catch (final Exception exception) {
 					exception.printStackTrace();
 				}
 			} else {
@@ -95,7 +95,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	
 	public void setProjector(final VectorI vectorI) {
 		vProjector = vectorI;
-		ForceFieldSetup forceFieldSetup = getForceFieldSetup();
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		if (forceFieldSetup != null) {
 			cache_beamFrequency = forceFieldSetup.beamFrequency;
 			if (getBlockMetadata() == forceFieldSetup.getCamouflageBlockState().getBlock().getMetaFromState(forceFieldSetup.getCamouflageBlockState())) {
@@ -110,9 +110,9 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	
 	public TileEntityForceFieldProjector getProjector() {
 		if (vProjector != null) {
-			TileEntity tileEntity = vProjector.getTileEntity(worldObj);
+			final TileEntity tileEntity = vProjector.getTileEntity(worldObj);
 			if (tileEntity instanceof TileEntityForceFieldProjector) {
-				TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
+				final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
 				if (worldObj.isRemote) {
 					return tileEntityForceFieldProjector;
 					

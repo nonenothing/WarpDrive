@@ -22,7 +22,7 @@ public enum EnumCameraType {
 		}
 	}
 	
-	EnumCameraType(Class<?> clazz) {
+	EnumCameraType(final Class<?> clazz) {
 		this.clazz = clazz;
 	}
 	

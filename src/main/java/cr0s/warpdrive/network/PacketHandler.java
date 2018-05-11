@@ -11,7 +11,6 @@ import cr0s.warpdrive.data.Vector3;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityTrackerEntry;
@@ -49,7 +48,7 @@ public class PacketHandler {
 		try {
 			EntityTrackerEntry_getPacketForThisEntity = ReflectionHelper.findMethod(
 				EntityTrackerEntry.class, null, new String[] { "createSpawnPacket", "func_151260_c" } );
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			throw new RuntimeException(exception);
 		}
 	}
@@ -88,7 +87,7 @@ public class PacketHandler {
 	                                                 final int age, final int energy, final AxisAlignedBB aabb) {
 		assert(!world.isRemote);
 		
-		MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
+		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
 		// Send packet to all players within cloaked area
 		final List<Entity> list = world.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
 		for (final Entity entity : list) {
@@ -106,7 +105,7 @@ public class PacketHandler {
 	                                           final int radius) {
 		assert(!world.isRemote);
 		
-		MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(
+		final MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(
 			type, quantity, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue);
 		
 		// small beam are sent relative to beam center
@@ -160,7 +159,7 @@ public class PacketHandler {
 	
 	// LaserCamera shooting at target (client -> server)
 	public static void sendLaserTargetingPacket(final int x, final int y, final int z, final float yaw, final float pitch) {
-		MessageTargeting messageTargeting = new MessageTargeting(x, y, z, yaw, pitch);
+		final MessageTargeting messageTargeting = new MessageTargeting(x, y, z, yaw, pitch);
 		simpleNetworkManager.sendToServer(messageTargeting);
 		if (WarpDriveConfig.LOGGING_TARGETING) {
 			WarpDrive.logger.info("Sent targeting packet (" + x + " " + y + " " + z + ") yaw " + yaw + " pitch " + pitch);
@@ -188,7 +187,7 @@ public class PacketHandler {
 		final EntityTrackerEntry entry = new EntityTrackerEntry(entity, 0, 0, 0, false);
 		try {
 			return (Packet) EntityTrackerEntry_getPacketForThisEntity.invoke(entry);
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
 		return null;

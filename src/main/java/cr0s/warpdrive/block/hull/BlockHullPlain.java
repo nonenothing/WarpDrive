@@ -52,7 +52,7 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	}
 	
 	@Override
-	public int damageDropped(IBlockState blockState) {
+	public int damageDropped(final IBlockState blockState) {
 		return blockState.getValue(BlockColored.COLOR).getMetadata();
 	}
 	

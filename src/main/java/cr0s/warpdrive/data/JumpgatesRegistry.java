@@ -24,15 +24,15 @@ public final class JumpgatesRegistry {
 	
 	public void saveGates() {
 		try {
-			PrintWriter out = new PrintWriter(new FileWriter(file));
+			final PrintWriter out = new PrintWriter(new FileWriter(file));
 	        
 			// Write each string in the array on a separate line
-			for (Jumpgate jg : gates) {
+			for (final Jumpgate jg : gates) {
 				out.println(jg);
 			}
 	        
 			out.close();
-		} catch (IOException exception) {
+		} catch (final IOException exception) {
 			exception.printStackTrace();
 			WarpDrive.logger.error("Exception while saving jumpgates to disk");
 		}
@@ -44,12 +44,12 @@ public final class JumpgatesRegistry {
 			if (file != null && !file.exists()) {
 				try {
 					file.createNewFile();
-				} catch (IOException exception) {
+				} catch (final IOException exception) {
 					exception.printStackTrace();
 				}
 			}
 			
-			BufferedReader bufferedreader;
+			final BufferedReader bufferedreader;
 			bufferedreader = new BufferedReader(new FileReader(file));
 			String s1;
 	        
@@ -59,7 +59,7 @@ public final class JumpgatesRegistry {
 	        
 			bufferedreader.close();
 			WarpDrive.logger.info("Loaded " + gates.size() + " jump gates.");
-		} catch (IOException exception) {
+		} catch (final IOException exception) {
 			exception.printStackTrace();
 			WarpDrive.logger.error("Exception while loading jumpgates from disk");
 		}
@@ -98,8 +98,8 @@ public final class JumpgatesRegistry {
 		saveGates();
 	}
 	
-	public Jumpgate findGateByName(String name) {
-		for (Jumpgate jg : gates) {
+	public Jumpgate findGateByName(final String name) {
+		for (final Jumpgate jg : gates) {
 			if (jg.name.equalsIgnoreCase(name)) {
 				return jg;
 			}
@@ -111,7 +111,7 @@ public final class JumpgatesRegistry {
 	public String JumpgatesList() {
 		String result = "";
         
-		for (Jumpgate jg : gates) {
+		for (final Jumpgate jg : gates) {
 			result += jg.toNiceString() + "\n";
 		}
         
@@ -125,7 +125,7 @@ public final class JumpgatesRegistry {
 		
 		final StringBuilder result = new StringBuilder();
 		boolean isFirst = true;
-		for (Jumpgate jg : gates) {
+		for (final Jumpgate jg : gates) {
 			if (isFirst) {
 				isFirst = false;
 			} else {
@@ -140,11 +140,11 @@ public final class JumpgatesRegistry {
 		double minDistance2 = -1;
 		Jumpgate res = null;
 		
-		for (Jumpgate jg : gates) {
-			double dX = jg.xCoord - blockPos.getX();
-			double dY = jg.yCoord - blockPos.getY();
-			double dZ = jg.zCoord - blockPos.getZ();
-			double distance2 = dX * dX + dY * dY + dZ * dZ;
+		for (final Jumpgate jg : gates) {
+			final double dX = jg.xCoord - blockPos.getX();
+			final double dY = jg.yCoord - blockPos.getY();
+			final double dZ = jg.zCoord - blockPos.getZ();
+			final double distance2 = dX * dX + dY * dY + dZ * dZ;
             
 			if ((minDistance2 == -1) || (distance2 < minDistance2)) {
 				minDistance2 = distance2;

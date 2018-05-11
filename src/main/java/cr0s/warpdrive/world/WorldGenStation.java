@@ -11,16 +11,16 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 public class WorldGenStation extends WorldGenerator {
 	private final boolean corrupted;
 
-	public WorldGenStation(boolean corrupted) {
+	public WorldGenStation(final boolean corrupted) {
 		this.corrupted = corrupted;
 	}
 
 	@Override
-	public boolean generate(World world, Random rand, BlockPos blockPos) {
-		int x = blockPos.getX();
-		int y = blockPos.getY();
-		int z = blockPos.getZ();
-		WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
+	public boolean generate(final World world, final Random rand, final BlockPos blockPos) {
+		final int x = blockPos.getX();
+		final int y = blockPos.getY();
+		final int z = blockPos.getZ();
+		final WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
 		genStructure.setHullPlain(world, x + 1, y + 0, z + 3);
 		genStructure.setHullPlain(world, x + 1, y + 0, z + 12);
 		genStructure.setHullPlain(world, x + 1, y + 1, z + 3);

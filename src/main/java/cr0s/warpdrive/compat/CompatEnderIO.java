@@ -30,7 +30,7 @@ public class CompatEnderIO implements IBlockTransformer {
 			classTileEntityEIO = Class.forName("crazypants.enderio.TileEntityEio");
 			classBlockReservoir = Class.forName("crazypants.enderio.machine.reservoir.BlockReservoir");
 			WarpDriveConfig.registerBlockTransformer("EnderIO", new CompatEnderIO());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -41,7 +41,7 @@ public class CompatEnderIO implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -102,15 +102,15 @@ public class CompatEnderIO implements IBlockTransformer {
 		}
 		return newData;
 	}
-	private NBTTagCompound rotate_conduit(final byte rotationSteps, NBTTagCompound nbtConduit) {
+	private NBTTagCompound rotate_conduit(final byte rotationSteps, final NBTTagCompound nbtConduit) {
 		final NBTTagCompound nbtNewConduit = new NBTTagCompound();
 		final Set<String> keys = nbtConduit.getKeySet();
 		for (final String key : keys) {
 			final NBTBase base = nbtConduit.getTag(key);
 			switch(base.getId()) {
 			case Constants.NBT.TAG_INT_ARRAY:	// "connections", "externalConnections"
-				int[] data = nbtConduit.getIntArray(key);
-				int[] newData = data.clone();
+				final int[] data = nbtConduit.getIntArray(key);
+				final int[] newData = data.clone();
 				for (int index = 0; index < data.length; index++) {
 					switch (rotationSteps) {
 					case 1:
@@ -201,7 +201,7 @@ public class CompatEnderIO implements IBlockTransformer {
 				targets[index] = transformation.apply(oldCoords[3 * index], oldCoords[3 * index + 1], oldCoords[3 * index + 2]);
 			}
 			if (targets[0].getY() == targets[1].getY() && targets[1].getY() == targets[2].getY() && targets[2].getY() == targets[3].getY()) {
-				short pos = nbtTileEntity.getShort("pos");
+				final short pos = nbtTileEntity.getShort("pos");
 				switch (rotationSteps) {
 				case 1:
 					nbtTileEntity.setShort("pos", rotPosHorizontal[pos]);
@@ -216,14 +216,14 @@ public class CompatEnderIO implements IBlockTransformer {
 					break;
 				}
 			} else {
-				BlockPos newPos = transformation.apply(nbtTileEntity.getInteger("x"), nbtTileEntity.getInteger("y"), nbtTileEntity.getInteger("z"));
+				final BlockPos newPos = transformation.apply(nbtTileEntity.getInteger("x"), nbtTileEntity.getInteger("y"), nbtTileEntity.getInteger("z"));
 				if (targets[0].getX() == targets[1].getX() && targets[1].getX() == targets[2].getX() && targets[2].getX() == targets[3].getX()) {
-					int minZ = Math.min(targets[0].getZ(), Math.min(targets[1].getZ(), targets[2].getZ()));
-					short pos = (short) ((nbtTileEntity.getShort("pos") & 2) + (newPos.getZ() == minZ ? 1 : 0));	// 2 & 3 are for bottom
+					final int minZ = Math.min(targets[0].getZ(), Math.min(targets[1].getZ(), targets[2].getZ()));
+					final short pos = (short) ((nbtTileEntity.getShort("pos") & 2) + (newPos.getZ() == minZ ? 1 : 0));	// 2 & 3 are for bottom
 					nbtTileEntity.setShort("pos", pos);
 				} else {
-					int minX = Math.min(targets[0].getX(), Math.min(targets[1].getX(), targets[2].getX()));
-					short pos = (short) ((nbtTileEntity.getShort("pos") & 2) + (newPos.getZ() == minX ? 1 : 0));	// 2 & 3 are for bottom
+					final int minX = Math.min(targets[0].getX(), Math.min(targets[1].getX(), targets[2].getX()));
+					final short pos = (short) ((nbtTileEntity.getShort("pos") & 2) + (newPos.getZ() == minX ? 1 : 0));	// 2 & 3 are for bottom
 					nbtTileEntity.setShort("pos", pos);
 				}
 			}
@@ -239,11 +239,11 @@ public class CompatEnderIO implements IBlockTransformer {
 	}
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		
 		if (nbtTileEntity.hasKey("facing")) {
-			short facing = nbtTileEntity.getShort("facing");
+			final short facing = nbtTileEntity.getShort("facing");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setShort("facing", mrot[facing]);
@@ -268,7 +268,7 @@ public class CompatEnderIO implements IBlockTransformer {
 		final Map<String, Short> map = new HashMap<>();
 		for (final String key : rotFaceNames.keySet()) {
 			if (nbtTileEntity.hasKey(key)) {
-				short face = nbtTileEntity.getShort(key);
+				final short face = nbtTileEntity.getShort(key);
 				switch (rotationSteps) {
 				case 1:
 					map.put(rotFaceNames.get(key), face);

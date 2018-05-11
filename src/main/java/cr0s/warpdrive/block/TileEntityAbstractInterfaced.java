@@ -101,7 +101,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	}
 	
 	private boolean assetExist(final String resourcePath) {
-		URL url = getClass().getResource(resourcePath);
+		final URL url = getClass().getResource(resourcePath);
 		return (url != null);
 	}
 	
@@ -120,7 +120,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	public void validate() {
 		if (WarpDriveConfig.isComputerCraftLoaded) {
-			String CC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.ComputerCraft/" + peripheralName;
+			final String CC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.ComputerCraft/" + peripheralName;
 			CC_hasResource = assetExist(CC_path);
 		}
 		
@@ -208,10 +208,10 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	// Dirty cheap conversion methods
 	@Optional.Method(modid = "OpenComputers")
-	protected Object[] argumentsOCtoCC(Arguments args) {
-		Object[] arguments = new Object[args.count()];
+	protected Object[] argumentsOCtoCC(final Arguments args) {
+		final Object[] arguments = new Object[args.count()];
 		int index = 0;
-		for (Object arg:args) {
+		for (final Object arg : args) {
 			if (args.isString(index)) {
 				arguments[index] = args.checkString(index);
 			} else {
@@ -246,7 +246,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		} else {
 			strings = strings[strings.length - 1].split("\\.");
 		}
-		ArrayList<Integer> integers = new ArrayList<>(strings.length);
+		final ArrayList<Integer> integers = new ArrayList<>(strings.length);
 		for (final String string : strings) {
 			integers.add(Integer.parseInt(string));
 		}
@@ -274,7 +274,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				final int z = Commons.toInt(arguments[2]);
 				return new VectorI(x, y, z);
 			}
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException exception) {
 			// ignore
 		}
 		return vDefault;
@@ -290,7 +290,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 					return UUID.fromString((String) arguments[0]);
 				}
 			}
-		} catch (IllegalArgumentException e) {
+		} catch (final IllegalArgumentException exception) {
 			// ignore
 		}
 		return uuidDefault;
@@ -298,7 +298,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {
@@ -317,8 +317,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public void attach(IComputerAccess computer) {
-		int id = computer.getID();
+	public void attach(final IComputerAccess computer) {
+		final int id = computer.getID();
 		connectedComputers.put(id, computer);
 		if (CC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
 			try {
@@ -332,7 +332,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 						computer.mount("/" + script, ComputerCraftAPI.createResourceMount(WarpDrive.class, modid, "lua.ComputerCraft/" + peripheralName + "/" + script));
 					}
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 				WarpDrive.logger.error(String.format("Failed to mount ComputerCraft scripts for %s @ %s (%d %d %d)",
 				                                     peripheralName,
@@ -344,25 +344,25 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public void detach(IComputerAccess computer) {
+	public void detach(final IComputerAccess computer) {
 		final int id = computer.getID();
 		connectedComputers.remove(id);
 	}
 	
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public boolean equals(IPeripheral other) {
+	public boolean equals(final IPeripheral other) {
 		return other.hashCode() == hashCode();
 	}
 	
 	// Computer abstraction methods
-	protected void sendEvent(String eventName, Object... arguments) {
+	protected void sendEvent(final String eventName, final Object... arguments) {
 		if (WarpDriveConfig.LOGGING_LUA) {
 			WarpDrive.logger.info(this + " Sending event '" + eventName + "'");
 		}
 		if (WarpDriveConfig.isComputerCraftLoaded) {
 			for (final Map.Entry<Integer, IComputerAccess> integerIComputerAccessEntry : connectedComputers.entrySet()) {
-				IComputerAccess comp = integerIComputerAccessEntry.getValue();
+				final IComputerAccess comp = integerIComputerAccessEntry.getValue();
 				comp.queueEvent(eventName, arguments);
 			}
 		}
@@ -371,10 +371,10 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				if (arguments == null || arguments.length == 0) {
 					OC_node.sendToReachable("computer.signal", eventName);
 				} else {
-					Object[] eventWithArguments = new Object[arguments.length + 1];
+					final Object[] eventWithArguments = new Object[arguments.length + 1];
 					eventWithArguments[0] = eventName;
 					int index = 1;
-					for (Object object : arguments) {
+					for (final Object object : arguments) {
 						eventWithArguments[index] = object;
 						index++;
 					}
@@ -387,19 +387,19 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	// OpenComputers methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] position(Context context, Arguments arguments) {
+	public Object[] position(final Context context, final Arguments arguments) {
 		return position();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] version(Context context, Arguments arguments) {
+	public Object[] version(final Context context, final Arguments arguments) {
 		return version();
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] interfaced(Context context, Arguments arguments) {
+	public Object[] interfaced(final Context context, final Arguments arguments) {
 		return interfaced();
 	}
 	
@@ -423,7 +423,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "OpenComputers")
-	public void onConnect(Node node) {
+	public void onConnect(final Node node) {
 		if (node.host() instanceof Context) {
 			// Attach our file system to new computers we get connected to.
 			// Note that this is also called for all already present computers
@@ -437,7 +437,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "OpenComputers")
-	public void onDisconnect(Node node) {
+	public void onDisconnect(final Node node) {
 		if (OC_fileSystem != null) {
 			if (node.host() instanceof Context) {
 				// Disconnecting from a single computer
@@ -451,7 +451,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "OpenComputers")
-	public void onMessage(Message message) {
+	public void onMessage(final Message message) {
 		// nothing special
 	}
 }

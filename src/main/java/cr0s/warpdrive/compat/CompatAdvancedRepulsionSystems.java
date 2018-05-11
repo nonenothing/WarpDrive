@@ -24,7 +24,7 @@ public class CompatAdvancedRepulsionSystems implements IBlockTransformer {
 			classBlockMachine = Class.forName("mods.immibis.ars.BlockMachine");
 			classBlockUpgrades = Class.forName("mods.immibis.ars.BlockUpgrades");
 			WarpDriveConfig.registerBlockTransformer("AdvancedRepulsionSystems", new CompatAdvancedRepulsionSystems());
-		} catch(ClassNotFoundException | SecurityException exception) {
+		} catch(final ClassNotFoundException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -38,7 +38,7 @@ public class CompatAdvancedRepulsionSystems implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -60,8 +60,8 @@ public class CompatAdvancedRepulsionSystems implements IBlockTransformer {
 	private static final byte[]  rotOutputFace = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}
@@ -80,7 +80,7 @@ public class CompatAdvancedRepulsionSystems implements IBlockTransformer {
 		}
 		
 		if (nbtTileEntity.hasKey("facing")) {
-			short facing = nbtTileEntity.getShort("facing");
+			final short facing = nbtTileEntity.getShort("facing");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setShort("facing", rotFacing[facing]);
@@ -97,7 +97,7 @@ public class CompatAdvancedRepulsionSystems implements IBlockTransformer {
 		}
 		
 		if (nbtTileEntity.hasKey("outputFace")) {
-			byte outputFace = nbtTileEntity.getByte("outputFace");
+			final byte outputFace = nbtTileEntity.getByte("outputFace");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setByte("outputFace", rotOutputFace[outputFace]);

@@ -31,7 +31,7 @@ public class CompatSGCraft implements IBlockTransformer {
 			methodSGBaseTE_sgStateDescription = classSGBaseTE.getMethod("sgStateDescription");
 			
 			WarpDriveConfig.registerBlockTransformer("SGCraft", new CompatSGCraft());
-		} catch(ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
+		} catch(final ClassNotFoundException | NoSuchMethodException | SecurityException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -42,11 +42,11 @@ public class CompatSGCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		if (classSGBaseTE.isInstance(tileEntity)) {
 			try {
-				Object object = methodSGBaseTE_sgStateDescription.invoke(tileEntity);
-				String state = (String)object;
+				final Object object = methodSGBaseTE_sgStateDescription.invoke(tileEntity);
+				final String state = (String)object;
 				if (!state.equalsIgnoreCase("Idle")) {
 					reason.append(String.format("Stargate is active (%s)!", state));
 					return false;
@@ -73,14 +73,14 @@ public class CompatSGCraft implements IBlockTransformer {
 	private static final byte[] mrotDHD = {  3,  0,  1,  2,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		
 		// Link between stargate controller and DHD
 		if (nbtTileEntity.hasKey("isLinkedToStargate")) {
 			if ( nbtTileEntity.getBoolean("isLinkedToStargate")
 			  && nbtTileEntity.hasKey("linkedX") && nbtTileEntity.hasKey("linkedY") && nbtTileEntity.hasKey("linkedZ")) {
-				BlockPos targetLink = transformation.apply(nbtTileEntity.getInteger("linkedX"), nbtTileEntity.getInteger("linkedY"), nbtTileEntity.getInteger("linkedZ"));
+				final BlockPos targetLink = transformation.apply(nbtTileEntity.getInteger("linkedX"), nbtTileEntity.getInteger("linkedY"), nbtTileEntity.getInteger("linkedZ"));
 				nbtTileEntity.setInteger("linkedX", targetLink.getX());
 				nbtTileEntity.setInteger("linkedY", targetLink.getY());
 				nbtTileEntity.setInteger("linkedZ", targetLink.getZ());
@@ -91,7 +91,7 @@ public class CompatSGCraft implements IBlockTransformer {
 		if (nbtTileEntity.hasKey("isMerged")) {
 			if ( nbtTileEntity.getBoolean("isMerged")
 			  && nbtTileEntity.hasKey("baseX") && nbtTileEntity.hasKey("baseY") && nbtTileEntity.hasKey("baseZ")) {
-				BlockPos targetLink = transformation.apply(nbtTileEntity.getInteger("baseX"), nbtTileEntity.getInteger("baseY"), nbtTileEntity.getInteger("baseZ"));
+				final BlockPos targetLink = transformation.apply(nbtTileEntity.getInteger("baseX"), nbtTileEntity.getInteger("baseY"), nbtTileEntity.getInteger("baseZ"));
 				nbtTileEntity.setInteger("baseX", targetLink.getX());
 				nbtTileEntity.setInteger("baseY", targetLink.getY());
 				nbtTileEntity.setInteger("baseZ", targetLink.getZ());

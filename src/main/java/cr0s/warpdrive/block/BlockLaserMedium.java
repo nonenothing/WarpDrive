@@ -28,7 +28,7 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	
 	public BlockLaserMedium(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.machines.LaserMedium");
+		setUnlocalizedName("warpdrive.machines.Laser_medium");
 		GameRegistry.registerTileEntity(TileEntityLaserMedium.class, WarpDrive.PREFIX + registryName);
 		
 		setDefaultState(getDefaultState().withProperty(LEVEL, 0));

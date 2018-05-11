@@ -43,7 +43,7 @@ public class MetaOrbInstance extends OrbInstance {
 		}
 		
 		// generate an abstract form for the core
-		for (VectorI location: metaShell.locations) {
+		for (final VectorI location: metaShell.locations) {
 			// place core block
 			if (metaShell.block != null) {
 				world.setBlockState(new BlockPos(blockPos.getX() + location.x, y2 + location.y, blockPos.getZ() + location.z), metaShell.block.getStateFromMeta(metaShell.metadata), 2);
@@ -96,8 +96,8 @@ public class MetaOrbInstance extends OrbInstance {
 					mutableBlockPos.setPos(x, y, z);
 					// if inside radius
 					if (sqRange <= sqRadius && isReplaceableOreGen(world, mutableBlockPos)) {
-						OrbShell shell = getShellForSqRadius(sqRange);
-						Filler filler = shell.getRandomUnit(world.rand);
+						final OrbShell shell = getShellForSqRadius(sqRange);
+						final Filler filler = shell.getRandomUnit(world.rand);
 						filler.setBlock(world, mutableBlockPos);
 					}
 				}

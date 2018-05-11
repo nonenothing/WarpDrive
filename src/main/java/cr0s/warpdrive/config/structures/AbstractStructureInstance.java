@@ -15,20 +15,20 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 	protected AbstractStructure structure;
 	protected HashMap<String,Double> variables = new HashMap<>();
 	
-	public AbstractStructureInstance(AbstractStructure structure, Random random) {
+	public AbstractStructureInstance(final AbstractStructure structure, final Random random) {
 		this.structure = structure;
 		
 		// evaluate variables
 		for (final Entry<String, String> entry : structure.variables.entrySet()) {
-			double value;
+			final double value;
 			String stringValue = entry.getValue();
 			try {
 				if (stringValue.contains(",")) {
-					String[] values = stringValue.split(",");
+					final String[] values = stringValue.split(",");
 					stringValue = values[random.nextInt(values.length)];
 				}
 				value = Double.parseDouble(entry.getValue());
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new RuntimeException("Invalid expression '" + entry.getValue() + "'"
 						+ (stringValue.equalsIgnoreCase(entry.getValue()) ? "" : " in '" + entry.getValue() + "'")
 						+ " for variable " + entry.getKey()

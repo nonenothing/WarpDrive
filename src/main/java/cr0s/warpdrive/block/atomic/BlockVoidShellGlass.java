@@ -20,7 +20,7 @@ public class BlockVoidShellGlass extends BlockVoidShellPlain {
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
-	public boolean shouldSideBeRendered(IBlockState blockState, @Nonnull IBlockAccess blockAccess, @Nonnull BlockPos blockPos, EnumFacing side) {
+	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
 		final IBlockState blockStateSide = blockAccess.getBlockState(blockPos);
 		final Block blockSide = blockStateSide.getBlock();
 		if (blockSide.isAir(blockStateSide, blockAccess, blockPos)) {

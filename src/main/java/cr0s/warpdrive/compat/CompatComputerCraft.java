@@ -27,7 +27,7 @@ public class CompatComputerCraft implements IBlockTransformer {
 			classBlockPeripheral   = Class.forName("dan200.computercraft.shared.peripheral.common.BlockPeripheral");
 			classBlockTurtle       = Class.forName("dan200.computercraft.shared.turtle.blocks.BlockTurtle");
 			WarpDriveConfig.registerBlockTransformer("ComputerCraft", new CompatComputerCraft());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -38,7 +38,7 @@ public class CompatComputerCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -64,8 +64,8 @@ public class CompatComputerCraft implements IBlockTransformer {
 	private static final int[] rotDir            = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 };	// printer, monitor, turtle
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}
@@ -117,7 +117,7 @@ public class CompatComputerCraft implements IBlockTransformer {
 			return metadata;
 		}
 		// turtles and others
-		int dir = nbtTileEntity.getInteger("dir");
+		final int dir = nbtTileEntity.getInteger("dir");
 		switch (rotationSteps) {
 		case 1:
 			nbtTileEntity.setInteger("dir", rotDir[dir]);

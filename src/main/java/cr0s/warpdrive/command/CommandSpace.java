@@ -36,7 +36,7 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
 		if (commandSender == null) { return; } 
 		
 		// set defaults
@@ -175,7 +175,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 			// inform player
-			String message = "§aTeleporting player " + entityPlayerMP.getName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.provider.getSaveFolder();
+			final String message = "§aTeleporting player " + entityPlayerMP.getName() + " to dimension " + dimensionIdTarget + "..."; // + ":" + worldTarget.provider.getSaveFolder();
 			Commons.addChatMessage(commandSender, new TextComponentString(message));
 			WarpDrive.logger.info(message);
 			if (commandSender != entityPlayerMP) {
@@ -211,7 +211,7 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(@Nonnull ICommandSender commandSender) {
+	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";
 	}
 }

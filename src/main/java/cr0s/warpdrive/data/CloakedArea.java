@@ -31,7 +31,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CloakedArea {
 	
-	public int dimensionId = -666;
+	public int dimensionId;
 	public BlockPos blockPosCore;
 	public int minX, minY, minZ;
 	public int maxX, maxY, maxZ;
@@ -63,7 +63,7 @@ public class CloakedArea {
 				for (final EntityPlayer player : list) {
 					addPlayer(player.getUniqueID());
 				}
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 			}
 		}
@@ -234,8 +234,8 @@ public class CloakedArea {
 		// Hide the blocks within area
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Refreshing cloaked blocks..."); }
 		final World world = player.getEntityWorld();
-		int minY_clamped = Math.max(0, minY);
-		int maxY_clamped = Math.min(255, maxY);
+		final int minY_clamped = Math.max(0, minY);
+		final int maxY_clamped = Math.min(255, maxY);
 		for (int y = minY_clamped; y <= maxY_clamped; y++) {
 			for (int x = minX; x <= maxX; x++) {
 				for (int z = minZ; z <= maxZ; z++) {
@@ -264,7 +264,7 @@ public class CloakedArea {
 		world.markBlockRangeForRenderUpdate(minX - 1, Math.max(0, minY - 1), minZ - 1, maxX + 1, Math.min(255, maxY + 1), maxZ + 1);
 
 		// Make some graphics
-		int numLasers = 80 + world.rand.nextInt(50);
+		final int numLasers = 80 + world.rand.nextInt(50);
 		
 		final double centerX = (minX + maxX) / 2.0D;
 		final double centerY = (minY + maxY) / 2.0D;

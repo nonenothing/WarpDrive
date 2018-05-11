@@ -35,20 +35,20 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 		return upgrade;
 	}
 	
-	protected void setUpgrade(EnumForceFieldUpgrade upgrade) {
+	protected void setUpgrade(final EnumForceFieldUpgrade upgrade) {
 		this.upgrade = upgrade;
 		markDirty();
 	}
 	
 	@Override
 	protected ITextComponent getUpgradeStatus() {
-		EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
-		ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.statusLine." + enumForceFieldUpgrade.getName());
+		final EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
+		final ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.status_line." + enumForceFieldUpgrade.getName());
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
-			return new TextComponentTranslation("warpdrive.upgrade.statusLine.none",
+			return new TextComponentTranslation("warpdrive.upgrade.status_line.none",
 				strDisplayName);
 		} else {
-			return new TextComponentTranslation("warpdrive.upgrade.statusLine.valid",
+			return new TextComponentTranslation("warpdrive.upgrade.status_line.valid",
 				strDisplayName);
 		}
 	}

@@ -3,6 +3,8 @@ death.attack.warpdrive.asphyxia=%1$s 不能呼吸了
 death.attack.warpdrive.asphyxia.player=%1$s 被 %2$s 親吻導致不能呼吸了
 death.attack.warpdrive.cold=%1$s 變成了老冰棍
 death.attack.warpdrive.cold.player=%2$s 對 %1$s 使用了冰凍魔法
+death.attack.warpdrive.irradiation=%1$s died from irradiation
+death.attack.warpdrive.irradiation.player=%1$s received a lethal radiation from %2$s
 death.attack.warpdrive.laser=%1$s 被粒子炮射穿了
 death.attack.warpdrive.laser.player=%2$s 用粒子炮射穿了 %1$s  
 death.attack.warpdrive.shock=%1$s 被楊叫獸電死了
@@ -11,6 +13,8 @@ death.attack.warpdrive.teleportation=%1$s 再構成失敗了
 death.attack.warpdrive.teleportation.player=%2$s 對 %1$s 使出了超時空傳送 
 death.attack.warpdrive.warm=%1$s 在傳送中失去聯係了
 death.attack.warpdrive.warm.player=%2$s 把 %1$s 變成了綠色香蕉
+
+itemGroup.warpdrive=WarpDrive
 
 item.warpdrive.crafting.Malformed.name=不良道具[WD]
 item.warpdrive.crafting.EmeraldCrystal.name=翡翠調諧水晶
@@ -36,8 +40,19 @@ item.warpdrive.crafting.CoilCrystal.name=回紋水晶
 item.warpdrive.crafting.ElectromagneticProjector.name=電磁投射器
 item.warpdrive.crafting.Superconductor.name=超導材料
 
-item.warpdrive.armor.AirCanisterFull.name=空氣罐
-item.warpdrive.armor.Helmet.name=躍遷保護盔
+item.warpdrive.armor.helmet.name=躍遷保護盔
+item.warpdrive.armor.chestplate.name=Warp Chestplate
+item.warpdrive.armor.leggings.name=Warp Leggings
+item.warpdrive.armor.boots.name=Warp Boots
+
+item.warpdrive.atomic.electromagnetic_cell.name=Electromagnetic cell
+item.warpdrive.atomic.electromagnetic_cell.tooltip.empty=Use a particle collider to fill me!
+item.warpdrive.atomic.electromagnetic_cell.tooltip.filled=Contains %1$s Å³ of %2$s
+
+item.warpdrive.breathing.air_tank0.name=Air Canister
+item.warpdrive.breathing.air_tank1.name=Basic Air Tank
+item.warpdrive.breathing.air_tank2.name=Advanced Air Tank
+item.warpdrive.breathing.air_tank3.name=Superior Air Tank
 
 item.warpdrive.energy.IC2reactorLaserFocus.name=IC2 反應堆鐳射
 
@@ -75,13 +90,13 @@ item.warpdrive.forcefield.upgrade.heating.name=熔融芯片
 item.warpdrive.forcefield.upgrade.heating.tooltip=加熱方塊或者實體。增加更多熔融芯片來增强效果。 增加一個廣域芯片來增加反應區域。
 item.warpdrive.forcefield.upgrade.inversion.name=廣域芯片
 item.warpdrive.forcefield.upgrade.inversion.tooltip=§4工作正在進行時\n更改作用的區域。  用於定位實體或地形。
-item.warpdrive.forcefield.upgrade.itemPort.name=端口擴充芯片
-item.warpdrive.forcefield.upgrade.itemPort.tooltip=增加機械的接口。 添加更多引力升級芯片或者斷路器芯片。 增加斥力芯片以提供進行放置穩定升級芯片。
+item.warpdrive.forcefield.upgrade.item_port.name=端口擴充芯片
+item.warpdrive.forcefield.upgrade.item_port.tooltip=增加機械的接口。 添加更多引力升級芯片或者斷路器芯片。 增加斥力芯片以提供進行放置穩定升級芯片。
 item.warpdrive.forcefield.upgrade.pumping.name=泵升級
 item.warpdrive.forcefield.upgrade.pumping.tooltip=§4工作正在進行時\n往力場位置泵送流體。 添加更多泵升級以驅動具有較高粘度流體的流體，如熔岩。
 item.warpdrive.forcefield.upgrade.range.name=射程提升芯片
 item.warpdrive.forcefield.upgrade.range.tooltip=增加投射器的最大範圍。
-item.warpdrive forcefield.forcefield.upgrade.repulsion.name=斥力芯片
+item.warpdrive.forcefield.upgrade.repulsion.name=斥力芯片
 item.warpdrive.forcefield.upgrade.repulsion.tooltip=通過穩定升級壓縮存儲的物品。增加更多斥力芯片來增加被作用的物品, 實體, 怪物以及玩家。 添加一個廣域芯片以增加作用範圍。
 item.warpdrive.forcefield.upgrade.rotation.name=旋轉芯片
 item.warpdrive.forcefield.upgrade.rotation.tooltip=啟用旋轉力場
@@ -107,53 +122,119 @@ item.warpdrive.upgrade.Range.name=射程提升芯片
 item.warpdrive.upgrade.Energy.name=能量芯片
 
 
-item.warpdrive.tool.crystalToken.name=水晶印記
-item.warpdrive.tool.crystalToken.tooltip=將水晶封裝在船上 '%1$s'\n§b啓動掃描力場§7 來建造你的船隻。
-item.warpdrive.tool.crystalToken0.name=水晶印記 #0
-item.warpdrive.tool.crystalToken1.name=水晶印記 #1
-item.warpdrive.tool.crystalToken2.name=水晶印記 #2
-item.warpdrive.tool.crystalToken3.name=水晶印記 #3
-item.warpdrive.tool.crystalToken4.name=水晶印記 #4
-item.warpdrive.tool.crystalToken5.name=水晶印記 #5
+item.warpdrive.tool.ship_token.name=Ship token
+item.warpdrive.tool.ship_token.tooltip.usage=將水晶封裝在船上 '%1$s'\n§b啓動掃描力場§7 來建造你的船隻。
+item.warpdrive.tool.ship_token0.name=Ship token #0
+item.warpdrive.tool.ship_token1.name=Ship token #1
+item.warpdrive.tool.ship_token2.name=Ship token #2
+item.warpdrive.tool.ship_token3.name=Ship token #3
+item.warpdrive.tool.ship_token4.name=Ship token #4
+item.warpdrive.tool.ship_token5.name=Ship token #5
+item.warpdrive.tool.ship_token10.name=Ship token #10
+item.warpdrive.tool.ship_token11.name=Ship token #11
+item.warpdrive.tool.ship_token12.name=Ship token #12
+item.warpdrive.tool.ship_token13.name=Ship token #13
+item.warpdrive.tool.ship_token14.name=Ship token #14
+item.warpdrive.tool.ship_token15.name=Ship token #15
+item.warpdrive.tool.ship_token20.name=Ship token #20
+item.warpdrive.tool.ship_token21.name=Ship token #21
+item.warpdrive.tool.ship_token22.name=Ship token #22
+item.warpdrive.tool.ship_token23.name=Ship token #23
+item.warpdrive.tool.ship_token24.name=Ship token #24
+item.warpdrive.tool.ship_token25.name=Ship token #25
+item.warpdrive.tool.ship_token30.name=Ship token #30
+item.warpdrive.tool.ship_token31.name=Ship token #31
+item.warpdrive.tool.ship_token32.name=Ship token #32
+item.warpdrive.tool.ship_token33.name=Ship token #33
+item.warpdrive.tool.ship_token34.name=Ship token #34
+item.warpdrive.tool.ship_token35.name=Ship token #35
+item.warpdrive.tool.ship_token40.name=Ship token #40
+item.warpdrive.tool.ship_token41.name=Ship token #41
+item.warpdrive.tool.ship_token42.name=Ship token #42
+item.warpdrive.tool.ship_token43.name=Ship token #43
+item.warpdrive.tool.ship_token44.name=Ship token #44
+item.warpdrive.tool.ship_token45.name=Ship token #45
 
 
-item.warpdrive.tool.TuningFork.name=調音叉
-item.warpdrive.tool.TuningFork.white.name=白色調音叉
-item.warpdrive.tool.TuningFork.orange.name=橙色調音叉
-item.warpdrive.tool.TuningFork.magenta.name=品紅調音叉
-item.warpdrive.tool.TuningFork.lightBlue.name=粉藍調音叉
-item.warpdrive.tool.TuningFork.yellow.name=黃色調音叉
-item.warpdrive.tool.TuningFork.lime.name=青檸調音叉
-item.warpdrive.tool.TuningFork.pink.name=粉紅調音叉
-item.warpdrive.tool.TuningFork.gray.name=灰色調音叉
-item.warpdrive.tool.TuningFork.silver.name=銀色調音叉
-item.warpdrive.tool.TuningFork.cyan.name=青色調音叉
-item.warpdrive.tool.TuningFork.purple.name=紫色調音叉
-item.warpdrive.tool.TuningFork.blue.name=藍色調音叉
-item.warpdrive.tool.TuningFork.brown.name=熊大調音叉
-item.warpdrive.tool.TuningFork.green.name=肥鋒調音叉
-item.warpdrive.tool.TuningFork.red.name=赤色調音叉
-item.warpdrive.tool.TuningFork.black.name=黑色調音叉
+item.warpdrive.tool.tuning_driver.video_channel.name=Video Channel Tuning Driver
+item.warpdrive.tool.tuning_driver.beam_frequency.name=Beam Frequency Tuning Driver
+item.warpdrive.tool.tuning_driver.control_channel.name=Control Channel Tuning Driver
 
-item.warpdrive.tool.TuningFork.tooltip.videoChannel=視頻頻道設置為 %1$d
-item.warpdrive.tool.TuningFork.tooltip.beamFrequency=光束頻率設置為 %1$d
-item.warpdrive.tool.TuningFork.tooltip.usage=§b右鍵單擊一個方塊§7 以調整其水晶\n§b潛行§7 以調節交替水晶
-item.warpdrive.tool.TuningFork.use.setVideoChannel=%1$s 現在調整為視頻頻道 %2$d
-item.warpdrive.tool.TuningFork.use.setBeamFrequency=%1$s 現在與波束頻率對準 %2$d
+item.warpdrive.tool.tuning_driver.tooltip.usage=§bRight click a block§7 to tune its crystals\n§bSneak§7 to retrieve its value\n§bRight click air§7 to change mode
 
 
-tile.warpdrive.passive.Air.name=空氣方塊
-tile.warpdrive.passive.Energized.name=通電方塊
-tile.warpdrive.passive.Gas.name=氣體方塊
-tile.warpdrive.passive.IridiumBlock.name=銥塊
-tile.warpdrive.passive.HighlyAdvancedMachine.name=高級機床
-tile.warpdrive.passive.Network.name=網絡方塊
-tile.warpdrive.passive.Plain.name=戰機方塊
+item.warpdrive.tool.tuning_fork.name=調音叉
+item.warpdrive.tool.tuning_fork.white.name=白色調音叉
+item.warpdrive.tool.tuning_fork.orange.name=橙色調音叉
+item.warpdrive.tool.tuning_fork.magenta.name=品紅調音叉
+item.warpdrive.tool.tuning_fork.lightBlue.name=粉藍調音叉
+item.warpdrive.tool.tuning_fork.yellow.name=黃色調音叉
+item.warpdrive.tool.tuning_fork.lime.name=青檸調音叉
+item.warpdrive.tool.tuning_fork.pink.name=粉紅調音叉
+item.warpdrive.tool.tuning_fork.gray.name=灰色調音叉
+item.warpdrive.tool.tuning_fork.silver.name=銀色調音叉
+item.warpdrive.tool.tuning_fork.cyan.name=青色調音叉
+item.warpdrive.tool.tuning_fork.purple.name=紫色調音叉
+item.warpdrive.tool.tuning_fork.blue.name=藍色調音叉
+item.warpdrive.tool.tuning_fork.brown.name=熊大調音叉
+item.warpdrive.tool.tuning_fork.green.name=肥鋒調音叉
+item.warpdrive.tool.tuning_fork.red.name=赤色調音叉
+item.warpdrive.tool.tuning_fork.black.name=黑色調音叉
 
-tile.warpdrive.machines.AirGenerator.name=空氣發生器
-tile.warpdrive.machines.ChunkLoader.name=方塊裝載器
-tile.warpdrive.machines.Laser.name=鐳射
-tile.warpdrive.machines.LaserMedium.name=鐳射單元 (粒子加速器)
+item.warpdrive.tool.tuning_fork.tooltip.usage=§b右鍵單擊一個方塊§7 以調整其水晶\n§b潛行§7 以調節交替水晶
+
+
+tile.warpdrive.decoration.decorative.energized.name=通電方塊
+tile.warpdrive.decoration.decorative.network.name=網絡方塊
+tile.warpdrive.decoration.decorative.plain.name=戰機方塊
+tile.warpdrive.decoration.gas.name=氣體方塊
+tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
+
+
+tile.warpdrive.passive.iridium_block.name=銥塊
+tile.warpdrive.passive.highly_advanced_machine.name=高級機床
+
+tile.warpdrive.machines.chunk_loader.name=方塊裝載器
+tile.warpdrive.machines.laser.name=鐳射
+tile.warpdrive.machines.laser_medium.name=鐳射單元 (粒子加速器)
+
+tile.warpdrive.atomic.accelerator_controller.name=Accelerator Controller
+tile.warpdrive.atomic.accelerator_controller.tooltip=Controls one or more particle accelerators.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.accelerator_control_point.name=Accelerator control point
+tile.warpdrive.atomic.accelerator_control_point.tooltip=Control accelerator nodes like collider, input and output.\nShall be placed exactly 1 block away from a void shell.\nStore results in any directly connected storage.
+tile.warpdrive.atomic.chiller1.name=Basic Chiller
+tile.warpdrive.atomic.chiller1.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.chiller2.name=Advanced Chiller
+tile.warpdrive.atomic.chiller2.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.chiller3.name=Superior Chiller
+tile.warpdrive.atomic.chiller3.tooltip=Progressively cooldown electromagnets from a connected particle accelerator.\nShall be placed next to an electromagnet.
+tile.warpdrive.atomic.electromagnet1.plain.name=Basic Plain Electromagnet
+tile.warpdrive.atomic.electromagnet1.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet1.glass.name=Basic Glass Electromagnet
+tile.warpdrive.atomic.electromagnet1.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.electromagnet2.plain.name=Advanced Plain Electromagnet
+tile.warpdrive.atomic.electromagnet2.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet2.glass.name=Advanced Glass Electromagnet
+tile.warpdrive.atomic.electromagnet2.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.electromagnet3.plain.name=Superior Plain Electromagnet
+tile.warpdrive.atomic.electromagnet3.plain.tooltip=Accelerate, focus and orient particles in the attached Void Shell.
+tile.warpdrive.atomic.electromagnet3.glass.name=Superior Glass Electromagnet
+tile.warpdrive.atomic.electromagnet3.glass.tooltip=Same a Plain Electromagnet, except you can see through it.
+tile.warpdrive.atomic.particles_collider.name=Particles Collider
+tile.warpdrive.atomic.particles_collider.tooltip=Deviates particles to collide against each others or a fixed target.\nRequires 12 blocks and an Accelerator control point to collect results.
+tile.warpdrive.atomic.particles_injector.name=Particles Injector
+tile.warpdrive.atomic.particles_injector.tooltip=Inject items or particles from a connected storage into a Basic Accelerator.
+tile.warpdrive.atomic.void_shell_plain.name=Plain Void Shell
+tile.warpdrive.atomic.void_shell_plain.tooltip=Provides 2 empty channels for particles to travel inside an accelerator setup.\nConnects only horizontally to other Void Shells.
+tile.warpdrive.atomic.void_shell_glass.name=Glass Void Shell
+tile.warpdrive.atomic.void_shell_glass.tooltip=Same as a Plain Void Shell, except you can see particles moving through it.
+
+tile.warpdrive.breathing.air.name=空氣方塊
+tile.warpdrive.breathing.air_generator.name=空氣發生器
+tile.warpdrive.breathing.air_generator1.name=Basic Air Generator
+tile.warpdrive.breathing.air_generator2.name=Advanced Air Generator
+tile.warpdrive.breathing.air_generator3.name=Superior Air Generator
+tile.warpdrive.breathing.air_shield.name=Energy Air Shield
 
 tile.warpdrive.building.ship_scanner.name=船隻掃描儀
 
@@ -259,6 +340,40 @@ tile.warpdrive.hull1.glass.green.name=綠色船體玻璃
 tile.warpdrive.hull1.glass.red.name=紅色船體玻璃
 tile.warpdrive.hull1.glass.black.name=黑色船體玻璃
 
+tile.warpdrive.hull1.omnipanel.white.name=White Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.orange.name=Orange Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.magenta.name=Magenta Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.lightBlue.name=Light Blue Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.yellow.name=Yellow Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.lime.name=Lime Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.pink.name=Pink Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.gray.name=Gray Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.silver.name=Silver Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.cyan.name=Cyan Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.purple.name=Purple Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.blue.name=Blue Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.brown.name=Brown Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.green.name=Green Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.red.name=Red Stained Basic Hull Omnipanel
+tile.warpdrive.hull1.omnipanel.black.name=Black Stained Basic Hull Omnipanel
+
+tile.warpdrive.hull1.slab.white.name=White Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.orange.name=Orange Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.magenta.name=Magenta Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.lightBlue.name=Light Blue Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.yellow.name=Yellow Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.lime.name=Lime Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.pink.name=Pink Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.gray.name=Gray Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.silver.name=Silver Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.cyan.name=Cyan Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.purple.name=Purple Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.blue.name=Blue Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.brown.name=Brown Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.green.name=Green Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.red.name=Red Stained Basic Hull Slab
+tile.warpdrive.hull1.slab.black.name=Black Stained Basic Hull Slab
+
 tile.warpdrive.hull1.stairs.white.name=白色船體階梯
 tile.warpdrive.hull1.stairs.orange.name=橙色船體階梯
 tile.warpdrive.hull1.stairs.magenta.name=品紅船體階梯
@@ -309,6 +424,40 @@ tile.warpdrive.hull2.glass.brown.name=熊大進階船體玻璃
 tile.warpdrive.hull2.glass.green.name=綠色進階船體玻璃
 tile.warpdrive.hull2.glass.red.name=紅色進階船體玻璃
 tile.warpdrive.hull2.glass.black.name=黑色進階船體玻璃
+
+tile.warpdrive.hull2.omnipanel.white.name=White Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.orange.name=Orange Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.magenta.name=Magenta Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.lightBlue.name=Light Blue Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.yellow.name=Yellow Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.lime.name=Lime Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.pink.name=Pink Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.gray.name=Gray Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.silver.name=Silver Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.cyan.name=Cyan Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.purple.name=Purple Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.blue.name=Blue Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.brown.name=Brown Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.green.name=Green Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.red.name=Red Stained Advanced Hull Omnipanel
+tile.warpdrive.hull2.omnipanel.black.name=Black Stained Advanced Hull Omnipanel
+
+tile.warpdrive.hull2.slab.white.name=White Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.orange.name=Orange Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.magenta.name=Magenta Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.lightBlue.name=Light Blue Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.yellow.name=Yellow Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.lime.name=Lime Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.pink.name=Pink Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.gray.name=Gray Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.silver.name=Silver Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.cyan.name=Cyan Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.purple.name=Purple Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.blue.name=Blue Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.brown.name=Brown Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.green.name=Green Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.red.name=Red Stained Advanced Hull Slab
+tile.warpdrive.hull2.slab.black.name=Black Stained Advanced Hull Slab
 
 tile.warpdrive.hull2.stairs.white.name=白色進階船體階梯
 tile.warpdrive.hull2.stairs.orange.name=橙色進階船體階梯
@@ -361,6 +510,40 @@ tile.warpdrive.hull3.glass.green.name=綠色高階船體玻璃
 tile.warpdrive.hull3.glass.red.name=紅色高階船體玻璃
 tile.warpdrive.hull3.glass.black.name=黑色高階船體玻璃
 
+tile.warpdrive.hull3.omnipanel.white.name=White Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.orange.name=Orange Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.magenta.name=Magenta Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.lightBlue.name=Light Blue Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.yellow.name=Yellow Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.lime.name=Lime Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.pink.name=Pink Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.gray.name=Gray Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.silver.name=Silver Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.cyan.name=Cyan Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.purple.name=Purple Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.blue.name=Blue Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.brown.name=Brown Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.green.name=Green Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.red.name=Red Stained Superior Hull Omnipanel
+tile.warpdrive.hull3.omnipanel.black.name=Black Stained Superior Hull Omnipanel
+
+tile.warpdrive.hull3.slab.white.name=White Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.orange.name=Orange Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.magenta.name=Magenta Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.lightBlue.name=Light Blue Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.yellow.name=Yellow Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.lime.name=Lime Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.pink.name=Pink Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.gray.name=Gray Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.silver.name=Silver Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.cyan.name=Cyan Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.purple.name=Purple Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.blue.name=Blue Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.brown.name=Brown Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.green.name=Green Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.red.name=Red Stained Superior Hull Slab
+tile.warpdrive.hull3.slab.black.name=Black Stained Superior Hull Slab
+
 tile.warpdrive.hull3.stairs.white.name=白色高階船體階梯
 tile.warpdrive.hull3.stairs.orange.name=橙色高階船體階梯
 tile.warpdrive.hull3.stairs.magenta.name=品紅高階船體階梯
@@ -385,49 +568,78 @@ warpdrive.monitor.viewingCamera=查看攝影機 %2$d, %3$d, %4$d 在視頻頻道
 warpdrive.ship.attachedPlayers=屬於: %1$s
 warpdrive.ship.playerAttached=您現在已連接到船艦 %1$s.\n這艘船艦屬於 %2$s
 warpdrive.ship.playerDetached=您現在已從船艦分離 %1$s.\n這艘船艦屬於 %2$s
-warpdrive.ship.statusLine.cooling=%1$d s 升降梯的冷卻中。
-warpdrive.ship.statusLine.isolation=%1$d 主動隔離塊由 %2$2.1f%% 吸收。
+warpdrive.ship.status_line.cooling=%1$d s 升降梯的冷卻中。
+warpdrive.ship.status_line.isolation=%1$d 主動隔離塊由 %2$2.1f%% 吸收。
 
-warpdrive.energy.statusLine=能量填充 %1$s / %2$s EU.
+warpdrive.energy.status_line=能量填充 %1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=%1$s 側面變為能量輸入模式!
 warpdrive.energy.side.changedToOutput=%1$s 側面變為能量輸出模式!
 warpdrive.energy.side.changedToDisabled=%1$s 側面變為能量禁用模式!
 
-warpdrive.beamFrequency.statusLine.valid=光束頻率 %1$d 已驗證。
-warpdrive.beamFrequency.statusLine.invalid=§c光束頻率 %1$d 是無效的。
-warpdrive.beamFrequency.statusLine.undefined=§7無效的光束頻率。\n§bUse 使用調音叉§r 來設置。
+warpdrive.accelerator.guide.lowPower_noStorage=Energy storage is too low; we need at least %1$d to continue operation but can only store %2$d
+warpdrive.accelerator.guide.lowPower_accelerating=We're running out of power chief, particles are on the loose, prepare for massive irradiation!
+warpdrive.accelerator.guide.lowPower_noParticles=We need more power to start the accelerator!
+warpdrive.accelerator.guide.noChiller=No chiller could be found for this accelerator!
+
+warpdrive.beam_frequency.tooltip=光束頻率設置為 %1$d
+warpdrive.beam_frequency.get=Beam frequency %2$d has been retrieved from %1$s
+warpdrive.beam_frequency.set=%1$s 現在與波束頻率對準 %2$d
+warpdrive.beam_frequency.status_line.valid=光束頻率 %1$d 已驗證。
+warpdrive.beam_frequency.status_line.invalid=§c光束頻率 %1$d 是無效的。
+warpdrive.beam_frequency.status_line.undefined=§7無效的光束頻率。\n§bUse 使用調音叉§r 來設置。
+
+warpdrive.breathing.alarm=Breathing alarm
+warpdrive.breathing.invalid_setup=No breathing helmet\nor incomplete armor
+warpdrive.breathing.low_reserve=Low air reserve!
+warpdrive.breathing.no_air=No more air!
+
+warpdrive.control_channel.tooltip=Control channel is set to %1$d
+warpdrive.control_channel.get=Control channel %2$d has been retrieved from %1$s
+warpdrive.control_channel.set=%1$s is now tuned with Control channel %2$d
+warpdrive.control_channel.status_line.valid=Control channel %1$d is valid.
+warpdrive.control_channel.status_line.invalid=§cControl channel %1$d is invalid.
+warpdrive.control_channel.status_line.undefined=§7Undefined Control channel.\n§bUse a Tuning fork§r to set it.
 
 warpdrive.forcefield.guide.lowPower=我們的能量用完了，艦長！減少消耗，或讓引擎長提高我們的輸出！
 
-warpdrive.forcefield.shape.statusLine.none=§c形狀未定義。
-warpdrive.forcefield.shape.statusLine.double=形狀是滿的 %1$s
-warpdrive.forcefield.shape.statusLine.single=形狀是一半 %1$s
-warpdrive.forcefield.shape.statusLine.sphere=領域
-warpdrive.forcefield.shape.statusLine.cylinder_h=水平氣缸
-warpdrive.forcefield.shape.statusLine.cylinder_v=垂直氣缸
-warpdrive.forcefield.shape.statusLine.cube=立方體
-warpdrive.forcefield.shape.statusLine.plane=平面
-warpdrive.forcefield.shape.statusLine.tube=管
-warpdrive.forcefield.shape.statusLine.tunnel=隧道
+warpdrive.forcefield.shape.status_line.none=§c形狀未定義。
+warpdrive.forcefield.shape.status_line.double=形狀是滿的 %1$s
+warpdrive.forcefield.shape.status_line.single=形狀是一半 %1$s
+warpdrive.forcefield.shape.status_line.sphere=領域
+warpdrive.forcefield.shape.status_line.cylinder_h=水平氣缸
+warpdrive.forcefield.shape.status_line.cylinder_v=垂直氣缸
+warpdrive.forcefield.shape.status_line.cube=立方體
+warpdrive.forcefield.shape.status_line.plane=平面
+warpdrive.forcefield.shape.status_line.tube=管
+warpdrive.forcefield.shape.status_line.tunnel=隧道
 
-warpdrive.forcefield.upgrade.statusLine.attraction=引力
-warpdrive.forcefield.upgrade.statusLine.breaking=斷路器
-warpdrive.forcefield.upgrade.statusLine.camouflage=偽裝
-warpdrive.forcefield.upgrade.statusLine.cooling=冷卻
-warpdrive.forcefield.upgrade.statusLine.fusion=融合
-warpdrive.forcefield.upgrade.statusLine.heating=熔融
-warpdrive.forcefield.upgrade.statusLine.inversion=廣域
-warpdrive.forcefield.upgrade.statusLine.itemPort=端口擴充
-warpdrive.forcefield.upgrade.statusLine.pumping=泵
-warpdrive.forcefield.upgrade.statusLine.range=射程提升
-warpdrive.forcefield.upgrade.statusLine.repulsion=斥力
-warpdrive.forcefield.upgrade.statusLine.rotation=旋轉	
-warpdrive.forcefield.upgrade.statusLine.shock=震蕩
-warpdrive.forcefield.upgrade.statusLine.silencer=消音
-warpdrive.forcefield.upgrade.statusLine.speed=極速
-warpdrive.forcefield.upgrade.statusLine.stabilization=穩定
-warpdrive.forcefield.upgrade.statusLine.thickness=加厚
-warpdrive.forcefield.upgrade.statusLine.translation=轉換
+warpdrive.forcefield.upgrade.status_line.attraction=引力
+warpdrive.forcefield.upgrade.status_line.breaking=斷路器
+warpdrive.forcefield.upgrade.status_line.camouflage=偽裝
+warpdrive.forcefield.upgrade.status_line.cooling=冷卻
+warpdrive.forcefield.upgrade.status_line.fusion=融合
+warpdrive.forcefield.upgrade.status_line.heating=熔融
+warpdrive.forcefield.upgrade.status_line.inversion=廣域
+warpdrive.forcefield.upgrade.status_line.item_port=端口擴充
+warpdrive.forcefield.upgrade.status_line.pumping=泵
+warpdrive.forcefield.upgrade.status_line.range=射程提升
+warpdrive.forcefield.upgrade.status_line.repulsion=斥力
+warpdrive.forcefield.upgrade.status_line.rotation=旋轉
+warpdrive.forcefield.upgrade.status_line.shock=震蕩
+warpdrive.forcefield.upgrade.status_line.silencer=消音
+warpdrive.forcefield.upgrade.status_line.speed=極速
+warpdrive.forcefield.upgrade.status_line.stabilization=穩定
+warpdrive.forcefield.upgrade.status_line.thickness=加厚
+warpdrive.forcefield.upgrade.status_line.translation=轉換
+
+warpdrive.particle.ion.name=ion
+warpdrive.particle.ion.tooltip=Produced by colliding a particle bunch in a basic accelerator
+warpdrive.particle.proton.name=proton
+warpdrive.particle.proton.tooltip=Produced by colliding a particle bunch in an advanced accelerator
+warpdrive.particle.antimatter.name=antimatter
+warpdrive.particle.antimatter.tooltip=Produced by colliding a particle bunch in a superior accelerator
+warpdrive.particle.strange_matter.name=strange matter
+warpdrive.particle.strange_matter.tooltip=Produced by colliding 2 particle bunches in a superior accelerator
 
 warpdrive.upgrade.result.noUpgradeToDismount=§c無需升級即可卸載。
 warpdrive.upgrade.result.notEnoughUpgrades=§c您需要至少1個才能升級此塊。
@@ -446,16 +658,22 @@ warpdrive.upgrade.result.notEnoughShapes.single=§c至少需要1個項目來設�
 warpdrive.upgrade.result.shapeDismounted=已成功卸載形狀。
 warpdrive.upgrade.result.shapeMounted=形狀已成功安裝。
 
-warpdrive.upgrade.statusLine.none=§7未安裝升級。
-warpdrive.upgrade.statusLine.valid=已升級 %1$s.
+warpdrive.upgrade.status_line.none=§7未安裝升級。
+warpdrive.upgrade.status_line.valid=已升級 %1$s.
 
-warpdrive.videoChannel.statusLine.valid=視頻頻道 %1$d 有效。
-warpdrive.videoChannel.statusLine.validCamera視頻頻道 %1$d 對於攝像機 %2$d, %3$d, %4$d 有效
-warpdrive.videoChannel.statusLine.invalid=§c視頻頻道 %1$d 是無效的。
-warpdrive.videoChannel.statusLine.invalidOrNotLoaded=§c視頻頻道 %1$d 是無效的或者錄像機太過遙遠。 
-warpdrive.videoChannel.statusLine.undefined=§7未定義的視頻通道。\n§bUse 調音叉§r 來設定。
+warpdrive.video_channel.tooltip=視頻頻道設置為 %1$d
+warpdrive.video_channel.get=Video channel %2$d has been retrieved from %1$s
+warpdrive.video_channel.set=%1$s 現在調整為視頻頻道 %2$d
+warpdrive.video_channel.status_line.valid_camera=視頻頻道 %1$d 有效。
+warpdrive.video_channel.status_line.validCamera視頻頻道 %1$d 對於攝像機 %2$d, %3$d, %4$d 有效
+warpdrive.video_channel.status_line.invalid=§c視頻頻道 %1$d 是無效的。
+warpdrive.video_channel.status_line.not_loaded=§c視頻頻道 %1$d 是無效的或者錄像機太過遙遠。
+warpdrive.video_channel.status_line.undefined=§7未定義的視頻通道。\n§bUse 調音叉§r 來設定。
 
-warpdrive.cloaking_core.invalidAssembly=§c裝配無效！
+warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s
+warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s
+warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s
+warpdrive.cloaking_core.valid=System is valid
 warpdrive.cloaking_core.disabled=僞裝無效！
 warpdrive.cloaking_core.lowPower=§c僞裝失效了，我們需要更多的能量！艦長！
 warpdrive.cloaking_core.cloaking=A 層 %1$d 僞裝目前正確覆蓋 %2$d 區域！
@@ -474,6 +692,7 @@ warpdrive.transporter_signature.set_self=§cTransporter room can't target itself
 warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
 warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
-warpdrive.tooltip.itemTag.breathingIC2=§b空間呼吸§r 正在從您的庫存消耗IC2的壓縮空氣囊。
-warpdrive.tooltip.itemTag.flyInSpace=§b空間噴氣背包§r.
-warpdrive.tooltip.itemTag.noFallDamage=§b吸收跌落傷害§r.
+warpdrive.tooltip.item_tag.breathing_helmet-legacyTranslation=§b空間呼吸§r 正在從您的庫存消耗IC2的壓縮空氣囊。
+warpdrive.tooltip.item_tag.breathing_helmet=§bSpace breathing§r consuming Air canisters and IC2 Compressed air cells from your inventory.
+warpdrive.tooltip.item_tag.fly_in_space=§b空間噴氣背包§r.
+warpdrive.tooltip.item_tag.no_fall_damage=§b吸收跌落傷害§r.

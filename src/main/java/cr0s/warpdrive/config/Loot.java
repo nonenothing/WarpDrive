@@ -69,7 +69,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringDamage.isEmpty()) {
 			try {
 				damage = Integer.parseInt(stringDamage);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid damage for item " + nameItem);
 			}
 		}
@@ -80,7 +80,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringNBT.isEmpty()) {
 			try {
 				tagCompound = JsonToNBT.getTagFromJson(stringNBT);
-			} catch (NBTException exception) {
+			} catch (final NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for item " + nameItem);
 			}
 		}
@@ -91,7 +91,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringQuantityMin.isEmpty()) {
 			try {
 				quantityMin = Integer.parseInt(stringQuantityMin);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid minQuantity for item " + nameItem);
 			}
 		}
@@ -102,7 +102,7 @@ public class Loot implements IXmlRepresentableUnit {
 		if (!stringQuantityMax.isEmpty()) {
 			try {
 				quantityMax = Integer.parseInt(stringQuantityMax);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid maxQuantity for item " + nameItem);
 			}
 		}
@@ -128,7 +128,7 @@ public class Loot implements IXmlRepresentableUnit {
 	}
 	
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		return object instanceof Loot
 			&& (item == null || item.equals(((Loot) object).item))
 			&& damage == ((Loot) object).damage

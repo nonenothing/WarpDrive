@@ -29,8 +29,8 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 		if (ticks > 20) {
 			ticks = 0;
 			
-			int level = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
-			IBlockState blockState = worldObj.getBlockState(pos);
+			final int level = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
+			final IBlockState blockState = worldObj.getBlockState(pos);
 			if (blockState.getValue(BlockLaserMedium.LEVEL) != level) {
 				updateBlockState(blockState, BlockLaserMedium.LEVEL, level);
 			}
@@ -55,7 +55,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return true;
 	}
 }

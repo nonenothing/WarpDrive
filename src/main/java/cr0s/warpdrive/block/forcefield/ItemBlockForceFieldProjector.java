@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	
-	public ItemBlockForceFieldProjector(Block block) {
+	public ItemBlockForceFieldProjector(final Block block) {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
@@ -24,12 +24,12 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
-		ResourceLocation resourceLocation = getRegistryName();
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
+		final int damage = itemStack.getItemDamage();
+		final ResourceLocation resourceLocation = getRegistryName();
 		String stringVariant = "inventory";
 /*		if (itemStack.hasTagCompound() && itemStack.getTagCompound() != null) {
-			NBTTagCompound tagCompound = itemStack.getTagCompound();
+			final NBTTagCompound tagCompound = itemStack.getTagCompound();
 			stringVariant = "facing=" + (tagCompound.getBoolean("isDoubleSided") ? "east" : "north")
 					+ ",is_double_sided=false"
 					+ "state=connected_powered,shape=" + EnumForceFieldShape.get(tagCompound.getByte("shape")).getName();
@@ -45,7 +45,7 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		if (itemStack == null) {
 			return getUnlocalizedName();
 		}

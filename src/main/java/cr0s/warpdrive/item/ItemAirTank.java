@@ -52,7 +52,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 	//	return icons[Math.min(icons.length, offset + tier * 6)];
 	
 	@Override
-	public void getSubItems(@Nonnull Item item, CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, getMaxDamage()));
 	}

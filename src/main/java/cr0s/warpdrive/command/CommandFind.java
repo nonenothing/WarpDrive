@@ -35,7 +35,8 @@ public class CommandFind extends CommandBase {
 			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
 		} else if (args.length == 1) {
-			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+			if ( args[0].equalsIgnoreCase("help")
+			  || args[0].equalsIgnoreCase("?") ) {
 				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 				return;
 			}

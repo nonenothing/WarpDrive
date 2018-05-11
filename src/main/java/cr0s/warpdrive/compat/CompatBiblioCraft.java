@@ -20,7 +20,7 @@ public class CompatBiblioCraft implements IBlockTransformer {
 			classBlockArmorStand = Class.forName("jds.bibliocraft.blocks.BlockArmorStand");
 			classBlockPrintingPress = Class.forName("jds.bibliocraft.blocks.BlockPrintPress");
 			WarpDriveConfig.registerBlockTransformer("BiblioCraft", new CompatBiblioCraft());
-		} catch(ClassNotFoundException exception) {
+		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
 	}
@@ -30,12 +30,12 @@ public class CompatBiblioCraft implements IBlockTransformer {
 		if (block == null) {
 			return false;
 		}
-		String canonicalName = block.getClass().getCanonicalName();
+		final String canonicalName = block.getClass().getCanonicalName();
 		return canonicalName != null && canonicalName.startsWith("jds.bibliocraft.");
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
 		return true;
 	}
 	
@@ -56,8 +56,8 @@ public class CompatBiblioCraft implements IBlockTransformer {
 	private static final int[]  rotCaseAngle   = {  0,  1,  2,  3,  5,  6,  7,  4,  8,  9, 10, 11, 12, 13, 14, 15 };
 	
 	@Override
-	public int rotate(final Block block, final int metadata, NBTTagCompound nbtTileEntity, final ITransformation transformation) {
-		byte rotationSteps = transformation.getRotationSteps();
+	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
+		final byte rotationSteps = transformation.getRotationSteps();
 		if (rotationSteps == 0) {
 			return metadata;
 		}
@@ -96,7 +96,7 @@ public class CompatBiblioCraft implements IBlockTransformer {
 			key = "potionshelfAngle";
 		}
 		if (key != null) {
-			int angle = nbtTileEntity.getInteger(key);
+			final int angle = nbtTileEntity.getInteger(key);
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger(key, rotAngle[angle]);
@@ -114,7 +114,7 @@ public class CompatBiblioCraft implements IBlockTransformer {
 		
 		
 		if (nbtTileEntity.hasKey("caseAngle")) {
-			int angle = nbtTileEntity.getInteger("caseAngle");
+			final int angle = nbtTileEntity.getInteger("caseAngle");
 			switch (rotationSteps) {
 			case 1:
 				nbtTileEntity.setInteger("caseAngle", rotCaseAngle[angle]);

@@ -142,7 +142,7 @@ public class BreathingManager {
 			// damage entity if in vacuum without protection
 			final boolean hasValidSetup = hasValidSetup(entityLivingBase);
 			if (entityLivingBase instanceof EntityPlayerMP) {
-				EntityPlayerMP player = (EntityPlayerMP) entityLivingBase;
+				final EntityPlayerMP player = (EntityPlayerMP) entityLivingBase;
 				air = player_airTank.get(uuidEntity);
 				
 				boolean hasHelmet = hasValidSetup;
@@ -150,7 +150,7 @@ public class BreathingManager {
 					if (air == null) {// new player in space => grace period
 						player_airTank.put(uuidEntity, AIR_FIRST_BREATH_TICKS);
 					} else if (air <= 1) {
-						int ticksAir = consumeAir(player);
+						final int ticksAir = consumeAir(player);
 						if (ticksAir > 0) {
 							player_airTank.put(uuidEntity, ticksAir);
 						} else {
@@ -226,7 +226,7 @@ public class BreathingManager {
 						itemStackToAdd.stackSize = 1;
 						itemStackToAdd = airContainerItem.consumeAir(itemStackToAdd);
 						if (!entityPlayer.inventory.addItemStackToInventory(itemStackToAdd)) {
-							EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackToAdd);
+							final EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackToAdd);
 							entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 						}
 						entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
@@ -425,8 +425,8 @@ public class BreathingManager {
 				} else {
 					playerInventory[slotEnergyContainer].stackSize--;
 					if (!entityPlayer.inventory.addItemStackToInventory(itemStackEnergyContainer)) {
-						World world = entityPlayer.worldObj;
-						EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackEnergyContainer);
+						final World world = entityPlayer.worldObj;
+						final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackEnergyContainer);
 						entityPlayer.worldObj.spawnEntityInWorld(entityItem);
 					}
 				}

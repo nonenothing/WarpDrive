@@ -35,7 +35,7 @@ public class MessageTargeting implements IMessage, IMessageHandler<MessageTarget
 	}
 
 	@Override
-	public void fromBytes(ByteBuf buffer) {
+	public void fromBytes(final ByteBuf buffer) {
 		x = buffer.readInt();
 		y = buffer.readInt();
 		z = buffer.readInt();
@@ -44,7 +44,7 @@ public class MessageTargeting implements IMessage, IMessageHandler<MessageTarget
 	}
 
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeInt(x);
 		buffer.writeInt(y);
 		buffer.writeInt(z);
@@ -52,16 +52,16 @@ public class MessageTargeting implements IMessage, IMessageHandler<MessageTarget
 		buffer.writeFloat(pitch);
 	}
 	
-	private void handle(World worldObj) {
-		TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(x, y, z));
-		if (tileEntity != null && tileEntity instanceof TileEntityLaser) {
-			TileEntityLaser laser = (TileEntityLaser) tileEntity;
+	private void handle(final World world) {
+		final TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
+		if (tileEntity instanceof TileEntityLaser) {
+			final TileEntityLaser laser = (TileEntityLaser) tileEntity;
 			laser.initiateBeamEmission(yaw, pitch);
 		}
 	}
 	
 	@Override
-	public IMessage onMessage(MessageTargeting targetingMessage, MessageContext context) {
+	public IMessage onMessage(final MessageTargeting targetingMessage, final MessageContext context) {
 		if (WarpDriveConfig.LOGGING_TARGETING) {
 			WarpDrive.logger.info("Received target packet: (" + targetingMessage.x + " " + targetingMessage.y + " " + targetingMessage.z
 				+ ") yaw: " + targetingMessage.yaw + " pitch: " + targetingMessage.pitch);

@@ -82,6 +82,12 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
+	@Nonnull
+	@Override
+	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
+		return new TileEntityForceFieldRelay();
+	}
+	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
 	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
@@ -94,20 +100,20 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 			return true;
 		}
 		
-		TileEntity tileEntity = world.getTileEntity(blockPos);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityForceFieldRelay)) {
 			return false;
 		}
-		TileEntityForceFieldRelay tileEntityForceFieldRelay = (TileEntityForceFieldRelay) tileEntity;
+		final TileEntityForceFieldRelay tileEntityForceFieldRelay = (TileEntityForceFieldRelay) tileEntity;
 		
 		// sneaking with an empty hand or an upgrade item in hand to dismount current upgrade
 		if (entityPlayer.isSneaking()) {
-			EnumForceFieldUpgrade enumForceFieldUpgrade = tileEntityForceFieldRelay.getUpgrade();
+			final EnumForceFieldUpgrade enumForceFieldUpgrade = tileEntityForceFieldRelay.getUpgrade();
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
 				if (!entityPlayer.capabilities.isCreativeMode) {
 					// dismount the upgrade item
-					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.setNoPickupDelay();
 					world.spawnEntityInWorld(entityItem);
 				}
@@ -147,26 +153,20 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				
 				// dismount the current upgrade item
 				if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
-					ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
-					EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
+					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
+					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.setNoPickupDelay();
 					world.spawnEntityInWorld(entityItem);
 				}
 			}
 			
 			// mount the new upgrade item
-			EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage());
+			final EnumForceFieldUpgrade enumForceFieldUpgrade = EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage());
 			tileEntityForceFieldRelay.setUpgrade(enumForceFieldUpgrade);
 			// upgrade mounted
 			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.mounted", enumForceFieldUpgrade.name()));
 		}
 		
 		return false;
-	}
-
-	@Nonnull
-	@Override
-	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceFieldRelay();
 	}
 }

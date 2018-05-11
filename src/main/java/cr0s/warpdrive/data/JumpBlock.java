@@ -476,9 +476,9 @@ public class JumpBlock {
 		y = tagCompound.getInteger("y");
 		z = tagCompound.getInteger("z");
 		if (tagCompound.hasKey("externals")) {
-			NBTTagCompound tagCompoundExternals = tagCompound.getCompoundTag("externals");
+			final NBTTagCompound tagCompoundExternals = tagCompound.getCompoundTag("externals");
 			externals = new HashMap<>();
-			for (Object key : tagCompoundExternals.getKeySet()) {
+			for (final Object key : tagCompoundExternals.getKeySet()) {
 				assert (key instanceof String);
 				externals.put((String) key, tagCompoundExternals.getTag((String) key));
 			}
@@ -549,7 +549,7 @@ public class JumpBlock {
 		
 		// OpenComputers case
 		if (tagCompound.hasKey("oc:items")) {
-			NBTTagList tagListItems = tagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
+			final NBTTagList tagListItems = tagCompound.getTagList("oc:items", Constants.NBT.TAG_COMPOUND);
 			for (int indexItemSlot = 0; indexItemSlot < tagListItems.tagCount(); indexItemSlot++) {
 				final NBTTagCompound tagCompoundItemSlot = tagListItems.getCompoundTagAt(indexItemSlot);
 				final NBTTagCompound tagCompoundItem = tagCompoundItemSlot.getCompoundTag("item");

@@ -13,26 +13,27 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public final class EntityStarCore extends Entity {
+	
 	public int xCoord;
 	public int yCoord;
 	public int zCoord;
 	
 	private int radius;
 	
-	private final int KILL_RADIUS = 60;
-	private final int BURN_RADIUS = 200;
+	private static final int KILL_RADIUS = 60;
+	private static final int BURN_RADIUS = 200;
 	//private final int ROCKET_INTERCEPT_RADIUS = 100; //disabled
 	private boolean isLogged = false;
 	
-	private final int ENTITY_ACTION_INTERVAL = 10; // ticks
+	private static final int ENTITY_ACTION_INTERVAL = 10; // ticks
 	
 	private int ticks = 0;
 	
-	public EntityStarCore(World world) {
+	public EntityStarCore(final World world) {
 		super(world);
 	}
 	
-	public EntityStarCore(World world, int x, int y, int z, int radius) {
+	public EntityStarCore(final World world, final int x, final int y, final int z, final int radius) {
 		super(world);
 		this.xCoord = x;
 		this.posX = x;
@@ -44,8 +45,8 @@ public final class EntityStarCore extends Entity {
 	}
 	
 	private void actionToEntitiesNearStar() {
-		int xMax, yMax, zMax;
-		int xMin, yMin, zMin;
+		final int xMax, yMax, zMax;
+		final int xMin, yMin, zMin;
 		final int MAX_RANGE = radius + KILL_RADIUS + BURN_RADIUS;// + ROCKET_INTERCEPT_RADIUS;
 		final int KILL_RANGESQ = (radius + KILL_RADIUS) * (radius + KILL_RADIUS);
 		final int BURN_RANGESQ = (radius + KILL_RADIUS + BURN_RADIUS) * (radius + KILL_RADIUS + BURN_RADIUS);
@@ -57,49 +58,49 @@ public final class EntityStarCore extends Entity {
 		
 		yMin = yCoord - MAX_RANGE;
 		yMax = yCoord + MAX_RANGE;
-		AxisAlignedBB aabb = new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
-		List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, aabb);
+		final AxisAlignedBB aabb = new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
+		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, aabb);
 		
 		if (!isLogged) {
 			isLogged = true;
 			WarpDrive.logger.info(this + " Capture range " + MAX_RANGE + " X " + xMin + " to " + xMax + " Y " + yMin + " to " + yMax + " Z " + zMin + " to " + zMax);
 		}
-		for (Object object : list) {
+		for (final Object object : list) {
 			if (!(object instanceof Entity)) {
 				continue;
 			}
 			
 			if (object instanceof EntityLivingBase) {
-				EntityLivingBase entity = (EntityLivingBase) object;
+				final EntityLivingBase entityLivingBase = (EntityLivingBase) object;
 				
 				//System.out.println("Found: " + entity.getEntityName() + " distance: " + entity.getDistanceToEntity(this));
 				
 				// creative bypass
-				if (entity.isEntityInvulnerable(WarpDrive.damageWarm)) {
+				if (entityLivingBase.isEntityInvulnerable(WarpDrive.damageWarm)) {
 					continue;
 				}
-				if (entity instanceof EntityPlayer) {
-					EntityPlayer player = (EntityPlayer) entity;
-					if (player.capabilities.isCreativeMode) {
+				if (entityLivingBase instanceof EntityPlayer) {
+					final EntityPlayer entityPlayer = (EntityPlayer) entityLivingBase;
+					if (entityPlayer.capabilities.isCreativeMode) {
 						continue;
 					}
 				}
 				
-				double distanceSq = entity.getDistanceSqToEntity(this);
+				final double distanceSq = entityLivingBase.getDistanceSqToEntity(this);
 				if (distanceSq <= KILL_RANGESQ) {
 					// 100% kill, ignores any protection
-					entity.attackEntityFrom(DamageSource.onFire, 9000);
-					entity.attackEntityFrom(DamageSource.generic, 9000);
-					if (!entity.isDead) {
-						WarpDrive.logger.warn("Forcing entity death due to star proximity: " + entity);
-						entity.setDead();
+					entityLivingBase.attackEntityFrom(DamageSource.onFire, 9000);
+					entityLivingBase.attackEntityFrom(DamageSource.generic, 9000);
+					if (!entityLivingBase.isDead) {
+						WarpDrive.logger.warn("Forcing entity death due to star proximity: " + entityLivingBase);
+						entityLivingBase.setDead();
 					}
 				} else if (distanceSq <= BURN_RANGESQ) {
 					// burn entity
-					if (!entity.isImmuneToFire()) {
-						entity.setFire(3);
+					if (!entityLivingBase.isImmuneToFire()) {
+						entityLivingBase.setFire(3);
 					}
-					entity.attackEntityFrom(DamageSource.onFire, 1);
+					entityLivingBase.attackEntityFrom(DamageSource.onFire, 1);
 				}
 			}/* else { // Intercept ICBM rocket and kill
 
@@ -125,11 +126,11 @@ public final class EntityStarCore extends Entity {
 	}
 	
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound nbttagcompound) {
-		xCoord = nbttagcompound.getInteger("x");
-		yCoord = nbttagcompound.getInteger("y");
-		zCoord = nbttagcompound.getInteger("z");
-		radius = nbttagcompound.getInteger("radius");
+	protected void readEntityFromNBT(final NBTTagCompound tagCompound) {
+		xCoord = tagCompound.getInteger("x");
+		yCoord = tagCompound.getInteger("y");
+		zCoord = tagCompound.getInteger("z");
+		radius = tagCompound.getInteger("radius");
 	}
 	
 	@Override
@@ -139,22 +140,22 @@ public final class EntityStarCore extends Entity {
 	
 	// override to skip the block bounding override on client side
 	@Override
-	public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch) {
+	public void setPositionAndRotation(final double x, final double y, final double z, final float yaw, final float pitch) {
 		//	super.setPositionAndRotation(x, y, z, yaw, pitch);
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
 	}
 	
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("x", xCoord);
-		nbttagcompound.setInteger("y", yCoord);
-		nbttagcompound.setInteger("z", zCoord);
-		nbttagcompound.setInteger("radius", radius);
+	protected void writeEntityToNBT(final NBTTagCompound tagCompound) {
+		tagCompound.setInteger("x", xCoord);
+		tagCompound.setInteger("y", yCoord);
+		tagCompound.setInteger("z", zCoord);
+		tagCompound.setInteger("radius", radius);
 	}
 	
 	@Override
-	public boolean shouldRenderInPass(int pass) {
+	public boolean shouldRenderInPass(final int pass) {
 		return false;
 	}
 }

@@ -12,19 +12,19 @@ import net.minecraft.item.ItemStack;
 
 public class ItemBlockAirShield extends ItemBlockAbstractBase {
 	
-	public ItemBlockAirShield(Block block) {
+	public ItemBlockAirShield(final Block block) {
 		super(block);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.breathing.air_shield");
 	}
 	
 	@Override
-	public int getMetadata(int damage) {
+	public int getMetadata(final int damage) {
 		return damage;
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull Item item, @Nonnull CreativeTabs creativeTabs, @Nonnull List<ItemStack> list) {
+	public void getSubItems(@Nonnull final Item item, @Nonnull final CreativeTabs creativeTabs, @Nonnull final List<ItemStack> list) {
 		for (int metadata = 0; metadata < 16; metadata++) {
 			list.add(new ItemStack(item, 1, metadata));
 		}
@@ -32,7 +32,7 @@ public class ItemBlockAirShield extends ItemBlockAbstractBase {
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemstack) {
+	public String getUnlocalizedName(final ItemStack itemstack) {
 		return getUnlocalizedName();
 	}
 }

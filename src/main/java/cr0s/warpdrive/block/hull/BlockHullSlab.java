@@ -305,7 +305,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		Item item = Item.getItemFromBlock(this);
+		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
 	}
 	

@@ -66,7 +66,7 @@ public class LocalProfiler {
 	
 	public static void start(final String name) {
 		if (WarpDriveConfig.LOGGING_PROFILING_CPU_USAGE) {
-			StackElement stackElement = new StackElement();
+			final StackElement stackElement = new StackElement();
 			stackElement.start = System.nanoTime();
 			stackElement.internal = 0;
 			stackElement.name = name;
@@ -84,7 +84,7 @@ public class LocalProfiler {
 		final long timeElapsed = end - stackElement.start;
 
 		if (!stack.isEmpty()) {
-			StackElement nextStackElement = stack.peek();
+			final StackElement nextStackElement = stack.peek();
 			nextStackElement.internal += timeElapsed;
 		}
 		

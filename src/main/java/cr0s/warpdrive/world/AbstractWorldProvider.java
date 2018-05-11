@@ -61,7 +61,7 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	/**/
 	
 	@Override
-	public boolean canCoordinateBeSpawn(int x, int z) {
+	public boolean canCoordinateBeSpawn(final int x, final int z) {
 		final BlockPos blockPos = worldObj.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z));
 		return blockPos.getY() != 0;
 	}
@@ -112,7 +112,7 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	@Nonnull
 	@Override
-	public Vec3d getSkyColor(@Nonnull Entity cameraEntity, float partialTicks) {
+	public Vec3d getSkyColor(@Nonnull final Entity cameraEntity, final float partialTicks) {
 		if (getCloudRenderer() == null) {
 			setCloudRenderer(RenderBlank.getInstance());
 		}
@@ -133,15 +133,15 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	@SideOnly(Side.CLIENT)
 	@Nonnull
 	@Override
-	public Vec3d getFogColor(float celestialAngle, float par2) {
+	public Vec3d getFogColor(float celestialAngle, final float par2) {
 		final float factor = Commons.clamp(0.0F, 1.0F, MathHelper.cos(celestialAngle * (float) Math.PI * 2.0F) * 2.0F + 0.5F);
 		
 		float red   = celestialObject == null ? 0.0F : celestialObject.colorFog.red;
 		float green = celestialObject == null ? 0.0F : celestialObject.colorFog.green;
 		float blue  = celestialObject == null ? 0.0F : celestialObject.colorFog.blue;
-		float factorRed   = celestialObject == null ? 0.0F : celestialObject.factorFog.red;
-		float factorGreen = celestialObject == null ? 0.0F : celestialObject.factorFog.green;
-		float factorBlue  = celestialObject == null ? 0.0F : celestialObject.factorFog.blue;
+		final float factorRed   = celestialObject == null ? 0.0F : celestialObject.factorFog.red;
+		final float factorGreen = celestialObject == null ? 0.0F : celestialObject.factorFog.green;
+		final float factorBlue  = celestialObject == null ? 0.0F : celestialObject.factorFog.blue;
 		red   *= factor * factorRed   + (1.0F - factorRed  );
 		green *= factor * factorGreen + (1.0F - factorGreen);
 		blue  *= factor * factorBlue  + (1.0F - factorBlue );
@@ -150,7 +150,7 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	
 	@SideOnly(Side.CLIENT)
 	@Override
-	public float getStarBrightness(float partialTicks) {
+	public float getStarBrightness(final float partialTicks) {
 		if (celestialObject == null) {
 			return 0.0F;
 		}

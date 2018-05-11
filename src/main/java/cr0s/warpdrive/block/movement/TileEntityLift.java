@@ -124,8 +124,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	private boolean isPassableBlock(int yPosition) {
-		BlockPos blockPos = new BlockPos(pos.getX(), yPosition, pos.getZ());
-		IBlockState blockState = worldObj.getBlockState(blockPos);
+		final BlockPos blockPos = new BlockPos(pos.getX(), yPosition, pos.getZ());
+		final IBlockState blockState = worldObj.getBlockState(blockPos);
 		return blockState.getBlock() == Blocks.AIR
 			|| worldObj.isAirBlock(blockPos)
 			|| blockState.getCollisionBoundingBox(worldObj, blockPos) == null;
@@ -165,9 +165,9 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			for (final Entity entity : list) {
 	  			if ( entity instanceof EntityLivingBase
-	  			  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
-	  		    	entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
-	  				PacketHandler.sendBeamPacket(worldObj,
+            && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
+            entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
+            PacketHandler.sendBeamPacket(worldObj,
 	  						new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 	  						new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
 	  				worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
@@ -221,13 +221,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Override
-	public boolean energy_canInput(EnumFacing from) {
+	public boolean energy_canInput(final EnumFacing from) {
 		return true;
 	}
 	
 	// Common OC/CC methods
 	@Override
-	public Object[] enable(Object[] arguments) {
+	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
 			markDirty();
@@ -236,7 +236,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Override
-	public Object[] mode(Object[] arguments) {
+	public Object[] mode(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] instanceof String) {
 			final String stringValue = (String) arguments[0];
 			if (stringValue.equalsIgnoreCase("up")) {
@@ -262,13 +262,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	// OpenComputer callback methods
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] enable(Context context, Arguments arguments) {
+	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] mode(Context context, Arguments arguments) {
+	public Object[] mode(final Context context, final Arguments arguments) {
 		return mode(
 			new Object[] {
 				arguments.checkString(0)
@@ -278,14 +278,14 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
 	@Callback
 	@Optional.Method(modid = "OpenComputers")
-	public Object[] state(Context context, Arguments arguments) {
+	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) {
+	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
 		switch (methodName) {

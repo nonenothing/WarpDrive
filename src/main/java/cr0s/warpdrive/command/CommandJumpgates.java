@@ -25,13 +25,13 @@ public class CommandJumpgates extends CommandBase {
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender commandSender) {
+	public String getCommandUsage(final ICommandSender commandSender) {
 		return "Lists jumpgates";
 	}
 	
 	@Override
-	public void execute(MinecraftServer server, ICommandSender commandSender, String[] args) throws CommandException {
-		EntityPlayerMP player = (EntityPlayerMP) commandSender;
+	public void execute(final MinecraftServer server, final ICommandSender commandSender, final String[] args) throws CommandException {
+		final EntityPlayerMP player = (EntityPlayerMP) commandSender;
 		Commons.addChatMessage(player, new TextComponentString("Jumpgates: " + WarpDrive.jumpgates.commaList()));
 	}
 }

@@ -28,7 +28,7 @@ public class CommandBed extends CommandBase {
 	}
 	
 	@Override
-	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender commandSender, @Nonnull String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
 		if (commandSender == null) { return; }
 		
 		// parse arguments
@@ -56,7 +56,7 @@ public class CommandBed extends CommandBase {
 				return;
 			}
 			
-			EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
+			final EntityPlayerMP[] entityPlayerMPs_found = Commons.getOnlinePlayerByNameOrSelector(commandSender, args[0]);
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else if (commandSender instanceof EntityPlayerMP) {

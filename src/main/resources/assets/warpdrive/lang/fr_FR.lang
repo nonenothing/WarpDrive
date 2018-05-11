@@ -123,7 +123,7 @@ item.warpdrive.upgrade.Energy.name=Amélioration d'énergie
 
 
 item.warpdrive.tool.ship_token.name=Jeton de vaisseau
-item.warpdrive.tool.ship_token.tooltip=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ d'un constructeur§7 pour réclamer ton vaisseau
+item.warpdrive.tool.ship_token.tooltip.usage=Jeton échangeable pour un vaisseau '%1$s'\n§bEntre dans le champ d'un constructeur§7 pour réclamer ton vaisseau
 item.warpdrive.tool.ship_token0.name=Jeton de vaisseau #0
 item.warpdrive.tool.ship_token1.name=Jeton de vaisseau #1
 item.warpdrive.tool.ship_token2.name=Jeton de vaisseau #2
@@ -193,12 +193,13 @@ tile.warpdrive.decoration.lamp_bubble.name=Lampe bulle
 tile.warpdrive.decoration.lamp_flat.name=Lampe plate
 tile.warpdrive.decoration.lamp_long.name=Lamp allongée
 
-tile.warpdrive.passive.IridiumBlock.name=Bloc d'iridium
-tile.warpdrive.passive.HighlyAdvancedMachine.name=Bloc de machine hyper avancé
 
-tile.warpdrive.machines.ChunkLoader.name=Chargeur de chunk
-tile.warpdrive.machines.Laser.name=Laser
-tile.warpdrive.machines.LaserMedium.name=Milieu amplificateur
+tile.warpdrive.passive.iridium_block.name=Bloc d'iridium
+tile.warpdrive.passive.highly_advanced_machine.name=Bloc de machine hyper avancé
+
+tile.warpdrive.machines.chunk_loader.name=Chargeur de chunk
+tile.warpdrive.machines.laser.name=Laser
+tile.warpdrive.machines.laser_medium.name=Milieu amplificateur
 
 tile.warpdrive.atomic.accelerator_controller.name=Controlleur d'accélérateurs
 tile.warpdrive.atomic.accelerator_controller.tooltip=Contrôle un ou plusieurs accélérateurs de particules.\nDoit être placé à coté d'un électroaimant.
@@ -572,10 +573,10 @@ warpdrive.monitor.viewingCamera=Affichage de la caméra à %2$d, %3$d, %4$d sur 
 warpdrive.ship.attachedPlayers=Joueurs attachés: %1$s
 warpdrive.ship.playerAttached=Tu es désormais attaché au vaisseau %1$s.\nLes joueurs attachés sont %2$s
 warpdrive.ship.playerDetached=Tu es désormais détaché du vaisseau %1$s.\nLes joueurs attachés sont %2$s
-warpdrive.ship.statusLine.cooling=Encore %1$d s de refroidissement.
-warpdrive.ship.statusLine.isolation=Les %1$d blocs d'isolations actifs fournissent %2$2.1f%% d'absorption.
+warpdrive.ship.status_line.cooling=Encore %1$d s de refroidissement.
+warpdrive.ship.status_line.isolation=Les %1$d blocs d'isolations actifs fournissent %2$2.1f%% d'absorption.
 
-warpdrive.energy.statusLine=Le niveau d'énergie est de %1$s / %2$s EU.
+warpdrive.energy.status_line=Le niveau d'énergie est de %1$s / %2$s EU.
 warpdrive.energy.side.changedToInput=Le coté %1$s est en mode Réception d'énergie!
 warpdrive.energy.side.changedToOutput=Le coté %1$s est en mode Emission d'énergie!
 warpdrive.energy.side.changedToDisabled=Le coté %1$s side est en mode Inactif!
@@ -588,9 +589,9 @@ warpdrive.accelerator.guide.noChiller=Cet accélérateur n'a aucun refroidisseur
 warpdrive.beam_frequency.tooltip=Fréquence de faisceau ajustée à %1$d
 warpdrive.beam_frequency.get=Beam frequency %2$d has been retrieved from %1$s 
 warpdrive.beam_frequency.set=%1$s est désormais accordé à la Fréquence de faisceau %2$d
-warpdrive.beam_frequency.statusLine.valid=La fréquence de faisceau %1$d est valide.
-warpdrive.beam_frequency.statusLine.invalid=§cLa fréquence de faisceau %1$d est invalide.
-warpdrive.beam_frequency.statusLine.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
+warpdrive.beam_frequency.status_line.valid=La fréquence de faisceau %1$d est valide.
+warpdrive.beam_frequency.status_line.invalid=§cLa fréquence de faisceau %1$d est invalide.
+warpdrive.beam_frequency.status_line.undefined=§7La fréquence de faisceau est non définie.\n§bUtilises un Diapason§f pour l'ajuster.
 
 warpdrive.breathing.alarm=Alarme de respiration
 warpdrive.breathing.invalid_setup=Pas de casque respiratoire\nou armure incomplète
@@ -598,43 +599,43 @@ warpdrive.breathing.low_reserve=Réserve d'air faible!
 warpdrive.breathing.no_air=Réserve d'air épuisée!
 
 warpdrive.control_channel.tooltip=Canal de contrôle ajusté à %1$d
-warpdrive.control_channel.get=Le canal de contrôle %2$d a été récupéré de %1$s 
+warpdrive.control_channel.get=Le canal de contrôle %2$d a été récupéré de %1$s
 warpdrive.control_channel.set=%1$s est désormais accordé au Canal de contrôle %2$d
-warpdrive.control_channel.statusLine.valid=Le canal de contrôle %1$d est valide.
-warpdrive.control_channel.statusLine.invalid=§cLe canal de contrôle %1$d est invalide.
-warpdrive.control_channel.statusLine.undefined=§7Le canal de contrôle est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
+warpdrive.control_channel.status_line.valid=Le canal de contrôle %1$d est valide.
+warpdrive.control_channel.status_line.invalid=§cLe canal de contrôle %1$d est invalide.
+warpdrive.control_channel.status_line.undefined=§7Le canal de contrôle est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
 
 warpdrive.forcefield.guide.lowPower=Nous sommes à court d'énergie Capitaine, réduissez la consommation ou appelez l'ingénieur écossais pour booster notre production!
 
-warpdrive.forcefield.shape.statusLine.none=§cLa forme n'est pas définie.
-warpdrive.forcefield.shape.statusLine.double=La forme est %1$s plein(e)
-warpdrive.forcefield.shape.statusLine.single=La forme est %1$s coupé(e)
-warpdrive.forcefield.shape.statusLine.sphere=une sphère
-warpdrive.forcefield.shape.statusLine.cylinder_h=un cylindre horizontal
-warpdrive.forcefield.shape.statusLine.cylinder_v=un cylindre vertical
-warpdrive.forcefield.shape.statusLine.cube=un cube
-warpdrive.forcefield.shape.statusLine.plane=un plan
-warpdrive.forcefield.shape.statusLine.tube=un tube
-warpdrive.forcefield.shape.statusLine.tunnel=un tunnel
+warpdrive.forcefield.shape.status_line.none=§cLa forme n'est pas définie.
+warpdrive.forcefield.shape.status_line.double=La forme est %1$s plein(e)
+warpdrive.forcefield.shape.status_line.single=La forme est %1$s coupé(e)
+warpdrive.forcefield.shape.status_line.sphere=une sphère
+warpdrive.forcefield.shape.status_line.cylinder_h=un cylindre horizontal
+warpdrive.forcefield.shape.status_line.cylinder_v=un cylindre vertical
+warpdrive.forcefield.shape.status_line.cube=un cube
+warpdrive.forcefield.shape.status_line.plane=un plan
+warpdrive.forcefield.shape.status_line.tube=un tube
+warpdrive.forcefield.shape.status_line.tunnel=un tunnel
 
-warpdrive.forcefield.upgrade.statusLine.attraction=attraction
-warpdrive.forcefield.upgrade.statusLine.breaking=casseur de bloc
-warpdrive.forcefield.upgrade.statusLine.camouflage=camouflage
-warpdrive.forcefield.upgrade.statusLine.cooling=refroidissement
-warpdrive.forcefield.upgrade.statusLine.fusion=fusion
-warpdrive.forcefield.upgrade.statusLine.heating=chauffage
-warpdrive.forcefield.upgrade.statusLine.inversion=inversion
-warpdrive.forcefield.upgrade.statusLine.item_port=port d'item
-warpdrive.forcefield.upgrade.statusLine.pumping=pompe
-warpdrive.forcefield.upgrade.statusLine.range=portée
-warpdrive.forcefield.upgrade.statusLine.repulsion=répulsion
-warpdrive.forcefield.upgrade.statusLine.rotation=rotation
-warpdrive.forcefield.upgrade.statusLine.shock=décharge électrique
-warpdrive.forcefield.upgrade.statusLine.silencer=silencieux
-warpdrive.forcefield.upgrade.statusLine.speed=vitesse
-warpdrive.forcefield.upgrade.statusLine.stabilization=stabilisation
-warpdrive.forcefield.upgrade.statusLine.thickness=épaisseur
-warpdrive.forcefield.upgrade.statusLine.translation=translation
+warpdrive.forcefield.upgrade.status_line.attraction=attraction
+warpdrive.forcefield.upgrade.status_line.breaking=casseur de bloc
+warpdrive.forcefield.upgrade.status_line.camouflage=camouflage
+warpdrive.forcefield.upgrade.status_line.cooling=refroidissement
+warpdrive.forcefield.upgrade.status_line.fusion=fusion
+warpdrive.forcefield.upgrade.status_line.heating=chauffage
+warpdrive.forcefield.upgrade.status_line.inversion=inversion
+warpdrive.forcefield.upgrade.status_line.item_port=port d'item
+warpdrive.forcefield.upgrade.status_line.pumping=pompe
+warpdrive.forcefield.upgrade.status_line.range=portée
+warpdrive.forcefield.upgrade.status_line.repulsion=répulsion
+warpdrive.forcefield.upgrade.status_line.rotation=rotation
+warpdrive.forcefield.upgrade.status_line.shock=décharge électrique
+warpdrive.forcefield.upgrade.status_line.silencer=silencieux
+warpdrive.forcefield.upgrade.status_line.speed=vitesse
+warpdrive.forcefield.upgrade.status_line.stabilization=stabilisation
+warpdrive.forcefield.upgrade.status_line.thickness=épaisseur
+warpdrive.forcefield.upgrade.status_line.translation=translation
 
 warpdrive.particle.ion.name=ion
 warpdrive.particle.ion.tooltip=Produit par collision d'un bunch de particules dans un accélérateur élémentaire
@@ -662,17 +663,17 @@ warpdrive.upgrade.result.notEnoughShapes.single=§cIl faut au moins 1 object pou
 warpdrive.upgrade.result.shapeDismounted=Forme démontée correctement.
 warpdrive.upgrade.result.shapeMounted=Forme montée correctement.
 
-warpdrive.upgrade.statusLine.none=§7Pas d'augmentation installée.
-warpdrive.upgrade.statusLine.valid=Augmenté avec %1$s.
+warpdrive.upgrade.status_line.none=§7Pas d'augmentation installée.
+warpdrive.upgrade.status_line.valid=Augmenté avec %1$s.
 
 warpdrive.video_channel.tooltip=Canal vidéo ajusté à %1$d
 warpdrive.video_channel.get=Le canal vidéo %2$d a été recupéré depuis %1$s
 warpdrive.video_channel.set=%1$s est désormais accordé au Canal vidéo %2$d
-warpdrive.video_channel.statusLine.valid=Le canal vidéo %1$d est valide.
-warpdrive.video_channel.statusLine.validCamera=Le canal vidéo %1$d est valide pour la caméra à %2$d %3$d %4$d.
-warpdrive.video_channel.statusLine.invalid=§cLe canal vidéo %1$d est invalide.
-warpdrive.video_channel.statusLine.invalidOrNotLoaded=§cLe canal vidéo %1$d est invalide ou la caméra est trop loin!
-warpdrive.video_channel.statusLine.undefined=§7Le canal vidéo est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
+warpdrive.video_channel.status_line.valid_camera=Le canal vidéo %1$d est valide.
+warpdrive.video_channel.status_line.valid_monitor=Le canal vidéo %1$d est valide pour la caméra à %2$d %3$d %4$d.
+warpdrive.video_channel.status_line.invalid=§cLe canal vidéo %1$d est invalide.
+warpdrive.video_channel.status_line.not_loaded=§cLe canal vidéo %1$d est invalide ou la caméra est trop loin!
+warpdrive.video_channel.status_line.undefined=§7Le canal vidéo est non défini.\n§bUtilises un Diapason§r pour l'ajuster.
 
 warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s, et bobine(s) de projection manquante(nt) en direction de %3$s
 warpdrive.cloaking_core.missingInner=§cIntegrité réduite à %1$d%%: bobine(s) de canalisation manquante(nt) en direction de %2$s
@@ -696,6 +697,6 @@ warpdrive.transporter_signature.set_self=§cTransporter room can't target itself
 warpdrive.transporter_signature.set_same=§cTransporter room is already linked to %1$s.
 warpdrive.transporter_signature.set=Transporter room is now linked to %1$s.
 
-warpdrive.tooltip.itemTag.breathingHelmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.
-warpdrive.tooltip.itemTag.flyInSpace=Jetpack compatible avec une utilisation §bspatiale§r.
-warpdrive.tooltip.itemTag.noFallDamage=§bAbsorbe les damages de chute§r.
+warpdrive.tooltip.item_tag.breathing_helmet=Permet de §brespirer dans le vide§r en consommant des cartouches d'air et des cellules d'air comprimé de IC2 depuis l'inventaire.
+warpdrive.tooltip.item_tag.fly_in_space=Jetpack compatible avec une utilisation §bspatiale§r.
+warpdrive.tooltip.item_tag.no_fall_damage=§bAbsorbe les damages de chute§r.

@@ -41,8 +41,8 @@ public class CommonProxy {
 		// client side only
 	}
 	
-	private static EntityPlayerMP getPlayer(WorldServer world, final UUID uuidPlayer) {
-		for (Object object : world.getMinecraftServer().getPlayerList().getPlayerList()) {
+	private static EntityPlayerMP getPlayer(final WorldServer world, final UUID uuidPlayer) {
+		for (final Object object : world.getMinecraftServer().getPlayerList().getPlayerList()) {
 			if (object instanceof EntityPlayerMP) {
 				final EntityPlayerMP entityPlayerMP = (EntityPlayerMP) object;
 				if (entityPlayerMP.getUniqueID() == uuidPlayer) {

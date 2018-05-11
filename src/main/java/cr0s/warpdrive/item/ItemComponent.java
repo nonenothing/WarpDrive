@@ -34,9 +34,9 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 		itemStackCache = new ItemStack[EnumComponentType.length];
 	}
 	
-	public static ItemStack getItemStack(EnumComponentType enumComponentType) {
+	public static ItemStack getItemStack(final EnumComponentType enumComponentType) {
 		if (enumComponentType != null) {
-			int damage = enumComponentType.ordinal();
+			final int damage = enumComponentType.ordinal();
 			if (itemStackCache[damage] == null) {
 				itemStackCache[damage] = new ItemStack(WarpDrive.itemComponent, 1, damage);
 			}
@@ -45,14 +45,14 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 		return null;
 	}
 	
-	public static ItemStack getItemStackNoCache(EnumComponentType enumComponentType, int amount) {
+	public static ItemStack getItemStackNoCache(final EnumComponentType enumComponentType, final int amount) {
 		return new ItemStack(WarpDrive.itemComponent, amount, enumComponentType.ordinal());
 	}
 	
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(final ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			return "item.warpdrive.component." + EnumComponentType.get(damage).getUnlocalizedName();
 		}
@@ -70,7 +70,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	@Override
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumComponentType.get(damage).getUnlocalizedName());

@@ -23,7 +23,7 @@ public class OrbInstance extends AbstractStructureInstance {
 	// internal look-up table to accelerate computations
 	private OrbShell[] sqRadiusToOrbShell;
 	
-	public OrbInstance(Orb orb, Random random) {
+	public OrbInstance(final Orb orb, final Random random) {
 		super(orb, random);
 		orbShells = new OrbShell[orb.orbShells.length];
 		orbShellThicknesses = new int[orb.orbShells.length];
@@ -31,10 +31,10 @@ public class OrbInstance extends AbstractStructureInstance {
 		minThickness = 0;
 		int orbShellIndexOut = 0;
 		for (int orbShellIndexIn = 0; orbShellIndexIn < orb.orbShells.length; orbShellIndexIn++) {
-			OrbShell orbShell = orb.orbShells[orbShellIndexIn].instantiate(random);
+			final OrbShell orbShell = orb.orbShells[orbShellIndexIn].instantiate(random);
 			if (orbShell != null) {
 				orbShells[orbShellIndexOut] = orbShell;
-				int thickness = Commons.randomRange(random, orbShell.minThickness, orbShell.maxThickness);
+				final int thickness = Commons.randomRange(random, orbShell.minThickness, orbShell.maxThickness);
 				orbShellThicknesses[orbShellIndexOut] = thickness;
 				totalThickness += thickness;
 				minThickness += orbShell.minThickness;
@@ -63,7 +63,7 @@ public class OrbInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public void WriteToNBT(NBTTagCompound tagCompound) {
+	public void WriteToNBT(final NBTTagCompound tagCompound) {
 		super.WriteToNBT(tagCompound);
 		// TODO not implemented
 	}
@@ -73,14 +73,14 @@ public class OrbInstance extends AbstractStructureInstance {
 	}
 	
 	@Override
-	public boolean generate(World world, Random random, BlockPos blockPos) {
-		boolean hasShip = schematicName != null && !schematicName.isEmpty();
-		int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness,
+	public boolean generate(final World world, final Random random, final BlockPos blockPos) {
+		final boolean hasShip = schematicName != null && !schematicName.isEmpty();
+		final int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness,
 			  Math.max(blockPos.getY(), WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness));
 		if (hasShip) {
 			new WorldGenSmallShip(random.nextFloat() < 0.2F, false).generate(world, random, new BlockPos(blockPos.getX(), y2, blockPos.getZ()));
 		}
-		EntitySphereGen entitySphereGen = new EntitySphereGen(world, blockPos.getX(), y2, blockPos.getZ(), this, !hasShip);
+		final EntitySphereGen entitySphereGen = new EntitySphereGen(world, blockPos.getX(), y2, blockPos.getZ(), this, !hasShip);
 		world.spawnEntityInWorld(entitySphereGen);
 		if (((Orb)structure).hasStarCore) {
 			return world.spawnEntityInWorld(new EntityStarCore(world, blockPos.getX(), y2, blockPos.getZ(), totalThickness));
@@ -89,7 +89,7 @@ public class OrbInstance extends AbstractStructureInstance {
 	}
 	
 	public OrbShell getShellForSqRadius(final double sqRadius) {
-		int intSqRadius = (int)Math.round(sqRadius);
+		final int intSqRadius = (int)Math.round(sqRadius);
 		if (intSqRadius < sqRadiusToOrbShell.length) {
 			return sqRadiusToOrbShell[intSqRadius];
 		} else {

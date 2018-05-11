@@ -84,7 +84,7 @@ public class CommandEntity extends CommandBase {
 				final String par = args[2].toLowerCase();
 				kill = par.equals("y") || par.equals("yes") || par.equals("1");
 			}
-		} catch (Exception exception) {
+		} catch (final Exception exception) {
 			exception.printStackTrace();
 			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
 			return;
@@ -94,7 +94,7 @@ public class CommandEntity extends CommandBase {
 
 		List<Entity> entities;
 		if (radius <= 0) {
-			World world;
+			final World world;
 			if (commandSender instanceof EntityPlayerMP) {
 				world = ((EntityPlayerMP) commandSender).worldObj;
 			} else if (radius <= 0) {
@@ -117,7 +117,7 @@ public class CommandEntity extends CommandBase {
 		}
 		final HashMap<String, Integer> counts = new HashMap<>(entities.size());
 		int count = 0;
-		for (Object object : entities) {
+		for (final Object object : entities) {
 			if (object instanceof Entity) {
 				String name = object.getClass().getCanonicalName();
 				if (name == null) {

@@ -50,8 +50,8 @@ public class GlobalPosition {
 		boolean isLoaded = false;
 		final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 		try {
-			long i = ChunkPos.chunkXZ2Int(x >> 4, z >> 4);
-			Chunk chunk = chunkProviderServer.id2ChunkMap.get(i);
+			final long i = ChunkPos.chunkXZ2Int(x >> 4, z >> 4);
+			final Chunk chunk = chunkProviderServer.id2ChunkMap.get(i);
 			if (chunk != null) {
 				isLoaded = !chunk.unloaded;
 			}
@@ -128,13 +128,13 @@ public class GlobalPosition {
 	@Override
 	public boolean equals(final Object object) {
 		if (object instanceof GlobalPosition) {
-			GlobalPosition globalPosition = (GlobalPosition) object;
+			final GlobalPosition globalPosition = (GlobalPosition) object;
 			return (dimensionId == globalPosition.dimensionId) && (x == globalPosition.x) && (y == globalPosition.y) && (z == globalPosition.z);
 		} else if (object instanceof VectorI) {
-			VectorI vector = (VectorI) object;
+			final VectorI vector = (VectorI) object;
 			return (x == vector.x) && (y == vector.y) && (z == vector.z);
 		} else if (object instanceof TileEntity) {
-			TileEntity tileEntity = (TileEntity) object;
+			final TileEntity tileEntity = (TileEntity) object;
 			return (dimensionId == tileEntity.getWorld().provider.getDimension())
 			    && (x == tileEntity.getPos().getX())
 			    && (y == tileEntity.getPos().getY())

@@ -23,7 +23,7 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
-		int damage = itemStack.getItemDamage();
+		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > EnumDecorativeType.length) {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}

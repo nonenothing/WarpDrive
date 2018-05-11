@@ -46,14 +46,14 @@ public class Filler implements IXmlRepresentableUnit {
 	}
 	
 	@Override
-	public boolean loadFromXmlElement(Element element) throws InvalidXmlException {
+	public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 		
 		// Check there is a block name
 		if (!element.hasAttribute("block")) {
 			throw new InvalidXmlException("Filler " + element + " is missing a block attribute!");
 		}
 		
-		String nameBlock = element.getAttribute("block");
+		final String nameBlock = element.getAttribute("block");
 		block = Block.getBlockFromName(nameBlock);
 		if (block == null) {
 			WarpDrive.logger.warn("Skipping missing block " + nameBlock);
@@ -62,22 +62,22 @@ public class Filler implements IXmlRepresentableUnit {
 		
 		// Get metadata attribute, defaults to 0
 		metadata = 0;
-		String stringMetadata = element.getAttribute("metadata");
+		final String stringMetadata = element.getAttribute("metadata");
 		if (!stringMetadata.isEmpty()) {
 			try {
 				metadata = Integer.parseInt(stringMetadata);
-			} catch (NumberFormatException exception) {
+			} catch (final NumberFormatException exception) {
 				throw new InvalidXmlException("Invalid metadata for block " + nameBlock);
 			}
 		}
 		
 		// Get nbt attribute, default to null/none
 		tagCompound = null;
-		String stringNBT = element.getAttribute("nbt");
+		final String stringNBT = element.getAttribute("nbt");
 		if (!stringNBT.isEmpty()) {
 			try {
 				tagCompound = JsonToNBT.getTagFromJson(stringNBT);
-			} catch (NBTException exception) {
+			} catch (final NBTException exception) {
 				throw new InvalidXmlException("Invalid nbt for block " + nameBlock);
 			}
 		}
@@ -87,11 +87,11 @@ public class Filler implements IXmlRepresentableUnit {
 		return true;
 	}
 	
-	public void setBlock(World world, final BlockPos blockPos) {
+	public void setBlock(final World world, final BlockPos blockPos) {
 		JumpBlock.setBlockNoLight(world, blockPos, block.getStateFromMeta(metadata), 2);
 		
 		if (tagCompound != null) {
-			TileEntity tileEntity = world.getTileEntity(blockPos);
+			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity == null) {
 				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)",
 				                       getName(),
@@ -99,7 +99,7 @@ public class Filler implements IXmlRepresentableUnit {
 				return;
 			}
 			
-			NBTTagCompound nbtTagCompoundTileEntity = new NBTTagCompound();
+			final NBTTagCompound nbtTagCompoundTileEntity = new NBTTagCompound();
 			tileEntity.writeToNBT(nbtTagCompoundTileEntity);
 			
 			for (final Object key : tagCompound.getKeySet()) {
@@ -123,7 +123,7 @@ public class Filler implements IXmlRepresentableUnit {
 	}
 	
 	@Override
-	public boolean equals(Object object) {
+	public boolean equals(final Object object) {
 		return object instanceof Filler
 			&& (block == null || block.equals(((Filler)object).block))
 			&& metadata == ((Filler)object).metadata

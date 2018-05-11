@@ -31,8 +31,8 @@ import net.minecraftforge.event.world.WorldEvent;
 public class WorldHandler {
 	
 	//TODO: register as event receiver
-	public void onChunkLoaded(ChunkWatchEvent event) {
-		ChunkPos chunk = event.getChunk();
+	public void onChunkLoaded(final ChunkWatchEvent event) {
+		final ChunkPos chunk = event.getChunk();
 		
 		// Check chunk for locating in cloaked areas
 		WarpDrive.logger.info("onChunkLoaded " + chunk.chunkXPos + " " + chunk.chunkZPos);
@@ -50,7 +50,7 @@ public class WorldHandler {
 	
 	// Server side
 	@SubscribeEvent
-	public void onEntityJoinWorld(EntityJoinWorldEvent event){
+	public void onEntityJoinWorld(final EntityJoinWorldEvent event){
 		if (event.getWorld().isRemote) {
 			return;
 		}			
@@ -89,7 +89,7 @@ public class WorldHandler {
 	}
 	
 	@SubscribeEvent
-	public void onPlayerChangedDimension(PlayerChangedDimensionEvent event) {
+	public void onPlayerChangedDimension(final PlayerChangedDimensionEvent event) {
 		WarpDrive.logger.info(String.format("onPlayerChangedDimension %s %d -> %d",
 		                                    event.player.getName(), event.fromDim, event.toDim ));
 		WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.player, ((EntityPlayerMP) event.player).worldObj);
@@ -98,20 +98,20 @@ public class WorldHandler {
 	// Client side
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void onClientConnectedToServer(ClientConnectedToServerEvent event) {
+	public void onClientConnectedToServer(final ClientConnectedToServerEvent event) {
 		// WarpDrive.logger.info("onClientConnectedToServer connectionType " + event.connectionType + " isLocal " + event.isLocal);
 		WarpDrive.cloaks.onClientChangingDimension();
 	}
 	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void onWorldUnload(WorldEvent.Unload event) {
+	public void onWorldUnload(final WorldEvent.Unload event) {
 		// WarpDrive.logger.info("onWorldUnload world " + event.getWorld());
 		WarpDrive.cloaks.onClientChangingDimension();
 	}
 	
 	@SubscribeEvent
-	public void onServerTick(ServerTickEvent event) {
+	public void onServerTick(final ServerTickEvent event) {
 		if (event.side != Side.SERVER || event.phase != Phase.END) {
 			return;
 		}
@@ -120,7 +120,7 @@ public class WorldHandler {
 	}
 	
 	@SubscribeEvent
-	public void onBlockUpdated(BlockEvent blockEvent) {
+	public void onBlockUpdated(final BlockEvent blockEvent) {
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE && WarpDrive.isDev) {
 			WarpDrive.logger.info("onBlockUpdate args " + blockEvent.getState()
 			                      + " actual " + blockEvent.getWorld().getBlockState(blockEvent.getPos()));

@@ -108,7 +108,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 	}
 	
 	@Override
-	public void toBytes(ByteBuf buffer) {
+	public void toBytes(final ByteBuf buffer) {
 		buffer.writeBoolean(isTransporterRoom);
 		
 		buffer.writeShort(globalPosition.dimensionId);
@@ -274,7 +274,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			}
 			
 			// start preferably from top or bottom side
-			double y;
+			final double y;
 			if (isFalling) {
 				y = vContainment.getY() + 0.5D - Math.pow(world.rand.nextDouble(), 3.0D) * yRange;
 			} else {

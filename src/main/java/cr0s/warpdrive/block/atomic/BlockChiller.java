@@ -38,14 +38,14 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, @Nonnull World world, @Nonnull BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
 		return new AxisAlignedBB(
 			blockPos.getX() + BOUNDING_TOLERANCE, blockPos.getY() + BOUNDING_TOLERANCE, blockPos.getZ() + BOUNDING_TOLERANCE,
 			blockPos.getX() + 1 - BOUNDING_TOLERANCE, blockPos.getY() + 1 - BOUNDING_TOLERANCE, blockPos.getZ() + 1 - BOUNDING_TOLERANCE);
 	}
 	
 	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos blockPos, IBlockState blockState, Entity entity) {
+	public void onEntityCollidedWithBlock(final World world, final BlockPos blockPos, final IBlockState blockState, final Entity entity) {
 		super.onEntityCollidedWithBlock(world, blockPos, blockState, entity);
 		onEntityEffect(world, blockPos, entity);
 	}
@@ -57,12 +57,12 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	}
 	
 	@Override
-	public void onBlockClicked(World world, BlockPos blockPos, EntityPlayer entityPlayer) {
+	public void onBlockClicked(final World world, final BlockPos blockPos, final EntityPlayer entityPlayer) {
 		super.onBlockClicked(world, blockPos, entityPlayer);
 		onEntityEffect(world, blockPos, entityPlayer);
 	}
 	
-	private void onEntityEffect(World world, final BlockPos blockPos, Entity entity) {
+	private void onEntityEffect(final World world, final BlockPos blockPos, final Entity entity) {
 		if (entity.isDead || !(entity instanceof EntityLivingBase)) {
 			return;
 		}
@@ -74,9 +74,9 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		}
 		entity.attackEntityFrom(WarpDrive.damageWarm, 1 + tier);
 		
-		Vector3 v3Entity = new Vector3(entity);
-		Vector3 v3Chiller = new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D);
-		Vector3 v3Direction = new Vector3(entity).subtract(v3Chiller).normalize();
+		final Vector3 v3Entity = new Vector3(entity);
+		final Vector3 v3Chiller = new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D);
+		final Vector3 v3Direction = new Vector3(entity).subtract(v3Chiller).normalize();
 		v3Chiller.translateFactor(v3Direction, 0.6D);
 		v3Entity.translateFactor(v3Direction, -0.6D);
 		
@@ -89,14 +89,14 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(IBlockState blockState, World world, BlockPos blockPos, Random rand) {
-		int metadata = this.getMetaFromState(world.getBlockState(blockPos)); // @TODO MC1.10
+	public void randomDisplayTick(final IBlockState blockState, final World world, final BlockPos blockPos, final Random random) {
+		final int metadata = this.getMetaFromState(world.getBlockState(blockPos)); // @TODO MC1.10
 		if (metadata == 0) {
 			return;
 		}
 		
 		// sound effect
-		int countNearby = 17
+		final int countNearby = 17
 		                - (world.getBlockState(blockPos.east()  ).getBlock() == this ? 1 : 0)
 		                - (world.getBlockState(blockPos.west()  ).getBlock() == this ? 1 : 0)
 		                - (world.getBlockState(blockPos.north() ).getBlock() == this ? 1 : 0)
@@ -120,12 +120,12 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		
 		// particle effect, loosely based on redstone ore
 		if (world.rand.nextInt(8) != 1) {
-			double dOffset = 0.0625D;
+			final double dOffset = 0.0625D;
 			
 			for (int l = 0; l < 6; ++l) {
-				double dX = (double) ((float) blockPos.getX() + rand.nextFloat());
-				double dY = (double) ((float) blockPos.getY() + rand.nextFloat());
-				double dZ = (double) ((float) blockPos.getZ() + rand.nextFloat());
+				double dX = (double) ((float) blockPos.getX() + random.nextFloat());
+				double dY = (double) ((float) blockPos.getY() + random.nextFloat());
+				double dZ = (double) ((float) blockPos.getZ() + random.nextFloat());
 				boolean isValidSide = false;
 				
 				if (l == 0 && !world.getBlockState(blockPos.up()).isOpaqueCube()) {
