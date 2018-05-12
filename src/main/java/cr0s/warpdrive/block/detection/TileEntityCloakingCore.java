@@ -250,7 +250,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 				                   xCoord + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.offsetX,
 				                   yCoord + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.offsetY,
 				                   zCoord + 0.5D + distanceOuterCoils_blocks[direction.ordinal()] * direction.offsetZ),
-				        r, g, b, LASER_DURATION_TICKS, 0,
+				        r, g, b,
+				        LASER_DURATION_TICKS,
 				        AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
 			}
 		}
@@ -280,7 +281,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						xCoord + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .offsetX + 0.2D * start.offsetX,
 						yCoord + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .offsetY + 0.2D * start.offsetY,
 						zCoord + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * stop .offsetZ + 0.2D * start.offsetZ),
-					r, g, b, LASER_DURATION_TICKS, 0,
+					r, g, b,
+					LASER_DURATION_TICKS,
 					AxisAlignedBB.getBoundingBox(minX, minY, minZ, maxX, maxY, maxZ));
 			}
 		}

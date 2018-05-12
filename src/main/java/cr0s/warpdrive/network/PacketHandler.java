@@ -57,7 +57,7 @@ public class PacketHandler {
 	                                  final int age, final int energy, final int radius) {
 		assert(!world.isRemote);
 		
-		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(v3Source, v3Target, red, green, blue, age, energy);
+		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(v3Source, v3Target, red, green, blue, age);
 		
 		// small beam are sent relative to beam center
 		if (v3Source.distanceTo_square(v3Target) < 3600 /* 60 * 60 */) {
@@ -82,10 +82,10 @@ public class PacketHandler {
 	
 	public static void sendBeamPacketToPlayersInArea(final World world, final Vector3 source, final Vector3 target,
 	                                                 final float red, final float green, final float blue,
-	                                                 final int age, final int energy, final AxisAlignedBB aabb) {
+	                                                 final int age, final AxisAlignedBB aabb) {
 		assert(!world.isRemote);
 		
-		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age, energy);
+		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age);
 		// Send packet to all players within cloaked area
 		final List<Entity> list = world.getEntitiesWithinAABB(EntityPlayerMP.class, aabb);
 		for (final Entity entity : list) {

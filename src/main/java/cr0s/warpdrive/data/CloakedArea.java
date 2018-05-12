@@ -282,7 +282,7 @@ public class CloakedArea {
 					centerY + radiusY * world.rand.nextGaussian(),
 					centerZ + radiusZ * world.rand.nextGaussian()),
 				world.rand.nextFloat(), world.rand.nextFloat(), world.rand.nextFloat(),
-				60 + world.rand.nextInt(60), 100));
+				60 + world.rand.nextInt(60)));
 		}
 	}
 	
