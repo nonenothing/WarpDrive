@@ -29,7 +29,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.BlockStaticLiquid;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,7 +47,8 @@ import cpw.mods.fml.common.Optional;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidBlock;
 
 public class TileEntityForceFieldProjector extends TileEntityAbstractForceField {
 	
@@ -396,13 +396,47 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				}
 			}
 			
+			Fluid fluid = null;
+			
 			// skip if block properties prevents it
-			if (doProjectThisBlock && (block != Blocks.tallgrass) && (block != Blocks.deadbush) && !Dictionary.BLOCKS_EXPANDABLE.contains(block)) {
+			if ( doProjectThisBlock
+			  && (block != Blocks.tallgrass)
+			  && (block != Blocks.deadbush)
+			  && !Dictionary.BLOCKS_EXPANDABLE.contains(block) ) {
 				// MFR laser is unbreakable and replaceable
 				// Liquid, vine and snow are replaceable
-				if (block instanceof BlockLiquid) {
-					final Fluid fluid = FluidRegistry.lookupFluidForBlock(block);
-					doProjectThisBlock = fluid == null || forceFieldSetup.pumping_maxViscosity >= fluid.getViscosity();
+				if ( block instanceof BlockLiquid
+				  || block instanceof IFluidBlock ) {
+					// BlockLiquid remapped by CoFH
+					// minecraft:flowing_water:0 = source
+					// minecraft:flowing_water:1 2 = flow
+					// minecraft:flowing_lava:1 2 4 6 = flow
+					// BlockLiquid in Vanilla ?
+					// minecraft:water:1 =
+					// minecraft:lava:6 =
+					
+					fluid = block instanceof IFluidBlock ? ((IFluidBlock) block).getFluid() : Commons.fluid_getByBlock(block);
+					final int metadata = vector.getBlockMetadata(worldObj);
+					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+						WarpDrive.logger.info(String.format("Block %s %s:%d Fluid %s with viscosity %d, projector max is %.1f: %s %s",
+						                                    block.getUnlocalizedName(),
+						                                    Block.blockRegistry.getNameForObject(block), metadata,
+						                                    fluid == null ? null : fluid.getName(),
+						                                    fluid == null ? 0 : fluid.getViscosity(),
+						                                    forceFieldSetup.pumping_maxViscosity,
+						                                    block, fluid));
+					}
+					if (fluid == null) {
+						if ((worldObj.getWorldTime() & 0xFF) == 0) {
+							WarpDrive.logger.error(String.format("Block %s %s:%d is not a valid fluid! %s",
+							                                     block.getUnlocalizedName(),
+							                                     Block.blockRegistry.getNameForObject(block), metadata,
+							                                     block));
+						}
+						doProjectThisBlock = false;
+					} else {
+						doProjectThisBlock = forceFieldSetup.pumping_maxViscosity >= fluid.getViscosity();
+					}
 					
 				} else if (forceFieldSetup.breaking_maxHardness > 0) {
 					final float blockHardness = block.getBlockHardness(worldObj, vector.x, vector.y, vector.z);
@@ -464,9 +498,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			if (doProjectThisBlock) {
 				if ((block != WarpDrive.blockForceFields[tier - 1]) && (!vector.equals(this))) {
 					boolean hasPlaced = false;
-					if (block instanceof BlockLiquid) {
+					if (fluid != null) {
 						hasPlaced = true;
-						doPumping(forceFieldSetup, metadataForceField, vector, block);
+						doPumping(forceFieldSetup, metadataForceField, vector, block, vector.getBlockMetadata(worldObj), fluid);
 						
 					} else if (forceFieldSetup.breaking_maxHardness > 0) {
 						hasPlaced = true;
@@ -530,13 +564,36 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		}
 	}
 	
-	private void doPumping(final ForceFieldSetup forceFieldSetup, final int metadataForceField, final VectorI vector, final Block block) {
-		if (block instanceof BlockStaticLiquid) {// it's a source block
-			// TODO collect fluid
+	private void doPumping(final ForceFieldSetup forceFieldSetup, final int metadataForceField, final VectorI vector,
+	                       final Block block, final int metadata,
+	                       final Fluid fluid) {
+		final boolean isForceFluid = block instanceof IFluidBlock;
+		final boolean isSourceBlock = ( block instanceof BlockLiquid
+		                             && metadata == 0 )
+		                           || ( isForceFluid
+		                             && ((IFluidBlock) block).canDrain(worldObj, vector.x, vector.y, vector.z) );
+		if (isSourceBlock) {
+			final FluidStack fluidStack;
+			if (isForceFluid) {
+				fluidStack = ((IFluidBlock) block).drain(worldObj, vector.x, vector.y, vector.z, true);
+			} else {
+				fluidStack = new FluidStack(fluid, 1000);
+			}
+			if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+				WarpDrive.logger.info("Fluid source found! " + fluidStack.getUnlocalizedName() + " x " + fluidStack.amount + " mL");
+			}
+			// @TODO store fluid using IFluidHandler
+			
+		} else {
+			if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+				WarpDrive.logger.info("Fluid flow found! " + fluid.getUnlocalizedName());
+			}
 		}
 		
 		if (forceFieldSetup.isInverted || forceFieldSetup.breaking_maxHardness > 0) {
-			worldObj.setBlock(vector.x, vector.y, vector.z, Blocks.air, 0, 2);
+			if (!(isForceFluid && isSourceBlock)) {
+				worldObj.setBlock(vector.x, vector.y, vector.z, Blocks.air, 0, 2);
+			}
 		} else {
 			worldObj.setBlock(vector.x, vector.y, vector.z, WarpDrive.blockForceFields[tier - 1], metadataForceField, 2);
 			
