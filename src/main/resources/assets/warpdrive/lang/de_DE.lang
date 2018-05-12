@@ -16,29 +16,29 @@ death.attack.warpdrive.warm.player=%1$s wurde von %2$s gebruzelt
 
 itemGroup.warpdrive=WarpDrive
 
-item.warpdrive.crafting.Malformed.name=Fehlerhaftes Item
-item.warpdrive.crafting.EmeraldCrystal.name=Smaragdkristall
-item.warpdrive.crafting.EnderCrystal.name=Enderkristall
-item.warpdrive.crafting.DiamondCrystal.name=Diamantkristall
-item.warpdrive.crafting.DiffractionGrating.name=Beugungsgitter
-item.warpdrive.crafting.ReactorCore.name=Reaktorkern
-item.warpdrive.crafting.ComputerInterface.name=Computer Schnittstelle
-item.warpdrive.crafting.PowerInterface.name=Power Schnittstelle
-item.warpdrive.crafting.CapacitiveCrystal.name=Kapazitätskristall
-item.warpdrive.crafting.AirCanisterEmpty.name=Leerer Luftkanister
-item.warpdrive.crafting.AirCanisterEmpty.tooltip=§bRechtsklicke einen Luftgenerator um mich zu füllen
-item.warpdrive.crafting.Lens.name=Linse
-item.warpdrive.crafting.Zoom.name=Zoom
-item.warpdrive.crafting.GlassTank.name=Glas Tank
-item.warpdrive.crafting.FlatScreen.name=Flatscreen
-item.warpdrive.crafting.MemoryCrystal.name=Speicherkristall
-item.warpdrive.crafting.Motor.name=Motor
-item.warpdrive.crafting.BoneCharcoal.name=Knochenkohle
-item.warpdrive.crafting.ActivatedCarbon.name=Aktivkohle
-item.warpdrive.crafting.LaserMediumEmpty.name=Medium Laser (leer)
-item.warpdrive.crafting.CoilCrystal.name=Spulenkristall
-item.warpdrive.crafting.ElectromagneticProjector.name=Elektromagnetischer Projektor
-item.warpdrive.crafting.Superconductor.name=Supraleiter
+item.warpdrive.component.malformed.name=Fehlerhaftes Item
+item.warpdrive.component.emerald_crystal.name=Smaragdkristall
+item.warpdrive.component.ender_crystal.name=Enderkristall
+item.warpdrive.component.diamond_crystal.name=Diamantkristall
+item.warpdrive.component.diffraction_grating.name=Beugungsgitter
+item.warpdrive.component.reactor_core.name=Reaktorkern
+item.warpdrive.component.computer_interface.name=Computer Schnittstelle
+item.warpdrive.component.power_interface.name=Power Schnittstelle
+item.warpdrive.component.capacitive_crystal.name=Kapazitätskristall
+item.warpdrive.component.air_canister_empty.name=Leerer Luftkanister
+item.warpdrive.component.air_canister_empty.tooltip=§bRechtsklicke einen Luftgenerator um mich zu füllen
+item.warpdrive.component.lens.name=Linse
+item.warpdrive.component.zoom.name=Zoom
+item.warpdrive.component.glass_tank.name=Glas Tank
+item.warpdrive.component.flat_screen.name=Flatscreen
+item.warpdrive.component.memory_crystal.name=Speicherkristall
+item.warpdrive.component.motor.name=Motor
+item.warpdrive.component.bone_charcoal.name=Knochenkohle
+item.warpdrive.component.activated_carbon.name=Aktivkohle
+item.warpdrive.component.laser_medium_empty.name=Medium Laser (leer)
+item.warpdrive.component.coil_crystal.name=Spulenkristall
+item.warpdrive.component.electromagnetic_projector.name=Elektromagnetischer Projektor
+item.warpdrive.component.superconductor.name=Supraleiter
 
 item.warpdrive.armor.helmet.name=Warp Helm
 item.warpdrive.armor.chestplate.name=Warp Brustpanzer
@@ -568,23 +568,23 @@ tile.warpdrive.hull3.stairs.black.name=Schwarze überlegene Treppe
 
 
 warpdrive.guide.prefix=§6%1$s:§r
-warpdrive.error.badTileEntity=§cDieser Block benötigt ein Update, durch zerstören und neu setzen.
-warpdrive.monitor.viewingCamera=Kamera bei %2$d, %3$d, %4$d läuft auf Videokanal %1$d
-warpdrive.ship.attachedPlayers=Verbundene Spieler: %1$s
-warpdrive.ship.playerAttached=Du bist jetzt mit dem Schiff %1$s verbunden.\nVerbundene Spieler sind %2$s
-warpdrive.ship.playerDetached=Du wurdest vom Schiff %1$s getrennt.\nVerbundene Spieler sind %2$s
+warpdrive.error.bad_tile_entity=§cDieser Block benötigt ein Update, durch zerstören und neu setzen.
+warpdrive.monitor.viewing_camera=Kamera bei %2$d, %3$d, %4$d läuft auf Videokanal %1$d
+warpdrive.ship.attached_players=Verbundene Spieler: %1$s
+warpdrive.ship.player_attached=Du bist jetzt mit dem Schiff %1$s verbunden.\nVerbundene Spieler sind %2$s
+warpdrive.ship.player_detached=Du wurdest vom Schiff %1$s getrennt.\nVerbundene Spieler sind %2$s
 warpdrive.ship.status_line.cooling=%1$d s Abklingzeit verbleibend.
 warpdrive.ship.status_line.isolation=%1$d aktive Isolations Blöcke bieten %2$2.1f%% Absorption.
 
 warpdrive.energy.status_line=Das Energie Level ist %1$s / %2$s EU.
-warpdrive.energy.side.changedToInput=%1$s Seite auf Energiezufuhr Modus gestellt!
-warpdrive.energy.side.changedToOutput=%1$s Seite auf Energieausgabe Modus gestellt!
-warpdrive.energy.side.changedToDisabled=%1$s Seite auf Deaktiviert gestellt!
+warpdrive.energy.side.changed_to_input=%1$s Seite auf Energiezufuhr Modus gestellt!
+warpdrive.energy.side.changed_to_output=%1$s Seite auf Energieausgabe Modus gestellt!
+warpdrive.energy.side.changed_to_disabled=%1$s Seite auf Deaktiviert gestellt!
 
-warpdrive.accelerator.guide.lowPower_noStorage=Energiespeicher zu klein; wir brauchen mindestens %1$d um den Betrieb fortzusetzen, können aber nur %2$d speichern.
-warpdrive.accelerator.guide.lowPower_accelerating=Uns geht der Strom aus, Chef, Teilchen werden frei, auf massiven Strahlungsaustritt vorbereiten!
-warpdrive.accelerator.guide.lowPower_noParticles=Wir brauchen mehr Strom um den Beschleuniger zu starten!
-warpdrive.accelerator.guide.noChiller=Für diesen Beschleuniger konnte kein Kühler gefunden werden!
+warpdrive.accelerator.guide.low_power.not_enough_storage=Energiespeicher zu klein; wir brauchen mindestens %1$d um den Betrieb fortzusetzen, können aber nur %2$d speichern.
+warpdrive.accelerator.guide.low_power.accelerating=Uns geht der Strom aus, Chef, Teilchen werden frei, auf massiven Strahlungsaustritt vorbereiten!
+warpdrive.accelerator.guide.low_power.no_particles=Wir brauchen mehr Strom um den Beschleuniger zu starten!
+warpdrive.accelerator.guide.no_chiller=Für diesen Beschleuniger konnte kein Kühler gefunden werden!
 
 warpdrive.beam_frequency.tooltip=Strahlfrequenz auf %1$d gestellt
 warpdrive.beam_frequency.get=Strahlfrequenz %2$d wurde von %1$s abgerufen
@@ -605,7 +605,7 @@ warpdrive.control_channel.status_line.valid=Steuerungskanal %1$d ist gültig.
 warpdrive.control_channel.status_line.invalid=§cSteuerungskanal %1$d ist ungültig.
 warpdrive.control_channel.status_line.undefined=§7Nicht definierter Steuerungskanal.\n§bNutze eine Stimmgabel§r um ihn einzustellen.
 
-warpdrive.forcefield.guide.lowPower=Uns geht die Energie aus, Captain. Verringere unseren Energieverbrauch oder hol den schottischen Ingenieur!
+warpdrive.forcefield.guide.low_power=Uns geht die Energie aus, Captain. Verringere unseren Energieverbrauch oder hol den schottischen Ingenieur!
 
 warpdrive.forcefield.shape.status_line.none=§cForm ist nicht definiert
 warpdrive.forcefield.shape.status_line.double=Die Form ist ein(e) volle(r) %1$s
@@ -646,22 +646,22 @@ warpdrive.particle.antimatter.tooltip=Erzeugt durch Kollision eines Partikelhauf
 warpdrive.particle.strange_matter.name=Seltsame Materie
 warpdrive.particle.strange_matter.tooltip=Erzeugt durch Kollision zweier Partikelhaufen in einem Überlegenen Beschleuniger
 
-warpdrive.upgrade.result.noUpgradeToDismount=§cKein Upgrade zum deinstallieren vorhanden.
-warpdrive.upgrade.result.notEnoughUpgrades=§cDu brauchst mindestens 1 Item um diesen Block aufzuwerten.
-warpdrive.upgrade.result.invalidUpgrade=§cDies ist kein gültiges Item, um diesen Block upzugraden.
-warpdrive.upgrade.result.invalidProjectorUpgrade=§cDieses Upgrade ist zu groß für einen Projektor. Nutze ein Relais.
-warpdrive.upgrade.result.invalidRelayUpgrade=§cDieses Upgrade funktioniert nur bei Projektoren!
-warpdrive.upgrade.result.validUpgrades=Gültige Upgrades für diesen Block sind: %1$s. @TODO noch nicht implementiert
-warpdrive.upgrade.result.tooManyUpgrades=§cEs sind schon %1$d Upgrades installiert.
+warpdrive.upgrade.result.no_upgrade_to_dismount=§cKein Upgrade zum deinstallieren vorhanden.
+warpdrive.upgrade.result.not_enough_upgrades=§cDu brauchst mindestens 1 Item um diesen Block aufzuwerten.
+warpdrive.upgrade.result.invalid_upgrade=§cDies ist kein gültiges Item, um diesen Block upzugraden.
+warpdrive.upgrade.result.invalid_upgrade_for_projector=§cDieses Upgrade ist zu groß für einen Projektor. Nutze ein Relais.
+warpdrive.upgrade.result.invalid_upgrade_for_relay=§cDieses Upgrade funktioniert nur bei Projektoren!
+warpdrive.upgrade.result.valid_upgrades=Gültige Upgrades für diesen Block sind: %1$s. @TODO noch nicht implementiert
+warpdrive.upgrade.result.too_many_upgrades=§cEs sind schon %1$d Upgrades installiert.
 warpdrive.upgrade.result.dismounted=Upgrade %1$s erfolgreich deinstalliert.
 warpdrive.upgrade.result.mounted=Upgrade %1$s erfolgreich installiert.
 
-warpdrive.upgrade.result.wrongShapeSide=§cAuf dieser Seite gibt es keinen Elektromagnetischen Projektor.
-warpdrive.upgrade.result.noShapeToDismount=§cKeine Form zum deinstallieren vorhanden.
-warpdrive.upgrade.result.notEnoughShapes.double=§cDu brauchst mindestens 2 Items um einen doppelseitigen Projektor einzustellen.
-warpdrive.upgrade.result.notEnoughShapes.single=§cDu brauchst mindestens 1 Item um einen einseitigen Projektor einzustellen.
-warpdrive.upgrade.result.shapeDismounted=Form erfolgreich deinstalliert.
-warpdrive.upgrade.result.shapeMounted=Form erfolgreich installiert.
+warpdrive.upgrade.result.wrong_shape_side=§cAuf dieser Seite gibt es keinen Elektromagnetischen Projektor.
+warpdrive.upgrade.result.no_shape_to_dismount=§cKeine Form zum deinstallieren vorhanden.
+warpdrive.upgrade.result.not_enough_shapes.double=§cDu brauchst mindestens 2 Items um einen doppelseitigen Projektor einzustellen.
+warpdrive.upgrade.result.not_enough_shapes.single=§cDu brauchst mindestens 1 Item um einen einseitigen Projektor einzustellen.
+warpdrive.upgrade.result.shape_dismounted=Form erfolgreich deinstalliert.
+warpdrive.upgrade.result.shape_mounted=Form erfolgreich installiert.
 
 warpdrive.upgrade.status_line.none=§7Kein Upgrade installiert.
 warpdrive.upgrade.status_line.valid=%1$s Upgrade installiert.
@@ -675,16 +675,16 @@ warpdrive.video_channel.status_line.invalid=§cVideokanal %1$d ist ungültig.
 warpdrive.video_channel.status_line.not_loaded=§cVideokanal %1$d ist ungültig oder die Kamera ist zu weit weg!
 warpdrive.video_channel.status_line.undefined=§7Nicht definierter Videokanal.\n§bNutze eine Stimmgabel§r um ihn einzustellen.
 
-warpdrive.cloaking_core.missingInnerAndOuter=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s !!!
-warpdrive.cloaking_core.missingInner=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s !!!
-warpdrive.cloaking_core.missingOuter=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s !!!
+warpdrive.cloaking_core.missing_channeling_and_projecting_coils=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s and projecting coil(s) towards %3$s !!!
+warpdrive.cloaking_core.missing_channeling_coils=§cIntegrity down to %1$d%%: missing channeling coil(s) towards %2$s !!!
+warpdrive.cloaking_core.missing_projecting_coils=§cIntegrity down to %1$d%%: missing projecting coil(s) towards %2$s !!!
 warpdrive.cloaking_core.valid=System is valid !!!
 warpdrive.cloaking_core.disabled=Tarnfeld ist deaktiviert!
-warpdrive.cloaking_core.lowPower=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
+warpdrive.cloaking_core.low_power=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
 warpdrive.cloaking_core.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Blöcke!
 
-warpdrive.ic2_reactor_laser_monitor.noReactor=Kein Reaktor gefunden!
-warpdrive.ic2_reactor_laser_monitor.multipleReactors=%1$d Reaktor(en) verbunden.
+warpdrive.ic2_reactor_laser_monitor.no_reactor=Kein Reaktor gefunden!
+warpdrive.ic2_reactor_laser_monitor.reactor_found=Reactor connected on %1$s.
 
 warpdrive.transporter.status=Von (%1$.0f %2$.0f %3$.0f) zu (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

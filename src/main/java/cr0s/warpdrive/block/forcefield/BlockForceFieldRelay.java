@@ -37,9 +37,9 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		
 		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade.maxCountOnRelay > 0) {
-				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "-" + enumForceFieldUpgrade.unlocalizedName);
+				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "-" + enumForceFieldUpgrade.getName());
 			} else {
-				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "-" + EnumForceFieldUpgrade.NONE.unlocalizedName);
+				icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/relay" + "-" + EnumForceFieldUpgrade.NONE.getName());
 			}
 		}
 		icons[EnumForceFieldUpgrade.length] = iconRegister.registerIcon("warpdrive:forcefield/relay-top");
@@ -117,7 +117,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				
 			} else {
 				// no more upgrades to dismount
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noUpgradeToDismount"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.no_upgrade_to_dismount"));
 				return true;
 			}
 			
@@ -129,7 +129,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 			// validate type
 			if (EnumForceFieldUpgrade.get(itemStackHeld.getItemDamage()).maxCountOnRelay <= 0) {
 				// invalid upgrade type
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.invalidRelayUpgrade"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.invalid_upgrade_for_relay"));
 				return true;
 			}
 			
@@ -137,7 +137,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				// validate quantity
 				if (itemStackHeld.stackSize < 1) {
 					// not enough upgrade items
-					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.notEnoughUpgrades"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.not_enough_upgrades"));
 					return true;
 				}
 				

@@ -57,7 +57,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldUpgrade.length];
 		for (final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
-			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade-" + enumForceFieldUpgrade.unlocalizedName);
+			icons[enumForceFieldUpgrade.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/upgrade-" + enumForceFieldUpgrade.getName());
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	public String getUnlocalizedName(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldUpgrade.length) {
-			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).unlocalizedName;
+			return getUnlocalizedName() + "." + EnumForceFieldUpgrade.get(damage).getName();
 		}
 		return getUnlocalizedName();
 	}

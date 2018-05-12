@@ -251,7 +251,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 					
 					final String msg = StatCollector.translateToLocalFormatted("warpdrive.guide.prefix", getBlockType().getLocalizedName())
-					           + StatCollector.translateToLocalFormatted("warpdrive.forcefield.guide.lowPower");
+					           + StatCollector.translateToLocalFormatted("warpdrive.forcefield.guide.low_power");
 					
 					final AxisAlignedBB axisalignedbb = AxisAlignedBB.getBoundingBox(xCoord - 10, yCoord - 10, zCoord - 10, xCoord + 10, yCoord + 10, zCoord + 10);
 					final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
@@ -968,7 +968,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	private String getShapeStatus() {
 		final EnumForceFieldShape enumForceFieldShape = getShape();
-		final String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line." + enumForceFieldShape.unlocalizedName);
+		final String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line." + enumForceFieldShape.getName());
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
 			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line.none",
 				strDisplayName);

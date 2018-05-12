@@ -32,8 +32,8 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[2];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/cloakingCoreInactive");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:detection/cloakingCoreActive");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:detection/cloaking_core-side_inactive");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:detection/cloaking_core-side_active");
 	}
 	
 	@SideOnly(Side.CLIENT)

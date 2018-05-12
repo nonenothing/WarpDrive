@@ -3,12 +3,15 @@ package cr0s.warpdrive.data;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldShape;
+import cr0s.warpdrive.api.IStringSerializable;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum EnumForceFieldShape implements IForceFieldShape {
+public enum EnumForceFieldShape implements IStringSerializable, IForceFieldShape {
+	
 	NONE               ("none"),
 	SPHERE             ("sphere"),
 	CYLINDER_H         ("cylinder_h"),
@@ -18,7 +21,7 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 	TUBE               ("tube"),
 	TUNNEL             ("tunnel");
 	
-	public final String unlocalizedName;
+	public final String name;
 	
 	// cached values
 	public static final int length;
@@ -31,12 +34,18 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 		}
 	}
 	
-	EnumForceFieldShape(final String unlocalizedName) {
-		this.unlocalizedName = unlocalizedName;
+	EnumForceFieldShape(final String name) {
+		this.name = name;
 	}
 	
 	public static EnumForceFieldShape get(final int damage) {
 		return ID_MAP.get(damage);
+	}
+	
+	@Nonnull
+	@Override
+	public String getName() {
+		return name;
 	}
 	
 	@Override
@@ -78,9 +87,9 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			default:
 				sizeEstimation = 8;
 				WarpDrive.logger.error(String.format("Invalid object %s for shape %s with size %s. Please report this to the mod author",
-				                                    this,
-				                                    unlocalizedName,
-				                                    vScale));
+				                                     this,
+				                                     name,
+				                                     vScale));
 				break;
 			}
 		} else {
@@ -238,7 +247,7 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 		if (mapVertexes.size() > sizeEstimation) {
 			WarpDrive.logger.warn(String.format("Underestimated memory allocation lag %d > %d for shape %s with size %s, isFusionOrInverted %s, thickness %.2f. Please report this to the mod author",
 			                                    mapVertexes.size(), sizeEstimation,
-			                                    unlocalizedName,
+			                                    name,
 			                                    vScale,
 			                                    isFusionOrInverted,
 			                                    forceFieldSetup.thickness));
@@ -246,14 +255,14 @@ public enum EnumForceFieldShape implements IForceFieldShape {
 			if (mapVertexes.size() * 1.25 < sizeEstimation) {
 				WarpDrive.logger.warn(String.format("Overestimated memory allocation %d < %d for shape %s with size %s, isFusionOrInverted %s, thickness %.2f. Please report this to the mod author",
 				                                    mapVertexes.size(), sizeEstimation,
-				                                    unlocalizedName,
+				                                    name,
 				                                    vScale,
 				                                    isFusionOrInverted,
 				                                    forceFieldSetup.thickness));
 			} else {
 				WarpDrive.logger.warn(String.format("Memory allocation is good: %d vs %d for shape %s with size %s, isFusionOrInverted %s, thickness %.2f. Please report this to the mod author",
 				                                    mapVertexes.size(), sizeEstimation,
-				                                    unlocalizedName,
+				                                    name,
 				                                    vScale,
 				                                    isFusionOrInverted,
 				                                    forceFieldSetup.thickness));

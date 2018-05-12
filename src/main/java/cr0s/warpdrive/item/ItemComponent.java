@@ -1,6 +1,5 @@
 package cr0s.warpdrive.item;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractContainer;
@@ -15,7 +14,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.relauncher.Side;
@@ -31,7 +29,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	public ItemComponent() {
 		super();
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.crafting.component");
+		setUnlocalizedName("warpdrive.component.malformed");
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
 		
 		itemStackCache = new ItemStack[EnumComponentType.length];
@@ -57,7 +55,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumComponentType.length];
 		for (final EnumComponentType enumComponentType : EnumComponentType.values()) {
-			icons[enumComponentType.ordinal()] = iconRegister.registerIcon("warpdrive:component/" + enumComponentType.unlocalizedName);
+			icons[enumComponentType.ordinal()] = iconRegister.registerIcon("warpdrive:component/" + enumComponentType.getName());
 		}
 	}
 	
@@ -65,7 +63,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	public String getUnlocalizedName(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumComponentType.length) {
-			return "item.warpdrive.crafting." + EnumComponentType.get(damage).unlocalizedName;
+			return "item.warpdrive.component." + EnumComponentType.get(damage).getName();
 		}
 		return getUnlocalizedName();
 	}
@@ -136,29 +134,11 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 		return null;
 	}
 	
-	
-	
 	@Override
 	public boolean doesSneakBypassUse(final World world, final int x, final int y, final int z, final EntityPlayer player) {
 		final Block block = world.getBlock(x, y, z);
 		
 		return block instanceof BlockAbstractContainer
 		    || super.doesSneakBypassUse(world, x, y, z, player);
-	}
-	
-	@Override
-	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List list, final boolean advancedItemTooltips) {
-		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
-		
-		String tooltip = "";
-		switch (EnumComponentType.get(itemStack.getItemDamage())) {
-		case AIR_CANISTER:
-			tooltip += StatCollector.translateToLocalFormatted("item.warpdrive.crafting.AirCanisterEmpty.tooltip");
-			break;
-		default:
-			break;
-		}
-		
-		Commons.addTooltip(list, tooltip);
 	}
 }

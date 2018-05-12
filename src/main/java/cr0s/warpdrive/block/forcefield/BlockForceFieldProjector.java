@@ -147,7 +147,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				
 				if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
 					// no more upgrades to dismount
-					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noUpgradeToDismount"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.no_upgrade_to_dismount"));
 					return true;
 				}
 				
@@ -177,15 +177,15 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 						
 						tileEntityForceFieldProjector.setShape(EnumForceFieldShape.NONE);
 						// shape dismounted
-						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shapeDismounted"));
+						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shape_dismounted"));
 					} else {
 						// wrong side
-						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrongShapeSide"));
+						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrong_shape_side"));
 						return true;
 					}
 				} else {
 					// no shape to dismount
-					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.noShapeToDismount"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.no_shape_to_dismount"));
 					return true;
 				}
 			}
@@ -202,7 +202,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 						// not enough shape items
 						Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted(
 							tileEntityForceFieldProjector.isDoubleSided ?
-								"warpdrive.upgrade.result.notEnoughShapes.double" : "warpdrive.upgrade.result.notEnoughShapes.single"));
+								"warpdrive.upgrade.result.not_enough_shapes.double" : "warpdrive.upgrade.result.not_enough_shapes.single"));
 						return true;
 					}
 					
@@ -221,11 +221,11 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				// mount the new shape item(s)
 				tileEntityForceFieldProjector.setShape(EnumForceFieldShape.get(itemStackHeld.getItemDamage()));
 				// shape mounted
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shapeMounted"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.shape_mounted"));
 				
 			} else {
 				// wrong side
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrongShapeSide"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.wrong_shape_side"));
 				return true;
 			}
 			
@@ -233,12 +233,12 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 			// validate type
 			if (tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade) <= 0) {
 				// invalid upgrade type
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.invalidProjectorUpgrade"));
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.invalid_upgrade_for_projector"));
 				return true;
 			}
 			if (!tileEntityForceFieldProjector.canUpgrade(enumForceFieldUpgrade)) {
 				// too many upgrades
-				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.tooManyUpgrades",
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.too_many_upgrades",
 					tileEntityForceFieldProjector.getUpgradeMaxCount(enumForceFieldUpgrade)));
 				return true;
 			}
@@ -247,7 +247,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 				// validate quantity
 				if (itemStackHeld.stackSize < 1) {
 					// not enough upgrade items
-					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.notEnoughUpgrades"));
+					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.upgrade.result.not_enough_upgrades"));
 					return true;
 				}
 				

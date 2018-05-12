@@ -507,59 +507,60 @@ public class Dictionary {
 			WarpDrive.logger.debug("Checking block registry for '" + blockKey + "': " + object);
 			if (!(object instanceof Block)) {
 				WarpDrive.logger.error("Block registry for '" + blockKey + "': this is not a block? " + object);
-			} else {
-				final Block block = (Block) object;
-				// get hardness and blast resistance
-				float hardness = -2.0F;
-				if (WarpDrive.fieldBlockHardness != null) {
-					// WarpDrive.fieldBlockHardness.setAccessible(true);
-					try {
-						hardness = (float)WarpDrive.fieldBlockHardness.get(block);
-					} catch (final IllegalArgumentException | IllegalAccessException exception) {
-						exception.printStackTrace();
-						WarpDrive.logger.error("Unable to access block hardness value '" + blockKey + "' " + block);
+				continue;
+			}
+			
+			final Block block = (Block) object;
+			// get hardness and blast resistance
+			float hardness = -2.0F;
+			if (WarpDrive.fieldBlockHardness != null) {
+				// WarpDrive.fieldBlockHardness.setAccessible(true);
+				try {
+					hardness = (float)WarpDrive.fieldBlockHardness.get(block);
+				} catch (final IllegalArgumentException | IllegalAccessException exception) {
+					exception.printStackTrace();
+					WarpDrive.logger.error("Unable to access block hardness value '" + blockKey + "' " + block);
+				}
+			}
+			
+			final float blastResistance = block.getExplosionResistance(null);
+			
+			// check actual values
+			if (hardness != -2.0F) {
+				if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
+					WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
+				} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
+				         && !( block instanceof BlockAbstractBase
+				            || block instanceof BlockAbstractContainer
+				            || block instanceof BlockHullGlass
+				            || block instanceof BlockHullSlab
+				            || block instanceof BlockHullStairs
+				            || BLOCKS_ANCHOR.contains(block) ) ) {
+					WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
+				}
+			}
+			if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
+			   && !( block instanceof BlockAbstractBase
+			      || block instanceof BlockAbstractContainer
+			      || block instanceof BlockHullGlass
+			      || block instanceof BlockHullSlab
+			      || block instanceof BlockHullStairs
+			      || BLOCKS_ANCHOR.contains(block) ) ) {
+				block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
+				WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
+				if (adjustResistance) {// TODO: not implemented
+					WarpDrive.logger.warn("Adjusting blast resistance of '" + blockKey + "' " + block + " from " + blastResistance + " to " + block.getExplosionResistance(null));
+					if (block.getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
+						WarpDrive.logger.error("Blacklisting block with high blast resistance '" + blockKey + "' " + block + " (" + blastResistance + ")");
+						BLOCKS_ANCHOR.add(block);
+						BLOCKS_STOPMINING.add(block);
 					}
 				}
-				
-				final float blastResistance = block.getExplosionResistance(null);
-				
-				// check actual values
-				if (hardness != -2.0F) {
-					if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
-						WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-					} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
-					         && !( block instanceof BlockAbstractBase
-					            || block instanceof BlockAbstractContainer
-					            || block instanceof BlockHullGlass
-					            || block instanceof BlockHullSlab
-					            || block instanceof BlockHullStairs
-					            || BLOCKS_ANCHOR.contains(block) ) ) {
-						WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + blockKey + "' " + block + " (" + hardness + ")");
-					}
-				}
-				if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
-				   && !( block instanceof BlockAbstractBase
-				      || block instanceof BlockAbstractContainer
-				      || block instanceof BlockHullGlass
-				      || block instanceof BlockHullSlab
-				      || block instanceof BlockHullStairs
-				      || BLOCKS_ANCHOR.contains(block) ) ) {
-					block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
-					WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + blockKey + "' " + block + " (" + hardness + ")");
-					if (adjustResistance) {// TODO: not implemented
-						WarpDrive.logger.warn("Adjusting blast resistance of '" + blockKey + "' " + block + " from " + blastResistance + " to " + block.getExplosionResistance(null));
-						if (block.getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
-							WarpDrive.logger.error("Blacklisting block with high blast resistance '" + blockKey + "' " + block + " (" + blastResistance + ")");
-							BLOCKS_ANCHOR.add(block);
-							BLOCKS_STOPMINING.add(block);
-						}
-					}
-				}
-				
-				if (WarpDriveConfig.LOGGING_DICTIONARY) {
-					WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
-						+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + block.getExplosionResistance(null));
-				}
+			}
+			
+			if (WarpDriveConfig.LOGGING_DICTIONARY) {
+				WarpDrive.logger.info("Block registry for '" + blockKey + "': Block " + block
+					+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + block.getExplosionResistance(null));
 			}
 		}
 	}
@@ -577,7 +578,6 @@ public class Dictionary {
 			} else {
 				message.append(object);
 			}
-			
 		}
 		return message.toString();
 	}

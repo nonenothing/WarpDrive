@@ -218,7 +218,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	@Override
 	public String getStatus() {
 		return super.getStatus()
-				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attachedPlayers",
+				+ StatCollector.translateToLocalFormatted("warpdrive.ship.attached_players",
 						getAttachedPlayersList());
 	}
 	
@@ -261,7 +261,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				players.remove(i);
 				return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 				                                               getBlockType().getLocalizedName())
-				       + StatCollector.translateToLocalFormatted("warpdrive.ship.playerDetached",
+				       + StatCollector.translateToLocalFormatted("warpdrive.ship.player_detached",
 				                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
 				                                                 getAttachedPlayersList());
 			}
@@ -271,7 +271,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		players.add(entityPlayer.getDisplayName());
 		return StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 		                                               getBlockType().getLocalizedName())
-		       + StatCollector.translateToLocalFormatted("warpdrive.ship.playerAttached",
+		       + StatCollector.translateToLocalFormatted("warpdrive.ship.player_attached",
 		                                                 tileEntityShipCore != null && !tileEntityShipCore.shipName.isEmpty() ? tileEntityShipCore.shipName : "-",
 		                                                 getAttachedPlayersList());
 	}

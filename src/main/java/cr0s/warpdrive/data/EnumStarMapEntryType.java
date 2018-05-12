@@ -1,8 +1,12 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.api.IStringSerializable;
+
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 
-public enum EnumStarMapEntryType {
+public enum EnumStarMapEntryType implements IStringSerializable {
+	
 	UNDEFINED  (0, "-undefined-"),
 	SHIP       (1, "ship"       ), // a ship core
 	JUMPGATE   (2, "jumpgate"   ), // a jump gate
@@ -36,6 +40,8 @@ public enum EnumStarMapEntryType {
 		return id;
 	}
 	
+	@Nonnull
+	@Override
 	public String getName() {
 		return name;
 	}

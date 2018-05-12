@@ -70,21 +70,24 @@ public class BlockMonitor extends BlockAbstractContainer {
 			
 			if (tileEntity instanceof TileEntityMonitor) {
 				final int videoChannel = ((TileEntityMonitor) tileEntity).getVideoChannel();
+				
+				// validate camera
 				final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
-				if (camera == null || entityPlayer.isSneaking()) {
+				if ( camera == null
+				  || entityPlayer.isSneaking() ) {
 					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor) tileEntity).getStatus());
 					return true;
-				} else {
-					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.monitor.viewingCamera",
-							videoChannel,
-							camera.position.chunkPosX,
-							camera.position.chunkPosY,
-							camera.position.chunkPosZ ));
-					ClientCameraHandler.setupViewpoint(
-							camera.type, entityPlayer, entityPlayer.rotationYaw, entityPlayer.rotationPitch,
-							x, y, z, this,
-							camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ, world.getBlock(camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ));
 				}
+				
+				Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.monitor.viewing_camera",
+						videoChannel,
+						camera.position.chunkPosX,
+						camera.position.chunkPosY,
+						camera.position.chunkPosZ ));
+				ClientCameraHandler.setupViewpoint(
+						camera.type, entityPlayer, entityPlayer.rotationYaw, entityPlayer.rotationPitch,
+						x, y, z, this,
+						camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ, world.getBlock(camera.position.chunkPosX, camera.position.chunkPosY, camera.position.chunkPosZ));
 			}
 		}
 		

@@ -425,13 +425,13 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		// build status message
 		final float integrity = countIntegrity / 13.0F; 
 		if (messageInnerCoils.length() > 0 && messageOuterCoils.length() > 0) {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missingInnerAndOuter",
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missing_channeling_and_projecting_coils",
 					Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils); 
 		} else if (messageInnerCoils.length() > 0) {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missingInner",
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missing_channeling_coils",
 			        Math.round(100.0F * integrity), messageInnerCoils);
 		} else if (messageOuterCoils.length() > 0) {
-			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missingOuter",
+			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.missing_projecting_coils",
 					Math.round(100.0F * integrity), messageOuterCoils);
 		} else {
 			messageValidityIssues = StatCollector.translateToLocalFormatted("warpdrive.cloaking_core.valid");
@@ -461,7 +461,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		} else if (!isEnabled) {
 			unlocalizedStatus = "warpdrive.cloaking_core.disabled";
 		} else if (!isCloaking) {
-			unlocalizedStatus = "warpdrive.cloaking_core.lowPower";
+			unlocalizedStatus = "warpdrive.cloaking_core.low_power";
 		} else {
 			unlocalizedStatus = "warpdrive.cloaking_core.cloaking";
 		}

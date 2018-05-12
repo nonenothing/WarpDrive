@@ -3,6 +3,7 @@ package cr0s.warpdrive.data;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
+import cr0s.warpdrive.api.IStringSerializable;
 import cr0s.warpdrive.network.PacketHandler;
 
 import javax.annotation.Nonnull;
@@ -26,7 +27,8 @@ import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.world.World;
 
-public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgradeEffector {
+public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpgrade, IForceFieldUpgradeEffector {
+	
 	//            Upgrade         - Compatibility -  ----- Value -----  -- Scan speed --  -- Place speed --  --------- Energy costs ---------  comment
 	//            name            projector   relay    incr.       cap  minimum  maximum   minimum  maximum  startup   scan    place    entity  
 	NONE         ("none"         ,        0,      0,    0.0F,     0.0F,  0.000F,  0.000F,   0.000F,  0.000F,    0.0F, 0.000F,  0.000F,    0.0F, "n/a"),
@@ -50,7 +52,7 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	TRANSLATION  ("translation"  ,        1,      0,    1.0F,     1.0F,  0.000F,  0.000F,   0.000F,  0.000F,  100.0F, 0.000F,  0.000F,    0.0F, "value is boolean"),
 	;
 	
-	public final String unlocalizedName;
+	public final String name;
 	public final int maxCountOnProjector;
 	public final int maxCountOnRelay;
 	private final float upgradeValue;
@@ -75,12 +77,12 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 		}
 	}
 	
-	EnumForceFieldUpgrade(final String unlocalizedName, final int allowOnProjector, final int maxCountOnRelay,
+	EnumForceFieldUpgrade(final String name, final int allowOnProjector, final int maxCountOnRelay,
 	                      final float upgradeValue, final float upgradeValueMax,
 	                      final float scanSpeedMinimum, final float scanSpeedMaximum, final float placeSpeedMinimum, final float placeSpeedMaximum,
 	                      final float startupEnergyCost, final float scanEnergyCost, final float placeEnergyCost, final float entityEffectEnergyCost,
 	                      final String comment) {
-		this.unlocalizedName = unlocalizedName;
+		this.name = name;
 		this.maxCountOnProjector = allowOnProjector;
 		this.maxCountOnRelay = maxCountOnRelay;
 		
@@ -108,6 +110,12 @@ public enum EnumForceFieldUpgrade implements IForceFieldUpgrade, IForceFieldUpgr
 	public static EnumForceFieldUpgrade get(final int damage) {
 		final EnumForceFieldUpgrade enumForceFieldUpgrade = ID_MAP.get(damage);
 		return enumForceFieldUpgrade == null ? EnumForceFieldUpgrade.NONE : enumForceFieldUpgrade;
+	}
+	
+	@Nonnull
+	@Override
+	public String getName() {
+		return name;
 	}
 	
 	@Override

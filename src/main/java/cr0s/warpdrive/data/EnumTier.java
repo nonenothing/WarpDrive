@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumTier implements IStringSerializable {
+	
 	CREATIVE ("creative",  0),
 	BASIC    ("basic"   ,  1),
 	ADVANCED ("advanced",  2),

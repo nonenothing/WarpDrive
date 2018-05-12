@@ -138,18 +138,18 @@ public class BlockEnergyBank extends BlockAbstractContainer {
 				case TileEntityEnergyBank.MODE_INPUT:
 					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 						StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"))
-					    + StatCollector.translateToLocalFormatted("warpdrive.energy.side.changedToInput", facing.name()));
+					    + StatCollector.translateToLocalFormatted("warpdrive.energy.side.changed_to_input", facing.name()));
 					return true;
 				case TileEntityEnergyBank.MODE_OUTPUT:
 					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 						StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"))
-					    + StatCollector.translateToLocalFormatted("warpdrive.energy.side.changedToOutput", facing.name()));
+					    + StatCollector.translateToLocalFormatted("warpdrive.energy.side.changed_to_output", facing.name()));
 					return true;
 				case TileEntityEnergyBank.MODE_DISABLED:
 				default:
 					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
 						StatCollector.translateToLocalFormatted(itemStack.getUnlocalizedName() + ".name"))
-					    + StatCollector.translateToLocalFormatted("warpdrive.energy.side.changedToDisabled", facing.name()));
+					    + StatCollector.translateToLocalFormatted("warpdrive.energy.side.changed_to_disabled", facing.name()));
 					return true;
 			}
 		}

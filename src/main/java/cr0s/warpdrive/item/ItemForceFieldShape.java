@@ -57,7 +57,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public void registerIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumForceFieldShape.length];
 		for (final EnumForceFieldShape enumForceFieldShape : EnumForceFieldShape.values()) {
-			icons[enumForceFieldShape.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/shape-" + enumForceFieldShape.unlocalizedName);
+			icons[enumForceFieldShape.ordinal()] = iconRegister.registerIcon("warpdrive:forcefield/shape-" + enumForceFieldShape.getName());
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public String getUnlocalizedName(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage >= 0 && damage < EnumForceFieldShape.length) {
-			return getUnlocalizedName() + "." + EnumForceFieldShape.get(damage).unlocalizedName;
+			return getUnlocalizedName() + "." + EnumForceFieldShape.get(damage).getName();
 		}
 		return getUnlocalizedName();
 	}

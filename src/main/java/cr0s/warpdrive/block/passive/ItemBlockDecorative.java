@@ -35,6 +35,6 @@ public class ItemBlockDecorative extends ItemBlock {
 		if (itemstack == null) {
 			return getUnlocalizedName();
 		}
-		return "tile.warpdrive.decoration.decorative." + EnumDecorativeType.get(itemstack.getItemDamage()).unlocalizedName;
+		return "tile.warpdrive.decoration.decorative." + EnumDecorativeType.get(itemstack.getItemDamage()).getName();
 	}
 }

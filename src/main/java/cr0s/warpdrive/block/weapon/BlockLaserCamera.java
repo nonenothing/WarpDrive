@@ -36,7 +36,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[1];
 		// Solid textures
-		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:weapon/laserCameraSide");
+		iconBuffer[ICON_SIDE] = iconRegister.registerIcon("warpdrive:weapon/laser_camera-side");
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -71,7 +71,7 @@ public class BlockLaserCamera extends BlockAbstractContainer {
 					Commons.addChatMessage(entityPlayer, ((TileEntityLaserCamera) tileEntity).getStatus());
 				} else {
 					Commons.addChatMessage(entityPlayer, StatCollector.translateToLocalFormatted("warpdrive.guide.prefix",
-							getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.badTileEntity"));
+							getLocalizedName()) + StatCollector.translateToLocalFormatted("warpdrive.error.bad_tile_entity"));
 					WarpDrive.logger.error("Block " + this + " with invalid tile entity " + tileEntity);
 				}
 				return false;

@@ -43,7 +43,7 @@ public class BlockDecorative extends BlockAbstractBase {
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		icons = new IIcon[EnumDecorativeType.length];
 		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
-			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:decoration/decorative-" + enumDecorativeType.unlocalizedName);
+			icons[enumDecorativeType.ordinal()] = iconRegister.registerIcon("warpdrive:decoration/decorative-" + enumDecorativeType.getName());
 		}
 	}
 	
