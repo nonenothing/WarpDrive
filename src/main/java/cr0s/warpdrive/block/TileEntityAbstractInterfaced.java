@@ -332,10 +332,11 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				}
 			} catch (final Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error(String.format("Failed to mount ComputerCraft scripts for %s @ %s (%d %d %d)",
+				WarpDrive.logger.error(String.format("Failed to mount ComputerCraft scripts for %s @ %s (%d %d %d), isFirstTick %s",
 				                                     peripheralName,
 				                                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
-				                                     xCoord, yCoord, zCoord));
+				                                     xCoord, yCoord, zCoord,
+				                                     isFirstTick()));
 			}
 		}
 	}
