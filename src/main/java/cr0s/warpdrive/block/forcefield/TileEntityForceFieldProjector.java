@@ -18,6 +18,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1198,24 +1199,33 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private class ThreadCalculation extends Thread {
-		private final TileEntityForceFieldProjector projector;
+		
+		private final WeakReference<TileEntityForceFieldProjector> weakProjector;
+		private final String stringProjector;
 		
 		ThreadCalculation(final TileEntityForceFieldProjector projector) {
-			this.projector = projector;
+			this.weakProjector = new WeakReference<>(projector);
+			stringProjector = projector.toString();
 		}
 		
 		@Override
 		public void run() {
+			TileEntityForceFieldProjector projector;
 			Set<VectorI> vPerimeterBlocks = null;
 			Set<VectorI> vInteriorBlocks = null;
 			
 			// calculation start is done synchronously, by caller
 			try {
+				projector = weakProjector.get();
 				if ( projector != null
 				  && projector.isValid() ) {
+					// collect what we need, then release the object
 					final ForceFieldSetup forceFieldSetup = projector.getForceFieldSetup();
+					final int heightWorld = projector.worldObj.getHeight();
+					projector = null;
+					
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-						WarpDrive.logger.debug(this + " Calculation started for " + projector);
+						WarpDrive.logger.debug(this + " Calculation started for " + stringProjector);
 					}
 					
 					// create HashSets
@@ -1226,7 +1236,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					// compute interior fields to remove overlapping parts
 					final Map<VectorI, Boolean> vertexes = forceFieldSetup.shapeProvider.getVertexes(forceFieldSetup);
 					if (vertexes.isEmpty()) {
-						WarpDrive.logger.error(this + " No vertexes for " + forceFieldSetup + " at " + projector);
+						WarpDrive.logger.error(this + " No vertexes for " + forceFieldSetup + " at " + stringProjector);
 					}
 					for (final Map.Entry<VectorI, Boolean> entry : vertexes.entrySet()) {
 						final VectorI vPosition = entry.getKey();
@@ -1237,7 +1247,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 							
 							vPosition.translate(forceFieldSetup.vTranslation);
 							
-							if (vPosition.y > 0 && vPosition.y <= projector.worldObj.getHeight()) {
+							if (vPosition.y > 0 && vPosition.y <= heightWorld) {
 								if (entry.getValue()) {
 									vPerimeterBlocks.add(vPosition);
 								} else {
@@ -1266,10 +1276,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				vInteriorBlocks = null;
 				vPerimeterBlocks = null;
 				exception.printStackTrace();
-				WarpDrive.logger.error(this + " Calculation failed for " + (projector == null ? "-null-" : projector.toString()));
+				WarpDrive.logger.error(this + " Calculation failed for " + stringProjector);
 			}
 			
-			projector.calculation_done(vInteriorBlocks, vPerimeterBlocks);
+			projector = weakProjector.get();
+			if (projector != null) {
+				projector.calculation_done(vInteriorBlocks, vPerimeterBlocks);
+			}
 		}
 	}
 }
