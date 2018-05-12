@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.minecraft.block.Block;
@@ -104,6 +105,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	// currently placed forcefield blocks
 	private final Set<VectorI> vForceFields = new HashSet<>();
 	
+	// schedule removal/destruction in main thread
+	final CopyOnWriteArraySet<VectorI> vForceFields_forRemoval = new CopyOnWriteArraySet<>();
+	
 	public TileEntityForceFieldProjector() {
 		super();
 		IC2_sinkTier = 4;
@@ -167,13 +171,16 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			guideTicks--;
 		}
 		
+		// remove from main thread
+		doScheduledForceFieldRemoval();
+		
 		// Powered ?
 		final ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		final int energyRequired;
 		if (!legacy_isOn) {
-			energyRequired = (int)Math.round(forceFieldSetup.startupEnergyCost + forceFieldSetup.placeEnergyCost * forceFieldSetup.placeSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F);
+			energyRequired = (int) Math.round(forceFieldSetup.startupEnergyCost + forceFieldSetup.placeEnergyCost * forceFieldSetup.placeSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F);
 		} else {
-			energyRequired = (int)Math.round(                                    forceFieldSetup.scanEnergyCost * forceFieldSetup.scanSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F);
+			energyRequired = (int) Math.round(                                    forceFieldSetup.scanEnergyCost * forceFieldSetup.scanSpeed * PROJECTOR_PROJECTION_UPDATE_TICKS / 20.0F);
 		}
 		if (energyRequired > energy_getMaxStorage()) {
 			WarpDrive.logger.error("Force field projector requires " + energyRequired + " to get started but can only store " + energy_getMaxStorage());
@@ -237,7 +244,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				cooldownTicks = PROJECTOR_COOLDOWN_TICKS;
 				guideTicks = 0;
 			}
-			destroyForceField(false);
+			destroyForceField();
 			
 			if (isEnabledAndValid) {
 				if (guideTicks <= 0) {
@@ -264,8 +271,13 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	@Override
 	public void invalidate() {
+		destroyForceField();
+		try {
+			doScheduledForceFieldRemoval();
+		} catch (final Exception exception) {
+			exception.printStackTrace();
+		}
 		super.invalidate();
-		destroyForceField(true);
 	}
 	
 	public boolean isValid() {
@@ -380,7 +392,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			
 			vector = iteratorForcefield.next();
 			
-			if (!worldObj.blockExists(vector.x, vector.y, vector.z) || !worldObj.getChunkFromBlockCoords(vector.x, vector.z).isChunkLoaded) {
+			// skip non loaded chunks
+			if ( !worldObj.blockExists(vector.x, vector.y, vector.z)
+			  || !worldObj.getChunkFromBlockCoords(vector.x, vector.z).isChunkLoaded ) {
 				continue;
 			}
 			
@@ -740,43 +754,73 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return false;
 	}
 	
-	private void destroyForceField(final boolean isChunkLoading) {
+	private void destroyForceField() {
 		if (worldObj == null || worldObj.isRemote) {
 			return;
 		}
 		
-		legacy_isOn = false;
+		// invalidate() can be multi-threaded, so we're delaying the destruction
+		if (!Commons.isSafeThread()) {
+			vForceFields_forRemoval.addAll(vForceFields);
+			vForceFields.clear();
+			
+			// add calculated blocks only once
+			if ( isCalculated()
+			  && vForceFields_forRemoval.size() < calculated_forceField.size() ) {
+				vForceFields_forRemoval.addAll(calculated_forceField);
+			}
+			
+			// force a reboot
+			legacy_isOn = false;
+			
+			return;
+		}
+		
 		if (!vForceFields.isEmpty()) {
-			// invalidate() can be multi-threaded, so we're working with a copy of the collection 
 			final VectorI[] vForceFields_cache = vForceFields.toArray(new VectorI[0]);
 			vForceFields.clear();
 			
 			for (final VectorI vector : vForceFields_cache) {
-				if (!isChunkLoading) {
-					if (!(worldObj.blockExists(vector.x, vector.y, vector.z))) {// chunk is not loaded, skip it
-						continue;
-					}
-					if (!worldObj.getChunkFromBlockCoords(vector.x, vector.z).isChunkLoaded) {// chunk is unloading, skip it
-						continue;
-					}
-				}
-				
 				final Block block = vector.getBlock(worldObj);
 				if (block == WarpDrive.blockForceFields[tier - 1]) {
 					worldObj.setBlockToAir(vector.x, vector.y, vector.z);
 				}
 			}
+			
+			if (isCalculated()) {
+				for (final VectorI vector : calculated_forceField) {
+					final Block block = vector.getBlock(worldObj);
+					
+					if (block == WarpDrive.blockForceFields[tier - 1]) {
+						final TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+						if ( tileEntity instanceof TileEntityForceField
+						  && (((TileEntityForceField) tileEntity).getProjector() == this) ) {
+							worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+						}
+					}
+				}
+			}
 		}
 		
-		if (isCalculated() && isChunkLoading) {
-			for (final VectorI vector : calculated_forceField) {
-				final Block block = vector.getBlock(worldObj);
-				
-				if (block == WarpDrive.blockForceFields[tier - 1]) {
-					final TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
-					if (tileEntity instanceof TileEntityForceField && (((TileEntityForceField) tileEntity).getProjector() == this)) {
-						worldObj.setBlockToAir(vector.x, vector.y, vector.z);
-					}
+		// force a reboot
+		legacy_isOn = false;
+	}
+	
+	private void doScheduledForceFieldRemoval() {
+		if (!Commons.isSafeThread()) {
+			WarpDrive.logger.warn("Removing force field blocks outside main thread, bad things may happen...");
+		}
+		final VectorI[] vForceFields_cache = vForceFields_forRemoval.toArray(new VectorI[0]);
+		vForceFields_forRemoval.clear();
+		
+		for (final VectorI vector : vForceFields_cache) {
+			final Block block = vector.getBlock(worldObj);
+			
+			if (block == WarpDrive.blockForceFields[tier - 1]) {
+				final TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+				if ( tileEntity instanceof TileEntityForceField
+				  && (((TileEntityForceField) tileEntity).getProjector() == this) ) {
+					worldObj.setBlockToAir(vector.x, vector.y, vector.z);
 				}
 			}
 		}
@@ -792,11 +836,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	@Override
-	public void setBeamFrequency(final int parBeamFrequency) {
-		super.setBeamFrequency(parBeamFrequency);
+	public void setBeamFrequency(final int beamFrequency) {
+		super.setBeamFrequency(beamFrequency);
 		cache_forceFieldSetup = null;
-		isDirty.set(true);
-		destroyForceField(false);
 	}
 	
 	public Vector3 getMin() {
@@ -866,10 +908,10 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		this.rotationYaw = Commons.clamp( -45.0F, +45.0F, rotationYaw);
 		this.rotationPitch = Commons.clamp( -45.0F, +45.0F, rotationPitch);
 		this.rotationRoll = (rotationRoll + 720.0F) % 360.0F - 180.0F;
-		if (oldYaw != this.rotationYaw || oldPitch != this.rotationPitch || oldRoll != this.rotationRoll) {
-			isDirty.set(true);
-			destroyForceField(false);
-			markDirty();
+		if ( oldYaw != this.rotationYaw
+		  || oldPitch != this.rotationPitch
+		  || oldRoll != this.rotationRoll ) {
+			cache_forceFieldSetup = null;
 		}
 	}
 	
@@ -881,12 +923,12 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	void setShape(final EnumForceFieldShape shape) {
-		this.shape = shape;
-		cache_forceFieldSetup = null;
-		isDirty.set(true);
-		markDirty();
-		if (hasWorldObj()) {
-			destroyForceField(false);
+		if (this.shape != shape) {
+			this.shape = shape;
+			cache_forceFieldSetup = null;
+			
+			// refresh block rendering
+			markDirty();
 		}
 	}
 	
@@ -899,15 +941,17 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void setTranslation(final float x, final float y, final float z) {
+		final Vector3 oldTranslation = this.v3Translation;
 		v3Translation = new Vector3(Commons.clamp(-1.0D, 1.0D, x), Commons.clamp(-1.0D, 1.0D, y), Commons.clamp(-1.0D, 1.0D, z));
+		if (!oldTranslation.equals(v3Translation)) {
+			cache_forceFieldSetup = null;
+		}
 	}
 	
 	@Override
 	public boolean mountUpgrade(final Object upgrade) {
 		if  (super.mountUpgrade(upgrade)) {
 			cache_forceFieldSetup = null;
-			isDirty.set(true);
-			destroyForceField(false);
 			return true;
 		}
 		return false;
@@ -917,8 +961,6 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	public boolean dismountUpgrade(final Object upgrade) {
 		if (super.dismountUpgrade(upgrade)) {
 			cache_forceFieldSetup = null;
-			isDirty.set(true);
-			destroyForceField(false);
 			return true;
 		}
 		return false;
@@ -926,7 +968,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	private String getShapeStatus() {
 		final EnumForceFieldShape enumForceFieldShape = getShape();
-		String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line." + enumForceFieldShape.unlocalizedName);
+		final String strDisplayName = StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line." + enumForceFieldShape.unlocalizedName);
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
 			return StatCollector.translateToLocalFormatted("warpdrive.forcefield.shape.status_line.none",
 				strDisplayName);
@@ -1026,6 +1068,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	
 	public ForceFieldSetup getForceFieldSetup() {
 		if (cache_forceFieldSetup == null) {
+			// don't try until projector has initialised (see: entities colliding with the world during chunk loading)
+			if (isFirstTick()) {
+				return null;
+			}
+			
 			cache_forceFieldSetup = new ForceFieldSetup(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, tier, beamFrequency);
 			setupTicks = Math.max(setupTicks, 10);
 			
@@ -1039,7 +1086,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.info(this + " rebooting with new rendering...");
 					}
-					destroyForceField(true);
+					destroyForceField();
 					
 				} else if ( legacy_forceFieldSetup.isInverted != cache_forceFieldSetup.isInverted
 				         || legacy_forceFieldSetup.shapeProvider != cache_forceFieldSetup.shapeProvider
@@ -1047,11 +1094,14 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				         || !legacy_forceFieldSetup.vMin.equals(cache_forceFieldSetup.vMin)
 				         || !legacy_forceFieldSetup.vMax.equals(cache_forceFieldSetup.vMax)
 				         || !legacy_forceFieldSetup.vTranslation.equals(cache_forceFieldSetup.vTranslation)
+				         || legacy_forceFieldSetup.rotationYaw != cache_forceFieldSetup.rotationYaw
+				         || legacy_forceFieldSetup.rotationPitch != cache_forceFieldSetup.rotationPitch
+				         || legacy_forceFieldSetup.rotationRoll != cache_forceFieldSetup.rotationRoll
 					     || (legacy_forceFieldSetup.breaking_maxHardness <= 0 && cache_forceFieldSetup.breaking_maxHardness > 0) ) {
 					if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 						WarpDrive.logger.info(this + " rebooting with new shape...");
 					}
-					destroyForceField(true);
+					destroyForceField();
 					isDirty.set(true);
 				}
 			}
@@ -1241,7 +1291,9 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					for (final Map.Entry<VectorI, Boolean> entry : vertexes.entrySet()) {
 						final VectorI vPosition = entry.getKey();
 						if (forceFieldSetup.isDoubleSided || vPosition.y >= 0) {
-							if ((forceFieldSetup.rotationYaw != 0.0F) || (forceFieldSetup.rotationPitch != 0.0F) || (forceFieldSetup.rotationRoll != 0.0F)) {
+							if ( (forceFieldSetup.rotationYaw != 0.0F)
+							  || (forceFieldSetup.rotationPitch != 0.0F)
+							  || (forceFieldSetup.rotationRoll != 0.0F) ) {
 								vPosition.rotateByAngle(forceFieldSetup.rotationYaw, forceFieldSetup.rotationPitch, forceFieldSetup.rotationRoll);
 							}
 							

@@ -52,6 +52,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	protected boolean isFirstTick() {
+		return isFirstTick;
+	}
+	
 	@Override
 	public void onBlockUpdateDetected() {
 	}

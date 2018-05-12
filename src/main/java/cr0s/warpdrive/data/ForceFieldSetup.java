@@ -152,7 +152,8 @@ public class ForceFieldSetup extends GlobalPosition {
 				continue;
 			}
 			// only consider same dimension
-			if (tileEntity.getWorldObj() == null || tileEntity.getWorldObj().provider.dimensionId != dimensionId) {
+			if ( tileEntity.getWorldObj() == null
+			  || tileEntity.getWorldObj().provider.dimensionId != dimensionId ) {
 				continue;
 			}
 			// projectors
@@ -184,13 +185,14 @@ public class ForceFieldSetup extends GlobalPosition {
 					}
 					
 				} else {
-					if ((((TileEntityForceFieldProjector) tileEntity).isEnabled)
-						&& (((TileEntityForceFieldProjector) tileEntity).isCalculated())
-						&& (((TileEntityForceFieldProjector) tileEntity).isValid())) {
+					if ( ((TileEntityForceFieldProjector) tileEntity).isEnabled
+					  && ((TileEntityForceFieldProjector) tileEntity).isCalculated()
+					  && ((TileEntityForceFieldProjector) tileEntity).isValid() ) {
 						projectors.add((TileEntityForceFieldProjector) tileEntity);
 					}
 				}
 			}
+			
 			// upgrade blocks (namely, relays)
 			if (tileEntity instanceof IForceFieldUpgrade) {
 				final IForceFieldUpgradeEffector upgradeEffector = ((IForceFieldUpgrade)tileEntity).getUpgradeEffector();
@@ -218,6 +220,13 @@ public class ForceFieldSetup extends GlobalPosition {
 					}
 				}
 			}
+		}
+		
+		if (shapeProvider == null) {
+			WarpDrive.logger.error(String.format("ForceFieldSetup without a projector or null shape returned @ (%d %d %d), while #%d has %d registered tile entities",
+			                                     x, y, z,
+			                                     beamFrequency,
+			                                     tileEntities.size()));
 		}
 		
 		// set default coefficients, depending on projector
