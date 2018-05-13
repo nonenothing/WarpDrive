@@ -126,7 +126,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			}
 			return;
 		}
+		
 		TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference == null ? null : tileEntityShipControllerWeakReference.get();
+		if ( tileEntityShipController != null
+		  && tileEntityShipController.isInvalid() ) {
+			tileEntityShipControllerWeakReference = null;
+			tileEntityShipController = null;
+		}
 		
 		// Always cooldown
 		if (cooldownTime_ticks > 0) {
@@ -180,6 +186,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			WarpDrive.starMap.updateInRegistry(this);
 			
 			final TileEntityShipController tileEntityShipControllerNew = findControllerBlock();
+			if (tileEntityShipControllerNew == null) {
+				tileEntityShipControllerWeakReference = null;
+			}
 			if (tileEntityShipControllerNew != tileEntityShipController) {
 				tileEntityShipController = tileEntityShipControllerNew;
 				tileEntityShipControllerWeakReference = new WeakReference<>(tileEntityShipController);
@@ -403,7 +412,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			return false;
 		}
 		final TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference.get();
-		return tileEntityShipController != null && tileEntityShipController.getCommand() == EnumShipControllerCommand.OFFLINE;
+		return tileEntityShipController != null
+		    && !tileEntityShipController.isInvalid()
+		    && tileEntityShipController.getCommand() == EnumShipControllerCommand.OFFLINE;
 	}
 	
 	protected boolean isAttached(final TileEntityShipController tileEntityShipControllerExpected) {
@@ -446,6 +457,54 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			stringBuilderResult.append(((EntityPlayer) object).getCommandSenderName());
 		}
 		return stringBuilderResult.toString();
+	}
+	
+	public boolean isBooting() {
+		if (bootTicks > 0) {
+			return true;
+		}
+		
+		if (tileEntityShipControllerWeakReference == null) {// not attached
+			return false;
+		}
+		
+		final TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference.get();
+		if ( tileEntityShipController == null
+		  || tileEntityShipController.isInvalid() ) {// we're desync
+			// force a refresh
+			registryUpdateTicks = 0;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public String getFirstOnlineCrew() {
+		if (tileEntityShipControllerWeakReference == null) {// not attached
+			return null;
+		}
+		
+		final TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference.get();
+		if ( tileEntityShipController == null
+		  || tileEntityShipController.isInvalid() ) {// we're desync
+			// force a refresh
+			registryUpdateTicks = 0;
+			return "-busy-";
+		}
+		
+		if (tileEntityShipController.players == null || tileEntityShipController.players.isEmpty()) {// no crew defined
+			return null;
+		}
+		
+		for (final String namePlayer : tileEntityShipController.players) {
+			final EntityPlayer entityPlayer = Commons.getOnlinePlayerByName(namePlayer);
+			if (entityPlayer != null) {// crew member is online
+				return namePlayer;
+			}
+		}
+		
+		// all cleared
+		return null;
 	}
 	
 	private void updateIsolationState() {
