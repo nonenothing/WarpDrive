@@ -198,8 +198,13 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		if (logTicks <= 0) {
 			logTicks = LOG_INTERVAL_TICKS;
 			if (WarpDriveConfig.LOGGING_JUMP) {
-				WarpDrive.logger.info(this + " controller is " + tileEntityShipController + ", warmupTime " + warmupTime_ticks + ", stateCurrent " + stateCurrent + ", jumpFlag "
-						+ (tileEntityShipController == null ? "NA" : tileEntityShipController.isEnabled) + ", cooldownTime " + cooldownTime_ticks);
+				WarpDrive.logger.info(String.format("%s %s, jumpFlag %s from %s, warmup %d, cooldown %d",
+				                                    this,
+				                                    stateCurrent,
+				                                    tileEntityShipController == null ? "NA" : tileEntityShipController.isEnabled,
+						                            tileEntityShipController,
+						                            warmupTime_ticks,
+						                            cooldownTime_ticks));
 			}
 		}
 		

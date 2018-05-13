@@ -448,7 +448,7 @@ public class JumpSequencer extends AbstractSequencer {
 	}
 	
 	protected void state_borders() {
-		LocalProfiler.start("Jump.borders");
+		LocalProfiler.start("Jump.borders1");
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Checking ship borders...");
@@ -463,6 +463,9 @@ public class JumpSequencer extends AbstractSequencer {
 			LocalProfiler.stop();
 			return;
 		}
+		LocalProfiler.stop();
+		
+		LocalProfiler.start("Jump.borders2");
 		
 		final File file = new File(WarpDriveConfig.G_SCHEMALOCATION + "/auto");
 		if (!file.exists() || !file.isDirectory()) {

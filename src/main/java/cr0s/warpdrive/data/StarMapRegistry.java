@@ -419,6 +419,7 @@ public class StarMapRegistry {
 	}
 	
 	// do not call during tileEntity construction (readFromNBT and validate)
+	private static boolean isExceptionReported = false;
 	private void cleanup() {
 		LocalProfiler.start("Starmap registry cleanup");
 		
@@ -439,6 +440,12 @@ public class StarMapRegistry {
 						try {
 							isLoaded = chunkProviderServer.loadedChunkHashMap.containsItem(ChunkCoordIntPair.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
 						} catch (final NoSuchFieldError exception) {
+							if (!isExceptionReported) {
+								WarpDrive.logger.info(String.format("Unable to check non-loaded chunks for star map entry %s",
+								                                    registryItem));
+								exception.printStackTrace();
+								isExceptionReported = true;
+							}
 							isLoaded = chunkProviderServer.chunkExists(registryItem.x >> 4, registryItem.z >> 4);
 						}
 					} else {
@@ -446,6 +453,8 @@ public class StarMapRegistry {
 					}
 					// skip unloaded chunks
 					if (!isLoaded) {
+						WarpDrive.logger.info(String.format("Skipping non-loaded star map entry %s",
+						                                    registryItem));
 						continue;
 					}
 					
@@ -455,38 +464,41 @@ public class StarMapRegistry {
 					final TileEntity tileEntity = world.getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 					isValid = true;
 					switch (registryItem.type) {
-						case UNDEFINED:
-							break;
-						case SHIP:
-							isValid = block == WarpDrive.blockShipCore && tileEntity != null && !tileEntity.isInvalid();
-							break;
-						case JUMPGATE:
-							break;
-						case PLANET:
-							break;
-						case STAR:
-							break;
-						case STRUCTURE:
-							break;
-						case WARP_ECHO:
-							break;
-						case ACCELERATOR:
-							isValid = block == WarpDrive.blockAcceleratorController && tileEntity != null && !tileEntity.isInvalid();
-							break;
-						default:
-							break;
+					case UNDEFINED:
+						break;
+					case SHIP:
+						isValid = block == WarpDrive.blockShipCore && tileEntity != null && !tileEntity.isInvalid();
+						break;
+					case JUMPGATE:
+						break;
+					case PLANET:
+						break;
+					case STAR:
+						break;
+					case STRUCTURE:
+						break;
+					case WARP_ECHO:
+						break;
+					case ACCELERATOR:
+						isValid = block == WarpDrive.blockAcceleratorController && tileEntity != null && !tileEntity.isInvalid();
+						break;
+					case TRANSPORTER:
+						isValid = block == WarpDrive.blockTransporterCore && tileEntity != null && !tileEntity.isInvalid();
+						break;
+					default:
+						break;
 					}
 				}
 				
 				if (!isValid) {
-					if (WarpDriveConfig.LOGGING_STARMAP) {
+					// if (WarpDriveConfig.LOGGING_STARMAP) {
 						if (registryItem == null) {
 							WarpDrive.logger.info("Cleaning up starmap object ~null~");
 						} else {
 							WarpDrive.logger.info("Cleaning up starmap object " + registryItem.type + " at "
 							                      + registryItem.dimensionId + " " + registryItem.x + " " + registryItem.y + " " + registryItem.z);
 						}
-					}
+					// }
 					countRemove++;
 					entryDimension.getValue().remove(registryItem);
 				}
