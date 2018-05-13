@@ -390,6 +390,13 @@ public class StarMapRegistry {
 				continue;
 			}
 			
+			// Compare areas for intersection
+			final AxisAlignedBB aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ,
+			                                                         registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+			if (!aabb1.intersectsWith(aabb2)) {
+				continue;
+			}
+			
 			// Skip missing ship cores
 			final TileEntity tileEntity = core.getWorldObj().getTileEntity(registryItem.x, registryItem.y, registryItem.z);
 			if (!(tileEntity instanceof TileEntityShipCore)) {
@@ -407,12 +414,8 @@ public class StarMapRegistry {
 				continue;
 			}
 			
-			// Compare areas for intersection
-			final AxisAlignedBB aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ,
-			                                                         registryItem.maxX, registryItem.maxY, registryItem.maxZ);
-			if (aabb1.intersectsWith(aabb2)) {
-				return true;
-			}
+			// ship is intersecting, online and valid
+			return true;
 		}
 		
 		return false;
@@ -453,8 +456,10 @@ public class StarMapRegistry {
 					}
 					// skip unloaded chunks
 					if (!isLoaded) {
-						WarpDrive.logger.info(String.format("Skipping non-loaded star map entry %s",
-						                                    registryItem));
+						if (WarpDrive.isDev) {
+							WarpDrive.logger.info(String.format("Skipping non-loaded star map entry %s",
+							                                    registryItem));
+						}
 						continue;
 					}
 					
