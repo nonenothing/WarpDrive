@@ -270,7 +270,8 @@ public class JumpShip {
 					final Block block = worldObj.getBlock(x, y, z);
 					
 					// Skipping any air block & ignored blocks
-					if (worldObj.isAirBlock(x, y, z) || Dictionary.BLOCKS_LEFTBEHIND.contains(block)) {
+					if ( block.isAir(worldObj, x, y, z)
+					  || Dictionary.BLOCKS_LEFTBEHIND.contains(block) ) {
 						continue;
 					}
 					
