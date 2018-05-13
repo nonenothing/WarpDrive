@@ -18,6 +18,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
+	
 	// machine type
 	protected ForgeDirection laserOutputSide = ForgeDirection.NORTH;
 	
@@ -32,8 +33,8 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	public void validate() {
-		super.validate();
+	protected void onFirstUpdateTick() {
+		super.onFirstUpdateTick();
 		laserOutput = new Vector3(this).translate(0.5D).translate(laserOutputSide, 0.5D);
 	}
 	
