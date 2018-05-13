@@ -100,7 +100,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		icons = new IIcon[16];
 		
 		for (int i = 0; i < 16; ++i) {
-			icons[i] = iconRegister.registerIcon(getTextureName() + "_" + i);
+			icons[i] = iconRegister.registerIcon(getTextureName() + "-" + i);
 		}
 	}
 	

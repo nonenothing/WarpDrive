@@ -28,12 +28,12 @@ public class BlockLift extends BlockAbstractContainer {
 	@Override
 	public void registerBlockIcons(final IIconRegister iconRegister) {
 		iconBuffer = new IIcon[6];
-		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/liftSideOffline");
-		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/liftSideUp");
-		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/liftSideDown");
-		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/liftUpInactive");
-		iconBuffer[4] = iconRegister.registerIcon("warpdrive:movement/liftUpOut");
-		iconBuffer[5] = iconRegister.registerIcon("warpdrive:movement/liftUpIn");
+		iconBuffer[0] = iconRegister.registerIcon("warpdrive:movement/lift-side_offline");
+		iconBuffer[1] = iconRegister.registerIcon("warpdrive:movement/lift-side_up");
+		iconBuffer[2] = iconRegister.registerIcon("warpdrive:movement/lift-side_down");
+		iconBuffer[3] = iconRegister.registerIcon("warpdrive:movement/lift-top_inactive");
+		iconBuffer[4] = iconRegister.registerIcon("warpdrive:movement/lift-top_out");
+		iconBuffer[5] = iconRegister.registerIcon("warpdrive:movement/lift-top_in");
 	}
 	
 	@SideOnly(Side.CLIENT)
