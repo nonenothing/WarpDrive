@@ -17,7 +17,6 @@ import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
 import cr0s.warpdrive.render.EntityFXBoundingBox;
-import cr0s.warpdrive.world.SpaceTeleporter;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -42,7 +41,6 @@ import net.minecraft.util.Vec3;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
@@ -671,19 +669,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	private void summonPlayer(final EntityPlayerMP player, final int x, final int y, final int z) {
 		if (energy_consume(WarpDriveConfig.SHIP_TELEPORT_ENERGY_PER_ENTITY, false)) {
-			if (player.dimension != worldObj.provider.dimensionId) {
-				player.mcServer.getConfigurationManager().transferPlayerToDimension(
-					player,
-					worldObj.provider.dimensionId,
-					new SpaceTeleporter(
-						DimensionManager.getWorld(worldObj.provider.dimensionId),
-						0,
-						MathHelper.floor_double(player.posX), MathHelper.floor_double(player.posY), MathHelper.floor_double(player.posZ)));
-				player.setPositionAndUpdate(x + 0.5d, y, z + 0.5d);
-				player.sendPlayerAbilities();
-			} else {
-				player.setPositionAndUpdate(x + 0.5d, y, z + 0.5d);
-			}
+			Commons.moveEntity(player, worldObj, new Vector3(x + 0.5D, y, z + 0.5D));
 		}
 	}
 	
