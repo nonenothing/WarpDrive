@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.render.ClientCameraHandler;
@@ -69,7 +70,13 @@ public class BlockMonitor extends BlockAbstractContainer {
 			final TileEntity tileEntity = world.getTileEntity(x, y, z);
 			
 			if (tileEntity instanceof TileEntityMonitor) {
+				// validate video channel
 				final int videoChannel = ((TileEntityMonitor) tileEntity).getVideoChannel();
+				if ( videoChannel < IVideoChannel.VIDEO_CHANNEL_MIN
+				  || videoChannel > IVideoChannel.VIDEO_CHANNEL_MAX ) {
+					Commons.addChatMessage(entityPlayer, ((TileEntityMonitor) tileEntity).getStatus());
+					return true;
+				}
 				
 				// validate camera
 				final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
