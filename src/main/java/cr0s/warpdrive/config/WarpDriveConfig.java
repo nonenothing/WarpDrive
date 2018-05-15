@@ -553,7 +553,7 @@ public class WarpDriveConfig {
 		CelestialObjectManager.load(configDirectory);
 		
 		// read mod dependencies
-		isCoFHCoreLoaded = Loader.isModLoaded("cofhcore");
+		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
 		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
 		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
 		
