@@ -194,6 +194,20 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// Minecraft overrides
 	@Override
+	protected void onFirstUpdateTick() {
+		super.onFirstUpdateTick();
+		
+		if (worldObj.isRemote) {
+			return;
+		}
+		
+		// Thermal Expansion
+		if (WarpDriveConfig.isCoFHCoreLoaded) {
+			CoFH_scanForEnergyHandlers();
+		}
+	}
+	
+	@Override
 	public void updateEntity() {
 		super.updateEntity();
 		
