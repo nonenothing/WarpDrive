@@ -45,7 +45,7 @@ public enum EnumComponentType {
 	public static EnumComponentType get(final int damage) {
 		return ID_MAP.get(damage);
 	}
-
+	
 	public String getUnlocalizedName() {
 		return unlocalizedName;
 	}
