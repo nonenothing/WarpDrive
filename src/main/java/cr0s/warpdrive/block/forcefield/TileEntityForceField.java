@@ -59,6 +59,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				}
 			} catch (final Exception exception) {
 				exception.printStackTrace();
+				cache_blockCamouflage = null;
+				cache_metadataCamouflage = 0;
+				cache_colorMultiplierCamouflage = 0;
+				cache_lightCamouflage = 0;
 			}
 		} else if (tagCompound.hasKey("camouflageBlock")) {// legacy up to 1.7.10-1.3.38
 			try {
@@ -74,6 +78,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				}
 			} catch (final Exception exception) {
 				exception.printStackTrace();
+				cache_blockCamouflage = null;
+				cache_metadataCamouflage = 0;
+				cache_colorMultiplierCamouflage = 0;
+				cache_lightCamouflage = 0;
 			}
 		} else {
 			cache_blockCamouflage = null;
