@@ -240,7 +240,7 @@ function laser_battery_page()
   w.setColorControl()
   w.setCursorPos(1, 15)
   w.writeFullLine(" Add/Remove/Configure selected battery (A/R/C)")
-  w.writeFullLine(" select battery (Arrows), Link lasers (L)")
+  w.writeFullLine(" select battery (Up, Down), Link lasers (L)")
   w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
 end
 
@@ -307,7 +307,7 @@ function laser_battery_linkLasers()
   
   w.setColorDisabled()
   w.setCursorPos(1, 3)
-  w.writeLn("Help: Use arrows to select lasers.")
+  w.writeLn("Use Up/Down/Left/Right to select lasers.")
   w.writeLn("Press backspace/delete to remove laser.")
   w.writeLn("Press enter to validate.")
   w.writeLn("Validate with '-no laser-' to stop adding lasers.")
@@ -556,7 +556,7 @@ function laser_station_page()
   w.setColorControl()
   w.setCursorPos(1, 15)
   w.writeFullLine(" Add/Remove/Configure laser station (A/R/C)")
-  w.writeFullLine(" select station (Arrows), Link batteries (L)")
+  w.writeFullLine(" select station (Up, Down), Link batteries (L)")
   w.writeFullLine(" change Firing mode (F), toggle Scatter mode (S)")
 end
 
@@ -592,7 +592,7 @@ function laser_station_config()
   local channel
   repeat
     w.setCursorPos(1, 7)
-    w.write("Camera video frequency (" .. w.format_integer(camVideoChannel, 5) .. "): ")
+    w.write("Camera video channel (" .. w.format_integer(camVideoChannel, 5) .. "): ")
     channel = w.input_readInteger(camVideoChannel)
     if channel ~= 0 and (channel < 0 or channel > 268435455) then
       w.status_showWarning("This is not a valid video channel. Try again.")
@@ -643,7 +643,7 @@ function laser_station_linkBatteries()
   
   w.setColorDisabled()
   w.setCursorPos(1, 3)
-  w.writeLn("Instruction: use arrows to select batteries.")
+  w.writeLn("Use Up/Down/Left/Right to select batteries.")
   w.writeLn("Press backspace/delete to remove battery.")
   w.writeLn("Press enter to validate.")
   w.writeLn("Validate '-no battery-' to stop adding batteries.")

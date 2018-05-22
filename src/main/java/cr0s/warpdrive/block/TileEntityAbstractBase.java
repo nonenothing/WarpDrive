@@ -59,6 +59,10 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	protected boolean isFirstTick() {
+		return isFirstTick;
+	}
+	
 	@Override
 	public void onBlockUpdateDetected() {
 	}
@@ -476,5 +480,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

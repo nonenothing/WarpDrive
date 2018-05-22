@@ -233,7 +233,7 @@ function ffield_projector_page()
   w.setCursorPos(1, 15)
   w.writeFullLine(" Start/stoP all force field projectors (S/P)")
   w.writeFullLine(" Configure (C) or togglE (E) selected projector")
-  w.writeFullLine(" select force field projector (Arrows)")
+  w.writeFullLine(" select force field projector (Up, Down)")
 end
 
 function ffield_projector_config()
@@ -481,7 +481,7 @@ function ffield_relay_page()
   w.setCursorPos(1, 15)
   w.writeFullLine(" Start/stoP all force field relays (S/P)")
   w.writeFullLine(" Configure (C) or togglE (E) selected relay")
-  w.writeFullLine(" select force field relay (Arrows)")
+  w.writeFullLine(" select force field relay (Up, Down)")
 end
 
 function ffield_relay_config()

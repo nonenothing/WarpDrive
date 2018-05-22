@@ -547,7 +547,7 @@ function ship_page_crew()
   w.setCursorPos(1, 16)
   w.setColorControl()
   w.writeFullLine(" Summon all crew (S), Toggle summon after jump (T)")
-  w.writeFullLine(" select crew (arrows), summon selected crew (enter)")
+  w.writeFullLine(" select crew (Up, Down), summon selected crew (enter)")
 end
 
 function ship_key_crew(character, keycode)
@@ -604,7 +604,7 @@ function ship_page_navigation()
   
   w.setCursorPos(1, 16)
   w.setColorControl()
-  w.writeFullLine(" select target (arrows), register target (enter)")
+  w.writeFullLine(" select target (Up, Down), register target (enter)")
   w.writeFullLine(" jump through Gate (G)")
 end
 
