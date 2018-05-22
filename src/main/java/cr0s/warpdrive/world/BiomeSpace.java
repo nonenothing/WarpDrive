@@ -15,16 +15,16 @@ public class BiomeSpace extends BiomeGenBase {
 	
 	@Override
 	public float getSpawningChance() {
-	return 0;
+		return 0.0F;
 	}
 	
 	@Override
 	public boolean canSpawnLightningBolt() {
-	return false;
+		return false;
 	}
 	
 	@Override
 	public boolean getEnableSnow() {
-	return false;
+		return false;
 	}
 }

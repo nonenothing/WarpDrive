@@ -20,6 +20,7 @@ public class MessageTargeting implements IMessage, IMessageHandler<MessageTarget
 	private float yaw;
 	private float pitch;
 	
+	@SuppressWarnings("unused")
 	public MessageTargeting() {
 		// required on receiving side
 	}

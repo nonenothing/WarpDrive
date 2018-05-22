@@ -144,7 +144,7 @@ public class CloakManager {
 		}
 	}
 	
-	// call is inserted by ASM
+	@SuppressWarnings("unused") // Core mod
 	@SideOnly(Side.CLIENT)
 	public static boolean onBlockChange(final int x, final int y, final int z, final Block block, final int metadata, final int flag) {
 		if (block != Blocks.air) {
@@ -161,7 +161,7 @@ public class CloakManager {
 		return Minecraft.getMinecraft().theWorld.setBlock(x, y, z, block, metadata, flag);
 	}
 	
-	// call is inserted by ASM
+	@SuppressWarnings("unused") // Core mod
 	@SideOnly(Side.CLIENT)
 	public static void onFillChunk(final Chunk chunk) {
 		if (cloaks == null) {

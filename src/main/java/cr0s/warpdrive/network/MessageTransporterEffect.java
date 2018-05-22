@@ -45,6 +45,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 	private int tickEnergizing;
 	private int tickCooldown;
 	
+	@SuppressWarnings("unused")
 	public MessageTransporterEffect() {
 		// required on receiving side
 	}

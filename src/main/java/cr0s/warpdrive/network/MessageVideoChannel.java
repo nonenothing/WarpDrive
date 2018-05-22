@@ -21,6 +21,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	private int z;
 	private int videoChannel;
 	
+	@SuppressWarnings("unused")
 	public MessageVideoChannel() {
 		// required on receiving side
 	}

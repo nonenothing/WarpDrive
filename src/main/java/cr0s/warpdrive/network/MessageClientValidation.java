@@ -18,6 +18,7 @@ public class MessageClientValidation implements IMessage, IMessageHandler<Messag
 	
 	private String mapClass;
 	
+	@SuppressWarnings("unused")
 	public MessageClientValidation() {
 		// required on receiving side
 	}

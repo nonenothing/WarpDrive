@@ -42,6 +42,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	private float fadeGreen;
 	private float fadeBlue;
 	
+	@SuppressWarnings("unused")
 	public MessageSpawnParticle() {
 		// required on receiving side
 	}

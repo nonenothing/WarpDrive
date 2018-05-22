@@ -566,13 +566,14 @@ public class WarpDrive {
 		GameRegistry.registerBlock(blockWeaponController, ItemBlockAbstractBase.class, "blockWeaponController");
 		GameRegistry.registerTileEntity(TileEntityWeaponController.class, MODID + ":blockWeaponController");
 		
-		// COMPONENT ITEMS
+		// component items
 		itemComponent = new ItemComponent();
 		GameRegistry.registerItem(itemComponent, "itemComponent");
 		
 		itemShipToken = new ItemShipToken();
 		GameRegistry.registerItem(itemShipToken, "itemShipToken");
 		
+		// warp armor
 		itemWarpArmor = new ItemArmor[4];
 		for (int armorPart = 0; armorPart < 4; armorPart++) {
 			itemWarpArmor[armorPart] = new ItemWarpArmor(armorMaterial, 3, armorPart);

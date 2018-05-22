@@ -500,7 +500,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		
 		if (!(block instanceof BlockShipCore)) {
-			world.newExplosion(null, x, y, z, 1, false, false);
+			world.newExplosion(null, x, y, z,
+			                   1, false, false);
 			reason.append(String.format("§cDeployment area occupied by %s.\nCan't deploy new ship at (%d %d %d)",
 			                            block.getLocalizedName(),
 			                            x, y, z));
@@ -509,10 +510,12 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		
 		final TileEntity tileEntity = world.getTileEntity(x, y, z);
 		if (!(tileEntity instanceof TileEntityShipCore)) {
-			reason.append(String.format("§cDeployment area occupied with invalid tile entity %s.\nContact an admin for help at (%d %d %d)",
-			                            block, x, y, z));
+			reason.append(String.format("§cDeployment area occupied with invalid tile entity %s for ship core.\nContact an admin for help at (%d %d %d)",
+			                            tileEntity,
+			                            x, y, z));
 			WarpDrive.logger.error(reason.toString());
-			world.newExplosion(null, x, y, z, 1, false, false);
+			world.newExplosion(null, x, y, z,
+			                   1, false, false);
 			return false;
 		}
 		
