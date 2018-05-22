@@ -13,11 +13,24 @@ import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityTrackerEntry;
+import net.minecraft.entity.ai.attributes.ServersideAttributeMap;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.S04PacketEntityEquipment;
+import net.minecraft.network.play.server.S0APacketUseBed;
+import net.minecraft.network.play.server.S1BPacketEntityAttach;
+import net.minecraft.network.play.server.S1CPacketEntityMetadata;
+import net.minecraft.network.play.server.S1DPacketEntityEffect;
+import net.minecraft.network.play.server.S20PacketEntityProperties;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -188,6 +201,76 @@ public class PacketHandler {
 		} catch (final Exception exception) {
 			exception.printStackTrace();
 		}
+		WarpDrive.logger.error(String.format("Unable to get packet for entity %s",
+		                                     entity));
 		return null;
+	}
+	
+	public static void revealEntityToPlayer(final Entity entity, final EntityPlayerMP entityPlayerMP) {
+		try {
+			final Packet packet = getPacketForThisEntity(entity);
+			if (packet == null) {
+				WarpDrive.logger.error(String.format("Unable to reveal entity %s to player %s: null packet",
+					entity, entityPlayerMP));
+				return;
+			}
+			if (WarpDriveConfig.LOGGING_CLOAKING) {
+				WarpDrive.logger.info("Revealing entity " + entity + " with packet " + packet);
+			}
+			entityPlayerMP.playerNetServerHandler.sendPacket(packet);
+			
+			if (!entity.getDataWatcher().getIsBlank()) {
+				entityPlayerMP.playerNetServerHandler.sendPacket(new S1CPacketEntityMetadata(entity.getEntityId(), entity.getDataWatcher(), true));
+			}
+			
+			if (entity instanceof EntityLivingBase) {
+				final ServersideAttributeMap serversideattributemap = (ServersideAttributeMap)((EntityLivingBase) entity).getAttributeMap();
+				final Collection collection = serversideattributemap.getWatchedAttributes();
+				
+				if (!collection.isEmpty()) {
+					entityPlayerMP.playerNetServerHandler.sendPacket(new S20PacketEntityProperties(entity.getEntityId(), collection));
+				}
+			}
+			
+			if (entity.ridingEntity != null) {
+				entityPlayerMP.playerNetServerHandler.sendPacket(new S1BPacketEntityAttach(0, entity, entity.ridingEntity));
+			}
+			
+			if (entity instanceof EntityLiving && ((EntityLiving) entity).getLeashedToEntity() != null) {
+				entityPlayerMP.playerNetServerHandler.sendPacket(new S1BPacketEntityAttach(1, entity, ((EntityLiving) entity).getLeashedToEntity()));
+			}
+			
+			if (entity instanceof EntityLivingBase) {
+				for (int i = 0; i < 5; ++i) {
+					final ItemStack itemstack = ((EntityLivingBase) entity).getEquipmentInSlot(i);
+					
+					if (itemstack != null) {
+						entityPlayerMP.playerNetServerHandler.sendPacket(new S04PacketEntityEquipment(entity.getEntityId(), i, itemstack));
+					}
+				}
+			}
+			
+			if (entity instanceof EntityPlayer) {
+				final EntityPlayer entityplayer = (EntityPlayer) entity;
+				
+				if (entityplayer.isPlayerSleeping()) {
+					entityPlayerMP.playerNetServerHandler.sendPacket(new S0APacketUseBed(entityplayer, MathHelper.floor_double(entity.posX), MathHelper.floor_double(entity.posY), MathHelper.floor_double(entity.posZ)));
+				}
+			}
+			
+			if (entity instanceof EntityLivingBase) {
+				final EntityLivingBase entitylivingbase = (EntityLivingBase) entity;
+				
+				for (final Object object : entitylivingbase.getActivePotionEffects()) {
+					if (!(object instanceof PotionEffect)) {
+						continue;
+					}
+					final PotionEffect potioneffect = (PotionEffect) object;
+					entityPlayerMP.playerNetServerHandler.sendPacket(new S1DPacketEntityEffect(entity.getEntityId(), potioneffect));
+				}
+			}
+		} catch (final Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 }
