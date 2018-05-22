@@ -57,6 +57,25 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				cache_colorMultiplierCamouflage = 0;
 				cache_lightCamouflage = 0;
 			}
+		} else if (tagCompound.hasKey("camouflageBlock")) {// legacy up to 1.7.10-1.3.38
+			try {
+				cache_blockCamouflage = Block.getBlockFromName(tagCompound.getString("camouflageBlock"));
+				cache_metadataCamouflage = tagCompound.getByte("camouflageMeta");
+				cache_colorMultiplierCamouflage = tagCompound.getInteger("camouflageColorMultiplier");
+				cache_lightCamouflage = tagCompound.getByte("camouflageLight");
+				if (Dictionary.BLOCKS_NOCAMOUFLAGE.contains(cache_blockCamouflage)) {
+					cache_blockCamouflage = null;
+					cache_metadataCamouflage = 0;
+					cache_colorMultiplierCamouflage = 0;
+					cache_lightCamouflage = 0;
+				}
+			} catch (final Exception exception) {
+				exception.printStackTrace();
+				cache_blockCamouflage = null;
+				cache_metadataCamouflage = 0;
+				cache_colorMultiplierCamouflage = 0;
+				cache_lightCamouflage = 0;
+			}
 		} else {
 			cache_blockStateCamouflage = null;
 			cache_colorMultiplierCamouflage = 0;

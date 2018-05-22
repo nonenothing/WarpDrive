@@ -399,6 +399,13 @@ public class StarMapRegistry {
 				continue;
 			}
 			
+			// Compare areas for intersection
+			final AxisAlignedBB aabb2 = AxisAlignedBB.getBoundingBox(registryItem.minX, registryItem.minY, registryItem.minZ,
+			                                                         registryItem.maxX, registryItem.maxY, registryItem.maxZ);
+			if (!aabb1.intersectsWith(aabb2)) {
+				continue;
+			}
+			
 			// Skip missing ship cores
 			final TileEntity tileEntity = core.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 			if (!(tileEntity instanceof TileEntityShipCore)) {

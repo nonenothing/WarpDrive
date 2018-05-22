@@ -815,6 +815,20 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					}
 				}
 			}
+			
+			if (isCalculated()) {
+				for (final VectorI vector : calculated_forceField) {
+					final Block block = vector.getBlock(worldObj);
+					
+					if (block == WarpDrive.blockForceFields[tier - 1]) {
+						final TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+						if ( tileEntity instanceof TileEntityForceField
+						  && (((TileEntityForceField) tileEntity).getProjector() == this) ) {
+							worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+						}
+					}
+				}
+			}
 		}
 		
 		// force a reboot

@@ -3,6 +3,7 @@ package cr0s.warpdrive.data;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
+import cr0s.warpdrive.api.IStringSerializable;
 import cr0s.warpdrive.network.PacketHandler;
 
 import javax.annotation.Nonnull;

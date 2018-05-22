@@ -375,6 +375,12 @@ public class WarpDrive {
 		itemForceFieldShape = new ItemForceFieldShape("itemForceFieldShape");
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade("itemForceFieldUpgrade");
 		
+		itemForceFieldShape = new ItemForceFieldShape();
+		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
+		
+		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
+		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
+		
 		// hull blocks
 		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
