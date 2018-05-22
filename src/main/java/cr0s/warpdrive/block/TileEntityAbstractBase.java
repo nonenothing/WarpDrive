@@ -447,4 +447,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s @ %s (%d %d %d)",
+		                     getClass().getSimpleName(),
+		                     worldObj == null ? "~NULL~" : worldObj.provider.getDimensionName(),
+		                     xCoord, yCoord, zCoord);
+	}
 }

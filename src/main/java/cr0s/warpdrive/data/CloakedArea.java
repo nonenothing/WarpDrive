@@ -259,8 +259,10 @@ public class CloakedArea {
 	@SideOnly(Side.CLIENT)
 	public void clientDecloak() {
 		final World world = Minecraft.getMinecraft().theWorld;
-		world.markBlockRangeForRenderUpdate(minX - 1, Math.max(0, minY - 1), minZ - 1, maxX + 1, Math.min(255, maxY + 1), maxZ + 1);
-
+		world.markBlockRangeForRenderUpdate(
+			minX - 1, Math.max(  0, minY - 1), minZ - 1,
+			maxX + 1, Math.min(255, maxY + 1), maxZ + 1);
+		
 		// Make some graphics
 		final int numLasers = 80 + world.rand.nextInt(50);
 		

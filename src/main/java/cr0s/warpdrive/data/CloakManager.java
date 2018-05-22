@@ -34,7 +34,9 @@ public class CloakManager {
 				continue;
 			}
 			
-			if (area.minX <= x && area.maxX >= x && area.minY <= y && area.maxY >= y && area.minZ <= z && area.maxZ >= z) {
+			if ( area.minX <= x && area.maxX >= x
+			  && area.minY <= y && area.maxY >= y
+			  && area.minZ <= z && area.maxZ >= z ) {
 				return true;
 			}
 		}
@@ -101,7 +103,9 @@ public class CloakManager {
 		if (world.isRemote) {
 			newArea.clientCloak();
 		}
-		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Cloak count is " + cloaks.size()); }
+		if (WarpDriveConfig.LOGGING_CLOAKING) {
+			WarpDrive.logger.info("Cloak count is " + cloaks.size());
+		}
 	}
 	
 	public void removeCloakedArea(final int dimensionId, final int coreX, final int coreY, final int coreZ) {
@@ -123,19 +127,12 @@ public class CloakManager {
 	
 	public CloakedArea getCloakedArea(final World world, final int x, final int y, final int z) {
 		for (final CloakedArea area : cloaks) {
-			if (area.dimensionId == world.provider.dimensionId && area.coreX == x && area.coreY == y && area.coreZ == z)
+			if ( area.dimensionId == world.provider.dimensionId
+			  && area.coreX == x
+			  && area.coreY == y
+			  && area.coreZ == z ) {
 				return area;
-		}
-		
-		return null;
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public CloakedArea getCloakedArea(final int x, final int y, final int z) {
-		// client only 
-		for (final CloakedArea area : cloaks) {
-			if (area.coreX == x && area.coreY == y && area.coreZ == z)
-				return area;
+			}
 		}
 		
 		return null;
@@ -147,9 +144,10 @@ public class CloakManager {
 		}
 	}
 	
+	// call is inserted by ASM
 	@SideOnly(Side.CLIENT)
 	public static boolean onBlockChange(final int x, final int y, final int z, final Block block, final int metadata, final int flag) {
-		if (block != Blocks.air && cloaks != null) {
+		if (block != Blocks.air) {
 			for (final CloakedArea area : cloaks) {
 				if (area.isBlockWithinArea(x, y, z)) {
 					// WarpDrive.logger.info("CM block is inside");
@@ -163,6 +161,7 @@ public class CloakManager {
 		return Minecraft.getMinecraft().theWorld.setBlock(x, y, z, block, metadata, flag);
 	}
 	
+	// call is inserted by ASM
 	@SideOnly(Side.CLIENT)
 	public static void onFillChunk(final Chunk chunk) {
 		if (cloaks == null) {
