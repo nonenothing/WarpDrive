@@ -89,9 +89,6 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		
 		updateTicks--;
 		if (updateTicks <= 0) {
-			if (WarpDriveConfig.LOGGING_CLOAKING) {
-				WarpDrive.logger.info(this + " Updating cloaking state...");
-			}
 			updateTicks = ((tier == 1) ? 20 : (tier == 2) ? 10 : 20) * WarpDriveConfig.CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS; // resetting timer
 			
 			isRefreshNeeded = validateAssembly();
@@ -133,9 +130,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						if (area != null) {
 							area.sendCloakPacketToPlayersEx(false); // re-cloak field
 						} else {
-							if (WarpDriveConfig.LOGGING_CLOAKING) {
-								WarpDrive.logger.info("getCloakedArea1 returned null for " + worldObj + " " + xCoord + "," + yCoord + "," + zCoord);
-							}
+							WarpDrive.logger.error("getCloakedArea1 returned null for " + worldObj + " " + xCoord + "," + yCoord + "," + zCoord);
 						}
 						
 					} else {// enabled, not cloaking and not able to
@@ -154,15 +149,19 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						
 					} else {// enabled, cloaking and valid
 						if (hasEnoughPower) {// enabled, cloaking and able to
+							if (isRefreshNeeded) {
+								WarpDrive.cloaks.updateCloakedArea(worldObj,
+										worldObj.provider.dimensionId, xCoord, yCoord, zCoord, tier,
+										minX, minY, minZ, maxX, maxY, maxZ);
+							}
+							
 							// IDLE
 							// Refresh the field (workaround to re-synchronize players since client may 'eat up' the packets)
 							final CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, xCoord, yCoord, zCoord);
 							if (area != null) {
 								area.sendCloakPacketToPlayersEx(false); // re-cloak field
 							} else {
-								if (WarpDriveConfig.LOGGING_CLOAKING) {
-									WarpDrive.logger.info("getCloakedArea2 returned null for " + worldObj + " " + xCoord + "," + yCoord + "," + zCoord);
-								}
+								WarpDrive.logger.error("getCloakedArea2 returned null for " + worldObj + " " + xCoord + "," + yCoord + "," + zCoord);
 							}
 							setCoilsState(true);
 							
