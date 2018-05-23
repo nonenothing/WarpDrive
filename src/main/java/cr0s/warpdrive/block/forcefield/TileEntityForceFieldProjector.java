@@ -49,6 +49,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -821,10 +822,11 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 					final Block block = vector.getBlock(worldObj);
 					
 					if (block == WarpDrive.blockForceFields[tier - 1]) {
-						final TileEntity tileEntity = worldObj.getTileEntity(vector.x, vector.y, vector.z);
+						final BlockPos blockPos = vector.getBlockPos();
+						final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
 						if ( tileEntity instanceof TileEntityForceField
 						  && (((TileEntityForceField) tileEntity).getProjector() == this) ) {
-							worldObj.setBlockToAir(vector.x, vector.y, vector.z);
+							worldObj.setBlockToAir(blockPos);
 						}
 					}
 				}

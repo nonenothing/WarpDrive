@@ -3,7 +3,6 @@ package cr0s.warpdrive.data;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IForceFieldShape;
-import cr0s.warpdrive.api.IStringSerializable;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import net.minecraft.util.IStringSerializable;
 

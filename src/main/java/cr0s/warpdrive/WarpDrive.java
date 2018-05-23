@@ -375,12 +375,6 @@ public class WarpDrive {
 		itemForceFieldShape = new ItemForceFieldShape("itemForceFieldShape");
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade("itemForceFieldUpgrade");
 		
-		itemForceFieldShape = new ItemForceFieldShape();
-		GameRegistry.registerItem(itemForceFieldShape, "itemForceFieldShape");
-		
-		itemForceFieldUpgrade = new ItemForceFieldUpgrade();
-		GameRegistry.registerItem(itemForceFieldUpgrade, "itemForceFieldUpgrade");
-		
 		// hull blocks
 		blockHulls_plain = new Block[3][EnumHullPlainType.length];
 		blockHulls_glass = new Block[3];
@@ -472,34 +466,6 @@ public class WarpDrive {
 		}
 		
 		proxy.onForgePreInitialisation();
-		
-		if (event.getSide().isClient()) {
-			creativeTabWarpDrive.setBackgroundImageName("items.png");
-			
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayAir());
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayCamera());
-			MinecraftForge.EVENT_BUS.register(new RenderOverlayLocation());
-			
-			MinecraftForge.EVENT_BUS.register(new ClientCameraHandler());
-			
-			// @TODO MC1.10 force field rendering
-			/*
-			RenderBlockStandard.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockStandard.instance);
-			
-			RenderBlockForceField.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockForceField.instance);
-			
-			RenderBlockOmnipanel.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockOmnipanel.instance);
-			
-			RenderBlockShipScanner.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockShipScanner.instance);
-			
-			RenderBlockTransporterBeacon.renderId = RenderingRegistry.getNextAvailableRenderId();
-			RenderingRegistry.registerBlockHandler(RenderBlockTransporterBeacon.instance);
-			/**/
-		}
 	}
 	
 	@EventHandler
