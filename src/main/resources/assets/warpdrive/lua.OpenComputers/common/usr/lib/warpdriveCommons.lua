@@ -962,7 +962,7 @@ local function data_register(name, callbackRead, callbackSave, callbackName)
     callbackSave = function() end
   end
   
-  -- name callback is nill when not defined
+  -- name callback is nil when not defined
   
   data_handlers[name] = { read = callbackRead, save = callbackSave, name = callbackName }
 end
