@@ -1,4 +1,4 @@
-package cr0s.warpdrive.block.passive;
+package cr0s.warpdrive.block.decoration;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.CelestialObjectManager;

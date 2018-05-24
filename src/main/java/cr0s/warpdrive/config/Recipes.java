@@ -2,8 +2,8 @@ package cr0s.warpdrive.config;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ParticleRegistry;
+import cr0s.warpdrive.block.decoration.BlockDecorative;
 import cr0s.warpdrive.block.detection.BlockSiren;
-import cr0s.warpdrive.block.passive.BlockDecorative;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumDecorativeType;
 import cr0s.warpdrive.data.EnumForceFieldShape;
