@@ -569,7 +569,7 @@ warpdrive.ship.attached_players=屬於: %1$s
 warpdrive.ship.player_attached=您現在已連接到船艦 %1$s.\n這艘船艦屬於 %2$s
 warpdrive.ship.player_detached=您現在已從船艦分離 %1$s.\n這艘船艦屬於 %2$s
 warpdrive.ship.status_line.cooling=%1$d s 升降梯的冷卻中。
-warpdrive.ship.status_line.isolation=%1$d 主動隔離塊由 %2$2.1f%% 吸收。
+warpdrive.ship.status_line.isolation=%1$d 主動隔離塊由 %2$s%% 吸收。
 
 warpdrive.energy.status_line=能量填充 %1$s / %2$s EU.
 warpdrive.energy.side.changed_to_input=%1$s 側面變為能量輸入模式!

@@ -571,7 +571,7 @@ warpdrive.ship.attached_players=所属的玩家: %1$s
 warpdrive.ship.player_attached=你在飞船 %1$s上.\n属于%2$s
 warpdrive.ship.player_detached=你已经脱离了飞船 %1$s.\n属于%2$s
 warpdrive.ship.status_line.cooling=%1$d s 冷却时间
-warpdrive.ship.status_line.isolation=%1$d有效的隔离方块提供%2$2.1f%%吸收.
+warpdrive.ship.status_line.isolation=%1$d有效的隔离方块提供%2$s%%吸收.
 
 warpdrive.energy.status_line=能量水平%1$s / %2$s EU.
 warpdrive.energy.side.changed_to_input=%1$s侧面更改为能量输入模式！

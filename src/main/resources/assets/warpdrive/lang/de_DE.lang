@@ -574,7 +574,7 @@ warpdrive.ship.attached_players=Verbundene Spieler: %1$s
 warpdrive.ship.player_attached=Du bist jetzt mit dem Schiff %1$s verbunden.\nVerbundene Spieler sind %2$s
 warpdrive.ship.player_detached=Du wurdest vom Schiff %1$s getrennt.\nVerbundene Spieler sind %2$s
 warpdrive.ship.status_line.cooling=%1$d s Abklingzeit verbleibend.
-warpdrive.ship.status_line.isolation=%1$d aktive Isolations Blöcke bieten %2$2.1f%% Absorption.
+warpdrive.ship.status_line.isolation=%1$d aktive Isolations Blöcke bieten %2$s%% Absorption.
 
 warpdrive.energy.status_line=Das Energie Level ist %1$s / %2$s EU.
 warpdrive.energy.side.changed_to_input=%1$s Seite auf Energiezufuhr Modus gestellt!

@@ -571,7 +571,7 @@ warpdrive.ship.attached_players=Прирепленные игроки: %1$s
 warpdrive.ship.player_attached=Вы были прикреплены к кораблю %1$s.\nПрикрепленные игроки: %2$s
 warpdrive.ship.player_detached=Вы были откреплены от корабля %1$s.\nПрикрепленные игроки: %2$s
 warpdrive.ship.status_line.cooling=Осталось %1$d с до остывания.
-warpdrive.ship.status_line.isolation=%1$d активных блоков изоляции предоставляют %2$2.1f%% поглощения.
+warpdrive.ship.status_line.isolation=%1$d активных блоков изоляции предоставляют %2$s%% поглощения.
 
 warpdrive.energy.status_line=Содержит энергии: %1$s / %2$s EU.
 warpdrive.energy.side.changed_to_input=%1$s side changed to energy Input mode!

@@ -571,7 +571,7 @@ warpdrive.ship.attached_players=Attached players: %1$s
 warpdrive.ship.player_attached=You're now attached to ship %1$s.\nAttached players are %2$s
 warpdrive.ship.player_detached=You've been detached from ship %1$s.\nAttached players are %2$s
 warpdrive.ship.status_line.cooling=%1$d s left of cooldown.
-warpdrive.ship.status_line.isolation=%1$d active isolation blocks providing %2$2.1f%% absorption.
+warpdrive.ship.status_line.isolation=%1$d active isolation blocks providing %2$s%% absorption.
 
 warpdrive.energy.status_line=Energy level is %1$s / %2$s EU.
 warpdrive.energy.side.changed_to_input=%1$s side changed to energy Input mode!
