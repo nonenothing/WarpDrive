@@ -582,7 +582,7 @@ warpdrive.energy.side.changed_to_output=%1$s Seite auf Energieausgabe Modus gest
 warpdrive.energy.side.changed_to_disabled=%1$s Seite auf Deaktiviert gestellt!
 
 warpdrive.accelerator.guide.low_power.not_enough_storage=Energiespeicher zu klein; wir brauchen mindestens %1$d um den Betrieb fortzusetzen, können aber nur %2$d speichern.
-warpdrive.accelerator.guide.low_power.accelerating=Uns geht der Strom aus, Chef, Teilchen werden frei, auf massiven Strahlungsaustritt vorbereiten!
+warpdrive.accelerator.guide.low_power.accelerating=Uns geht der Strom aus (%1$d > %2$d EU), Chef, Teilchen werden frei, auf massiven Strahlungsaustritt vorbereiten!
 warpdrive.accelerator.guide.low_power.no_particles=Wir brauchen mehr Strom um den Beschleuniger zu starten!
 warpdrive.accelerator.guide.no_chiller=Für diesen Beschleuniger konnte kein Kühler gefunden werden!
 

@@ -579,7 +579,7 @@ warpdrive.energy.side.changed_to_output=Le coté %1$s est en mode Emission d'én
 warpdrive.energy.side.changed_to_disabled=Le coté %1$s side est en mode Inactif!
 
 warpdrive.accelerator.guide.low_power.not_enough_storage=La capacité de stockage d'énergie est insuffisante; Nous avons besoin d'au moins %1$d pour continuer mais ne pouvons stocker que %2$d
-warpdrive.accelerator.guide.low_power.accelerating=Nous sommes à court d'énergie Capitaine, les bunches de particules s'échappent, préparez-vous à une irradiation de masse!
+warpdrive.accelerator.guide.low_power.accelerating=Nous sommes à court d'énergie chef (%1$d > %2$d EU), les bunches de particules s'échappent, préparez-vous à une irradiation de masse!
 warpdrive.accelerator.guide.low_power.no_particles=Il nous faut plus d'énergie pour démarrer l'accélérateur!
 warpdrive.accelerator.guide.no_chiller=Cet accélérateur n'a aucun refroidisseur!
 
