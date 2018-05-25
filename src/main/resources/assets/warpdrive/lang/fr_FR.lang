@@ -574,7 +574,7 @@ warpdrive.ship.attached_players=Joueurs attachés: %1$s
 warpdrive.ship.player_attached=Tu es désormais attaché au vaisseau %1$s.\nLes joueurs attachés sont %2$s
 warpdrive.ship.player_detached=Tu es désormais détaché du vaisseau %1$s.\nLes joueurs attachés sont %2$s
 warpdrive.ship.status_line.cooling=Encore %1$d s de refroidissement.
-warpdrive.ship.status_line.isolation=Les %1$d blocs d'isolations actifs fournissent %2$2.1f%% d'absorption.
+warpdrive.ship.status_line.isolation=Les %1$d blocs d'isolations actifs fournissent %2$s%% d'absorption.
 
 warpdrive.energy.status_line=Le niveau d'énergie est de %1$s / %2$s EU.
 warpdrive.energy.side.changed_to_input=Le coté %1$s est en mode Réception d'énergie!

@@ -289,10 +289,10 @@ public class AcceleratorSetup extends GlobalPosition {
 			
 			// count main magnets
 			final int indexTier = (trajectoryPoint.type & TrajectoryPoint.MASK_TIERS) - 1;
-			if ((trajectoryPoint.type & TrajectoryPoint.MAGNETS_HORIZONTAL) != 0) {
+			if ((trajectoryPoint.type & TrajectoryPoint.MAGNETS_HORIZONTAL) != 0 && indexTier >= 0) {
 				countMagnets[indexTier] += 2;
 			}
-			if ((trajectoryPoint.type & TrajectoryPoint.MAGNETS_VERTICAL) != 0) {
+			if ((trajectoryPoint.type & TrajectoryPoint.MAGNETS_VERTICAL) != 0 && indexTier >= 0) {
 				countMagnets[indexTier] += 2;
 			}
 			

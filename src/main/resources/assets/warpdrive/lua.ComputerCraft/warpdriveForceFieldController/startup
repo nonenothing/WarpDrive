@@ -179,7 +179,7 @@ function ffield_projector_key(character, keycode)
     return true
   elseif character == 'e' or character == 'E' then
     local projector = ffield_projector_getSelected()
-    if projector ~= nil and projector.device ~= nill then
+    if projector ~= nil and projector.device ~= nil then
       ffield_enable(projector)
     end
     return true

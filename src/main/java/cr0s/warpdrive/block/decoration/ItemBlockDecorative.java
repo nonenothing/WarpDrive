@@ -16,7 +16,7 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	public ItemBlockDecorative(Block block) {
 		super(block);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.decoration");
+		setUnlocalizedName("warpdrive.decoration.decorative");
 	}
 	
 	@Nonnull

@@ -1092,9 +1092,10 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 	
 	@Override
 	public ITextComponent getStatus() {
+		final String strIsolationRate = String.format("%.1f", isolationRate * 100.0D);
 		return super.getStatus()
 			.appendSibling((cooldownTime_ticks > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.status_line.cooling", cooldownTime_ticks / 20)) : new TextComponentString(""))
-			.appendSibling((isolationBlocksCount > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.status_line.isolation", isolationBlocksCount, isolationRate * 100.0)) : new TextComponentString(""));
+			.appendSibling((isolationBlocksCount > 0) ? new TextComponentString("\n").appendSibling(new TextComponentTranslation("warpdrive.ship.status_line.isolation", isolationBlocksCount, strIsolationRate)) : new TextComponentString(""));
 	}
 	
 	public ITextComponent getBoundingBoxStatus() {
