@@ -579,7 +579,7 @@ warpdrive.energy.side.changed_to_output=%1$s kant verandert naar energie output 
 warpdrive.energy.side.changed_to_disabled=%1$s kant verandert naar inactief modus!
 
 warpdrive.accelerator.guide.low_power.not_enough_storage=Energie-opslagcapaciteit is te weinig; we hebben tenminste %1$d om verder te opereren maar we kunnen alleen %2$d opslaan
-warpdrive.accelerator.guide.low_power.accelerating=We verliezen stroom baas, deeltjes vliegen in het rond, bereid je voor op grote bestraling!
+warpdrive.accelerator.guide.low_power.accelerating=We verliezen stroom baas (%1$d > %2$d EU), deeltjes vliegen in het rond, bereid je voor op grote bestraling!
 warpdrive.accelerator.guide.low_power.no_particles=We hebben meer stroom nodig om de versneller te activeren!
 warpdrive.accelerator.guide.no_chiller=Geen koeler gevonden voor deze versneller!
 
