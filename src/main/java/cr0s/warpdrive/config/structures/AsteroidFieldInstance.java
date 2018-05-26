@@ -105,8 +105,14 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 			}
 			
 			// Place an asteroid
-			final AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
-			moon.generate(world, world.rand, aX, aY, aZ);
+			final AbstractStructure asteroid = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+			if (asteroid == null) {
+				WarpDrive.logger.error(String.format("Unable to generate big asteroid in DIM%d @ (%d %d %d), probably a bad configuration",
+				                                     world.provider.dimensionId,
+				                                     aX, aY, aZ));
+			} else {
+				asteroid.generate(world, world.rand, aX, aY, aZ);
+			}
 		}
 		
 		// Setting up small asteroids
@@ -123,8 +129,14 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 			
 			// Placing
 			if (world.rand.nextInt(400) != 1) {
-				final AbstractStructure moon = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
-				moon.generate(world, world.rand, aX, aY, aZ);
+				final AbstractStructure asteroid = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
+				if (asteroid == null) {
+					WarpDrive.logger.error(String.format("Unable to generate small asteroid in DIM%d @ (%d %d %d), probably a bad configuration",
+						world.provider.dimensionId,
+						aX, aY, aZ));
+				} else {
+					asteroid.generate(world, world.rand, aX, aY, aZ);
+				}
 			} else {
 				if (world.rand.nextInt(20) != 1) {
 					generateSmallShip(world, aX, aY, aZ, 8);
@@ -149,7 +161,11 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 			// Placing
 			if (world.rand.nextBoolean()) {
 				final AbstractStructure gasCloud = StructureManager.getStructure(world.rand, StructureManager.GROUP_GAS_CLOUDS, null);
-				if (gasCloud != null) {
+				if (gasCloud == null) {
+					WarpDrive.logger.error(String.format("Unable to generate gas cloud in DIM%d @ (%d %d %d), probably a bad configuration",
+						world.provider.dimensionId,
+						aX, aY, aZ));
+				} else {
 					gasCloud.generate(world, world.rand, aX, aY, aZ);
 				}
 			}
