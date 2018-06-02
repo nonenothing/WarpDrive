@@ -301,7 +301,7 @@ public class StarMapRegistry {
 		final int radius2 = radius * radius;
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			for (final StarMapRegistryItem starMapRegistryItem : entryDimension.getValue()) {
-				if (starMapRegistryItem.type == EnumStarMapEntryType.ACCELERATOR) {
+				if (!starMapRegistryItem.type.hasRadarEcho()) {
 					continue;
 				}
 				final Vector3 vectorItem = starMapRegistryItem.getUniversalCoordinates(tileEntity.getWorldObj().isRemote);
