@@ -124,29 +124,28 @@ function reactor_page()
       w.write(w.format_integer(energy[3]) .. " RF/t")
     end
     
-    w.setColorNormal()
     w.setCursorPos(1, 9)
+    w.setColorNormal()
     w.write("Activated: ")
     local isEnabled = reactor.enable()
     if isEnabled then w.setColorSuccess() else w.setColorNormal() end
     w.write(w.format_boolean(isEnabled, "YES", "no"))
   end
   
+  w.setCursorPos(30, 2)
   if #reactorlasers == 0 then
     w.setColorDisabled()
-    w.setCursorPos(30, 2)
     w.write("Lasers not detected")
   else
     w.setColorNormal()
-    w.setCursorPos(30, 2)
     w.write("Lasers")
     
     for key, reactorlaser in pairs(reactorlasers) do
       local side = reactorlaser.side
       if side ~= nil then
         side = side % 4
-        w.setColorNormal()
         w.setCursorPos(4, 3 + side)
+        w.setColorNormal()
         w.write("Side " .. w.format_integer(side) .. ":")
         w.setCursorPos(30, 3 + side)
         local energy = reactorlaser.wrap.energy()
@@ -162,8 +161,8 @@ function reactor_page()
     end
   end
   
-  w.setColorNormal()
   w.setCursorPos(1, 10)
+  w.setColorNormal()
   w.write("  -----------------------------------------------")
   w.setCursorPos(1, 11)
   w.write("Output mode     : ")
@@ -177,14 +176,14 @@ function reactor_page()
   else
     w.write("rated at " .. reactor_rate .. " RF")
   end
-  w.setColorNormal()
   w.setCursorPos( 1, 12)
+  w.setColorNormal()
   w.write("Target stability: " .. reactor_targetStability .. "%")
   w.setCursorPos(30, 12)
   w.write("Laser amount: " .. reactor_laserAmount)
   
-  w.setColorControl()
   w.setCursorPos(1, 14)
+  w.setColorControl()
   w.writeFullLine(" Start/stoP reactor (S/P), Use lasers (L)")
   w.writeFullLine(" Output mode (O), Configuration (C)")
   w.writeFullLine(" Target stability (+/-), Laser amount (U/J)")
@@ -272,9 +271,9 @@ function reactor_pulse(output)
       w.write(w.format_float(stability, 5) .. " %")
     end
     
-    w.setColorNormal()
     local energy = { reactor.energy() }
     w.setCursorPos(12, 7)
+    w.setColorNormal()
     if energy[2] ~= nil then
       w.write(w.format_integer(energy[1], 10))
       w.setCursorPos(39, 7)
@@ -320,27 +319,50 @@ function reactor_config()
     w.setColorDisabled()
     w.write("Reactor not detected")
   else
-    w.setColorNormal()
+    -- reactor output rate
+    w.setCursorPos(1, 6)
+    w.setColorHelp()
+    w.writeFullLine(" Enter a positive number.")
+    
     w.setCursorPos(1, 4)
+    w.setColorNormal()
     w.write("Reactor output rate (" .. w.format_integer(reactor_rate) .. " RF): ")
     reactor_rate = w.input_readInteger(reactor_rate)
     reactor_setMode()
     w.setCursorPos(1, 5)
     w.write("Reactor output rate set")
+    w.setCursorPos(1, 6)
+    w.writeFullLine(" ")
+    
+    -- laser amount
+    w.setCursorPos(1, 9)
+    w.setColorHelp()
+    w.writeFullLine(" Enter a positive number.")
     
     w.setCursorPos(1, 7)
+    w.setColorNormal()
     w.write("Laser energy level (" .. w.format_integer(reactor_laserAmount) .. "): ")
     reactor_laserAmount = w.input_readInteger(reactor_laserAmount)
     reactor_setLaser()
     w.setCursorPos(1, 8)
     w.write("Laser energy level set")
+    w.setCursorPos(1, 9)
+    w.writeFullLine(" ")
+    
+    -- target stability
+    w.setCursorPos(1, 12)
+    w.setColorHelp()
+    w.writeFullLine(" Enter a positive number.")
     
     w.setCursorPos(1, 10)
+    w.setColorNormal()
     w.write("Reactor target stability (" .. w.format_integer(reactor_targetStability) .. "%): ")
     reactor_targetStability = w.input_readInteger(reactor_targetStability)
     reactor_setTargetStability()
     w.setCursorPos(1, 11)
     w.write("Reactor target stability set")
+    w.setCursorPos(1, 12)
+    w.writeFullLine(" ")
   end
   reactor_configPageLoaded = false
 end
