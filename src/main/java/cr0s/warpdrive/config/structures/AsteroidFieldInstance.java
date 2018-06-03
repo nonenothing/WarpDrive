@@ -110,7 +110,7 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 			final AbstractStructure asteroid = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
 			if (asteroid == null) {
 				WarpDrive.logger.error(String.format("Unable to generate big asteroid in DIM%d @ (%d %d %d), probably a bad configuration",
-				                                     world.provider.dimensionId,
+				                                     world.provider.getDimension(),
 				                                     aX, aY, aZ));
 			} else {
 				asteroid.generate(world, world.rand, new BlockPos(aX, aY, aZ));
@@ -134,8 +134,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 				final AbstractStructure asteroid = StructureManager.getStructure(world.rand, StructureManager.GROUP_ASTEROIDS, null);
 				if (asteroid == null) {
 					WarpDrive.logger.error(String.format("Unable to generate small asteroid in DIM%d @ (%d %d %d), probably a bad configuration",
-						world.provider.dimensionId,
-						aX, aY, aZ));
+					                                     world.provider.getDimension(),
+					                                     aX, aY, aZ));
 				} else {
 					asteroid.generate(world, world.rand, new BlockPos(aX, aY, aZ));
 				}
@@ -165,8 +165,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 				final AbstractStructure gasCloud = StructureManager.getStructure(world.rand, StructureManager.GROUP_GAS_CLOUDS, null);
 				if (gasCloud == null) {
 					WarpDrive.logger.error(String.format("Unable to generate gas cloud in DIM%d @ (%d %d %d), probably a bad configuration",
-						world.provider.dimensionId,
-						aX, aY, aZ));
+					                                     world.provider.getDimension(),
+					                                     aX, aY, aZ));
 				} else {
 					gasCloud.generate(world, world.rand, new BlockPos(aX, aY, aZ));
 				}
