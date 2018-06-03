@@ -111,9 +111,6 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 					tileEntityShipCoreWeakReference = new WeakReference<>(tileEntityShipCore);
 				}
 				
-				if (command.getCode() != getBlockMetadata()) {
-					updateMetadata(command.getCode());  // Activated
-				}
 				if ( isPendingScan
 				  && tileEntityShipCore.isAttached(this) ) {
 					isPendingScan = false;
@@ -127,9 +124,9 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 						WarpDrive.logger.info(this + " Exception in validateShipSpatialParameters, reason: " + reason.toString());
 					}
 				}
-			} else if (getBlockMetadata() != 0) {
-				updateMetadata(0);  // Inactive
 			}
+			
+			updateBlockState(null, BlockShipController.COMMAND, command);
 		}
 	}
 	
@@ -359,7 +356,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 				markDirty();
 				if (WarpDriveConfig.LOGGING_LUA && hasWorldObj()) {
 					WarpDrive.logger.info(String.format("%s Command set to %s (%d)",
-					                                    this, this.command, this.command.getCode()));
+					                                    this, this.command, this.command.ordinal()));
 				}
 			}
 		}
@@ -371,7 +368,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		if (!success) {
 			final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
 			if (tileEntityShipCore != null) {
-				tileEntityShipCore.messageToAllPlayersOnShip(new TextComponentString(reason.toString()));
+				tileEntityShipCore.messageToAllPlayersOnShip(new TextComponentString(reason));
 			}
 		}
 	}

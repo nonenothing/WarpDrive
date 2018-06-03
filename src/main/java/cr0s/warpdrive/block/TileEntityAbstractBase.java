@@ -85,6 +85,23 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		}
 	}
 	
+	protected void updateBlockState(final IBlockState blockState_in, @Nonnull final IBlockState blockState_new) {
+		IBlockState blockState_old = blockState_in;
+		if (blockState_old == null) {
+			blockState_old = worldObj.getBlockState(pos);
+		}
+		try {
+			final int metadata_old = blockState_old.getBlock().getMetaFromState(blockState_old);
+			final int metadata_new = blockState_new.getBlock().getMetaFromState(blockState_new);
+			if (metadata_old != metadata_new) {
+				worldObj.setBlockState(pos, blockState_new, 2);
+			}
+		} catch (Exception exception) {
+			exception.printStackTrace();
+			WarpDrive.logger.error("Exception in " + this);
+		}
+	}
+	
 	@Deprecated
 	protected void updateMetadata(final int metadata) {
 		if (getBlockMetadata() != metadata) {

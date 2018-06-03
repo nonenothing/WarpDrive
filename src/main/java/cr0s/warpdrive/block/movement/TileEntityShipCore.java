@@ -7,6 +7,7 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.ShipMovementCosts;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipControllerCommand;
 import cr0s.warpdrive.data.EnumShipCoreState;
@@ -135,8 +136,8 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference == null ? null : tileEntityShipControllerWeakReference.get();
-		if ( tileEntityShipController != null
-		  && tileEntityShipController.isInvalid() ) {
+		if (tileEntityShipController != null
+		    && tileEntityShipController.isInvalid()) {
 			tileEntityShipControllerWeakReference = null;
 			tileEntityShipController = null;
 		}
@@ -167,11 +168,6 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			if (timeLastShipScanDone <= 0L) {
 				stateCurrent = EnumShipCoreState.SCANNING;
 			}
-		}
-		
-		// Refresh rendering
-		if (getBlockMetadata() != stateCurrent.getMetadata()) {
-			updateMetadata(stateCurrent.getMetadata());
 		}
 		
 		// accelerate update ticks during boot
@@ -211,9 +207,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 				                                    this,
 				                                    stateCurrent,
 				                                    tileEntityShipController == null ? "NA" : tileEntityShipController.isEnabled,
-						                            tileEntityShipController,
-						                            warmupTime_ticks,
-						                            cooldownTime_ticks));
+				                                    tileEntityShipController,
+				                                    warmupTime_ticks,
+				                                    cooldownTime_ticks));
 			}
 		}
 		
@@ -223,6 +219,12 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			isolationUpdateTicks = WarpDriveConfig.SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS * 20;
 			updateIsolationState();
 		}
+		
+		// Refresh rendering
+		final boolean isActive = stateCurrent != EnumShipCoreState.DISCONNECTED
+		                      && tileEntityShipController != null
+		                      && commandCurrent != EnumShipControllerCommand.OFFLINE;
+		updateBlockState(null, BlockProperties.ACTIVE, isActive);
 		
 		if (tileEntityShipController == null) {
 			return;
