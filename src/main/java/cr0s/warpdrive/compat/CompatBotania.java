@@ -24,7 +24,7 @@ public class CompatBotania implements IBlockTransformer {
 			classBlockAvatar        = Class.forName("vazkii.botania.common.block.BlockAvatar");
 			classBlockFelPumpkin    = Class.forName("vazkii.botania.common.block.BlockFelPumpkin");
 			classBlockSpecialFlower = Class.forName("vazkii.botania.common.block.BlockSpecialFlower");
-			WarpDriveConfig.registerBlockTransformer("Botania", new CompatBotania());
+			WarpDriveConfig.registerBlockTransformer("botania", new CompatBotania());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

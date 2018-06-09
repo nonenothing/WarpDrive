@@ -78,11 +78,11 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
-		IBlockState blockState = worldObj.getBlockState(pos);
+		IBlockState blockState = world.getBlockState(pos);
 		if (currentState == STATE_IDLE) {
 			delayTicks = WarpDriveConfig.MINING_LASER_WARMUP_DELAY_TICKS;
 			updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.INACTIVE);
@@ -97,7 +97,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return;
 		}
 		
-		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ());
+		final boolean isOnPlanet = CelestialObjectManager.hasAtmosphere(world, pos.getX(), pos.getZ());
 		radiusCapacity = WarpDriveConfig.MINING_LASER_RADIUS_NO_LASER_MEDIUM
 		               + cache_laserMedium_count * WarpDriveConfig.MINING_LASER_RADIUS_PER_LASER_MEDIUM;
 		
@@ -130,10 +130,10 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				final double zMax = pos.getZ() + radiusCapacity + 1.0D;
 				final double zMin = pos.getZ() - radiusCapacity + 0.0D;
 				final double y = currentLayer + 1.0D;
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMin, y, zMin), new Vector3(xMax, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMin), new Vector3(xMax, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMax), new Vector3(xMin, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMin, y, zMax), new Vector3(xMin, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMin, y, zMin), new Vector3(xMax, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMax, y, zMin), new Vector3(xMax, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMax, y, zMax), new Vector3(xMin, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMin, y, zMax), new Vector3(xMin, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
 				
 			} else if (delayTicks < 0) {
 				delayTicks = WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS;
@@ -159,22 +159,22 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 					final int offset = (pos.getY() - currentLayer) % (2 * r);
 					final int age = Math.max(20, Math.round(2.5F * WarpDriveConfig.MINING_LASER_SCAN_DELAY_TICKS));
 					final double y = currentLayer + 1.0D;
-					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(pos.getX() - r + offset, y, pos.getZ() + r).translate(0.3D),
+					PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(pos.getX() - r + offset, y, pos.getZ() + r).translate(0.3D),
 							0.0F, 0.0F, 1.0F, age, 0, 50);
-					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(pos.getX() + r, y, pos.getZ() + r - offset).translate(0.3D),
+					PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(pos.getX() + r, y, pos.getZ() + r - offset).translate(0.3D),
 							0.0F, 0.0F, 1.0F, age, 0, 50);
-					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(pos.getX() + r - offset, y, pos.getZ() - r).translate(0.3D),
+					PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(pos.getX() + r - offset, y, pos.getZ() - r).translate(0.3D),
 							0.0F, 0.0F, 1.0F, age, 0, 50);
-					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(pos.getX() - r, y, pos.getZ() - r + offset).translate(0.3D),
+					PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(pos.getX() - r, y, pos.getZ() - r + offset).translate(0.3D),
 							0.0F, 0.0F, 1.0F, age, 0, 50);
-					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
+					world.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
 					delayTicks = WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS;
 					currentState = STATE_MINING;
 					updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.MINING_POWERED);
 					return;
 					
 				} else {
-					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
+					world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 					currentLayer--;
 				}
 			}
@@ -215,17 +215,17 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				valuableIndex++;
 				
 				// Mine valuable ore
-				final IBlockState blockStateValuable = worldObj.getBlockState(valuable);
+				final IBlockState blockStateValuable = world.getBlockState(valuable);
 				
 				// Skip if block is too hard or its empty block (check again in case it changed)
 				if (!canDig(blockStateValuable, valuable)) {
 					delayTicks = Math.round(WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS * 0.2F);
 					return;
 				}
-				final int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
-				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable).translate(0.5D),
+				final int age = Math.max(10, Math.round((4 + world.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+				PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(valuable).translate(0.5D),
 						1.0F, 1.0F, 0.0F, age, 0, 50);
-				worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
+				world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 				harvestBlock(valuable);
 			}
 		}
@@ -240,7 +240,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	private boolean canDig(final IBlockState blockState, final BlockPos blockPos) {
 		// ignore air
-		if (worldObj.isAirBlock(blockPos)) {
+		if (world.isAirBlock(blockPos)) {
 			return false;
 		}
 		// check blacklists
@@ -260,7 +260,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return true;
 		}
 		// check area protection
-		if (isBlockBreakCanceled(null, worldObj, blockPos)) {
+		if (isBlockBreakCanceled(null, world, blockPos)) {
 			stop();
 			if (WarpDriveConfig.LOGGING_COLLECTION) {
 				WarpDrive.logger.info(this + " Mining stopped by cancelled event at (" + blockPos.getX() + " " + blockPos.getY()+ " " + blockPos.getZ() + ")");
@@ -281,7 +281,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		// WarpDrive.logger.info("Scanning layer");
 		IBlockState blockState;
 		for (int y = pos.getY() - 1; y > currentLayer; y --) {
-			blockState = worldObj.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()));
+			blockState = world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()));
 			if (Dictionary.BLOCKS_STOPMINING.contains(blockState.getBlock())) {
 				stop();
 				if (WarpDriveConfig.LOGGING_COLLECTION) {
@@ -302,7 +302,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		x = pos.getX();
 		z = pos.getZ();
 		blockPos = new BlockPos(x, currentLayer, z);
-		blockState = worldObj.getBlockState(blockPos);
+		blockState = world.getBlockState(blockPos);
 		if (canDig(blockState, blockPos)) {
 			if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
 				valuablesInLayer.add(blockPos);
@@ -317,7 +317,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			z = zMin;
 			for (; x <= xMax; x++) {
 				blockPos = new BlockPos(x, currentLayer, z);
-				blockState = worldObj.getBlockState(blockPos);
+				blockState = world.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(blockPos);
@@ -328,7 +328,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			z++;
 			for (; z <= zMax; z++) {
 				blockPos = new BlockPos(x, currentLayer, z);
-				blockState = worldObj.getBlockState(blockPos);
+				blockState = world.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(blockPos);
@@ -339,7 +339,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			z = zMax;
 			for (; x >= xMin; x--) {
 				blockPos = new BlockPos(x, currentLayer, z);
-				blockState = worldObj.getBlockState(blockPos);
+				blockState = world.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(blockPos);
@@ -350,7 +350,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			z--;
 			for (; z > zMin; z--) {
 				blockPos = new BlockPos(x, currentLayer, z);
-				blockState = worldObj.getBlockState(blockPos);
+				blockState = world.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(blockPos);
@@ -361,7 +361,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			z = zMin;
 			for (; x < pos.getX(); x++) {
 				blockPos = new BlockPos(x, currentLayer, z);
-				blockState = worldObj.getBlockState(blockPos);
+				blockState = world.getBlockState(blockPos);
 				if (canDig(blockState, blockPos)) {
 					if (mineAllBlocks || Dictionary.BLOCKS_ORES.contains(blockState.getBlock())) {// Quarry collects all blocks or only collect valuables blocks
 						valuablesInLayer.add(blockPos);
@@ -397,39 +397,39 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] start(final Context context, final Arguments arguments) {
 		return start();
 	}
 	
 	@SuppressWarnings("SameReturnValue")
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] stop(final Context context, final Arguments arguments) {
 		stop();
 		return null;
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] offset(final Context context, final Arguments arguments) {
 		return offset(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] onlyOres(final Context context, final Arguments arguments) {
 		return onlyOres(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] silktouch(final Context context, final Arguments arguments) {
 		return silktouch(argumentsOCtoCC(arguments));
 	}
@@ -510,7 +510,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -574,7 +574,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	public String toString() {
 		return String.format("%s @ \'%s\' %d, %d, %d",
 		                     getClass().getSimpleName(), 
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(), 
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

@@ -89,7 +89,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
     public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -227,22 +227,22 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	private TileEntityShipCore findCoreBlock() {
 		TileEntity tileEntity;
 		
-		tileEntity = worldObj.getTileEntity(pos.add(1, 0, 0));
+		tileEntity = world.getTileEntity(pos.add(1, 0, 0));
 		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(pos.add(-1, 0, 0));
+		tileEntity = world.getTileEntity(pos.add(-1, 0, 0));
 		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(pos.add(0, 0, 1));
+		tileEntity = world.getTileEntity(pos.add(0, 0, 1));
 		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
 		
-		tileEntity = worldObj.getTileEntity(pos.add(0, 0, -1));
+		tileEntity = world.getTileEntity(pos.add(0, 0, -1));
 		if (tileEntity instanceof TileEntityShipCore) {
 			return (TileEntityShipCore) tileEntity;
 		}
@@ -268,7 +268,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			}
 		}
 		
-		entityPlayer.attackEntityFrom(DamageSource.generic, 1);
+		entityPlayer.attackEntityFrom(DamageSource.GENERIC, 1);
 		players.add(entityPlayer.getName());
 		return Commons.getChatPrefix(getBlockType())
 			.appendSibling(new TextComponentTranslation("warpdrive.ship.player_attached",
@@ -354,7 +354,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 			if (enumShipControllerCommand.name().equalsIgnoreCase(command)) {
 				this.command = enumShipControllerCommand;
 				markDirty();
-				if (WarpDriveConfig.LOGGING_LUA && hasWorldObj()) {
+				if (WarpDriveConfig.LOGGING_LUA && hasWorld()) {
 					WarpDrive.logger.info(String.format("%s Command set to %s (%d)",
 					                                    this, this.command, this.command.ordinal()));
 				}
@@ -382,7 +382,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		this.moveUp = moveUp;
 		this.moveRight = moveRight;
 		markDirty();
-		if (WarpDriveConfig.LOGGING_LUA && hasWorldObj()) {
+		if (WarpDriveConfig.LOGGING_LUA && hasWorld()) {
 			WarpDrive.logger.info(String.format("%s Movement set to %d front, %d up, %d right",
 			                                    this, this.moveFront, this.moveUp, this.moveRight));
 		}
@@ -395,7 +395,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	private void setRotationSteps(final byte rotationSteps) {
 		this.rotationSteps = (byte) ((rotationSteps + 4) % 4);
 		markDirty();
-		if (WarpDriveConfig.LOGGING_LUA && hasWorldObj()) {
+		if (WarpDriveConfig.LOGGING_LUA && hasWorld()) {
 			WarpDrive.logger.info(String.format("%s Movement set to %d rotation steps",
 			                                    this, this.rotationSteps));
 		}
@@ -436,12 +436,12 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	@Override
 	public Object[] isInSpace() {
-		return new Boolean[] { CelestialObjectManager.isInSpace(worldObj, pos.getX(), pos.getZ()) };
+		return new Boolean[] { CelestialObjectManager.isInSpace(world, pos.getX(), pos.getZ()) };
 	}
 	
 	@Override
 	public Object[] isInHyperspace() {
-		return new Boolean[] { CelestialObjectManager.isInHyperspace(worldObj, pos.getX(), pos.getZ()) };
+		return new Boolean[] { CelestialObjectManager.isInHyperspace(world, pos.getX(), pos.getZ()) };
 	}
 	
 	@Override
@@ -627,110 +627,110 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] isAssemblyValid(final Context context, final Arguments arguments) {
 		return isAssemblyValid();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getOrientation(final Context context, final Arguments arguments) {
 		return getOrientation();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] isInSpace(final Context context, final Arguments arguments) {
 		return isInSpace();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] isInHyperspace(final Context context, final Arguments arguments) {
 		return isInHyperspace();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] shipName(final Context context, final Arguments arguments) {
 		return shipName(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] dim_positive(final Context context, final Arguments arguments) {
 		return dim_positive(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] dim_negative(final Context context, final Arguments arguments) {
 		return dim_negative(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getAttachedPlayers(final Context context, final Arguments arguments) {
 		return getAttachedPlayers();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] command(final Context context, final Arguments arguments) {
 		return command(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getShipSize(final Context context, final Arguments arguments) {
 		return getShipSize();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getMaxJumpDistance(final Context context, final Arguments arguments) {
 		return getMaxJumpDistance();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] movement(final Context context, final Arguments arguments) {
 		return movement(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] rotationSteps(final Context context, final Arguments arguments) {
 		return rotationSteps(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] targetName(final Context context, final Arguments arguments) {
 		return targetName(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method, arguments);
 		
@@ -796,7 +796,7 @@ public class TileEntityShipController extends TileEntityAbstractInterfaced imple
 		return String.format("%s \'%s\' @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
 		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName, 
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

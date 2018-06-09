@@ -5,7 +5,7 @@ import cr0s.warpdrive.data.Vector3;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -28,7 +28,7 @@ public class EntityFXBoundingBox extends Particle {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		this.setRBGColorF(red, green, blue);
 		this.setSize(0.02F, 0.02F);
-		this.isCollided = false;
+		this.canCollide = false;
 		this.motionX = 0.0D;
 		this.motionY = 0.0D;
 		this.motionZ = 0.0D;
@@ -63,11 +63,11 @@ public class EntityFXBoundingBox extends Particle {
 	}
 	
 	@Override
-	public void renderParticle(final VertexBuffer vertexBuffer, final Entity entityIn, final float partialTick,
+	public void renderParticle(final BufferBuilder vertexBuffer, final Entity entityIn, final float partialTick,
 	                           final float rotationX, final float rotationZ, final float rotationYZ, final float rotationXY, final float rotationXZ) {
 		GL11.glPushMatrix();
 		
-		// final float rot = (worldObj.provider.getWorldTime() % (360 / rotationSpeed) + partialTick) * rotationSpeed;
+		// final float rot = (world.provider.getWorldTime() % (360 / rotationSpeed) + partialTick) * rotationSpeed;
 		
         // alpha starts at 50%, vanishing to 10% during last ticks
 		float alpha = 0.45F;
@@ -77,12 +77,12 @@ public class EntityFXBoundingBox extends Particle {
 			alpha = 0.10F;
 		}
 		
-		// final double relativeTime = worldObj.getTotalWorldTime() + partialTick;
-		// final double uOffset = (float) (-relativeTime * 0.3D - MathHelper.floor_double(-relativeTime * 0.15D));
-		// final double vOffset = (float) (-relativeTime * 0.2D - MathHelper.floor_double(-relativeTime * 0.1D));
+		// final double relativeTime = world.getTotalWorldTime() + partialTick;
+		// final double uOffset = (float) (-relativeTime * 0.3D - MathHelper.floor(-relativeTime * 0.15D));
+		// final double vOffset = (float) (-relativeTime * 0.2D - MathHelper.floor(-relativeTime * 0.1D));
 		
 		// box position
-		final double relativeTime = Math.abs(worldObj.getTotalWorldTime() % 64L + partialTick) / 64.0D;
+		final double relativeTime = Math.abs(world.getTotalWorldTime() % 64L + partialTick) / 64.0D;
 		final double sizeOffset = 0.01F * (1.0F + (float) Math.sin(relativeTime * Math.PI * 2));
 		final double xMin = min.x - posX - sizeOffset;
 		final double xMax = max.x - posX + sizeOffset;

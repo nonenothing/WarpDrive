@@ -153,11 +153,11 @@ public class StateAir {
 	
 	private void updateVoidSource() {
 		if (!isAir()) {// sealed blocks have no pressure
-			setGenerator((short) 0, EnumFacing.DOWN);
-			setVoid((short) 0, EnumFacing.DOWN);
+			setGenerator((short) 0, null);
+			setVoid((short) 0, null);
 			
 		} else if (pressureGenerator == 0) {// no generator in range => clear to save resources
-			setVoid((short) 0, EnumFacing.DOWN);
+			setVoid((short) 0, null);
 			
 		} else if (pressureGenerator == 1) {// at generator range => this is a void source
 			setVoid((short) VOID_PRESSURE_MAX, directionGenerator.getOpposite());
@@ -529,10 +529,10 @@ public class StateAir {
 				for (int dz = -1; dz <= 1; dz++) {
 					for (int dx = -1; dx <= 1; dx++) {
 						final StateAir stateAir = new StateAir(null);
-						stateAir.refresh(entityPlayer.worldObj,
-						                 MathHelper.floor_double(entityPlayer.posX) + dx,
-						                 MathHelper.floor_double(entityPlayer.posY) + dy,
-						                 MathHelper.floor_double(entityPlayer.posZ) + dz);
+						stateAir.refresh(entityPlayer.world,
+						                 MathHelper.floor(entityPlayer.posX) + dx,
+						                 MathHelper.floor(entityPlayer.posY) + dy,
+						                 MathHelper.floor(entityPlayer.posZ) + dz);
 						stateAirs[dx + 1][dy + 1][dz + 1] = stateAir;
 					}
 				}

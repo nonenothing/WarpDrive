@@ -219,7 +219,7 @@ public class StarMapRegistry {
 	}
 	
 	public static double getGravity(final Entity entity) {
-		final CelestialObject celestialObject = CelestialObjectManager.get(entity.worldObj, (int) entity.posX, (int) entity.posZ);
+		final CelestialObject celestialObject = CelestialObjectManager.get(entity.world, (int) entity.posX, (int) entity.posZ);
 		return celestialObject == null ? 1.0D : celestialObject.getGravity();
 	}
 	
@@ -276,11 +276,11 @@ public class StarMapRegistry {
 			return -1;
 		case "s":
 		case "space":
-			return getSpaceDimensionId(entity.worldObj, (int) entity.posX, (int) entity.posZ);
+			return getSpaceDimensionId(entity.world, (int) entity.posX, (int) entity.posZ);
 		case "h":
 		case "hyper":
 		case "hyperspace":
-			return getHyperspaceDimensionId(entity.worldObj, (int) entity.posX, (int) entity.posZ);
+			return getHyperspaceDimensionId(entity.world, (int) entity.posX, (int) entity.posZ);
 		default:
 			try {
 				return Integer.parseInt(stringDimension);
@@ -395,7 +395,7 @@ public class StarMapRegistry {
 			// Compare areas for intersection
 			final AxisAlignedBB aabb2 = new AxisAlignedBB(registryItem.minX, registryItem.minY, registryItem.minZ,
 			                                              registryItem.maxX, registryItem.maxY, registryItem.maxZ);
-			if (!aabb1.intersectsWith(aabb2)) {
+			if (!aabb1.intersects(aabb2)) {
 				continue;
 			}
 			
@@ -443,7 +443,7 @@ public class StarMapRegistry {
 					if (world.getChunkProvider() instanceof ChunkProviderServer) {
 						final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 						try {
-							final Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(registryItem.x >> 4, registryItem.z >> 4));
+							final Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.asLong(registryItem.x >> 4, registryItem.z >> 4));
 							isLoaded = chunk != null && chunk.isLoaded();
 						} catch (final NoSuchFieldError exception) {
 							if (!isExceptionReported) {

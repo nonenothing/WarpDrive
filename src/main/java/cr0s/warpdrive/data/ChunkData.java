@@ -291,20 +291,20 @@ public class ChunkData {
 	}
 	
 	public BlockPos getChunkPosition() {
-		return chunkCoordIntPair.getCenterBlock(128);
+		return chunkCoordIntPair.getBlock(8, 128, 8);
 	}
 	
 	protected boolean isInside(final int x, @SuppressWarnings("unused") final int y, final int z) {
-		final int xInChunk = x - (chunkCoordIntPair.chunkXPos << 4);
+		final int xInChunk = x - (chunkCoordIntPair.x << 4);
 		// final int yInChunk = Commons.clamp(0, 255, y);
-		final int zInChunk = z - (chunkCoordIntPair.chunkZPos << 4);
+		final int zInChunk = z - (chunkCoordIntPair.z << 4);
 		return xInChunk >= 0 && xInChunk <= 15 && zInChunk >= 0 && zInChunk <= 15;
 	}
 	
 	private int getDataIndex(final int x, final int y, final int z) {
-		final int xInChunk = x - (chunkCoordIntPair.chunkXPos << 4);
+		final int xInChunk = x - (chunkCoordIntPair.x << 4);
 		final int yInChunk = Commons.clamp(0, 255, y);
-		final int zInChunk = z - (chunkCoordIntPair.chunkZPos << 4);
+		final int zInChunk = z - (chunkCoordIntPair.z << 4);
 		if (xInChunk < 0 || xInChunk > 15 || zInChunk < 0 || zInChunk > 15) {
 			WarpDrive.logger.error(String.format("Invalid block position provided (%d %d %d) is outside of chunk %s at (%d %d %d)",
 					x, y, z,
@@ -316,9 +316,9 @@ public class ChunkData {
 	}
 	
 	private BlockPos getPositionFromDataIndex(final int indexSegment, final int indexBlock) {
-		final int x = (chunkCoordIntPair.chunkXPos << 4) + ((indexBlock & 0x00F0) >> 4);
+		final int x = (chunkCoordIntPair.x << 4) + ((indexBlock & 0x00F0) >> 4);
 		final int y = (indexSegment << 4) + ((indexBlock & 0x0F00) >> 8);
-		final int z = (chunkCoordIntPair.chunkZPos << 4) + (indexBlock & 0x000F);
+		final int z = (chunkCoordIntPair.z << 4) + (indexBlock & 0x000F);
 		return new BlockPos(x, y, z);
 	}
 	
@@ -450,9 +450,9 @@ public class ChunkData {
 				}
 				// update
 				countTickingBlocks++;
-				final int x = (chunkCoordIntPair.chunkXPos << 4) + ((indexBlock & 0x00F0) >> 4);
+				final int x = (chunkCoordIntPair.x << 4) + ((indexBlock & 0x00F0) >> 4);
 				final int y = (indexSegment << 4) + ((indexBlock & 0x0F00) >> 8);
-				final int z = (chunkCoordIntPair.chunkZPos << 4) + (indexBlock & 0x000F);
+				final int z = (chunkCoordIntPair.z << 4) + (indexBlock & 0x000F);
 				try {
 					AirSpreader.execute(world, x, y, z);
 				} catch (final ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
@@ -472,15 +472,15 @@ public class ChunkData {
 		AirSpreader.clearCache();
 		if (isModified) {
 			isModified = false;
-			world.getChunkFromChunkCoords(chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos).setChunkModified();
+			world.getChunkFromChunkCoords(chunkCoordIntPair.x, chunkCoordIntPair.z).markDirty();
 		}
 		if ( WarpDriveConfig.LOGGING_CHUNK_HANDLER
 		  && ChunkHandler.delayLogging == 0
 		  && countBlocks != 0 ) {
 			WarpDrive.logger.info(String.format("Dimension %d chunk (%d %d) had %d / %d blocks ticked",
 			                                    world.provider.getDimension(),
-			                                    chunkCoordIntPair.chunkXPos,
-			                                    chunkCoordIntPair.chunkZPos,
+			                                    chunkCoordIntPair.x,
+			                                    chunkCoordIntPair.z,
 			                                    countTickingBlocks,
 			                                    countBlocks));
 		}
@@ -490,7 +490,7 @@ public class ChunkData {
 	/* object overrides */
 	@Override
 	public int hashCode() {
-		return chunkCoordIntPair.chunkXPos & 0xFFFF | (chunkCoordIntPair.chunkZPos & 0xFFFF) << 16;
+		return chunkCoordIntPair.x & 0xFFFF | (chunkCoordIntPair.z & 0xFFFF) << 16;
 	}
 	
 	@Override
@@ -501,8 +501,8 @@ public class ChunkData {
 			return false;
 		} else {
 			final ChunkData chunkData = (ChunkData) object;
-			return chunkCoordIntPair.chunkXPos == chunkData.chunkCoordIntPair.chunkXPos
-			    && chunkCoordIntPair.chunkZPos == chunkData.chunkCoordIntPair.chunkZPos;
+			return chunkCoordIntPair.x == chunkData.chunkCoordIntPair.x
+			    && chunkCoordIntPair.z == chunkData.chunkCoordIntPair.z;
 		}
 	}
 	
@@ -511,7 +511,7 @@ public class ChunkData {
 		final BlockPos chunkPosition = getChunkPosition();
 		return String.format("%s (%d %d @ %d %d %d) isLoaded %s hasAir %s isNotEmpty %s )", 
 		                     getClass().getSimpleName(),
-		                     chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos,
+		                     chunkCoordIntPair.x, chunkCoordIntPair.z,
 		                     chunkPosition.getX(), chunkPosition.getY(), chunkPosition.getZ(), 
 		                     isLoaded, hasAir(), isNotEmpty());
 	}

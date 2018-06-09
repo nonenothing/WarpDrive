@@ -39,6 +39,8 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -50,7 +52,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -75,7 +76,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		setDefaultState(getDefaultState()
 		                .withProperty(FREQUENCY, 0)
 		);
-		GameRegistry.registerTileEntity(TileEntityForceField.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityForceField.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -89,9 +90,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public MapColor getMapColor(final IBlockState state) {
+	public MapColor getMapColor(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
 		// @TODO: color from force field frequency
-		return super.getMapColor(state);
+		return super.getMapColor(blockState, blockAccess, blockPos);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -102,8 +103,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	@Override
-	public int getMetaFromState(final IBlockState state) {
-		return state.getValue(FREQUENCY);
+	public int getMetaFromState(final IBlockState blockState) {
+		return blockState.getValue(FREQUENCY);
 	}
 	
 	@Nonnull
@@ -133,10 +134,10 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
 		// hide in NEI
 		for (int i = 0; i < 16; i++) {
-			Commons.hideItemStack(new ItemStack(item, 1, i));
+			Commons.hideItemStack(new ItemStack(this, 1, i));
 		}
 	}
 	
@@ -159,8 +160,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isVisuallyOpaque() {
+	public boolean causesSuffocation(final IBlockState state) {
 		return false;
 	}
 	
@@ -172,7 +174,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(final IBlockState state) {
+	public boolean isFullBlock(IBlockState state) {
 		return false;
 	}
 	
@@ -220,8 +222,8 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		return null;
 	}
 	
-	private ForceFieldSetup getForceFieldSetup(final World world, @Nonnull final BlockPos blockPos) {
-		final TileEntity tileEntity = world.getTileEntity(blockPos);
+	private ForceFieldSetup getForceFieldSetup(final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
+		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
 		if (tileEntity instanceof TileEntityForceField) {
 			return ((TileEntityForceField) tileEntity).getForceFieldSetup();
 		}
@@ -242,10 +244,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
-		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(world, blockPos);
-		if (forceFieldSetup != null) {
-			final List<EntityPlayer> entities = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
+		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(blockAccess, blockPos);
+		if ( forceFieldSetup != null
+		  && blockAccess instanceof World ) {
+			final List<EntityPlayer> entities = ((World) blockAccess).getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
 				blockPos.getX(), blockPos.getY(), blockPos.getZ(),
 				blockPos.getX() + 1.0D, blockPos.getY() + 1.0D, blockPos.getZ() + 1.0D));
 			

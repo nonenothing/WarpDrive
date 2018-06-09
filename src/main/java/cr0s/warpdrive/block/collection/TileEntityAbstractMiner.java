@@ -50,27 +50,27 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	}
 	
 	protected void harvestBlock(final BlockPos valuable) {
-		final IBlockState blockState = worldObj.getBlockState(valuable);
-		if (blockState.getBlock().isAir(blockState, worldObj, valuable)) {
+		final IBlockState blockState = world.getBlockState(valuable);
+		if (blockState.getBlock().isAir(blockState, world, valuable)) {
 			return;
 		}
 		if (blockState.getBlock() instanceof BlockLiquid) {
 			// Evaporate fluid
-			worldObj.playSound(null, valuable, net.minecraft.init.SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
-					2.6F + (worldObj.rand.nextFloat() - worldObj.rand.nextFloat()) * 0.8F);
+			world.playSound(null, valuable, net.minecraft.init.SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F,
+					2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
 			
 			// remove without updating neighbours @TODO: add proper pump upgrade
-			worldObj.setBlockState(valuable, Blocks.AIR.getDefaultState(), 2);
+			world.setBlockState(valuable, Blocks.AIR.getDefaultState(), 2);
 		} else {
 			final List<ItemStack> itemStacks = getItemStackFromBlock(valuable, blockState);
 			if (addToConnectedInventories(itemStacks)) {
 				stop();
 			}
 			// standard harvest block effect
-			worldObj.playEvent(2001, valuable, Block.getStateId(blockState));
+			world.playEvent(2001, valuable, Block.getStateId(blockState));
 			
 			// remove while updating neighbours
-			worldObj.setBlockState(valuable, Blocks.AIR.getDefaultState(), 3);
+			world.setBlockState(valuable, Blocks.AIR.getDefaultState(), 3);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		if (enableSilktouch) {
 			boolean isSilkHarvestable = false;
 			try {
-				isSilkHarvestable = blockState.getBlock().canSilkHarvest(worldObj, blockPos, blockState, null);
+				isSilkHarvestable = blockState.getBlock().canSilkHarvest(world, blockPos, blockState, null);
 			} catch (final Exception exception) {// protect in case the mined block is corrupted
 				exception.printStackTrace();
 			}
@@ -95,7 +95,7 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 		}
 		
 		try {
-			return blockState.getBlock().getDrops(worldObj, blockPos, blockState, 0);
+			return blockState.getBlock().getDrops(world, blockPos, blockState, 0);
 		} catch (final Exception exception) {// protect in case the mined block is corrupted
 			exception.printStackTrace();
 			return null;

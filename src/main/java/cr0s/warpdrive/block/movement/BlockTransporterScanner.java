@@ -84,12 +84,12 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return AABB_HALF_DOWN;
 	}
 	
 	// return null or empty collection if it's invalid
-	public Collection<BlockPos> getValidContainment(final World worldObj, final BlockPos blockPos) {
+	public Collection<BlockPos> getValidContainment(final World world, final BlockPos blockPos) {
 		final ArrayList<BlockPos> vContainments = new ArrayList<>(8);
 		final MutableBlockPos mutableBlockPos = new MutableBlockPos(blockPos);
 		boolean isScannerPosition = true;
@@ -97,7 +97,7 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 			for (int z = blockPos.getZ() - 1; z <= blockPos.getZ() + 1; z++) {
 				// check base block is containment or scanner in checker pattern
 				mutableBlockPos.setPos(x, blockPos.getY(), z);
-				final Block blockBase = worldObj.getBlockState(mutableBlockPos).getBlock();
+				final Block blockBase = world.getBlockState(mutableBlockPos).getBlock();
 				if ( !(blockBase instanceof BlockTransporterContainment)
 				  && (!isScannerPosition || !(blockBase instanceof BlockTransporterScanner)) ) {
 					return null;
@@ -106,11 +106,11 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 				
 				// check 2 above blocks are air
 				mutableBlockPos.move(EnumFacing.UP);
-				if (!worldObj.isAirBlock(mutableBlockPos)) {
+				if (!world.isAirBlock(mutableBlockPos)) {
 					return null;
 				}
 				mutableBlockPos.move(EnumFacing.UP);
-				if (!worldObj.isAirBlock(mutableBlockPos)) {
+				if (!world.isAirBlock(mutableBlockPos)) {
 					return null;
 				}
 				

@@ -29,7 +29,7 @@ public class CompatEnderIO implements IBlockTransformer {
 		try {
 			classTileEntityEIO = Class.forName("crazypants.enderio.TileEntityEio");
 			classBlockReservoir = Class.forName("crazypants.enderio.machine.reservoir.BlockReservoir");
-			WarpDriveConfig.registerBlockTransformer("EnderIO", new CompatEnderIO());
+			WarpDriveConfig.registerBlockTransformer("enderio", new CompatEnderIO());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

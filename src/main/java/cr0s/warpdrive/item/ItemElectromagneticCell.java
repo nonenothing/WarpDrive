@@ -10,7 +10,9 @@ import cr0s.warpdrive.data.Vector3;
 
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +20,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentTranslation;
 
@@ -80,7 +83,10 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
 		list.add(getItemStackNoCache(null, 0));
 		list.add(getItemStackNoCache(ParticleRegistry.ION, 1000));
 		list.add(getItemStackNoCache(ParticleRegistry.PROTON, 1000));
@@ -244,12 +250,13 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 			super.onEntityExpireEvent(entityItem, itemStack);
 			return;
 		}
-		particleStack.onWorldEffect(entityItem.worldObj, new Vector3(entityItem));
+		particleStack.onWorldEffect(entityItem.world, new Vector3(entityItem));
 	}
 	
 	@Override
-	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
-		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
+	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
+		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
 			WarpDrive.logger.error("Invalid ItemStack passed, expecting ItemElectromagneticCell: " + itemStack);

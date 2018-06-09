@@ -2,11 +2,9 @@ package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.api.IAirContainerItem;
 
-import java.util.List;
-
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 import javax.annotation.Nonnull;
 
@@ -52,7 +50,10 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 	//	return icons[Math.min(icons.length, offset + tier * 6)];
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, getMaxDamage()));
 	}

@@ -81,9 +81,9 @@ public class OrbInstance extends AbstractStructureInstance {
 			new WorldGenSmallShip(random.nextFloat() < 0.2F, false).generate(world, random, new BlockPos(blockPos.getX(), y2, blockPos.getZ()));
 		}
 		final EntitySphereGen entitySphereGen = new EntitySphereGen(world, blockPos.getX(), y2, blockPos.getZ(), this, !hasShip);
-		world.spawnEntityInWorld(entitySphereGen);
+		world.spawnEntity(entitySphereGen);
 		if (((Orb)structure).hasStarCore) {
-			return world.spawnEntityInWorld(new EntityStarCore(world, blockPos.getX(), y2, blockPos.getZ(), totalThickness));
+			return world.spawnEntity(new EntityStarCore(world, blockPos.getX(), y2, blockPos.getZ(), totalThickness));
 		}
 		return true;
 	}

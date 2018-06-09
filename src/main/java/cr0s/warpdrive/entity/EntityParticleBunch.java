@@ -46,7 +46,7 @@ public class EntityParticleBunch extends Entity {
 	public EntityParticleBunch(final World world) {
 		super(world);
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-			WarpDrive.logger.info(this + " created in dimension " + worldObj.provider.getSaveFolder());
+			WarpDrive.logger.info(this + " created in dimension " + world.provider.getSaveFolder());
 		}
 	}
 	
@@ -93,7 +93,7 @@ public class EntityParticleBunch extends Entity {
 	
 	@Override
 	public void onUpdate() {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -111,7 +111,7 @@ public class EntityParticleBunch extends Entity {
 			final float pitch = 0.6F + 0.4F * (float) (factor - indexSound);
 			
 			soundTicks = (int) Math.floor(ACCELERATION_SOUND_UPDATE_TICKS * pitch);
-			worldObj.playSound((EntityPlayer) null, posX, posY, posZ, soundEvent, SoundCategory.HOSTILE, 1.0F, pitch);
+			world.playSound((EntityPlayer) null, posX, posY, posZ, soundEvent, SoundCategory.HOSTILE, 1.0F, pitch);
 		}
 	}
 	
@@ -190,7 +190,7 @@ public class EntityParticleBunch extends Entity {
 		return String.format("%s/%d @ \'%s\' %.2f %.2f %.2f",
 			getClass().getSimpleName(),
 			getEntityId(),
-			worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+			world == null ? "~NULL~" : world.provider.getSaveFolder(),
 			posX, posY, posZ);
 	}
 }

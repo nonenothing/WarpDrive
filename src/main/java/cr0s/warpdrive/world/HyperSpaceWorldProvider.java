@@ -9,7 +9,7 @@ import net.minecraft.world.DimensionType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -18,8 +18,8 @@ import javax.annotation.Nonnull;
 public class HyperSpaceWorldProvider extends AbstractWorldProvider {
 	
 	public HyperSpaceWorldProvider() {
-		biomeProvider  = new BiomeProviderSingle(WarpDrive.spaceBiome);
-		hasNoSky = true;
+		biomeProvider  = new BiomeProviderSingle(WarpDrive.biomeSpace);
+		nether = true;
 	}
 	
 	@Nonnull
@@ -56,7 +56,7 @@ public class HyperSpaceWorldProvider extends AbstractWorldProvider {
 	@Nonnull
 	@Override
 	public Biome getBiomeForCoords(@Nonnull final BlockPos blockPos) {
-		return WarpDrive.spaceBiome;
+		return WarpDrive.biomeSpace;
 	}
 	
 	@Override
@@ -88,17 +88,17 @@ public class HyperSpaceWorldProvider extends AbstractWorldProvider {
 	@Override
 	public int getRespawnDimension(final EntityPlayerMP entityPlayerMP) {
 		if ( entityPlayerMP == null
-		  || entityPlayerMP.worldObj == null ) {
+		  || entityPlayerMP.world == null ) {
 			WarpDrive.logger.error("Invalid player passed to getRespawnDimension: " + entityPlayerMP);
 			return 0;
 		}
-		return StarMapRegistry.getHyperspaceDimensionId(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+		return StarMapRegistry.getHyperspaceDimensionId(entityPlayerMP.world, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 	}
 	
 	@Nonnull
 	@Override
 	public IChunkGenerator createChunkGenerator() {
-		return new HyperSpaceChunkProvider(worldObj, 46);
+		return new HyperSpaceChunkProvider(world, 46);
 	}
 	
 	@Override

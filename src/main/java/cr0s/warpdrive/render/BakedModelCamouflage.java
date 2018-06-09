@@ -19,17 +19,14 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.block.model.ItemTransformVec3f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
-import net.minecraftforge.common.model.TRSRTransformation;
 import net.minecraftforge.common.property.IExtendedBlockState;
 
-public class BakedModelCamouflage implements IPerspectiveAwareModel, IMyBakedModel {
+public class BakedModelCamouflage implements IBakedModel, IMyBakedModel {
 	
 	private ResourceLocation resourceLocation;
 	private IBakedModel bakedModelOriginal;
@@ -106,15 +103,13 @@ public class BakedModelCamouflage implements IPerspectiveAwareModel, IMyBakedMod
 		return bakedModelOriginal.getOverrides();
 	}
 	
+	@Nonnull
 	@Override
-	public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-		final Matrix4f matrix4f;
-		if (bakedModelOriginal instanceof IPerspectiveAwareModel) {
-			matrix4f = ((IPerspectiveAwareModel) bakedModelOriginal).handlePerspective(cameraTransformType).getRight();
-		} else {
-			final ItemTransformVec3f itemTransformVec3f = bakedModelOriginal.getItemCameraTransforms().getTransform(cameraTransformType);
-			matrix4f = new TRSRTransformation(itemTransformVec3f).getMatrix();
+	public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull final ItemCameraTransforms.TransformType cameraTransformType) {
+		if (bakedModelOriginal == null) {
+			return net.minecraftforge.client.ForgeHooksClient.handlePerspective(this, cameraTransformType);
 		}
+		final Matrix4f matrix4f = ((IBakedModel) bakedModelOriginal).handlePerspective(cameraTransformType).getRight();
 		return Pair.of(this, matrix4f);
 	}
 }

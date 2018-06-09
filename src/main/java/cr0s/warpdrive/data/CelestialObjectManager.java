@@ -274,7 +274,7 @@ public class CelestialObjectManager extends XmlFileManager {
 				  && celestialObject1.parent.dimensionId == celestialObject2.parent.dimensionId ) {
 					final AxisAlignedBB areaInParent1 = celestialObject1.getAreaInParent();
 					final AxisAlignedBB areaInParent2 = celestialObject2.getAreaInParent();
-					if (areaInParent1.intersectsWith(areaInParent2)) {
+					if (areaInParent1.intersects(areaInParent2)) {
 						countErrors++;
 						WarpDrive.logger.error(String.format("CelestiaObjects validation error #%d\nOverlapping parent areas detected in dimension %d between %s and %s\nArea1 %s from %s\nArea2 %s from %s", 
 						                                     countErrors, 
@@ -293,7 +293,7 @@ public class CelestialObjectManager extends XmlFileManager {
 				  && celestialObject1.dimensionId == celestialObject2.dimensionId ) {
 					final AxisAlignedBB worldBorderArea1 = celestialObject1.getWorldBorderArea();
 					final AxisAlignedBB worldBorderArea2 = celestialObject2.getWorldBorderArea();
-					if (worldBorderArea1.intersectsWith(worldBorderArea2)) {
+					if (worldBorderArea1.intersects(worldBorderArea2)) {
 						countErrors++;
 						WarpDrive.logger.error(String.format("CelestiaObjects validation error #%d\nOverlapping areas detected in dimension %d between %s and %s\nArea1 %s from %s\nArea2 %s from %s",
 						                                     countErrors,

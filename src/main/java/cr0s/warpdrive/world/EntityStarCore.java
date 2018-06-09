@@ -2,6 +2,7 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.WarpDrive;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -59,7 +60,7 @@ public final class EntityStarCore extends Entity {
 		yMin = yCoord - MAX_RANGE;
 		yMax = yCoord + MAX_RANGE;
 		final AxisAlignedBB aabb = new AxisAlignedBB(xMin, yMin, zMin, xMax, yMax, zMax);
-		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(this, aabb);
+		final List list = world.getEntitiesWithinAABBExcludingEntity(this, aabb);
 		
 		if (!isLogged) {
 			isLogged = true;
@@ -86,11 +87,11 @@ public final class EntityStarCore extends Entity {
 					}
 				}
 				
-				final double distanceSq = entityLivingBase.getDistanceSqToEntity(this);
+				final double distanceSq = entityLivingBase.getDistanceSq(this);
 				if (distanceSq <= KILL_RANGESQ) {
 					// 100% kill, ignores any protection
-					entityLivingBase.attackEntityFrom(DamageSource.onFire, 9000);
-					entityLivingBase.attackEntityFrom(DamageSource.generic, 9000);
+					entityLivingBase.attackEntityFrom(DamageSource.ON_FIRE, 9000);
+					entityLivingBase.attackEntityFrom(DamageSource.GENERIC, 9000);
 					if (!entityLivingBase.isDead) {
 						WarpDrive.logger.warn("Forcing entity death due to star proximity: " + entityLivingBase);
 						entityLivingBase.setDead();
@@ -100,14 +101,14 @@ public final class EntityStarCore extends Entity {
 					if (!entityLivingBase.isImmuneToFire()) {
 						entityLivingBase.setFire(3);
 					}
-					entityLivingBase.attackEntityFrom(DamageSource.onFire, 1);
+					entityLivingBase.attackEntityFrom(DamageSource.ON_FIRE, 1);
 				}
 			}/* else { // Intercept ICBM rocket and kill
 
 				   Entity entity = (Entity) o;
 				   if (entity.getDistanceToEntity(this) <= (this.radius + ROCKET_INTERCEPT_RADIUS)) {
 				       System.out.println("[SC] Intercepted entity: " + entity.getEntityName());
-				       worldObj.removeEntity(entity);
+				       world.removeEntity(entity);
 				   }
 				}*/
 		}
@@ -115,7 +116,7 @@ public final class EntityStarCore extends Entity {
 	
 	@Override
 	public void onUpdate() {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -126,7 +127,7 @@ public final class EntityStarCore extends Entity {
 	}
 	
 	@Override
-	protected void readEntityFromNBT(final NBTTagCompound tagCompound) {
+	protected void readEntityFromNBT(@Nonnull final NBTTagCompound tagCompound) {
 		xCoord = tagCompound.getInteger("x");
 		yCoord = tagCompound.getInteger("y");
 		zCoord = tagCompound.getInteger("z");

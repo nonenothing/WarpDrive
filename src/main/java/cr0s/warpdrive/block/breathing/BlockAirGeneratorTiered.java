@@ -3,18 +3,15 @@ package cr0s.warpdrive.block.breathing;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirContainerItem;
-import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -23,12 +20,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
@@ -38,7 +32,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		super(registryName, Material.IRON);
 		this.tier = tier;
 		setUnlocalizedName("warpdrive.breathing.air_generator" + tier);
-		GameRegistry.registerTileEntity(TileEntityAirGeneratorTiered.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityAirGeneratorTiered.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
@@ -60,7 +54,6 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		       .withProperty(BlockProperties.ACTIVE, (metadata & 8) != 0);
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex() + (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0);
@@ -72,13 +65,6 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 		return new TileEntityAirGeneratorTiered();
 	}
 	
-	@Nonnull
-	@Override
-	public IBlockState onBlockPlaced(final World worldIn, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int meta, final EntityLivingBase entityLiving) {
-		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving).getOpposite();
-		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
-	}
-	
 	@Override
 	public byte getTier(final ItemStack itemStack) {
 		return tier;
@@ -86,20 +72,22 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (tileEntity instanceof TileEntityAirGenerator) {
-			final TileEntityAirGenerator airGenerator = (TileEntityAirGenerator)tileEntity;
-			if (itemStackHeld == null) {
+		if (tileEntity instanceof TileEntityAirGeneratorTiered) {
+			final TileEntityAirGeneratorTiered airGenerator = (TileEntityAirGeneratorTiered) tileEntity;
+			if (itemStackHeld.isEmpty()) {
 				Commons.addChatMessage(entityPlayer, airGenerator.getStatus());
 				return true;
 			} else {
@@ -111,8 +99,8 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 						final ItemStack toAdd = airCanister.getFullAirContainer(itemStackHeld);
 						if (toAdd != null) {
 							if (!entityPlayer.inventory.addItemStackToInventory(toAdd)) {
-								final EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
-								entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+								final EntityItem entityItem = new EntityItem(entityPlayer.world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, toAdd);
+								entityPlayer.world.spawnEntity(entityItem);
 							}
 							((EntityPlayerMP)entityPlayer).sendContainerToPlayer(entityPlayer.inventoryContainer);
 							airGenerator.energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_CANISTER, false);

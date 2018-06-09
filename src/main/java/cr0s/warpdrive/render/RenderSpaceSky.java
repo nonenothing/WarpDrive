@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -45,7 +45,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	static {
 		// pre-generate skyboxes
 		final Tessellator tessellator = Tessellator.getInstance();
-		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		final BufferBuilder vertexBuffer = tessellator.getBuffer();
 		
 		GL11.glNewList(callListUpperSkyBox, GL11.GL_COMPILE);
 		final int stepSize = 64;
@@ -80,12 +80,12 @@ public class RenderSpaceSky extends IRenderHandler {
 	
 	@Override
 	public void render(final float partialTicks, final WorldClient world, final Minecraft mc) {
-		final Vec3d vec3Player = mc.thePlayer.getPositionEyes(partialTicks);
+		final Vec3d vec3Player = mc.player.getPositionEyes(partialTicks);
 		final CelestialObject celestialObject = world.provider == null ? null
-				: CelestialObjectManager.get(world, (int) vec3Player.xCoord, (int) vec3Player.zCoord);
+				: CelestialObjectManager.get(world, (int) vec3Player.x, (int) vec3Player.z);
 		
 		final Tessellator tessellator = Tessellator.getInstance();
-		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		final BufferBuilder vertexBuffer = tessellator.getBuffer();
 		
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glDepthMask(false);
@@ -93,9 +93,9 @@ public class RenderSpaceSky extends IRenderHandler {
 		// draw upper skybox
 		/*
 		final Vec3d skyColor = getCustomSkyColor();
-		float skyColorRed   = (float) skyColor.xCoord * (1 - world.getStarBrightness(partialTicks) * 2);
-		float skyColorGreen = (float) skyColor.yCoord * (1 - world.getStarBrightness(partialTicks) * 2);
-		float skyColorBlue  = (float) skyColor.zCoord * (1 - world.getStarBrightness(partialTicks) * 2);
+		float skyColorRed   = (float) skyColor.x * (1 - world.getStarBrightness(partialTicks) * 2);
+		float skyColorGreen = (float) skyColor.y * (1 - world.getStarBrightness(partialTicks) * 2);
+		float skyColorBlue  = (float) skyColor.z * (1 - world.getStarBrightness(partialTicks) * 2);
 		float var8;
 
 		if (mc.gameSettings.anaglyph) {
@@ -162,7 +162,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			GL11.glPushMatrix();
 			final double planetScale = 10.0D;
 			final double planetRange = 140.0D;
-			final float planetRotation = (float) (world.getSpawnPoint().getZ() - mc.thePlayer.posZ) * 0.1F;
+			final float planetRotation = (float) (world.getSpawnPoint().getZ() - mc.player.posZ) * 0.1F;
 			GL11.glScalef(0.6F, 0.6F, 0.6F);
 			GL11.glRotatef(planetRotation, 1.0F, 0.0F, 0.0F);
 			GL11.glRotatef(190F, 1.0F, 0.0F, 0.0F);
@@ -184,7 +184,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		
 		// Planets
 		if (celestialObject != null && celestialObject.opacityCelestialObjects > 0.0F) {
-			final Vector3 vectorPlayer = StarMapRegistry.getUniversalCoordinates(celestialObject, vec3Player.xCoord, vec3Player.yCoord, vec3Player.zCoord);
+			final Vector3 vectorPlayer = StarMapRegistry.getUniversalCoordinates(celestialObject, vec3Player.x, vec3Player.y, vec3Player.z);
 			for (final CelestialObject celestialObjectChild : CelestialObjectManager.getRenderStack()) {
 				if (celestialObject == celestialObjectChild) {
 					continue;
@@ -199,7 +199,7 @@ public class RenderSpaceSky extends IRenderHandler {
 			}
 		}
 		
-		// final double playerAltitude = mc.thePlayer.getPositionEyes(partialTicks).yCoord - world.getHorizon();
+		// final double playerAltitude = mc.player.getPositionEyes(partialTicks).yCoord - world.getHorizon();
 		
 		// stratosphere box
 		/*
@@ -361,7 +361,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		
 		// GL11.glEnable(GL11.GL_BLEND);    // by caller
 		final double time = Minecraft.getSystemTime() / 1000.0D;
-		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		final BufferBuilder vertexBuffer = tessellator.getBuffer();
 		for (final RenderData renderData : celestialObject.setRenderData) {
 			// compute texture offsets for clouds animation 
 			final float offsetU = (float) ( Math.signum(renderData.periodU) * ((time / Math.abs(renderData.periodU)) % 1.0D) );
@@ -416,7 +416,7 @@ public class RenderSpaceSky extends IRenderHandler {
 		final Random rand = new Random(10842L);
 		final boolean hasMoreStars = rand.nextBoolean() || rand.nextBoolean();
 		final Tessellator tessellator = Tessellator.getInstance();
-		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		final BufferBuilder vertexBuffer = tessellator.getBuffer();
 		
 		final double renderRangeMax = 100.0D;
 		for (int indexStars = 0; indexStars < (hasMoreStars ? 20000 : 2000); indexStars++) {
@@ -551,7 +551,7 @@ public class RenderSpaceSky extends IRenderHandler {
 	}
 	
 	public static float getSkyBrightness(final float par1) {
-		final float var2 = FMLClientHandler.instance().getClient().theWorld.getCelestialAngle(par1);
+		final float var2 = FMLClientHandler.instance().getClient().world.getCelestialAngle(par1);
 		float var3 = 1.0F - (MathHelper.sin(var2 * (float) Math.PI * 2.0F) * 2.0F + 0.25F);
 
 		if (var3 < 0.0F) {

@@ -7,7 +7,6 @@ import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import io.netty.buffer.ByteBuf;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -50,10 +49,10 @@ public class MessageClientSync implements IMessage, IMessageHandler<MessageClien
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageClientSync messageClientSync, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().theWorld == null) {
-			WarpDrive.logger.error("WorldObj is null, ignoring client synchronization packet");
-			return null;
-		}
+		// if (Minecraft.getMinecraft().world == null) {
+		// 	WarpDrive.logger.error("WorldObj is null, ignoring client synchronization packet");
+		// 	return null;
+		// }
 		
 		if (WarpDriveConfig.LOGGING_CLIENT_SYNCHRONIZATION) {
 			WarpDrive.logger.info(String.format("Received client synchronization packet: %s",

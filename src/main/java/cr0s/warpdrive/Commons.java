@@ -10,6 +10,7 @@ import cr0s.warpdrive.world.SpaceTeleporter;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -43,7 +44,6 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -125,6 +125,11 @@ public class Commons {
 		return result.toString();
 	}
 	
+	public static Style styleCommand = new Style().setColor(TextFormatting.AQUA);
+	public static Style styleHeader = new Style().setColor(TextFormatting.GOLD);
+	public static Style styleCorrect = new Style().setColor(TextFormatting.GREEN);
+	public static Style styleWarning = new Style().setColor(TextFormatting.RED);
+	
 	public static ITextComponent getChatPrefix(final Block block) {
 		return getChatPrefix(block.getUnlocalizedName() + ".name");
 	}
@@ -136,7 +141,7 @@ public class Commons {
 	public static ITextComponent getChatPrefix(final String translationKey) {
 		return new TextComponentString("")
 		    .appendSibling(new TextComponentTranslation("warpdrive.guide.prefix", new TextComponentTranslation(translationKey))
-		        .setStyle(new Style().setColor(TextFormatting.GOLD)));
+		        .setStyle(styleHeader));
 	}
 	
 	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {
@@ -153,7 +158,7 @@ public class Commons {
 		
 		final String[] lines = updateEscapeCodes(message).split("\n");
 		for (final String line : lines) {
-			commandSender.addChatMessage(new TextComponentString(line));
+			commandSender.sendMessage(new TextComponentString(line));
 		}
 		
 		// logger.info(message);
@@ -284,7 +289,7 @@ public class Commons {
 	
 	public static ItemStack copyWithSize(final ItemStack itemStack, final int newSize) {
 		final ItemStack ret = itemStack.copy();
-		ret.stackSize = newSize;
+		ret.setCount(newSize);
 		return ret;
 	}
 	
@@ -481,36 +486,39 @@ public class Commons {
 		return EnumFacing.NORTH;
 	}
 	
-	public static int getFacingFromEntity(final EntityLivingBase entityLiving) {
-		if (entityLiving != null) {
-			final int metadata;
-			if (entityLiving.rotationPitch > 65) {
-				metadata = 1;
-			} else if (entityLiving.rotationPitch < -65) {
-				metadata = 0;
+	public static EnumFacing getFacingFromEntity(final EntityLivingBase entityLivingBase) {
+		if (entityLivingBase != null) {
+			final EnumFacing facing;
+			if (entityLivingBase.rotationPitch > 45) {
+				facing = EnumFacing.UP;
+			} else if (entityLivingBase.rotationPitch < -45) {
+				facing = EnumFacing.DOWN;
 			} else {
-				final int direction = Math.round(entityLiving.rotationYaw / 90.0F) & 3;
+				final int direction = Math.round(entityLivingBase.rotationYaw / 90.0F) & 3;
 				switch (direction) {
 					case 0:
-						metadata = 2;
+						facing = EnumFacing.NORTH;
 						break;
 					case 1:
-						metadata = 5;
+						facing = EnumFacing.EAST;
 						break;
 					case 2:
-						metadata = 3;
+						facing = EnumFacing.SOUTH;
 						break;
 					case 3:
-						metadata = 4;
+						facing = EnumFacing.WEST;
 						break;
 					default:
-						metadata = 2;
+						facing = EnumFacing.NORTH;
 						break;
 				}
 			}
-			return metadata;
+			if (entityLivingBase.isSneaking()) {
+				return facing.getOpposite();
+			}
+			return facing;
 		}
-		return 0;
+		return EnumFacing.UP;
 	}
 	
 	public static boolean isSafeThread() {
@@ -599,16 +607,21 @@ public class Commons {
 	}
 	
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(final ICommandSender sender, final String playerNameOrSelector) {
-		final List<EntityPlayerMP> onlinePlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
+		final List<EntityPlayerMP> onlinePlayers = sender.getServer().getPlayerList().getPlayers();
 		for (final EntityPlayerMP onlinePlayer : onlinePlayers) {
-			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector) && onlinePlayer instanceof EntityPlayerMP) {
+			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector)) {
 				return new EntityPlayerMP[] { onlinePlayer };
 			}
 		}
 		
-		final List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(sender, playerNameOrSelector, EntityPlayerMP.class);
-		if (entityPlayerMPs_found != null && !entityPlayerMPs_found.isEmpty()) {
-			return entityPlayerMPs_found.toArray(new EntityPlayerMP[0]);
+		try {
+			final List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(sender, playerNameOrSelector, EntityPlayerMP.class);
+			if (!entityPlayerMPs_found.isEmpty()) {
+				return entityPlayerMPs_found.toArray(new EntityPlayerMP[0]);
+			}
+		} catch (final CommandException exception) {
+			WarpDrive.logger.error(String.format("Exception from %s with selector %s",
+			                                     sender, playerNameOrSelector));
 		}
 		
 		return null;
@@ -640,15 +653,15 @@ public class Commons {
 	
 	public static void moveEntity(final Entity entity, final World worldDestination, final Vector3 v3Destination) {
 		// change to another dimension if needed
-		if (worldDestination != entity.worldObj) {
-			final World worldSource = entity.worldObj;
+		if (worldDestination != entity.world) {
+			final World worldSource = entity.world;
 			final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-			final WorldServer from = server.worldServerForDimension(worldSource.provider.getDimension());
-			final WorldServer to = server.worldServerForDimension(worldDestination.provider.getDimension());
+			final WorldServer from = server.getWorld(worldSource.provider.getDimension());
+			final WorldServer to = server.getWorld(worldDestination.provider.getDimension());
 			final SpaceTeleporter teleporter = new SpaceTeleporter(to, 0,
-			                                                       MathHelper.floor_double(v3Destination.x),
-			                                                       MathHelper.floor_double(v3Destination.y),
-			                                                       MathHelper.floor_double(v3Destination.z));
+			                                                       MathHelper.floor(v3Destination.x),
+			                                                       MathHelper.floor(v3Destination.y),
+			                                                       MathHelper.floor(v3Destination.z));
 			
 			if (entity instanceof EntityPlayerMP) {
 				final EntityPlayerMP player = (EntityPlayerMP) entity;
@@ -675,7 +688,7 @@ public class Commons {
 		if (worldServer == null) {
 			try {
 				final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-				worldServer = server.worldServerForDimension(dimensionId);
+				worldServer = server.getWorld(dimensionId);
 			} catch (final Exception exception) {
 				WarpDrive.logger.error(String.format("%s: Failed to initialize dimension %d",
 				                                     exception.getMessage(),
@@ -698,7 +711,7 @@ public class Commons {
 	public static RayTraceResult getInteractingBlock(final World world, final EntityPlayer entityPlayer, final double distance) {
 		final Vec3d vec3Position = new Vec3d(entityPlayer.posX, entityPlayer.posY + entityPlayer.eyeHeight, entityPlayer.posZ);
 		final Vec3d vec3Look = entityPlayer.getLook(1.0F);
-		final Vec3d vec3Target = vec3Position.addVector(vec3Look.xCoord * distance, vec3Look.yCoord * distance, vec3Look.zCoord * distance);
+		final Vec3d vec3Target = vec3Position.addVector(vec3Look.x * distance, vec3Look.y * distance, vec3Look.z * distance);
 		return world.rayTraceBlocks(vec3Position, vec3Target, false, false, true);
 	}
 	

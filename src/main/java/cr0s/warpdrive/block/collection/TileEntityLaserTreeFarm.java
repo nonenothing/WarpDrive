@@ -119,11 +119,11 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
-		IBlockState blockState = worldObj.getBlockState(pos);
+		IBlockState blockState = world.getBlockState(pos);
 		if (currentState == STATE_IDLE) {
 			delayTicks = 0;
 			delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
@@ -162,12 +162,12 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// validate environment: clearance above
-				final IBlockState blockStateAbove = worldObj.getBlockState(pos.up());
+				final IBlockState blockStateAbove = world.getBlockState(pos.up());
 				final Block blockAbove = blockStateAbove.getBlock();
 				if ( !isLog(blockAbove)
 				  && !isLeaf(blockAbove)
-				  && !blockAbove.isAir(blockStateAbove, worldObj, pos.up()) ) {
-					PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
+				  && !blockAbove.isAir(blockStateAbove, world, pos.up()) ) {
+					PacketHandler.sendSpawnParticlePacket(world, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
 					                                      new Vector3(0.0D, 0.0D, 0.0D),
 					                                      1.0F, 1.0F, 1.0F,
 					                                      1.0F, 1.0F, 1.0F,
@@ -198,11 +198,11 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				final double xMin = pos.getX() - radiusX_actual + 0.0D;
 				final double zMax = pos.getZ() + radiusZ_actual + 1.0D;
 				final double zMin = pos.getZ() - radiusZ_actual + 0.0D;
-				final double y = pos.getY() + worldObj.rand.nextInt(9);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMin, y, zMin), new Vector3(xMax, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMin), new Vector3(xMax, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMax, y, zMax), new Vector3(xMin, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
-				PacketHandler.sendBeamPacket(worldObj, new Vector3(xMin, y, zMax), new Vector3(xMin, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				final double y = pos.getY() + world.rand.nextInt(9);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMin, y, zMin), new Vector3(xMax, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMax, y, zMin), new Vector3(xMax, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMax, y, zMax), new Vector3(xMin, y, zMax), 0.3F, 0.0F, 1.0F, age, 0, 50);
+				PacketHandler.sendBeamPacket(world, new Vector3(xMin, y, zMax), new Vector3(xMin, y, zMin), 0.3F, 0.0F, 1.0F, age, 0, 50);
 				
 			} else if (delayTicks >= delayTargetTicks) {
 				if (WarpDriveConfig.LOGGING_COLLECTION) {
@@ -228,21 +228,21 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				valuables = new ArrayList<>(scanTrees());
 				valuableIndex = 0;
 				if (!valuables.isEmpty()) {
-					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
+					world.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
 					currentState = tapTrees ? STATE_TAP : STATE_HARVEST;
 					delayTargetTicks = TREE_FARM_HARVEST_LOG_DELAY_TICKS;
 					updateBlockState(blockState, BlockLaserTreeFarm.MODE, EnumLaserTreeFarmMode.FARMING_POWERED);
 					return;
 					
 				} else if (soils != null && !soils.isEmpty()) {
-					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
+					world.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
 					currentState = STATE_PLANT;
 					delayTargetTicks = TREE_FARM_PLANT_DELAY_TICKS;
 					updateBlockState(blockState, BlockLaserTreeFarm.MODE, EnumLaserTreeFarmMode.PLANTING_POWERED);
 					return;
 					
 				} else {
-					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
+					world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 					currentState = STATE_WARMUP;
 					delayTargetTicks = TREE_FARM_WARMUP_DELAY_TICKS;
 					updateBlockState(blockState, BlockLaserTreeFarm.MODE, EnumLaserTreeFarmMode.SCANNING_LOW_POWER);
@@ -266,13 +266,13 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				
 				// get current block
 				final BlockPos valuable = valuables.get(valuableIndex);
-				final IBlockState blockStateValuable = worldObj.getBlockState(valuable);
+				final IBlockState blockStateValuable = world.getBlockState(valuable);
 				valuableIndex++;
 				boolean isLog = isLog(blockStateValuable.getBlock());
 				boolean isLeaf = isLeaf(blockStateValuable.getBlock());
 				
 				// check area protection
-				if (isBlockBreakCanceled(null, worldObj, valuable)) {
+				if (isBlockBreakCanceled(null, world, valuable)) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
 						WarpDrive.logger.info(this + " Harvesting cancelled at (" + valuable.getX() + " " + valuable.getY() + " " + valuable.getZ() + ")");
 					}
@@ -302,16 +302,16 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							}
 							
 							final ItemStack resin = WarpDriveConfig.IC2_Resin.copy();
-							resin.stackSize = (int) Math.round(Math.random() * 4);
+							resin.setCount( (int) Math.round(Math.random() * 4) );
 							if (addToConnectedInventories(resin)) {
 								stop();
 							}
-							totalHarvested += resin.stackSize;
-							final int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * TREE_FARM_HARVEST_LOG_DELAY_TICKS));
-							PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable).translate(0.5D),
+							totalHarvested += resin.getCount();
+							final int age = Math.max(10, Math.round((4 + world.rand.nextFloat()) * TREE_FARM_HARVEST_LOG_DELAY_TICKS));
+							PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(valuable).translate(0.5D),
 									0.8F, 0.8F, 0.2F, age, 0, 50);
 							
-							worldObj.setBlockState(valuable, blockStateValuable.getBlock().getStateFromMeta(metadata + 6), 3);
+							world.setBlockState(valuable, blockStateValuable.getBlock().getStateFromMeta(metadata + 6), 3);
 							// done with this block
 							return;
 							
@@ -340,10 +340,10 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					}
 					
 					totalHarvested++;
-					final int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
-					PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(valuable).translate(0.5D),
+					final int age = Math.max(10, Math.round((4 + world.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+					PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(valuable).translate(0.5D),
 							0.2F, 0.7F, 0.4F, age, 0, 50);
-					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
+					world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
 					
 					harvestBlock(valuable);
 				}
@@ -367,7 +367,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				// get current block
 				final BlockPos soil = soils.get(soilIndex);
 				final BlockPos blockPosPlant = soil.add(0, 1, 0);
-				final IBlockState blockStateSoil = worldObj.getBlockState(soil);
+				final IBlockState blockStateSoil = world.getBlockState(soil);
 				soilIndex++;
 				final Collection<IInventory> inventories = Commons.getConnectedInventories(this);
 				if (inventories == null || inventories.isEmpty()) {
@@ -388,7 +388,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					}
 					while (slotIndex < inventoryLoop.getSizeInventory()) {
 						itemStack = inventoryLoop.getStackInSlot(slotIndex);
-						if (itemStack == null || itemStack.stackSize <= 0) {
+						if (itemStack.isEmpty()) {
 							slotIndex++;
 							continue;
 						}
@@ -399,18 +399,18 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 						}
 						plantableCount++;
 						final IPlantable plantable = (IPlantable) ((itemStack.getItem() instanceof IPlantable) ? itemStack.getItem() : blockFromItem);
-						plant = plantable.getPlant(worldObj, blockPosPlant);
+						plant = plantable.getPlant(world, blockPosPlant);
 						if (WarpDriveConfig.LOGGING_COLLECTION) {
 							WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant);
 						}
 						
-						if (!blockStateSoil.getBlock().canSustainPlant(blockStateSoil, worldObj, soil, EnumFacing.UP, plantable)) {
+						if (!blockStateSoil.getBlock().canSustainPlant(blockStateSoil, world, soil, EnumFacing.UP, plantable)) {
 							plant = null;
 							slotIndex++;
 							continue;
 						}
 						
-						if (!plant.getBlock().canPlaceBlockAt(worldObj, blockPosPlant)) {
+						if (!plant.getBlock().canPlaceBlockAt(world, blockPosPlant)) {
 							plant = null;
 							slotIndex++;
 							continue;
@@ -437,7 +437,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// check area protection
-				if (isBlockPlaceCanceled(null, worldObj, blockPosPlant, plant)) {
+				if (isBlockPlaceCanceled(null, world, blockPosPlant, plant)) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
 						WarpDrive.logger.info(this + " Planting cancelled at (" + blockPosPlant.getX() + " " + blockPosPlant.getY() + " " + blockPosPlant.getZ() + ")");
 					}
@@ -457,18 +457,15 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					updateBlockState(blockState, BlockLaserTreeFarm.MODE, EnumLaserTreeFarmMode.PLANTING_POWERED);
 				}
 				
-				itemStack.stackSize--;
-				if (itemStack.stackSize <= 0) {
-					itemStack = null;
-				}
+				itemStack.shrink(1);
 				inventory.setInventorySlotContents(slotIndex, itemStack);
 				
 				// totalPlanted++;
-				final int age = Math.max(10, Math.round((4 + worldObj.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
-				PacketHandler.sendBeamPacket(worldObj, laserOutput, new Vector3(blockPosPlant).translate(0.5D),
+				final int age = Math.max(10, Math.round((4 + world.rand.nextFloat()) * WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS));
+				PacketHandler.sendBeamPacket(world, laserOutput, new Vector3(blockPosPlant).translate(0.5D),
 						0.2F, 0.7F, 0.4F, age, 0, 50);
-				worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
-				worldObj.setBlockState(blockPosPlant, plant, 3);
+				world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.BLOCKS, 4F, 1F);
+				world.setBlockState(blockPosPlant, plant, 3);
 			}
 		}
 	}
@@ -513,8 +510,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			for (int x = xMin; x <= xMax; x++) {
 				for (int z = zMin; z <= zMax; z++) {
 					final BlockPos blockPos = new BlockPos(x, y, z);
-					if (worldObj.isAirBlock(blockPos.add(0, 1, 0))) {
-						final Block block = worldObj.getBlockState(blockPos).getBlock();
+					if (world.isAirBlock(blockPos.add(0, 1, 0))) {
+						final Block block = world.getBlockState(blockPos).getBlock();
 						if (isSoil(block)) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
 								WarpDrive.logger.info("Found soil at " + x + " " + y + " " + z);
@@ -545,7 +542,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			for (int x = xMin; x <= xMax; x++) {
 				for (int z = zMin; z <= zMax; z++) {
 					final BlockPos blockPos = new BlockPos(x, y, z);
-					final Block block = worldObj.getBlockState(blockPos).getBlock();
+					final Block block = world.getBlockState(blockPos).getBlock();
 					if (isLog(block)) {
 						if (!logPositions.contains(blockPos)) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
@@ -565,7 +562,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			}
 			final int maxLogDistance = WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE
 			                         + cache_laserMedium_count * WarpDriveConfig.TREE_FARM_MAX_LOG_DISTANCE_PER_MEDIUM;
-			logPositions = Commons.getConnectedBlocks(worldObj, logPositions, Commons.UP_DIRECTIONS, whitelist, maxLogDistance);
+			logPositions = Commons.getConnectedBlocks(world, logPositions, Commons.UP_DIRECTIONS, whitelist, maxLogDistance);
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
@@ -600,45 +597,45 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] start(final Context context, final Arguments arguments) {
 		return start();
 	}
 	
 	@SuppressWarnings("SameReturnValue")
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] stop(final Context context, final Arguments arguments) {
 		stop();
 		return null;
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] radius(final Context context, final Arguments arguments) {
 		return radius(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] breakLeaves(final Context context, final Arguments arguments) {
 		return breakLeaves(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] silktouch(final Context context, final Arguments arguments) {
 		return silktouch(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] tapTrees(final Context context, final Arguments arguments) {
 		return tapTrees(argumentsOCtoCC(arguments));
 	}
@@ -724,7 +721,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

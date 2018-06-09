@@ -61,7 +61,7 @@ public class TileEntityAcceleratorController extends TileEntityAbstractEnergy im
 	public String toString() {
 		return String.format("%s @ \'%s\' (%d %d %d)",
 		                     getClass().getSimpleName(),
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

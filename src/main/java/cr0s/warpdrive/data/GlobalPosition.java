@@ -34,7 +34,7 @@ public class GlobalPosition {
 	}
 	
 	public GlobalPosition(final Entity entity) {
-		this(entity.worldObj.provider.getDimension(),
+		this(entity.world.provider.getDimension(),
 			(int) Math.floor(entity.posX),
 			(int) Math.floor(entity.posY),
 			(int) Math.floor(entity.posZ));
@@ -50,10 +50,10 @@ public class GlobalPosition {
 		boolean isLoaded = false;
 		final ChunkProviderServer chunkProviderServer = world.getChunkProvider();
 		try {
-			final long i = ChunkPos.chunkXZ2Int(x >> 4, z >> 4);
+			final long i = ChunkPos.asLong(x >> 4, z >> 4);
 			final Chunk chunk = chunkProviderServer.id2ChunkMap.get(i);
 			if (chunk != null) {
-				isLoaded = !chunk.unloaded;
+				isLoaded = !chunk.unloadQueued;
 			}
 		} catch (NoSuchFieldError exception) {
 			isLoaded = chunkProviderServer.chunkExists(x >> 4, z >> 4);
@@ -97,7 +97,7 @@ public class GlobalPosition {
 	}
 	
 	public double distance2To(final Entity entity) {
-		if (entity.worldObj.provider.getDimension() != dimensionId) {
+		if (entity.world.provider.getDimension() != dimensionId) {
 			return Double.MAX_VALUE;
 		}
 		final double newX = entity.posX - x;

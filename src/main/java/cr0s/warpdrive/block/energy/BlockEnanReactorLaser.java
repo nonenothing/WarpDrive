@@ -12,9 +12,9 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
@@ -24,34 +24,33 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		super(registryName, Material.IRON);
 		setResistance(60.0F * 5 / 3);
 		setUnlocalizedName("warpdrive.energy.enan_reactor_laser");
-		GameRegistry.registerTileEntity(TileEntityEnanReactorLaser.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityEnanReactorLaser.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
-		setDefaultState(blockState.getBaseState()
-		                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
-		                .withProperty(BlockProperties.VALID_POWERED, EnumValidPowered.INVALID));
+		setDefaultState(getDefaultState()
+				                .withProperty(BlockProperties.ACTIVE, false)
+				                .withProperty(BlockProperties.FACING, EnumFacing.DOWN)
+		               );
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, BlockProperties.FACING, BlockProperties.VALID_POWERED);
+		return new BlockStateContainer(this, BlockProperties.ACTIVE, BlockProperties.FACING);
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
-		final int facing = (metadata & 7) < 6 ? (metadata & 7) : 0;
-		final EnumValidPowered enumValidPowered = EnumValidPowered.get(metadata - facing);
 		return getDefaultState()
-		       .withProperty(BlockProperties.FACING, EnumFacing.getFront(facing))
-		       .withProperty(BlockProperties.VALID_POWERED, enumValidPowered != null ? enumValidPowered : EnumValidPowered.INVALID);
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x8) != 0)
+				       .withProperty(BlockProperties.FACING, EnumFacing.getFront(metadata & 0x7));
 	}
 	
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
-		return blockState.getValue(BlockProperties.FACING).getIndex()
-		       + blockState.getValue(BlockProperties.VALID_POWERED).getIndex();
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 0x8 : 0x0)
+		       | (blockState.getValue(BlockProperties.FACING).getIndex());
 	}
 	
 	@Nonnull

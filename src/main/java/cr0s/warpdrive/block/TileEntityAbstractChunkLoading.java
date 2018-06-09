@@ -27,15 +27,15 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
 		if ( chunkMin == null
 		  || chunkMax == null ) {
 			WarpDrive.logger.warn(this + " No chunk coordinates defined, assuming current chunk");
-			chunkMin = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
-			chunkMax = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
+			chunkMin = world.getChunkFromBlockCoords(pos).getPos();
+			chunkMax = world.getChunkFromBlockCoords(pos).getPos();
 		}
 	}
 	
@@ -43,7 +43,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -64,7 +64,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		final boolean shouldChunkLoad = shouldChunkLoad();
 		if (shouldChunkLoad) {
 			if (ticket == null) {
-				chunkloading_giveTicket(ChunkLoadingHandler.forgeTicket_requestNormal(worldObj, this));
+				chunkloading_giveTicket(ChunkLoadingHandler.forgeTicket_requestNormal(world, this));
 			} else if (force) {
 				ChunkLoadingHandler.forgeTicket_clearChunks(ticket);
 			}
@@ -74,7 +74,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 				final ArrayList<ChunkPos> chunksToLoad = getChunksToLoad();
 				if (chunksToLoad.size() > ticketSize) {
 					WarpDrive.logger.error(String.format("Too many chunk requested for loading @ %s (%d %d %d)",
-					                                     worldObj.provider.getSaveFolder(),
+					                                     world.provider.getSaveFolder(),
 					                                     pos.getX(), pos.getY(), pos.getZ()));
 					return;
 				}
@@ -101,8 +101,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	}
 	
 	public int chunkloading_getArea() {
-		return (chunkMax.chunkXPos - chunkMin.chunkXPos + 1)
-		     * (chunkMax.chunkZPos - chunkMin.chunkZPos + 1);
+		return (chunkMax.x - chunkMin.x + 1)
+		     * (chunkMax.z - chunkMin.z + 1);
 	}
 	
 	@Nonnull
@@ -111,17 +111,17 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		tagCompound = super.writeToNBT(tagCompound);
 		
 		if (chunkMin == null) {
-			chunkMin = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
+			chunkMin = world.getChunkFromBlockCoords(pos).getPos();
 		}
 		
 		if (chunkMax == null) {
-			chunkMax = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
+			chunkMax = world.getChunkFromBlockCoords(pos).getPos();
 		}
 		
-		tagCompound.setInteger("minChunkX", chunkMin.chunkXPos);
-		tagCompound.setInteger("minChunkZ", chunkMin.chunkZPos);
-		tagCompound.setInteger("maxChunkX", chunkMax.chunkXPos);
-		tagCompound.setInteger("maxChunkZ", chunkMax.chunkZPos);
+		tagCompound.setInteger("minChunkX", chunkMin.x);
+		tagCompound.setInteger("minChunkZ", chunkMin.z);
+		tagCompound.setInteger("maxChunkX", chunkMax.x);
+		tagCompound.setInteger("maxChunkZ", chunkMax.z);
 		return tagCompound;
 	}
 	
@@ -154,20 +154,20 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 			return null;
 		}
 		
-		assert(chunkMin.chunkXPos <= chunkMax.chunkXPos);
-		assert(chunkMin.chunkZPos <= chunkMax.chunkZPos);
+		assert(chunkMin.x <= chunkMax.x);
+		assert(chunkMin.z <= chunkMax.z);
 		
 		final int count = chunkloading_getArea();
 		if (WarpDriveConfig.LOGGING_CHUNK_LOADING) {
 			WarpDrive.logger.info(String.format("Collecting %d chunks to be loaded @ %s from %s to %s",
 			                                    count,
-			                                    worldObj.provider.getSaveFolder(),
+			                                    world.provider.getSaveFolder(),
 			                                    chunkMin, chunkMax));
 		}
 		final ArrayList<ChunkPos> chunkCoords = new ArrayList<>(count);
 		
-		for (int x = chunkMin.chunkXPos; x <= chunkMax.chunkXPos; x++) {
-			for (int z = chunkMin.chunkZPos; z <= chunkMax.chunkZPos; z++) {
+		for (int x = chunkMin.x; x <= chunkMax.x; x++) {
+			for (int z = chunkMin.z; z <= chunkMax.z; z++) {
 				chunkCoords.add(new ChunkPos(x, z));
 			}
 		}

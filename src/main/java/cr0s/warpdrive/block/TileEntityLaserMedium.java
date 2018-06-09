@@ -21,7 +21,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -30,7 +30,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 			ticks = 0;
 			
 			final int level = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
-			final IBlockState blockState = worldObj.getBlockState(pos);
+			final IBlockState blockState = world.getBlockState(pos);
 			if (blockState.getValue(BlockLaserMedium.LEVEL) != level) {
 				updateBlockState(blockState, BlockLaserMedium.LEVEL, level);
 			}

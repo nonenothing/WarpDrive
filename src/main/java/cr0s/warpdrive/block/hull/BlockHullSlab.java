@@ -10,7 +10,6 @@ import cr0s.warpdrive.data.Vector3;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.BlockSlab;
@@ -32,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -48,13 +48,13 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	// 12 for plain double slab
 	// 13-15 for tiled double slabs
 	
-	protected static final AxisAlignedBB AABB_HALF_DOWN   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 0.50D, 1.00D);
-	protected static final AxisAlignedBB AABB_HALF_UP     = new AxisAlignedBB(0.00D, 0.50D, 0.00D, 1.00D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_HALF_NORTH  = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 1.00D, 0.50D);
-	protected static final AxisAlignedBB AABB_HALF_SOUTH  = new AxisAlignedBB(0.00D, 0.00D, 0.50D, 1.00D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_HALF_EAST   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 0.50D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_HALF_WEST   = new AxisAlignedBB(0.50D, 0.00D, 0.00D, 1.00D, 1.00D, 1.00D);
-	protected static final AxisAlignedBB AABB_FULL        = FULL_BLOCK_AABB;
+	private static final AxisAlignedBB AABB_HALF_DOWN   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 0.50D, 1.00D);
+	private static final AxisAlignedBB AABB_HALF_UP     = new AxisAlignedBB(0.00D, 0.50D, 0.00D, 1.00D, 1.00D, 1.00D);
+	private static final AxisAlignedBB AABB_HALF_NORTH  = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 1.00D, 0.50D);
+	private static final AxisAlignedBB AABB_HALF_SOUTH  = new AxisAlignedBB(0.00D, 0.00D, 0.50D, 1.00D, 1.00D, 1.00D);
+	private static final AxisAlignedBB AABB_HALF_EAST   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 0.50D, 1.00D, 1.00D);
+	private static final AxisAlignedBB AABB_HALF_WEST   = new AxisAlignedBB(0.50D, 0.00D, 0.00D, 1.00D, 1.00D, 1.00D);
+	private static final AxisAlignedBB AABB_FULL        = FULL_BLOCK_AABB;
 	
 	public static final PropertyEnum<EnumVariant> VARIANT = PropertyEnum.create("variant", EnumVariant.class);
 	
@@ -105,11 +105,11 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
-		list.add(new ItemStack(item, 1, 0));
-		list.add(new ItemStack(item, 1, 2));
-		list.add(new ItemStack(item, 1, 6));
-		list.add(new ItemStack(item, 1, 8));
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
+		list.add(new ItemStack(this, 1, 0));
+		list.add(new ItemStack(this, 1, 2));
+		list.add(new ItemStack(this, 1, 6));
+		list.add(new ItemStack(this, 1, 8));
 	}
 	
 	@Override
@@ -146,6 +146,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return EnumVariant.get(itemStack.getItemDamage());
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public AxisAlignedBB getBoundingBox(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
@@ -155,7 +156,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return getBlockBoundsFromState(blockState);
 	}
 	
@@ -166,16 +167,23 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return blockState.getValue(VARIANT).getAxisAlignedBB();
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(final IBlockState state) {
+	public boolean isFullBlock(IBlockState state) {
+		return ((BlockSlab) state.getBlock()).isDouble();
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isFullCube(final IBlockState state) {
 		return ((BlockSlab) state.getBlock()).isDouble();
 	}
 	
 	@Nonnull
 	@Override
-	public IBlockState onBlockPlaced(final World world, final BlockPos blockPos, final EnumFacing facing,
-	                                 final float hitX, final float hitY, final float hitZ, final int metadata,
-	                                 final EntityLivingBase entityLivingBase) {
+	public IBlockState getStateForPlacement(final World world, final BlockPos blockPos, final EnumFacing facing,
+	                                        final float hitX, final float hitY, final float hitZ, final int metadata,
+	                                        final EntityLivingBase entityLivingBase) {
 		final IBlockState blockState = getStateFromMeta(metadata);
 		
 		// full block?
@@ -240,6 +248,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return isDouble() ? 2 : 1;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
@@ -252,6 +261,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isOpaqueCube(final IBlockState blockState) {
 		return isDouble();
@@ -267,6 +277,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return enumFacing == side;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isSideSolid(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
 		final EnumFacing enumFacing = blockState.getValue(VARIANT).getFacing();
@@ -276,8 +287,8 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public MapColor getMapColor(final IBlockState blockState) {
-		return blockStateHull.getMapColor();
+	public MapColor getMapColor(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
+		return blockStateHull.getMapColor(blockAccess, blockPos);
 	}
 	
 	@Override

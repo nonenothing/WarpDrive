@@ -63,10 +63,10 @@ public class MessageClientValidation implements IMessage, IMessageHandler<Messag
 	public IMessage onMessage(final MessageClientValidation targetingMessage, final MessageContext context) {
 		if (WarpDrive.isDev) {
 			WarpDrive.logger.info("Received client validation packet from %s",
-			                      context.getServerHandler().playerEntity.getName());
+			                      context.getServerHandler().player.getName());
 		}
 		
-		targetingMessage.handle(context.getServerHandler().playerEntity.getName());
+		targetingMessage.handle(context.getServerHandler().player.getName());
         
 		return null;	// no response
 	}

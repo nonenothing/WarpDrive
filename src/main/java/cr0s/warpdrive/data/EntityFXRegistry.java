@@ -30,16 +30,16 @@ public class EntityFXRegistry {
 	
 	private static int computeHashcode(final AbstractEntityFX entityFX) {
 		return computeHashcode(entityFX.getWorld().provider.getDimension(),
-		                       MathHelper.floor_double(entityFX.getX()),
-		                       MathHelper.floor_double(entityFX.getY()),
-		                       MathHelper.floor_double(entityFX.getZ()));
+		                       MathHelper.floor(entityFX.getX()),
+		                       MathHelper.floor(entityFX.getY()),
+		                       MathHelper.floor(entityFX.getZ()));
 	}
 	
 	private static int computeHashcode(final World world, final Vector3 v3Position) {
 		return computeHashcode(world.provider.getDimension(),
-		                       MathHelper.floor_double(v3Position.x),
-		                       MathHelper.floor_double(v3Position.y),
-		                       MathHelper.floor_double(v3Position.z));
+		                       MathHelper.floor(v3Position.x),
+		                       MathHelper.floor(v3Position.y),
+		                       MathHelper.floor(v3Position.z));
 	}
 	
 	private static int computeHashcode(final int dimensionId, final int x, final int y, final int z) {

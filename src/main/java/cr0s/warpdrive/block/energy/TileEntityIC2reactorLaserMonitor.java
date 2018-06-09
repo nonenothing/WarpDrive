@@ -43,10 +43,10 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	}
 	
 	// returns IReactor tile entities
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private IReactor findReactor() {
 		for(final EnumFacing facing : EnumFacing.values()) {
-			final TileEntity tileEntity = worldObj.getTileEntity(pos.offset(facing, 2));
+			final TileEntity tileEntity = world.getTileEntity(pos.offset(facing, 2));
 			if (tileEntity == null) {
 				continue;
 			}
@@ -76,9 +76,9 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 			// if reactor or chamber was found, check the space in between
 			if (output != null) {
 				final BlockPos blockPos = pos.offset(facing);
-				final IBlockState blockState = worldObj.getBlockState(blockPos);
+				final IBlockState blockState = world.getBlockState(blockPos);
 				final Block block = blockState.getBlock();
-				final boolean isAir = block.isAir(blockState, worldObj, blockPos); 
+				final boolean isAir = block.isAir(blockState, world, blockPos);
 				isValid = ( isAir
 				         || block instanceof BlockFluidBase
 				         || block instanceof IReactorChamber
@@ -92,7 +92,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 		return null;
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private boolean coolReactor(final IReactor reactor) {
 		for (int x = 0; x < 9; x++) {
 			for (int y = 0; y < 6; y++) {
@@ -116,11 +116,11 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -135,7 +135,7 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 			
 			if (coolReactor(reactor)) {
 				final Vector3 vMonitor = new Vector3(this).translate(0.5);
-				PacketHandler.sendBeamPacket(worldObj,
+				PacketHandler.sendBeamPacket(world,
 				                             vMonitor,
 				                             new Vector3(reactor.getPosition()).translate(0.5D),
 				                             0.0f, 0.8f, 1.0f, 20, 0, 20);
@@ -184,9 +184,9 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public ITextComponent getStatus() {
-		if (worldObj == null) {
+		if (world == null) {
 			return super.getStatus();
 		}
 		

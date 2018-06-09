@@ -1,6 +1,5 @@
 package cr0s.warpdrive.render;
 
-import com.google.common.base.*;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import cr0s.warpdrive.WarpDrive;
@@ -18,7 +17,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.property.IExtendedBlockState;
@@ -31,6 +29,7 @@ import java.util.*;
 
 // Wrapper around OBJLoader to re-texture faces depending on IExtendedBlockState
 public enum MyCustomModelLoader implements ICustomModelLoader {
+	
 	INSTANCE;
 	
 	private static boolean spriteInitialisationDone = false; 
@@ -63,7 +62,7 @@ public enum MyCustomModelLoader implements ICustomModelLoader {
 	}
 	
 	@Override
-	public IModel loadModel(ResourceLocation modelLocation) throws Exception {
+	public IModel loadModel(@Nonnull final ResourceLocation modelLocation) throws Exception {
 		return new MyModel(OBJLoader.INSTANCE.loadModel(modelLocation));
 	}
 	
@@ -74,28 +73,33 @@ public enum MyCustomModelLoader implements ICustomModelLoader {
 			this.model = model;
 		}
 		
+		@Nonnull
 		@Override
 		public Collection<ResourceLocation> getDependencies() {
 			return model.getDependencies();
 		}
 		
+		@Nonnull
 		@Override
 		public Collection<ResourceLocation> getTextures() {
 			return model.getTextures();
 		}
 		
+		@Nonnull
 		@Override
-		public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
+		public IBakedModel bake(@Nonnull final IModelState state, @Nonnull final VertexFormat format,
+		                        @Nonnull final java.util.function.Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter) {
 			return new MyBakedModel(model.bake(state, format, bakedTextureGetter));
 		}
 		
+		@Nonnull
 		@Override
 		public IModelState getDefaultState() {
 			return model.getDefaultState();
 		}
 	}
 	
-	class MyBakedModel implements IPerspectiveAwareModel {
+	class MyBakedModel implements IBakedModel {
 		
 		private final IBakedModel bakedModel;
 		
@@ -157,12 +161,10 @@ public enum MyCustomModelLoader implements ICustomModelLoader {
 			return bakedModel.getOverrides();
 		}
 		
+		@Nonnull
 		@Override
-		public Pair<? extends IBakedModel, Matrix4f> handlePerspective(TransformType cameraTransformType) {
-			if (bakedModel instanceof IPerspectiveAwareModel) {
-				return ((IPerspectiveAwareModel) bakedModel).handlePerspective(cameraTransformType);
-			}
-			return null;
+		public Pair<? extends IBakedModel, Matrix4f> handlePerspective(@Nonnull final TransformType cameraTransformType) {
+			return ((IBakedModel) bakedModel).handlePerspective(cameraTransformType);
 		}
 	}
 }

@@ -50,7 +50,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -135,18 +135,18 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	public void setIsEnabled(final boolean isEnabled) {
 		this.isEnabled = isEnabled;
-		WarpDrive.starMap.onBlockUpdated(worldObj, pos, worldObj.getBlockState(pos));
+		WarpDrive.starMap.onBlockUpdated(world, pos, world.getBlockState(pos));
 	}
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] controlChannel(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setControlChannel(arguments.checkInteger(0));
@@ -155,7 +155,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
@@ -184,7 +184,7 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

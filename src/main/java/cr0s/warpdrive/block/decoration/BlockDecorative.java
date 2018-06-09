@@ -1,7 +1,5 @@
 package cr0s.warpdrive.block.decoration;
 
-import java.util.List;
-
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.EnumDecorativeType;
 import net.minecraft.block.material.Material;
@@ -10,9 +8,10 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumRarity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+
 import cr0s.warpdrive.WarpDrive;
 
 import javax.annotation.Nonnull;
@@ -26,7 +25,7 @@ public class BlockDecorative extends BlockAbstractBase {
 	public BlockDecorative(final String registryName) {
 		super(registryName, Material.IRON);
 		setHardness(1.5f);
-		setUnlocalizedName("warpdrive.decoration.decorative.plain");
+		setUnlocalizedName("warpdrive.decoration.decorative.");
 		
 		setDefaultState(getDefaultState().withProperty(TYPE, EnumDecorativeType.PLAIN));
 		itemStackCache = new ItemStack[EnumDecorativeType.length];
@@ -63,9 +62,9 @@ public class BlockDecorative extends BlockAbstractBase {
 	}
 	
 	@Override
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
 		for (final EnumDecorativeType enumDecorativeType : EnumDecorativeType.values()) {
-			list.add(new ItemStack(item, 1, enumDecorativeType.ordinal()));
+			list.add(new ItemStack(this, 1, enumDecorativeType.ordinal()));
 		}
 	}
 	

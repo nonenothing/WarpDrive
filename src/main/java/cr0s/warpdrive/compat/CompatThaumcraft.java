@@ -35,7 +35,7 @@ public class CompatThaumcraft implements IBlockTransformer {
 			classBlockTable = Class.forName("thaumcraft.common.blocks.BlockTable");
 			classBlockTube = Class.forName("thaumcraft.common.blocks.BlockTube");
 			classBlockWoodenDevice = Class.forName("thaumcraft.common.blocks.BlockWoodenDevice");
-			WarpDriveConfig.registerBlockTransformer("Thaumcraft", new CompatThaumcraft());
+			WarpDriveConfig.registerBlockTransformer("thaumcraft", new CompatThaumcraft());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

@@ -1,6 +1,0 @@
-{
-	"parent": "warpdrive:item/itemForceFieldUpgrade-none",
-	"textures": {
-		"layer0": "warpdrive:items/forcefield/upgrade-item_port"
-	}
-}

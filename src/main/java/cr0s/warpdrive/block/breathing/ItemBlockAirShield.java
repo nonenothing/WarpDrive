@@ -3,19 +3,17 @@ package cr0s.warpdrive.block.breathing;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public class ItemBlockAirShield extends ItemBlockAbstractBase {
 	
 	public ItemBlockAirShield(final Block block) {
 		super(block);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.breathing.air_shield");
 	}
 	
 	@Override
@@ -24,9 +22,12 @@ public class ItemBlockAirShield extends ItemBlockAbstractBase {
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, @Nonnull final CreativeTabs creativeTabs, @Nonnull final List<ItemStack> list) {
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
 		for (int metadata = 0; metadata < 16; metadata++) {
-			list.add(new ItemStack(item, 1, metadata));
+			list.add(new ItemStack(this, 1, metadata));
 		}
 	}
 	

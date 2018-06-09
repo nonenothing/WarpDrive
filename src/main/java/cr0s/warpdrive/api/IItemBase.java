@@ -11,9 +11,9 @@ import javax.annotation.Nonnull;
 public interface IItemBase {
     
     // wrapper for Forge ItemExpireEvent
-    void onEntityExpireEvent(EntityItem entityItem, ItemStack itemStack);
+    void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack);
     
     @Nonnull
     @SideOnly(Side.CLIENT)
-    ModelResourceLocation getModelResourceLocation(ItemStack itemStack);
+    ModelResourceLocation getModelResourceLocation(final ItemStack itemStack);
 }

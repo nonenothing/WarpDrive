@@ -219,13 +219,16 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 	
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer, final World world,
-	                                  @Nonnull final BlockPos blockPos, final EnumHand hand, @Nonnull final EnumFacing facing,
+	public EnumActionResult onItemUse(@Nonnull final EntityPlayer entityPlayer, final World world, @Nonnull final BlockPos blockPos,
+	                                  @Nonnull final EnumHand enumHand, @Nonnull final EnumFacing enumFacing,
 	                                  final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return EnumActionResult.FAIL;
 		}
-		if (itemStack.stackSize == 0) {
+		
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
+		if (itemStackHeld.isEmpty()) {
 			return EnumActionResult.FAIL;
 		}
 		
@@ -234,14 +237,14 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		
 		if (!(tileEntity instanceof ITransporterCore)) {
-			return super.onItemUse(itemStack, entityPlayer, world, blockPos, hand, facing, hitX, hitY, hitZ);
+			return super.onItemUse(entityPlayer, world, blockPos, enumHand, enumFacing, hitX, hitY, hitZ);
 		}
-		if (!entityPlayer.canPlayerEdit(blockPos, facing, itemStack)) {
+		if (!entityPlayer.canPlayerEdit(blockPos, enumFacing, itemStackHeld)) {
 			return EnumActionResult.FAIL;
 		}
 		
-		final UUID uuidBeacon = getTransporterSignature(itemStack);
-		final String nameBeacon = getTransporterName(itemStack);
+		final UUID uuidBeacon = getTransporterSignature(itemStackHeld);
+		final String nameBeacon = getTransporterName(itemStackHeld);
 		final UUID uuidTransporter = ((ITransporterCore) tileEntity).getUUID();
 		if (entityPlayer.isSneaking()) {// update transporter signature
 			final String nameTransporter = ((ITransporterCore) tileEntity).getStarMapName();
@@ -256,7 +259,7 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 				                                                                  nameTransporter));
 				
 			} else {
-				final ItemStack itemStackNew = setTransporterName(itemStack, nameTransporter);
+				final ItemStack itemStackNew = setTransporterName(itemStackHeld, nameTransporter);
 				setTransporterSignature(itemStackNew, uuidTransporter);
 				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.transporter_signature.get",
 				                                                                  nameTransporter));

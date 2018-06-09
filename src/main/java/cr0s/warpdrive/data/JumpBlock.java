@@ -343,7 +343,7 @@ public class JumpBlock {
 				}
 				
 				if (newTileEntity != null) {
-					newTileEntity.setWorldObj(targetWorld);
+					newTileEntity.setWorld(targetWorld);
 					newTileEntity.validate();
 					
 					targetWorld.setTileEntity(target, newTileEntity);
@@ -750,7 +750,7 @@ public class JumpBlock {
 					return false;
 				}
 				
-				extendedblockstorage = storageArrays[y >> 4] = new ExtendedBlockStorage(y >> 4 << 4, !c.worldObj.provider.hasNoSky);
+				extendedblockstorage = storageArrays[y >> 4] = new ExtendedBlockStorage(y >> 4 << 4, !c.world.provider.hasNoSky);
 				// Removed light recalculations
 				// flag = y >= j1;
 			}
@@ -759,11 +759,11 @@ public class JumpBlock {
 			final int i2 = c.zPosition * 16 + z;
 			
 			// Removed light recalculations
-			// int k2 = block1.getLightOpacity(c.worldObj, l1, y, i2);
+			// int k2 = block1.getLightOpacity(c.world, l1, y, i2);
 			
 			// Removed preDestroy event
-			// if (!c.worldObj.isRemote) {
-			// 	block1.onBlockPreDestroy(c.worldObj, l1, y, i2, k1);
+			// if (!c.world.isRemote) {
+			// 	block1.onBlockPreDestroy(c.world, l1, y, i2, k1);
 			// }
 			
 			extendedblockstorage.func_150818_a(x, y & 15, z, block);
@@ -771,17 +771,17 @@ public class JumpBlock {
 			
 			// Skip air at destination
 			if (block1 != Blocks.air) {
-				if (!c.worldObj.isRemote) {
-					block1.breakBlock(c.worldObj, l1, y, i2, block1, k1);
+				if (!c.world.isRemote) {
+					block1.breakBlock(c.world, l1, y, i2, block1, k1);
 					// After breakBlock a phantom TE might have been created with incorrect meta. This attempts to kill that phantom TE so the normal one can be created properly later
 					final TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
-					if (te != null && te.shouldRefresh(block1, c.getBlock(x & 0x0F, y, z & 0x0F), k1, c.getBlockMetadata(x & 0x0F, y, z & 0x0F), c.worldObj, l1, y, i2)) {
+					if (te != null && te.shouldRefresh(block1, c.getBlock(x & 0x0F, y, z & 0x0F), k1, c.getBlockMetadata(x & 0x0F, y, z & 0x0F), c.world, l1, y, i2)) {
 						c.removeTileEntity(x & 0x0F, y, z & 0x0F);
 					}
 				} else if (block1.hasTileEntity(k1)) {
 					final TileEntity te = c.getTileEntityUnsafe(x & 0x0F, y, z & 0x0F);
-					if (te != null && te.shouldRefresh(block1, block, k1, blockMeta, c.worldObj, l1, y, i2)) {
-						c.worldObj.removeTileEntity(l1, y, i2);
+					if (te != null && te.shouldRefresh(block1, block, k1, blockMeta, c.world, l1, y, i2)) {
+						c.world.removeTileEntity(l1, y, i2);
 					}
 				}
 			}
@@ -795,7 +795,7 @@ public class JumpBlock {
 				if (flag) {
 					c.generateSkylightMap();
 				} else {
-					int j2 = block.getLightOpacity(c.worldObj, l1, y, i2);
+					int j2 = block.getLightOpacity(c.world, l1, y, i2);
 	
 					if (j2 > 0) {
 						if (y >= j1) {
@@ -814,8 +814,8 @@ public class JumpBlock {
 				final TileEntity tileentity;
 				
 				// Removed onBlockAdded event
-				// if (!c.worldObj.isRemote) {
-				//	block.onBlockAdded(c.worldObj, l1, y, i2);
+				// if (!c.world.isRemote) {
+				//	block.onBlockAdded(c.world, l1, y, i2);
 				// }
 				
 				// Skip air at destination

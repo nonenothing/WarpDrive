@@ -19,12 +19,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -37,7 +37,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		setUnlocalizedName("warpdrive.forcefield.relay" + tier);
 		
 		setDefaultState(getDefaultState().withProperty(UPGRADE, EnumForceFieldUpgrade.NONE));
-		GameRegistry.registerTileEntity(TileEntityForceFieldRelay.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityForceFieldRelay.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -53,9 +53,8 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 		return this.getDefaultState();
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
-	public int getMetaFromState(final IBlockState state) {
+	public int getMetaFromState(final IBlockState blockState) {
 		return 0;
 	}
 	
@@ -90,16 +89,18 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityForceFieldRelay)) {
 			return false;
@@ -115,7 +116,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(enumForceFieldUpgrade, 1);
 					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.setNoPickupDelay();
-					world.spawnEntityInWorld(entityItem);
+					world.spawnEntity(entityItem);
 				}
 				
 				tileEntityForceFieldRelay.setUpgrade(EnumForceFieldUpgrade.NONE);
@@ -128,7 +129,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 				return true;
 			}
 			
-		} else if (itemStackHeld == null) {// no sneaking and no item in hand to show status
+		} else if (itemStackHeld.isEmpty()) {// no sneaking and no item in hand to show status
 			Commons.addChatMessage(entityPlayer, tileEntityForceFieldRelay.getStatus());
 			return true;
 			
@@ -142,21 +143,21 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 			
 			if (!entityPlayer.capabilities.isCreativeMode) {
 				// validate quantity
-				if (itemStackHeld.stackSize < 1) {
+				if (itemStackHeld.getCount() < 1) {
 					// not enough upgrade items
 					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.not_enough_upgrades"));
 					return true;
 				}
 				
 				// update player inventory
-				itemStackHeld.stackSize -= 1;
+				itemStackHeld.shrink(1);
 				
 				// dismount the current upgrade item
 				if (tileEntityForceFieldRelay.getUpgrade() != EnumForceFieldUpgrade.NONE) {
 					final ItemStack itemStackDrop = ItemForceFieldUpgrade.getItemStackNoCache(tileEntityForceFieldRelay.getUpgrade(), 1);
 					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.setNoPickupDelay();
-					world.spawnEntityInWorld(entityItem);
+					world.spawnEntity(entityItem);
 				}
 			}
 			

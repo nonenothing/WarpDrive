@@ -1,7 +1,11 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.item.ItemComponent;
+
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -16,7 +20,7 @@ public class CreativeTabWarpDrive extends CreativeTabs {
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public Item getTabIconItem() {
-		return WarpDrive.itemComponent;
+	public ItemStack getTabIconItem() {
+		return ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL);
     }
 }

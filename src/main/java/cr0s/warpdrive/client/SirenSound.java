@@ -39,7 +39,7 @@ public class SirenSound extends MovingSound {
     
     @Override
     public void update() {
-        final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        final EntityPlayer player = Minecraft.getMinecraft().player;
         
         this.xPosF = (float) player.posX;
         this.yPosF = (float) player.posY;

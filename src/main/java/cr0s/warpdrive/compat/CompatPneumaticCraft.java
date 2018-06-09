@@ -19,7 +19,7 @@ public class CompatPneumaticCraft implements IBlockTransformer {
 	public static void register() {
 		try {
 			classTileEntityBase = Class.forName("pneumaticCraft.common.tileentity.TileEntityBase");
-			WarpDriveConfig.registerBlockTransformer("PneumaticCraft", new CompatPneumaticCraft());
+			WarpDriveConfig.registerBlockTransformer("pneumaticcraft", new CompatPneumaticCraft());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

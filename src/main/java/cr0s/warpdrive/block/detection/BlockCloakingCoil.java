@@ -57,7 +57,6 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@Nonnull
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		if (!blockState.getValue(BlockProperties.ACTIVE)) {

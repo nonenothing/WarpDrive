@@ -25,7 +25,7 @@ public class CompatTConstruct implements IBlockTransformer {
 			classTileFaucetLogic = Class.forName("tconstruct.smeltery.logic.FaucetLogic");
 			classTileSmelteryDrainLogic = Class.forName("tconstruct.smeltery.logic.SmelteryDrainLogic");
 			classTileSmelteryLogic = Class.forName("tconstruct.smeltery.logic.SmelteryLogic");
-			WarpDriveConfig.registerBlockTransformer("TConstruct", new CompatTConstruct());
+			WarpDriveConfig.registerBlockTransformer("tconstruct", new CompatTConstruct());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

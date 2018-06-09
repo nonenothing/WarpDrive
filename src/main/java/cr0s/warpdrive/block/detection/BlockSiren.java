@@ -17,12 +17,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.List;
 
 public class BlockSiren extends BlockAbstractContainer {
 	
@@ -36,7 +35,7 @@ public class BlockSiren extends BlockAbstractContainer {
 		super(registryName, Material.IRON);
 		hasSubBlocks = true;
 		setUnlocalizedName("warpdrive.detection.siren");
-		GameRegistry.registerTileEntity(TileEntitySiren.class, WarpDrive.MODID + ":tileEntitySiren");
+		registerTileEntity(TileEntitySiren.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
 		                .withProperty(BlockProperties.SIREN_TYPE, EnumSirenType.INDUSTRIAL)
@@ -45,11 +44,11 @@ public class BlockSiren extends BlockAbstractContainer {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
-		list.add(new ItemStack(item, 1, EnumSirenType.INDUSTRIAL.getIndex()));
-		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.BASIC.getIndex() - 1));
-		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.ADVANCED.getIndex() - 1));
-		list.add(new ItemStack(item, 1, EnumSirenType.RAID.getIndex() + EnumTier.SUPERIOR.getIndex() - 1));
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
+		list.add(new ItemStack(this, 1, EnumSirenType.INDUSTRIAL.getIndex()));
+		list.add(new ItemStack(this, 1, EnumSirenType.RAID.getIndex() + EnumTier.BASIC.getIndex() - 1));
+		list.add(new ItemStack(this, 1, EnumSirenType.RAID.getIndex() + EnumTier.ADVANCED.getIndex() - 1));
+		list.add(new ItemStack(this, 1, EnumSirenType.RAID.getIndex() + EnumTier.SUPERIOR.getIndex() - 1));
 	}
 	
 	@Nonnull
@@ -67,7 +66,6 @@ public class BlockSiren extends BlockAbstractContainer {
 		       .withProperty(BlockProperties.TIER, EnumTier.get(1 + (metadata & 3)));
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.SIREN_TYPE).getIndex() + Math.max(0, (blockState.getValue(BlockProperties.TIER).getIndex() - 1));

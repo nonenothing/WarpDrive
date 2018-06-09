@@ -38,7 +38,7 @@ public class CloakedArea {
 	public byte tier;
 	public IBlockState blockStateFog;
 	
-	public CloakedArea(final World worldObj,
+	public CloakedArea(final World world,
 			final int dimensionId, final BlockPos blockPosCore, final byte tier,
 			final int minX, final int minY, final int minZ,
 			final int maxX, final int maxY, final int maxZ) {
@@ -55,10 +55,10 @@ public class CloakedArea {
 		
 		this.playersInArea = new CopyOnWriteArraySet<>();
 		
-		if (worldObj != null) {
+		if (world != null) {
 			try {
 				// Add all players currently inside the field
-				final List<EntityPlayer> list = worldObj.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+				final List<EntityPlayer> list = world.getEntitiesWithinAABB(EntityPlayerMP.class, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
 				for (final EntityPlayer player : list) {
 					addPlayer(player.getUniqueID());
 				}
@@ -110,7 +110,7 @@ public class CloakedArea {
 		final double midZ = minZ + (Math.abs(maxZ - minZ) / 2.0D);
 		
 		final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-		for (final EntityPlayerMP entityPlayerMP : server.getPlayerList().getPlayerList()) {
+		for (final EntityPlayerMP entityPlayerMP : server.getPlayerList().getPlayers()) {
 			if (entityPlayerMP.dimension == dimensionId) {
 				final double dX = midX - entityPlayerMP.posX;
 				final double dY = midY - entityPlayerMP.posY;
@@ -146,12 +146,12 @@ public class CloakedArea {
 					WarpDrive.logger.info(this + " Player " + EntityPlayerMP.getUniqueID() + " has left");
 				}
 				removePlayer(EntityPlayerMP.getUniqueID());
-				EntityPlayerMP.getEntityWorld().getMinecraftServer().getPlayerList()
+				FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
 						.sendToAllNearExcept(
 							EntityPlayerMP,
 							EntityPlayerMP.posX, EntityPlayerMP.posY, EntityPlayerMP.posZ,
 							100,
-							EntityPlayerMP.worldObj.provider.getDimension(),
+							EntityPlayerMP.world.provider.getDimension(),
 							PacketHandler.getPacketForThisEntity(EntityPlayerMP));
 				PacketHandler.sendCloakPacket(EntityPlayerMP, this, false);
 			}
@@ -168,11 +168,11 @@ public class CloakedArea {
 			for (int z = minZ; z <= maxZ; z++) {
 				for (int y = minY_clamped; y <= maxY_clamped; y++) {
 					BlockPos blockPos = new BlockPos(x, y, z);
-					IBlockState blockState = player.worldObj.getBlockState(blockPos);
+					IBlockState blockState = player.world.getBlockState(blockPos);
 					if (blockState.getBlock() != Blocks.AIR) {
-						player.worldObj.notifyBlockUpdate(blockPos, blockState, blockState, 3);
+						player.world.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 						
-						JumpBlock.refreshBlockStateOnClient(player.worldObj, new BlockPos(x, y, z));
+						JumpBlock.refreshBlockStateOnClient(player.world, new BlockPos(x, y, z));
 					}
 				}
 			}
@@ -183,7 +183,7 @@ public class CloakedArea {
 		
 		for (int x = minX >> 4; x <= maxX >> 4; x++) {
 			for (int z = minZ >> 4; z <= maxZ >> 4; z++) {
-				chunksToSend.add(p.worldObj.getChunkFromChunkCoords(x, z));
+				chunksToSend.add(p.world.getChunkFromChunkCoords(x, z));
 			}
 		}
 		
@@ -198,7 +198,7 @@ public class CloakedArea {
 	}
 	
 	public void revealEntitiesToPlayer(final EntityPlayerMP entityPlayerMP) {
-		final List<Entity> list = entityPlayerMP.worldObj.getEntitiesWithinAABBExcludingEntity(entityPlayerMP, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
+		final List<Entity> list = entityPlayerMP.world.getEntitiesWithinAABBExcludingEntity(entityPlayerMP, new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ));
 		
 		for (final Entity entity : list) {
 			PacketHandler.revealEntityToPlayer(entity, entityPlayerMP);
@@ -207,7 +207,7 @@ public class CloakedArea {
 	
 	@SideOnly(Side.CLIENT)
 	public void clientCloak() {
-		final EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		
 		// Hide the blocks within area
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Refreshing cloaked blocks..."); }
@@ -238,7 +238,7 @@ public class CloakedArea {
 	
 	@SideOnly(Side.CLIENT)
 	public void clientDecloak() {
-		final World world = Minecraft.getMinecraft().theWorld;
+		final World world = Minecraft.getMinecraft().world;
 		world.markBlockRangeForRenderUpdate(
 			minX - 1, Math.max(  0, minY - 1), minZ - 1,
 			maxX + 1, Math.min(255, maxY + 1), maxZ + 1);

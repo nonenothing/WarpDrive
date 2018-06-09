@@ -62,7 +62,7 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	
 	@Override
 	public boolean canCoordinateBeSpawn(final int x, final int z) {
-		final BlockPos blockPos = worldObj.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z));
+		final BlockPos blockPos = world.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z));
 		return blockPos.getY() != 0;
 	}
 	
@@ -75,30 +75,30 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	@Nonnull
 	@Override
 	public BlockPos getRandomizedSpawnPoint() {
-		BlockPos blockPos = new BlockPos(worldObj.getSpawnPoint());
-		// boolean isAdventure = worldObj.getWorldInfo().getGameType() == EnumGameType.ADVENTURE;
+		BlockPos blockPos = new BlockPos(world.getSpawnPoint());
+		// boolean isAdventure = world.getWorldInfo().getGameType() == EnumGameType.ADVENTURE;
 		int spawnFuzz = 100;
 		int spawnFuzzHalf = spawnFuzz / 2;
 		{
 			blockPos = new BlockPos(
-				blockPos.getX() + worldObj.rand.nextInt(spawnFuzz) - spawnFuzzHalf,
+				blockPos.getX() + world.rand.nextInt(spawnFuzz) - spawnFuzzHalf,
 				200,
-				blockPos.getZ() + worldObj.rand.nextInt(spawnFuzz) - spawnFuzzHalf);
+				blockPos.getZ() + world.rand.nextInt(spawnFuzz) - spawnFuzzHalf);
 		}
 		
-		if (worldObj.isAirBlock(blockPos)) {
-			worldObj.setBlockState(blockPos, Blocks.STONE.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 1, 1,  0), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 1, 2,  0), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add(-1, 1,  0), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add(-1, 2,  0), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 0, 1,  1), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 0, 2,  1), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 0, 1, -1), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 0, 2, -1), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 0, 3,  0), Blocks.GLASS.getDefaultState(), 2);
-			worldObj.setBlockState(blockPos.add( 0, 0,  0), WarpDrive.blockAir.getStateFromMeta(15), 2);
-			worldObj.setBlockState(blockPos.add( 0, 1,  0), WarpDrive.blockAir.getStateFromMeta(15), 2);
+		if (world.isAirBlock(blockPos)) {
+			world.setBlockState(blockPos, Blocks.STONE.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 1, 1,  0), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 1, 2,  0), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add(-1, 1,  0), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add(-1, 2,  0), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 0, 1,  1), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 0, 2,  1), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 0, 1, -1), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 0, 2, -1), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 0, 3,  0), Blocks.GLASS.getDefaultState(), 2);
+			world.setBlockState(blockPos.add( 0, 0,  0), WarpDrive.blockAir.getStateFromMeta(15), 2);
+			world.setBlockState(blockPos.add( 0, 1,  0), WarpDrive.blockAir.getStateFromMeta(15), 2);
 		}
 		
 		return blockPos;
@@ -120,9 +120,9 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 			setSkyRenderer(RenderSpaceSky.getInstance());
 		}
 		
-		celestialObject = cameraEntity.worldObj == null ? null : CelestialObjectManager.get(
-			cameraEntity.worldObj,
-			MathHelper.floor_double(cameraEntity.posX), MathHelper.floor_double(cameraEntity.posZ));
+		celestialObject = cameraEntity.world == null ? null : CelestialObjectManager.get(
+			cameraEntity.world,
+			MathHelper.floor(cameraEntity.posX), MathHelper.floor(cameraEntity.posZ));
 		if (celestialObject == null) {
 			return new Vec3d(1.0D, 0.0D, 0.0D);
 		} else {

@@ -54,7 +54,7 @@ public class PacketHandler {
 		// Entity packets for 'uncloaking' entities
 		try {
 			EntityTrackerEntry_getPacketForThisEntity = ReflectionHelper.findMethod(
-				EntityTrackerEntry.class, null, new String[] { "createSpawnPacket", "func_151260_c" } );
+				EntityTrackerEntry.class, "createSpawnPacket", "func_151260_c");
 		} catch (final Exception exception) {
 			throw new RuntimeException(exception);
 		}
@@ -73,7 +73,7 @@ public class PacketHandler {
 			simpleNetworkManager.sendToAllAround(messageBeamEffect, new TargetPoint(
 					world.provider.getDimension(), (v3Source.x + v3Target.x) / 2, (v3Source.y + v3Target.y) / 2, (v3Source.z + v3Target.z) / 2, radius));
 		} else {// large beam are sent from both ends
-			final List<EntityPlayerMP> playerEntityList = world.getMinecraftServer().getPlayerList().getPlayerList();
+			final List<EntityPlayerMP> playerEntityList = world.getMinecraftServer().getPlayerList().getPlayers();
 			final int dimensionId = world.provider.getDimension();
 			final int radius_square = radius * radius;
 			for (int index = 0; index < playerEntityList.size(); index++) {
@@ -139,7 +139,7 @@ public class PacketHandler {
 				lockStrength, tickEnergizing, tickCooldown);
 		
 		// check both ends to send packet
-		final List<EntityPlayerMP> playerEntityList = world.getMinecraftServer().getPlayerList().getPlayerList();
+		final List<EntityPlayerMP> playerEntityList = world.getMinecraftServer().getPlayerList().getPlayers();
 		final int radius_square = radius * radius;
 		for (int index = 0; index < playerEntityList.size(); index++) {
 			final EntityPlayerMP entityPlayerMP = playerEntityList.get(index);
@@ -238,7 +238,7 @@ public class PacketHandler {
 				for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values()) {
 					final ItemStack itemstack = ((EntityLivingBase) entity).getItemStackFromSlot(entityequipmentslot);
 					
-					if (itemstack != null) {
+					if (!itemstack.isEmpty()) {
 						entityPlayerMP.connection.sendPacket(new SPacketEntityEquipment(entity.getEntityId(), entityequipmentslot, itemstack));
 					}
 				}

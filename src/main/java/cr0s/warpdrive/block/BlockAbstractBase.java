@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.client.ClientProxy;
@@ -57,7 +58,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		final StateMapperBase stateMapperBase = new StateMapperBase() {
 			@Nonnull
 			@Override
-			protected ModelResourceLocation getModelResourceLocation(@Nonnull IBlockState blockState) {
+			protected ModelResourceLocation getModelResourceLocation(@Nonnull final IBlockState blockState) {
 				return modelResourceLocation;
 			}
 		};
@@ -76,7 +77,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
-			EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(blockPos, entityLiving);
+			EnumFacing enumFacing = Commons.getFacingFromEntity(entityLiving);
 			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
 		}
 	}
@@ -107,16 +108,5 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		case 3:  return EnumRarity.RARE;
 		default: return rarity;
 		}
-	}
-	
-	public static EnumFacing getFacingFromEntity(final BlockPos clickedBlock, final EntityLivingBase entityLivingBase) {
-		final EnumFacing facing = EnumFacing.getFacingFromVector(
-				(float) (entityLivingBase.posX - clickedBlock.getX()),
-				(float) (entityLivingBase.posY - clickedBlock.getY()),
-				(float) (entityLivingBase.posZ - clickedBlock.getZ()) );
-		if (entityLivingBase.isSneaking()) {
-			return facing.getOpposite();
-		}
-		return facing;
 	}
 }

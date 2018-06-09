@@ -13,31 +13,30 @@ import javax.annotation.Nonnull;
 
 public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	
-	public ItemBlockDecorative(Block block) {
+	public ItemBlockDecorative(final Block block) {
 		super(block);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.decoration.decorative");
 	}
 	
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > EnumDecorativeType.length) {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
 		ResourceLocation resourceLocation = getRegistryName();
-		String variant = String.format("type=%s", EnumDecorativeType.get( itemStack.getItemDamage() ).getName());
+		final String variant = String.format("type=%s", EnumDecorativeType.get( itemStack.getItemDamage() ).getName());
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(ItemStack itemStack) {
+	public String getUnlocalizedName(final ItemStack itemStack) {
 		if (itemStack == null) {
 			return getUnlocalizedName();
 		}
-		return "tile.warpdrive.decoration.decorative." + EnumDecorativeType.get(itemStack.getItemDamage()).getName();
+		return getUnlocalizedName() + EnumDecorativeType.get(itemStack.getItemDamage()).getName();
 	}
 }

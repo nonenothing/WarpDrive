@@ -42,11 +42,11 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	public void update() {
 		super.update();
 		
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendVideoChannelPacket(worldObj.provider.getDimension(), pos, videoChannel);
+				PacketHandler.sendVideoChannelPacket(world.provider.getDimension(), pos, videoChannel);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] videoChannel(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setVideoChannel(arguments.checkInteger(0));
@@ -109,7 +109,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -128,7 +128,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 		return String.format("%s %d @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
 		                     videoChannel,
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

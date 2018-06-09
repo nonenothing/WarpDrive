@@ -111,16 +111,16 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 				cache_lightCamouflage = forceFieldSetup.getCamouflageLight();
 			}
 		}
-		IBlockState blockState = worldObj.getBlockState(pos);
-		worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
+		IBlockState blockState = world.getBlockState(pos);
+		world.notifyBlockUpdate(pos, blockState, blockState, 3);
 	}
 	
 	public TileEntityForceFieldProjector getProjector() {
 		if (vProjector != null) {
-			final TileEntity tileEntity = vProjector.getTileEntity(worldObj);
+			final TileEntity tileEntity = vProjector.getTileEntity(world);
 			if (tileEntity instanceof TileEntityForceFieldProjector) {
 				final TileEntityForceFieldProjector tileEntityForceFieldProjector = (TileEntityForceFieldProjector) tileEntity;
-				if (worldObj.isRemote) {
+				if (world.isRemote) {
 					return tileEntityForceFieldProjector;
 					
 				} else if (tileEntityForceFieldProjector.isPartOfForceField(new VectorI(this))) {
@@ -128,10 +128,10 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 						return tileEntityForceFieldProjector;
 					} else {
 						// projector is disabled or out of power
-						worldObj.setBlockToAir(pos);
+						world.setBlockToAir(pos);
 						if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 							WarpDrive.logger.info(String.format("Removed a force field from an offline projector @ %s (%d %d %d)", 
-							                                    worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+							                                    world == null ? "~NULL~" : world.provider.getSaveFolder(),
 							                                    pos.getX(), pos.getY(), pos.getZ()));
 						}
 					}
@@ -139,13 +139,13 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			}
 		}
 		
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			gracePeriod_calls--;
 			if (gracePeriod_calls < 0) {
-				worldObj.setBlockToAir(pos);
+				world.setBlockToAir(pos);
 				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
 					WarpDrive.logger.info(String.format("Removed a force field with no projector defined @ %s (%d %d %d)",
-					                                    worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+					                                    world == null ? "~NULL~" : world.provider.getSaveFolder(),
 					                                    pos.getX(), pos.getY(), pos.getZ()));
 				}
 			}

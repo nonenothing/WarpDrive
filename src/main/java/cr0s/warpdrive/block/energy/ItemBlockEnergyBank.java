@@ -20,7 +20,6 @@ public class ItemBlockEnergyBank extends ItemBlockAbstractBase {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.energy.EnergyBank.");
 	}
 	
 	@Nonnull

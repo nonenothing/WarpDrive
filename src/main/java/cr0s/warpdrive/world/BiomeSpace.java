@@ -6,10 +6,10 @@ public class BiomeSpace extends Biome {
 	
     public BiomeSpace(final BiomeProperties biomeProperties) {
         super(biomeProperties);
-        this.theBiomeDecorator.treesPerChunk = 0;
+        this.decorator.treesPerChunk = 0;
         //this.temperature = 1F;
-        this.theBiomeDecorator.flowersPerChunk = 0;
-        this.theBiomeDecorator.grassPerChunk = 0;
+        this.decorator.flowersPerChunk = 0;
+        this.decorator.grassPerChunk = 0;
         this.setRegistryName("Space");
     }
 

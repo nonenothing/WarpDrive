@@ -138,7 +138,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 		final int maxRenderDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16;
 		final int maxRenderDistance_squared = maxRenderDistance * maxRenderDistance;
 		
-		final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+		final EntityPlayer player = Minecraft.getMinecraft().player;
 		
 		// handle source
 		if (globalPosition.distance2To(player) > maxRenderDistance_squared) {
@@ -165,7 +165,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 				// check existing particle at position
 				final Vector3 v3Position = v3EntityPositions.get(indexEntity).clone();
 				if ( entity instanceof EntityPlayer
-				  && entity == Minecraft.getMinecraft().thePlayer) {
+				  && entity == Minecraft.getMinecraft().player) {
 					v3Position.translate(EnumFacing.DOWN, entity.getEyeHeight());
 				}
 				AbstractEntityFX effect = EntityFXRegistry.get(world, v3Position, 0.5D);
@@ -221,11 +221,11 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 					aabb.minZ + world.rand.nextDouble() * (aabb.maxZ - aabb.minZ));
 			
 			// adjust to block presence
-			if ( ( isFalling && MathHelper.floor_double(y) == MathHelper.floor_double(aabb.maxY))
-			  || (!isFalling && MathHelper.floor_double(y) == MathHelper.floor_double(aabb.minY)) ) {
-				final BlockPos position = new BlockPos(MathHelper.floor_double(v3Position.x),
-				                                       MathHelper.floor_double(v3Position.y),
-				                                       MathHelper.floor_double(v3Position.z));
+			if ( ( isFalling && MathHelper.floor(y) == MathHelper.floor(aabb.maxY))
+			  || (!isFalling && MathHelper.floor(y) == MathHelper.floor(aabb.minY)) ) {
+				final BlockPos position = new BlockPos(MathHelper.floor(v3Position.x),
+				                                       MathHelper.floor(v3Position.y),
+				                                       MathHelper.floor(v3Position.z));
 				final IBlockState blockState = world.getBlockState(position);
 				final Block block = blockState.getBlock();
 				if ( !block.isAir(blockState, world, position)
@@ -302,7 +302,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageTransporterEffect messageTransporterEffect, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().theWorld == null) {
+		if (Minecraft.getMinecraft().world == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring particle packet");
 			return null;
 		}
@@ -314,7 +314,7 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 			                      messageTransporterEffect.lockStrength, messageTransporterEffect.tickEnergizing, messageTransporterEffect.tickCooldown);
 		}
 		
-		messageTransporterEffect.handle(Minecraft.getMinecraft().theWorld);
+		messageTransporterEffect.handle(Minecraft.getMinecraft().world);
 		
 		return null;	// no response
 	}

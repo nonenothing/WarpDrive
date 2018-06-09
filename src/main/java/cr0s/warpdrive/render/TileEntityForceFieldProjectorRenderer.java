@@ -51,15 +51,17 @@ public class TileEntityForceFieldProjectorRenderer extends TileEntitySpecialRend
 	}
 	
 	private static List<BakedQuad> quads;
+	
 	@Override
-	public void renderTileEntityAt(TileEntityForceFieldProjector tileEntityForceFieldProjector, double x, double y, double z, float partialTicks, int destroyStage) {
+	public void render(final TileEntityForceFieldProjector tileEntityForceFieldProjector, final double x, final double y, final double z,
+	                   final float partialTicks, final int destroyStage, final float alpha) {
 		if (!tileEntityForceFieldProjector.getWorld().isBlockLoaded(tileEntityForceFieldProjector.getPos(), false)) {
 			return;
 		}
 		if (quads == null) {
 			quads = getBakedModel().getQuads(null, null, 0L);
 		}
-		Tessellator tessellator = Tessellator.getInstance();
+		final Tessellator tessellator = Tessellator.getInstance();
 		GlStateManager.pushAttrib();
 		GlStateManager.pushMatrix();
 		
@@ -85,7 +87,7 @@ public class TileEntityForceFieldProjectorRenderer extends TileEntitySpecialRend
 		GlStateManager.rotate(wheelRotation, 0.0F, 1.0F, 0.0F);
 		
 		Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-		VertexBuffer worldRenderer = tessellator.getBuffer();
+		BufferBuilder worldRenderer = tessellator.getBuffer();
 		worldRenderer.setTranslation(-0.5, -0.5, -0.5);
 		worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
 		
@@ -101,7 +103,7 @@ public class TileEntityForceFieldProjectorRenderer extends TileEntitySpecialRend
 		GlStateManager.popAttrib();
 	}
 	
-	public static void renderModelTESR(List<BakedQuad> quads, VertexBuffer renderer, int brightness) {
+	public static void renderModelTESR(List<BakedQuad> quads, BufferBuilder renderer, int brightness) {
 		int l1 = (brightness >> 0x10) & 0xFFFF;
 		int l2 = brightness & 0xFFFF;
 		for (BakedQuad quad : quads) {

@@ -50,11 +50,11 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		super.update();
 		
 		// Update video channel on clients (recovery mechanism, no need to go too fast)
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendVideoChannelPacket(worldObj.provider.getDimension(), pos, videoChannel);
+				PacketHandler.sendVideoChannelPacket(world.provider.getDimension(), pos, videoChannel);
 			}
 		} else {
 			registryUpdateTicks--;
@@ -63,7 +63,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 					WarpDrive.logger.info(this + " Updating registry (" + videoChannel + ")");
 				}
-				WarpDrive.cameras.updateInRegistry(worldObj, pos, videoChannel, EnumCameraType.LASER_CAMERA);
+				WarpDrive.cameras.updateInRegistry(world, pos, videoChannel, EnumCameraType.LASER_CAMERA);
 			}
 		}
 	}
@@ -119,19 +119,19 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	@Override
 	public void invalidate() {
-		WarpDrive.cameras.removeFromRegistry(worldObj, pos);
+		WarpDrive.cameras.removeFromRegistry(world, pos);
 		super.invalidate();
 	}
 	
 	@Override
 	public void onChunkUnload() {
-		WarpDrive.cameras.removeFromRegistry(worldObj, pos);
+		WarpDrive.cameras.removeFromRegistry(world, pos);
 		super.onChunkUnload();
 	}
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] videoChannel(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setVideoChannel(arguments.checkInteger(0));
@@ -141,7 +141,7 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -161,8 +161,8 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 		                     getClass().getSimpleName(),
 		                     beamFrequency,
 		                     videoChannel,
-		                     worldObj == null ? "~NULL~" : worldObj.getWorldInfo().getWorldName(),
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.getWorldInfo().getWorldName(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

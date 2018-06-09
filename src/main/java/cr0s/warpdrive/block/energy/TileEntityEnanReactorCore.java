@@ -94,7 +94,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -142,7 +142,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			final int indexStability = reactorFace.indexStability;
 			if (containedEnergy > WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * PR_MIN_GENERATION * 100) {
 				final double amountToIncrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS
-						* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((worldObj.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.1));
+						* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((world.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.1));
 				if (WarpDriveConfig.LOGGING_ENERGY) {
 					WarpDrive.logger.info(String.format("increaseInstability %.5f", amountToIncrease));
 				}
@@ -169,7 +169,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		double nospamFactor = 1.0D;
 		if (lasersReceived > 1.0F) {
 			nospamFactor = 0.5;
-			worldObj.newExplosion(null,
+			world.newExplosion(null,
 			                      pos.getX() + reactorFace.facing.getFrontOffsetX(),
 			                      pos.getY() + reactorFace.facing.getFrontOffsetY(),
 			                      pos.getZ() + reactorFace.facing.getFrontOffsetZ(),
@@ -177,7 +177,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 		final double normalisedAmount = Math.min(1.0D, Math.max(0.0D, amount / PR_MAX_LASER_ENERGY)); // 0.0 to 1.0
 		final double baseLaserEffect = 0.5D + 0.5D * Math.cos(Math.PI - (1.0D + Math.log10(0.1D + 0.9D * normalisedAmount)) * Math.PI); // 0.0 to 1.0
-		final double randomVariation = 0.8D + 0.4D * worldObj.rand.nextDouble(); // ~1.0
+		final double randomVariation = 0.8D + 0.4D * world.rand.nextDouble(); // ~1.0
 		final double amountToRemove = PR_MAX_LASER_EFFECT * baseLaserEffect * randomVariation * nospamFactor;
 		
 		final int indexStability = reactorFace.indexStability;
@@ -220,7 +220,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	private void runControlLoop() {
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
 			if (instabilityValues[reactorFace.indexStability] > instabilityTarget) {
-				final TileEntity tileEntity = worldObj.getTileEntity(
+				final TileEntity tileEntity = world.getTileEntity(
 					pos.add(reactorFace.x, reactorFace.y, reactorFace.z));
 				if (tileEntity instanceof TileEntityEnanReactorLaser) {
 					((TileEntityEnanReactorLaser) tileEntity).stabilize(stabilizerEnergy);
@@ -235,7 +235,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
 			exploding = exploding || (instabilityValues[reactorFace.indexStability] >= 100);
 			int laserEnergy = 0;
-			final TileEntity tileEntity = worldObj.getTileEntity(
+			final TileEntity tileEntity = world.getTileEntity(
 					pos.add(reactorFace.x, reactorFace.y, reactorFace.z));
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
 				try {
@@ -250,7 +250,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			                                 instabilityValues[reactorFace.indexStability],
 			                                 laserEnergy));
 		}
-		exploding &= (worldObj.rand.nextInt(4) == 2);
+		exploding &= (world.rand.nextInt(4) == 2);
 		
 		if (exploding) {
 			WarpDrive.logger.info(String.format("%s Explosion triggered\nEnergy stored is %d, Laser received is %.2f, reactor is %s%s",
@@ -278,10 +278,10 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				for (int y = pos.getY() - radius; y <= pos.getY() + radius; y++) {
 					for (int z = pos.getZ() - radius; z <= pos.getZ() + radius; z++) {
 						if (z != pos.getZ() || y != pos.getY() || x != pos.getX()) {
-							if (worldObj.rand.nextDouble() < chanceOfRemoval) {
+							if (world.rand.nextDouble() < chanceOfRemoval) {
 								BlockPos blockPos = new BlockPos(x, y, z);
-								if (worldObj.getBlockState(blockPos).getBlock().getExplosionResistance(null) >= bedrockExplosionResistance) {
-									worldObj.setBlockToAir(blockPos);
+								if (world.getBlockState(blockPos).getBlock().getExplosionResistance(null) >= bedrockExplosionResistance) {
+									world.setBlockToAir(blockPos);
 								}
 							}
 						}
@@ -291,15 +291,15 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// remove reactor
-		worldObj.setBlockToAir(pos);
+		world.setBlockToAir(pos);
 		
 		// set a few augmented TnT around reactor core
 		for (int i = 0; i < 3; i++) {
-			worldObj.newExplosion(null,
-				pos.getX() + worldObj.rand.nextInt(3) - 0.5D,
-				pos.getY() + worldObj.rand.nextInt(3) - 0.5D,
-				pos.getZ() + worldObj.rand.nextInt(3) - 0.5D,
-				4.0F + worldObj.rand.nextInt(3), true, true);
+			world.newExplosion(null,
+				pos.getX() + world.rand.nextInt(3) - 0.5D,
+				pos.getY() + world.rand.nextInt(3) - 0.5D,
+				pos.getZ() + world.rand.nextInt(3) - 0.5D,
+				4.0F + world.rand.nextInt(3), true, true);
 		}
 	}
 	
@@ -313,9 +313,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		final int instabilityNibble = (int) Math.max(0, Math.min(3, Math.round(maxInstability / 25.0D)));
 		final int energyNibble = (int) Math.max(0, Math.min(3, Math.round(4.0D * containedEnergy / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED)));
 		
-		final IBlockState blockStateNew = blockType.getDefaultState()
-		                                           .withProperty(BlockEnanReactorCore.ENERGY, energyNibble)
-		                                           .withProperty(BlockEnanReactorCore.INSTABILITY, instabilityNibble);
+		final IBlockState blockStateNew = getBlockType().getDefaultState()
+		                                                .withProperty(BlockEnanReactorCore.ENERGY, energyNibble)
+		                                                .withProperty(BlockEnanReactorCore.INSTABILITY, instabilityNibble);
 		updateBlockState(null, blockStateNew);
 	}
 	
@@ -335,12 +335,12 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			}
 			if (reactorFace.indexStability < 0) {
 				final BlockPos blockPos = pos.add(reactorFace.x, reactorFace.y, reactorFace.z);
-				final IBlockState blockState = worldObj.getBlockState(blockPos);
-				final boolean isAir = blockState.getBlock().isAir(blockState, worldObj, blockPos);
+				final IBlockState blockState = world.getBlockState(blockPos);
+				final boolean isAir = blockState.getBlock().isAir(blockState, world, blockPos);
 				if (!isAir) {
 					isValid = false;
 					final Vector3 vPosition = new Vector3(blockPos).translate(0.5D);
-					PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, vPosition,
+					PacketHandler.sendSpawnParticlePacket(world, "jammed", (byte) 5, vPosition,
 					                                      new Vector3(0.0D, 0.0D, 0.0D),
 					                                      1.0F, 1.0F, 1.0F,
 					                                      1.0F, 1.0F, 1.0F,
@@ -351,7 +351,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		// then update the stabilization lasers accordingly
 		for (final EnumReactorFace reactorFace : EnumReactorFace.getLasers(tier)) {
-			final TileEntity tileEntity = worldObj.getTileEntity(
+			final TileEntity tileEntity = world.getTileEntity(
 				pos.add(reactorFace.x, reactorFace.y, reactorFace.z));
 			if (tileEntity instanceof TileEntityEnanReactorLaser) {
 				if (isValid) {
@@ -521,63 +521,63 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
 	@Override
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] instability(final Context context, final Arguments arguments) {
 		return instability();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] instabilityTarget(final Context context, final Arguments arguments) {
 		return instabilityTarget(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] release(final Context context, final Arguments arguments) {
 		return release(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] releaseRate(final Context context, final Arguments arguments) {
 		return releaseRate(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] releaseAbove(final Context context, final Arguments arguments) {
 		return releaseAbove(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] stabilizerEnergy(final Context context, final Arguments arguments) {
 		return stabilizerEnergy(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		// computer is alive => start updating reactor
 		hold = false;
@@ -749,7 +749,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		return String.format("%s %s @ %s (%d %d %d)", 
 		                     getClass().getSimpleName(), 
 		                     connectedComputers == null ? "~NULL~" : connectedComputers, 
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

@@ -18,7 +18,7 @@ public class CompatIndustrialCraft2 implements IBlockTransformer {
 	public static void register() {
 		try {
 			classIC2tileEntity = Class.forName("ic2.core.block.TileEntityBlock");
-			WarpDriveConfig.registerBlockTransformer("IC2", new CompatIndustrialCraft2());
+			WarpDriveConfig.registerBlockTransformer("ic2", new CompatIndustrialCraft2());
 		} catch (final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

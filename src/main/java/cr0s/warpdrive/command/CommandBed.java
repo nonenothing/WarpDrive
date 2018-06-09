@@ -5,7 +5,6 @@ import cr0s.warpdrive.Commons;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -23,12 +22,12 @@ public class CommandBed extends CommandBase {
 	
 	@Nonnull
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "wbed";
 	}
 	
 	@Override
-	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		if (commandSender == null) { return; }
 		
 		// parse arguments
@@ -40,19 +39,19 @@ public class CommandBed extends CommandBase {
 				entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
 			} else {
 				Commons.addChatMessage(commandSender, new TextComponentString(String.format("§c/%s: use as a player or provide a player name",
-				                                                    getCommandName())));
+				                                                    getName())));
 				return;
 			}
 			
 		} else if (args.length == 1) {
 			if ( args[0].equalsIgnoreCase("help")
 			  || args[0].equalsIgnoreCase("?") ) {
-				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 				return;
 			}
 			if ( commandSender instanceof EntityPlayerMP
 			  && !((EntityPlayerMP) commandSender).capabilities.isCreativeMode ) {
-				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 				return;
 			}
 			
@@ -64,33 +63,33 @@ public class CommandBed extends CommandBase {
 				entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
 			} else {
 				Commons.addChatMessage(commandSender, new TextComponentString(String.format("§c/%s: player not found '%s'",
-				                                                    getCommandName(), args[0])));
+				                                                    getName(), args[0])));
 				return;
 			}
 		}
 		
 		assert (entityPlayerMPs != null);
 		for (final EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
-			final BlockPos bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.worldObj.provider.getDimension());
+			final BlockPos bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.world.provider.getDimension());
 			if (bedLocation == null) {
 				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("§cTeleportation failed:\nyou need to set your bed location in %s",
-				                                                     entityPlayerMP.worldObj.provider.getDimensionType().getName())));
+				                                                     entityPlayerMP.world.provider.getDimensionType().getName())));
 				if (args.length != 0) {
 					Commons.addChatMessage(commandSender, new TextComponentString(String.format("§cTeleportation failed for player %s:\nplayer needs to set his/her bed location in %s",
 					                                                    entityPlayerMP.getName(),
-					                                                    entityPlayerMP.worldObj.provider.getDimensionType().getName())));
+					                                                    entityPlayerMP.world.provider.getDimensionType().getName())));
 				}
 				continue;
 			}
 			
-			final Block block = entityPlayerMP.worldObj.getBlockState(bedLocation).getBlock();
+			final Block block = entityPlayerMP.world.getBlockState(bedLocation).getBlock();
 			if (!(block instanceof BlockBed)) {
 				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("§cTeleportation failed:\nyour bed is no longer there in %s",
-				                                                     entityPlayerMP.worldObj.provider.getSaveFolder())));
+				                                                     entityPlayerMP.world.provider.getSaveFolder())));
 				if (args.length != 0) {
 					Commons.addChatMessage(commandSender, new TextComponentString(String.format("§cTeleportation failed for player %s:\nbed is no longer there in %s",
 					                                                    entityPlayerMP.getName(),
-					                                                    entityPlayerMP.worldObj.provider.getSaveFolder())));
+					                                                    entityPlayerMP.world.provider.getSaveFolder())));
 				}
 				continue;
 			}
@@ -102,7 +101,7 @@ public class CommandBed extends CommandBase {
 			if (args.length != 0) {
 				Commons.addChatMessage(commandSender, new TextComponentString(String.format("Teleporting player %s to %s @ (%d %d %d)",
 				                                                    entityPlayerMP.getName(),
-				                                                    entityPlayerMP.worldObj.provider.getSaveFolder(),
+				                                                    entityPlayerMP.world.provider.getSaveFolder(),
 				                                                    bedLocation.getX(), bedLocation.getY(), bedLocation.getZ())));
 			}
 		}
@@ -110,8 +109,8 @@ public class CommandBed extends CommandBase {
 	
 	@Nonnull
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
-		return getCommandName() + " (<playerName>)"
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
+		return getName() + " (<playerName>)"
 		       + "\nplayerName: name of the player home to find. Exact casing is required.";
 	}
 }

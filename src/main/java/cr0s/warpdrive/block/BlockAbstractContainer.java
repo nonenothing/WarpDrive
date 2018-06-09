@@ -10,6 +10,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.render.ClientCameraHandler;
 
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -18,10 +19,10 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,21 +33,26 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashSet;
 
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "defense.api.IEMPBlock", modid = "DefenseTech"),
-	@Optional.Interface(iface = "resonant.api.explosion.IEMPBlock", modid = "icbmclassic")
 })
-public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, defense.api.IEMPBlock, resonant.api.explosion.IEMPBlock {
+public abstract class BlockAbstractContainer extends BlockContainer implements IBlockBase, defense.api.IEMPBlock {
+	
+	private static HashSet<Class> tileEntityRegistered = new HashSet<>(64);
+	private static boolean isInvalidEMPreported = false;
 	
 	protected boolean hasSubBlocks = false;
-	private static boolean isInvalidEMPreported = false;
 	
 	protected BlockAbstractContainer(final String registryName, final Material material) {
 		super(material);
@@ -58,6 +64,14 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		WarpDrive.register(this);
 		
 		setDefaultState(blockState.getBaseState());
+	}
+	
+	public static void registerTileEntity(Class<? extends TileEntity> tileEntityClass, ResourceLocation key) {
+		if (tileEntityRegistered.contains(tileEntityClass)) {
+			return;
+		}
+		GameRegistry.registerTileEntity(tileEntityClass, key);
+		tileEntityRegistered.add(tileEntityClass);
 	}
 	
 	@Nullable
@@ -94,7 +108,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
 		final boolean isRotating = blockState.getProperties().containsKey(BlockProperties.FACING);
 		if (isRotating) {
-			final EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(blockPos, entityLiving);
+			final EnumFacing enumFacing = Commons.getFacingFromEntity(entityLiving);
 			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
 		}
 		
@@ -150,11 +164,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		return super.rotateBlock(world, blockPos, axis);
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
-	public void neighborChanged(final IBlockState blockState, final World world, final BlockPos blockPos, final Block block) {
-		super.neighborChanged(blockState, world, blockPos, block);
-		final TileEntity tileEntity = world.getTileEntity(blockPos);
+	public void onNeighborChange(final IBlockAccess blockAccess, final BlockPos blockPos, final BlockPos blockPosNeighbor) {
+		super.onNeighborChange(blockAccess, blockPos, blockPosNeighbor);
+		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
 		if (tileEntity instanceof IBlockUpdateDetector) {
 			((IBlockUpdateDetector) tileEntity).onBlockUpdateDetected();
 		}
@@ -163,32 +176,6 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Override
 	@Optional.Method(modid = "DefenseTech")
 	public void onEMP(final World world, final int x, final int y, final int z, final defense.api.IExplosion explosiveEMP) {
-		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
-			                                    world.provider.getSaveFolder(), x, y, z,
-			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
-		}
-		// EMP tower = 3k Energy, 60 radius
-		// EMP explosive = 3k Energy, 50 radius
-		if (explosiveEMP.getRadius() == 60.0F) {// compensate tower stacking effect
-			onEMP(world, new BlockPos(x, y, z), 0.02F);
-		} else if (explosiveEMP.getRadius() == 50.0F) {
-			onEMP(world, new BlockPos(x, y, z), 0.70F);
-		} else {
-			if (!isInvalidEMPreported) {
-				isInvalidEMPreported = true;
-				WarpDrive.logger.warn(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-			                                      world.provider.getSaveFolder(), x, y, z,
-				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
-				Commons.dumpAllThreads();
-			}
-			onEMP(world, new BlockPos(x, y, z), 0.02F);
-		}
-	}
-	
-	@Override
-	@Optional.Method(modid = "icbmclassic")
-	public void onEMP(final World world, final int x, final int y, final int z, final resonant.api.explosion.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
 			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
 			                                    world.provider.getSaveFolder(), x, y, z,
@@ -240,13 +227,17 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
-		if (hand != EnumHand.MAIN_HAND) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
+		if (enumHand != EnumHand.MAIN_HAND) {
+			return true;
+		}
+		if (ClientCameraHandler.isOverlayEnabled) {
 			return true;
 		}
 		
 		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityAbstractBase)) {
 			return false;
@@ -261,7 +252,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 		
 		EnumComponentType enumComponentType = null;
-		if ( itemStackHeld != null
+		if ( !itemStackHeld.isEmpty()
 		  && itemStackHeld.getItem() instanceof ItemComponent ) {
 			enumComponentType = EnumComponentType.get(itemStackHeld.getItemDamage());
 		}
@@ -271,10 +262,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		  && entityPlayer.isSneaking() ) {
 			// using an upgrade item or an empty hand means dismount upgrade
 			if ( tileEntityAbstractBase.isUpgradeable()
-			  && ( itemStackHeld == null
+			  && ( itemStackHeld.isEmpty()
 			    || enumComponentType != null ) ) {
 				// find a valid upgrade to dismount
-				if ( itemStackHeld == null
+				if ( itemStackHeld.isEmpty()
 				  || !tileEntityAbstractBase.hasUpgrade(enumComponentType) ) {
 					enumComponentType = (EnumComponentType) tileEntityAbstractBase.getFirstUpgradeOfType(EnumComponentType.class, null);
 				}
@@ -290,7 +281,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 					final ItemStack itemStackDrop = ItemComponent.getItemStackNoCache(enumComponentType, 1);
 					final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY + 0.5D, entityPlayer.posZ, itemStackDrop);
 					entityItem.setNoPickupDelay();
-					world.spawnEntityInWorld(entityItem);
+					world.spawnEntity(entityItem);
 				}
 				
 				tileEntityAbstractBase.dismountUpgrade(enumComponentType);
@@ -300,7 +291,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			}
 			
 		} else if ( !entityPlayer.isSneaking()
-		         && itemStackHeld == null ) {// no sneaking and no item in hand => show status
+		         && itemStackHeld.isEmpty() ) {// no sneaking and no item in hand => show status
 			Commons.addChatMessage(entityPlayer, tileEntityAbstractBase.getStatus());
 			return true;
 			
@@ -322,14 +313,14 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			
 			if (!entityPlayer.capabilities.isCreativeMode) {
 				// validate quantity
-				if (itemStackHeld.stackSize < 1) {
+				if (itemStackHeld.getCount() < 1) {
 					// not enough upgrade items
 					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.not_enough_upgrades"));
 					return true;
 				}
 				
 				// update player inventory
-				itemStackHeld.stackSize -= 1;
+				itemStackHeld.shrink(1);
 			}
 			
 			// mount the new upgrade item

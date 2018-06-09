@@ -23,17 +23,17 @@ public class RenderOverlayLocation {
 	
 	private void renderLocation(final int widthScreen, final int heightScreen) {
 		// get player
-		final EntityPlayer entityPlayer = minecraft.thePlayer;
+		final EntityPlayer entityPlayer = minecraft.player;
 		if (entityPlayer == null) {
 			return;
 		}
-		final int x = MathHelper.floor_double(entityPlayer.posX);
-		final int z = MathHelper.floor_double(entityPlayer.posZ);
+		final int x = MathHelper.floor(entityPlayer.posX);
+		final int z = MathHelper.floor(entityPlayer.posZ);
 		
 		// get celestial object
-		String name = entityPlayer.worldObj.provider.getDimensionType().getName();
+		String name = entityPlayer.world.provider.getDimensionType().getName();
 		String description = "";
-		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj, x, z);
+		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.world, x, z);
 		if (celestialObject != null) {
 			if (!celestialObject.getDisplayName().isEmpty()) {
 				name = celestialObject.getDisplayName();

@@ -105,7 +105,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -116,7 +116,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -147,13 +147,13 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	}
 	
 	private void refreshChunkRange() {
-		if (worldObj == null) {
+		if (world == null) {
 			return;
 		}
-		final ChunkPos chunkSelf = worldObj.getChunkFromBlockCoords(pos).getChunkCoordIntPair();
+		final ChunkPos chunkSelf = world.getChunkFromBlockCoords(pos).getPos();
 		
-		chunkMin = new ChunkPos(chunkSelf.chunkXPos + radiusXneg, chunkSelf.chunkZPos + radiusZneg);
-		chunkMax = new ChunkPos(chunkSelf.chunkXPos + radiusXpos, chunkSelf.chunkZPos + radiusZpos);
+		chunkMin = new ChunkPos(chunkSelf.x + radiusXneg, chunkSelf.z + radiusZneg);
+		chunkMax = new ChunkPos(chunkSelf.x + radiusXpos, chunkSelf.z + radiusZpos);
 		refreshChunkLoading();
 	}
 	
@@ -214,38 +214,38 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] bounds(final Context context, final Arguments arguments) {
 		return bounds(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] radius(final Context context, final Arguments arguments) {
 		return radius(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] upgrades(final Context context, final Arguments arguments) {
 		return upgrades();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -274,7 +274,7 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		return String.format(
 			"%s @ %s (%d %d %d)",
 			getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+			world == null ? "~NULL~" : world.provider.getSaveFolder(),
 			pos.getX(), pos.getY(), pos.getZ());
 	}
 }

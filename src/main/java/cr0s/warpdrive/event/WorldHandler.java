@@ -35,15 +35,15 @@ public class WorldHandler {
 		final ChunkPos chunk = event.getChunk();
 		
 		// Check chunk for locating in cloaked areas
-		WarpDrive.logger.info("onChunkLoaded " + chunk.chunkXPos + " " + chunk.chunkZPos);
-		WarpDrive.cloaks.onChunkLoaded(event.getPlayer(), chunk.chunkXPos, chunk.chunkZPos);
+		WarpDrive.logger.info("onChunkLoaded " + chunk.x + " " + chunk.z);
+		WarpDrive.cloaks.onChunkLoaded(event.getPlayer(), chunk.x, chunk.z);
 		
 		/*
 		List<Chunk> list = new ArrayList<Chunk>();
 		list.add(c);
 		
 		// Send obscured chunk
-		System.out.println("[Cloak] Sending to player " + p.username + " obscured chunk at (" + chunk.chunkXPos + "; " + chunk.chunkZPos + ")");
+		System.out.println("[Cloak] Sending to player " + p.username + " obscured chunk at (" + chunk.x + "; " + chunk.z + ")");
 		((EntityPlayerMP)p).connection.sendPacketToPlayer(new Packet56MapChunks(list));
 		*/
 	}
@@ -53,25 +53,25 @@ public class WorldHandler {
 	public void onEntityJoinWorld(final EntityJoinWorldEvent event){
 		if (event.getWorld().isRemote) {
 			return;
-		}			
+		}
 		// WarpDrive.logger.info("onEntityJoinWorld " + event.entity);
 		if (event.getEntity() instanceof EntityLivingBase) {
 			final EntityLivingBase entityLivingBase = (EntityLivingBase) event.getEntity();
-			final int x = MathHelper.floor_double(event.getEntity().posX);
-			final int y = MathHelper.floor_double(event.getEntity().posY);
-			final int z = MathHelper.floor_double(event.getEntity().posZ);
+			final int x = MathHelper.floor(entityLivingBase.posX);
+			final int y = MathHelper.floor(entityLivingBase.posY);
+			final int z = MathHelper.floor(entityLivingBase.posZ);
 			final CelestialObject celestialObject = CelestialObjectManager.get(event.getWorld(), x, z);
 			
-			if (event.getEntity() instanceof EntityPlayerMP) {
-				WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.getEntity(), event.getWorld());
-				PacketHandler.sendClientSync((EntityPlayerMP) event.getEntity(), celestialObject);
+			if (entityLivingBase instanceof EntityPlayerMP) {
+				WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) entityLivingBase, event.getWorld());
+				PacketHandler.sendClientSync((EntityPlayerMP) entityLivingBase, celestialObject);
 				
 			} else {
 				if (celestialObject == null) {
 					// unregistered dimension => exit
 					return;
 				}
-				if (event.getEntity().ticksExisted > 5) {
+				if (entityLivingBase.ticksExisted > 5) {
 					// just changing dimension
 					return;
 				}
@@ -81,7 +81,7 @@ public class WorldHandler {
 						event.setCanceled(true);
 					}
 				}
-				if (!celestialObject.isInsideBorder(event.getEntity().posX, event.getEntity().posZ)) {
+				if (!celestialObject.isInsideBorder(entityLivingBase.posX, entityLivingBase.posZ)) {
 					event.setCanceled(true);
 				}
 			}
@@ -92,7 +92,7 @@ public class WorldHandler {
 	public void onPlayerChangedDimension(final PlayerChangedDimensionEvent event) {
 		WarpDrive.logger.info(String.format("onPlayerChangedDimension %s %d -> %d",
 		                                    event.player.getName(), event.fromDim, event.toDim ));
-		WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.player, ((EntityPlayerMP) event.player).worldObj);
+		WarpDrive.cloaks.onPlayerJoinWorld((EntityPlayerMP) event.player, ((EntityPlayerMP) event.player).world);
 	}
 	
 	// Client side

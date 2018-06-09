@@ -8,18 +8,23 @@ import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -61,10 +66,13 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, @Nonnull final CreativeTabs creativeTabs, @Nonnull final List<ItemStack> subItems) {
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
 		for(final EnumForceFieldUpgrade enumForceFieldUpgrade : EnumForceFieldUpgrade.values()) {
 			if (enumForceFieldUpgrade != EnumForceFieldUpgrade.NONE) {
-				subItems.add(new ItemStack(item, 1, enumForceFieldUpgrade.ordinal()));
+				list.add(new ItemStack(this, 1, enumForceFieldUpgrade.ordinal()));
 			}
 		}
 	}
@@ -75,6 +83,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
+		assert(resourceLocation != null);
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldUpgrade.get(damage).getName());
 		}
@@ -88,8 +97,9 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
-		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
+	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
+		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		Commons.addTooltip(list, "\n");
 		

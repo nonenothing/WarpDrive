@@ -13,7 +13,6 @@ import javax.annotation.Nonnull;
 import mcp.MethodsReturnNonnullByDefault;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -31,12 +30,12 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "space";
 	}
 	
 	@Override
-	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		if (commandSender == null) { return; } 
 		
 		// set defaults
@@ -54,7 +53,7 @@ public class CommandSpace extends CommandBase {
 			// nop
 		} else if (args.length == 1) {
 			if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-				Commons.addChatMessage(commandSender,  new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender,  new TextComponentString(getUsage(commandSender)));
 				return;
 			}
 			
@@ -91,21 +90,21 @@ public class CommandSpace extends CommandBase {
 		
 		for (final EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
 			// toggle between overworld and space if no dimension was provided
-			int xTarget = MathHelper.floor_double(entityPlayerMP.posX);
-			int yTarget = Math.min(255, Math.max(0, MathHelper.floor_double(entityPlayerMP.posY)));
-			int zTarget = MathHelper.floor_double(entityPlayerMP.posZ);
-			final CelestialObject celestialObjectCurrent = CelestialObjectManager.get(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+			int xTarget = MathHelper.floor(entityPlayerMP.posX);
+			int yTarget = Math.min(255, Math.max(0, MathHelper.floor(entityPlayerMP.posY)));
+			int zTarget = MathHelper.floor(entityPlayerMP.posZ);
+			final CelestialObject celestialObjectCurrent = CelestialObjectManager.get(entityPlayerMP.world, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 			if (dimensionIdTarget == Integer.MAX_VALUE) {
 				if (celestialObjectCurrent == null) {
 					Commons.addChatMessage(commandSender, new TextComponentString(
 						String.format("§c/space: player %s is in unknown dimension %d.\n§bTry specifying an explicit target dimension instead.",
-							    entityPlayerMP.getName(), entityPlayerMP.worldObj.provider.getDimension()) ));
+							    entityPlayerMP.getName(), entityPlayerMP.world.provider.getDimension()) ));
 					continue;
 				}
 				if ( celestialObjectCurrent.isSpace()
 				  || celestialObjectCurrent.isHyperspace() ) {
 					// in space or hyperspace => move to closest child
-					final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+					final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityPlayerMP.world, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 					if (celestialObjectChild == null) {
 						dimensionIdTarget = 0;
 					} else if (celestialObjectChild.isVirtual()) {
@@ -145,7 +144,7 @@ public class CommandSpace extends CommandBase {
 					yTarget -= vEntry.y;
 					zTarget -= vEntry.z;
 				} else {
-					final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityPlayerMP.worldObj, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
+					final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityPlayerMP.world, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 					if ( celestialObjectChild != null
 					  && celestialObjectChild.dimensionId == dimensionIdTarget ) {// moving to child explicitly
 						final VectorI vEntry = celestialObjectChild.getEntryOffset();
@@ -168,7 +167,7 @@ public class CommandSpace extends CommandBase {
 			}
 			
 			// get target world
-			final WorldServer worldTarget = server.worldServerForDimension(dimensionIdTarget);
+			final WorldServer worldTarget = server.getWorld(dimensionIdTarget);
 			if (worldTarget == null) {
 				Commons.addChatMessage(commandSender, new TextComponentString("§c/space: undefined dimension '" + dimensionIdTarget + "'"));
 				continue;
@@ -211,7 +210,7 @@ public class CommandSpace extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";
 	}
 }

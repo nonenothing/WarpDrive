@@ -15,8 +15,8 @@ public class ItemHandler {
 		if (event.getEntityItem() == null) {
 			return;
 		}
-		final ItemStack itemStack = event.getEntityItem().getEntityItem();
-		if (itemStack == null) {
+		final ItemStack itemStack = event.getEntityItem().getItem();
+		if (itemStack.isEmpty()) {
 			return;
 		}
 		final Item item = itemStack.getItem();

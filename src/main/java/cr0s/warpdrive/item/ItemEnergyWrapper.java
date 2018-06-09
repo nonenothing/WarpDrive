@@ -1,9 +1,10 @@
 package cr0s.warpdrive.item;
 
-import cofh.api.energy.IEnergyContainerItem;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+
+import cofh.redstoneflux.api.IEnergyContainerItem;
 import ic2.api.item.ElectricItem;
 import ic2.api.item.IElectricItem;
 import ic2.api.item.IElectricItemManager;
@@ -119,7 +120,7 @@ public class ItemEnergyWrapper {
 	}
 	
 	// IndustrialCraft IElectricItem interface
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static IElectricItemManager IC2_getManager(final ItemStack itemStack) {
 		final Item item = itemStack.getItem();
 		if (item == null) {
@@ -134,22 +135,22 @@ public class ItemEnergyWrapper {
 		return ElectricItem.getBackupManager(itemStack);
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static boolean IC2_isContainer(final ItemStack itemStack) {
 		return itemStack.getItem() instanceof IElectricItem;
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static boolean IC2_canOutput(final ItemStack itemStack) {
 		return ((IElectricItem)itemStack.getItem()).canProvideEnergy(itemStack);
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static boolean IC2_canInput(final ItemStack itemStack) {
 		return false;
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static double IC2_getEnergyStored(final ItemStack itemStack) {
 		final IElectricItemManager electricItemManager = IC2_getManager(itemStack);
 		if (electricItemManager == null) {
@@ -158,12 +159,12 @@ public class ItemEnergyWrapper {
 		return electricItemManager.getCharge(itemStack);
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static double IC2_getMaxEnergyStorage(final ItemStack itemStack) {
 		return ((IElectricItem)itemStack.getItem()).getMaxCharge(itemStack);
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static ItemStack IC2_consume(final ItemStack itemStack, final double amount_EU, final boolean simulate) {
 		final IElectricItemManager electricItemManager = IC2_getManager(itemStack);
 		if (electricItemManager == null) {
@@ -178,7 +179,7 @@ public class ItemEnergyWrapper {
 		return null;
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private static ItemStack IC2_charge(final ItemStack itemStack, final double amount_EU, final boolean simulate) {
 		final IElectricItemManager electricItemManager = IC2_getManager(itemStack);
 		if (electricItemManager == null) {
@@ -194,33 +195,33 @@ public class ItemEnergyWrapper {
 	}
 	
 	
-	// Thermal Expansion IEnergyContainerItem interface
-	@Optional.Method(modid = "cofhcore")
+	// CoFH IEnergyContainerItem interface
+	@Optional.Method(modid = "redstoneflux")
 	private static boolean CoFH_isContainer(final ItemStack itemStack) {
 		return itemStack.getItem() instanceof IEnergyContainerItem;
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private static boolean CoFH_canOutput(final ItemStack itemStack) {
 		return ((IEnergyContainerItem) itemStack.getItem()).getEnergyStored(itemStack) > 0;
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private static boolean CoFH_canInput(final ItemStack itemStack) {
 		return ((IEnergyContainerItem) itemStack.getItem()).getEnergyStored(itemStack) < ((IEnergyContainerItem) itemStack.getItem()).getMaxEnergyStored(itemStack);
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private static int CoFH_getEnergyStored(final ItemStack itemStack) {
 		return (int) Math.floor( ((IEnergyContainerItem)itemStack.getItem()).getEnergyStored(itemStack) );
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private static int CoFH_getMaxEnergyStorage(final ItemStack itemStack) {
 		return (int) Math.floor( ((IEnergyContainerItem)itemStack.getItem()).getMaxEnergyStored(itemStack) );
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private static ItemStack CoFH_consume(final ItemStack itemStack, final int amount_RF, final boolean simulate) {
 		if (((IEnergyContainerItem)itemStack.getItem()).extractEnergy(itemStack, amount_RF, simulate) > 0) {
 			return itemStack;
@@ -228,7 +229,7 @@ public class ItemEnergyWrapper {
 		return null;
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private static ItemStack CoFH_charge(final ItemStack itemStack, final int amount_RF, final boolean simulate) {
 		if ( ((IEnergyContainerItem)itemStack.getItem()).receiveEnergy(itemStack, amount_RF, simulate) > 0) {
 			return itemStack;

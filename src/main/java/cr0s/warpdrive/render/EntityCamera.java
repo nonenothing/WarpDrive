@@ -7,6 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -18,6 +19,7 @@ import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
@@ -45,6 +47,11 @@ public final class EntityCamera extends EntityLivingBase {
 	private int bootUpTicks = 20;
 	
 	private boolean isCentered = true;
+	
+	// required for registration?
+	public EntityCamera(final World world) {
+		super(world);
+	}
 	
 	public EntityCamera(final World world, final int x, final int y, final int z, final EntityPlayer player) {
 		super(world);
@@ -84,25 +91,25 @@ public final class EntityCamera extends EntityLivingBase {
 		}
 		
 		ClientCameraHandler.resetViewpoint();
-		worldObj.removeEntity(this);
+		world.removeEntity(this);
 		isActive = false;
 	}
 	
 	@Override
 	public void onEntityUpdate() {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			if (player == null || player.isDead) {
 				WarpDrive.logger.error(this + " Player is null or dead, closing camera...");
 				closeCamera();
 				return;
 			}
-			if (!ClientCameraHandler.isValidContext(worldObj)) {
+			if (!ClientCameraHandler.isValidContext(world)) {
 				WarpDrive.logger.error(this + " Invalid context, closing camera...");
 				closeCamera();
 				return;
 			}
 			
-			final Block block = worldObj.getBlockState(new BlockPos(cameraX, cameraY, cameraZ)).getBlock();
+			final Block block = world.getBlockState(new BlockPos(cameraX, cameraY, cameraZ)).getBlock();
 			if (mc.getRenderViewEntity() != null) {
 				mc.getRenderViewEntity().rotationYaw = player.rotationYaw;
 				// mc.renderViewEntity.rotationYawHead = player.rotationYawHead;
@@ -219,17 +226,18 @@ public final class EntityCamera extends EntityLivingBase {
 		return false;
 	}
 	
+	@Nonnull
 	@Override
 	public EnumHandSide getPrimaryHand() {
 		return EnumHandSide.RIGHT;
 	}
 	
 	@Override
-	public void moveEntity(final double x, final double y, final double z) {
+	public void move(final MoverType type, final double x, final double y, final double z) {
 	}
 	
 	@Override
-	public void readEntityFromNBT(final NBTTagCompound tagCompound) {
+	public void readEntityFromNBT(@Nonnull final NBTTagCompound tagCompound) {
 		// nothing to save, skip ancestor call
 		cameraX = tagCompound.getInteger("x");
 		cameraY = tagCompound.getInteger("y");
@@ -249,14 +257,14 @@ public final class EntityCamera extends EntityLivingBase {
 		return new ArrayList<>();
 	}
 	
-	@Nullable
+	@Nonnull
 	@Override
-	public ItemStack getItemStackFromSlot(final EntityEquipmentSlot slotIn) {
-		return null;
+	public ItemStack getItemStackFromSlot(@Nonnull final EntityEquipmentSlot slotIn) {
+		return ItemStack.EMPTY;
 	}
 	
 	@Override
-	public void setItemStackToSlot(final EntityEquipmentSlot slotIn, @Nullable final ItemStack itemStack) {
+	public void setItemStackToSlot(@Nonnull final EntityEquipmentSlot slotIn, @Nullable final ItemStack itemStack) {
 		
 	}
 }

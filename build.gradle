@@ -98,13 +98,14 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+	// using deobfCompile will include in run environment
     compileOnly "cofh:RedstoneFlux:1.12-2.0.0.1:universal"
     compileOnly "blusunrize:ImmersiveEngineering:0.12-+:deobf"
 //  compileOnly "mezz.jei:jei_1.10.2:3.13.+"
 //  compileOnly "mcp.mobius.waila:Waila:1.7.0-B3_1.9.4"
 //  compileOnly "slimeknights.mantle:Mantle:1.10.2-1.+"
 //  compileOnly "slimeknights:TConstruct:1.10.2-2.5.6.+"
-    deobfCompile "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+"
+    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-1.7.2.+"
 //  compileOnly "mcjty.theoneprobe:TheOneProbe:1.10-1.0.13-26"
 //  compileOnly "MineTweaker3:MineTweaker3-API:3.0.14.59"
     compileOnly "MCMultiPart2:MCMultiPart-exp:2.5.1+"

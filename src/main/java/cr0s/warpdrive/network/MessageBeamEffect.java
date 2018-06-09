@@ -92,7 +92,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageBeamEffect beamEffectMessage, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().theWorld == null) {
+		if (Minecraft.getMinecraft().world == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring beam packet");
 			return null;
 		}
@@ -103,7 +103,7 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 				+ " age " + beamEffectMessage.age);
 		}
 		
-        beamEffectMessage.handle(Minecraft.getMinecraft().theWorld);
+        beamEffectMessage.handle(Minecraft.getMinecraft().world);
         
 		return null;	// no response
 	}

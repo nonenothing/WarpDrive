@@ -24,6 +24,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 public class BreathingManager {
@@ -46,7 +47,7 @@ public class BreathingManager {
 	public static boolean hasAirBlock(final EntityLivingBase entityLivingBase, final int x, final int y, final int z) {
 		for (final VectorI vOffset : vAirOffsets) {
 			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
-			final Block block = vPosition.getBlockState(entityLivingBase.worldObj).getBlock();
+			final Block block = vPosition.getBlockState(entityLivingBase.world).getBlock();
 			if (isAirBlock(block)) {
 				return true;
 			}
@@ -74,7 +75,7 @@ public class BreathingManager {
 		
 		if (WarpDriveConfig.LOGGING_BREATHING) {
 			WarpDrive.logger.warn(String.format("Entity spawn denied @ %s (%d %d %d) entityId '%s'",
-			                                    entityLivingBase.worldObj.provider.getSaveFolder(),
+			                                    entityLivingBase.world.provider.getSaveFolder(),
 			                                    x, y, z, idEntity));
 		}
 		return false;
@@ -94,13 +95,13 @@ public class BreathingManager {
 		Block block = null;
 		for (final VectorI vOffset : vAirOffsets) {
 			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
-			blockState = vPosition.getBlockState(entityLivingBase.worldObj);
+			blockState = vPosition.getBlockState(entityLivingBase.world);
 			block = blockState.getBlock();
 			if (block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
 				vAirBlock = vPosition;
 				break;
 			} else if (block != Blocks.AIR) {
-				final StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.worldObj, vPosition.x, vPosition.y, vPosition.z);
+				final StateAir stateAir = ChunkHandler.getStateAir(entityLivingBase.world, vPosition.x, vPosition.y, vPosition.z);
 				if ( stateAir == null
 				  || stateAir.concentration > 0 ) {
 					vAirBlock = vPosition;
@@ -121,7 +122,7 @@ public class BreathingManager {
 				if (block == WarpDrive.blockAir) {
 					final int metadata = blockState.getBlock().getMetaFromState(blockState);
 					if (metadata > 0 && metadata < 15) {
-						entityLivingBase.worldObj.setBlockState(vAirBlock.getBlockPos(), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
+						entityLivingBase.world.setBlockState(vAirBlock.getBlockPos(), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
 					}
 				}
 			} else {
@@ -193,19 +194,21 @@ public class BreathingManager {
 		}
 		
 		final EntityPlayerMP entityPlayer = (EntityPlayerMP) entityLivingBase;
-		final ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+		final NonNullList<ItemStack> playerInventory = entityPlayer.inventory.mainInventory;
 		int slotAirCanisterFound = -1;
 		float fillingRatioAirCanisterFound = 0.0F;
 		
 		// find most consumed air canister with smallest stack
-		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
-			final ItemStack itemStack = playerInventory[slotIndex];
-			if (itemStack != null && itemStack.getItem() instanceof IAirContainerItem) {
+		for (int slotIndex = 0; slotIndex < playerInventory.size(); slotIndex++) {
+			final ItemStack itemStack = playerInventory.get(slotIndex);
+			if ( itemStack != ItemStack.EMPTY
+			  && itemStack.getCount() > 0
+			  && itemStack.getItem() instanceof IAirContainerItem) {
 				final IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
 				final int airAvailable = airContainerItem.getCurrentAirStorage(itemStack);
 				if (airAvailable > 0) {
 					float fillingRatio = airAvailable / (float) airContainerItem.getMaxAirStorage(itemStack);
-					fillingRatio -= itemStack.stackSize / 1000.0F;
+					fillingRatio -= itemStack.getCount() / 1000.0F;
 					if (fillingRatioAirCanisterFound <= 0.0F || fillingRatio < fillingRatioAirCanisterFound) {
 						slotAirCanisterFound = slotIndex;
 						fillingRatioAirCanisterFound = fillingRatio;
@@ -215,25 +218,26 @@ public class BreathingManager {
 		}
 		// consume air on the selected Air canister
 		if (slotAirCanisterFound >= 0) {
-			final ItemStack itemStack = playerInventory[slotAirCanisterFound];
-			if (itemStack != null && itemStack.getItem() instanceof IAirContainerItem) {
+			final ItemStack itemStack = playerInventory.get(slotAirCanisterFound);
+			if ( !itemStack.isEmpty()
+			  && itemStack.getItem() instanceof IAirContainerItem ) {
 				final IAirContainerItem airContainerItem = (IAirContainerItem) itemStack.getItem();
 				final int airAvailable = airContainerItem.getCurrentAirStorage(itemStack);
 				if (airAvailable > 0) {
-					if (itemStack.stackSize > 1) {// unstack
-						itemStack.stackSize--;
+					if (itemStack.getCount() > 1) {// unstack
+						itemStack.shrink(1);
 						ItemStack itemStackToAdd = itemStack.copy();
-						itemStackToAdd.stackSize = 1;
+						itemStackToAdd.setCount(1);
 						itemStackToAdd = airContainerItem.consumeAir(itemStackToAdd);
 						if (!entityPlayer.inventory.addItemStackToInventory(itemStackToAdd)) {
-							final EntityItem entityItem = new EntityItem(entityPlayer.worldObj, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackToAdd);
-							entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+							final EntityItem entityItem = new EntityItem(entityPlayer.world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackToAdd);
+							entityPlayer.world.spawnEntity(entityItem);
 						}
 						entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 					} else {
 						final ItemStack itemStackNew = airContainerItem.consumeAir(itemStack);
 						if (itemStack != itemStackNew) {
-							playerInventory[slotAirCanisterFound] = itemStackNew;
+							playerInventory.set(slotAirCanisterFound, itemStackNew);
 						}
 					}
 					return airContainerItem.getAirTicksPerConsumption(itemStack);
@@ -244,19 +248,19 @@ public class BreathingManager {
 		// (no air canister or all empty)
 		// check IC2 compressed air cells
 		if (WarpDriveConfig.IC2_compressedAir != null) {
-			for (int slotIndex = 0; slotIndex < playerInventory.length; ++slotIndex) {
-				if (playerInventory[slotIndex] != null && playerInventory[slotIndex].isItemEqual(WarpDriveConfig.IC2_compressedAir)) {
-					playerInventory[slotIndex].stackSize--;
-					if (playerInventory[slotIndex].stackSize <= 0) {
-						playerInventory[slotIndex] = null;
-					}
+			for (int slotIndex = 0; slotIndex < playerInventory.size(); ++slotIndex) {
+				final ItemStack itemStack = playerInventory.get(slotIndex);
+				if ( !itemStack.isEmpty()
+				  && itemStack.isItemEqual(WarpDriveConfig.IC2_compressedAir) ) {
+					itemStack.shrink(1);
+					playerInventory.set(slotIndex, itemStack);
 					
 					if (WarpDriveConfig.IC2_emptyCell != null) {
 						final ItemStack emptyCell = new ItemStack(WarpDriveConfig.IC2_emptyCell.getItem(), 1, 0);
 						if (!entityPlayer.inventory.addItemStackToInventory(emptyCell)) {
-							final World world = entityPlayer.worldObj;
+							final World world = entityPlayer.world;
 							final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, emptyCell);
-							entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+							entityPlayer.world.spawnEntity(entityItem);
 						}
 						entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 					}
@@ -267,7 +271,7 @@ public class BreathingManager {
 		
 		// all air containers are empty
 		final ItemStack itemStackChestplate = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-		if (itemStackChestplate != null) {
+		if (!itemStackChestplate.isEmpty()) {
 			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[2]) {
 				return electrolyseIceToAir(entityLivingBase);
@@ -283,10 +287,10 @@ public class BreathingManager {
 			final ItemStack itemStackLeggings = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
 			final ItemStack itemStackBoots = entityLivingBase.getItemStackFromSlot(EntityEquipmentSlot.FEET);
 			// need full armor set to breath
-			if ( itemStackHelmet != null
-			  && itemStackChestplate != null
-			  && itemStackLeggings != null
-			  && itemStackBoots != null) {
+			if ( !itemStackHelmet.isEmpty()
+			  && !itemStackChestplate.isEmpty()
+			  && !itemStackLeggings.isEmpty()
+			  && !itemStackBoots.isEmpty() ) {
 				// need a working breathing helmet to breath
 				final Item itemHelmet = itemStackHelmet.getItem();
 				return (itemHelmet instanceof IBreathingHelmet && ((IBreathingHelmet) itemHelmet).canBreath(entityLivingBase))
@@ -295,7 +299,7 @@ public class BreathingManager {
 			
 		} else {
 			// need just a working breathing helmet to breath
-			if (itemStackHelmet != null) {
+			if (!itemStackHelmet.isEmpty()) {
 				final Item itemHelmet = itemStackHelmet.getItem();
 				return (itemHelmet instanceof IBreathingHelmet && ((IBreathingHelmet) itemHelmet).canBreath(entityLivingBase))
 				    || Dictionary.ITEMS_BREATHING_HELMET.contains(itemHelmet);
@@ -305,12 +309,12 @@ public class BreathingManager {
 	}
 	
 	public static float getAirReserveRatio(final EntityPlayer entityPlayer) {
-		final ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+		final NonNullList<ItemStack> playerInventory = entityPlayer.inventory.mainInventory;
 		
 		// check electrolysing
 		boolean canElectrolyse = false;
 		final ItemStack itemStackChestplate = entityPlayer.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-		if (itemStackChestplate != null) {
+		if (!itemStackChestplate.isEmpty()) {
 			final Item itemChestplate = itemStackChestplate.getItem();
 			if (itemChestplate == WarpDrive.itemWarpArmor[2]) {
 				canElectrolyse = true;
@@ -325,9 +329,8 @@ public class BreathingManager {
 		int countIce = 0;
 		int countEnergy = 0;
 		ItemStack itemStackAirContainer = null;
-		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
-			final ItemStack itemStack = playerInventory[slotIndex];
-			if (itemStack != null) {
+		for (final ItemStack itemStack : playerInventory) {
+			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() instanceof IAirContainerItem) {
 					countAirContainer++;
 					itemStackAirContainer = itemStack;
@@ -348,7 +351,7 @@ public class BreathingManager {
 					
 				} else if (canElectrolyse) {
 					if (itemStack.getItem() == itemIce) {
-						countIce += itemStack.stackSize;
+						countIce += itemStack.getCount();
 					} else if ( ItemEnergyWrapper.isEnergyContainer(itemStack)
 					         && ItemEnergyWrapper.canOutput(itemStack)
 					         && ItemEnergyWrapper.getEnergyStored(itemStack) >= AIR_ENERGY_FOR_ELECTROLYSE ) {
@@ -381,7 +384,7 @@ public class BreathingManager {
 			return 0;
 		}
 		final EntityPlayerMP entityPlayer = (EntityPlayerMP) entity;
-		final ItemStack[] playerInventory = entityPlayer.inventory.mainInventory;
+		final NonNullList<ItemStack> playerInventory = entityPlayer.inventory.mainInventory;
 		int slotIceFound = -1;
 		int slotFirstEmptyAirCanisterFound = -1;
 		int slotSecondEmptyAirCanisterFound = -1;
@@ -389,13 +392,13 @@ public class BreathingManager {
 		
 		// find 1 ice, 1 energy and 2 empty air containers
 		final Item itemIce = Item.getItemFromBlock(Blocks.ICE);
-		for (int slotIndex = 0; slotIndex < playerInventory.length; slotIndex++) {
-			final ItemStack itemStack = playerInventory[slotIndex];
-			if (itemStack == null || itemStack.stackSize <= 0) {
+		for (int slotIndex = 0; slotIndex < playerInventory.size(); slotIndex++) {
+			final ItemStack itemStack = playerInventory.get(slotIndex);
+			if (itemStack.isEmpty()) {
 				// skip
 			} else if (itemStack.getItem() == itemIce) {
 				slotIceFound = slotIndex;
-			} else if (itemStack.stackSize == 1 && itemStack.getItem() instanceof IAirContainerItem) {
+			} else if (itemStack.getCount() == 1 && itemStack.getItem() instanceof IAirContainerItem) {
 				final IAirContainerItem airCanister = (IAirContainerItem) itemStack.getItem();
 				if (airCanister.canContainAir(itemStack) && airCanister.getCurrentAirStorage(itemStack) >= 0) {
 					if (slotFirstEmptyAirCanisterFound < 0) {
@@ -417,38 +420,34 @@ public class BreathingManager {
 		
 		if (slotEnergyContainer >= 0 && slotIceFound >= 0 && slotFirstEmptyAirCanisterFound >= 0) {
 			// consume energy
-			ItemStack itemStackEnergyContainer = playerInventory[slotEnergyContainer];
+			ItemStack itemStackEnergyContainer = playerInventory.get(slotEnergyContainer);
 			itemStackEnergyContainer = ItemEnergyWrapper.consume(itemStackEnergyContainer, AIR_ENERGY_FOR_ELECTROLYSE, false);
 			if (itemStackEnergyContainer != null) {
-				if (playerInventory[slotEnergyContainer].stackSize <= 1) {
-					playerInventory[slotEnergyContainer] = itemStackEnergyContainer;
+				if (playerInventory.get(slotEnergyContainer).getCount() <= 1) {
+					playerInventory.set(slotEnergyContainer, itemStackEnergyContainer);
 				} else {
-					playerInventory[slotEnergyContainer].stackSize--;
+					playerInventory.get(slotEnergyContainer).shrink(1);
 					if (!entityPlayer.inventory.addItemStackToInventory(itemStackEnergyContainer)) {
-						final World world = entityPlayer.worldObj;
+						final World world = entityPlayer.world;
 						final EntityItem entityItem = new EntityItem(world, entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, itemStackEnergyContainer);
-						entityPlayer.worldObj.spawnEntityInWorld(entityItem);
+						entityPlayer.world.spawnEntity(entityItem);
 					}
 				}
 				
 				// consume ice
-				final ItemStack itemStackIce = playerInventory[slotIceFound];
-				if (itemStackIce.stackSize > 1) {
-					itemStackIce.stackSize--;
-					playerInventory[slotIceFound] = itemStackIce;
-				} else {
-					playerInventory[slotIceFound] = null;
-				}
+				final ItemStack itemStackIce = playerInventory.get(slotIceFound);
+				itemStackIce.shrink(1);
+				playerInventory.set(slotIceFound, itemStackIce);
 				
 				// fill air canister(s)
-				ItemStack itemStackAirCanister = playerInventory[slotFirstEmptyAirCanisterFound];
+				ItemStack itemStackAirCanister = playerInventory.get(slotFirstEmptyAirCanisterFound);
 				IAirContainerItem airCanister = (IAirContainerItem) itemStackAirCanister.getItem();
-				playerInventory[slotFirstEmptyAirCanisterFound] = airCanister.getFullAirContainer(itemStackAirCanister);
+				playerInventory.set(slotFirstEmptyAirCanisterFound, airCanister.getFullAirContainer(itemStackAirCanister));
 				
 				if (slotSecondEmptyAirCanisterFound >= 0) {
-					itemStackAirCanister = playerInventory[slotSecondEmptyAirCanisterFound];
+					itemStackAirCanister = playerInventory.get(slotSecondEmptyAirCanisterFound);
 					airCanister = (IAirContainerItem) itemStackAirCanister.getItem();
-					playerInventory[slotSecondEmptyAirCanisterFound] = airCanister.getFullAirContainer(itemStackAirCanister);
+					playerInventory.set(slotSecondEmptyAirCanisterFound, airCanister.getFullAirContainer(itemStackAirCanister));
 				}
 				entityPlayer.sendContainerToPlayer(entityPlayer.inventoryContainer);
 				

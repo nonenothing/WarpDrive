@@ -1,6 +1,5 @@
 package cr0s.warpdrive.block.decoration;
 
-
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumGasColor;
@@ -8,7 +7,6 @@ import cr0s.warpdrive.data.EnumGasColor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.material.EnumPushReaction;
@@ -17,11 +15,13 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -68,9 +68,9 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@Override
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
 		for (final EnumGasColor enumGasColor : EnumGasColor.values()) {
-			list.add(new ItemStack(item, 1, enumGasColor.ordinal()));
+			list.add(new ItemStack(this, 1, enumGasColor.ordinal()));
 		}
 	}
 	
@@ -79,8 +79,9 @@ public class BlockGas extends BlockAbstractBase {
 		return blockState.getBlock().getMetaFromState(blockState);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isVisuallyOpaque() {
+	public boolean causesSuffocation(final IBlockState state) {
 		return false;
 	}
 	
@@ -92,8 +93,8 @@ public class BlockGas extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(final IBlockState state) {
-		return false;
+	public boolean isFullBlock(IBlockState state) {
+		return true;
 	}
 	
 	@Override
@@ -104,7 +105,7 @@ public class BlockGas extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return null;
 	}
 	
@@ -130,10 +131,10 @@ public class BlockGas extends BlockAbstractBase {
 		return EnumPushReaction.DESTROY;
 	}
 	
-	@Nullable
+	@Nonnull
 	@Override
 	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
-		return null;
+		return Items.AIR;
 	}
 	
 	@Override

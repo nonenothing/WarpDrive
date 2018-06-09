@@ -159,9 +159,9 @@ public class CompatArsMagica2 implements IBlockTransformer {
 								final NBTTagCompound node = (NBTTagCompound) nodeList.removeTag(0);
 								// read coordinates
 								final Vec3d target = transformation.apply(node.getFloat("Vec3_x"), node.getFloat("Vec3_y"), node.getFloat("Vec3_z"));
-								node.setFloat("Vec3_x", (float)target.xCoord);
-								node.setFloat("Vec3_y", (float)target.yCoord);
-								node.setFloat("Vec3_z", (float)target.zCoord);
+								node.setFloat("Vec3_x", (float) target.x);
+								node.setFloat("Vec3_y", (float) target.y);
+								node.setFloat("Vec3_z", (float) target.z);
 								// add the node on to the power path
 								nodeList.appendTag(node);
 							}

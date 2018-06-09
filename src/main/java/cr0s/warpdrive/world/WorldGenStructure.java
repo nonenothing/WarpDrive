@@ -132,8 +132,8 @@ public class WorldGenStructure {
 		fillerPropulsion.setBlock(world, new BlockPos(x, y, z));
 	}
 	
-	public void fillInventoryWithLoot(final World worldObj, final Random rand, final int x, final int y, final int z, final String group) {
-		final TileEntity tileEntity = worldObj.getTileEntity(new BlockPos(x, y, z));
+	public void fillInventoryWithLoot(final World world, final Random rand, final int x, final int y, final int z, final String group) {
+		final TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof IInventory) {
 			final IInventory inventory = (IInventory) tileEntity;
 			final int size = inventory.getSizeInventory();
@@ -143,7 +143,7 @@ public class WorldGenStructure {
 			if (lootSet == null) {
 				WarpDrive.logger.warn(String.format("No LootSet found with group %s for inventory @ %s (%d %d %d): check your configuration",
 				                                    group,
-				                                    worldObj.provider.getSaveFolder(),
+				                                    world.provider.getSaveFolder(),
 				                                    x, y, z));
 				return;
 			}
@@ -171,7 +171,7 @@ public class WorldGenStructure {
 					WarpDrive.logger.info(String.format("Unable to find a valid loot from LootSet %s for inventory %s in @ %s (%d %d %d): check your configuration",
 					                                    lootSet.getFullName(),
 					                                    inventory.getName() == null ? "-null name-" : inventory.getName(),
-					                                    worldObj.provider.getSaveFolder(),
+					                                    world.provider.getSaveFolder(),
 					                                    x, y, z));
 				}
 			}

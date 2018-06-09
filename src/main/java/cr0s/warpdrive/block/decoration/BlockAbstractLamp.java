@@ -9,7 +9,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -100,29 +99,21 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	{
 		return false;
 	}
-		
-	@Nonnull
-	@SuppressWarnings("deprecation")
-	@Override
-	public IBlockState onBlockPlaced(final World worldIn, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int metadata, final EntityLivingBase entityLiving) {
-		EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
-		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
-	}
 	
-	@Nullable
 	@SuppressWarnings("deprecation")
+	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World worldIn, @Nonnull final BlockPos pos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return NULL_AABB;
 	}
-
+	
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override
 	public IBlockState withRotation(@Nonnull final IBlockState state, final Rotation rot) {
 		return state.withProperty(BlockProperties.FACING, rot.rotate(state.getValue(BlockProperties.FACING)));
 	}
-
+	
 	@Nonnull
 	@SuppressWarnings("deprecation")
 	@Override

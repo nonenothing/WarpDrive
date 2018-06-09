@@ -6,6 +6,7 @@ import cr0s.warpdrive.config.structures.Orb.OrbShell;
 import cr0s.warpdrive.config.structures.OrbInstance;
 import cr0s.warpdrive.data.JumpBlock;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 import net.minecraft.block.state.IBlockState;
@@ -83,7 +84,7 @@ public final class EntitySphereGen extends Entity {
 		this.zCoord = z;
 		this.posZ = z;
 		this.orbInstance = orbInstance;
-		this.gasColor = worldObj.rand.nextInt(12);
+		this.gasColor = world.rand.nextInt(12);
 		this.radius = orbInstance.getTotalThickness();
 		
 		this.state = STATE_SAVING;
@@ -102,19 +103,19 @@ public final class EntitySphereGen extends Entity {
 			for (int z = zCoord - radius; z <= zCoord + radius; z++) {
 				for (int y = minY_clamped; y <= maxY_clamped; y++) {
 					BlockPos blockPos = new BlockPos(x, y, z);
-					IBlockState blockState = worldObj.getBlockState(blockPos);
+					IBlockState blockState = world.getBlockState(blockPos);
 					if (blockState.getBlock() != Blocks.AIR) {
-						worldObj.notifyBlockUpdate(blockPos, blockState, blockState, 3);
+						world.notifyBlockUpdate(blockPos, blockState, blockState, 3);
 					}
 				}
 			}
 		}
-		worldObj.removeEntity(this);
+		world.removeEntity(this);
 	}
 	
 	@Override
 	public void onUpdate() {
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		 
@@ -157,9 +158,9 @@ public final class EntitySphereGen extends Entity {
 				break;
 			final JumpBlock jumpBlock = blocks.get(currentIndex);
 			if (isSurfaces.get(currentIndex)) {
-				worldObj.setBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
+				world.setBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
 			} else {
-				JumpBlock.setBlockNoLight(worldObj, new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
+				JumpBlock.setBlockNoLight(world, new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), jumpBlock.block.getStateFromMeta(jumpBlock.blockMeta), 2);
 			}
 			currentIndex++;
 		}
@@ -216,8 +217,8 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Replace water with random gas (ship in moon)
-		if (worldObj.getBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z)).getBlock().isAssociatedBlock(Blocks.WATER)) {
-			if (worldObj.rand.nextInt(50) != 1) {
+		if (world.getBlockState(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z)).getBlock().isAssociatedBlock(Blocks.WATER)) {
+			if (world.rand.nextInt(50) != 1) {
 				jumpBlock.block = WarpDrive.blockGas;
 				jumpBlock.blockMeta = gasColor;
 			}
@@ -226,7 +227,7 @@ public final class EntitySphereGen extends Entity {
 			return;
 		}
 		// Do not replace existing blocks if fillingSphere is true
-		if (!replace && !worldObj.isAirBlock(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z))) {
+		if (!replace && !world.isAirBlock(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z))) {
 			return;
 		}
 		blocks.add(jumpBlock);
@@ -234,7 +235,7 @@ public final class EntitySphereGen extends Entity {
 	}
 	
 	@Override
-	protected void readEntityFromNBT(final NBTTagCompound tagCompound) {
+	protected void readEntityFromNBT(@Nonnull final NBTTagCompound tagCompound) {
 		// FIXME not implemented
 	}
 	

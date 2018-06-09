@@ -27,8 +27,8 @@
 				<filler block="minecraft:wool" metadata="%colorMetadata%" weight="1" />
 			</for>
 		</replacement>
-		<replacement block="ComputerCraft:CC-Computer">
-			<filler block="ComputerCraft:CC-Computer" weight="1" mods="ComputerCraft" />
+		<replacement block="computercraft:CC-Computer">
+			<filler block="computercraft:CC-Computer" weight="1" mods="computercraft" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
 	</schematic>
@@ -37,7 +37,7 @@
 		<replacement block="minecraft:stone" metadata="0">
 			<import group="hull_plain" name="%hull1%" />
 			<filler block="minecraft:air" ratio="0.1" />
-			<filler block="WarpDrive:blockShipCorruption" ratio="0.0025" />
+			<filler block="warpdrive:block_ship_corruption" ratio="0.0025" />
 		</replacement>
 		<replacement block="minecraft:glass" metadata="0">
 			<import group="hull_glass" name="%hull1%" />
@@ -46,7 +46,7 @@
 		<replacement block="minecraft:sandstone" metadata="0">
 			<import group="hull_plain" name="%hull2%" />
 			<filler block="minecraft:air" ratio="0.1" />
-			<filler block="WarpDrive:blockShipCorruption" ratio="0.0025" />
+			<filler block="warpdrive:block_ship_corruption" ratio="0.0025" />
 		</replacement>
 		<replacement block="minecraft:stained_glass" metadata="0">
 			<import group="hull_glass" name="%hull2%" />
@@ -70,20 +70,20 @@
 				<filler block="minecraft:wool" metadata="%colorMetadata%" weight="1" />
 			</for>
 		</replacement>
-		<replacement block="warpdrive:blockShipCore">
-			<filler block="warpdrive:blockShipCore" weight="1" />
+		<replacement block="warpdrive:block_ship_core">
+			<filler block="warpdrive:block_ship_core" weight="1" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
-		<replacement block="warpdrive:blockAirGenerator">
-			<filler block="warpdrive:blockAirGenerator" weight="1" />
+		<replacement block="warpdrive:block_air_generator">
+			<filler block="warpdrive:block_air_generator" weight="1" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
-		<replacement block="warpdrive:blockShipController">
-			<filler block="warpdrive:blockShipController" weight="1" />
+		<replacement block="warpdrive:block_ship_controller">
+			<filler block="warpdrive:block_ship_controller" weight="1" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
-		<replacement block="ComputerCraft:CC-Computer">
-			<filler block="ComputerCraft:CC-Computer" weight="1" mods="ComputerCraft" />
+		<replacement block="computercraft:CC-Computer">
+			<filler block="computercraft:CC-Computer" weight="1" mods="computercraft" />
 			<filler block="minecraft:air" ratio="0.5" />
 		</replacement>
 	</schematic>

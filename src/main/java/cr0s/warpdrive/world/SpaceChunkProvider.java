@@ -14,9 +14,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
-import net.minecraft.world.gen.ChunkProviderOverworld;
+import net.minecraft.world.gen.ChunkGeneratorOverworld;
 
-public class SpaceChunkProvider extends ChunkProviderOverworld {
+public class SpaceChunkProvider extends ChunkGeneratorOverworld {
 	
 	private final World world;
 	private final Random rand;
@@ -29,17 +29,17 @@ public class SpaceChunkProvider extends ChunkProviderOverworld {
 	
 	@Nonnull
 	@Override
-	public Chunk provideChunk(final int x, final int z) {
+	public Chunk generateChunk(final int x, final int z) {
 		rand.setSeed(x * 341873128712L + z * 132897987541L);
 		
 		ChunkPrimer chunkprimer = new ChunkPrimer();
-		setBlocksInChunk(x, z, chunkprimer);
+		// setBlocksInChunk(x, z, chunkprimer);
 		
 		final Chunk chunk = new Chunk(world, chunkprimer, x, z);
 		
 		final byte[] byteBiomes = chunk.getBiomeArray();
 		for (int i = 0; i < byteBiomes.length; ++i) {
-			byteBiomes[i] = (byte) Biome.getIdForBiome(WarpDrive.spaceBiome);
+			byteBiomes[i] = (byte) Biome.getIdForBiome(WarpDrive.biomeSpace);
 		}
 		
 		chunk.generateSkylightMap();
@@ -63,7 +63,7 @@ public class SpaceChunkProvider extends ChunkProviderOverworld {
 	
 	@Nullable
 	@Override
-	public BlockPos getStrongholdGen(@Nonnull final World world, final String structureName, @Nonnull final BlockPos position) {
+	public BlockPos getNearestStructurePos(@Nonnull final World world, final String structureName, @Nonnull final BlockPos position, boolean findUnexplored) {
 		return null;
 	}
 	

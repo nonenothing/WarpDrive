@@ -6,7 +6,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.data.EnumTransporterBeaconState;
-import cr0s.warpdrive.render.TileEntityForceFieldProjectorRenderer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,14 +21,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -37,8 +35,8 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	
 	private static final double BOUNDING_RADIUS = 3.0D / 32.0D;
 	private static final double BOUNDING_HEIGHT = 21.0D / 32.0D;
-	protected static final AxisAlignedBB AABB_BEACON = new AxisAlignedBB(0.5D - BOUNDING_RADIUS, 0.0D, 0.5D - BOUNDING_RADIUS,
-	                                                                     0.5D + BOUNDING_RADIUS, BOUNDING_HEIGHT, 0.5D + BOUNDING_RADIUS);
+	private static final AxisAlignedBB AABB_BEACON = new AxisAlignedBB(0.5D - BOUNDING_RADIUS, 0.0D, 0.5D - BOUNDING_RADIUS,
+	                                                                   0.5D + BOUNDING_RADIUS, BOUNDING_HEIGHT, 0.5D + BOUNDING_RADIUS);
 	
 	public static final PropertyEnum<EnumTransporterBeaconState> VARIANT = PropertyEnum.create("variant", EnumTransporterBeaconState.class);
 	
@@ -50,7 +48,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		setDefaultState(getDefaultState()
 				                .withProperty(VARIANT, EnumTransporterBeaconState.PACKED_INACTIVE)
 		               );
-		GameRegistry.registerTileEntity(TileEntityTransporterBeacon.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityTransporterBeacon.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nullable
@@ -104,7 +102,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return null;
 	}
 	
@@ -123,17 +121,18 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
 		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityTransporterBeacon)) {
 			return false;
@@ -141,8 +140,8 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		final TileEntityTransporterBeacon tileEntityTransporterBeacon = (TileEntityTransporterBeacon) tileEntity;
 		
 		// sneaking with an empty hand
-		if ( entityPlayer.isSneaking()
-		  && itemStackHeld == null ) {
+		if ( itemStackHeld.isEmpty()
+		  && entityPlayer.isSneaking() ) {
 			final boolean isEnabledOld = tileEntityTransporterBeacon.enable(new Object[] { })[0];
 			final boolean isEnabledNew = tileEntityTransporterBeacon.enable(new Object[] { !isEnabledOld })[0];
 			if (isEnabledOld == !isEnabledNew) {
@@ -151,6 +150,6 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 			return true;
 		}
 		
-		return super.onBlockActivated(world, blockPos, blockState, entityPlayer, hand, itemStackHeld, side, hitX, hitY, hitZ);
+		return super.onBlockActivated(world, blockPos, blockState, entityPlayer, enumHand, enumFacing, hitX, hitY, hitZ);
 	}
 }

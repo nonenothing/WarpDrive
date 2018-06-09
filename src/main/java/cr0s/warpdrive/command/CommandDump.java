@@ -6,7 +6,6 @@ import cr0s.warpdrive.WarpDrive;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -29,12 +28,12 @@ public class CommandDump extends CommandBase {
 	
 	@Nonnull
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "wdump";
 	}
 	
 	@Override
-	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		if (commandSender == null) { return; }
 		final World world = commandSender.getEntityWorld();
 		final BlockPos coordinates = commandSender.getPosition();
@@ -49,7 +48,7 @@ public class CommandDump extends CommandBase {
 		
 		// parse arguments
 		if (args.length != 0) {
-			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 			return;
 		}
 		
@@ -83,7 +82,7 @@ public class CommandDump extends CommandBase {
 				                                    indexSlot,
 				                                    uniqueIdentifier.getResourceDomain(), uniqueIdentifier.getResourcePath(),
 				                                    stringDamage,
-				                                    itemStack.stackSize, itemStack.stackSize,
+				                                    itemStack.getCount(), itemStack.getCount(),
 				                                    stringNBT,
 				                                    itemStack.getDisplayName()));
 			}
@@ -92,7 +91,7 @@ public class CommandDump extends CommandBase {
 	
 	@Nonnull
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender icommandsender) {
+	public String getUsage(@Nonnull final ICommandSender icommandsender) {
 		return "/wdump: write loot table in console for item container below or next to player";
 	}
 	

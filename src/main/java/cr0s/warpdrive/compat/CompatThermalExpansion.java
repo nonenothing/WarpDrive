@@ -18,7 +18,7 @@ public class CompatThermalExpansion implements IBlockTransformer {
 		try {
 			tileEntityTEBase = Class.forName("cofh.thermalexpansion.block.TileTEBase");
 			
-			WarpDriveConfig.registerBlockTransformer("ThermalExpansion", new CompatThermalExpansion());
+			WarpDriveConfig.registerBlockTransformer("thermalexpansion", new CompatThermalExpansion());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

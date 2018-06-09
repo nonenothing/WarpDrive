@@ -6,7 +6,6 @@ import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumShipControllerCommand;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
@@ -17,10 +16,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockShipController extends BlockAbstractContainer {
 	
@@ -33,7 +31,7 @@ public class BlockShipController extends BlockAbstractContainer {
 		setDefaultState(getDefaultState()
 				                .withProperty(COMMAND, EnumShipControllerCommand.OFFLINE)
 		               );
-		GameRegistry.registerTileEntity(TileEntityShipController.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityShipController.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -63,26 +61,32 @@ public class BlockShipController extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
-		if (itemStackHeld == null) {
-			final TileEntity tileEntity = world.getTileEntity(blockPos);
-			if (tileEntity instanceof TileEntityShipController) {
-				if (entityPlayer.isSneaking()) {
-					Commons.addChatMessage(entityPlayer, ((TileEntityShipController) tileEntity).getStatus());
-				} else {
-					Commons.addChatMessage(entityPlayer, ((TileEntityShipController) tileEntity).attachPlayer(entityPlayer));
-				}
-				return true;
+		
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
+		if (!(tileEntity instanceof TileEntityShipController)) {
+			return false;
+		}
+		final TileEntityShipController tileEntityShipController = (TileEntityShipController) tileEntity;
+		
+		if (itemStackHeld.isEmpty()) {
+			if (entityPlayer.isSneaking()) {
+				Commons.addChatMessage(entityPlayer, tileEntityShipController.getStatus());
+			} else {
+				Commons.addChatMessage(entityPlayer, tileEntityShipController.attachPlayer(entityPlayer));
 			}
+			return true;
 		}
 		
 		return false;

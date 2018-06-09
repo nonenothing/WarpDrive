@@ -4,7 +4,7 @@ import cr0s.warpdrive.data.Vector3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
@@ -35,7 +35,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		setRBGColorF(red, green, blue);
 		setSize(0.02F, 0.02F);
-		isCollided = false;
+		canCollide = false;
 		motionX = 0.0D;
 		motionY = 0.0D;
 		motionZ = 0.0D;
@@ -46,7 +46,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 		final float yd = (float) (posY - target.y);
 		final float zd = (float) (posZ - target.z);
 		length = new Vector3(this).distanceTo(target);
-		final double lengthXZ = MathHelper.sqrt_double(xd * xd + zd * zd);
+		final double lengthXZ = MathHelper.sqrt(xd * xd + zd * zd);
 		rotYaw = (float) (Math.atan2(xd, zd) * 180.0D / Math.PI);
 		rotPitch = (float) (Math.atan2(yd, lengthXZ) * 180.0D / Math.PI);
 		prevYaw = rotYaw;
@@ -84,7 +84,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 	}
 	
 	@Override
-	public void renderParticle(final VertexBuffer vertexBuffer, final Entity entityIn, final float partialTick,
+	public void renderParticle(final BufferBuilder vertexBuffer, final Entity entityIn, final float partialTick,
 	                           final float rotationX, final float rotationZ, final float rotationYZ, final float rotationXY, final float rotationXZ) {
 		GL11.glPushMatrix();
 		

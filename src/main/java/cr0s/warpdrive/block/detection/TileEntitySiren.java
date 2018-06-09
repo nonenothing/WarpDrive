@@ -50,7 +50,7 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 			return;
 		}
         
-		if (!hasWorldObj() || !worldObj.isRemote) {
+		if (!hasWorld() || !world.isRemote) {
 		    return;
         }
 		if (sound == null) {
@@ -105,7 +105,7 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	// Stops the siren when the chunk is unloaded.
 	@Override
 	public void onChunkUnload() {
-		if (worldObj.isRemote && this.isPlaying()) {
+		if (world.isRemote && this.isPlaying()) {
 		    stopSound();
         }
 		super.onChunkUnload();
@@ -114,7 +114,7 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	// Stops the siren when the TileEntity object is invalidated.
 	@Override
 	public void invalidate() {
-		if (worldObj.isRemote && isPlaying()) {
+		if (world.isRemote && isPlaying()) {
 		    stopSound();
         }
 		super.invalidate();
@@ -155,6 +155,6 @@ public class TileEntitySiren extends TileEntityAbstractBase {
     
 	// Checks if the siren is being powered by redstone.
 	private boolean isPowered() {
-		return worldObj.isBlockIndirectlyGettingPowered(pos) > 0;
+		return world.isBlockIndirectlyGettingPowered(pos) > 0;
 	}
 }

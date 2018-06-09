@@ -1,216 +1,65 @@
 package cr0s.warpdrive.config;
 
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IParticleContainerItem;
 import cr0s.warpdrive.api.ParticleStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.Block;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.world.World;
+import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.util.ResourceLocation;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.common.crafting.CraftingHelper.ShapedPrimer;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 // Adds support for IParticleContainerItem ingredients
 // Loosely inspired from vanilla ShapedOreRecipe
-public class RecipeParticleShapedOre implements IRecipe {
+public class RecipeParticleShapedOre extends ShapedOreRecipe {
 	
-	private static final int MAX_CRAFT_GRID_WIDTH = 3;
-	private static final int MAX_CRAFT_GRID_HEIGHT = 3;
-	
-	private ItemStack itemStackResult = null;
-	private Object[] itemStackIngredients = null;
-	private int width = 0;
-	private int height = 0;
-	private boolean isMirrored = true;
-	
-	public RecipeParticleShapedOre(final Block result, final Object... recipe){ this(new ItemStack(result), recipe); }
-	public RecipeParticleShapedOre(final Item result, final Object... recipe){ this(new ItemStack(result), recipe); }
-	public RecipeParticleShapedOre(final ItemStack result, Object... recipe) {
-		this.itemStackResult = result.copy();
-		
-		String shape = "";
-		int indexRecipe = 0;
-		
-		// first parameter is an optional boolean 'mirrored'
-		if (recipe[indexRecipe] instanceof Boolean) {
-			isMirrored = (Boolean)recipe[indexRecipe];
-			if (recipe[indexRecipe + 1] instanceof Object[]) {
-				recipe = (Object[])recipe[indexRecipe+1];
-			} else {
-				indexRecipe = 1;
-			}
-		}
-		
-		// second parameter section is either a string array for aliases or a sequence of strings aliases
-		if (recipe[indexRecipe] instanceof String[]) {
-			final String[] stringRecipeLines = ((String[]) recipe[indexRecipe++]);
-			
-			for (final String stringRecipeLine : stringRecipeLines) {
-				width = stringRecipeLine.length();
-				shape += stringRecipeLine;
-			}
-			
-			height = stringRecipeLines.length;
-		} else {
-			while (recipe[indexRecipe] instanceof String) {
-				final String stringRecipeLine = (String) recipe[indexRecipe++];
-				shape += stringRecipeLine;
-				width = stringRecipeLine.length();
-				height++;
-			}
-		}
-		
-		// validate size
-		if (width * height != shape.length()) {
-			String stringMessage = "Invalid shaped ore recipe: ";
-			for (final Object objectIngredient : recipe) {
-				stringMessage += objectIngredient + ", ";
-			}
-			stringMessage += itemStackResult;
-			throw new RuntimeException(stringMessage);
-		}
-		
-		final HashMap<Character, Object> mapInputs = new HashMap<>();
-		
-		// third parameter section is the list of alias to component table
-		// convert inputs to ItemStack or ArrayList<ItemStack>
-		for (; indexRecipe < recipe.length; indexRecipe += 2) {
-			final Character character = (Character) recipe[indexRecipe];
-			final Object object = recipe[indexRecipe + 1];
-			
-			if (object instanceof ItemStack) {
-				mapInputs.put(character, ((ItemStack) object).copy());
-			} else if (object instanceof Item) {
-				mapInputs.put(character, new ItemStack((Item) object));
-			} else if (object instanceof Block) {
-				mapInputs.put(character, new ItemStack((Block) object, 1, OreDictionary.WILDCARD_VALUE));
-			} else if (object instanceof String) {
-				mapInputs.put(character, OreDictionary.getOres((String) object));
-			} else {
-				String stringMessage = "Invalid shaped ore recipe: ";
-				for (final Object objectIngredient :  recipe) {
-					stringMessage += objectIngredient + ", ";
-				}
-				stringMessage += itemStackResult;
-				throw new RuntimeException(stringMessage);
-			}
-		}
-		
-		// save recipe inputs
-		itemStackIngredients = new Object[width * height];
-		int indexSlot = 0;
-		for (final char chr : shape.toCharArray()) {
-			itemStackIngredients[indexSlot++] = mapInputs.get(chr);
-		}
+	public RecipeParticleShapedOre(final ResourceLocation group, final Block result, final Object... recipe){ this(group, new ItemStack(result), CraftingHelper.parseShaped(recipe)); }
+	public RecipeParticleShapedOre(final ResourceLocation group, final Item result, final Object... recipe){ this(group, new ItemStack(result), CraftingHelper.parseShaped(recipe)); }
+	public RecipeParticleShapedOre(final ResourceLocation group, @Nonnull final ItemStack result, final Object... recipe) { this(group, result, CraftingHelper.parseShaped(recipe)); }
+	public RecipeParticleShapedOre(final ResourceLocation group, @Nonnull final ItemStack result, final ShapedPrimer primer) {
+		super(group, result, primer);
 		
 		// add lower priority vanilla Shaped recipe for NEI support
-		GameRegistry.addRecipe(new ShapedOreRecipe(result, recipe));
+		WarpDrive.register(new ShapedOreRecipe(group, result, primer));
 	}
 	
-	// add ore dictionary support to an existing (vanilla) recipe
-	RecipeParticleShapedOre(final ShapedRecipes recipe, final Map<ItemStack, String> replacements) {
-		itemStackResult = recipe.getRecipeOutput();
-		width = recipe.recipeWidth;
-		height = recipe.recipeHeight;
-		
-		itemStackIngredients = new Object[recipe.recipeItems.length];
-		
-		for (int i = 0; i < itemStackIngredients.length; i++) {
-			final ItemStack itemStackIngredient = recipe.recipeItems[i];
-			
-			if (itemStackIngredient == null) {
-				continue;
-			}
-			
-			itemStackIngredients[i] = recipe.recipeItems[i];
-			
-			for (final Entry<ItemStack, String> entry : replacements.entrySet()) {
-				if (OreDictionary.itemMatches(entry.getKey(), itemStackIngredient, true)) {
-					itemStackIngredients[i] = OreDictionary.getOres(entry.getValue());
-					break;
-				}
-			}
-		}
-	}
-	
-	// Returns an Item that is the result of this recipe
-	@Override
-	public ItemStack getCraftingResult(final InventoryCrafting inventoryCrafting) {
-		return itemStackResult.copy();
-	}
-	
-	// Returns the size of the recipe area
-	@Override
-	public int getRecipeSize() {
-		return itemStackIngredients.length;
-	}
-	
-	@Override
-	public ItemStack getRecipeOutput() {
-		return itemStackResult;
-	}
-	
-	@Override
-	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
-		return new ItemStack[0];    // @TODO MC1.10
-	}
-	
-	// check if a recipe matches current crafting inventory
-	@Override
-	public boolean matches(final InventoryCrafting inv, final World world) {
-		for (int x = 0; x <= MAX_CRAFT_GRID_WIDTH - width; x++) {
-			for (int y = 0; y <= MAX_CRAFT_GRID_HEIGHT - height; ++y) {
-				if (checkMatch(inv, x, y, false)) {
-					return true;
-				}
-				
-				if (isMirrored && checkMatch(inv, x, y, true)) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
-	
-	private boolean checkMatch(final InventoryCrafting inventoryCrafting, final int startX, final int startY, final boolean mirror) {
-		for (int x = 0; x < MAX_CRAFT_GRID_WIDTH; x++) {
-			for (int y = 0; y < MAX_CRAFT_GRID_HEIGHT; y++) {
+	protected boolean checkMatch(final InventoryCrafting inventoryCrafting, final int startX, final int startY, final boolean mirror) {
+		for (int x = 0; x < inventoryCrafting.getWidth(); x++) {
+			for (int y = 0; y < inventoryCrafting.getHeight(); y++) {
 				final int subX = x - startX;
 				final int subY = y - startY;
-				Object target = null;
+				Ingredient target = Ingredient.EMPTY;
 				
 				if (subX >= 0 && subY >= 0 && subX < width && subY < height) {
 					if (mirror) {
-						target = itemStackIngredients[width - subX - 1 + subY * width];
+						target = input.get(width - subX - 1 + subY * width);
 					} else {
-						target = itemStackIngredients[subX + subY * width];
+						target = input.get(subX + subY * width);
 					}
 				}
 				
 				final ItemStack itemStackSlot = inventoryCrafting.getStackInRowAndColumn(x, y);
-				
-				if (target instanceof ItemStack) {// simple ingredient
-					if ( itemStackSlot != null
+				final ItemStack[] itemStackTargets = target.getMatchingStacks();
+				if (itemStackTargets.length == 1) {// simple ingredient
+					final ItemStack itemStackTarget = itemStackTargets[0];
+					if ( !itemStackSlot.isEmpty()
 					  && itemStackSlot.hasTagCompound()
 					  && itemStackSlot.getItem() instanceof IParticleContainerItem
-					  && ((ItemStack) target).getItem() instanceof IParticleContainerItem) {
+					  && itemStackTarget.getItem() instanceof IParticleContainerItem ) {
 						final IParticleContainerItem particleContainerItemSlot = (IParticleContainerItem) itemStackSlot.getItem();
 						final ParticleStack particleStackSlot = particleContainerItemSlot.getParticleStack(itemStackSlot);
 						
-						final IParticleContainerItem particleContainerItemTarget = (IParticleContainerItem) ((ItemStack) target).getItem();
-						final ParticleStack particleStackTarget = particleContainerItemTarget.getParticleStack((ItemStack) target);
+						final IParticleContainerItem particleContainerItemTarget = (IParticleContainerItem) itemStackTarget.getItem();
+						final ParticleStack particleStackTarget = particleContainerItemTarget.getParticleStack(itemStackTarget);
 						
 						// reject different particles or insufficient quantity
 						if (!particleStackSlot.containsParticle(particleStackTarget)) {
@@ -219,24 +68,11 @@ public class RecipeParticleShapedOre implements IRecipe {
 						// mark quantity otherwise
 						particleContainerItemSlot.setAmountToConsume(itemStackSlot, particleStackTarget.getAmount());
 						
-					} else if (!OreDictionary.itemMatches((ItemStack)target, itemStackSlot, false)) {
+					} else if (!OreDictionary.itemMatches(itemStackTarget, itemStackSlot, false)) {
 						return false;
 					}
 					
-				} else if (target instanceof ArrayList) {// ore dictionary ingredient
-					boolean matched = false;
-					
-					@SuppressWarnings("unchecked")
-					final Iterator<ItemStack> iterator = ((ArrayList<ItemStack>)target).iterator();
-					while (iterator.hasNext() && !matched) {
-						matched = OreDictionary.itemMatches(iterator.next(), itemStackSlot, false);
-					}
-					
-					if (!matched) {
-						return false;
-					}
-					
-				} else if (target == null && itemStackSlot != null) {// ingredient found while none expected
+				} else if (!target.apply(itemStackSlot)) {
 					return false;
 				}
 			}
@@ -245,21 +81,4 @@ public class RecipeParticleShapedOre implements IRecipe {
 		return true;
 	}
 	
-	public RecipeParticleShapedOre setMirrored(final boolean isMirrored) {
-		this.isMirrored = isMirrored;
-		return this;
-	}
-	
-	/**
-	 * Returns the ingredients for this recipe, any mod accessing this value should never
-	 * manipulate the values in this array as it will effect the recipe itself.
-	 * @return The recipes itemStackIngredients vales.
-	 */
-	public Object[] getIngredients() {
-		return this.itemStackIngredients;
-	}
-	@Deprecated
-	public Object[] getInput() {
-		return this.itemStackIngredients;
-	}
 }

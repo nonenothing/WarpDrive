@@ -26,7 +26,7 @@ public class CompatComputerCraft implements IBlockTransformer {
 			classBlockCable        = Class.forName("dan200.computercraft.shared.peripheral.common.BlockCable");
 			classBlockPeripheral   = Class.forName("dan200.computercraft.shared.peripheral.common.BlockPeripheral");
 			classBlockTurtle       = Class.forName("dan200.computercraft.shared.turtle.blocks.BlockTurtle");
-			WarpDriveConfig.registerBlockTransformer("ComputerCraft", new CompatComputerCraft());
+			WarpDriveConfig.registerBlockTransformer("computercraft", new CompatComputerCraft());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

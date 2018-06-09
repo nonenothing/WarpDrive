@@ -9,20 +9,22 @@ import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.SoundEvents;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -46,9 +48,12 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, List<ItemStack> list) {
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
 		for (int dyeColor = 0; dyeColor < 16; dyeColor++) {
-			list.add(new ItemStack(item, 1, dyeColor));
+			list.add(new ItemStack(this, 1, dyeColor));
 		}
 	}
 	
@@ -58,8 +63,9 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
+		assert(resourceLocation != null);
 		if (damage >= 0 && damage < 16) {
-			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumDyeColor.byDyeDamage(damage).getUnlocalizedName());
+			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumDyeColor.byDyeDamage(damage).getName());
 		}
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
@@ -97,12 +103,14 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(final ItemStack itemStack, final EntityPlayer entityPlayer,
+	public EnumActionResult onItemUse(final EntityPlayer entityPlayer,
 	                                  final World world, final BlockPos blockPos, final EnumHand hand,
 	                                  final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return EnumActionResult.FAIL;
 		}
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(hand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
 			return EnumActionResult.FAIL;
@@ -115,29 +123,29 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 			return EnumActionResult.FAIL;
 		}
 		if (hasVideoChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
-			((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStack));
+			((IVideoChannel)tileEntity).setVideoChannel(getVideoChannel(itemStackHeld));
 			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.video_channel.set",
 					tileEntity.getBlockType().getLocalizedName(),
-					getVideoChannel(itemStack)));
+					getVideoChannel(itemStackHeld)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
 			
 		} else if (hasControlChannel && !(entityPlayer.isSneaking() && hasBeamFrequency)) {
-			((IControlChannel)tileEntity).setControlChannel(getControlChannel(itemStack));
+			((IControlChannel)tileEntity).setControlChannel(getControlChannel(itemStackHeld));
 			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.control_channel.set",
 				tileEntity.getBlockType().getLocalizedName(),
-				getControlChannel(itemStack)));
+				getControlChannel(itemStackHeld)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
 			
 		} else if (hasBeamFrequency) {
-			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStack));
+			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStackHeld));
 			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.beam_frequency.set",
 					tileEntity.getBlockType().getLocalizedName(),
-					getBeamFrequency(itemStack)));
+					getBeamFrequency(itemStackHeld)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
 			
 		} else {
 			Commons.addChatMessage(entityPlayer, new TextComponentString("Error: invalid state, please contact the mod authors"
-					+ "\nof " + itemStack
+					+ "\nof " + itemStackHeld
 					+ "\nand " + tileEntity));
 		}
 		return EnumActionResult.SUCCESS;
@@ -150,8 +158,9 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	}
 	
 	@Override
-	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
-		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
+	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
+		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		String tooltip = "";
 		tooltip += new TextComponentTranslation("warpdrive.video_channel.tooltip", getVideoChannel(itemStack)).getFormattedText();

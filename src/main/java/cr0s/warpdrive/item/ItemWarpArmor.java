@@ -11,8 +11,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
-
 public class ItemWarpArmor extends ItemArmor implements IBreathingHelmet {
 	
 	public static final String[] suffixes = {  "boots", "leggings", "chestplate", "helmet" };
@@ -22,7 +20,7 @@ public class ItemWarpArmor extends ItemArmor implements IBreathingHelmet {
 		setUnlocalizedName("warpdrive.armor." + suffixes[entityEquipmentSlot.getIndex()]);
 		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		GameRegistry.register(this);
+		WarpDrive.register(this);
 	}
 	
 	@Nonnull

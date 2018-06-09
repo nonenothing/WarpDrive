@@ -108,7 +108,7 @@ public class VectorI implements Cloneable {
 			if (((WorldServer) blockAccess).getChunkProvider() instanceof ChunkProviderServer) {
 				ChunkProviderServer chunkProviderServer = ((WorldServer) blockAccess).getChunkProvider();
 				try {
-					Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.chunkXZ2Int(x >> 4, z >> 4));
+					Chunk chunk = chunkProviderServer.id2ChunkMap.get(ChunkPos.asLong(x >> 4, z >> 4));
 					return chunk != null && chunk.isLoaded();
 				} catch (NoSuchFieldError exception) {
 					return chunkProviderServer.chunkExists(x >> 4, z >> 4);

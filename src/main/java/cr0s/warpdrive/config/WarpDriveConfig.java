@@ -47,19 +47,22 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.server.FMLServerHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXParseException;
 
+import javax.annotation.Nonnull;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -108,15 +111,14 @@ public class WarpDriveConfig {
 	public static boolean isDefenseTechLoaded = false;
 	public static boolean isEnderIOLoaded = false;
 	public static boolean isForgeMultipartLoaded = false;
-	public static boolean isGregTech5Loaded = false;
-	public static boolean isGregTech6Loaded = false;
+	public static boolean isGregTechLoaded = false;
 	public static boolean isICBMClassicLoaded = false;
-	public static boolean isICBMLoaded = false;
 	public static boolean isImmersiveEngineeringLoaded = false;
 	public static boolean isIndustrialCraft2Loaded = false;
 	public static boolean isNotEnoughItemsLoaded = false;
 	public static boolean isOpenComputersLoaded = false;
 	public static boolean isThermalExpansionLoaded = false;
+	public static boolean isThermalFoundationLoaded = false;
 	
 	public static ItemStack IC2_compressedAir;
 	public static ItemStack IC2_emptyCell;
@@ -435,6 +437,23 @@ public class WarpDriveConfig {
 		return Blocks.FIRE;
 	}
 	
+	public static ItemStack getModItemStack(final String mod, final String id, final int meta, final String stringNBT) {
+		final ItemStack itemStack = getModItemStackOrNull(mod, id, meta);
+		if (itemStack == null) {
+			return new ItemStack(Blocks.FIRE);
+		}
+		try {
+			final NBTTagCompound tagCompound = JsonToNBT.getTagFromJson(stringNBT);
+			itemStack.setTagCompound(tagCompound);
+		} catch (final NBTException exception) {
+			exception.printStackTrace();
+			WarpDrive.logger.error(String.format("Invalid NBT for %s:%s@%d %s",
+			                                     mod, id, meta, stringNBT));
+			return new ItemStack(Blocks.FIRE);
+		}
+		return itemStack;
+	}
+	
 	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
 		final ItemStack itemStack = getModItemStackOrNull(mod, id, meta);
 		if (itemStack != null) {
@@ -514,17 +533,17 @@ public class WarpDriveConfig {
 		return valuesRead;
 	}
 	
-	public static void reload() {
+	public static void reload(@Nonnull final MinecraftServer server) {
 		CelestialObjectManager.clearForReload(false);
 		onFMLpreInitialization(stringConfigDirectory);
 		onFMLPostInitialization();
 		
-		final List<EntityPlayerMP> entityPlayers = FMLServerHandler.instance().getServer().getPlayerList().getPlayerList();
+		final List<EntityPlayerMP> entityPlayers = server.getPlayerList().getPlayers();
 		for (final EntityPlayerMP entityPlayerMP : entityPlayers) {
 			if ( !(entityPlayerMP instanceof FakePlayer) ) {
-				final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayerMP.worldObj,
-				                                                                   MathHelper.floor_double(entityPlayerMP.posX),
-				                                                                   MathHelper.floor_double(entityPlayerMP.posZ));
+				final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayerMP.world,
+				                                                                   MathHelper.floor(entityPlayerMP.posX),
+				                                                                   MathHelper.floor(entityPlayerMP.posZ));
 				PacketHandler.sendClientSync(entityPlayerMP, celestialObject);
 			}
 		}
@@ -556,27 +575,13 @@ public class WarpDriveConfig {
 		CelestialObjectManager.load(configDirectory);
 		
 		// read mod dependencies
-		isCoFHCoreLoaded = Loader.isModLoaded("CoFHCore");
-		isComputerCraftLoaded = Loader.isModLoaded("ComputerCraft");
-		isEnderIOLoaded = Loader.isModLoaded("EnderIO");
-		
+		isCoFHCoreLoaded = Loader.isModLoaded("redstoneflux");
+		isComputerCraftLoaded = Loader.isModLoaded("computercraft");
+		isEnderIOLoaded = Loader.isModLoaded("enderio");
 		isDefenseTechLoaded = Loader.isModLoaded("DefenseTech");
-		isICBMLoaded = Loader.isModLoaded("icbm");
-		
-		isGregTech5Loaded = false;
-		isGregTech6Loaded = false;
-		if (Loader.isModLoaded("gregtech")) {
-			final String gregTechVersion = FMLCommonHandler.instance().findContainerFor("gregtech").getVersion();
-			isGregTech5Loaded = gregTechVersion.equalsIgnoreCase("MC1710") || gregTechVersion.startsWith("5.");
-			isGregTech6Loaded = gregTechVersion.startsWith("GT6-MC1710");
-			if ( (isGregTech5Loaded && isGregTech6Loaded)
-			     || (!isGregTech5Loaded && !isGregTech6Loaded) ) {
-				throw new RuntimeException(String.format("Unsupported gregtech version '%s', please report to mod author", gregTechVersion));
-			}
-		}
-		
-		isIndustrialCraft2Loaded = Loader.isModLoaded("IC2");
-		isOpenComputersLoaded = Loader.isModLoaded("OpenComputers");
+		isGregTechLoaded = Loader.isModLoaded("gregtech");
+		isIndustrialCraft2Loaded = Loader.isModLoaded("ic2");
+		isOpenComputersLoaded = Loader.isModLoaded("opencomputers");
 	}
 	
 	public static void loadConfig(final File file) {
@@ -1084,8 +1089,9 @@ public class WarpDriveConfig {
 		isForgeMultipartLoaded = Loader.isModLoaded("ForgeMultipart");
 		isICBMClassicLoaded = Loader.isModLoaded("icbmclassic");
 		isNotEnoughItemsLoaded = Loader.isModLoaded("NotEnoughItems");
-		isImmersiveEngineeringLoaded = Loader.isModLoaded("ImmersiveEngineering");
-		isThermalExpansionLoaded = Loader.isModLoaded("ThermalExpansion");
+		isImmersiveEngineeringLoaded = Loader.isModLoaded("immersiveengineering");
+		isThermalExpansionLoaded = Loader.isModLoaded("thermalexpansion");
+		isThermalFoundationLoaded = Loader.isModLoaded("thermalfoundation");
 		
 		// apply compatibility modules
 		if (isAdvancedRepulsionSystemLoaded) {
@@ -1132,7 +1138,7 @@ public class WarpDriveConfig {
 			CompatThermalExpansion.register();
 		}
 		
-		final boolean isBotaniaLoaded = Loader.isModLoaded("Botania");
+		final boolean isBotaniaLoaded = Loader.isModLoaded("botania");
 		if (isBotaniaLoaded) {
 			CompatBotania.register();
 		}
@@ -1187,7 +1193,7 @@ public class WarpDriveConfig {
 			CompatNatura.register();
 		}
 		
-		final boolean isPneumaticCraftLoaded = Loader.isModLoaded("PneumaticCraft");
+		final boolean isPneumaticCraftLoaded = Loader.isModLoaded("pneumaticcraft");
 		if (isPneumaticCraftLoaded) {
 			CompatPneumaticCraft.register();
 		}
@@ -1212,7 +1218,7 @@ public class WarpDriveConfig {
 			CompatStargateTech2.register();
 		}
 		
-		final boolean isTConstructLoaded = Loader.isModLoaded("TConstruct");
+		final boolean isTConstructLoaded = Loader.isModLoaded("tconstruct");
 		if (isTConstructLoaded) {
 			CompatTConstruct.register();
 		}
@@ -1222,12 +1228,12 @@ public class WarpDriveConfig {
 			CompatTechguns.register();
 		}
 		
-		final boolean isThaumcraftLoaded = Loader.isModLoaded("Thaumcraft");
+		final boolean isThaumcraftLoaded = Loader.isModLoaded("thaumcraft");
 		if (isThaumcraftLoaded) {
 			CompatThaumcraft.register();
 		}
 		
-		final boolean isThermalDynamicsLoaded = Loader.isModLoaded("ThermalDynamics");
+		final boolean isThermalDynamicsLoaded = Loader.isModLoaded("thermaldynamics");
 		if (isThermalDynamicsLoaded) {
 			CompatThermalDynamics.register();
 		}
@@ -1244,11 +1250,11 @@ public class WarpDriveConfig {
 	
 	private static void loadIC2() {
 		try {
-			IC2_emptyCell = getModItemStack("IC2", "itemCellEmpty", -1);
-			IC2_compressedAir = getModItemStack("IC2", "itemCellEmpty", 5);
+			IC2_emptyCell = getModItemStack("ic2", "itemCellEmpty", -1);
+			IC2_compressedAir = getModItemStack("ic2", "itemCellEmpty", 5);
 			
-			IC2_rubberWood = getModBlock("IC2", "blockRubWood");
-			IC2_Resin = getModItemStack("IC2", "itemHarz", -1);
+			IC2_rubberWood = getModBlock("ic2", "blockRubWood");
+			IC2_Resin = getModItemStack("ic2", "itemHarz", -1);
 		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading IndustrialCraft2 classes");
 			exception.printStackTrace();
@@ -1257,11 +1263,11 @@ public class WarpDriveConfig {
 	
 	private static void loadCC() {
 		try {
-			CC_Computer = getModBlock("ComputerCraft", "CC-Computer");
-			CC_peripheral = getModBlock("ComputerCraft", "CC-Peripheral");
-			CCT_Turtle = getModBlock("ComputerCraft", "CC-Turtle");
-			CCT_Expanded = getModBlock("ComputerCraft", "CC-TurtleExpanded");
-			CCT_Advanced = getModBlock("ComputerCraft", "CC-TurtleAdvanced");
+			CC_Computer = getModBlock("computercraft", "CC-Computer");
+			CC_peripheral = getModBlock("computercraft", "CC-Peripheral");
+			CCT_Turtle = getModBlock("computercraft", "CC-Turtle");
+			CCT_Expanded = getModBlock("computercraft", "CC-TurtleExpanded");
+			CCT_Advanced = getModBlock("computercraft", "CC-TurtleAdvanced");
 		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading ComputerCraft classes");
 			exception.printStackTrace();

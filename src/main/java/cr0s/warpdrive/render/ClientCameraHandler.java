@@ -51,15 +51,15 @@ public class ClientCameraHandler {
 		originalSensitivity = mc.gameSettings.mouseSensitivity;
 		overlayType = enumCameraType;
 		ClientCameraHandler.entityPlayer = entityPlayer;
-		dimensionId = entityPlayer.worldObj.provider.getDimension();
+		dimensionId = entityPlayer.world.provider.getDimension();
 		blockPosCheck1 = blockPosMonitor;
 		blockStateCheck1 = blockStateMonitor;
 		blockPosCheck2 = blockPosCamera;
 		blockStateCheck2 = blockStateCamera;
 		
 		// Spawn camera entity
-		final EntityCamera entityCamera = new EntityCamera(entityPlayer.worldObj, blockPosCamera.getX(), blockPosCamera.getY(), blockPosCamera.getZ(), entityPlayer);
-		entityPlayer.worldObj.spawnEntityInWorld(entityCamera);
+		final EntityCamera entityCamera = new EntityCamera(entityPlayer.world, blockPosCamera.getX(), blockPosCamera.getY(), blockPosCamera.getZ(), entityPlayer);
+		entityPlayer.world.spawnEntity(entityCamera);
 		// entityCamera.setPositionAndUpdate(camera_x + 0.5D, camera_y + 0.5D, camera_z + 0.5D);
 		entityCamera.setLocationAndAngles(blockPosCamera.getX() + 0.5D, blockPosCamera.getY() + 0.5D, blockPosCamera.getZ() + 0.5D, initialYaw, initialPitch);
 		
@@ -112,7 +112,7 @@ public class ClientCameraHandler {
 		zoomIndex = (zoomIndex + 1) % 4;
 		refreshViewPoint();
 		if (WarpDriveConfig.LOGGING_CAMERA) {
-			mc.thePlayer.sendChatMessage("changed to fovSetting " + mc.gameSettings.fovSetting + " mouseSensitivity " + mc.gameSettings.mouseSensitivity);
+			mc.player.sendChatMessage("changed to fovSetting " + mc.gameSettings.fovSetting + " mouseSensitivity " + mc.gameSettings.mouseSensitivity);
 		}
 	}
 	

@@ -61,7 +61,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 					continue;
 				}
 				
-				final TileEntity tileEntity = worldObj.getTileEntity(pos.add(- reactorFace.x, - reactorFace.y, - reactorFace.z));
+				final TileEntity tileEntity = world.getTileEntity(pos.add(- reactorFace.x, - reactorFace.y, - reactorFace.z));
 				if (tileEntity instanceof TileEntityEnanReactorCore) {
 					((TileEntityEnanReactorCore) tileEntity).onBlockUpdateDetected();
 				}
@@ -103,7 +103,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		}
 		TileEntityEnanReactorCore reactorCore = weakReactorCore != null ? weakReactorCore.get() : null;
 		if (reactorCore == null) {
-			final TileEntity tileEntity = worldObj.getTileEntity(
+			final TileEntity tileEntity = world.getTileEntity(
 				pos.offset(reactorFace.facing, -1));
 			if (tileEntity instanceof TileEntityEnanReactorCore) {
 				reactorCore = (TileEntityEnanReactorCore) tileEntity;
@@ -165,7 +165,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 				WarpDrive.logger.info("ReactorLaser on " + reactorFace + " side sending " + energy);
 			}
 			reactorCore.decreaseInstability(reactorFace, energy);
-			PacketHandler.sendBeamPacket(worldObj, vLaser, vReactorCore, 0.1F, 0.2F, 1.0F, 25, 50, 100);
+			PacketHandler.sendBeamPacket(world, vLaser, vReactorCore, 0.1F, 0.2F, 1.0F, 25, 50, 100);
 		}
 	}
 	
@@ -217,26 +217,26 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 	
 	// OpenComputers callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] hasReactor(final Context context, final Arguments arguments) {
 		return hasReactor();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] stabilize(final Context context, final Arguments arguments) {
 		return stabilize(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] side(final Context context, final Arguments arguments) {
 		return side();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

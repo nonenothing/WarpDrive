@@ -6,14 +6,18 @@ import cr0s.warpdrive.WarpDrive;
 import java.util.List;
 
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ItemShipToken extends ItemAbstractBase {	
 	
@@ -63,9 +67,12 @@ public class ItemShipToken extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
 		for (final int metadataValid : VALID_METADATAS) {
-			list.add(new ItemStack(item, 1, metadataValid));
+			list.add(new ItemStack(this, 1, metadataValid));
 		}
 	}
 	
@@ -87,8 +94,9 @@ public class ItemShipToken extends ItemAbstractBase {
 	}
 	
 	@Override
-	public void addInformation(final ItemStack itemStack, final EntityPlayer entityPlayer, final List<String> list, final boolean advancedItemTooltips) {
-		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
+	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
+		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.tool.ship_token.tooltip.usage", getSchematicName(itemStack)).getFormattedText());
 	}

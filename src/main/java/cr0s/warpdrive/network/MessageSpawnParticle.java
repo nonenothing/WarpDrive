@@ -170,7 +170,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 			
 			case "jammed":// jammed machine particle reusing vanilla angryVillager particle
 				// as of MC1.7.10, direction vector is ignored by upstream
-				final EnumFacing directionFacing = Commons.getHorizontalDirectionFromEntity(Minecraft.getMinecraft().thePlayer);
+				final EnumFacing directionFacing = Commons.getHorizontalDirectionFromEntity(Minecraft.getMinecraft().player);
 				if (directionFacing.getFrontOffsetX() != 0) {
 					particle = mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.VILLAGER_ANGRY.getParticleID(),
 					        origin.x + 0.51D * directionFacing.getFrontOffsetX(),
@@ -205,7 +205,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageSpawnParticle messageSpawnParticle, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().theWorld == null) {
+		if (Minecraft.getMinecraft().world == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring particle packet");
 			return null;
 		}
@@ -217,7 +217,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 				messageSpawnParticle.fadeRed, messageSpawnParticle.fadeGreen, messageSpawnParticle.fadeBlue);
 		}
 		
-		messageSpawnParticle.handle(Minecraft.getMinecraft().theWorld);
+		messageSpawnParticle.handle(Minecraft.getMinecraft().world);
 		
 		return null;	// no response
 	}

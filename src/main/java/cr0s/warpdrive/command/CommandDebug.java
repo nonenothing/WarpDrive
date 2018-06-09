@@ -2,7 +2,6 @@ package cr0s.warpdrive.command;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.StarMapRegistry;
 
 import javax.annotation.Nonnull;
@@ -11,10 +10,8 @@ import mcp.MethodsReturnNonnullByDefault;
 
 import net.minecraft.block.Block;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +24,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 public class CommandDebug extends CommandBase {
 	
 	@Override
-	public String getCommandName()
+	public String getName()
 	{
 		return "wdebug";
 	}
@@ -39,9 +36,9 @@ public class CommandDebug extends CommandBase {
 	}
 
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender)
+	public String getUsage(@Nonnull final ICommandSender commandSender)
 	{
-		return "/" + getCommandName() + " <dimension> <x> <y> <z> <blockId> <Metadata> <action><action>...\n"
+		return "/" + getName() + " <dimension> <x> <y> <z> <blockId> <Metadata> <action><action>...\n"
 				+ "dimension: 0/world, 2/space, 3/hyperspace\n"
 				+ "coordinates: x,y,z\n"
 				+ "action: I(nvalidate), V(alidate), A(set air), R(emoveEntity), P(setBlock), S(etEntity)";
@@ -50,7 +47,7 @@ public class CommandDebug extends CommandBase {
 	@Override
 	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		if (args.length <= 6) {
-			Commons.addChatMessage(commandSender,  new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender,  new TextComponentString(getUsage(commandSender)));
 			return;
 		}
 		final int dim, x, y, z, metadata;
@@ -66,16 +63,16 @@ public class CommandDebug extends CommandBase {
 			actions = args[6];
 		} catch (final Exception exception) {
 			exception.printStackTrace();
-			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 			return;
 		}
 
-		WarpDrive.logger.info("/" + getCommandName() + " " + dim + " " + x + "," + y + "," + z + " " + block + ":" + metadata + " " + actions);
-		final World worldObj = DimensionManager.getWorld(dim);
+		WarpDrive.logger.info("/" + getName() + " " + dim + " " + x + "," + y + "," + z + " " + block + ":" + metadata + " " + actions);
+		final World world = DimensionManager.getWorld(dim);
 		final BlockPos blockPos = new BlockPos(x, y, z);
-		final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
-			WarpDrive.logger.info("[" + getCommandName() + "] In dimension " + worldObj.getProviderName() + " - " + worldObj.getWorldInfo().getWorldName()
-			                     + ", Current block is " + worldObj.getBlockState(blockPos) + ", tile entity is " + ((tileEntity == null) ? "undefined" : "defined"));
+		final TileEntity tileEntity = world.getTileEntity(blockPos);
+			WarpDrive.logger.info("[" + getName() + "] In dimension " + world.getProviderName() + " - " + world.getWorldInfo().getWorldName()
+			                     + ", Current block is " + world.getBlockState(blockPos) + ", tile entity is " + ((tileEntity == null) ? "undefined" : "defined"));
 		final String side = FMLCommonHandler.instance().getEffectiveSide().isClient() ? "Client" : "Server";
 
 		// I(nvalidate), V(alidate), A(set air), R(emoveEntity), P(setBlock), S(etEntity)
@@ -83,25 +80,25 @@ public class CommandDebug extends CommandBase {
 		for (final char cAction : actions.toUpperCase().toCharArray()) {
 			switch (cAction) {
 			case 'I':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": invalidating");
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": invalidating");
 				if (tileEntity != null) {
 					tileEntity.invalidate();
 				}
 				break;
 			case 'V':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": validating");
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": validating");
 				if (tileEntity != null) {
 					tileEntity.validate();
 				}
 				break;
 			case 'A':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": setting to Air");
-				bReturn = worldObj.setBlockToAir(blockPos);
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": returned " + bReturn);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": setting to Air");
+				bReturn = world.setBlockToAir(blockPos);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": returned " + bReturn);
 				break;
 			case 'R':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": remove entity");
-				worldObj.removeTileEntity(blockPos);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": remove entity");
+				world.removeTileEntity(blockPos);
 				break;
 			case '0':
 			case '1':
@@ -111,27 +108,27 @@ public class CommandDebug extends CommandBase {
 			case '5':
 			case '6':
 			case '7':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": set block " + x + ", " + y + ", " + z + " to " + block + ":" + metadata);
-				bReturn = worldObj.setBlockState(blockPos, Block.getBlockById(block).getStateFromMeta(metadata), cAction - '0');
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": returned " + bReturn);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": set block " + x + ", " + y + ", " + z + " to " + block + ":" + metadata);
+				bReturn = world.setBlockState(blockPos, Block.getBlockById(block).getStateFromMeta(metadata), cAction - '0');
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": returned " + bReturn);
 				break;
 			case 'P':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": set block " + x + ", " + y + ", " + z + " to " + block + ":" + metadata);
-				bReturn = worldObj.setBlockState(blockPos, Block.getBlockById(block).getStateFromMeta(metadata), 2);
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": returned " + bReturn);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": set block " + x + ", " + y + ", " + z + " to " + block + ":" + metadata);
+				bReturn = world.setBlockState(blockPos, Block.getBlockById(block).getStateFromMeta(metadata), 2);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": returned " + bReturn);
 				break;
 			case 'S':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": set entity");
-				worldObj.setTileEntity(blockPos, tileEntity);
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": set entity");
+				world.setTileEntity(blockPos, tileEntity);
 				break;
 			case 'C':
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": update containing block info");
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": update containing block info");
 				if (tileEntity != null) {
 					tileEntity.updateContainingBlockInfo();
 				}
 				break;
 			default:
-				WarpDrive.logger.info("[" + getCommandName() + "] " + side + ": invalid step '" + cAction + "'");
+				WarpDrive.logger.info("[" + getName() + "] " + side + ": invalid step '" + cAction + "'");
 				break;
 			}
 		}

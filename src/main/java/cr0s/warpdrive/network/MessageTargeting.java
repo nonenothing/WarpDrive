@@ -67,7 +67,7 @@ public class MessageTargeting implements IMessage, IMessageHandler<MessageTarget
 				+ ") yaw: " + targetingMessage.yaw + " pitch: " + targetingMessage.pitch);
 		}
 		
-		targetingMessage.handle(context.getServerHandler().playerEntity.worldObj);
+		targetingMessage.handle(context.getServerHandler().player.world);
         
 		return null;	// no response
 	}

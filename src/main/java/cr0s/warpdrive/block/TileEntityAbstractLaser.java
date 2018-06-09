@@ -54,7 +54,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -77,7 +77,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		assert(laserMedium_maxCount != 0);
 		
 		for (final EnumFacing facing : laserMedium_directionsValid) {
-			TileEntity tileEntity = worldObj.getTileEntity(pos.offset(facing));
+			TileEntity tileEntity = world.getTileEntity(pos.offset(facing));
 			
 			if (tileEntity instanceof TileEntityLaserMedium) {
 				// at least one found
@@ -92,7 +92,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 					count++;
 					
 					// check next one
-					tileEntity = worldObj.getTileEntity(pos.offset(facing, count + 1));
+					tileEntity = world.getTileEntity(pos.offset(facing, count + 1));
 				}
 				
 				// save results
@@ -136,7 +136,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 		int count = 1;
 		final List<TileEntityLaserMedium> laserMediums = new LinkedList<>();
 		for (; count <= laserMedium_maxCount; count++) {
-			final TileEntity tileEntity = worldObj.getTileEntity(pos.offset(laserMedium_direction, count));
+			final TileEntity tileEntity = world.getTileEntity(pos.offset(laserMedium_direction, count));
 			if (!(tileEntity instanceof TileEntityLaserMedium)) {
 				break;
 			}
@@ -201,26 +201,26 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	
 	// OpenComputers callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] laserMediumDirection(final Context context, final Arguments arguments) {
 		return laserMediumDirection();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] laserMediumCount(final Context context, final Arguments arguments) {
 		return laserMediumCount();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

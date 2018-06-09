@@ -18,13 +18,12 @@ public class ItemBlockSiren extends ItemBlockAbstractBase {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.detection.Siren");
 	}
 	
 	@Nonnull
 	@Override
 	@SideOnly(Side.CLIENT)
-	public ModelResourceLocation getModelResourceLocation(ItemStack itemStack) {
+	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > 15) {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));

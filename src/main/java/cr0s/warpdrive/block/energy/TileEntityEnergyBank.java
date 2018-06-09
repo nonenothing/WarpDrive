@@ -180,14 +180,14 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	public void onDataPacket(final NetworkManager networkManager, final SPacketUpdateTileEntity packet) {
 		final NBTTagCompound tagCompound = packet.getNbtCompound();
 		readFromNBT(tagCompound);
-		worldObj.markBlockRangeForRenderUpdate(pos, pos);
+		world.markBlockRangeForRenderUpdate(pos, pos);
 	}
 	
 	@Override
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d) %8d",
 		                     getClass().getSimpleName(),
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ(),
 		                     energy_getEnergyStored());
 	}

@@ -17,7 +17,7 @@ public class CompatOpenComputers implements IBlockTransformer {
 	public static void register() {
 		try {
 			classTileEntityRotatable = Class.forName("li.cil.oc.common.tileentity.traits.Rotatable");
-			WarpDriveConfig.registerBlockTransformer("OpenComputers", new CompatOpenComputers());
+			WarpDriveConfig.registerBlockTransformer("opencomputers", new CompatOpenComputers());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}

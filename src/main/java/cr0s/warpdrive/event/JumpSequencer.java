@@ -100,7 +100,7 @@ public class JumpSequencer extends AbstractSequencer {
 	                     final int destX, final int destY, final int destZ) {
 		this.sourceWorld = shipCore.getWorld();
 		this.ship = new JumpShip();
-		this.ship.worldObj = sourceWorld;
+		this.ship.world = sourceWorld;
 		this.ship.core = shipCore.getPos();
 		this.ship.dx = shipCore.facing.getFrontOffsetX();
 		this.ship.dz = shipCore.facing.getFrontOffsetZ();
@@ -676,7 +676,7 @@ public class JumpSequencer extends AbstractSequencer {
 			if ( shipMovementType != EnumShipMovementType.INSTANTIATE
 			  && shipMovementType != EnumShipMovementType.RESTORE
 			  && !betweenWorlds
-			  && aabbSource.intersectsWith(aabbTarget) ) {
+			  && aabbSource.intersects(aabbTarget) ) {
 				// render fake explosions
 				doCollisionDamage(false);
 				
@@ -862,7 +862,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
 			assert(server != null);
 			try {
-				targetWorld = server.worldServerForDimension(dimensionIdSpace);
+				targetWorld = server.getWorld(dimensionIdSpace);
 			} catch (Exception exception) {
 				exception.printStackTrace();
 				reason.append(String.format("Unable to load Space dimension %d, aborting jump.",
@@ -891,7 +891,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
 			assert(server != null);
 			try {
-				targetWorld = server.worldServerForDimension(dimensionIdHyperspace);
+				targetWorld = server.getWorld(dimensionIdHyperspace);
 			} catch (Exception exception) {
 				exception.printStackTrace();
 				reason.append(String.format("Unable to load Hyperspace dimension %d, aborting jump.",
@@ -932,7 +932,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
 			assert(server != null);
 			try {
-				targetWorld = server.worldServerForDimension(dimensionIdSpace);
+				targetWorld = server.getWorld(dimensionIdSpace);
 			} catch (Exception exception) {
 				exception.printStackTrace();
 				reason.append(String.format("Unable to load Space dimension %d, aborting jump.",
@@ -979,7 +979,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
 			assert(server != null);
 			try {
-				targetWorld = server.worldServerForDimension(celestialObject.dimensionId);
+				targetWorld = server.getWorld(celestialObject.dimensionId);
 			} catch (Exception exception) {
 				exception.printStackTrace();
 				reason.append(String.format("Sorry, we can't land here. Dimension %d isn't defined. It might be a decorative planet or a server misconfiguration",
@@ -1177,9 +1177,9 @@ public class JumpSequencer extends AbstractSequencer {
 				final double oldEntityY = movingEntity.v3OriginalPosition.y;
 				final double oldEntityZ = movingEntity.v3OriginalPosition.z;
 				Vec3d target = transformation.apply(oldEntityX, oldEntityY, oldEntityZ);
-				final double newEntityX = target.xCoord;
-				final double newEntityY = target.yCoord;
-				final double newEntityZ = target.zCoord;
+				final double newEntityX = target.x;
+				final double newEntityY = target.y;
+				final double newEntityZ = target.z;
 				
 				if (WarpDriveConfig.LOGGING_JUMP) {
 					WarpDrive.logger.info(String.format("Entity moving: (%.2f %.2f %.2f) -> (%.2f %.2f %.2f) entity %s",
@@ -1194,7 +1194,7 @@ public class JumpSequencer extends AbstractSequencer {
 				if (entity instanceof EntityPlayerMP) {
 					final EntityPlayerMP player = (EntityPlayerMP) entity;
 					
-					BlockPos bedLocation = player.getBedLocation(player.worldObj.provider.getDimension());
+					BlockPos bedLocation = player.getBedLocation(player.world.provider.getDimension());
 					
 					if ( ship.minX <= bedLocation.getX() && ship.maxX >= bedLocation.getX()
 					  && ship.minY <= bedLocation.getY() && ship.maxY >= bedLocation.getY()

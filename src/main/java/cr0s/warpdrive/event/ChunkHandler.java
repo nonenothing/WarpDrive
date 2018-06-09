@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.ChunkEvent.Unload;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -82,10 +83,10 @@ public class ChunkHandler {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loading data (1)", 
 			                                    event.getWorld().isRemote ? "Client" : "Server",
 			                                    event.getWorld().provider.getDimensionType().getName(),
-			                                    event.getChunk().getChunkCoordIntPair()));
+			                                    event.getChunk().getPos()));
 		}
 		
-		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, true);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, true);
 		assert(chunkData != null);
 		chunkData.load(event.getData());
 	}
@@ -97,10 +98,10 @@ public class ChunkHandler {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loaded (2)",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
 			                                    event.getWorld().provider.getDimensionType().getName(),
-			                                    event.getChunk().getChunkCoordIntPair()));
+			                                    event.getChunk().getPos()));
 		}
 		
-		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, true);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, true);
 		assert(chunkData != null);
 		if (!chunkData.isLoaded()) {
 			chunkData.load(new NBTTagCompound());
@@ -112,7 +113,7 @@ public class ChunkHandler {
 	public void onWatchChunk(ChunkWatchEvent.Watch event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("World %s chunk %s watch by %s",
-			                                    event.getPlayer().worldObj.getWorldInfo().getWorldName(),
+			                                    event.getPlayer().world.getWorldInfo().getWorldName(),
 			                                    event.getChunk(),
 			                                    event.getPlayer()));
 		}
@@ -126,16 +127,16 @@ public class ChunkHandler {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s save data",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
 			                                    event.getWorld().provider.getDimensionType().getName(),
-			                                    event.getChunk().getChunkCoordIntPair()));
+			                                    event.getChunk().getPos()));
 		}
-		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, false);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, false);
 		if (chunkData != null) {
 			chunkData.save(event.getData());
 		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is saving data without loading it first!",
 			                                     event.getWorld().isRemote ? "Client" : "Server",
 			                                     event.getWorld().provider.getDimensionType().getName(),
-			                                     event.getChunk().getChunkCoordIntPair()));
+			                                     event.getChunk().getPos()));
 		}
 	}
 	
@@ -189,22 +190,22 @@ public class ChunkHandler {
 	
 	// (not called when closing SSP game)
 	@SubscribeEvent
-	public void onUnloadChunk(final ChunkEvent.Unload event) {
+	public void onUnloadChunk(final Unload event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unload",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
 			                                    event.getWorld().provider.getDimensionType().getName(),
-			                                    event.getChunk().getChunkCoordIntPair()));
+			                                    event.getChunk().getPos()));
 		}
 		
-		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().xPosition, event.getChunk().zPosition, false);
+		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, false);
 		if (chunkData != null) {
 			chunkData.unload();
 		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is unloading without loading it first!", 
 			                                     event.getWorld().isRemote ? "Client" : "Server",
 			                                     event.getWorld().provider.getDimensionType().getName(),
-			                                     event.getChunk().getChunkCoordIntPair()));
+			                                     event.getChunk().getPos()));
 		}
 	}
 	/*
@@ -214,8 +215,8 @@ public class ChunkHandler {
 	public void onUnwatchChunk(ChunkWatchEvent.UnWatch event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unwatch by %s",
-			                                    event.player.worldObj.isRemote ? "Client" : "Server",
-			                                    event.player.worldObj.provider.getSaveFolder(),
+			                                    event.player.world.isRemote ? "Client" : "Server",
+			                                    event.player.world.provider.getSaveFolder(),
 			                                    event.chunk,
 			                                    event.player));
 		}
@@ -238,7 +239,7 @@ public class ChunkHandler {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
 					WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
 					                                     world.isRemote ? "Client" : "Server",
-				                                     world.provider.getDimensionType().getName(),
+					                                     world.provider.getDimensionType().getName(),
 					                                     x, y, z));
 					Commons.dumpAllThreads();
 				}
@@ -288,7 +289,7 @@ public class ChunkHandler {
 			registry.put(dimensionId, mapRegistryItems);
 		}
 		// get chunk data
-		final long index = ChunkPos.chunkXZ2Int(xChunk, zChunk);
+		final long index = ChunkPos.asLong(xChunk, zChunk);
 		ChunkData chunkData = mapRegistryItems.get(index);
 		// (lambda expressions are forcing synchronisation, so we don't use them here)
 		//noinspection Java8MapApi
@@ -323,7 +324,7 @@ public class ChunkHandler {
 	
 	private static boolean isLoaded(final Map<Long, ChunkData> mapRegistryItems, final int xChunk, final int zChunk) {
 		// get chunk data
-		final long index = ChunkPos.chunkXZ2Int(xChunk, zChunk);
+		final long index = ChunkPos.asLong(xChunk, zChunk);
 		final ChunkData chunkData = mapRegistryItems.get(index);
 		return chunkData != null && chunkData.isLoaded();
 	}
@@ -415,10 +416,10 @@ public class ChunkHandler {
 		// skip empty chunks (faster and more frequent)
 		// ship chunk with unloaded neighbours
 		if ( chunkData.isNotEmpty()
-		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos + 1, chunkCoordIntPair.chunkZPos)
-		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos - 1, chunkCoordIntPair.chunkZPos)
-		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos + 1)
-		  && isLoaded(mapRegistryItems, chunkCoordIntPair.chunkXPos, chunkCoordIntPair.chunkZPos - 1) ) {
+		  && isLoaded(mapRegistryItems, chunkCoordIntPair.x + 1, chunkCoordIntPair.z)
+		  && isLoaded(mapRegistryItems, chunkCoordIntPair.x - 1, chunkCoordIntPair.z)
+		  && isLoaded(mapRegistryItems, chunkCoordIntPair.x, chunkCoordIntPair.z + 1)
+		  && isLoaded(mapRegistryItems, chunkCoordIntPair.x, chunkCoordIntPair.z - 1) ) {
 			chunkData.updateTick(world);
 		}
 	}

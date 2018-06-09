@@ -22,6 +22,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -70,14 +71,14 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, IProperty<T> property, V value) {
 		IBlockState blockState = blockState_in;
 		if (blockState == null) {
-			blockState = worldObj.getBlockState(pos);
+			blockState = world.getBlockState(pos);
 		}
 		try {
 			if (property != null) {
 				blockState = blockState.withProperty(property, value);
 			}
 			if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
-				worldObj.setBlockState(pos, blockState, 2);
+				world.setBlockState(pos, blockState, 2);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -88,13 +89,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	protected void updateBlockState(final IBlockState blockState_in, @Nonnull final IBlockState blockState_new) {
 		IBlockState blockState_old = blockState_in;
 		if (blockState_old == null) {
-			blockState_old = worldObj.getBlockState(pos);
+			blockState_old = world.getBlockState(pos);
 		}
 		try {
 			final int metadata_old = blockState_old.getBlock().getMetaFromState(blockState_old);
 			final int metadata_new = blockState_new.getBlock().getMetaFromState(blockState_new);
 			if (metadata_old != metadata_new) {
-				worldObj.setBlockState(pos, blockState_new, 2);
+				world.setBlockState(pos, blockState_new, 2);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -105,19 +106,19 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	@Deprecated
 	protected void updateMetadata(final int metadata) {
 		if (getBlockMetadata() != metadata) {
-			worldObj.setBlockState(pos, getBlockType().getStateFromMeta(metadata), 2);
+			world.setBlockState(pos, getBlockType().getStateFromMeta(metadata), 2);
 		}
 	}
 	
 	@Override
 	public void markDirty() {
-		if ( hasWorldObj()
+		if ( hasWorld()
 		  && Commons.isSafeThread() ) {
 			super.markDirty();
 			isDirty = false;
-			final IBlockState blockState = worldObj.getBlockState(pos);
-			worldObj.notifyBlockUpdate(pos, blockState, blockState, 3);
-			WarpDrive.starMap.onBlockUpdated(worldObj, pos, blockState);
+			final IBlockState blockState = world.getBlockState(pos);
+			world.notifyBlockUpdate(pos, blockState, blockState, 3);
+			WarpDrive.starMap.onBlockUpdated(world, pos, blockState);
 		} else {
 			isDirty = true;
 		}
@@ -143,16 +144,16 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		boolean overflow = false;
 		if (itemStacks != null) {
 			for (final ItemStack itemStack : itemStacks) {
-				if (itemStack.getItem() == null) {
-					WarpDrive.logger.error(this + "Invalid itemStack with null item...");
+				if (itemStack.isEmpty()) {
+					WarpDrive.logger.error(this + "Invalid empty itemStack...");
 					continue;
 				}
-				int qtyLeft = itemStack.stackSize;
+				int qtyLeft = itemStack.getCount();
 				final ItemStack itemStackLeft = itemStack.copy();
 				for (final IInventory inventory : inventories) {
 					qtyLeft = addToInventory(itemStack, inventory);
 					if (qtyLeft > 0) {
-						itemStackLeft.stackSize = qtyLeft;
+						itemStackLeft.setCount(qtyLeft);
 					} else {
 						break;
 					}
@@ -166,8 +167,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 					while (qtyLeft > 0) {
 						transfer = Math.min(qtyLeft, itemStackLeft.getMaxStackSize());
 						final ItemStack itemStackDrop = Commons.copyWithSize(itemStackLeft, transfer);
-						final EntityItem entityItem = new EntityItem(worldObj, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, itemStackDrop);
-						worldObj.spawnEntityInWorld(entityItem);
+						final EntityItem entityItem = new EntityItem(world, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, itemStackDrop);
+						world.spawnEntity(entityItem);
 						qtyLeft -= transfer;
 					}
 				}
@@ -177,11 +178,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	private static int addToInventory(final ItemStack itemStackSource, final IInventory inventory) {
-		if (itemStackSource == null || itemStackSource.getItem() == null) {
+		if (itemStackSource == null || itemStackSource.isEmpty()) {
 			return 0;
 		}
 		
-		int qtyLeft = itemStackSource.stackSize;
+		int qtyLeft = itemStackSource.getCount();
 		int transfer;
 		
 		if (inventory != null) {
@@ -192,12 +193,13 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				}
 				
 				final ItemStack itemStack = inventory.getStackInSlot(i);
-				if (itemStack == null || !itemStack.isItemEqual(itemStackSource)) {
+				if ( itemStack.isEmpty()
+				  || !itemStack.isItemEqual(itemStackSource) ) {
 					continue;
 				}
 				
-				transfer = Math.min(qtyLeft, itemStack.getMaxStackSize() - itemStack.stackSize);
-				itemStack.stackSize += transfer;
+				transfer = Math.min(qtyLeft, itemStack.getMaxStackSize() - itemStack.getCount());
+				itemStack.grow(transfer);
 				qtyLeft -= transfer;
 				if (qtyLeft <= 0) {
 					return 0;
@@ -211,7 +213,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				}
 				
 				final ItemStack itemStack = inventory.getStackInSlot(i);
-				if (itemStack != null) {
+				if (!itemStack.isEmpty()) {
 					continue;
 				}
 				
@@ -300,9 +302,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	protected ITextComponent getStatusPrefix() {
-		if (worldObj != null) {
+		if (world != null) {
 			final Item item = Item.getItemFromBlock(getBlockType());
-			if (item != null) {
+			if (item != Items.AIR) {
 				final ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
 				return Commons.getChatPrefix(itemStack);
 			}
@@ -324,11 +326,11 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (videoChannel == -1) {
 			return new TextComponentTranslation("warpdrive.video_channel.status_line.undefined");
 		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.video_channel.status_line.invalid", videoChannel);
+			return new TextComponentTranslation("warpdrive.video_channel.status_line.invalid", videoChannel).setStyle(Commons.styleWarning);
 		} else {
-			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(worldObj, videoChannel);
+			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 			if (camera == null) {
-				return new TextComponentTranslation("warpdrive.video_channel.status_line.not_loaded", videoChannel);
+				return new TextComponentTranslation("warpdrive.video_channel.status_line.not_loaded", videoChannel).setStyle(Commons.styleWarning);
 			} else if (camera.isTileEntity(this)) {
 				return new TextComponentTranslation("warpdrive.video_channel.status_line.valid", videoChannel);
 			} else {
@@ -350,8 +352,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		
 		if (this instanceof IBeamFrequency) {
 			// only show in item form or from server side
-			if ( worldObj == null
-			  || !worldObj.isRemote ) {
+			if ( world == null
+			  || !world.isRemote ) {
 				message.appendSibling(new TextComponentString("\n"))
 				       .appendSibling( getBeamFrequencyStatus(((IBeamFrequency) this).getBeamFrequency()) );
 			}
@@ -359,8 +361,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		
 		if (this instanceof IVideoChannel) {
 			// only show in item form or from client side
-			if ( worldObj == null
-			  || worldObj.isRemote ) {
+			if ( world == null
+			  || world.isRemote ) {
 				message.appendSibling(new TextComponentString("\n"))
 				       .appendSibling( getVideoChannelStatus(((IVideoChannel) this).getVideoChannel()) );
 			}
@@ -390,9 +392,9 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	private String getUpgradeAsString(final Object object) {
 		if (object instanceof Item) {
-			return Item.REGISTRY.getNameForObject((Item)object).toString();
+			return Item.REGISTRY.getNameForObject((Item) object).toString();
 		} else if (object instanceof Block) {
-			return Block.REGISTRY.getNameForObject((Block)object).toString();
+			return Block.REGISTRY.getNameForObject((Block) object).toString();
 		} else if (object instanceof ItemStack) {
 			return Item.REGISTRY.getNameForObject(((ItemStack) object).getItem()) + ":" + ((ItemStack) object).getItemDamage();
 		} else {
@@ -499,11 +501,15 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		return false;
 	}
 	
+	public void onEMP(final float efficiency) {
+	
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

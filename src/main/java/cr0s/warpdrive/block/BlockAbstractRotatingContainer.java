@@ -4,10 +4,7 @@ import cr0s.warpdrive.data.BlockProperties;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
@@ -37,13 +34,5 @@ public abstract class BlockAbstractRotatingContainer extends BlockAbstractContai
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Nonnull
-	@Override
-	public IBlockState onBlockPlaced(final World worldIn, final BlockPos pos, final EnumFacing facing, final float hitX, final float hitY, final float hitZ, final int meta, final EntityLivingBase entityLiving) {
-		final EnumFacing enumFacing = BlockAbstractBase.getFacingFromEntity(pos, entityLiving);
-		return this.getDefaultState().withProperty(BlockProperties.FACING, enumFacing);
 	}
 }

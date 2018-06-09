@@ -10,6 +10,5 @@ public class ItemBlockForceFieldRelay extends ItemBlockAbstractBase {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(false);
-		setUnlocalizedName("warpdrive.forcefield.relay");
 	}
 }

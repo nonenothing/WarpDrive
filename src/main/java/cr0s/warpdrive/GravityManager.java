@@ -50,7 +50,7 @@ public class GravityManager {
 					return SPACE_FIELD_ENTITY_GRAVITY;
 				}
 			} else {
-				final double jitter = inHyperspace ? (entity.worldObj.rand.nextDouble() - 0.5D) * 2.0D * HYPERSPACE_VOID_ENTITY_JITTER : 0.0D;
+				final double jitter = inHyperspace ? (entity.world.rand.nextDouble() - 0.5D) * 2.0D * HYPERSPACE_VOID_ENTITY_JITTER : 0.0D;
 				if (entity instanceof EntityPlayer) {
 					final EntityPlayer player = (EntityPlayer) entity;
 					
@@ -120,18 +120,18 @@ public class GravityManager {
 	}
 	
 	public static boolean isEntityInGraviField(final Entity entity) {
-		final int y = MathHelper.floor_double(entity.posY);
-		final int x = MathHelper.floor_double(entity.posX);
-		final int z = MathHelper.floor_double(entity.posZ);
+		final int y = MathHelper.floor(entity.posY);
+		final int x = MathHelper.floor(entity.posX);
+		final int z = MathHelper.floor(entity.posZ);
 		final int CHECK_DISTANCE = 20;
 		
 		// Search non-air blocks under player
 		final MutableBlockPos blockPos = new MutableBlockPos(x, y, z);
 		for (int ny = y; ny > (y - CHECK_DISTANCE); ny--) {
 			blockPos.setY(ny);
-			final IBlockState blockState = entity.worldObj.getBlockState(blockPos);
-			if (!blockState.getBlock().isAir(blockState, entity.worldObj, blockPos)) {
-				final AxisAlignedBB axisAlignedBB = blockState.getCollisionBoundingBox(entity.worldObj, blockPos);
+			final IBlockState blockState = entity.world.getBlockState(blockPos);
+			if (!blockState.getBlock().isAir(blockState, entity.world, blockPos)) {
+				final AxisAlignedBB axisAlignedBB = blockState.getCollisionBoundingBox(entity.world, blockPos);
 				if (axisAlignedBB != null && axisAlignedBB.getAverageEdgeLength() > 0.90D) {
 					return true;
 				}

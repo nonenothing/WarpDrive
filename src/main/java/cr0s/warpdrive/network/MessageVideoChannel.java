@@ -62,7 +62,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageVideoChannel videoChannelMessage, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().theWorld == null) {
+		if (Minecraft.getMinecraft().world == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring video channel packet");
 			return null;
 		}
@@ -71,7 +71,7 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 			WarpDrive.logger.info("Received video channel packet: (" + videoChannelMessage.blockPos.getX() + " " + videoChannelMessage.blockPos.getY() + " " + videoChannelMessage.blockPos.getZ() + ") videoChannel '" + videoChannelMessage.videoChannel + "'");
 		}
 		
-		videoChannelMessage.handle(Minecraft.getMinecraft().theWorld);
+		videoChannelMessage.handle(Minecraft.getMinecraft().world);
 		
 		return null;	// no response
 	}

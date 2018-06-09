@@ -10,9 +10,9 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -31,7 +31,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 				                .withProperty(ENERGY, 0)
 				                .withProperty(INSTABILITY, 0)
 		               );
-		GameRegistry.registerTileEntity(TileEntityEnanReactorCore.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityEnanReactorCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -49,7 +49,6 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 				       .withProperty(INSTABILITY, metadata >> 2);
 	}
 	
-	@SideOnly(Side.CLIENT)
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(ENERGY) + (blockState.getValue(INSTABILITY) << 2);

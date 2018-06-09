@@ -6,16 +6,16 @@ import cr0s.warpdrive.api.IItemBase;
 import cr0s.warpdrive.client.ClientProxy;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -24,6 +24,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 
 public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
@@ -31,6 +32,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	// As such, we can't use block properties from constructor
 	public ItemBlockAbstractBase(final Block block) {
 		super(block);
+		setUnlocalizedName(block.getUnlocalizedName());
 	}
 	
 	@Override
@@ -59,7 +61,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	}
 	
 	public ITextComponent getStatus(final NBTTagCompound tagCompound, final IBlockState blockState) {
-		final TileEntity tileEntity = block.createTileEntity(Minecraft.getMinecraft().theWorld, blockState);
+		final TileEntity tileEntity = block.createTileEntity(null, blockState); // @TODO probable crash here, can't use Minecraft.getMinecraft().world on server side
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			if (tagCompound != null) {
 				tileEntity.readFromNBT(tagCompound);
@@ -82,9 +84,9 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	}
 	
 	@Override
-	public void addInformation(@Nonnull final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer,
-	                           @Nonnull final List<String> list, final boolean advancedItemTooltips) {
-		super.addInformation(itemStack, entityPlayer, list, advancedItemTooltips);
+	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
+	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
+		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
 		if (I18n.hasKey(tooltipName1)) {
@@ -96,7 +98,16 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
 		
-		IBlockState blockState = block.getStateFromMeta(itemStack.getMetadata());   // @TODO: integrate tooltips on tile entities
+		final IBlockState blockState = block.getStateFromMeta(itemStack.getMetadata());   // @TODO: integrate tooltips on tile entities
 		Commons.addTooltip(list, getStatus(itemStack.getTagCompound(), blockState).getFormattedText());
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s@%s {%s} %s",
+		                     getClass().getSimpleName(),
+		                     Integer.toHexString(hashCode()),
+		                     REGISTRY.getNameForObject(this),
+		                     getUnlocalizedName());
 	}
 }

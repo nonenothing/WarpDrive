@@ -30,7 +30,7 @@ public class MovingEntity {
 			v3OriginalPosition = new Vector3(0, -100, 0);
 		} else {
 			weakEntity = new WeakReference<>(entity);
-			weakWorld = new WeakReference<>(entity.worldObj);
+			weakWorld = new WeakReference<>(entity.world);
 			entityId = entity.getEntityId();
 			v3OriginalPosition = new Vector3(entity);
 		}
@@ -75,7 +75,7 @@ public class MovingEntity {
 		if (entity == null) {// dead or disconnected
 			return Double.MAX_VALUE;
 		}
-		if (entity.worldObj != weakWorld.get()) {// moved to another dimension
+		if (entity.world != weakWorld.get()) {// moved to another dimension
 			return Double.MAX_VALUE;
 		}
 		return v3OriginalPosition.distanceTo_square(entity);

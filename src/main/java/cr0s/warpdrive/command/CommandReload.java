@@ -6,7 +6,6 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 import javax.annotation.Nonnull;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
@@ -19,19 +18,19 @@ public class CommandReload extends CommandBase {
 	
 	@Nonnull
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "wreload";
 	}
 	
 	@Override
-	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] params) throws CommandException {
-		WarpDriveConfig.reload();
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] params) {
+		WarpDriveConfig.reload(server);
 		Commons.addChatMessage(commandSender, new TextComponentString("§aWarpDrive configuration has been reloaded.\n§cUse at your own risk!"));
 	}
 	
 	@Nonnull
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/wreload";
 	}
 }

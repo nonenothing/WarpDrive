@@ -32,7 +32,7 @@ import net.minecraftforge.common.util.Constants;
 
 public class JumpShip {
 	
-	public World worldObj;
+	public World world;
 	public BlockPos core;
 	public int dx;
 	public int dz;
@@ -176,14 +176,14 @@ public class JumpShip {
 		boolean isSuccess = true;
 		entitiesOnShip = new ArrayList<>();
 		
-		if (worldObj == null) {
+		if (world == null) {
 			reason.append("Invalid call to saveEntities, please report it to mod author");
 			return false;
 		}
 		
 		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		
-		final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		
 		for (final Entity entity : list) {
 			if (entity == null) {
@@ -248,7 +248,7 @@ public class JumpShip {
 		return String.format("%s/%d \'%s\' @ %s (%d %d %d)",
 			getClass().getSimpleName(), hashCode(),
 			shipCore == null ? "~NULL~" : (shipCore.uuid + ":" + shipCore.shipName),
-			worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+			world == null ? "~NULL~" : world.provider.getSaveFolder(),
 			core.getX(), core.getY(), core.getZ());
 	}
 	
@@ -267,12 +267,12 @@ public class JumpShip {
 						continue;
 					}
 					BlockPos blockPos = new BlockPos(x, y, z);
-					IBlockState blockState = worldObj.getBlockState(blockPos);
+					IBlockState blockState = world.getBlockState(blockPos);
 					
 					final Block block = blockState.getBlock();
 					
 					// Skipping any air block & ignored blocks
-					if ( worldObj.isAirBlock(blockPos)
+					if ( world.isAirBlock(blockPos)
 					  || Dictionary.BLOCKS_LEFTBEHIND.contains(block) ) {
 						continue;
 					}
@@ -283,7 +283,7 @@ public class JumpShip {
 					}
 					
 					// Skipping blocks without tile entities
-					final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
+					final TileEntity tileEntity = world.getTileEntity(blockPos);
 					if (tileEntity == null) {
 						continue;
 					}
@@ -291,7 +291,7 @@ public class JumpShip {
 					reason.append(String.format("Ship snagged by %s at (%d %d %d). Sneak right click the ship core to see your ship dimensions, then update your ship dimensions.",
 					                            blockState.getBlock().getLocalizedName(),
 					                            x, y, z));
-					worldObj.createExplosion(null, x, y, z, Math.min(4F * 30, 4F * (jumpBlocks.length / 50)), false);
+					world.createExplosion(null, x, y, z, Math.min(4F * 30, 4F * (jumpBlocks.length / 50)), false);
 					return false;
 				}
 			}
@@ -329,7 +329,7 @@ public class JumpShip {
 						for (int x = x1; x <= x2; x++) {
 							for (int z = z1; z <= z2; z++) {
 								blockPos = new BlockPos(x, y, z);
-								final IBlockState blockState = worldObj.getBlockState(blockPos);
+								final IBlockState blockState = world.getBlockState(blockPos);
 								
 								// Skipping vanilla air & ignored blocks
 								if (blockState.getBlock() == Blocks.AIR || Dictionary.BLOCKS_LEFTBEHIND.contains(blockState.getBlock())) {
@@ -353,8 +353,8 @@ public class JumpShip {
 									return false;
 								}
 								
-								final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
-								final JumpBlock jumpBlock = new JumpBlock(worldObj, blockPos, blockState, tileEntity);
+								final TileEntity tileEntity = world.getTileEntity(blockPos);
+								final JumpBlock jumpBlock = new JumpBlock(world, blockPos, blockState, tileEntity);
 								
 								if (tileEntity != null && jumpBlock.externals != null) {
 									for (final Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {

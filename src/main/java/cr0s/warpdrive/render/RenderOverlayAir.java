@@ -32,26 +32,26 @@ public class RenderOverlayAir {
 	
 	private void renderAir(final int width, final int height) {
 		// get player
-		final EntityPlayer entityPlayer = minecraft.thePlayer;
+		final EntityPlayer entityPlayer = minecraft.player;
 		if (entityPlayer == null) {
 			return;
 		}
-		final int x = MathHelper.floor_double(entityPlayer.posX);
-		final int y = MathHelper.floor_double(entityPlayer.posY);
-		final int z = MathHelper.floor_double(entityPlayer.posZ);
+		final int x = MathHelper.floor(entityPlayer.posX);
+		final int y = MathHelper.floor(entityPlayer.posY);
+		final int z = MathHelper.floor(entityPlayer.posZ);
 		
 		// get celestial object
-		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.worldObj, x, z);
+		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.world, x, z);
 		if (celestialObject == null || celestialObject.hasAtmosphere()) {// skip (no display) if environment is breathable
 			return;
 		}
 		
 		// get air stats
-		final boolean hasVoidNearby = isVoid(entityPlayer.worldObj, x, y, z)
-		                           || isVoid(entityPlayer.worldObj, x - 2, y, z)
-		                           || isVoid(entityPlayer.worldObj, x + 2, y, z)
-		                           || isVoid(entityPlayer.worldObj, x, y, z - 2)
-		                           || isVoid(entityPlayer.worldObj, x, y, z + 2);
+		final boolean hasVoidNearby = isVoid(entityPlayer.world, x, y, z)
+		                           || isVoid(entityPlayer.world, x - 2, y, z)
+		                           || isVoid(entityPlayer.world, x + 2, y, z)
+		                           || isVoid(entityPlayer.world, x, y, z - 2)
+		                           || isVoid(entityPlayer.world, x, y, z + 2);
 		final boolean hasValidSetup = BreathingManager.hasValidSetup(entityPlayer);
 		final float ratioAirReserve = BreathingManager.getAirReserveRatio(entityPlayer);
 		
@@ -80,7 +80,7 @@ public class RenderOverlayAir {
 		final int top = height - GuiIngameForge.right_height;
 		
 		// draw animated air bubble
-		final long timeWorld =  entityPlayer.worldObj.getTotalWorldTime();
+		final long timeWorld =  entityPlayer.world.getTotalWorldTime();
 		if (ratioAirReserve != ratioPreviousAir) {
 			timePreviousAir = timeWorld;
 			ratioPreviousAir = ratioAirReserve;
@@ -93,7 +93,7 @@ public class RenderOverlayAir {
 		}
 		
 		// draw air level bar
-		final int full = MathHelper.ceiling_double_int(ratioAirReserve * 71.0D);
+		final int full = MathHelper.ceil(ratioAirReserve * 71.0D);
 		RenderCommons.drawTexturedModalRect(left - 81, top + 2, 20, 84, 71, 5, 100);
 		if (alpha != 255) {
 			final float factor = 1.0F - alpha / 255.0F;

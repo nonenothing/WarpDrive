@@ -16,6 +16,7 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -55,7 +56,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -82,6 +83,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 		super.readFromNBT(tagCompound);
 	}
 	
+	@Nonnull
 	@Override
 	public NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
 		return super.writeToNBT(tagCompound);
@@ -106,14 +108,14 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	// Common OC/CC methods
 	@Override
 	public Object[] position() {
-		final CelestialObject celestialObject = CelestialObjectManager.get(worldObj, pos.getX(), pos.getZ());
+		final CelestialObject celestialObject = CelestialObjectManager.get(world, pos.getX(), pos.getZ());
 		if (celestialObject != null) {
 			final Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, pos.getX(), pos.getY(), pos.getZ());
 			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
 		} else {
-			String name = worldObj.provider.getSaveFolder();
+			String name = world.provider.getSaveFolder();
 			if (name == null || name.isEmpty()) {
-				name = "DIM" + worldObj.provider.getDimension();
+				name = "DIM" + world.provider.getDimension();
 			}
 			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), name, pos.getX(), pos.getY(), pos.getZ() };
 		}
@@ -227,50 +229,50 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] radius(final Context context, final Arguments arguments) {
 		return radius(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getScanDuration(final Context context, final Arguments arguments) {
 		return getScanDuration(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] start(final Context context, final Arguments arguments) {
 		return start();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getResults(final Context context, final Arguments arguments) {
 		return getResults();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getResultsCount(final Context context, final Arguments arguments) {
 		return getResultsCount();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getResult(final Context context, final Arguments arguments) {
 		return getResult(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public void attach(final IComputerAccess computer) {
 		super.attach(computer);
 		if (getBlockMetadata() == 0) {
@@ -279,7 +281,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public void detach(final IComputerAccess computer) {
 		super.detach(computer);
 		if (connectedComputers.isEmpty()) {
@@ -288,7 +290,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

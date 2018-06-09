@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,7 +12,6 @@ import java.util.Map.Entry;
 import mcp.MethodsReturnNonnullByDefault;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -39,7 +37,7 @@ public class CommandEntity extends CommandBase {
 			);
 	
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "wentity";
 	}
 	
@@ -49,17 +47,17 @@ public class CommandEntity extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
-		return "/" + getCommandName() + " <radius> <filter> <kill?>"
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
+		return "/" + getName() + " <radius> <filter> <kill?>"
 			+ "\nradius: - or <= 0 to check all loaded in current world, 1+ blocks around player"
 			+ "\nfilter: * to get all, anything else is a case insensitive string"
 			+ "\nkill: yes/y/1 to kill, anything else is ignored";
 	}
 	
 	@Override
-	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		if (args.length > 3) {
-			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 			return;
 		}
 		
@@ -86,32 +84,32 @@ public class CommandEntity extends CommandBase {
 			}
 		} catch (final Exception exception) {
 			exception.printStackTrace();
-			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 			return;
 		}
 
-		WarpDrive.logger.info("/" + getCommandName() + " " + radius + " '*" + filter + "*' " + kill);
+		WarpDrive.logger.info("/" + getName() + " " + radius + " '*" + filter + "*' " + kill);
 
 		List<Entity> entities;
 		if (radius <= 0) {
 			final World world;
 			if (commandSender instanceof EntityPlayerMP) {
-				world = ((EntityPlayerMP) commandSender).worldObj;
+				world = ((EntityPlayerMP) commandSender).world;
 			} else if (radius <= 0) {
 				world = DimensionManager.getWorld(0);
 			} else {
-				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 				return;
 			}
 			entities = new ArrayList<>();
 			entities.addAll(world.loadedEntityList);
 		} else {
 			if (!(commandSender instanceof EntityPlayerMP)) {
-				Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+				Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 				return;
 			}
 			final EntityPlayerMP entityPlayer = (EntityPlayerMP) commandSender;
-			entities = entityPlayer.worldObj.getEntitiesWithinAABBExcludingEntity(entityPlayer, new AxisAlignedBB(
+			entities = entityPlayer.world.getEntitiesWithinAABBExcludingEntity(entityPlayer, new AxisAlignedBB(
 					Math.floor(entityPlayer.posX    ), Math.floor(entityPlayer.posY    ), Math.floor(entityPlayer.posZ    ),
 					Math.floor(entityPlayer.posX + 1), Math.floor(entityPlayer.posY + 1), Math.floor(entityPlayer.posZ + 1)).expand(radius, radius, radius));
 		}

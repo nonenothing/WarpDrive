@@ -14,6 +14,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.util.ResourceLocation;
@@ -58,9 +59,12 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	}
 	
 	@Override
-	public void getSubItems(@Nonnull final Item item, @Nonnull final CreativeTabs creativeTabs, @Nonnull final List<ItemStack> subItems) {
-		for(EnumComponentType enumComponentType : EnumComponentType.values()) {
-			subItems.add(new ItemStack(item, 1, enumComponentType.ordinal()));
+	public void getSubItems(@Nonnull final CreativeTabs creativeTab, @Nonnull final NonNullList<ItemStack> list) {
+		if (!isInCreativeTab(creativeTab)) {
+			return;
+		}
+		for(final EnumComponentType enumComponentType : EnumComponentType.values()) {
+			list.add(new ItemStack(this, 1, enumComponentType.ordinal()));
 		}
 	}
 	
@@ -70,6 +74,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
+		assert(resourceLocation != null);
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumComponentType.get(damage).getName());
 		}

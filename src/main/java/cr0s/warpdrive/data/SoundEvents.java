@@ -1,11 +1,12 @@
 package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.WarpDrive;
+
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class SoundEvents {
+	
 	public static final SoundEvent LASER_LOW;
 	public static final SoundEvent LASER_MEDIUM;
 	public static final SoundEvent LASER_HIGH;
@@ -55,6 +56,9 @@ public class SoundEvents {
 	
 	private static SoundEvent registerSound(String soundName) {
 		final ResourceLocation soundID = new ResourceLocation(WarpDrive.MODID, soundName);
-		return GameRegistry.register(new SoundEvent(soundID).setRegistryName(soundID));
+		final SoundEvent soundEvent = new SoundEvent(soundID);
+		soundEvent.setRegistryName(soundID);
+		WarpDrive.register(soundEvent);
+		return soundEvent;
 	}
 }

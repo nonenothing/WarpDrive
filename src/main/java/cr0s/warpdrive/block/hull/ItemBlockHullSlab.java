@@ -34,18 +34,19 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	@Nonnull
 	@Override
-	public EnumActionResult onItemUse(final ItemStack itemStack, @Nonnull final EntityPlayer entityPlayer, final World world,
-	                                  @Nonnull final BlockPos blockPos,
-	                                  final EnumHand enumHand, @Nonnull EnumFacing facing,
+	public EnumActionResult onItemUse(@Nonnull final EntityPlayer entityPlayer, final World world, @Nonnull final BlockPos blockPos,
+	                                  @Nonnull final EnumHand hand, @Nonnull EnumFacing facing,
 	                                  final float hitX, final float hitY, final float hitZ) {
-		if (itemStack.stackSize == 0) {
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(hand);
+		if (itemStackHeld.isEmpty()) {
 			return EnumActionResult.FAIL;
 		}
 		
 		// check if clicked block can be interacted with
 		@SuppressWarnings("deprecation")
-		final IBlockState blockStateItem = blockSlab.getStateFromMeta(itemStack.getItemDamage());
-		final int metadataItem = itemStack.getItemDamage();
+		final IBlockState blockStateItem = blockSlab.getStateFromMeta(itemStackHeld.getItemDamage());
+		final int metadataItem = itemStackHeld.getItemDamage();
 		final EnumVariant variantItem = blockStateItem.getValue(BlockHullSlab.VARIANT);
 		
 		final IBlockState blockStateWorld = world.getBlockState(blockPos);
@@ -55,7 +56,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 		  && !variantItem.getIsDouble()
 		  && !variantWorld.getIsDouble()
 		  && variantWorld.getIsPlain() == variantItem.getIsPlain() ) {
-			if (!entityPlayer.canPlayerEdit(blockPos, facing, itemStack)) {
+			if (!entityPlayer.canPlayerEdit(blockPos, facing, itemStackHeld)) {
 				return EnumActionResult.FAIL;
 			}
 			
@@ -88,7 +89,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 					final SoundType soundtype = blockSlab.getSoundType(blockStateWorld, world, blockPos, entityPlayer);
 					world.playSound(entityPlayer, blockPos, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
 					                (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-					itemStack.stackSize--;
+					itemStackHeld.shrink(1);
 				}
 				
 				return EnumActionResult.SUCCESS;
@@ -104,13 +105,13 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 			  && !variantItem.getIsDouble()
 			  && !variantSide.getIsDouble()
 			  && variantSide.getIsPlain() == variantItem.getIsPlain() ) {
-				if (!entityPlayer.canPlayerEdit(blockPosSide, facing, itemStack)) {
+				if (!entityPlayer.canPlayerEdit(blockPosSide, facing, itemStackHeld)) {
 					return EnumActionResult.FAIL;
 				}
 				
 				// try to place ignoring the existing block
 				@SuppressWarnings("deprecation")
-				final IBlockState blockStatePlaced = blockSlab.onBlockPlaced(world, blockPosSide, facing, hitX, hitY, hitZ, metadataItem, entityPlayer);
+				final IBlockState blockStatePlaced = blockSlab.getStateForPlacement(world, blockPosSide, facing, hitX, hitY, hitZ, metadataItem, entityPlayer);
 				final EnumFacing enumFacingPlaced = blockStatePlaced.getValue(BlockHullSlab.VARIANT).getFacing().getOpposite();
 				
 				// try to merge slabs when right-clicking on a side block
@@ -142,7 +143,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 						final SoundType soundtype = blockSlab.getSoundType(blockStateWorld, world, blockPosSide, entityPlayer);
 						world.playSound(entityPlayer, blockPosSide, soundtype.getPlaceSound(), SoundCategory.BLOCKS,
 						                (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-						itemStack.stackSize--;
+						itemStackHeld.shrink(1);
 					}
 					
 					return EnumActionResult.SUCCESS;
@@ -151,7 +152,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 			}
 		}
 		
-		return super.onItemUse(itemStack, entityPlayer, world, blockPos, enumHand, facing, hitX, hitY, hitZ);
+		return super.onItemUse(entityPlayer, world, blockPos, hand, facing, hitX, hitY, hitZ);
 	}
 	
 	@Override

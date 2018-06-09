@@ -7,10 +7,9 @@ import org.lwjgl.opengl.GL11;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.entity.RenderEntity;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -120,7 +119,7 @@ public class RenderEntityParticleBunch extends RenderEntity {
 		
 		// drawing preparation
 		final Tessellator tessellator = Tessellator.getInstance();
-		final VertexBuffer vertexBuffer = tessellator.getBuffer();
+		final BufferBuilder vertexBuffer = tessellator.getBuffer();
 		RenderHelper.disableStandardItemLighting();
 		GL11.glPushAttrib(GL11.GL_LIGHTING_BIT | GL11.GL_ENABLE_BIT | GL11.GL_COLOR_BUFFER_BIT);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);

@@ -1,0 +1,6 @@
+{
+	"parent": "warpdrive:item/item_force_field_shape-none",
+	"textures": {
+		"layer0": "warpdrive:items/forcefield/shape-sphere"
+	}
+}

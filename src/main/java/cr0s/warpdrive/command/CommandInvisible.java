@@ -20,7 +20,7 @@ public class CommandInvisible extends CommandBase {
 	}
 
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "invisible";
 	}
 		
@@ -32,7 +32,7 @@ public class CommandInvisible extends CommandBase {
 			WarpDrive.logger.info("/invisible: setting invisible to " + args[0]);
 			
 			// get an online player by name
-			final List<EntityPlayerMP> entityPlayers = server.getPlayerList().getPlayerList();
+			final List<EntityPlayerMP> entityPlayers = server.getPlayerList().getPlayers();
 			for (final EntityPlayerMP entityPlayer : entityPlayers) {
 				if (entityPlayer.getDisplayNameString().equalsIgnoreCase(args[0])) {
 					player = entityPlayer;
@@ -49,7 +49,7 @@ public class CommandInvisible extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/invisible [player]";
 	}
 }

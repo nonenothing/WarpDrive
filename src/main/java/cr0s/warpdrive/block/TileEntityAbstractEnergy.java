@@ -1,11 +1,12 @@
 package cr0s.warpdrive.block;
 
-import cofh.api.energy.IEnergyHandler;
-import cofh.api.energy.IEnergyProvider;
-import cofh.api.energy.IEnergyReceiver;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+
+import cofh.redstoneflux.api.IEnergyHandler;
+import cofh.redstoneflux.api.IEnergyProvider;
+import cofh.redstoneflux.api.IEnergyReceiver;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import ic2.api.energy.event.EnergyTileLoadEvent;
@@ -30,11 +31,11 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList({
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyHandler", modid = "cofhcore"),
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyProvider", modid = "cofhcore"),
-	@Optional.Interface(iface = "cofh.api.energy.IEnergyReceiver", modid = "cofhcore"),
-	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "IC2"),
-	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "IC2")
+	@Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyHandler", modid = "redstoneflux"),
+	@Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyProvider", modid = "redstoneflux"),
+	@Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyReceiver", modid = "redstoneflux"),
+	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2"),
+	@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "ic2")
 })
 public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfaced implements IEnergyProvider, IEnergyReceiver, IEnergyHandler, IEnergySink, IEnergySource, cr0s.warpdrive.api.computer.IEnergy {
 	
@@ -185,14 +186,14 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] energy(final Context context, final Arguments arguments) {
 		return energy();
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -208,7 +209,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -222,7 +223,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -266,13 +267,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// IndustrialCraft IEnergySink interface
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public double getDemandedEnergy() {
 		return Math.max(0.0D, convertInternalToEU_floor(energy_getMaxStorage() - energy_getEnergyStored()));
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public double injectEnergy(final EnumFacing from, final double amount_EU, final double voltage) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]injectEnergy from " + from  + "(" + energy_canInput(from) + ") amount " + amount_EU + " voltage " + voltage);
@@ -293,7 +294,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public boolean acceptsEnergyFrom(final IEnergyEmitter emitter, final EnumFacing from) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]acceptsEnergyFrom emitter " + emitter + " from " + from + " => " + energy_canInput(from));
@@ -303,13 +304,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// IndustrialCraft IEnergySource interface
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public double getOfferedEnergy() {
 		return convertInternalToEU_floor(energy_getPotentialOutput());
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public void drawEnergy(final double amount_EU) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]drawEnergy amount_EU " + amount_EU);
@@ -318,7 +319,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public boolean emitsEnergyTo(final IEnergyAcceptor receiver, final EnumFacing to) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [IC2]emitsEnergyTo receiver " + receiver + " to " + to + " => " + energy_canOutput(to));
@@ -326,7 +327,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		return energy_canOutput(to);
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private void IC2_addToEnergyNet() {
 		if (!addedToEnergyNet) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
@@ -334,7 +335,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 	}
 	
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	private void IC2_removeFromEnergyNet() {
 		if (addedToEnergyNet) {
 			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
@@ -344,13 +345,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 
 	// IndustrialCraft IEnergySink interface
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public int getSinkTier() {
 		return IC2_sinkTier;
 	}
 	
 	@Override
-	@Optional.Method(modid = "IC2")
+	@Optional.Method(modid = "ic2")
 	public int getSourceTier() {
 		return IC2_sourceTier;
 	}
@@ -358,7 +359,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	// ThermalExpansion IEnergyHandler interface
 	@Override
-	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver */
+	@Optional.Method(modid = "redstoneflux")	/* IEnergyReceiver */
 	public int receiveEnergy(final EnumFacing from, final int maxReceive_RF, final boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]receiveEnergy from " + from + " maxReceive_RF " + maxReceive_RF + " simulate " + simulate);
@@ -385,7 +386,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "cofhcore")	/* IEnergyProvider */
+	@Optional.Method(modid = "redstoneflux")	/* IEnergyProvider */
 	public int extractEnergy(final EnumFacing from, final int maxExtract_RF, final boolean simulate) {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]extractEnergy from " + from + " maxExtract_RF " + maxExtract_RF + " simulate " + simulate);
@@ -403,29 +404,29 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	}
 	
 	@Override
-	@Optional.Method(modid = "cofhcore")	/* IEnergyConnection */
+	@Optional.Method(modid = "redstoneflux")	/* IEnergyConnection */
 	public boolean canConnectEnergy(final EnumFacing from) {
 		return (energy_getMaxStorage() != 0) && (energy_canInput(from) || energy_canOutput(from)); // Warning: deadlock risk depending on child implementation
 	}
 	
 	@Override
-	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver and IEnergyProvider */
+	@Optional.Method(modid = "redstoneflux")	/* IEnergyReceiver and IEnergyProvider */
 	public int getEnergyStored(final EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getEnergyStored()) : 0;
 	}
 	
 	@Override
-	@Optional.Method(modid = "cofhcore")	/* IEnergyReceiver and IEnergyProvider */
+	@Optional.Method(modid = "redstoneflux")	/* IEnergyReceiver and IEnergyProvider */
 	public int getMaxEnergyStored(final EnumFacing from) {
 		return canConnectEnergy(from) ? convertInternalToRF_floor(energy_getMaxStorage()) : 0;
 	}
 	
 	
-	// WarpDrive overrides for Thermal Expansion
-	@Optional.Method(modid = "cofhcore")
+	// WarpDrive overrides for CoFH RedstoneFlux
+	@Optional.Method(modid = "redstoneflux")
 	private void CoFH_outputEnergy(final EnumFacing from, final IEnergyReceiver energyReceiver) {
 		if ( energyReceiver == null
-		  || worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null ) {
+		  || world.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ())) == null ) {
 			return;
 		}
 		if (!energy_canOutput(from)) {
@@ -442,7 +443,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private void CoFH_outputEnergy() {
 		for (final EnumFacing from : EnumFacing.VALUES) {
 			if (cofhEnergyReceivers[from.ordinal()] != null) {
@@ -451,7 +452,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		}
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private void CoFH_initialiseAPI() {
 		cofhEnergyReceivers = new IEnergyReceiver[EnumFacing.VALUES.length];
 	}
@@ -499,7 +500,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		scanTickCount = -1;
 	}
 	
-	@Optional.Method(modid = "cofhcore")
+	@Optional.Method(modid = "redstoneflux")
 	private void CoFH_scanForEnergyHandlers() {
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			WarpDrive.logger.info(this + " [CoFH]CoFH_scanForEnergyHandlers");
@@ -507,7 +508,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		for (final EnumFacing from : EnumFacing.VALUES) {
 			boolean energyReceiverFound = false;
 			if (canConnectEnergy(from)) {
-				final TileEntity tileEntity = worldObj.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));
+				final TileEntity tileEntity = world.getTileEntity(pos.add(from.getFrontOffsetX(), from.getFrontOffsetY(), from.getFrontOffsetZ()));
 				if (tileEntity instanceof IEnergyReceiver) {
 					IEnergyReceiver energyReceiver = (IEnergyReceiver) tileEntity;
 					if (energyReceiver.canConnectEnergy(from.getOpposite())) {
@@ -519,6 +520,13 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 			if (!energyReceiverFound) {
 				cofhEnergyReceivers[from.ordinal()] = null;
 			}
+		}
+	}
+	
+	@Override
+	public void onEMP(final float efficiency) {
+		if (energy_getMaxStorage() > 0) {
+			energy_consume(Math.round(energy_getEnergyStored() * efficiency), false);
 		}
 	}
 }

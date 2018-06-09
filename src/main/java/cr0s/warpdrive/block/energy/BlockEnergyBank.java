@@ -16,8 +16,6 @@ import ic2.api.energy.tile.IExplosionPowerOverride;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -33,6 +31,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
@@ -43,12 +43,11 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Optional.InterfaceList({
-	@Optional.Interface(iface = "ic2.api.energy.tile.IExplosionPowerOverride", modid = "IC2")
+	@Optional.Interface(iface = "ic2.api.energy.tile.IExplosionPowerOverride", modid = "ic2")
 })
 public class BlockEnergyBank extends BlockAbstractContainer implements IExplosionPowerOverride {
 	
@@ -70,7 +69,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 				                .withProperty(BlockProperties.TIER, EnumTier.BASIC)
 				                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)
 		               );
-		GameRegistry.registerTileEntity(TileEntityEnergyBank.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityEnergyBank.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
@@ -106,12 +105,12 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		}
 		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
 		return ((IExtendedBlockState) blockState)
-				       .withProperty(DOWN, tileEntityEnergyBank.getMode(EnumFacing.DOWN))
-				       .withProperty(UP, tileEntityEnergyBank.getMode(EnumFacing.UP))
+				       .withProperty(DOWN , tileEntityEnergyBank.getMode(EnumFacing.DOWN ))
+				       .withProperty(UP   , tileEntityEnergyBank.getMode(EnumFacing.UP   ))
 				       .withProperty(NORTH, tileEntityEnergyBank.getMode(EnumFacing.NORTH))
 				       .withProperty(SOUTH, tileEntityEnergyBank.getMode(EnumFacing.SOUTH))
-				       .withProperty(WEST, tileEntityEnergyBank.getMode(EnumFacing.WEST))
-				       .withProperty(EAST, tileEntityEnergyBank.getMode(EnumFacing.EAST));
+				       .withProperty(WEST , tileEntityEnergyBank.getMode(EnumFacing.WEST ))
+				       .withProperty(EAST , tileEntityEnergyBank.getMode(EnumFacing.EAST ));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -140,12 +139,12 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
 		for (byte tier = 0; tier < 4; tier++) {
-			ItemStack itemStack = new ItemStack(item, 1, tier);
+			ItemStack itemStack = new ItemStack(this, 1, tier);
 			list.add(itemStack);
 			if (tier > 0) {
-				itemStack = new ItemStack(item, 1, tier);
+				itemStack = new ItemStack(this, 1, tier);
 				final NBTTagCompound tagCompound = new NBTTagCompound();
 				tagCompound.setByte("tier", tier);
 				tagCompound.setInteger("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
@@ -199,47 +198,49 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityEnergyBank)) {
 			return false;
 		}
 		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
 		
-		if ( itemStackHeld != null
+		if ( !itemStackHeld.isEmpty()
 		  && itemStackHeld.getItem() instanceof IWarpTool ) {
 			if (entityPlayer.isSneaking()) {
-				tileEntityEnergyBank.setMode(side, tileEntityEnergyBank.getMode(side).getPrevious());
+				tileEntityEnergyBank.setMode(enumFacing, tileEntityEnergyBank.getMode(enumFacing).getPrevious());
 			} else {
-				tileEntityEnergyBank.setMode(side, tileEntityEnergyBank.getMode(side).getNext());
+				tileEntityEnergyBank.setMode(enumFacing, tileEntityEnergyBank.getMode(enumFacing).getNext());
 			}
 			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
-			switch (tileEntityEnergyBank.getMode(side)) {
+			switch (tileEntityEnergyBank.getMode(enumFacing)) {
 			case INPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_input", side.name())));
+				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_input", enumFacing.name())));
 				return true;
 			case OUTPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_output", side.name())));
+				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_output", enumFacing.name())));
 				return true;
 			case DISABLED:
 			default:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
-				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_disabled", side.name())));
+				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_disabled", enumFacing.name())));
 				return true;
 			}
 		}
 		
-		return super.onBlockActivated(world, blockPos, blockState, entityPlayer, hand, itemStackHeld, side, hitX, hitY, hitZ);
+		return super.onBlockActivated(world, blockPos, blockState, entityPlayer, enumHand, enumFacing, hitX, hitY, hitZ);
 	}
 }

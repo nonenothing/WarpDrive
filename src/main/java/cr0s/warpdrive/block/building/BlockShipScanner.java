@@ -10,15 +10,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class BlockShipScanner extends BlockAbstractContainer {
 	
@@ -27,7 +26,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	public BlockShipScanner(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.building.ship_scanner");
-		GameRegistry.registerTileEntity(TileEntityShipScanner.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityShipScanner.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 /* @TODO camouflage	
@@ -73,17 +72,20 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		if (world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
-		if (itemStackHeld == null) {
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
+		
+		if (itemStackHeld.isEmpty()) {
 			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity instanceof TileEntityShipScanner) {
 				final BlockPos blockPosAbove = blockPos.add(0, 2, 0);

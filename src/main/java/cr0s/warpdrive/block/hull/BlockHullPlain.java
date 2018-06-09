@@ -8,7 +8,6 @@ import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.material.EnumPushReaction;
@@ -18,10 +17,11 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -58,17 +58,17 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
 		for (final EnumDyeColor enumDyeColor : EnumDyeColor.values()) {
-			list.add(new ItemStack(item, 1, enumDyeColor.getMetadata()));
+			list.add(new ItemStack(this, 1, enumDyeColor.getMetadata()));
 		}
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
-	public MapColor getMapColor(final IBlockState blockState) {
-		return blockState.getValue(BlockColored.COLOR).getMapColor();
+	public MapColor getMapColor(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
+		return MapColor.getBlockColor(blockState.getValue(BlockColored.COLOR));
 	}
 	
 	@SuppressWarnings("deprecation")

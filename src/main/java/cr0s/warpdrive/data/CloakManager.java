@@ -43,7 +43,7 @@ public class CloakManager {
 	public void onChunkLoaded(final EntityPlayerMP player, final int chunkPosX, final int chunkPosZ) {
 		for (final CloakedArea area : cloaks) {
 			// skip other dimensions
-			if (area.dimensionId != player.worldObj.provider.getDimension()) {
+			if (area.dimensionId != player.world.provider.getDimension()) {
 				continue;
 			}
 			
@@ -141,14 +141,14 @@ public class CloakManager {
 			for (final CloakedArea area : cloaks) {
 				if (area.isBlockWithinArea(x, y, z)) {
 					// WarpDrive.logger.info("CM block is inside");
-					if (!area.isEntityWithinArea(Minecraft.getMinecraft().thePlayer)) {
+					if (!area.isEntityWithinArea(Minecraft.getMinecraft().player)) {
 						// WarpDrive.logger.info("CM player is outside");
-						return Minecraft.getMinecraft().theWorld.setBlockState(new BlockPos(x, y, z), area.blockStateFog, flag);
+						return Minecraft.getMinecraft().world.setBlockState(new BlockPos(x, y, z), area.blockStateFog, flag);
 					}
 				}
 			}
 		}
-		return Minecraft.getMinecraft().theWorld.setBlockState(new BlockPos(x, y, z), block.getStateFromMeta(metadata), flag);
+		return Minecraft.getMinecraft().world.setBlockState(new BlockPos(x, y, z), block.getStateFromMeta(metadata), flag);
 	}
 	
 	@SuppressWarnings("unused") // Core mod
@@ -159,17 +159,17 @@ public class CloakManager {
 			return;
 		}
 		
-		final int chunkX_min = chunk.xPosition * 16;
-		final int chunkX_max = chunk.xPosition * 16 + 15;
-		final int chunkZ_min = chunk.zPosition * 16;
-		final int chunkZ_max = chunk.zPosition * 16 + 15;
+		final int chunkX_min = chunk.x * 16;
+		final int chunkX_max = chunk.x * 16 + 15;
+		final int chunkZ_min = chunk.z * 16;
+		final int chunkZ_max = chunk.z * 16 + 15;
 		// WarpDrive.logger.info("CM onFillChunk (" + chunk.xPosition + " " + chunk.zPosition + ") " + cloaks.size() + " cloak(s) from (" + chunkX_min + " " + chunkZ_min + ") to (" + chunkX_max + " " + chunkZ_max + ")");
 		
 		for (final CloakedArea area : cloaks) {
 			if ( area.minX <= chunkX_max && area.maxX >= chunkX_min
 			  && area.minZ <= chunkZ_max && area.maxZ >= chunkZ_min ) {
 				// WarpDrive.logger.info("CM chunk is inside");
-				if (!area.isEntityWithinArea(Minecraft.getMinecraft().thePlayer)) {
+				if (!area.isEntityWithinArea(Minecraft.getMinecraft().player)) {
 					// WarpDrive.logger.info("CM player is outside");
 					
 					final int areaX_min = Math.max(chunkX_min, area.minX) & 15;

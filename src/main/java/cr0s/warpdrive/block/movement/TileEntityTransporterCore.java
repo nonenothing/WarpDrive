@@ -152,7 +152,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -227,7 +227,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		                                                               : EnumTransporterState.ENERGIZING); // @TODO add proper mapping
 		if (isConnected && isEnabled) {
 			if (isLockRequested && isJammed) {
-				PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
+				PacketHandler.sendSpawnParticlePacket(world, "jammed", (byte) 5, new Vector3(this).translate(0.5F),
 						new Vector3(0.0D, 0.0D, 0.0D),
 						1.0F, 1.0F, 1.0F,
 						1.0F, 1.0F, 1.0F,
@@ -236,7 +236,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			if ( lockStrengthActual > 0.01F
 			  || (transporterState == EnumTransporterState.ENERGIZING && tickEnergizing > 0)
 			  || tickCooldown > 0 ) {
-				PacketHandler.sendTransporterEffectPacket(worldObj, globalPositionLocal, globalPositionRemote, lockStrengthActual,
+				PacketHandler.sendTransporterEffectPacket(world, globalPositionLocal, globalPositionRemote, lockStrengthActual,
 				                                          movingEntitiesLocal.values(), movingEntitiesRemote.values(),
 				                                          tickEnergizing, tickCooldown, 64);
 			}
@@ -325,7 +325,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public void invalidate() {
-		if (!worldObj.isRemote) {
+		if (!world.isRemote) {
 			rebootTransporter();
 			WarpDrive.starMap.removeFromRegistry(this);
 		}
@@ -336,9 +336,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		// switch connected scanners to 'offline'
 		if (vLocalScanners != null) {
 			for (final BlockPos vScanner : vLocalScanners) {
-				final IBlockState blockState = worldObj.getBlockState(vScanner);
+				final IBlockState blockState = world.getBlockState(vScanner);
 				if (blockState.getBlock() == WarpDrive.blockTransporterScanner) {
-					worldObj.setBlockState(vScanner, blockState.withProperty(BlockProperties.ACTIVE, false), 2);
+					world.setBlockState(vScanner, blockState.withProperty(BlockProperties.ACTIVE, false), 2);
 				}
 			}
 		}
@@ -353,7 +353,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			sendEvent("transporterEnergizing", entityValues.count);
 		}
 		
-		// cancel if not entity was found
+		// cancel if no entity was found
 		if (entityValues.count == 0) {
 			// cancel transfer, cooldown, don't loose strength
 			isEnergizeRequested = false;
@@ -371,13 +371,13 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		// transfer at final tick
 		if ( vRemoteScanners == null
 		  || vRemoteScanners.isEmpty() ) {
-			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, globalPositionRemote.getBlockPos());
+			energizeEntities(lockStrengthActual, movingEntitiesLocal, world, globalPositionRemote.getBlockPos());
 		} else {
-			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, vRemoteScanners);
+			energizeEntities(lockStrengthActual, movingEntitiesLocal, world, vRemoteScanners);
 		}
 		if ( vLocalScanners != null
 		  && !vLocalScanners.isEmpty() ) {
-			energizeEntities(lockStrengthActual, movingEntitiesRemote, worldObj, vLocalScanners);
+			energizeEntities(lockStrengthActual, movingEntitiesRemote, world, vLocalScanners);
 		}
 		
 		// clear entities, cancel transfer, cooldown, loose a bit of strength
@@ -493,7 +493,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Beam frequency set from " + this.beamFrequency + " to " + beamFrequency);
 			}
-			if (hasWorldObj()) {
+			if (hasWorld()) {
 				ForceFieldRegistry.removeFromRegistry(this);
 			}
 			this.beamFrequency = beamFrequency;
@@ -588,15 +588,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				
 				for (int z = zMin; z <= zMax; z++) {
 					mutableBlockPos.setPos(x, y, z);
-					final IBlockState blockState = worldObj.getBlockState(mutableBlockPos);
+					final IBlockState blockState = world.getBlockState(mutableBlockPos);
 					final Block block = blockState.getBlock();
 					if (block instanceof BlockTransporterScanner) {
 						
 						// only accept valid ones, spawn particles on others
-						final Collection<BlockPos> vValidContainments = ((BlockTransporterScanner) block).getValidContainment(worldObj, mutableBlockPos);
+						final Collection<BlockPos> vValidContainments = ((BlockTransporterScanner) block).getValidContainment(world, mutableBlockPos);
 						if (vValidContainments == null || vValidContainments.isEmpty()) {
-							worldObj.setBlockState(mutableBlockPos, blockState.withProperty(BlockProperties.ACTIVE, false), 2);
-							PacketHandler.sendSpawnParticlePacket(worldObj, "jammed", (byte) 5,
+							world.setBlockState(mutableBlockPos, blockState.withProperty(BlockProperties.ACTIVE, false), 2);
+							PacketHandler.sendSpawnParticlePacket(world, "jammed", (byte) 5,
 							                                      new Vector3(x + 0.5D, y + 1.5D, z + 0.5D),
 							                                      new Vector3(0.0D, 0.0D, 0.0D),
 							                                      1.0F, 1.0F, 1.0F,
@@ -605,7 +605,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 						} else {
 							vScanners.add(mutableBlockPos.toImmutable());
 							vContainments.addAll(vValidContainments);
-							worldObj.setBlockState(mutableBlockPos, blockState.withProperty(BlockProperties.ACTIVE, true), 2);
+							world.setBlockState(mutableBlockPos, blockState.withProperty(BlockProperties.ACTIVE, true), 2);
 						}
 					}
 				}
@@ -678,7 +678,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// compute local universal coordinates
-		final CelestialObject celestialObjectLocal = CelestialObjectManager.get(worldObj, pos.getX(), pos.getZ());
+		final CelestialObject celestialObjectLocal = CelestialObjectManager.get(world, pos.getX(), pos.getZ());
 		final Vector3 v3Local_universal = StarMapRegistry.getUniversalCoordinates(celestialObjectLocal, globalPositionLocal.x, globalPositionLocal.y, globalPositionLocal.z);
 		
 		// check beacon obsolescence
@@ -707,7 +707,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		} else if (remoteLocationRequested instanceof VectorI) {
 			final VectorI vRequest = ((VectorI) remoteLocationRequested).clone();
 			if (vRequest.y < 0) {
-				final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(worldObj, pos.getX(), pos.getZ());
+				final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(world, pos.getX(), pos.getZ());
 				if (celestialObjectChild == null) {
 					reasonJammed = "Not in orbit of a planet";
 				} else {
@@ -719,7 +719,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				globalPositionRemoteNew = new GlobalPosition(celestialObjectLocal.parent.dimensionId, vRequest.x, vRequest.y % 256, vRequest.z);
 				
 			} else {
-				globalPositionRemoteNew = new GlobalPosition(worldObj.provider.getDimension(), vRequest.x, vRequest.y, vRequest.z);
+				globalPositionRemoteNew = new GlobalPosition(world.provider.getDimension(), vRequest.x, vRequest.y, vRequest.z);
 			}
 			
 		} else if (remoteLocationRequested instanceof UUID) {
@@ -734,13 +734,11 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 				reasonJammed = "No player by that name";
 			} else {
 				ItemStack itemStackHeld = entityPlayer.getHeldItem(EnumHand.MAIN_HAND);
-				if ( itemStackHeld == null
-				  || itemStackHeld.stackSize <= 0
+				if ( itemStackHeld.isEmpty()
 				  || !(itemStackHeld.getItem() instanceof IItemTransporterBeacon) ) {
 					itemStackHeld = entityPlayer.getHeldItem(EnumHand.OFF_HAND);
 				}
-				if ( itemStackHeld == null
-				  || itemStackHeld.stackSize <= 0
+				if ( itemStackHeld.isEmpty()
 				  || !(itemStackHeld.getItem() instanceof IItemTransporterBeacon) ) {
 				    reasonJammed = "No transporter beacon in player hand";
 				} else if (!((IItemTransporterBeacon) itemStackHeld.getItem()).isActive(itemStackHeld)) {
@@ -767,8 +765,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// validate target dimension
-		final CelestialObject celestialObjectRemote = globalPositionRemote.getCelestialObject(worldObj.isRemote);
-		final Vector3 v3Remote_universal = globalPositionRemote.getUniversalCoordinates(worldObj.isRemote);
+		final CelestialObject celestialObjectRemote = globalPositionRemote.getCelestialObject(world.isRemote);
+		final Vector3 v3Remote_universal = globalPositionRemote.getUniversalCoordinates(world.isRemote);
 		
 		if (celestialObjectRemote == null) {
 			isJammed = true;
@@ -814,7 +812,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final int rangeActual = (int) Math.ceil(Math.sqrt(rangeActualSquared));
 		
 		// compute focalization bonuses
-		final FocusValues focusValuesLocal  = getFocusValueAtCoordinates(worldObj, globalPositionLocal.getVectorI(), 0);
+		final FocusValues focusValuesLocal  = getFocusValueAtCoordinates(world, globalPositionLocal.getVectorI(), 0);
 		final FocusValues focusValuesRemote = getFocusValueAtCoordinates(worldRemote, globalPositionRemote.getVectorI(), WarpDriveConfig.TRANSPORTER_FOCUS_SEARCH_RADIUS_BLOCKS);
 		final double focusBoost = Commons.interpolate(
 				1.0D,
@@ -873,10 +871,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// validate shields along trajectory
-		if (worldObj == worldRemote) {// same world
-			isJammed |= isJammedTrajectory(worldObj, globalPositionLocal.getVectorI(), globalPositionRemote.getVectorI(), beamFrequency);
+		if (world == worldRemote) {// same world
+			isJammed |= isJammedTrajectory(world, globalPositionLocal.getVectorI(), globalPositionRemote.getVectorI(), beamFrequency);
 		} else if (v3Local_universal.y > v3Remote_universal.y) {// remote is below us
-			isJammed |= isJammedTrajectory(worldObj,
+			isJammed |= isJammedTrajectory(world,
 			                               globalPositionLocal.getVectorI(),
 			                               new VectorI(globalPositionLocal.x, -1, globalPositionLocal.z),
 			                               beamFrequency);
@@ -885,7 +883,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			                               globalPositionRemote.getVectorI(),
 			                               beamFrequency);
 		} else {// remote is above us
-			isJammed |= isJammedTrajectory(worldObj,
+			isJammed |= isJammedTrajectory(world,
 			                               globalPositionLocal.getVectorI(),
 			                               new VectorI(globalPositionLocal.x, 256, globalPositionLocal.z),
 			                               beamFrequency);
@@ -1154,8 +1152,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		} else if (strengthToUse > strengthNoDamage) {
 			// add lava blade at location
 			final BlockPos blockPos = new BlockPos(entity);
-			if (entity.worldObj.isAirBlock(blockPos)) {
-				entity.worldObj.setBlockState(blockPos, Blocks.FLOWING_LAVA.getDefaultState().withProperty(BlockLiquid.LEVEL, 6), 2);
+			if (entity.world.isAirBlock(blockPos)) {
+				entity.world.setBlockState(blockPos, Blocks.FLOWING_LAVA.getDefaultState().withProperty(BlockLiquid.LEVEL, 6), 2);
 			}
 		}
 	}
@@ -1175,7 +1173,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		// collect all candidates at local location
-		final EntityValues entityValuesLocal = updateEntitiesOnScanners(worldObj, vLocalScanners, countScanners, movingEntitiesLocal);
+		final EntityValues entityValuesLocal = updateEntitiesOnScanners(world, vLocalScanners, countScanners, movingEntitiesLocal);
 		
 		// collect all candidates at remote location
 		final World worldRemote = Commons.getOrCreateWorldServer(globalPositionRemote.dimensionId);
@@ -1669,7 +1667,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	// OpenComputers callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] beamFrequency(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setBeamFrequency(arguments.checkInteger(0));
@@ -1678,62 +1676,62 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] transporterName(final Context context, final Arguments arguments) {
 		return transporterName(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] remoteLocation(final Context context, final Arguments arguments) {
 		return remoteLocation(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] lock(final Context context, final Arguments arguments) {
 		return lock(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] energyFactor(final Context context, final Arguments arguments) {
 		return energyFactor(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getLockStrength(final Context context, final Arguments arguments) {
 		return getLockStrength();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
 		return getEnergyRequired();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] energize(final Context context, final Arguments arguments) {
 		return energize(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -1781,7 +1779,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		                     getClass().getSimpleName(),
 		                     transporterName, uuid,
 		                     beamFrequency,
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

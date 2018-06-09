@@ -63,7 +63,7 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -166,20 +166,20 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	
 	// OpenComputers callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] isActive(final Context context, final Arguments arguments) {
 		return isActive(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -287,7 +287,7 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d) %8d EU linked to %s %s",
 		                     getClass().getSimpleName(),
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ(),
 		                     energy_getEnergyStored(),
 		                     nameTransporterCore, uuidTransporterCore);

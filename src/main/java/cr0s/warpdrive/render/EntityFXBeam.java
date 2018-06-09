@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -39,7 +39,7 @@ public class EntityFXBeam extends Particle {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
 		this.setRBGColorF(red, green, blue);
 		this.setSize(0.02F, 0.02F);
-		this.isCollided = false;
+		this.canCollide = false;
 		this.motionX = 0.0D;
 		this.motionY = 0.0D;
 		this.motionZ = 0.0D;
@@ -48,7 +48,7 @@ public class EntityFXBeam extends Particle {
 		final float yd = (float) (this.posY - target.y);
 		final float zd = (float) (this.posZ - target.z);
 		this.length = (float) position.distanceTo(target);
-		final double lengthXZ = MathHelper.sqrt_double(xd * xd + zd * zd);
+		final double lengthXZ = MathHelper.sqrt(xd * xd + zd * zd);
 		this.rotYaw = (float) (Math.atan2(xd, zd) * 180.0D / Math.PI);
 		this.rotPitch = (float) (Math.atan2(yd, lengthXZ) * 180.0D / Math.PI);
 		this.prevYaw = this.rotYaw;
@@ -83,11 +83,11 @@ public class EntityFXBeam extends Particle {
 	}
 	
 	@Override
-	public void renderParticle(final VertexBuffer vertexBuffer, final Entity entityIn, final float partialTick,
+	public void renderParticle(final BufferBuilder vertexBuffer, final Entity entityIn, final float partialTick,
 	                           final float rotationX, final float rotationZ, final float rotationYZ, final float rotationXY, final float rotationXZ) {
 		GL11.glPushMatrix();
 		
-		final float rot = worldObj.provider.getWorldTime() % (360 / ROTATION_SPEED) * ROTATION_SPEED + ROTATION_SPEED * partialTick;
+		final float rot = world.provider.getWorldTime() % (360 / ROTATION_SPEED) * ROTATION_SPEED + ROTATION_SPEED * partialTick;
 		
 		final float sizeTarget = Math.min(particleAge / 4.0F, 1.0F);
 		final float size = prevSize + (sizeTarget - prevSize) * partialTick;
@@ -104,8 +104,8 @@ public class EntityFXBeam extends Particle {
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		
-		final float relativeTime = worldObj.getTotalWorldTime() + partialTick;
-		final float vOffset = -relativeTime * 0.2F - MathHelper.floor_float(-relativeTime * 0.1F);
+		final float relativeTime = world.getTotalWorldTime() + partialTick;
+		final float vOffset = -relativeTime * 0.2F - MathHelper.floor(-relativeTime * 0.1F);
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);

@@ -29,7 +29,6 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -54,14 +53,14 @@ public class LivingHandler {
 	
 	@SubscribeEvent
 	public void onLivingUpdate(final LivingUpdateEvent event) {
-		if (event.getEntityLiving() == null || event.getEntityLiving().worldObj.isRemote) {
+		if (event.getEntityLiving() == null || event.getEntityLiving().world.isRemote) {
 			return;
 		}
 		
 		final EntityLivingBase entityLivingBase = event.getEntityLiving();
-		final int x = MathHelper.floor_double(entityLivingBase.posX);
-		final int y = MathHelper.floor_double(entityLivingBase.posY);
-		final int z = MathHelper.floor_double(entityLivingBase.posZ);
+		final int x = MathHelper.floor(entityLivingBase.posX);
+		final int y = MathHelper.floor(entityLivingBase.posY);
+		final int z = MathHelper.floor(entityLivingBase.posZ);
 		
 		// *** save motion for fall damage computation
 		if (!entityLivingBase.onGround) {
@@ -70,7 +69,7 @@ public class LivingHandler {
 		
 		// *** world border handling
 		// Instant kill if entity exceeds world's limit
-		final CelestialObject celestialObject = CelestialObjectManager.get(entityLivingBase.worldObj, x, z);
+		final CelestialObject celestialObject = CelestialObjectManager.get(entityLivingBase.world, x, z);
 		if (celestialObject == null) {
 			// unregistered dimension => exit
 			return;
@@ -106,7 +105,7 @@ public class LivingHandler {
 			final double newEntityY = entityLivingBase.posY + 0.1D;
 			final double newEntityZ = celestialObject.dimensionCenterX + Math.signum(relativeZ) * newAbsoluteZ;
 			// entity.isAirBorne = true;
-			Commons.moveEntity(entityLivingBase, entityLivingBase.worldObj, new Vector3(newEntityX, newEntityY, newEntityZ));
+			Commons.moveEntity(entityLivingBase, entityLivingBase.world, new Vector3(newEntityX, newEntityY, newEntityZ));
 			
 			// spam chat if it's a player
 			if (entityLivingBase instanceof EntityPlayer && !entityLivingBase.isDead && entityLivingBase.deathTime <= 0) {
@@ -120,7 +119,7 @@ public class LivingHandler {
 				entityLivingBase.setFire(1);
 			} else {
 				// full damage
-				entityLivingBase.attackEntityFrom(DamageSource.outOfWorld, BORDER_BYPASS_DAMAGES_PER_TICK);
+				entityLivingBase.attackEntityFrom(DamageSource.OUT_OF_WORLD, BORDER_BYPASS_DAMAGES_PER_TICK);
 				return;
 			}
 		}
@@ -131,7 +130,7 @@ public class LivingHandler {
 			
 			// *** air handling
 			if ( WarpDriveConfig.BREATHING_AIR_AT_ENTITY_DEBUG
-			  && entityLivingBase.worldObj.getWorldTime() % 20 == 0) {
+			  && entityLivingBase.world.getWorldTime() % 20 == 0) {
 				StateAir.dumpAroundEntity((EntityPlayer) entityLivingBase);
 			}
 		}
@@ -154,11 +153,11 @@ public class LivingHandler {
 		// *** world transition handling
 		// If player falling down, teleport to child celestial object
 		if (entityLivingBase.posY < -10.0D) {
-			final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityLivingBase.worldObj, x, z);
+			final CelestialObject celestialObjectChild = CelestialObjectManager.getClosestChild(entityLivingBase.world, x, z);
 			// are we actually in orbit?
 			if ( celestialObjectChild != null
 			  && !celestialObject.isHyperspace()
-			  && celestialObjectChild.isInOrbit(entityLivingBase.worldObj.provider.getDimension(), x, z) ) {
+			  && celestialObjectChild.isInOrbit(entityLivingBase.world.provider.getDimension(), x, z) ) {
 				
 				final WorldServer worldTarget = Commons.getOrCreateWorldServer(celestialObjectChild.dimensionId);
 				if (worldTarget == null) {
@@ -252,7 +251,7 @@ public class LivingHandler {
 		// get vanilla check for fall distance, as found in EntityLivingBase.fall()
 		// we're ignoring the jump potion effect bonus
 		final float distance = event.getDistance();
-		final int check = MathHelper.ceiling_float_int(distance - 3.0F);
+		final int check = MathHelper.ceil(distance - 3.0F);
 		// ignore small jumps
 		if (check <= 0) {
 			event.setCanceled(true); // Don't damage entity
@@ -295,14 +294,14 @@ public class LivingHandler {
 	@SubscribeEvent
 	public void onEnderTeleport(final EnderTeleportEvent event) {
 		if ( event.getEntityLiving() == null
-		  || event.getEntityLiving().worldObj.isRemote ) {
+		  || event.getEntityLiving().world.isRemote ) {
 			return;
 		}
 		
-		final World world = event.getEntityLiving().worldObj;
-		final int x = MathHelper.floor_double(event.getTargetX());
-		final int y = MathHelper.floor_double(event.getTargetY());
-		final int z = MathHelper.floor_double(event.getTargetZ());
+		final World world = event.getEntityLiving().world;
+		final int x = MathHelper.floor(event.getTargetX());
+		final int y = MathHelper.floor(event.getTargetY());
+		final int z = MathHelper.floor(event.getTargetZ());
 		
 		final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(x, y, z);
 		for (int xLoop = x - 1; xLoop <= x + 1; xLoop++) {

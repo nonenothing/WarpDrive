@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 
@@ -42,7 +42,7 @@ public class RenderOverlayCamera {
 			}
 			
 			final Tessellator tessellator = Tessellator.getInstance();
-			final VertexBuffer vertexBuffer = tessellator.getBuffer();
+			final BufferBuilder vertexBuffer = tessellator.getBuffer();
 			
 			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 			vertexBuffer.pos(       0.0D, scaledHeight, -90.0D).tex(0.0D, 1.0D).endVertex();
@@ -59,20 +59,20 @@ public class RenderOverlayCamera {
 			final int color = (RenderCommons.colorGradient(time, 0x40, 0xA0) << 16)
 			                + (RenderCommons.colorGradient(time, 0x80, 0x00) << 8)
 			                +  RenderCommons.colorGradient(time, 0x80, 0xFF);
-			minecraft.fontRendererObj.drawString(strHelp,
-			                                     (scaledWidth - minecraft.fontRendererObj.getStringWidth(strHelp)) / 2,
-			                                     (int)(scaledHeight * 0.19) - minecraft.fontRendererObj.FONT_HEIGHT,
+			minecraft.fontRenderer.drawString(strHelp,
+			                                     (scaledWidth - minecraft.fontRenderer.getStringWidth(strHelp)) / 2,
+			                                     (int)(scaledHeight * 0.19) - minecraft.fontRenderer.FONT_HEIGHT,
 			                                     color, true);
 			
 			final String strZoom = "Zoom " + (ClientCameraHandler.originalFOV / minecraft.gameSettings.fovSetting) + "x";
-			minecraft.fontRendererObj.drawString(strZoom,
-			                                     (int) (scaledWidth * 0.91) - minecraft.fontRendererObj.getStringWidth(strZoom),
+			minecraft.fontRenderer.drawString(strZoom,
+			                                     (int) (scaledWidth * 0.91) - minecraft.fontRenderer.getStringWidth(strZoom),
 			                                     (int) (scaledHeight * 0.81),
 			                                     0x40A080, true);
 			
 			if (WarpDriveConfig.LOGGING_CAMERA) {
-				minecraft.fontRendererObj.drawString(ClientCameraHandler.overlayLoggingMessage,
-				                                     (scaledWidth - minecraft.fontRendererObj.getStringWidth(ClientCameraHandler.overlayLoggingMessage)) / 2,
+				minecraft.fontRenderer.drawString(ClientCameraHandler.overlayLoggingMessage,
+				                                     (scaledWidth - minecraft.fontRenderer.getStringWidth(ClientCameraHandler.overlayLoggingMessage)) / 2,
 				                                     (int) (scaledHeight * 0.19),
 				                                     0xFF008F, true);
 			}

@@ -23,8 +23,6 @@ import net.minecraft.nbt.NBTTagString;
 
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.registry.GameData;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class Dictionary {
@@ -101,9 +99,9 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:mycelium"                              , "Soil").getString();
 				config.get("block_tags", "minecraft:sand"                                  , "Soil").getString();
 				config.get("block_tags", "minecraft:soul_sand"                             , "Soil").getString();
-				config.get("block_tags", "IC2:blockRubWood"                                , "Log").getString();
-				config.get("block_tags", "TConstruct:slime.gel"                            , "Log").getString();
-				config.get("block_tags", "TConstruct:slime.leaves"                         , "Leaf").getString();
+				config.get("block_tags", "ic2:rubber_wood"                                 , "Log").getString();
+				config.get("block_tags", "tconstruct:slime_congealed"                      , "Log").getString();
+				config.get("block_tags", "tconstruct:slime_leaves"                         , "Leaf").getString();
 				
 				// anchors
 				config.get("block_tags", "minecraft:barrier"                               , "Anchor SkipMining").getString();
@@ -116,68 +114,70 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:portal"                                , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:repeating_command_block"               , "Anchor StopMining").getString();
 				config.get("block_tags", "minecraft:structure_block"                       , "Anchor StopMining").getString();
-				config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining NoBlink").getString();
-				config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
-				config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
-				config.get("block_tags", "ComputerCraft:command_computer"                  , "Anchor SkipMining").getString();
-				config.get("block_tags", "IC2:blockPersonal"                               , "Anchor SkipMining").getString();
-				config.get("block_tags", "malisisdoors:null"                               , "Anchor").getString(); // improper registration of block causing NPE
-				config.get("block_tags", "malisisdoors:rustyHatch"                         , "Anchor").getString();
-				config.get("block_tags", "WarpDrive:blockBedrockGlass"                     , "Anchor StopMining NoBlink").getString();
+				// config.get("block_tags", "Artifacts:invisible_bedrock"                     , "Anchor StopMining NoBlink").getString();
+				// config.get("block_tags", "Artifacts:anti_anti_builder_stone"               , "Anchor StopMining").getString();
+				// config.get("block_tags", "Artifacts:anti_builder"                          , "Anchor StopMining").getString();
+				config.get("block_tags", "computercraft:command_computer"                  , "Anchor SkipMining").getString();
+				// @TODO MC1.12 config.get("block_tags", "ic2:blockPersonal"                               , "Anchor SkipMining").getString(); // IC2 personal chest, need property filtering
+				// @TODO MC1.12 config.get("block_tags", "malisisdoors:null"                               , "Anchor").getString(); // improper registration of block causing NPE
+				config.get("block_tags", "malisisdoors:rustyhatch"                         , "Anchor").getString();
+				config.get("block_tags", "warpdrive:block_bedrock_glass"                   , "Anchor StopMining NoBlink").getString();
 				
 				// placement priorities
 				config.get("block_tags", "minecraft:lever"                                 , "PlaceLatest").getString();
-				config.get("block_tags", "warpdrive:blockHull1_plain"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockHull2_plain"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockHull3_plain"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockHull1_glass"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockHull2_glass"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockHull3_glass"                      , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockLamp"                             , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "warpdrive:blockForceField1"                      , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "warpdrive:blockForceField2"                      , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "warpdrive:blockForceField3"                      , "PlaceLatest StopMining NoMass").getString();
-				config.get("block_tags", "IC2:blockReinforcedFoam"                         , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "IC2:blockAlloy"                                  , "PlaceEarliest StopMining").getString();
-				config.get("block_tags", "IC2:blockAlloyGlass"                             , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_hull1_plain"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_hull2_plain"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_hull3_plain"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_hull1_glass"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_hull2_glass"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_hull3_glass"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_lamp_bubble"                     , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_lamp_flat"                       , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_lamp_long"                       , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "warpdrive:block_force_field1"                    , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:block_force_field2"                    , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "warpdrive:block_force_field3"                    , "PlaceLatest StopMining NoMass").getString();
+				config.get("block_tags", "ic2:foam"                                        , "PlaceEarliest StopMining").getString();
+				// @TODO MC1.12 config.get("block_tags", "ic2:blockAlloy"                                  , "PlaceEarliest StopMining").getString();
+				config.get("block_tags", "ic2:glass"                                       , "PlaceEarliest StopMining").getString();
 				config.get("block_tags", "minecraft:obsidian"                              , "PlaceEarliest Mining").getString();
-				config.get("block_tags", "AdvancedRepulsionSystems:field"                  , "PlaceEarlier StopMining NoBlink").getString();
+				// config.get("block_tags", "AdvancedRepulsionSystems:field"                  , "PlaceEarlier StopMining NoBlink").getString();
 				// config.get("block_tags", "MFFS:field"                                                   , "PlaceEarlier StopMining NoBlink").getString();
-				config.get("block_tags", "IC2:blockGenerator"                              , "PlaceLater").getString();
-				config.get("block_tags", "IC2:blockReactorChamber"                         , "PlaceLatest").getString();
-				config.get("block_tags", "ImmersiveEngineering:metalDevice"                , "PlaceLatest").getString();	// FIXME: need to fine tune at metadata level
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersDaylightSensor"  , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersDoor"            , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersGarageDoor"      , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersHatch"           , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersLadder"          , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersLever"           , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersPressurePlate"   , "PlaceLatest").getString();
-				config.get("block_tags", "CarpentersBlocks:blockCarpentersTorch"           , "PlaceLatest").getString();
-				// config.get("block_tags", "SGCraft:stargateBase"                                         , "PlaceEarliest").getString();
-				// config.get("block_tags", "SGCraft:stargateBase"                                         , "PlaceEarliest").getString();
-				// config.get("block_tags", "SGCraft:stargateRing"                                         , "PlaceEarlier").getString();
-				// config.get("block_tags", "SGCraft:stargateController"                                   , "PlaceLatest").getString();
-				config.get("block_tags", "OpenComputers:case1"                             , "PlaceLatest").getString();
-				config.get("block_tags", "OpenComputers:case2"                             , "PlaceLatest").getString(); 
-				config.get("block_tags", "OpenComputers:case3"                             , "PlaceLatest").getString(); 
-				config.get("block_tags", "OpenComputers:caseCreative"                      , "PlaceLatest").getString(); 
-				config.get("block_tags", "OpenComputers:keyboard"                          , "PlaceLatest").getString();
-				config.get("block_tags", "PneumaticCraft:pressureChamberValve"             , "PlaceEarlier").getString();
-				config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining NoBlink").getString();
-				config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining NoBlink").getString();
-				config.get("block_tags", "StargateTech2:block.shield"                      , "PlaceNormal StopMining NoBlink").getString();
-				config.get("block_tags", "StargateTech2:block.busAdapter"                  , "PlaceLatest StopMining").getString();
-				config.get("block_tags", "StargateTech2:block.busCable"                    , "PlaceNormal StopMining").getString();
+				// @TODO MC1.12 config.get("block_tags", "ic2:blockGenerator"                              , "PlaceLater").getString(); // nuclear reactor type:nuclear_reactor
+				// @TODO MC1.12 config.get("block_tags", "ic2:blockReactorChamber"                         , "PlaceLatest").getString(); // reactor chamber type:reactor_chamber
+				config.get("block_tags", "immersiveengineering:metalDevice"                , "PlaceLatest").getString();	// FIXME: need to fine tune at metadata level
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersDaylightSensor"  , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersDoor"            , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersGarageDoor"      , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersHatch"           , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersLadder"          , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersLever"           , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersPressurePlate"   , "PlaceLatest").getString();
+				// config.get("block_tags", "CarpentersBlocks:blockCarpentersTorch"           , "PlaceLatest").getString();
+				// config.get("block_tags", "sgcraft:stargateBase"                                         , "PlaceEarliest").getString();
+				// config.get("block_tags", "sgcraft:stargateBase"                                         , "PlaceEarliest").getString();
+				// config.get("block_tags", "sgcraft:stargateRing"                                         , "PlaceEarlier").getString();
+				// config.get("block_tags", "sgcraft:stargateController"                                   , "PlaceLatest").getString();
+				config.get("block_tags", "opencomputers:case1"                             , "PlaceLatest").getString();
+				config.get("block_tags", "opencomputers:case2"                             , "PlaceLatest").getString();
+				config.get("block_tags", "opencomputers:case3"                             , "PlaceLatest").getString();
+				config.get("block_tags", "opencomputers:casecreative"                      , "PlaceLatest").getString();
+				config.get("block_tags", "opencomputers:keyboard"                          , "PlaceLatest").getString();
+				config.get("block_tags", "pneumaticcraft:pressure_chamber_valve"           , "PlaceEarlier").getString();
+				// config.get("block_tags", "StargateTech2:block.shieldEmitter"               , "PlaceLater StopMining NoBlink").getString();
+				// config.get("block_tags", "StargateTech2:block.shieldController"            , "PlaceNormal StopMining NoBlink").getString();
+				// config.get("block_tags", "StargateTech2:block.shield"                      , "PlaceNormal StopMining NoBlink").getString();
+				// config.get("block_tags", "StargateTech2:block.busAdapter"                  , "PlaceLatest StopMining").getString();
+				// config.get("block_tags", "StargateTech2:block.busCable"                    , "PlaceNormal StopMining").getString();
 				
 				// expendables, a.k.a. "don't blow my ship with this..."
 				config.get("block_tags", "chisel:cloud"                                    , "LeftBehind Expandable").getString();
-				config.get("block_tags", "Railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
-				config.get("block_tags", "warpdrive:blockGas"                              , "LeftBehind Expandable").getString();
-				config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
-				config.get("block_tags", "warpdrive:blockAir"                              , "NoMass Expandable PlaceLatest").getString();
-				config.get("block_tags", "warpdrive:blockAirFlow"                          , "NoMass Expandable PlaceLatest").getString();
-				config.get("block_tags", "warpdrive:blockAirSource"                        , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "railcraft:residual.heat"                         , "LeftBehind Expandable").getString();
+				config.get("block_tags", "warpdrive:block_gas"                             , "LeftBehind Expandable").getString();
+				// config.get("block_tags", "InvisibLights:blockLightSource"                  , "NoMass Expandable").getString();
+				config.get("block_tags", "warpdrive:block_air"                             , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:block_air_flow"                        , "NoMass Expandable PlaceLatest").getString();
+				config.get("block_tags", "warpdrive:block_air_source"                      , "NoMass Expandable PlaceLatest").getString();
 				
 				// mining a mineshaft...
 				config.get("block_tags", "minecraft:web"                                   , "Mining").getString();
@@ -187,26 +187,22 @@ public class Dictionary {
 				config.get("block_tags", "minecraft:redstone_block"                        , "Mining").getString();
 				
 				// mining an 'end' moon
-				config.get("block_tags", "WarpDrive:blockIridium"                          , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
+				config.get("block_tags", "warpdrive:block_iridium"                         , "Mining").getString();	// stronger than obsidian but can still be mined (see ender moon)
 				
 				// force field camouflage blacklisting
-				config.get("block_tags", "deepresonance:energyCollectorBlock"              , "NoCamouflage").getString();
-				config.get("block_tags", "deepresonance:resonatingCrystalBlock"            , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:bloodInfuser"                          , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:darkOre"                               , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:sanguinaryEnvironmentalAccumulator"    , "NoCamouflage").getString();
-				config.get("block_tags", "evilcraft:spiritReanimator"                      , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierWood"                 , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierOneBlock"             , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierTwoBlock"             , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierThreeBlock"           , "NoCamouflage").getString();
-				config.get("block_tags", "openmodularturrets:baseTierFourBlock"            , "NoCamouflage").getString();
-				config.get("block_tags", "Thaumcraft:blockCustomPlant"                     , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Cache"                          , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Device"                         , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Machine"                        , "NoCamouflage").getString();
-				config.get("block_tags", "ThermalExpansion:Sponge"                         , "NoCamouflage").getString();
-				config.get("block_tags", "witchery:leechchest"                             , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:energy_collector"                   , "NoCamouflage").getString();
+				config.get("block_tags", "deepresonance:resonating_crystal"                 , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:blood_infuser"                          , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:dark_ore"                               , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:sanguinary_environmental_accumulator"   , "NoCamouflage").getString();
+				config.get("block_tags", "evilcraft:spirit_reanimator"                      , "NoCamouflage").getString();
+				config.get("block_tags", "openmodularturrets:turret_base"                   , "NoCamouflage").getString(); // Turret tiers are stored in meta data
+				config.get("block_tags", "thaumcraft:blockCustomPlant"                      , "NoCamouflage").getString(); // To be tested
+				config.get("block_tags", "thermalexpansion:cache"                           , "NoCamouflage").getString();
+				config.get("block_tags", "thermalexpansion:device"                          , "NoCamouflage").getString();
+				config.get("block_tags", "thermalexpansion:machine"                         , "NoCamouflage").getString();
+				// config.get("block_tags", "thermalexpansion:Sponge"                          , "NoCamouflage").getString(); // not found
+				// config.get("block_tags", "witchery:leechchest"                              , "NoCamouflage").getString();
 				
 				taggedBlocksName = categoryBlockTags.getValues().keySet().toArray(new String[0]);
 			}
@@ -233,32 +229,32 @@ public class Dictionary {
 			final ConfigCategory categoryEntityTags = config.getCategory("entity_tags");
 			String[] taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			if (taggedEntitiesName.length == 0) {
-				config.get("entity_tags", "GalacticraftCore.OxygenBubble", "NoMass LeftBehind").getString();
-				config.get("entity_tags", "ItemFrame"                    , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "Painting"                     , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "LeashKnot"                    , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "Boat"                         , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "MinecartRideable"             , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "MinecartChest"                , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "MinecartFurnace"              , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "MinecartTNT"                  , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "MinecartHopper"               , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "MinecartSpawner"              , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "EnderCrystal"                 , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "Arrow"                        , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "GalacticraftCore.OxygenBubble"          , "NoMass LeftBehind").getString(); // Still needs fixing
+				config.get("entity_tags", "minecraft:item_frame"                   , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:painting"                     , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:leash_knot"                   , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:boat"                         , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:minecart"                     , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:chest_minecart"               , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:furnace_minecart"             , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:tnt_minecart"                 , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:hopper_minecart"              , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:spawner_minecart"             , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:ender_crystal"                , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "minecraft:arrow"                        , "NoMass NonLivingTarget").getString();
 				
-				config.get("entity_tags", "IC2.BoatCarbon"               , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "IC2.BoatRubber"               , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "IC2.BoatElectric"             , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "IC2.Nuke"                     , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "IC2.Itnt"                     , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "IC2.StickyDynamite"           , "NoMass NonLivingTarget").getString();
-				config.get("entity_tags", "IC2.Dynamite"                 , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:carbon_boat"                        , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:rubber_boat"                        , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:electric_boat"                      , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:nuke"                               , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:itnt"                               , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:sticky_dynamite"                    , "NoMass NonLivingTarget").getString();
+				config.get("entity_tags", "ic2:dynamite"                           , "NoMass NonLivingTarget").getString();
 				
-				config.get("entity_tags", "Creeper"                      , "LivingWithoutAir").getString();
-				config.get("entity_tags", "Skeleton"                     , "LivingWithoutAir").getString();
-				config.get("entity_tags", "Zombie"                       , "LivingWithoutAir").getString();
-				config.get("entity_tags", "testdummy.Dummy"              , "LivingWithoutAir").getString();
+				config.get("entity_tags", "minecraft:creeper"                      , "LivingWithoutAir").getString();
+				config.get("entity_tags", "minecraft:skeleton"                     , "LivingWithoutAir").getString();
+				config.get("entity_tags", "minecraft:zombie"                       , "LivingWithoutAir").getString();
+				config.get("entity_tags", "testdummy.Dummy"                        , "LivingWithoutAir").getString(); // need review
 				
 				taggedEntitiesName = categoryEntityTags.getValues().keySet().toArray(new String[0]);
 			}
@@ -281,42 +277,39 @@ public class Dictionary {
 			final ConfigCategory categoryItemTags = config.getCategory("item_tags");
 			String[] taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			if (taggedItemsName.length == 0) {
-				config.get("item_tags", "AWWayofTime:boundHelmet", "BreathingHelmet").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetEarth", "BreathingHelmet").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetFire", "BreathingHelmet").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetWater", "BreathingHelmet").getString();
-				config.get("item_tags", "AWWayofTime:boundHelmetWind", "BreathingHelmet").getString();
-				config.get("item_tags", "AdvancedSolarPanel:advanced_solar_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "AdvancedSolarPanel:hybrid_solar_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "AdvancedSolarPanel:ultimate_solar_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "Botania:elementiumHelm", "BreathingHelmet").getString();
-				config.get("item_tags", "Botania:elementiumHelmReveal", "BreathingHelmet").getString();
-				config.get("item_tags", "Botania:terrasteelHelm", "BreathingHelmet").getString();
-				config.get("item_tags", "Botania:terrasteelHelmReveal", "BreathingHelmet").getString();
-				config.get("item_tags", "EnderIO:item.darkSteel_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "IC2:itemArmorHazmatHelmet", "BreathingHelmet").getString();
-				config.get("item_tags", "IC2:itemSolarHelmet", "BreathingHelmet").getString();
-				config.get("item_tags", "IC2:itemArmorNanoHelmet", "BreathingHelmet").getString();
-				config.get("item_tags", "IC2:itemArmorQuantumHelmet", "BreathingHelmet").getString();
-				config.get("item_tags", "PneumaticCraft:pneumaticHelmet", "BreathingHelmet").getString();
-				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux", "BreathingHelmet").getString();
-				config.get("item_tags", "Techguns:t3_exo_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "Techguns:t3_miner_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "Techguns:t3_power_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "Techguns:steam,_helmet", "BreathingHelmet").getString();
-				config.get("item_tags", "Techguns:tacticalMask", "BreathingHelmet").getString();
+				config.get("item_tags", "bloodmagic:living_armour_helmet"              , "BreathingHelmet").getString();
+				config.get("item_tags", "bloodmagic:sentient_armour_helmet"            , "BreathingHelmet").getString();
+				config.get("item_tags", "advanced_solar_panels:advancedsolarhelmet"    , "BreathingHelmet").getString();
+				config.get("item_tags", "advanced_solar_panels:hybridsolarhelmet"      , "BreathingHelmet").getString();
+				config.get("item_tags", "advanced_solar_panels:ultimatesolarhelmet"    , "BreathingHelmet").getString();
+				config.get("item_tags", "botania:elementiumhelm"                       , "BreathingHelmet").getString();
+				config.get("item_tags", "botania:elementiumhelmreveal"                 , "BreathingHelmet").getString();
+				config.get("item_tags", "botania:terrasteelhelm"                       , "BreathingHelmet").getString();
+				config.get("item_tags", "botania:terrasteelhelmreveal"                 , "BreathingHelmet").getString();
+				config.get("item_tags", "enderio:item_dark_steel_helmet"               , "BreathingHelmet").getString();
+				config.get("item_tags", "ic2:hazmat_helmet"                            , "BreathingHelmet").getString();
+				config.get("item_tags", "ic2:solar_helmet"                             , "BreathingHelmet").getString();
+				config.get("item_tags", "ic2:nano_helmet"                              , "BreathingHelmet").getString();
+				config.get("item_tags", "ic2:quantum_helmet"                           , "BreathingHelmet").getString();
+				config.get("item_tags", "pneumaticcraft:pneumatic_helmet"              , "BreathingHelmet").getString();
+				config.get("item_tags", "RedstoneArsenal:armor.helmetFlux"             , "BreathingHelmet").getString();
+				config.get("item_tags", "techguns:t3_exo_helmet"                       , "BreathingHelmet").getString();
+				config.get("item_tags", "techguns:t3_miner_helmet"                     , "BreathingHelmet").getString();
+				config.get("item_tags", "techguns:t3_power_helmet"                     , "BreathingHelmet").getString();
+				config.get("item_tags", "techguns:steam_helmet"                        , "BreathingHelmet").getString();
+				config.get("item_tags", "techguns:tacticalmask"                        , "BreathingHelmet").getString();
 				
-				config.get("item_tags", "IC2:itemArmorJetpack", "FlyInSpace NoFallDamage").getString();
-				config.get("item_tags", "IC2:itemArmorJetpackElectric", "FlyInSpace NoFallDamage").getString();
-				config.get("item_tags", "IC2:itemArmorQuantumChestplate", "FlyInSpace NoFallDamage").getString();
-				config.get("item_tags", "GraviSuite:advJetpack", "FlyInSpace NoFallDamage").getString();
-				config.get("item_tags", "GraviSuite:advNanoChestPlate", "FlyInSpace NoFallDamage").getString();
-				config.get("item_tags", "GraviSuite:graviChestPlate", "FlyInSpace NoFallDamage").getString();
+				config.get("item_tags", "ic2:jetpack"                                  , "FlyInSpace NoFallDamage").getString();
+				config.get("item_tags", "ic2:jetpack_electric"                         , "FlyInSpace NoFallDamage").getString();
+				config.get("item_tags", "ic2:quantum_chestplate"                       , "FlyInSpace NoFallDamage").getString();
+				config.get("item_tags", "GraviSuite:advJetpack"                        , "FlyInSpace NoFallDamage").getString(); // not ported
+				config.get("item_tags", "GraviSuite:advNanoChestPlate"                 , "FlyInSpace NoFallDamage").getString(); // not ported
+				config.get("item_tags", "GraviSuite:graviChestPlate"                   , "FlyInSpace NoFallDamage").getString(); // not ported
 				
-				config.get("item_tags", "IC2:itemArmorRubBoots", "NoFallDamage").getString();
-				config.get("item_tags", "IC2:itemArmorQuantumBoots", "NoFallDamage").getString();
-				config.get("item_tags", "WarpDrive:itemWarpArmor_leggings", "NoFallDamage").getString();
-				config.get("item_tags", "WarpDrive:itemWarpArmor_boots", "NoFallDamage").getString();
+				config.get("item_tags", "ic2:rubber_boots"                             , "NoFallDamage").getString();
+				config.get("item_tags", "ic2:quantum_boots"                            , "NoFallDamage").getString();
+				config.get("item_tags", "warpdrive:item_warp_armor_leggings"           , "NoFallDamage").getString();
+				config.get("item_tags", "warpdrive:item_warp_armor_boots"              , "NoFallDamage").getString();
 				taggedItemsName = categoryItemTags.getValues().keySet().toArray(new String[0]);
 			}
 			taggedItems = new HashMap<>(taggedItemsName.length);
@@ -439,7 +432,7 @@ public class Dictionary {
 		ITEMS_BREATHING_HELMET = new HashSet<>(taggedItems.size());
 		for (final Entry<String, String> taggedItem : taggedItems.entrySet()) {
 			final String itemId = taggedItem.getKey();
-			final Item item = GameData.getItemRegistry().getObject(new ResourceLocation(itemId));
+			final Item item = Item.REGISTRY.getObject(new ResourceLocation(itemId));
 			if (item == null) {
 				WarpDrive.logger.info("Ignoring missing item " + itemId);
 				continue;
@@ -614,7 +607,7 @@ public class Dictionary {
 		if (size > 0) {
 			for (int index = 0; index < nbtTagList.tagCount(); index++) {
 				final String registryName = nbtTagList.getStringTagAt(index);
-				final Item item = GameData.getItemRegistry().getObject(new ResourceLocation(registryName));
+				final Item item = Item.REGISTRY.getObject(new ResourceLocation(registryName));
 				if (item != null) {
 					hashSetItem.add(item);
 				} else {

@@ -18,7 +18,6 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 		super(block);
 		setMaxDamage(0);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.forcefield.projector");
 	}
 	
 	@Nonnull

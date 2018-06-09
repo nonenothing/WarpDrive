@@ -81,10 +81,10 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	private void handle(final EntityPlayerSP player) {
 		if (decloak) {
 			// reveal the area
-			WarpDrive.cloaks.removeCloakedArea(player.worldObj.provider.getDimension(), new BlockPos(coreX, coreY, coreZ));
+			WarpDrive.cloaks.removeCloakedArea(player.world.provider.getDimension(), new BlockPos(coreX, coreY, coreZ));
 		} else { 
 			// Hide the area
-			WarpDrive.cloaks.updateCloakedArea(player.worldObj, player.worldObj.provider.getDimension(), new BlockPos(coreX, coreY, coreZ), tier, minX, minY, minZ, maxX, maxY, maxZ);
+			WarpDrive.cloaks.updateCloakedArea(player.world, player.world.provider.getDimension(), new BlockPos(coreX, coreY, coreZ), tier, minX, minY, minZ, maxX, maxY, maxZ);
 		}
 	}
 	
@@ -92,7 +92,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageCloak cloakMessage, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().theWorld == null) {
+		if (Minecraft.getMinecraft().world == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring cloak packet");
 			return null;
 		}
@@ -103,7 +103,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 				+ ") -> (" + cloakMessage.maxX + " " + cloakMessage.maxY + " " + cloakMessage.maxZ + ") tier " + cloakMessage.tier);
 		}
 		
-		final EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		if ( cloakMessage.minX <= player.posX && (cloakMessage.maxX + 1) > player.posX
 		  && cloakMessage.minY <= player.posY && (cloakMessage.maxY + 1) > player.posY
 		  && cloakMessage.minZ <= player.posZ && (cloakMessage.maxZ + 1) > player.posZ) {

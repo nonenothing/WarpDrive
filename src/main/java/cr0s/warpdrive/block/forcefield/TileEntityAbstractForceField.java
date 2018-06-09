@@ -50,7 +50,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		if (block instanceof BlockAbstractForceField) {
 			tier = ((BlockAbstractForceField) block).tier;
 		} else {
-			WarpDrive.logger.error("Missing block for " + this + " at " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+			WarpDrive.logger.error("Missing block for " + this + " at " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 		}
 		if (beamFrequency >= 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX) {
 			ForceFieldRegistry.updateInRegistry(this);
@@ -61,7 +61,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -97,14 +97,14 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
 				WarpDrive.logger.info(this + " Beam frequency set from " + beamFrequency + " to " + parBeamFrequency);
 			}
-			if (hasWorldObj()) {
+			if (hasWorld()) {
 				ForceFieldRegistry.removeFromRegistry(this);
 			}
 			beamFrequency = parBeamFrequency;
 			vRGB = IBeamFrequency.getBeamColor(beamFrequency);
 		}
 		markDirty();
-		if (hasWorldObj()) {
+		if (hasWorld()) {
 			ForceFieldRegistry.updateInRegistry(this);
 		}
 	}
@@ -146,13 +146,13 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] beamFrequency(final Context context, final Arguments arguments) {
 		if (arguments.count() == 1) {
 			setBeamFrequency(arguments.checkInteger(0));
@@ -179,7 +179,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -207,7 +207,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		return String.format("%s Beam \'%d\' @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
 		                     beamFrequency,
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

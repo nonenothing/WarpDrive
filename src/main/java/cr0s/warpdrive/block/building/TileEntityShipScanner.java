@@ -45,10 +45,8 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
@@ -98,7 +96,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -122,7 +120,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		} else if (enumShipScannerState != EnumShipScannerState.DEPLOYING && shipCore == null) {// Ship core is not found
 			laserTicks++;
 			if (laserTicks > 20) {
-				PacketHandler.sendBeamPacket(worldObj,
+				PacketHandler.sendBeamPacket(world,
 				                             new Vector3(this).translate(0.5D),
 				                             new Vector3(pos.getX(), pos.getY() + 5, pos.getZ()).translate(0.5D), 
 				                             1.0F, 0.2F, 0.0F, 40, 0, 100);
@@ -136,7 +134,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			if (shipCore != null) {// and ship core found
 				laserTicks++;
 				if (laserTicks > 20) {
-					PacketHandler.sendBeamPacket(worldObj,
+					PacketHandler.sendBeamPacket(world,
 					                             new Vector3(this).translate(0.5D),
 					                             new Vector3(shipCore).translate(0.5D),
 					                             0.0F, 1.0F, 0.2F, 40, 0, 100);
@@ -151,16 +149,16 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				laserTicks = 0;
 				
 				for (int index = 0; index < 10; index++) {
-					final int randomX = shipCore.minX + worldObj.rand.nextInt(shipCore.maxX - shipCore.minX + 1);
-					final int randomY = shipCore.minY + worldObj.rand.nextInt(shipCore.maxY - shipCore.minY + 1);
-					final int randomZ = shipCore.minZ + worldObj.rand.nextInt(shipCore.maxZ - shipCore.minZ + 1);
+					final int randomX = shipCore.minX + world.rand.nextInt(shipCore.maxX - shipCore.minX + 1);
+					final int randomY = shipCore.minY + world.rand.nextInt(shipCore.maxY - shipCore.minY + 1);
+					final int randomZ = shipCore.minZ + world.rand.nextInt(shipCore.maxZ - shipCore.minZ + 1);
 					
-					worldObj.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.HOSTILE, 4F, 1F);
-					final float r = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
-					final float g = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
-					final float b = worldObj.rand.nextFloat() - worldObj.rand.nextFloat();
+					world.playSound(null, pos, SoundEvents.LASER_LOW, SoundCategory.HOSTILE, 4F, 1F);
+					final float r = world.rand.nextFloat() - world.rand.nextFloat();
+					final float g = world.rand.nextFloat() - world.rand.nextFloat();
+					final float b = world.rand.nextFloat() - world.rand.nextFloat();
 					
-					PacketHandler.sendBeamPacket(worldObj,
+					PacketHandler.sendBeamPacket(world,
 							new Vector3(this).translate(0.5D),
 							new Vector3(randomX, randomY, randomZ).translate(0.5D),
 							r, g, b, 15, 0, 100);
@@ -256,8 +254,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(pos);
 		for (int newY = pos.getY() + 1; newY <= 255; newY++) {
 			mutableBlockPos.setY(newY);
-			if (worldObj.getBlockState(mutableBlockPos).getBlock().isAssociatedBlock(WarpDrive.blockShipCore)) { // found ship core above
-				tileEntityShipCore = (TileEntityShipCore) worldObj.getTileEntity(mutableBlockPos);
+			if (world.getBlockState(mutableBlockPos).getBlock().isAssociatedBlock(WarpDrive.blockShipCore)) { // found ship core above
+				tileEntityShipCore = (TileEntityShipCore) world.getTileEntity(mutableBlockPos);
 				
 				if (tileEntityShipCore != null) {
 					if (!tileEntityShipCore.validateShipSpatialParameters(reason)) { // If we can't refresh ship's spatial parameters
@@ -298,7 +296,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		
 		// Save new format
 		final JumpShip ship = new JumpShip();
-		ship.worldObj = shipCore.getWorld();
+		ship.world = shipCore.getWorld();
 		ship.core = shipCore.getPos();
 		ship.dx = shipCore.facing.getFrontOffsetX();
 		ship.dz = shipCore.facing.getFrontOffsetZ();
@@ -326,7 +324,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			for (int y = 0; y < height; y++) {
 				for (int z = 0; z < length; z++) {
 					BlockPos blockPos = new BlockPos(shipCore.minX + x, shipCore.minY + y, shipCore.minZ + z);
-					IBlockState blockState = worldObj.getBlockState(blockPos);
+					IBlockState blockState = world.getBlockState(blockPos);
 					
 					// Skip leftBehind and anchor blocks
 					if (Dictionary.BLOCKS_LEFTBEHIND.contains(blockState.getBlock()) || Dictionary.BLOCKS_ANCHOR.contains(blockState.getBlock())) {
@@ -338,7 +336,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 					byteMetadatas[index] = (byte) blockState.getBlock().getMetaFromState(blockState);
 					
 					if (!blockState.getBlock().isAssociatedBlock(Blocks.AIR)) {
-						final TileEntity tileEntity = worldObj.getTileEntity(blockPos);
+						final TileEntity tileEntity = world.getTileEntity(blockPos);
 						if (tileEntity != null) {
 							try {
 								final NBTTagCompound tagTileEntity = new NBTTagCompound();
@@ -428,7 +426,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			final double dX = pos.getX() - targetX;
 			final double dY = pos.getY() - targetY;
 			final double dZ = pos.getZ() - targetZ;
-			final double distance = MathHelper.sqrt_double(dX * dX + dY * dY + dZ * dZ);
+			final double distance = MathHelper.sqrt(dX * dX + dY * dY + dZ * dZ);
 			
 			if (distance > WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS) {
 				reason.append(String.format("§cCannot deploy ship more than %d blocks away from scanner.", WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS));
@@ -436,7 +434,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			}
 			
 			// Compute target area
-			final Transformation transformation = new Transformation(jumpShip, worldObj, targetX - jumpShip.core.getX(), targetY - jumpShip.core.getY(), targetZ - jumpShip.core.getZ(), rotationSteps);
+			final Transformation transformation = new Transformation(jumpShip, world, targetX - jumpShip.core.getX(), targetY - jumpShip.core.getY(), targetZ - jumpShip.core.getZ(), rotationSteps);
 			final BlockPos targetLocation1 = transformation.apply(jumpShip.minX, jumpShip.minY, jumpShip.minZ);
 			final BlockPos targetLocation2 = transformation.apply(jumpShip.maxX, jumpShip.maxY, jumpShip.maxZ);
 			final BlockPos targetLocationMin = new BlockPos(
@@ -449,7 +447,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			                  Math.max(targetLocation1.getZ(), targetLocation2.getZ()) + 1);
 			
 			if (isForced) {
-				if (!isShipCoreClear(worldObj, new BlockPos(targetX, targetY, targetZ), playerName, reason)) {
+				if (!isShipCoreClear(world, new BlockPos(targetX, targetY, targetZ), playerName, reason)) {
 					if (WarpDriveConfig.LOGGING_BUILDING) {
 						WarpDrive.logger.info(String.format("Deployment collision detected at (%d %d %d)",
 						                                    targetX, targetY, targetZ));
@@ -461,7 +459,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				for (int x = targetLocationMin.getX(); x <= targetLocationMax.getX(); x++) {
 					for (int y = targetLocationMin.getY(); y <= targetLocationMax.getY(); y++) {
 						for (int z = targetLocationMin.getZ(); z <= targetLocationMax.getZ(); z++) {
-							worldObj.setBlockToAir(new BlockPos(x, y, z));
+							world.setBlockToAir(new BlockPos(x, y, z));
 						}
 					}
 				}
@@ -474,10 +472,10 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				for (int x = targetLocationMin.getX(); x <= targetLocationMax.getX(); x++) {
 					for (int y = targetLocationMin.getY(); y <= targetLocationMax.getY(); y++) {
 						for (int z = targetLocationMin.getZ(); z <= targetLocationMax.getZ(); z++) {
-							if (!worldObj.isAirBlock(new BlockPos(x, y, z))) {
+							if (!world.isAirBlock(new BlockPos(x, y, z))) {
 								occupiedBlockCount++;
-								if (occupiedBlockCount == 1 || (occupiedBlockCount <= 100 && worldObj.rand.nextInt(10) == 0)) {
-									worldObj.newExplosion(null, x, y, z, 1, false, false);
+								if (occupiedBlockCount == 1 || (occupiedBlockCount <= 100 && world.rand.nextInt(10) == 0)) {
+									world.newExplosion(null, x, y, z, 1, false, false);
 								}
 								if (WarpDriveConfig.LOGGING_BUILDING) {
 									WarpDrive.logger.info("Deployment collision detected at " + x + " " + y + " " + z);
@@ -622,25 +620,25 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] scan(final Context context, final Arguments arguments) {
 		return scan();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] filename(final Context context, final Arguments arguments) {
 		return filename();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] deploy(final Context context, final Arguments arguments) {
 		return deploy(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
@@ -692,7 +690,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		// don't force captain when deploying from LUA
 		playerName = null;
 		/*
-		final EntityPlayer entityPlayer = worldObj.getClosestPlayer(xCoord, yCoord, zCoord, 8);
+		final EntityPlayer entityPlayer = world.getClosestPlayer(xCoord, yCoord, zCoord, 8);
 		if (entityPlayer != null) {
 			playerName = entityPlayer.getCommandSenderName();
 		} else {
@@ -716,7 +714,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		
@@ -756,7 +754,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		// find a unique player in range
 		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 1.0D, pos.getY() + 1.0D, pos.getZ() - 1.0D,
 		                                                      pos.getX() + 1.99D, pos.getY() + 5.0D, pos.getZ() + 1.99D);
-		final List list = worldObj.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
+		final List list = world.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
 		final List<EntityPlayer> entityPlayers = new ArrayList<>(10);
 		for (final Object object : list) {
 			if (object instanceof EntityPlayer) {
@@ -770,7 +768,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (entityPlayers.size() > 1) {
 			for (final EntityPlayer entityPlayer : entityPlayers) {
 				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time.")
-					.setStyle(new Style().setColor(TextFormatting.RED)));
+					.setStyle(Commons.styleWarning));
 				shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS;
 			}
 			shipToken_idPlayer = null;
@@ -783,9 +781,9 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		ItemStack itemStack = null;
 		for (; slotIndex < entityPlayer.inventory.getSizeInventory(); slotIndex++) {
 			itemStack = entityPlayer.inventory.getStackInSlot(slotIndex);
-			if ( itemStack != null
+			if ( !itemStack.isEmpty()
 			  && itemStack.getItem() == WarpDrive.itemShipToken
-			  && itemStack.stackSize >= 1) {
+			  && itemStack.getCount() >= 1 ) {
 				break;
 			}
 		}
@@ -804,7 +802,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			shipToken_countWarmup = SHIP_TOKEN_PLAYER_WARMUP_PERIODS + 1;
 			shipToken_nameSchematic = ItemShipToken.getSchematicName(itemStack);
 			Commons.addChatMessage(entityPlayer, new TextComponentString(String.format("Ship token '%1$s' detected!", shipToken_nameSchematic))
-			                                        .setStyle(new Style().setColor(TextFormatting.GOLD)));
+			                                        .setStyle(Commons.styleHeader));
 		}
 		shipToken_countWarmup--;
 		if (shipToken_countWarmup > 0) {
@@ -821,20 +819,16 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		deployShip(ItemShipToken.getSchematicName(itemStack), targetX - pos.getX(), targetY - pos.getY(), targetZ - pos.getZ(), rotationSteps, true, reason);
 		if (enumShipScannerState == EnumShipScannerState.IDLE) {
 			// failed
-			Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.RED)));
+			Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(Commons.styleWarning));
 			shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_DEPLOY_TICKS;
 			return;
 		}
-		Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(new Style().setColor(TextFormatting.GOLD)));
+		Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(Commons.styleHeader));
 		
 		// success => remove token
 		if (!entityPlayer.capabilities.isCreativeMode) {
-			itemStack.stackSize--;
-			if (itemStack.stackSize > 0) {
-				entityPlayer.inventory.setInventorySlotContents(slotIndex, itemStack);
-			} else {
-				entityPlayer.inventory.setInventorySlotContents(slotIndex, null);
-			}
+			itemStack.shrink(1);
+			entityPlayer.inventory.setInventorySlotContents(slotIndex, itemStack);
 			entityPlayer.inventory.markDirty();
 		}
 	}
@@ -843,7 +837,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d)",
 		                     getClass().getSimpleName(),
-		                     worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
 		                     pos.getX(), pos.getY(), pos.getZ());
 	}
 }

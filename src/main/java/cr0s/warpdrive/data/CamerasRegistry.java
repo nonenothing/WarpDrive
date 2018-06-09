@@ -57,7 +57,7 @@ public class CamerasRegistry {
 	
 	private static boolean isCamAlive(final World world, final CameraRegistryItem cam) {
 		if (world.provider.getDimension() != cam.dimensionId) {
-			WarpDrive.logger.error("Inconsistent worldObj with camera " + world.provider.getDimension() + " vs " + cam.dimensionId);
+			WarpDrive.logger.error("Inconsistent world with camera " + world.provider.getDimension() + " vs " + cam.dimensionId);
 			return false;
 		}
 		

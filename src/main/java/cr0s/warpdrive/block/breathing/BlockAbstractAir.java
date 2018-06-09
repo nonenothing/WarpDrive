@@ -1,13 +1,11 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
@@ -16,10 +14,12 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -38,8 +38,9 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		setUnlocalizedName("warpdrive.breathing.air");
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isVisuallyOpaque() {
+	public boolean causesSuffocation(final IBlockState state) {
 		return false;
 	}
 	
@@ -51,8 +52,8 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullyOpaque(final IBlockState state) {
-		return false;
+	public boolean isFullBlock(IBlockState state) {
+		return true;
 	}
 	
 	@Override
@@ -63,7 +64,7 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return null;
 	}
 	
@@ -86,10 +87,10 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	@Override
 	@SideOnly(Side.CLIENT)
-	public void getSubBlocks(@Nonnull final Item item, final CreativeTabs creativeTab, final List<ItemStack> list) {
+	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
 		// hide in NEI
 		for (int i = 0; i < 16; i++) {
-			Commons.hideItemStack(new ItemStack(item, 1, i));
+			Commons.hideItemStack(new ItemStack(this, 1, i));
 		}
 	}
 	
@@ -100,10 +101,10 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 		return EnumPushReaction.DESTROY;
 	}
 	
-	@Nullable
+	@Nonnull
 	@Override
 	public Item getItemDropped(final IBlockState state, final Random rand, final int fortune) {
-		return null;
+		return Items.AIR;
 	}
 	
 	@Override

@@ -17,6 +17,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -38,7 +39,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	@Override
-	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final World world, @Nonnull final BlockPos blockPos) {
+	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		return new AxisAlignedBB(
 			blockPos.getX() + BOUNDING_TOLERANCE, blockPos.getY() + BOUNDING_TOLERANCE, blockPos.getZ() + BOUNDING_TOLERANCE,
 			blockPos.getX() + 1 - BOUNDING_TOLERANCE, blockPos.getY() + 1 - BOUNDING_TOLERANCE, blockPos.getZ() + 1 - BOUNDING_TOLERANCE);

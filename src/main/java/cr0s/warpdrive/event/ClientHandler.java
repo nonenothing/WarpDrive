@@ -94,8 +94,10 @@ public class ClientHandler {
 			blockState = block.getStateFromMeta(event.getItemStack().getItemDamage());
 		} catch (AssertionError assertionError) {
 			// assertionError.printStackTrace();
-			WarpDrive.logger.error(String.format("Assertion error on item stack %s with state %s",
-			                                     event.getItemStack(), (blockState != null) ? blockState : "-null-"));
+			if (!event.getItemStack().getItem().getRegistryName().toString().equals("ic2:te")) {
+				WarpDrive.logger.error(String.format("Assertion error on item stack %s with state %s",
+				                                     event.getItemStack(), (blockState != null) ? blockState : "-null-"));
+			}
 		}
 		if ( WarpDriveConfig.CLIENT_TOOLTIP_HARVESTING.isEnabled(isSneaking, isCreativeMode)
 		  && blockState != null ) {

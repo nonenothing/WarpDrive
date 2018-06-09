@@ -115,8 +115,8 @@ public class WorldGenSmallShip extends WorldGenerator {
 		world.setBlockState(new BlockPos(x + 5, y + 2, z + 4), Blocks.GLOWSTONE.getDefaultState());
 		genStructure.setHullPlain(world, x + 5, y + 2, z + 5);
 		genStructure.setHullPlain(world, x + 5, y + 2, z + 6);
-		world.setBlockState(new BlockPos(x + 5, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(14), 0);
-		world.setBlockState(new BlockPos(x + 5, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(8), 0);
+		world.setBlockState(new BlockPos(x + 5, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(14), 2);
+		world.setBlockState(new BlockPos(x + 5, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(8), 2);
 		genStructure.setHullPlain(world, x + 5, y + 2, z + 9);
 		world.setBlockState(new BlockPos(x + 5, y + 2, z + 10), Blocks.GLOWSTONE.getDefaultState());
 		genStructure.setHullPlain(world, x + 5, y + 2, z + 11);
@@ -143,22 +143,22 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 3);
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 4);
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 5);
-		world.setBlockState(new BlockPos(x + 6, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(14), 0);
-		world.setBlockState(new BlockPos(x + 6, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(8), 0);
-		world.setBlockState(new BlockPos(x + 6, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(14), 0);
+		world.setBlockState(new BlockPos(x + 6, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(14), 2);
+		world.setBlockState(new BlockPos(x + 6, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(8), 2);
+		world.setBlockState(new BlockPos(x + 6, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(14), 2);
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 9);
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 10);
 		genStructure.setHullPlain(world, x + 6, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 6, y + 3, z + 2);
-		world.setBlockState(new BlockPos(x + 6, y + 3, z + 3), Blocks.CHEST.getStateFromMeta(3), 0);
+		world.setBlockState(new BlockPos(x + 6, y + 3, z + 3), Blocks.CHEST.getStateFromMeta(3), 2);
 		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 3, z + 3, "ship");
-		world.setBlockState(new BlockPos(x + 6, y + 3, z + 11), Blocks.CHEST.getStateFromMeta(2), 0);
+		world.setBlockState(new BlockPos(x + 6, y + 3, z + 11), Blocks.CHEST.getStateFromMeta(2), 2);
 		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 3, z + 11, "ship");
 		genStructure.setHullPlain(world, x + 6, y + 3, z + 12);
 		genStructure.setHullPlain(world, x + 6, y + 4, z + 2);
-		world.setBlockState(new BlockPos(x + 6, y + 4, z + 3), Blocks.CHEST.getStateFromMeta(3), 0);
+		world.setBlockState(new BlockPos(x + 6, y + 4, z + 3), Blocks.CHEST.getStateFromMeta(3), 2);
 		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 4, z + 3, "ship");
-		world.setBlockState(new BlockPos(x + 6, y + 4, z + 11), Blocks.CHEST.getStateFromMeta(2), 0);
+		world.setBlockState(new BlockPos(x + 6, y + 4, z + 11), Blocks.CHEST.getStateFromMeta(2), 2);
 		genStructure.fillInventoryWithLoot(world, rand, x + 6, y + 4, z + 11, "ship");
 		genStructure.setHullPlain(world, x + 6, y + 4, z + 12);
 		genStructure.setHullPlain(world, x + 6, y + 5, z + 2);
@@ -189,9 +189,9 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 7, y + 2, z + 4);
 		genStructure.setHullPlain(world, x + 7, y + 2, z + 5);
 		genStructure.setHullPlain(world, x + 7, y + 2, z + 6);
-		world.setBlockState(new BlockPos(x + 7, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(8), 0);
-		world.setBlockState(new BlockPos(x + 7, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(8), 0);
-		world.setBlockState(new BlockPos(x + 7, y + 2, z + 9), Blocks.WOOL.getStateFromMeta(14), 0);
+		world.setBlockState(new BlockPos(x + 7, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(8), 2);
+		world.setBlockState(new BlockPos(x + 7, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(8), 2);
+		world.setBlockState(new BlockPos(x + 7, y + 2, z + 9), Blocks.WOOL.getStateFromMeta(14), 2);
 		genStructure.setHullPlain(world, x + 7, y + 2, z + 10);
 		genStructure.setHullPlain(world, x + 7, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 7, y + 3, z + 2);
@@ -225,9 +225,9 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 8, y + 2, z + 3);
 		genStructure.setHullPlain(world, x + 8, y + 2, z + 4);
 		genStructure.setHullPlain(world, x + 8, y + 2, z + 5);
-		world.setBlockState(new BlockPos(x + 8, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(14), 0);
-		world.setBlockState(new BlockPos(x + 8, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(14), 0);
-		world.setBlockState(new BlockPos(x + 8, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(14), 0);
+		world.setBlockState(new BlockPos(x + 8, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(14), 2);
+		world.setBlockState(new BlockPos(x + 8, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(14), 2);
+		world.setBlockState(new BlockPos(x + 8, y + 2, z + 8), Blocks.WOOL.getStateFromMeta(14), 2);
 		genStructure.setHullPlain(world, x + 8, y + 2, z + 9);
 		genStructure.setHullPlain(world, x + 8, y + 2, z + 10);
 		genStructure.setHullPlain(world, x + 8, y + 2, z + 11);
@@ -261,12 +261,12 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 9, y + 1, z + 10);
 		genStructure.setHullPlain(world, x + 9, y + 2, z + 3);
 		genStructure.setHullPlain(world, x + 9, y + 2, z + 4);
-		world.setBlockState(new BlockPos(x + 9, y + 2, z + 5), Blocks.WOOL.getStateFromMeta(14), 0);
-		world.setBlockState(new BlockPos(x + 9, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(8), 0);
-		world.setBlockState(new BlockPos(x + 9, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(14), 0);
+		world.setBlockState(new BlockPos(x + 9, y + 2, z + 5), Blocks.WOOL.getStateFromMeta(14), 2);
+		world.setBlockState(new BlockPos(x + 9, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(8), 2);
+		world.setBlockState(new BlockPos(x + 9, y + 2, z + 7), Blocks.WOOL.getStateFromMeta(14), 2);
 		genStructure.setHullPlain(world, x + 9, y + 2, z + 8);
 		genStructure.setHullPlain(world, x + 9, y + 2, z + 9);
-		world.setBlockState(new BlockPos(x + 9, y + 2, z + 10), Blocks.WOOL.getStateFromMeta(14), 0);
+		world.setBlockState(new BlockPos(x + 9, y + 2, z + 10), Blocks.WOOL.getStateFromMeta(14), 2);
 		genStructure.setHullPlain(world, x + 9, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 9, y + 3, z + 2);
 		genStructure.setHullPlain(world, x + 9, y + 3, z + 12);
@@ -276,7 +276,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 9, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 9, y + 6, z + 3);
 		if (!isCorrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 9, y + 6, z + 7), WarpDrive.blockAirGenerator.getDefaultState(), 0);
+			world.setBlockState(new BlockPos(x + 9, y + 6, z + 7), WarpDrive.blockAirGenerator.getDefaultState(), 2);
 		}
 		genStructure.setHullPlain(world, x + 9, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 4);
@@ -297,12 +297,12 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 10, y + 1, z + 10);
 		genStructure.setHullPlain(world, x + 10, y + 2, z + 3);
 		genStructure.setHullPlain(world, x + 10, y + 2, z + 4);
-		world.setBlockState(new BlockPos(x + 10, y + 2, z + 5), Blocks.WOOL.getStateFromMeta(8), 0);
-		world.setBlockState(new BlockPos(x + 10, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(8), 0);
+		world.setBlockState(new BlockPos(x + 10, y + 2, z + 5), Blocks.WOOL.getStateFromMeta(8), 2);
+		world.setBlockState(new BlockPos(x + 10, y + 2, z + 6), Blocks.WOOL.getStateFromMeta(8), 2);
 		genStructure.setHullPlain(world, x + 10, y + 2, z + 7);
 		genStructure.setHullPlain(world, x + 10, y + 2, z + 8);
-		world.setBlockState(new BlockPos(x + 10, y + 2, z + 9), Blocks.WOOL.getStateFromMeta(8), 0);
-		world.setBlockState(new BlockPos(x + 10, y + 2, z + 10), Blocks.WOOL.getStateFromMeta(14), 0);
+		world.setBlockState(new BlockPos(x + 10, y + 2, z + 9), Blocks.WOOL.getStateFromMeta(8), 2);
+		world.setBlockState(new BlockPos(x + 10, y + 2, z + 10), Blocks.WOOL.getStateFromMeta(14), 2);
 		genStructure.setHullPlain(world, x + 10, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 10, y + 3, z + 2);
 		genStructure.setHullPlain(world, x + 10, y + 3, z + 12);
@@ -343,7 +343,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 11, y + 2, z + 11);
 		genStructure.setHullPlain(world, x + 11, y + 3, z + 2);
 		genStructure.setHullPlain(world, x + 11, y + 3, z + 7);
-		world.setBlockState(new BlockPos(x + 11, y + 3, z + 9), Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE.getDefaultState(), 0);
+		world.setBlockState(new BlockPos(x + 11, y + 3, z + 9), Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE.getDefaultState(), 2);
 		genStructure.setHullPlain(world, x + 11, y + 3, z + 12);
 		genStructure.setHullGlass(world, x + 11, y + 4, z + 2);
 		if ((!isCorrupted || rand.nextBoolean()) && WarpDriveConfig.isComputerCraftLoaded) {
@@ -568,19 +568,19 @@ public class WorldGenSmallShip extends WorldGenerator {
 				final EntityVillager entityVillager = new EntityVillager(world, 0);
 				entityVillager.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
 				entityVillager.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(WarpDrive.itemWarpArmor[3], 1, 1));
-				world.spawnEntityInWorld(entityVillager);
+				world.spawnEntity(entityVillager);
 			}
 		} else if (world.rand.nextBoolean()) {// Zombies
 			for (int idx = 0; idx < countMobs; idx++) {
 				final EntityZombie entityZombie = new EntityZombie(world);
 				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
-				world.spawnEntityInWorld(entityZombie);
+				world.spawnEntity(entityZombie);
 			}
 		} else {// Zombie pigmen
 			for (int idx = 0; idx < countMobs; idx++) {
 				final EntityPigZombie entityZombie = new EntityPigZombie(world);
 				entityZombie.setLocationAndAngles(x + 0.5D, y, z + 0.5D, 0.0F, 0.0F);
-				world.spawnEntityInWorld(entityZombie);
+				world.spawnEntity(entityZombie);
 			}
 		}
 	}

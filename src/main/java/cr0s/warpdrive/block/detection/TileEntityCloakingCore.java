@@ -57,7 +57,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	private int maxZ = 0;
 	
 	private boolean isValid = false;
-	private String messageValidityIssues = "";
+	private ITextComponent messageValidityIssues = new TextComponentString("");
 	private boolean isCloaking = false;
 	private int volume = 0;
 	private int energyRequired = 0;
@@ -82,7 +82,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -101,7 +101,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			
 			isRefreshNeeded = validateAssembly();
 			
-			isCloaking = WarpDrive.cloaks.isAreaExists(worldObj, pos); 
+			isCloaking = WarpDrive.cloaks.isAreaExists(world, pos);
 			if (!isEnabled) {// disabled
 				if (isCloaking) {// disabled, cloaking => stop cloaking
 					if (WarpDriveConfig.LOGGING_CLOAKING) {
@@ -125,20 +125,20 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						isRefreshNeeded = true;
 						
 						// Register cloak
-						WarpDrive.cloaks.updateCloakedArea(worldObj,
-								worldObj.provider.getDimension(), pos, tier,
+						WarpDrive.cloaks.updateCloakedArea(world,
+								world.provider.getDimension(), pos, tier,
 								minX, minY, minZ, maxX, maxY, maxZ);
 						if (!soundPlayed) {
 							soundPlayed = true;
-							worldObj.playSound(null, pos, SoundEvents.CLOAK, SoundCategory.BLOCKS, 4F, 1F);
+							world.playSound(null, pos, SoundEvents.CLOAK, SoundCategory.BLOCKS, 4F, 1F);
 						}
 						
 						// Refresh the field
-						final CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, pos);
+						final CloakedArea area = WarpDrive.cloaks.getCloakedArea(world, pos);
 						if (area != null) {
 							area.sendCloakPacketToPlayersEx(false); // re-cloak field
 						} else {
-							WarpDrive.logger.error("getCloakedArea1 returned null for " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+							WarpDrive.logger.error("getCloakedArea1 returned null for " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 						}
 						
 					} else {// enabled, not cloaking and not able to
@@ -158,18 +158,18 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 					} else {// enabled, cloaking and valid
 						if (hasEnoughPower) {// enabled, cloaking and able to
 							if (isRefreshNeeded) {
-								WarpDrive.cloaks.updateCloakedArea(worldObj,
-										worldObj.provider.getDimension(), pos, tier,
+								WarpDrive.cloaks.updateCloakedArea(world,
+										world.provider.getDimension(), pos, tier,
 										minX, minY, minZ, maxX, maxY, maxZ);
 							}
 							
 							// IDLE
 							// Refresh the field (workaround to re-synchronize players since client may 'eat up' the packets)
-							final CloakedArea area = WarpDrive.cloaks.getCloakedArea(worldObj, pos);
+							final CloakedArea area = WarpDrive.cloaks.getCloakedArea(world, pos);
 							if (area != null) {
 								area.sendCloakPacketToPlayersEx(false); // re-cloak field
 							} else {
-								WarpDrive.logger.error("getCloakedArea2 returned null for " + worldObj + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+								WarpDrive.logger.error("getCloakedArea2 returned null for " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
 							}
 							setCoilsState(true);
 							
@@ -210,12 +210,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	private void setCoilState(final int distance, final EnumFacing direction, final boolean enabled) {
 		final BlockPos blockPos = pos.offset(direction);
-		final IBlockState blockState = worldObj.getBlockState(blockPos);
+		final IBlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockCloakingCoil)) {
 			if (distance == DISTANCE_INNER_COILS_BLOCKS) {
-				BlockCloakingCoil.setBlockState(worldObj, blockPos, enabled, false, EnumFacing.UP);
+				BlockCloakingCoil.setBlockState(world, blockPos, enabled, false, EnumFacing.UP);
 			} else {
-				BlockCloakingCoil.setBlockState(worldObj, blockPos, enabled, true, direction);
+				BlockCloakingCoil.setBlockState(world, blockPos, enabled, true, direction);
 			}
 		}
 	}
@@ -242,7 +242,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		for (final EnumFacing direction : EnumFacing.values()) {
 			if ( isValidInnerCoils[direction.ordinal()]
 			  && distanceOuterCoils_blocks[direction.ordinal()] > 0) {
-				PacketHandler.sendBeamPacketToPlayersInArea(worldObj,
+				PacketHandler.sendBeamPacketToPlayersInArea(world,
 				        new Vector3(
 				                   pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getFrontOffsetX(),
 				                   pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * direction.getFrontOffsetY(),
@@ -268,12 +268,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 				}
 				
 				// draw a random colored beam
-				final int mapIndex = worldObj.rand.nextInt(innerCoilColor_b.length);
+				final int mapIndex = world.rand.nextInt(innerCoilColor_b.length);
 				r = innerCoilColor_r[mapIndex];
 				g = innerCoilColor_g[mapIndex];
 				b = innerCoilColor_b[mapIndex];
 				
-				PacketHandler.sendBeamPacketToPlayersInArea(worldObj,
+				PacketHandler.sendBeamPacketToPlayersInArea(world,
 					new Vector3(
 						pos.getX() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getFrontOffsetX() + 0.2D * stop .getFrontOffsetX(),
 						pos.getY() + 0.5D + (DISTANCE_INNER_COILS_BLOCKS + 0.3D) * start.getFrontOffsetY() + 0.2D * stop .getFrontOffsetY(),
@@ -291,12 +291,12 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	public void disableCloakingField() {
 		setCoilsState(false);
-		if (WarpDrive.cloaks.isAreaExists(worldObj, pos)) {
-			WarpDrive.cloaks.removeCloakedArea(worldObj.provider.getDimension(), pos);
+		if (WarpDrive.cloaks.isAreaExists(world, pos)) {
+			WarpDrive.cloaks.removeCloakedArea(world.provider.getDimension(), pos);
 			
 			if (!soundPlayed) {
 				soundPlayed = true;
-				worldObj.playSound(null, pos, SoundEvents.DECLOAK, SoundCategory.BLOCKS, 4F, 1F);
+				world.playSound(null, pos, SoundEvents.DECLOAK, SoundCategory.BLOCKS, 4F, 1F);
 			}
 		}
 	}
@@ -309,7 +309,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
 					for (z = minZ; z <= maxZ; z++) {
-						if (!worldObj.isAirBlock(new BlockPos(x, y, z))) { // @TODO MC1.10 use mutableBlockPos
+						if (!world.isAirBlock(new BlockPos(x, y, z))) { // @TODO MC1.10 use mutableBlockPos
 							volume_new++;
 						} 
 					}
@@ -320,7 +320,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
 					for (z = minZ; z <= maxZ; z++) {
-						if (worldObj.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) { // @TODO MC1.10 use mutableBlockPos
+						if (world.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) { // @TODO MC1.10 use mutableBlockPos
 							volume_new++;
 						} 
 					}
@@ -366,7 +366,10 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			
 			// check validity of inner coil
 			BlockPos blockPos = new BlockPos(pos.offset(direction, DISTANCE_INNER_COILS_BLOCKS));
-			final boolean isInnerValid = (worldObj.getBlockState(blockPos) == WarpDrive.blockCloakingCoil);
+			final boolean isInnerValid = (world.getBlockState(blockPos).getBlock() == WarpDrive.blockCloakingCoil);
+			if (isInnerValid) {
+				BlockCloakingCoil.setBlockState(world, blockPos, true, false, direction);
+			}
 			
 			// whenever a change is detected, force a laser redraw 
 			if (isInnerValid != isValidInnerCoils[direction.ordinal()]) {
@@ -389,8 +392,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			for (int distance = DISTANCE_INNER_COILS_BLOCKS + 1; distance < maxOuterCoilDistance; distance++) {
 				blockPos = blockPos.offset(direction);
 				
-				if (worldObj.getBlockState(blockPos).getBlock() == WarpDrive.blockCloakingCoil) {
-					BlockCloakingCoil.setBlockState(worldObj, blockPos, true, true, direction);
+				if (world.getBlockState(blockPos).getBlock() == WarpDrive.blockCloakingCoil) {
+					BlockCloakingCoil.setBlockState(world, blockPos, true, true, direction);
 					newCoilDistance = distance;
 					break;
 				}
@@ -401,8 +404,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			if (newCoilDistance != oldCoilDistance) {
 				if (oldCoilDistance > 0) {
 					final BlockPos blockPosOld = pos.offset(direction, oldCoilDistance);
-					if (worldObj.getBlockState(blockPosOld).getBlock() == WarpDrive.blockCloakingCoil) {
-						BlockCloakingCoil.setBlockState(worldObj, blockPos, false, false, EnumFacing.UP);
+					if (world.getBlockState(blockPosOld).getBlock() == WarpDrive.blockCloakingCoil) {
+						BlockCloakingCoil.setBlockState(world, blockPos, false, false, EnumFacing.UP);
 					}
 				}
 				isRefreshNeeded = true;
@@ -424,15 +427,15 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		final float integrity = countIntegrity / 13.0F; 
 		if (messageInnerCoils.length() > 0 && messageOuterCoils.length() > 0) {
 			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missing_channeling_and_projecting_coils",
-					Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils).toString(); 
+					Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils).setStyle(Commons.styleWarning);
 		} else if (messageInnerCoils.length() > 0) {
 			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missing_channeling_coils",
-			        Math.round(100.0F * integrity), messageInnerCoils).toString();
+			        Math.round(100.0F * integrity), messageInnerCoils).setStyle(Commons.styleWarning);
 		} else if (messageOuterCoils.length() > 0) {
 			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missing_projecting_coils",
-					Math.round(100.0F * integrity), messageOuterCoils).toString();
+					Math.round(100.0F * integrity), messageOuterCoils).setStyle(Commons.styleWarning);
 		} else {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.valid").toString();
+			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.valid").setStyle(Commons.styleCorrect);
 		}
 		
 		// Update cloaking field parameters defined by coils
@@ -449,24 +452,28 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	@Override
 	public ITextComponent getStatusHeader() {
-		if (worldObj == null) {
+		if (world == null) {
 			return super.getStatusHeader();
 		}
 		
-		final String unlocalizedStatus;
+		final ITextComponent textStatus;
 		if (!isValid) {
-			unlocalizedStatus = messageValidityIssues;
+			textStatus = messageValidityIssues;
 		} else if (!isEnabled) {
-			unlocalizedStatus = "warpdrive.cloaking_core.disabled";
+			textStatus = new TextComponentTranslation("warpdrive.cloaking_core.disabled",
+					tier,
+					volume);
 		} else if (!isCloaking) {
-			unlocalizedStatus = "warpdrive.cloaking_core.low_power";
+			textStatus = new TextComponentTranslation("warpdrive.cloaking_core.low_power",
+					tier,
+					volume);
 		} else {
-			unlocalizedStatus = "warpdrive.cloaking_core.cloaking";
+			textStatus = new TextComponentTranslation("warpdrive.cloaking_core.cloaking",
+			                                                 tier,
+			                                                 volume);
 		}
 		return super.getStatusHeader()
-		    .appendSibling(new TextComponentString("\n")).appendSibling(new TextComponentTranslation(unlocalizedStatus,
-						tier,
-						volume));
+		    .appendSibling(new TextComponentString("\n")).appendSibling(textStatus);
 	}
 	
 	// Common OC/CC methods
@@ -489,7 +496,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	public Object[] isAssemblyValid() {
-		return new Object[] { isValid, Commons.removeFormatting(messageValidityIssues) };
+		return new Object[] { isValid, Commons.removeFormatting(messageValidityIssues.getUnformattedText()) };
 	}
 	
 	public Object[] enable(final Object[] arguments) {
@@ -502,26 +509,26 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] tier(final Context context, final Arguments arguments) {
 		return tier(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] isAssemblyValid(final Context context, final Arguments arguments) {
 		return isAssemblyValid();
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

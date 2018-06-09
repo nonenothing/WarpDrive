@@ -60,7 +60,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -70,7 +70,7 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			
 			// Switching mode
 			if (  computerMode == EnumLiftMode.DOWN
-			  || (computerMode == EnumLiftMode.REDSTONE && worldObj.isBlockIndirectlyGettingPowered(pos) > 0)) {
+			  || (computerMode == EnumLiftMode.REDSTONE && world.isBlockIndirectlyGettingPowered(pos) > 0)) {
 				mode = EnumLiftMode.DOWN;
 			} else {
 				mode = EnumLiftMode.UP;
@@ -82,17 +82,17 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			       && isPassableBlock(pos.getY() - 2);
 			isActive = isEnabled && isValid;
 			
-			IBlockState blockState = worldObj.getBlockState(pos);
+			IBlockState blockState = world.getBlockState(pos);
 			if (energy_getEnergyStored() < WarpDriveConfig.LIFT_ENERGY_PER_ENTITY || !isActive) {
 				mode = EnumLiftMode.INACTIVE;
 				if (blockState.getValue(BlockLift.MODE) != EnumLiftMode.INACTIVE) {
-					worldObj.setBlockState(pos, blockState.withProperty(BlockLift.MODE, EnumLiftMode.INACTIVE));
+					world.setBlockState(pos, blockState.withProperty(BlockLift.MODE, EnumLiftMode.INACTIVE));
 				}
 				return;
 			}
 			
 			if (blockState.getValue(BlockLift.MODE) != mode) {
-				worldObj.setBlockState(pos, blockState.withProperty(BlockLift.MODE, mode));
+				world.setBlockState(pos, blockState.withProperty(BlockLift.MODE, mode));
 			}
 			
 			// Launch a beam: search non-air blocks under lift
@@ -105,12 +105,12 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			
 			if (pos.getY() - firstUncoveredY >= 2) {
 				if (mode == EnumLiftMode.UP) {
-					PacketHandler.sendBeamPacket(worldObj,
+					PacketHandler.sendBeamPacket(world,
 							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
 							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							0f, 1f, 0f, 40, 0, 100);
 				} else if (mode == EnumLiftMode.DOWN) {
-					PacketHandler.sendBeamPacket(worldObj,
+					PacketHandler.sendBeamPacket(world,
 							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 0f,
 							0f, 1f, 40, 0, 100);
@@ -125,10 +125,10 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
 	private boolean isPassableBlock(int yPosition) {
 		final BlockPos blockPos = new BlockPos(pos.getX(), yPosition, pos.getZ());
-		final IBlockState blockState = worldObj.getBlockState(blockPos);
+		final IBlockState blockState = world.getBlockState(blockPos);
 		return blockState.getBlock() == Blocks.AIR
-			|| worldObj.isAirBlock(blockPos)
-			|| blockState.getCollisionBoundingBox(worldObj, blockPos) == null;
+			|| world.isAirBlock(blockPos)
+			|| blockState.getCollisionBoundingBox(world, blockPos) == null;
 	}
 	
 	private boolean liftEntity() {
@@ -143,16 +143,16 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			final AxisAlignedBB aabb = new AxisAlignedBB(
 					xMin, firstUncoveredY, zMin,
 					xMax, pos.getY(), zMax);
-			final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+			final List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			for (final Entity entity : list) {
 				if ( entity instanceof EntityLivingBase
 				  && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
 					entity.setPositionAndUpdate(pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D);
-					PacketHandler.sendBeamPacket(worldObj,
+					PacketHandler.sendBeamPacket(world,
 							new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D),
 							new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 							1F, 1F, 0F, 40, 0, 100);
-					worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
+					world.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
 					energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 					isTransferDone = true;
 				}
@@ -162,15 +162,15 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 			final AxisAlignedBB aabb = new AxisAlignedBB(
 					xMin, Math.min(firstUncoveredY + 4.0D, pos.getY()), zMin,
 					xMax, pos.getY() + 2.0D, zMax);
-			final List<Entity> list = worldObj.getEntitiesWithinAABBExcludingEntity(null, aabb);
+			final List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, aabb);
 			for (final Entity entity : list) {
 	  			if ( entity instanceof EntityLivingBase
             && energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, true)) {
             entity.setPositionAndUpdate(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D);
-            PacketHandler.sendBeamPacket(worldObj,
+            PacketHandler.sendBeamPacket(world,
 	  						new Vector3(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D),
 	  						new Vector3(pos.getX() + 0.5D, firstUncoveredY, pos.getZ() + 0.5D), 1F, 1F, 0F, 40, 0, 100);
-	  				worldObj.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
+	  				world.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.AMBIENT, 4.0F, 1.0F);
 	  				energy_consume(WarpDriveConfig.LIFT_ENERGY_PER_ENTITY, false);
 	  				isTransferDone = true;
 				}
@@ -261,13 +261,13 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] mode(final Context context, final Arguments arguments) {
 		return mode(
 			new Object[] {
@@ -277,14 +277,14 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	}
 	
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] state(final Context context, final Arguments arguments) {
 		return state();
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

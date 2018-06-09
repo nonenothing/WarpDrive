@@ -10,11 +10,11 @@
 		</shell>
 
 		<shell name="low_altitude" minThickness="4" maxThickness="6">
-			<filler weight="1" block="WarpDrive:blockGas" metadata="1" />
+			<filler weight="1" block="warpdrive:block_gas" metadata="1" />
 		</shell>
 
 		<shell name="atmosphere" minThickness="2" maxThickness="2">
-			<filler weight="1" block="WarpDrive:blockGas" metadata="1" />
+			<filler weight="1" block="warpdrive:block_gas" metadata="1" />
 		</shell>
 	</structure>
 
@@ -79,7 +79,7 @@
 			<filler weight="1" block="minecraft:air" />
 		</shell>
 		<shell name="atmosphere" minThickness="1" maxThickness="1"><!-- add stained glass for color -->
-			<filler weight="1" block="WarpDrive:blockGas" metadata="3" />
+			<filler weight="1" block="warpdrive:block_gas" metadata="3" />
 		</shell>
 	</structure>
 
@@ -293,14 +293,14 @@
 		<structure group="gascloud" name="bigCloud_%gasMetadata%" weight="1">
 			<metashell block="minecraft:glowstoneOff" minCount="10" maxCount="16" minRadius="5" relativeRadius="0.5" />
 			<shell name="mantle" minThickness="5" maxThickness="15">
-				<filler weight="1" block="WarpDrive:blockGas" metadata="%gasMetadata%" />
+				<filler weight="1" block="warpdrive:block_gas" metadata="%gasMetadata%" />
 			</shell>
 		</structure>
 
 		<structure group="gascloud" name="smallCloud_%gasMetadata%" weight="1">
 			<metashell block="minecraft:glowstoneOff" minCount="3" maxCount="7" minRadius="3" relativeRadius="0.5" />
 			<shell name="mantle" minThickness="2" maxThickness="8">
-				<filler weight="1" block="WarpDrive:blockGas" metadata="%gasMetadata%" />
+				<filler weight="1" block="warpdrive:block_gas" metadata="%gasMetadata%" />
 			</shell>
 		</structure>
 	</for>

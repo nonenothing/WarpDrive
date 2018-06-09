@@ -2,7 +2,7 @@ package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.data.Vector3;
 
-import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -23,7 +23,7 @@ public class EntityFXDot extends AbstractEntityFX {
 	                   final int age) {
 		super(world, v3Position.x, v3Position.y, v3Position.z, 0.0D, 0.0D, 0.0D);
 		this.setSize(0.02F, 0.02F);
-		this.isCollided = false;
+		this.canCollide = false;
 		this.motionX = v3Motion.x;
 		this.motionY = v3Motion.y;
 		this.motionZ = v3Motion.z;
@@ -58,7 +58,7 @@ public class EntityFXDot extends AbstractEntityFX {
 			setExpired();
 		}
 		
-		moveEntity(motionX, motionY, motionZ);
+		move(motionX, motionY, motionZ);
 		motionX = (motionX + v3Acceleration.x) * friction;
 		motionY = (motionY + v3Acceleration.y) * friction;
 		motionZ = (motionZ + v3Acceleration.z) * friction;
@@ -75,7 +75,7 @@ public class EntityFXDot extends AbstractEntityFX {
 	}
 	
 	@Override
-	public void renderParticle(final VertexBuffer vertexBuffer, final Entity entityIn, final float partialTick,
+	public void renderParticle(final BufferBuilder vertexBuffer, final Entity entityIn, final float partialTick,
 	                           final float rotationX, final float rotationZ, final float rotationYZ, final float rotationXY, final float rotationXZ) {
 		double minU = particleTextureIndexX / 16.0F;
 		double maxU = minU + 0.0624375F;
@@ -130,9 +130,9 @@ public class EntityFXDot extends AbstractEntityFX {
 		if (field_190014_F != 0.0F) {
 			final float angleSpin = field_190014_F + (field_190014_F - field_190015_G) * partialTick;
 			final float f9 = MathHelper.cos(angleSpin * 0.5F);
-			final float f10 = MathHelper.sin(angleSpin * 0.5F) * (float) field_190016_K.xCoord;
-			final float f11 = MathHelper.sin(angleSpin * 0.5F) * (float) field_190016_K.yCoord;
-			final float f12 = MathHelper.sin(angleSpin * 0.5F) * (float) field_190016_K.zCoord;
+			final float f10 = MathHelper.sin(angleSpin * 0.5F) * (float) field_190016_K.x;
+			final float f11 = MathHelper.sin(angleSpin * 0.5F) * (float) field_190016_K.y;
+			final float f12 = MathHelper.sin(angleSpin * 0.5F) * (float) field_190016_K.z;
 			final Vec3d vec3d = new Vec3d(f10, f11, f12);
 			
 			for (int l = 0; l < 4; ++l) {
@@ -143,9 +143,9 @@ public class EntityFXDot extends AbstractEntityFX {
 		}
 		/**/
 		
-		vertexBuffer.pos(x + vec3ds[0].xCoord, y + vec3ds[0].yCoord, z + vec3ds[0].zCoord).tex(maxU, maxV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
-		vertexBuffer.pos(x + vec3ds[1].xCoord, y + vec3ds[1].yCoord, z + vec3ds[1].zCoord).tex(maxU, minV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
-		vertexBuffer.pos(x + vec3ds[2].xCoord, y + vec3ds[2].yCoord, z + vec3ds[2].zCoord).tex(minU, minV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
-		vertexBuffer.pos(x + vec3ds[3].xCoord, y + vec3ds[3].yCoord, z + vec3ds[3].zCoord).tex(minU, maxV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(x + vec3ds[0].x, y + vec3ds[0].y, z + vec3ds[0].z).tex(maxU, maxV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(x + vec3ds[1].x, y + vec3ds[1].y, z + vec3ds[1].z).tex(maxU, minV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(x + vec3ds[2].x, y + vec3ds[2].y, z + vec3ds[2].z).tex(minU, minV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(x + vec3ds[3].x, y + vec3ds[3].y, z + vec3ds[3].z).tex(minU, maxV).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 	}
 }

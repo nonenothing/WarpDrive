@@ -72,7 +72,7 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 	@Override
 	public void addCollisionBoxToList(final IBlockState state, final @Nonnull World world, final @Nonnull BlockPos blockPos,
 	                                  final @Nonnull AxisAlignedBB entityBox, final @Nonnull List<AxisAlignedBB> collidingBoxes,
-	                                  final @Nullable Entity entity) {
+	                                  final @Nullable Entity entity, boolean isActualState) {
 		final MutableBlockPos mutableBlockPos = new MutableBlockPos(blockPos);
 		
 		// get direct connections

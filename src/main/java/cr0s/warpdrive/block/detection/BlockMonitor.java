@@ -8,7 +8,6 @@ import cr0s.warpdrive.data.CameraRegistryItem;
 import cr0s.warpdrive.render.ClientCameraHandler;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -17,18 +16,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class BlockMonitor extends BlockAbstractRotatingContainer {
 	
 	public BlockMonitor(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.detection.monitor");
-		GameRegistry.registerTileEntity(TileEntityMonitor.class, WarpDrive.PREFIX + registryName);
+		registerTileEntity(TileEntityMonitor.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 
 	@Nonnull
@@ -39,18 +37,21 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 
 	@Override
 	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand hand, @Nullable final ItemStack itemStackHeld,
-	                                final EnumFacing side, final float hitX, final float hitY, final float hitZ) {
+	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
+	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
 		// Monitor is only reacting client side
 		if (!world.isRemote) {
 			return false;
 		}
 		
-		if (hand != EnumHand.MAIN_HAND) {
+		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
 		
-		if (itemStackHeld == null) {
+		// get context
+		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
+		
+		if (itemStackHeld.isEmpty()) {
 			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			
 			if (tileEntity instanceof TileEntityMonitor) {

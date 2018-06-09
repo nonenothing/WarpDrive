@@ -40,7 +40,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	public void update() {
 		super.update();
 		
-		if (worldObj.isRemote) {
+		if (world.isRemote) {
 			return;
 		}
 		
@@ -49,24 +49,24 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 		}
 		
 		// Air generator works only in space & hyperspace
-		if (CelestialObjectManager.hasAtmosphere(worldObj, pos.getX(), pos.getZ())) {
-			final IBlockState blockState = worldObj.getBlockState(pos);
+		if (CelestialObjectManager.hasAtmosphere(world, pos.getX(), pos.getZ())) {
+			final IBlockState blockState = world.getBlockState(pos);
 			if (blockState.getValue(BlockProperties.ACTIVE)) {
-				worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
+				world.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 			}
 			return;
 		}
 		
 		cooldownTicks++;
 		if (cooldownTicks > WarpDriveConfig.BREATHING_AIR_GENERATION_TICKS) {
-			IBlockState blockState = worldObj.getBlockState(pos);
+			IBlockState blockState = world.getBlockState(pos);
 			if (isEnabled && energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], true)) {
 				if (!blockState.getValue(BlockProperties.ACTIVE)) {
-					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, true)); // set enabled texture
+					world.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, true)); // set enabled texture
 				}
 			} else {
 				if (blockState.getValue(BlockProperties.ACTIVE)) {
-					worldObj.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
+					world.setBlockState(pos, blockState.withProperty(BlockProperties.ACTIVE, false)); // set disabled texture
 				}
 			}
 			releaseAir(pos.north());
@@ -82,11 +82,11 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	}
 	
 	private void releaseAir(final BlockPos blockPos) {
-		final IBlockState blockState = worldObj.getBlockState(blockPos);
-		if (blockState.getBlock().isAir(blockState, worldObj, blockPos)) {// can be air
+		final IBlockState blockState = world.getBlockState(blockPos);
+		if (blockState.getBlock().isAir(blockState, world, blockPos)) {// can be air
 			final int energy_cost = (!blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0];
 			if (isEnabled && energy_consume(energy_cost, true)) {// enough energy and enabled
-				if (worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(START_CONCENTRATION_VALUE), 2)) {
+				if (world.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(START_CONCENTRATION_VALUE), 2)) {
 					// (needs to renew air or was not maxed out)
 					energy_consume(WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], false);
 				} else {
@@ -96,11 +96,11 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 				if (blockState.getBlock().isAssociatedBlock(WarpDrive.blockAir)) {
 					final int metadata = blockState.getBlock().getMetaFromState(blockState);
 					if (metadata > 4) {
-						worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(metadata - 4), 2);
+						world.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(metadata - 4), 2);
 					} else if (metadata > 1) {
-						worldObj.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(1), 2);
+						world.setBlockState(blockPos, WarpDrive.blockAir.getStateFromMeta(1), 2);
 					// } else {
-						// worldObj.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
+						// world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
 					}
 				}
 			}
@@ -134,7 +134,7 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	public String toString() {
 		return String.format("%s @ %s (%d %d %d)",
 			getClass().getSimpleName(),
-			worldObj == null ? "~NULL~" : worldObj.provider.getSaveFolder(),
+			world == null ? "~NULL~" : world.provider.getSaveFolder(),
 			pos.getX(), pos.getY(), pos.getZ());
 	}
 	
@@ -148,14 +148,14 @@ public class TileEntityAirGenerator extends TileEntityAbstractEnergy {
 	
 	// OpenComputer callback methods
 	@Callback
-	@Optional.Method(modid = "OpenComputers")
+	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
 		return enable(argumentsOCtoCC(arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
-	@Optional.Method(modid = "ComputerCraft")
+	@Optional.Method(modid = "computercraft")
 	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
 		final String methodName = getMethodName(method);
 		

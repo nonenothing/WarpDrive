@@ -38,12 +38,12 @@
 		<filler block="minecraft:redstone_ore" ratio=".02" />
 	</fillerSet>
 	<fillerSet group="overworld_commonOres" name="allButVanilla">
-		<filler block="IC2:blockOreTin" ratio=".05" mods="IC2,!ImmersiveEngineering" />
-		<filler block="IC2:blockOreCopper" ratio=".06" mods="IC2,!ImmersiveEngineering" />
-		<filler block="IC2:blockOreLead" ratio=".06" mods="IC2,!ImmersiveEngineering" />
-		<filler block="ImmersiveEngineering:ore" metadata="0" ratio=".05" mods="ImmersiveEngineering" /><!-- Copper -->
-		<filler block="ImmersiveEngineering:ore" metadata="1" ratio=".06" mods="ImmersiveEngineering" /><!-- Bauxite -->
-		<filler block="ImmersiveEngineering:ore" metadata="2" ratio=".06" mods="ImmersiveEngineering" /><!-- Lead -->
+		<filler block="ic2:resource" metadata="3" ratio=".05" mods="ic2,!immersiveengineering" /><!-- Tin -->
+		<filler block="ic2:resource" metadata="1" ratio=".06" mods="ic2,!immersiveengineering" /><!-- Copper -->
+		<filler block="ic2:resource" metadata="2" ratio=".06" mods="ic2,!immersiveengineering" /><!-- Lead -->
+		<filler block="immersiveengineering:ore" metadata="0" ratio=".05" mods="immersiveengineering" /><!-- Copper -->
+		<filler block="immersiveengineering:ore" metadata="1" ratio=".06" mods="immersiveengineering" /><!-- Bauxite -->
+		<filler block="immersiveengineering:ore" metadata="2" ratio=".06" mods="immersiveengineering" /><!-- Lead -->
 		<filler block="arsmagica2:vinteumOre" metadata="0" ratio=".001" mods="arsmagica2" /><!-- Vinteum -->
 		<filler block="icbm:sulfur_ore" ratio=".001" /><!-- to be confirmed -->
 	</fillerSet>
@@ -76,9 +76,9 @@
 		<filler block="minecraft:lapis_ore" ratio=".005" />
 	</fillerSet>
 	<fillerSet group="overworld_uncommonOres" name="allButVanilla">
-		<filler block="IC2:blockOreUran" ratio=".005" mods="IC2,!netherores" />
-		<filler block="ImmersiveEngineering:ore" metadata="3" ratio=".03" mods="ImmersiveEngineering" /><!-- Silver -->
-		<filler block="ImmersiveEngineering:ore" metadata="4" ratio=".02" mods="ImmersiveEngineering" /><!-- Nickel -->
+		<filler block="ic2:resource" metadata="4" ratio=".005" mods="ic2,!netherores" /><!-- Uranium -->
+		<filler block="immersiveengineering:ore" metadata="3" ratio=".03" mods="immersiveengineering" /><!-- Silver -->
+		<filler block="immersiveengineering:ore" metadata="4" ratio=".02" mods="immersiveengineering" /><!-- Nickel -->
 		<filler block="arsmagica2:vinteumOre" metadata="1" ratio=".01" mods="arsmagica2" /><!-- Chimerite -->
 	</fillerSet>
 	
@@ -104,7 +104,7 @@
 		<filler block="minecraft:emerald_ore" ratio=".001" />
 	</fillerSet>
 	<fillerSet group="overworld_rareOres" name="allButVanilla">
-		<filler block="IC2:blockOreUran" ratio=".03" mods="IC2,!netherores" />
+		<filler block="ic2:resource" metadata="4" ratio=".03" mods="ic2,!netherores" />
 		<filler block="arsmagica2:vinteumOre" metadata="2" ratio=".01" mods="arsmagica2" /><!-- Blue topaz -->
 	</fillerSet>
 	
@@ -135,7 +135,7 @@
 	<fillerSet group="end_ores" name="endstone">
 		<filler block="arsmagica2:vinteumOre" metadata="3" ratio=".001" mods="arsmagica2" /><!-- Moonstone -->
 		<filler block="ae2:quartz" ratio=".0013" mods="appliedenergistics2" />
-		<filler block="WarpDrive:blockIridium" ratio=".0001" mods="!netherores" />
+		<filler block="warpdrive:block_iridium" ratio=".0001" mods="!netherores" />
 	</fillerSet>
 	
 	
@@ -209,7 +209,7 @@
 	<!-- WarpDrive gases -->
 	<for variable="gasMetadata" in="0,1,2,3,4,5,6,7,8,9,10,11">
 		<fillerSet group="gas" name="wd_%gasMetadata%" weight="1">
-			<filler block="WarpDrive:blockGas" metadata="%gasMetadata%" weight="100" />
+			<filler block="warpdrive:block_gas" metadata="%gasMetadata%" weight="100" />
 		</fillerSet>
 	</for>
 	
@@ -223,23 +223,23 @@
 			<filler block="minecraft:stained_glass" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_plain" name="basic_%colorMetadata%" weight="40">
-			<filler block="WarpDrive:blockHull1_plain" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:block_hull1_plain" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_glass" name="basic_%colorMetadata%" weight="40">
-			<filler block="WarpDrive:blockHull1_glass" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:block_hull1_glass" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_plain" name="advanced_%colorMetadata%" weight="10">
-			<filler block="WarpDrive:blockHull2_plain" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:block_hull2_plain" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 		<fillerSet group="hull_glass" name="advanced_%colorMetadata%" weight="10">
-			<filler block="WarpDrive:blockHull2_glass" metadata="%colorMetadata%" weight="100" />
+			<filler block="warpdrive:block_hull2_glass" metadata="%colorMetadata%" weight="100" />
 		</fillerSet>
 	</for>
-	<fillerSet group="hull_plain" name="ic2" weight="1" mods="IC2">
-		<filler block="IC2:blockAlloy" metadata="0" weight="100" />
+	<fillerSet group="hull_plain" name="ic2" weight="1" mods="ic2">
+		<filler block="ic2:resource" metadata="11" weight="100" />
 	</fillerSet>
-	<fillerSet group="hull_glass" name="ic2" weight="1" mods="IC2">
-		<filler block="IC2:blockAlloyGlass" metadata="0" weight="100" />
+	<fillerSet group="hull_glass" name="ic2" weight="1" mods="ic2">
+		<filler block="ic2:glass" metadata="0" weight="100" />
 	</fillerSet>
 	
 	
@@ -248,13 +248,14 @@
 		<filler block="AdvancedSolarPanel:BlockAdvSolarPanel" nbt="{facing:5}" metadata="0" weight="200" />
 		<filler block="AdvancedSolarPanel:BlockAdvSolarPanel" nbt="{facing:5}" metadata="1" weight="100" />
 	</fillerSet>
-	<fillerSet group="ship_solarPanel" name="ic2" weight="10" mods="IC2">
-		<filler block="IC2:blockGenerator" metadata="3" nbt="{facing:5}" weight="100" />
+	<fillerSet group="ship_solarPanel" name="ic2" weight="10" mods="ic2">
+		<filler block="ic2:te" metadata="3" nbt="{facing:5,id:&quot;ic2:solar_generator&quot;}" weight="100" />
 	</fillerSet>
-	<fillerSet group="ship_solarPanel" name="enderIO" weight="10" mods="EnderIO,ThermalDynamics">
-		<filler block="EnderIO:blockSolarPanel" metadata="0" weight="100" />
+	<fillerSet group="ship_solarPanel" name="enderio" weight="10" mods="enderio,thermaldynamics">
+		<filler block="enderio:block_solar_panel" metadata="0" weight="100" />
+		<filler block="enderio:block_solar_panel" metadata="1" weight="50" />
 	</fillerSet>
-	<fillerSet group="ship_solarPanel" name="vanilla" weight="1" mods="!IC2,!EnderIO,!ThermalDynamics">
+	<fillerSet group="ship_solarPanel" name="vanilla" weight="1" mods="!ic2,!enderio,!thermaldynamics">
 		<filler block="minecraft:daylight_detector" weight="100" />
 	</fillerSet>
 	
@@ -263,18 +264,18 @@
 	<fillerSet group="ship_wiring" name="advancedSolarPanel" weight="10" mods="AdvancedSolarPanel">
 		<import group="ship_wiring" name="ic2" />
 	</fillerSet>
-	<fillerSet group="ship_wiring" name="ic2" weight="10" mods="IC2">
-		<filler block="IC2:blockCable" metadata="0" weight="100" /><!-- Insulated copper cable -->
-		<filler block="IC2:blockCable" metadata="3" weight="100" /><!-- Insulated gold cable -->
-		<filler block="IC2:blockCable" metadata="6" weight="100" /><!-- Glass fiber cable -->
-		<filler block="IC2:blockCable" metadata="9" weight="100" /><!-- Insulated tin cable -->
+	<fillerSet group="ship_wiring" name="ic2" weight="10" mods="ic2">
+		<filler block="ic2:cable" nbt="{type:0b,insulation:1b}" metadata="0" weight="100" /><!-- Insulated copper cable -->
+		<filler block="ic2:cable" nbt="{type:2b,insulation:1b}" metadata="3" weight="100" /><!-- Insulated gold cable -->
+		<filler block="ic2:cable" nbt="{type:1b,insulation:0b}" metadata="6" weight="100" /><!-- Glass fiber cable -->
+		<filler block="ic2:cable" nbt="{type:4b,insulation:1b}" metadata="9" weight="100" /><!-- Insulated tin cable -->
 	</fillerSet>
-	<fillerSet group="ship_wiring" name="enderIO" weight="5" mods="EnderIO,ThermalDynamics">
-		<filler block="ThermalDynamics:ThermalDynamics_0" metadata="0" weight="100" /><!-- Leadstone Fluxduct -->
-		<filler block="ThermalDynamics:ThermalDynamics_0" metadata="1" weight="40" /><!-- Hardened Fluxduct -->
-		<filler block="ThermalDynamics:ThermalDynamics_0" metadata="2" weight="10" /><!-- Readstone Energy Fluxduct -->
+	<fillerSet group="ship_wiring" name="enderio" weight="5" mods="enderio,thermaldynamics">
+		<filler block="thermaldynamics:ThermalDynamics_0" metadata="0" weight="100" /><!-- Leadstone Fluxduct -->
+		<filler block="thermaldynamics:ThermalDynamics_0" metadata="1" weight="40" /><!-- Hardened Fluxduct -->
+		<filler block="thermaldynamics:ThermalDynamics_0" metadata="2" weight="10" /><!-- Redstone Energy Fluxduct -->
 	</fillerSet>
-	<fillerSet group="ship_wiring" name="vanilla" weight="5" mods="!IC2,!EnderIO,!ThermalDynamics">
+	<fillerSet group="ship_wiring" name="vanilla" weight="5" mods="!ic2,!enderio,!thermaldynamics">
 		<filler block="minecraft:fence" weight="100" />
 	</fillerSet>
 
@@ -337,7 +338,7 @@
 	</fillerSet>
 	<fillerSet group="moon.core" name="iriquartz" weight="1">
 		<filler block="minecraft:quartz_block" metadata="0" weight="100" />
-		<filler block="WarpDrive:blockIridium" ratio="0.001" />
+		<filler block="warpdrive:block_iridium" ratio="0.001" />
 	</fillerSet>
 	<fillerSet group="moon.core" name="iroquartz" weight="1">
 		<filler block="minecraft:quartz_block" metadata="2" weight="33" />

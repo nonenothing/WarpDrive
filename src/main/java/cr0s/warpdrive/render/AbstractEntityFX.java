@@ -28,7 +28,7 @@ public abstract class AbstractEntityFX extends Particle {
 	
 	// return private properties
 	public World getWorld() {
-		return worldObj;
+		return world;
 	}
 	
 	public double getX() {

@@ -26,7 +26,7 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 	public static void register() {
 		try {
 			classTileEntityIEBase = Class.forName("blusunrize.immersiveengineering.common.blocks.TileEntityIEBase");
-			WarpDriveConfig.registerBlockTransformer("ImmersiveEngineering", new CompatImmersiveEngineering());
+			WarpDriveConfig.registerBlockTransformer("immersiveengineering", new CompatImmersiveEngineering());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
 		}
@@ -43,7 +43,7 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 	}
 	
 	@Override
-	@Optional.Method(modid = "ImmersiveEngineering")
+	@Optional.Method(modid = "immersiveengineering")
 	public NBTBase saveExternals(final World world, final int x, final int y, final int z, final Block block, final int blockMeta, final TileEntity tileEntity) {
 		if (tileEntity instanceof IImmersiveConnectable) {
 			final BlockPos node = tileEntity.getPos();
@@ -91,7 +91,7 @@ public class CompatImmersiveEngineering implements IBlockTransformer {
 	}
 	
 	@Override
-	@Optional.Method(modid = "ImmersiveEngineering")
+	@Optional.Method(modid = "immersiveengineering")
 	public void restoreExternals(final World world, final int x, final int y, final int z,
 	                             final Block block, final int blockMeta, final TileEntity tileEntity,
 	                             final ITransformation transformation, final NBTBase nbtBase) {

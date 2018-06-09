@@ -13,7 +13,6 @@ import mcp.MethodsReturnNonnullByDefault;
 import javax.annotation.Nonnull;
 
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -26,7 +25,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 public class CommandGenerate extends CommandBase {
 	
 	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "generate";
 	}
 	
@@ -36,12 +35,12 @@ public class CommandGenerate extends CommandBase {
 	}
 	
 	@Override
-	public String getCommandUsage(@Nonnull final ICommandSender commandSender) {
-		return "/" + getCommandName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
+		return "/" + getName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
 	}
 	
 	@Override
-	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) throws CommandException {
+	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		final World world = commandSender.getEntityWorld();
 		BlockPos blockPos = commandSender.getPosition();
 		
@@ -52,7 +51,7 @@ public class CommandGenerate extends CommandBase {
 		}
 		
 		if (args.length <= 0 || args.length == 3 || args.length > 5) {
-			Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+			Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 			return;
 		}
 		
@@ -114,7 +113,7 @@ public class CommandGenerate extends CommandBase {
 					}
 					break;
 				default:
-					Commons.addChatMessage(commandSender, new TextComponentString(getCommandUsage(commandSender)));
+					Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 					break;
 			}
 		}
