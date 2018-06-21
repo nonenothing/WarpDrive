@@ -334,8 +334,19 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private void state_energizing() {
+		// load remote world
+		final WorldServer worldRemote = Commons.getOrCreateWorldServer(globalPositionRemote.dimensionId);
+		if (worldRemote == null) {
+			WarpDrive.logger.error(String.format("Unable to initialize dimension %d for %s",
+			                                     globalPositionRemote.dimensionId,
+			                                     this));
+			isJammed = true;
+			reasonJammed = String.format("Unable to initialize dimension %d", globalPositionRemote.dimensionId);
+			return;
+		}
+		
 		// get entities
-		final EntityValues entityValues = updateEntitiesToEnergize();
+		final EntityValues entityValues = updateEntitiesToEnergize(worldRemote);
 		
 		// post event on first tick
 		if (tickEnergizing == WarpDriveConfig.TRANSPORTER_ENERGIZING_CHARGING_TICKS) {
@@ -360,9 +371,9 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		// transfer at final tick
 		if ( vRemoteScanners == null
 		  || vRemoteScanners.isEmpty() ) {
-			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, globalPositionRemote.getVectorI());
+			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldRemote, globalPositionRemote.getVectorI());
 		} else {
-			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldObj, vRemoteScanners);
+			energizeEntities(lockStrengthActual, movingEntitiesLocal, worldRemote, vRemoteScanners);
 		}
 		if ( vLocalScanners != null
 		  && !vLocalScanners.isEmpty() ) {
@@ -814,7 +825,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		vRemoteScanners = focusValuesRemote.vScanners;
 		
 		// update entities in range
-		final EntityValues entityValues = updateEntitiesToEnergize();
+		final EntityValues entityValues = updateEntitiesToEnergize(worldRemote);
 		
 		// compute energy cost from range
 		energyCostForAcquiring = Math.max(0, WarpDriveConfig.TRANSPORTER_LOCKING_ENERGY_FACTORS[0]
@@ -1138,7 +1149,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 	}
 	
-	private EntityValues updateEntitiesToEnergize() {
+	private EntityValues updateEntitiesToEnergize(final WorldServer worldRemote) {
 		final int countLocalScanners = vLocalScanners == null ? 0 : vLocalScanners.size();
 		final int countScanners = vRemoteScanners == null ? countLocalScanners : Math.min(countLocalScanners, vRemoteScanners.size());
 		
@@ -1156,7 +1167,6 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		final EntityValues entityValuesLocal = updateEntitiesOnScanners(worldObj, vLocalScanners, countScanners, movingEntitiesLocal);
 		
 		// collect all candidates at remote location
-		final World worldRemote = Commons.getOrCreateWorldServer(globalPositionRemote.dimensionId);
 		final EntityValues entityValuesRemote;
 		if (vRemoteScanners != null) {
 			entityValuesRemote = updateEntitiesOnScanners(worldRemote, vRemoteScanners, countScanners, movingEntitiesRemote);
@@ -1285,7 +1295,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private static Entity getCandidateEntityOnScanner(final World world, final VectorI vScanner, final HashSet<Entity> entitiesOnScanners) {
-		if (vScanner == null) {
+		if ( vScanner == null
+		  || world == null ) {
 			return null;
 		}
 		
@@ -1343,6 +1354,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	private static LinkedHashSet<Entity> getCandidateEntitiesInArea(final World world, final GlobalPosition globalPosition) {
+		if (world == null) {
+			return new LinkedHashSet<>(0);
+		}
+		
 		final AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(
 			globalPosition.x - WarpDriveConfig.TRANSPORTER_ENTITY_GRAB_RADIUS_BLOCKS,
 			globalPosition.y - 1.0D,
