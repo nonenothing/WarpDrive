@@ -234,6 +234,7 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 			tagCompound.setLong("uuidLeast", uuidTransporterCore.getLeastSignificantBits());
 		}
 		
+		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setInteger("tickDeploying", tickDeploying);
 	}
 	
@@ -248,6 +249,7 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 			nameTransporterCore = "";
 		}
 		
+		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 		tickDeploying = tagCompound.getInteger("tickDeploying");
 	}
 	
