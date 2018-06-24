@@ -164,11 +164,7 @@ public class JumpSequencer extends AbstractSequencer {
 		isEnabled = true;
 		register();
 	}
-
-	@Deprecated
-	public void disableAndMessage(final String message) {
-		disableAndMessage(new TextComponentString(message));
-	}
+	
 	public void disableAndMessage(final ITextComponent textComponent) {
 		disable(textComponent);
 		ship.messageToAllPlayersOnShip(textComponent);
@@ -208,8 +204,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (ship.minY < 0 || ship.maxY > 255) {
 			final TextComponentBase msg = new TextComponentString("Invalid Y coordinate(s), check ship dimensions...");
-			ship.messageToAllPlayersOnShip(msg);
-			disable(msg);
+			disableAndMessage(msg);
 			return true;
 		}
 		
@@ -331,8 +326,7 @@ public class JumpSequencer extends AbstractSequencer {
 			
 		default:
 			final TextComponentBase msg = new TextComponentString("Invalid state, aborting jump...");
-			ship.messageToAllPlayersOnShip(msg);
-			disable(msg);
+			disableAndMessage(msg);
 			return true;
 		}
 		return true;
@@ -455,8 +449,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!forceSourceChunks(reason)) {
 			final TextComponentBase msg = new TextComponentString(reason.toString());
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -474,8 +467,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!ship.save(reason)) {
 			final ITextComponent msg = new TextComponentString(reason.toString());
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -494,8 +486,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!ship.checkBorders(reason)) {
 			final ITextComponent msg = new TextComponentString(reason.toString());
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -571,8 +562,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final boolean isTargetWorldFound = computeTargetWorld(celestialObjectSource, shipMovementType, reason);
 			if (!isTargetWorldFound) {
 				LocalProfiler.stop();
-				ship.messageToAllPlayersOnShip(new TextComponentString(reason.toString()));
-				disable(new TextComponentString(reason.toString()));
+				disableAndMessage(new TextComponentString(reason.toString()));
 				return;
 			}
 		}
@@ -585,8 +575,7 @@ public class JumpSequencer extends AbstractSequencer {
 				LocalProfiler.stop();
 				final ITextComponent message = new TextComponentString(String.format("Ship is too big for a planet (max is %d blocks while ship is %d blocks)",
 				                                 WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE, ship.actualMass));
-				ship.messageToAllPlayersOnShip(message);
-				disable(message);
+				disableAndMessage(message);
 				return;
 			}
 		}
@@ -710,8 +699,7 @@ public class JumpSequencer extends AbstractSequencer {
 						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
 						(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ );
 					LocalProfiler.stop();
-					ship.messageToAllPlayersOnShip(message);
-					disable(message);
+					disableAndMessage(message);
 					return;
 				}
 			}
@@ -720,8 +708,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final CheckMovementResult checkMovementResult = checkCollisionAndProtection(transformation, true, "target");
 			if (checkMovementResult != null) {
 				final TextComponentBase msg = new TextComponentString(checkMovementResult.reason + "\nJump aborted!");
-				disable(msg);
-				ship.messageToAllPlayersOnShip(msg);
+				disableAndMessage(msg);
 				LocalProfiler.stop();
 				return;
 			}
@@ -740,8 +727,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!forceTargetChunks(reason)) {
 			final ITextComponent msg = new TextComponentString(reason.toString());
-			disable(msg);
-			ship.messageToAllPlayersOnShip(msg);
+			disableAndMessage(msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -762,8 +748,7 @@ public class JumpSequencer extends AbstractSequencer {
 			  && shipMovementType != EnumShipMovementType.RESTORE ) {
 				if (!ship.saveEntities(reason)) {
 					final ITextComponent msg = new TextComponentString(reason.toString());
-					disable(msg);
-					ship.messageToAllPlayersOnShip(msg);
+					disableAndMessage(msg);
 					LocalProfiler.stop();
 					return;
 				}
@@ -1147,7 +1132,7 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 						
 						final BlockPos target = transformation.apply(jumpBlock.x, jumpBlock.y, jumpBlock.z);
-						final TileEntity newTileEntity = jumpBlock.weakTileEntity == null ? null : targetWorld.getTileEntity(target);;
+						final TileEntity newTileEntity = jumpBlock.weakTileEntity == null ? null : targetWorld.getTileEntity(target);
 						blockTransformer.restoreExternals(targetWorld, target.getX(), target.getY(), target.getZ(),
 						                                  jumpBlock.block, jumpBlock.blockMeta, newTileEntity, transformation, external.getValue());
 					}
@@ -1270,7 +1255,7 @@ public class JumpSequencer extends AbstractSequencer {
 	@SuppressWarnings("unchecked")
 	protected void state_finishing() {
 		LocalProfiler.start("Jump.finishing()");
-		// FIXME TileEntity duplication workaround
+		
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Jump done in " + ((System.currentTimeMillis() - msCounter) / 1000F) + " seconds and " + ticks + " ticks");
 		}
@@ -1285,8 +1270,6 @@ public class JumpSequencer extends AbstractSequencer {
 				exception.printStackTrace();
 			}
 		}
-		
-		
 		
 		doCollisionDamage(true);
 		
@@ -1614,9 +1597,7 @@ public class JumpSequencer extends AbstractSequencer {
 			}
 		});
 		s.addAll(l);
-		List<TileEntity> listTileEntities = new ArrayList<>();
-		listTileEntities.addAll(s);
-		return listTileEntities;
+		return new ArrayList<>(s);
 	}
 	
 	@Override

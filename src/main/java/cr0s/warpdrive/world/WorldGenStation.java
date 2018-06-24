@@ -1,6 +1,6 @@
 package cr0s.warpdrive.world;
 
-
+import javax.annotation.Nonnull;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
@@ -16,13 +16,13 @@ public class WorldGenStation extends WorldGenerator {
 	}
 
 	@Override
-	public boolean generate(final World world, final Random rand, final BlockPos blockPos) {
+	public boolean generate(@Nonnull final World world, @Nonnull final Random rand, @Nonnull final BlockPos blockPos) {
+		final WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
 		final int x = blockPos.getX();
 		final int y = blockPos.getY();
 		final int z = blockPos.getZ();
-		final WorldGenStructure genStructure = new WorldGenStructure(corrupted, rand);
-		genStructure.setHullPlain(world, x + 1, y + 0, z + 3);
-		genStructure.setHullPlain(world, x + 1, y + 0, z + 12);
+		genStructure.setHullPlain(world, x + 1, y    , z + 3);
+		genStructure.setHullPlain(world, x + 1, y    , z + 12);
 		genStructure.setHullPlain(world, x + 1, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 1, y + 1, z + 12);
 		genStructure.setHullPlain(world, x + 1, y + 2, z + 3);
@@ -67,11 +67,11 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 1, y + 6, z + 12);
 		genStructure.setHullPlain(world, x + 1, y + 7, z + 3);
 		genStructure.setHullPlain(world, x + 1, y + 7, z + 12);
-		genStructure.setHullPlain(world, x + 2, y + 0, z + 2);
-		genStructure.setHullPlain(world, x + 2, y + 0, z + 3);
-		genStructure.setHullPlain(world, x + 2, y + 0, z + 4);
-		genStructure.setHullPlain(world, x + 2, y + 0, z + 12);
-		genStructure.setHullPlain(world, x + 2, y + 0, z + 13);
+		genStructure.setHullPlain(world, x + 2, y    , z + 2);
+		genStructure.setHullPlain(world, x + 2, y    , z + 3);
+		genStructure.setHullPlain(world, x + 2, y    , z + 4);
+		genStructure.setHullPlain(world, x + 2, y    , z + 12);
+		genStructure.setHullPlain(world, x + 2, y    , z + 13);
 		genStructure.setHullPlain(world, x + 2, y + 1, z + 2);
 		genStructure.setHullPlain(world, x + 2, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 2, y + 1, z + 4);
@@ -116,10 +116,10 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 2, y + 7, z + 11);
 		genStructure.setHullPlain(world, x + 2, y + 7, z + 12);
 		genStructure.setHullPlain(world, x + 2, y + 7, z + 13);
-		genStructure.setHullPlain(world, x + 3, y + 0, z + 4);
-		genStructure.setHullPlain(world, x + 3, y + 0, z + 5);
-		genStructure.setHullPlain(world, x + 3, y + 0, z + 11);
-		genStructure.setHullPlain(world, x + 3, y + 0, z + 12);
+		genStructure.setHullPlain(world, x + 3, y    , z + 4);
+		genStructure.setHullPlain(world, x + 3, y    , z + 5);
+		genStructure.setHullPlain(world, x + 3, y    , z + 11);
+		genStructure.setHullPlain(world, x + 3, y    , z + 12);
 		genStructure.setHullPlain(world, x + 3, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 3, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 3, y + 1, z + 5);
@@ -169,10 +169,10 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 3, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 3, y + 8, z + 4);
 		genStructure.setHullPlain(world, x + 3, y + 8, z + 12);
-		genStructure.setHullPlain(world, x + 4, y + 0, z + 5);
-		genStructure.setHullPlain(world, x + 4, y + 0, z + 6);
-		genStructure.setHullPlain(world, x + 4, y + 0, z + 10);
-		genStructure.setHullPlain(world, x + 4, y + 0, z + 11);
+		genStructure.setHullPlain(world, x + 4, y    , z + 5);
+		genStructure.setHullPlain(world, x + 4, y    , z + 6);
+		genStructure.setHullPlain(world, x + 4, y    , z + 10);
+		genStructure.setHullPlain(world, x + 4, y    , z + 11);
 		genStructure.setHullPlain(world, x + 4, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 4, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 4, y + 1, z + 5);
@@ -220,10 +220,10 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 4, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 4, y + 8, z + 5);
 		genStructure.setHullPlain(world, x + 4, y + 8, z + 11);
-		genStructure.setHullPlain(world, x + 5, y + 0, z + 6);
-		genStructure.setHullPlain(world, x + 5, y + 0, z + 7);
-		genStructure.setHullPlain(world, x + 5, y + 0, z + 9);
-		genStructure.setHullPlain(world, x + 5, y + 0, z + 10);
+		genStructure.setHullPlain(world, x + 5, y    , z + 6);
+		genStructure.setHullPlain(world, x + 5, y    , z + 7);
+		genStructure.setHullPlain(world, x + 5, y    , z + 9);
+		genStructure.setHullPlain(world, x + 5, y    , z + 10);
 		genStructure.setHullPlain(world, x + 5, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 5, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 5, y + 1, z + 5);
@@ -270,8 +270,8 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 5, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 5, y + 8, z + 9);
 		genStructure.setHullPlain(world, x + 5, y + 8, z + 10);
-		genStructure.setHullPlain(world, x + 6, y + 0, z + 7);
-		genStructure.setHullPlain(world, x + 6, y + 0, z + 8);
+		genStructure.setHullPlain(world, x + 6, y    , z + 7);
+		genStructure.setHullPlain(world, x + 6, y    , z + 8);
 		genStructure.setHullPlain(world, x + 6, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 6, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 6, y + 1, z + 5);
@@ -319,9 +319,9 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 6, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 6, y + 8, z + 7);
 		genStructure.setHullPlain(world, x + 6, y + 8, z + 10);
-		genStructure.setHullPlain(world, x + 7, y + 0, z + 7);
-		genStructure.setHullPlain(world, x + 7, y + 0, z + 8);
-		genStructure.setHullPlain(world, x + 7, y + 0, z + 9);
+		genStructure.setHullPlain(world, x + 7, y    , z + 7);
+		genStructure.setHullPlain(world, x + 7, y    , z + 8);
+		genStructure.setHullPlain(world, x + 7, y    , z + 9);
 		genStructure.setHullPlain(world, x + 7, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 7, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 7, y + 1, z + 5);
@@ -369,10 +369,10 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 7, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 7, y + 8, z + 5);
 		genStructure.setHullPlain(world, x + 7, y + 8, z + 8);
-		genStructure.setHullPlain(world, x + 8, y + 0, z + 6);
-		genStructure.setHullPlain(world, x + 8, y + 0, z + 7);
-		genStructure.setHullPlain(world, x + 8, y + 0, z + 9);
-		genStructure.setHullPlain(world, x + 8, y + 0, z + 10);
+		genStructure.setHullPlain(world, x + 8, y    , z + 6);
+		genStructure.setHullPlain(world, x + 8, y    , z + 7);
+		genStructure.setHullPlain(world, x + 8, y    , z + 9);
+		genStructure.setHullPlain(world, x + 8, y    , z + 10);
 		genStructure.setHullPlain(world, x + 8, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 8, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 8, y + 1, z + 5);
@@ -419,10 +419,10 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 8, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 8, y + 8, z + 5);
 		genStructure.setHullPlain(world, x + 8, y + 8, z + 6);
-		genStructure.setHullPlain(world, x + 9, y + 0, z + 5);
-		genStructure.setHullPlain(world, x + 9, y + 0, z + 6);
-		genStructure.setHullPlain(world, x + 9, y + 0, z + 10);
-		genStructure.setHullPlain(world, x + 9, y + 0, z + 11);
+		genStructure.setHullPlain(world, x + 9, y    , z + 5);
+		genStructure.setHullPlain(world, x + 9, y    , z + 6);
+		genStructure.setHullPlain(world, x + 9, y    , z + 10);
+		genStructure.setHullPlain(world, x + 9, y    , z + 11);
 		genStructure.setHullPlain(world, x + 9, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 9, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 9, y + 1, z + 5);
@@ -470,10 +470,10 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 9, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 9, y + 8, z + 4);
 		genStructure.setHullPlain(world, x + 9, y + 8, z + 10);
-		genStructure.setHullPlain(world, x + 10, y + 0, z + 4);
-		genStructure.setHullPlain(world, x + 10, y + 0, z + 5);
-		genStructure.setHullPlain(world, x + 10, y + 0, z + 11);
-		genStructure.setHullPlain(world, x + 10, y + 0, z + 12);
+		genStructure.setHullPlain(world, x + 10, y    , z + 4);
+		genStructure.setHullPlain(world, x + 10, y    , z + 5);
+		genStructure.setHullPlain(world, x + 10, y    , z + 11);
+		genStructure.setHullPlain(world, x + 10, y    , z + 12);
 		genStructure.setHullPlain(world, x + 10, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 10, y + 1, z + 4);
 		genStructure.setHullPlain(world, x + 10, y + 1, z + 5);
@@ -523,11 +523,11 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 10, y + 8, z + 2);
 		genStructure.setHullPlain(world, x + 10, y + 8, z + 3);
 		genStructure.setHullPlain(world, x + 10, y + 8, z + 11);
-		genStructure.setHullPlain(world, x + 11, y + 0, z + 2);
-		genStructure.setHullPlain(world, x + 11, y + 0, z + 3);
-		genStructure.setHullPlain(world, x + 11, y + 0, z + 4);
-		genStructure.setHullPlain(world, x + 11, y + 0, z + 12);
-		genStructure.setHullPlain(world, x + 11, y + 0, z + 13);
+		genStructure.setHullPlain(world, x + 11, y    , z + 2);
+		genStructure.setHullPlain(world, x + 11, y    , z + 3);
+		genStructure.setHullPlain(world, x + 11, y    , z + 4);
+		genStructure.setHullPlain(world, x + 11, y    , z + 12);
+		genStructure.setHullPlain(world, x + 11, y    , z + 13);
 		genStructure.setHullPlain(world, x + 11, y + 1, z + 2);
 		genStructure.setHullPlain(world, x + 11, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 11, y + 1, z + 4);
@@ -572,8 +572,8 @@ public class WorldGenStation extends WorldGenerator {
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 11);
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 12);
 		genStructure.setHullPlain(world, x + 11, y + 7, z + 13);
-		genStructure.setHullPlain(world, x + 12, y + 0, z + 3);
-		genStructure.setHullPlain(world, x + 12, y + 0, z + 12);
+		genStructure.setHullPlain(world, x + 12, y    , z + 3);
+		genStructure.setHullPlain(world, x + 12, y    , z + 12);
 		genStructure.setHullPlain(world, x + 12, y + 1, z + 3);
 		genStructure.setHullPlain(world, x + 12, y + 1, z + 12);
 		genStructure.setHullPlain(world, x + 12, y + 2, z + 3);

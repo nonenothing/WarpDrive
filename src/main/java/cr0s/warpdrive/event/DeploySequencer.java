@@ -10,6 +10,7 @@ import cr0s.warpdrive.data.JumpShip;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
@@ -41,7 +42,7 @@ public class DeploySequencer extends JumpSequencer {
 	}
 	
 	@Override
-	public void disableAndMessage(final String reason) {
+	public void disableAndMessage(final ITextComponent reason) {
 		super.disableAndMessage(reason);
 		callback.sequencer_finished();
 	}
