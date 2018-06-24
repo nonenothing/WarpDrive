@@ -20,11 +20,7 @@
 			"false": {},
 			"true": {
 				"textures": {
-					"down" : "warpdrive:blocks/breathing/air_generator-side_active",
-					"up"   : "warpdrive:blocks/breathing/air_generator-side_active",
-					"south": "warpdrive:blocks/breathing/air_generator-side_active",
-					"west" : "warpdrive:blocks/breathing/air_generator-side_active",
-					"east" : "warpdrive:blocks/breathing/air_generator-side_active"
+					"north"   : "warpdrive:blocks/breathing/air_generator-side_active"
 				}
 			}
 		},
