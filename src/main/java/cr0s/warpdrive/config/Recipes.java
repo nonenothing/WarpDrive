@@ -665,21 +665,21 @@ public class Recipes {
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		
 		// *** Blocks
-		// Ship core is 1 Ghast tear, 4 Capacitive crystal, 2 Tuning ender, 1 Power interface, 1 MV Machine casing
+		// Ship core is 1 Ghast tear, 4 Capacitive crystal, 2 Tuning ender, 1 Power interface, 1 Ship controller
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
 		                                       new ItemStack(WarpDrive.blockShipCore),"csc", "eme", "cpc",
 				's', Items.GHAST_TEAR,
 				'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 				'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL),
 				'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-				'm', itemStackMachineCasings[1]));
+				'm', new ItemStack(WarpDrive.blockShipController)));
 		
-		// Ship controller is 1 Computer interface, 1 Tuning emerald, 1 LV Machine casing, 2 Memory bank
+		// Ship controller is 1 Computer interface, 1 Tuning emerald, 1 MV Machine casing, 2 Memory bank
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
 		                                       new ItemStack(WarpDrive.blockShipController), false, " e ", "bmb", " c ",
 				'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
 				'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-				'm', itemStackMachineCasings[0],
+				'm', itemStackMachineCasings[1],
 				'b', ItemComponent.getItemStack(EnumComponentType.MEMORY_CRYSTAL)));
 		
 		// Radar is 1 motor, 4 Titanium plate (diamond), 1 quarztite rod (nether quartz), 1 computer interface, 1 HV Machine casing, 1 power interface

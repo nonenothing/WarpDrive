@@ -7,12 +7,12 @@ import net.minecraft.util.IStringSerializable;
 
 public enum EnumShipCoreState implements IStringSerializable {
 	
-	DISCONNECTED  (0, "disconnected"),   // Not connected to controller
+	// DISCONNECTED  (0, "disconnected"),   // Not connected to controller
 	IDLE          (1, "idle"),           // Ready for next command
-	SCANNING      (2, "scanning"),       // Ready for next command
+	// SCANNING      (2, "scanning"),       // Ready for next command
 	ONLINE        (3, "online"),         // Computing parameters
-	WARMING_UP    (4, "warming_up"),     // Warmup phase
-	COOLING_DOWN  (5, "cooling_down");   // Pending cooldown
+	WARMING_UP    (4, "warming_up");     // Warmup phase
+	// COOLING_DOWN  (5, "cooling_down");   // Pending cooldown
 	
 	private final int metadata;
 	private final String name;

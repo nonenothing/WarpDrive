@@ -5,13 +5,13 @@ import java.util.HashMap;
 
 import net.minecraft.util.IStringSerializable;
 
-public enum EnumShipControllerCommand implements IStringSerializable {
+public enum EnumShipCommand implements IStringSerializable {
 	
 	OFFLINE     ("offline"),      // Offline allows to move sub-ships
 	IDLE        ("idle"),         //
 	MANUAL      ("manual"),       // Move ship around including take off and landing
 	// AUTOPILOT("autopilot"),    // Move ship towards a far destination
-	SUMMON      ("summon"),       // Summoning crew
+	// SUMMON   ("summon"),       // Summoning crew
 	HYPERDRIVE  ("hyperdrive"),   // Jump to/from Hyperspace
 	GATE        ("gate"),         // Jump via jumpgate
 	MAINTENANCE ("maintenance");  // Maintenance mode
@@ -20,20 +20,20 @@ public enum EnumShipControllerCommand implements IStringSerializable {
 	
 	// cached values
 	public static final int length;
-	private static final HashMap<Integer, EnumShipControllerCommand> ID_MAP = new HashMap<>();
+	private static final HashMap<Integer, EnumShipCommand> ID_MAP = new HashMap<>();
 	
 	static {
-		length = EnumShipControllerCommand.values().length;
-		for (final EnumShipControllerCommand forceFieldShape : values()) {
+		length = EnumShipCommand.values().length;
+		for (final EnumShipCommand forceFieldShape : values()) {
 			ID_MAP.put(forceFieldShape.ordinal(), forceFieldShape);
 		}
 	}
 	
-	EnumShipControllerCommand(final String name) {
+	EnumShipCommand(final String name) {
 		this.name = name;
 	}
 	
-	public static EnumShipControllerCommand get(final int damage) {
+	public static EnumShipCommand get(final int damage) {
 		return ID_MAP.get(damage);
 	}
 	

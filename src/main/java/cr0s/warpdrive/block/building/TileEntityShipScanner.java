@@ -258,12 +258,12 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				tileEntityShipCore = (TileEntityShipCore) world.getTileEntity(mutableBlockPos);
 				
 				if (tileEntityShipCore != null) {
-					if (!tileEntityShipCore.validateShipSpatialParameters(reason)) { // If we can't refresh ship's spatial parameters
+					if (!tileEntityShipCore.isValid()) { // If we can't refresh ship's spatial parameters
 						tileEntityShipCore = null;
+					} else {
+						break;
 					}
 				}
-				
-				break;
 			}
 		}
 		
@@ -271,7 +271,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	private boolean saveShipToSchematic(final String fileName, final StringBuilder reason) {
-		if (!shipCore.validateShipSpatialParameters(reason)) {
+		if (!shipCore.isValid()) {
 			return false;
 		}
 		final short width = (short) (shipCore.maxX - shipCore.minX + 1);
@@ -528,14 +528,14 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		
 		final TileEntityShipCore tileEntityShipCore = (TileEntityShipCore) tileEntity;
-		final String namePlayersAboard = tileEntityShipCore.getAllPlayersOnShip();
+		final String namePlayersAboard = tileEntityShipCore.getAllPlayersInArea();
 		if (!namePlayersAboard.isEmpty()) {
 			reason.append(String.format("§cDeployment area occupied by active crew %s.\n§6Please wait or use another deployment spot",
 			                            namePlayersAboard));
 			return false;
 		}
 		
-		if (tileEntityShipCore.isBooting()) {
+		if (tileEntityShipCore.isBusy()) {
 			reason.append("§cDeployment area is busy.\n§6Please try again in a few seconds.");
 			return false;
 		}

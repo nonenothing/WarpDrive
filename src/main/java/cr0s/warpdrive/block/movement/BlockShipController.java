@@ -1,9 +1,8 @@
 package cr0s.warpdrive.block.movement;
 
-import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
-import cr0s.warpdrive.data.EnumShipControllerCommand;
+import cr0s.warpdrive.data.EnumShipCommand;
 
 import javax.annotation.Nonnull;
 
@@ -11,25 +10,20 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockShipController extends BlockAbstractContainer {
 	
-	public static final PropertyEnum<EnumShipControllerCommand> COMMAND = PropertyEnum.create("command", EnumShipControllerCommand.class);
+	public static final PropertyEnum<EnumShipCommand> COMMAND = PropertyEnum.create("command", EnumShipCommand.class);
 	
 	public BlockShipController(final String registryName) {
 		super(registryName, Material.IRON);
 		setUnlocalizedName("warpdrive.movement.ship_controller");
 		
 		setDefaultState(getDefaultState()
-				                .withProperty(COMMAND, EnumShipControllerCommand.OFFLINE)
+				                .withProperty(COMMAND, EnumShipCommand.OFFLINE)
 		               );
 		registerTileEntity(TileEntityShipController.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
@@ -45,7 +39,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				       .withProperty(COMMAND, EnumShipControllerCommand.get(metadata));
+				       .withProperty(COMMAND, EnumShipCommand.get(metadata));
 	}
 	
 	@Override
@@ -57,38 +51,5 @@ public class BlockShipController extends BlockAbstractContainer {
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
 		return new TileEntityShipController();
-	}
-	
-	@Override
-	public boolean onBlockActivated(final World world, final BlockPos blockPos, final IBlockState blockState,
-	                                final EntityPlayer entityPlayer, final EnumHand enumHand,
-	                                final EnumFacing enumFacing, final float hitX, final float hitY, final float hitZ) {
-		if (world.isRemote) {
-			return false;
-		}
-		
-		if (enumHand != EnumHand.MAIN_HAND) {
-			return true;
-		}
-		
-		
-		// get context
-		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
-		final TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (!(tileEntity instanceof TileEntityShipController)) {
-			return false;
-		}
-		final TileEntityShipController tileEntityShipController = (TileEntityShipController) tileEntity;
-		
-		if (itemStackHeld.isEmpty()) {
-			if (entityPlayer.isSneaking()) {
-				Commons.addChatMessage(entityPlayer, tileEntityShipController.getStatus());
-			} else {
-				Commons.addChatMessage(entityPlayer, tileEntityShipController.attachPlayer(entityPlayer));
-			}
-			return true;
-		}
-		
-		return false;
 	}
 }

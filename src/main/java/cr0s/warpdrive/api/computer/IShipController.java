@@ -16,8 +16,6 @@ public interface IShipController extends IInterfaced {
 	
 	Object[] dim_negative(Object[] arguments);
 	
-	Object[] getAttachedPlayers();
-	
 	Object[] energy();
 	
 	Object[] command(Object[] arguments);

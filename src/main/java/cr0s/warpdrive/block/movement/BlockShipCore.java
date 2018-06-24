@@ -76,12 +76,8 @@ public class BlockShipCore extends BlockAbstractContainer {
 	public void onBlockPlacedBy(final World world, final BlockPos blockPos, final IBlockState blockState,
 	                            final EntityLivingBase entityLiving, final ItemStack itemStack) {
 		super.onBlockPlacedBy(world, blockPos, blockState, entityLiving, itemStack);
-		
-		final TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (tileEntity instanceof TileEntityShipCore) {
-			((TileEntityShipCore) tileEntity).facing = Commons.getHorizontalDirectionFromEntity(entityLiving).getOpposite();
-			// @TODO MC1.10 world.markBlockForUpdate(x, y, z);
-		}
+		final EnumFacing enumFacing = Commons.getHorizontalDirectionFromEntity(entityLiving).getOpposite();
+		world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
 	}
 	
 	@Override

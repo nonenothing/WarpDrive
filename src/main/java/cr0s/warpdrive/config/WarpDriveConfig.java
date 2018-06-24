@@ -224,6 +224,7 @@ public class WarpDriveConfig {
 	public static int SHIP_WARMUP_RANDOM_TICKS = 60;
 	public static int SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = 2;
 	public static int SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = 10;
+	public static int SHIP_VOLUME_SCAN_BLOCKS_PER_TICK = 1000;
 	public static int SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = 120;
 	public static String[] SHIP_VOLUME_UNLIMITED_PLAYERNAMES = { "notch", "someone" };
 	public static int SHIP_SUMMON_MAX_RANGE = 500;
@@ -755,6 +756,8 @@ public class WarpDriveConfig {
 		
 		SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,
 				config.get("ship", "core_isolation_update_interval", SHIP_CORE_ISOLATION_UPDATE_INTERVAL_SECONDS, "(measured in seconds)").getInt());
+		SHIP_VOLUME_SCAN_BLOCKS_PER_TICK = Commons.clamp(100, 100000,
+		        config.get("ship", "volume_scan_blocks_per_tick", SHIP_VOLUME_SCAN_BLOCKS_PER_TICK, "Number of blocks to scan per tick when getting ship bounds, too high will cause lag spikes when resizing a ship").getInt());
 		SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS = Commons.clamp(0, 300,
                 config.get("ship", "volume_scan_age_tolerance", SHIP_VOLUME_SCAN_AGE_TOLERANCE_SECONDS, "Ship volume won't be refreshed unless it's older than that many seconds").getInt());
 		SHIP_CONTROLLER_UPDATE_INTERVAL_SECONDS = Commons.clamp(0, 300,

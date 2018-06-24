@@ -70,10 +70,10 @@ public enum EnumShipMovementType implements IStringSerializable {
 	@Nonnull
 	public String getDescription() { return description; }
 	
-	public static EnumShipMovementType compute(final World worldSource, final int xCurrent, final int yMin, final int yMax, final int zCurrent, 
-	                                           final EnumShipControllerCommand command, final int yMove, final StringBuilder reason) {
+	public static EnumShipMovementType compute(final World worldSource, final int xCurrent, final int yMin, final int yMax, final int zCurrent,
+	                                           final EnumShipCommand command, final int yMove, final StringBuilder reason) {
 		
-		if (command == EnumShipControllerCommand.GATE) {
+		if (command == EnumShipCommand.GATE) {
 			return GATE_ACTIVATING;
 		}
 		
@@ -116,7 +116,6 @@ public enum EnumShipMovementType implements IStringSerializable {
 		case IDLE:
 		case MAINTENANCE:
 		case OFFLINE:
-		case SUMMON:
 			return NONE;
 		}
 		

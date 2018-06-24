@@ -368,19 +368,22 @@ public class StarMapRegistry {
 		}
 	}
 	
-	public boolean isWarpCoreIntersectsWithOthers(final TileEntityShipCore core) {
-		final StringBuilder reason = new StringBuilder();
+	public boolean isWarpCoreIntersectsWithOthers(final TileEntityShipCore shipCore1) {
 		cleanup();
 		
-		core.validateShipSpatialParameters(reason);
-		final AxisAlignedBB aabb1 = new AxisAlignedBB(core.minX, core.minY, core.minZ, core.maxX, core.maxY, core.maxZ);
+		if (!shipCore1.isValid()) {
+			WarpDrive.logger.error(String.format("isWarpCoreIntersectsWithOthers() with invalid ship %s, assuming intersection",
+			                                     shipCore1));
+			return false;
+		}
+		final AxisAlignedBB aabb1 = new AxisAlignedBB(shipCore1.minX, shipCore1.minY, shipCore1.minZ, shipCore1.maxX, shipCore1.maxY, shipCore1.maxZ);
 		
-		final CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(core.getWorld().provider.getDimension());
+		final CopyOnWriteArraySet<StarMapRegistryItem> setRegistryItems = registry.get(shipCore1.getWorld().provider.getDimension());
 		if (setRegistryItems == null) {
 			return false;
 		}
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			assert(registryItem.dimensionId == core.getWorld().provider.getDimension());
+			assert(registryItem.dimensionId == shipCore1.getWorld().provider.getDimension());
 			
 			// only check cores
 			if (registryItem.type != EnumStarMapEntryType.SHIP) {
@@ -388,7 +391,7 @@ public class StarMapRegistry {
 			}
 			
 			// Skip self
-			if (registryItem.x == core.getPos().getX() && registryItem.y == core.getPos().getY() && registryItem.z == core.getPos().getZ()) {
+			if (registryItem.x == shipCore1.getPos().getX() && registryItem.y == shipCore1.getPos().getY() && registryItem.z == shipCore1.getPos().getZ()) {
 				continue;
 			}
 			
@@ -400,19 +403,19 @@ public class StarMapRegistry {
 			}
 			
 			// Skip missing ship cores
-			final TileEntity tileEntity = core.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
+			final TileEntity tileEntity = shipCore1.getWorld().getTileEntity(new BlockPos(registryItem.x, registryItem.y, registryItem.z));
 			if (!(tileEntity instanceof TileEntityShipCore)) {
 				continue;
 			}
-			final TileEntityShipCore shipCore = (TileEntityShipCore) tileEntity;
+			final TileEntityShipCore shipCore2 = (TileEntityShipCore) tileEntity;
 			
 			// Skip offline ship cores
-			if (shipCore.isOffline()) {
+			if (shipCore2.isOffline()) {
 				continue;
 			}
 			
 			// Skip invalid ships
-			if (!shipCore.validateShipSpatialParameters(reason)) {
+			if (!shipCore2.isValid()) {
 				continue;
 			}
 			
