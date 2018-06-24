@@ -28,7 +28,6 @@ public class RenderOverlayCamera {
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthMask(false);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
 		
 		try {
@@ -44,11 +43,11 @@ public class RenderOverlayCamera {
 			final Tessellator tessellator = Tessellator.getInstance();
 			final BufferBuilder vertexBuffer = tessellator.getBuffer();
 			
-			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-			vertexBuffer.pos(       0.0D, scaledHeight, -90.0D).tex(0.0D, 1.0D).endVertex();
-			vertexBuffer.pos(scaledWidth, scaledHeight, -90.0D).tex(1.0D, 1.0D).endVertex();
-			vertexBuffer.pos(scaledWidth,         0.0D, -90.0D).tex(1.0D, 0.0D).endVertex();
-			vertexBuffer.pos(       0.0D,         0.0D, -90.0D).tex(0.0D, 0.0D).endVertex();
+			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+			vertexBuffer.pos(       0.0D, scaledHeight, -90.0D).tex(0.0D, 1.0D).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+			vertexBuffer.pos(scaledWidth, scaledHeight, -90.0D).tex(1.0D, 1.0D).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+			vertexBuffer.pos(scaledWidth,         0.0D, -90.0D).tex(1.0D, 0.0D).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+			vertexBuffer.pos(       0.0D,         0.0D, -90.0D).tex(0.0D, 0.0D).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
 			tessellator.draw();
 			
 			frameCount++;
@@ -83,7 +82,6 @@ public class RenderOverlayCamera {
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 	
 	@SubscribeEvent

@@ -75,10 +75,6 @@ public class RenderBlockTransporterBeacon implements ISimpleBlockRenderingHandle
 		
 		final IIcon icon = RenderBlocks.getInstance().getBlockIconFromSideAndMetadata(block, 0, metadata);
 		
-		final Tessellator tessellator = Tessellator.instance;
-		tessellator.setBrightness(block.getMixedBrightnessForBlock(blockAccess, x, y, z));
-		tessellator.setColorOpaque_F(1.0F, 1.0F, 1.0F);
-		
 		renderTransporterBeacon(tessellator, x, y, z, enumTransporterBeaconState, icon);
 		
 		return true;
@@ -88,6 +84,8 @@ public class RenderBlockTransporterBeacon implements ISimpleBlockRenderingHandle
 	                                     final double x, final double y, final double z,
 	                                     final EnumTransporterBeaconState enumTransporterBeaconState,
 	                                     final IIcon icon) {
+		final Tessellator tessellator = Tessellator.instance;
+		
 		// texture coordinates
 		final double uMin_side   = icon.getInterpolatedU( 0.0D);
 		final double vMin_side   = icon.getInterpolatedV( 4.0D);

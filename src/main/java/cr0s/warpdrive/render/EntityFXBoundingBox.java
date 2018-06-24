@@ -2,15 +2,14 @@ package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.data.Vector3;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
@@ -77,6 +76,11 @@ public class EntityFXBoundingBox extends Particle {
 			alpha = 0.10F;
 		}
 		
+		// get brightness factors
+		final int brightnessForRender = getBrightnessForRender(partialTick);
+		final int brightnessHigh = brightnessForRender >> 16 & 65535;
+		final int brightnessLow  = Math.max(240, brightnessForRender & 65535);
+		
 		// final double relativeTime = world.getTotalWorldTime() + partialTick;
 		// final double uOffset = (float) (-relativeTime * 0.3D - MathHelper.floor(-relativeTime * 0.15D));
 		// final double vOffset = (float) (-relativeTime * 0.2D - MathHelper.floor(-relativeTime * 0.1D));
@@ -100,7 +104,7 @@ public class EntityFXBoundingBox extends Particle {
 		final double uv_zMin = zMin / uvScale + 0.5D;
 		final double uv_zMax = zMax / uvScale + 0.5D;
 		
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		GL11.glDisable(GL11.GL_CULL_FACE);
@@ -113,72 +117,62 @@ public class EntityFXBoundingBox extends Particle {
 		final float yy = (float)(prevPosY + (posY - prevPosY) * partialTick - interpPosY);
 		final float zz = (float)(prevPosZ + (posZ - prevPosZ) * partialTick - interpPosZ);
 		GL11.glTranslated(xx, yy, zz);
-		final int brightness = 200;
 		
 		final Tessellator tessellator = Tessellator.getInstance();
 		
 		// x planes
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// @TODO MC1.10 tessellator.setBrightness(brightness);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_yMin, uv_zMin).endVertex();
-		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_yMin, uv_zMax).endVertex();
-		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_yMax, uv_zMax).endVertex();
-		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_yMax, uv_zMin).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_yMin, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_yMin, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_yMax, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_yMax, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 		tessellator.draw();
 		
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// @TODO MC1.10 tessellator.setBrightness(brightness);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-		vertexBuffer.pos(xMax, yMin, zMin).tex( uv_yMin, uv_zMin).endVertex();
-		vertexBuffer.pos(xMax, yMin, zMax).tex( uv_yMin, uv_zMax).endVertex();
-		vertexBuffer.pos(xMax, yMax, zMax).tex( uv_yMax, uv_zMax).endVertex();
-		vertexBuffer.pos(xMax, yMax, zMin).tex( uv_yMax, uv_zMin).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		vertexBuffer.pos(xMax, yMin, zMin).tex( uv_yMin, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMax).tex( uv_yMin, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMax).tex( uv_yMax, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMin).tex( uv_yMax, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 		tessellator.draw();
 		
 		// y planes
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// @TODO MC1.10 tessellator.setBrightness(brightness);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_xMin, uv_zMin).endVertex();
-		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_xMin, uv_zMax).endVertex();
-		vertexBuffer.pos(xMax, yMin, zMax).tex(uv_xMax, uv_zMax).endVertex();
-		vertexBuffer.pos(xMax, yMin, zMin).tex(uv_xMax, uv_zMin).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_xMin, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_xMin, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMax).tex(uv_xMax, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMin).tex(uv_xMax, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 		tessellator.draw();
 		
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// @TODO MC1.10 tessellator.setBrightness(brightness);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_xMin, uv_zMin).endVertex();
-		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_xMin, uv_zMax).endVertex();
-		vertexBuffer.pos(xMax, yMax, zMax).tex(uv_xMax, uv_zMax).endVertex();
-		vertexBuffer.pos(xMax, yMax, zMin).tex(uv_xMax, uv_zMin).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_xMin, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_xMin, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMax).tex(uv_xMax, uv_zMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMin).tex(uv_xMax, uv_zMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 		tessellator.draw();
 		
 		// z planes
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// @TODO MC1.10 tessellator.setBrightness(brightness);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_xMin, uv_yMin).endVertex();
-		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_xMin, uv_yMax).endVertex();
-		vertexBuffer.pos(xMax, yMax, zMin).tex(uv_xMax, uv_yMax).endVertex();
-		vertexBuffer.pos(xMax, yMin, zMin).tex(uv_xMax, uv_yMin).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		vertexBuffer.pos(xMin, yMin, zMin).tex(uv_xMin, uv_yMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMin).tex(uv_xMin, uv_yMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMin).tex(uv_xMax, uv_yMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMin).tex(uv_xMax, uv_yMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 		tessellator.draw();
 		
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// @TODO MC1.10 tessellator.setBrightness(brightness);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_xMin, uv_yMin).endVertex();
-		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_xMin, uv_yMax).endVertex();
-		vertexBuffer.pos(xMax, yMax, zMax).tex(uv_xMax, uv_yMax).endVertex();
-		vertexBuffer.pos(xMax, yMin, zMax).tex(uv_xMax, uv_yMin).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		vertexBuffer.pos(xMin, yMin, zMax).tex(uv_xMin, uv_yMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMin, yMax, zMax).tex(uv_xMin, uv_yMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMax, zMax).tex(uv_xMax, uv_yMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+		vertexBuffer.pos(xMax, yMin, zMax).tex(uv_xMax, uv_yMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 		tessellator.draw();
 		
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDepthMask(true);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(new ResourceLocation("textures/particle/particles.png"));
+	}
+	
+	@Override
+	public int getFXLayer() {
+		return 3; // custom texture
 	}
 }

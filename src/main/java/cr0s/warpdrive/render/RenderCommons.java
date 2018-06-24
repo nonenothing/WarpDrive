@@ -28,14 +28,20 @@ public class RenderCommons {
 	
 	// from net.minecraft.client.gui.Gui
 	private static final float scaleUV = 0.00390625F;  // 1/256
-	protected static void drawTexturedModalRect(final int x, final int y, final int u, final int v, final int sizeX, final int sizeY, final int zLevel) {
+	protected static void drawTexturedModalRect(final int x, final int y, final int u, final int v,
+	                                            final int sizeX, final int sizeY, final int zLevel) {
+		drawTexturedModalRect(x, y, u, v, sizeX, sizeY, zLevel, 1.0F, 1.0F, 1.0F, 1.0F);
+	}
+	protected static void drawTexturedModalRect(final int x, final int y, final int u, final int v,
+	                                            final int sizeX, final int sizeY, final int zLevel,
+	                                            final float red, final float green, final float blue, final float alpha) {
 		final Tessellator tessellator = Tessellator.getInstance();
 		final BufferBuilder vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		vertexBuffer.pos( x         , (y + sizeY), zLevel).tex(scaleUV * u          , scaleUV * (v + sizeY)).endVertex();
-		vertexBuffer.pos((x + sizeX), (y + sizeY), zLevel).tex(scaleUV * (u + sizeX), scaleUV * (v + sizeY)).endVertex();
-		vertexBuffer.pos((x + sizeX),  y         , zLevel).tex(scaleUV * (u + sizeX), scaleUV *  v         ).endVertex();
-		vertexBuffer.pos( x         ,  y         , zLevel).tex(scaleUV * u          , scaleUV *  v         ).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+		vertexBuffer.pos( x         , (y + sizeY), zLevel).tex(scaleUV * u          , scaleUV * (v + sizeY)).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos((x + sizeX), (y + sizeY), zLevel).tex(scaleUV * (u + sizeX), scaleUV * (v + sizeY)).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos((x + sizeX),  y         , zLevel).tex(scaleUV * (u + sizeX), scaleUV *  v         ).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos( x         ,  y         , zLevel).tex(scaleUV * u          , scaleUV *  v         ).color(red, green, blue, alpha).endVertex();
 		tessellator.draw();
 	}
 	
@@ -106,19 +112,18 @@ public class RenderCommons {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		final byte red   = (byte) (colorBackground >> 16 & 255);
-		final byte blue  = (byte) (colorBackground >> 8 & 255);
-		final byte green = (byte) (colorBackground & 255);
-		final byte alpha = (byte) (colorBackground >> 24 & 255);
-		GL11.glColor4b(red, blue, green, alpha);
+		final float red   = (colorBackground >> 16 & 255) / 255.0F;
+		final float blue  = (colorBackground >> 8  & 255) / 255.0F;
+		final float green = (colorBackground       & 255) / 255.0F;
+		final float alpha = (colorBackground >> 24 & 255) / 255.0F;
 		
 		final Tessellator tessellator = Tessellator.getInstance();
 		final BufferBuilder vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
-		vertexBuffer.pos(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D).endVertex();
-		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D).endVertex();
-		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y                    , -90.0D).endVertex();
-		vertexBuffer.pos(scaled_box_x                   , scaled_box_y                    , -90.0D).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		vertexBuffer.pos(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y                    , -90.0D).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos(scaled_box_x                   , scaled_box_y                    , -90.0D).color(red, green, blue, alpha).endVertex();
 		tessellator.draw();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -138,7 +143,7 @@ public class RenderCommons {
 	                           final EnumDisplayAlignment enumScreenAnchor, final int xOffset, final int yOffset,
 	                           final EnumDisplayAlignment enumTextAlignment, final float widthTextRatio, final int widthTextMin) {
 		// prepare the string box content and dimensions
-		final String header_formatted  = Commons.updateEscapeCodes(String.format(new TextComponentTranslation(textHeader, formatHeader).getFormattedText()));
+		final String header_formatted  = Commons.updateEscapeCodes(new TextComponentTranslation(textHeader, formatHeader).getFormattedText());
 		final String content_formatted = Commons.updateEscapeCodes(new TextComponentTranslation(textContent).getFormattedText());
 		final int scaled_box_width = Math.max(widthTextMin, Math.round(widthTextRatio * screen_width)) + 2 * TEXT_BORDER;
 		
@@ -170,19 +175,18 @@ public class RenderCommons {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
-		final byte red   = (byte) (colorBackground >> 16 & 255);
-		final byte blue  = (byte) (colorBackground >> 8 & 255);
-		final byte green = (byte) (colorBackground & 255);
-		final byte alpha = (byte) (colorBackground >> 24 & 255);
-		GL11.glColor4b(red, blue, green, alpha);
+		final float red   = (colorBackground >> 16 & 0xFF) / 255.0F;
+		final float green = (colorBackground >> 8  & 0xFF) / 255.0F;
+		final float blue  = (colorBackground       & 0xFF) / 255.0F;
+		final float alpha = (colorBackground >> 24 & 0xFF) / 255.0F;
 		
 		final Tessellator tessellator = Tessellator.getInstance();
 		final BufferBuilder vertexBuffer = tessellator.getBuffer();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION);
-		vertexBuffer.pos(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D).endVertex();
-		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D).endVertex();
-		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y                    , -90.0D).endVertex();
-		vertexBuffer.pos(scaled_box_x                   , scaled_box_y                    , -90.0D).endVertex();
+		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		vertexBuffer.pos(scaled_box_x                   , scaled_box_y + scaled_box_height, -90.0D).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y + scaled_box_height, -90.0D).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos(scaled_box_x + scaled_box_width, scaled_box_y                    , -90.0D).color(red, green, blue, alpha).endVertex();
+		vertexBuffer.pos(scaled_box_x                   , scaled_box_y                    , -90.0D).color(red, green, blue, alpha).endVertex();
 		tessellator.draw();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
@@ -201,6 +205,8 @@ public class RenderCommons {
 		}
 		
 		// close rendering
+		// GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glPopMatrix();
 	}
 }

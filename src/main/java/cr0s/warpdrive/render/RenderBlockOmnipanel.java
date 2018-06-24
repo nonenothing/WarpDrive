@@ -26,7 +26,11 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 	@Override
 	public boolean renderWorldBlock(final IBlockAccess blockAccess, final int x, final int y, final int z, final Block block, final int modelId, final RenderBlocks renderer) {
 		final Tessellator tessellator = Tessellator.instance;
-		tessellator.setBrightness(block.getMixedBrightnessForBlock(blockAccess, x, y, z));
+		
+		// get brightness factors
+		final int brightnessForRender = getBrightnessForRender(partialTick);
+		final int brightnessHigh = brightnessForRender >> 16 & 65535;
+		final int brightnessLow  = Math.max(240, brightnessForRender & 65535);
 		
 		// apply coloring
 		final int colorMultiplier = block.colorMultiplier(blockAccess, x, y, z);
@@ -34,7 +38,7 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 		final float fGreen = (float) (colorMultiplier >> 8 & 255) / 255.0F;
 		final float fBlue  = (float) (colorMultiplier & 255) / 255.0F;
 		tessellator.setColorOpaque_F(fRed, fGreen, fBlue);
-		
+
 		// get icon
 		final int metadata = blockAccess.getBlockMetadata(x, y, z);
 		final IIcon icon = block.getIcon(0, metadata);
@@ -111,6 +115,11 @@ public class RenderBlockOmnipanel implements ISimpleBlockRenderingHandler {
 		final boolean hasZnYp = canConnectNone || (canConnectZ_neg && canConnectY_pos && canConnectZn_Y_pos);
 		final boolean hasZpYp = canConnectNone || (canConnectZ_pos && canConnectY_pos && canConnectZp_Y_pos);
 		
+		// @TODO MC1.10+ rendering
+		// template:
+		// vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+		// vertexBuffer.pos(xMinEnd  , yMax, 0.0D).tex(uMax, vMax).color(fRed, fGreen, fBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+
 		{// z plane
 			if (hasXnYn) {
 				tessellator.addVertexWithUV(dX_neg, dY_neg, dZ_neg, dU_neg, dV_pos);

@@ -107,15 +107,15 @@ public class EntityFXDot extends AbstractEntityFX {
 			}
 		}
 		
-		// start drawing
+		// start drawing (done by caller in layers 0 to 3)
 		// vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 		
 		// get brightness factors
-		final int brightnessForRender = this.getBrightnessForRender(partialTick);
+		final int brightnessForRender = getBrightnessForRender(partialTick);
 		final int brightnessHigh = brightnessForRender >> 16 & 65535;
 		final int brightnessLow  = brightnessForRender & 65535;
 		
-		// compute rotation matrix
+		// compute relative texture coordinates
 		final Vec3d[] vec3ds = new Vec3d[] { new Vec3d(-rotationX * scale - rotationXY * scale, -rotationZ * scale, -rotationYZ * scale - rotationXZ * scale),
 		                                     new Vec3d(-rotationX * scale + rotationXY * scale,  rotationZ * scale, -rotationYZ * scale + rotationXZ * scale),
 		                                     new Vec3d( rotationX * scale + rotationXY * scale,  rotationZ * scale,  rotationYZ * scale + rotationXZ * scale),

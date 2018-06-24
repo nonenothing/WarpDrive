@@ -2,6 +2,9 @@ package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.entity.EntityParticleBunch;
+
+import javax.annotation.Nonnull;
+
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -44,7 +47,7 @@ public class RenderEntityParticleBunch extends RenderEntity {
 	}
 	
 	@Override
-	public void doRenderShadowAndFire(final Entity entity,
+	public void doRenderShadowAndFire(@Nonnull final Entity entity,
 	                                  final double x, final double y, final double z,
 	                                  final float rotation, final float partialTick) {
 		// super.doRenderShadowAndFire(entity, x, y, z, rotation, partialTick);
@@ -156,7 +159,6 @@ public class RenderEntityParticleBunch extends RenderEntity {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glShadeModel(GL11.GL_FLAT);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glPopAttrib();

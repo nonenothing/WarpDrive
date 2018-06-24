@@ -57,7 +57,6 @@ public class RenderOverlayAir {
 		
 		// start rendering
 		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		// show splash message
 		int alpha = 255;
@@ -73,7 +72,6 @@ public class RenderOverlayAir {
 		
 		// restore texture
 		minecraft.getTextureManager().bindTexture(Gui.ICONS);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		// position right above food bar
 		final int left = width / 2 + 91;
@@ -95,16 +93,27 @@ public class RenderOverlayAir {
 		// draw air level bar
 		final int full = MathHelper.ceil(ratioAirReserve * 71.0D);
 		RenderCommons.drawTexturedModalRect(left - 81, top + 2, 20, 84, 71, 5, 100);
-		if (alpha != 255) {
+		final float fRed  ;
+		final float fGreen;
+		final float fBlue ;
+		final float fAlpha;
+		if (alpha == 255) {
+			fRed   = 1.0F;
+			fGreen = 1.0F;
+			fBlue  = 1.0F;
+			fAlpha = 1.0F;
+		} else {
 			final float factor = 1.0F - alpha / 255.0F;
-			GL11.glColor4f(1.0F, 0.2F + 0.8F * factor, 0.2F + 0.8F * factor, 1.0F);
+			fRed   = 1.0F;
+			fGreen = 0.2F + 0.8F * factor;
+			fBlue  = 0.2F + 0.8F * factor;
+			fAlpha = 1.0F;
 		}
-		RenderCommons.drawTexturedModalRect(left - 10 - full, top + 2, 91 - full, 89, full, 5, 100);
+		RenderCommons.drawTexturedModalRect(left - 10 - full, top + 2, 91 - full, 89, full, 5, 100, fRed, fGreen, fBlue, fAlpha);
 		
 		// close rendering
 		GuiIngameForge.right_height += 10;
 		
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 	

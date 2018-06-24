@@ -4,7 +4,6 @@ import cr0s.warpdrive.data.Vector3;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -13,7 +12,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -98,8 +96,12 @@ public class EntityFXBeam extends Particle {
 			alpha = 0.5F - (4 - (particleMaxAge - particleAge)) * 0.1F;
 		}
 		
-		// @TODO Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
+		// get brightness factors
+		final int brightnessForRender = getBrightnessForRender(partialTick);
+		final int brightnessHigh = brightnessForRender >> 16 & 65535;
+		final int brightnessLow  = Math.max(240, brightnessForRender & 65535);
+		
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		GL11.glDisable(GL11.GL_CULL_FACE);
@@ -136,17 +138,14 @@ public class EntityFXBeam extends Particle {
 			final double vMin = -1.0F + vOffset + t / 3.0F;
 			final double vMax = vMin + length * size;
 			GL11.glRotatef(60.0F, 0.0F, 1.0F, 0.0F);
-			// @TODO MC1.10 tessellator.setBrightness(200);
-			GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
-			vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-			vertexBuffer.pos(xMinEnd  , yMax, 0.0D).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos(xMinStart, 0.0D, 0.0D).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos(xMaxStart, 0.0D, 0.0D).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos(xMaxEnd  , yMax, 0.0D).tex(uMin, vMax).endVertex();
+			vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+			vertexBuffer.pos(xMinEnd  , yMax, 0.0D).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(xMinStart, 0.0D, 0.0D).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(xMaxStart, 0.0D, 0.0D).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(xMaxEnd  , yMax, 0.0D).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			tessellator.draw();
 		}
 		
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDepthMask(true);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_CULL_FACE);
@@ -154,9 +153,9 @@ public class EntityFXBeam extends Particle {
 		prevSize = size;
 		Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("textures/particle/particles.png"));
 	}
-
+	
 	@Override
 	public int getFXLayer() {
-		return 3;
+		return 3; // 3 means custom texture
 	}
 }

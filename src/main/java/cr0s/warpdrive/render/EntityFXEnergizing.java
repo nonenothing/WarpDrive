@@ -2,7 +2,6 @@ package cr0s.warpdrive.render;
 
 import cr0s.warpdrive.data.Vector3;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -12,7 +11,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -100,6 +98,11 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 			alpha += Math.pow(Math.sin(timeAlpha * 0.37D) + Math.sin(0.178D + timeAlpha * 0.17D), 2.0D) * 0.05D;
 		}
 		
+		// get brightness factors
+		final int brightnessForRender = getBrightnessForRender(partialTick);
+		final int brightnessHigh = brightnessForRender >> 16 & 65535;
+		final int brightnessLow  = Math.max(240, brightnessForRender & 65535);
+		
 		// texture clock is offset to de-synchronize particles
 		final double timeTexture = (getSeed() & 0xFFFF) + particleAge + partialTick;
 		
@@ -111,7 +114,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 		
 		
 		// bind our texture, repeating on both axis
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(TEXTURE);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(TEXTURE);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		
@@ -150,9 +153,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 		
 		// start drawing
 		final Tessellator tessellator = Tessellator.getInstance();
-		vertexBuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-		// tessellator.setBrightness(200);
-		GlStateManager.color(particleRed, particleGreen, particleBlue, alpha);
+		vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
 		
 		// loop covering 45 deg, using symmetry to cover a full circle
 		final double angleMax = Math.PI / 4.0D;
@@ -166,46 +167,46 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 			final double sinNext = radius * Math.sin(angle);
 			
 			// cos sin
-			vertexBuffer.pos( cosPrev, yMax,  sinPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos( cosPrev, yMin,  sinPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos( cosNext, yMin,  sinNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos( cosNext, yMax,  sinNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos( cosPrev, yMax,  sinPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( cosPrev, yMin,  sinPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( cosNext, yMin,  sinNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( cosNext, yMax,  sinNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
-			vertexBuffer.pos(-cosPrev, yMax,  sinPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos(-cosPrev, yMin,  sinPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos(-cosNext, yMin,  sinNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos(-cosNext, yMax,  sinNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos(-cosPrev, yMax,  sinPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-cosPrev, yMin,  sinPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-cosNext, yMin,  sinNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-cosNext, yMax,  sinNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
-			vertexBuffer.pos( cosPrev, yMax, -sinPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos( cosPrev, yMin, -sinPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos( cosNext, yMin, -sinNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos( cosNext, yMax, -sinNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos( cosPrev, yMax, -sinPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( cosPrev, yMin, -sinPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( cosNext, yMin, -sinNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( cosNext, yMax, -sinNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
-			vertexBuffer.pos(-cosPrev, yMax, -sinPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos(-cosPrev, yMin, -sinPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos(-cosNext, yMin, -sinNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos(-cosNext, yMax, -sinNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos(-cosPrev, yMax, -sinPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-cosPrev, yMin, -sinPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-cosNext, yMin, -sinNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-cosNext, yMax, -sinNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
 			// sin cos
-			vertexBuffer.pos( sinPrev, yMax,  cosPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos( sinPrev, yMin,  cosPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos( sinNext, yMin,  cosNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos( sinNext, yMax,  cosNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos( sinPrev, yMax,  cosPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( sinPrev, yMin,  cosPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( sinNext, yMin,  cosNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( sinNext, yMax,  cosNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
-			vertexBuffer.pos(-sinPrev, yMax,  cosPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos(-sinPrev, yMin,  cosPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos(-sinNext, yMin,  cosNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos(-sinNext, yMax,  cosNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos(-sinPrev, yMax,  cosPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-sinPrev, yMin,  cosPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-sinNext, yMin,  cosNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-sinNext, yMax,  cosNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
-			vertexBuffer.pos( sinPrev, yMax, -cosPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos( sinPrev, yMin, -cosPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos( sinNext, yMin, -cosNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos( sinNext, yMax, -cosNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos( sinPrev, yMax, -cosPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( sinPrev, yMin, -cosPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( sinNext, yMin, -cosNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos( sinNext, yMax, -cosNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
-			vertexBuffer.pos(-sinPrev, yMax, -cosPrev).tex(uMax, vMax).endVertex();
-			vertexBuffer.pos(-sinPrev, yMin, -cosPrev).tex(uMax, vMin).endVertex();
-			vertexBuffer.pos(-sinNext, yMin, -cosNext).tex(uMin, vMin).endVertex();
-			vertexBuffer.pos(-sinNext, yMax, -cosNext).tex(uMin, vMax).endVertex();
+			vertexBuffer.pos(-sinPrev, yMax, -cosPrev).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-sinPrev, yMin, -cosPrev).tex(uMax, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-sinNext, yMin, -cosNext).tex(uMin, vMin).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
+			vertexBuffer.pos(-sinNext, yMax, -cosNext).tex(uMin, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			
 			cosPrev = cosNext;
 			sinPrev = sinNext;
@@ -215,11 +216,14 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 		tessellator.draw();
 		
 		// restore OpenGL state
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GL11.glDepthMask(true);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glPopMatrix();
-		FMLClientHandler.instance().getClient().renderEngine.bindTexture(new ResourceLocation("textures/particle/particles.png"));
+	}
+	
+	@Override
+	public int getFXLayer() {
+		return 3; // custom texture
 	}
 }

@@ -12,17 +12,18 @@ public class RenderBlockShipScanner implements ISimpleBlockRenderingHandler {
 	
 	@Override
 	public void renderInventoryBlock(final Block block, final int metadata, final int modelId, final RenderBlocks renderer) {
-		final float intensity = 1.0F;
+		final float brightness = 1.0F;
 		
 		// simplified copy from RenderBlocks.renderBlockAsItem()
 		final Tessellator tessellator = Tessellator.instance;
 		
 		if (renderer.useInventoryTint) {
 			final int color = block.getRenderColor(metadata);
-			final float red = (float)(color >> 16 & 255) / 255.0F;
-			final float green = (float)(color >> 8 & 255) / 255.0F;
-			final float blue = (float)(color & 255) / 255.0F;
-			GL11.glColor4f(red * intensity, green * intensity, blue * intensity, 1.0F);
+			final float red   = brightness * (float) (color >> 16 & 255) / 255.0F;
+			final float green = brightness * (float) (color >> 8  & 255) / 255.0F;
+			final float blue  = brightness * (float) (color       & 255) / 255.0F;
+			final float alpha = 1.0F;
+			// @TODO replace with vertexBuffer.color(red, green, blue, 1.0F);
 		}
 		
 		renderer.setRenderBoundsFromBlock(block);
@@ -92,9 +93,13 @@ public class RenderBlockShipScanner implements ISimpleBlockRenderingHandler {
 		final boolean isHidden = !blockAbove.isAir(blockAccess, x, y + 1, z)
 		                      && blockAbove.isBlockSolid(blockAccess, x, y + 1, z, blockAccess.getBlockMetadata(x, y + 1, z));
 		
+		// get brightness factors
+		final int brightnessForRender = getBrightnessForRender(partialTick);
+		final int brightnessHigh = brightnessForRender >> 16 & 65535;
+		final int brightnessLow  = Math.max(240, brightnessForRender & 65535);
+		
 		// render borders
 		final Tessellator tessellator = Tessellator.instance;
-		tessellator.setBrightness(200); // block.getMixedBrightnessForBlock(blockAccess, x, y, z));
 		
 		// apply coloring
 		final int colorMultiplier = 0xFFFFFF; // block.colorMultiplier(blockAccess, x, y, z);
@@ -131,6 +136,8 @@ public class RenderBlockShipScanner implements ISimpleBlockRenderingHandler {
 			final double offsetMax = index == size - 1 ? 0.0D : 0.001D;
 			
 			// draw exterior faces
+			// template: vertexBuffer.begin(7, DefaultVertexFormats.PARTICLE_POSITION_TEX_COLOR_LMAP);
+			// template: vertexBuffer.pos(xMinEnd  , yMax, 0.0D).tex(uMax, vMax).color(particleRed, particleGreen, particleBlue, alpha).lightmap(brightnessHigh, brightnessLow).endVertex();
 			tessellator.addVertexWithUV(dX_min + index + 1, dY_max, dZ_min - offsetMax, dU_max, dV_min);
 			tessellator.addVertexWithUV(dX_min + index + 1, dY_min, dZ_min - offsetMax, dU_max, dV_max);
 			tessellator.addVertexWithUV(dX_min + index    , dY_min, dZ_min - offsetMin, dU_min, dV_max);
