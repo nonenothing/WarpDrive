@@ -24,9 +24,11 @@ import java.util.LinkedList;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -386,20 +388,30 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					if (plant == null) {
 						slotIndex = 0;
 					}
-					while (slotIndex < inventoryLoop.getSizeInventory()) {
+					while (slotIndex < inventoryLoop.getSizeInventory() && plant == null) {
 						itemStack = inventoryLoop.getStackInSlot(slotIndex);
 						if (itemStack.isEmpty()) {
 							slotIndex++;
 							continue;
 						}
 						final Block blockFromItem = Block.getBlockFromItem(itemStack.getItem());
-						if (!(itemStack.getItem() instanceof IPlantable) && !(blockFromItem instanceof IPlantable)) {
+						if ( !(itemStack.getItem() instanceof IPlantable)
+						  && !(blockFromItem instanceof IPlantable) ) {
 							slotIndex++;
 							continue;
 						}
 						plantableCount++;
 						final IPlantable plantable = (IPlantable) ((itemStack.getItem() instanceof IPlantable) ? itemStack.getItem() : blockFromItem);
-						plant = plantable.getPlant(world, blockPosPlant);
+						if (itemStack.getItem() instanceof ItemBlock) {
+							final ItemBlock itemBlock = (ItemBlock) itemStack.getItem();
+							final int metadata = itemBlock.getMetadata(itemStack.getMetadata());
+							final Block block = itemBlock.getBlock();
+							plant = block.getStateForPlacement(world, blockPosPlant, EnumFacing.UP,
+							                                   0.5F, 0.0F, 0.5F, metadata,
+							                                   null, EnumHand.MAIN_HAND);
+						} else {
+							plant = plantable.getPlant(world, blockPosPlant);
+						}
 						if (WarpDriveConfig.LOGGING_COLLECTION) {
 							WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant);
 						}
