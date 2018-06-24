@@ -220,7 +220,8 @@ public class CloakedArea {
 					final BlockPos blockPos = new BlockPos(x, y, z);
 					final IBlockState blockState = world.getBlockState(blockPos);
 					if (blockState.getBlock() != Blocks.AIR) {
-						world.setBlockState(blockPos, blockStateFog, 4);
+						// @TODO move cloaking to main thread
+						// world.setBlockState(blockPos, blockStateFog, 4);
 					}
 				}
 			}
