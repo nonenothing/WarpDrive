@@ -1144,6 +1144,7 @@ public class JumpSequencer extends AbstractSequencer {
 		LocalProfiler.stop();
 	}
 	
+	@SuppressWarnings("ConstantConditions") // https://github.com/MinecraftForge/MinecraftForge/issues/4996
 	protected void state_moveEntities() {
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			WarpDrive.logger.info(this + " Moving entities");
@@ -1180,10 +1181,16 @@ public class JumpSequencer extends AbstractSequencer {
 					final EntityPlayerMP player = (EntityPlayerMP) entity;
 					
 					BlockPos bedLocation = player.getBedLocation(player.world.provider.getDimension());
-					
-					if ( ship.minX <= bedLocation.getX() && ship.maxX >= bedLocation.getX()
-					  && ship.minY <= bedLocation.getY() && ship.maxY >= bedLocation.getY()
-					  && ship.minZ <= bedLocation.getZ() && ship.maxZ >= bedLocation.getZ()) {
+					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
+						WarpDrive.logger.info(String.format("bedLocation %s ship %s min %d %d %d max %d %d %d",
+						                                    bedLocation, ship,
+						                                    ship.minX, ship.minY, ship.minZ,
+						                                    ship.maxX, ship.maxY, ship.maxZ));
+					}
+					if ( bedLocation != null
+					     && ship.minX <= bedLocation.getX() && ship.maxX >= bedLocation.getX()
+					     && ship.minY <= bedLocation.getY() && ship.maxY >= bedLocation.getY()
+					     && ship.minZ <= bedLocation.getZ() && ship.maxZ >= bedLocation.getZ()) {
 						bedLocation = transformation.apply(bedLocation);
 						player.setSpawnChunk(bedLocation, false, targetWorld.provider.getDimension());
 					}
