@@ -631,25 +631,25 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] radius(final Context context, final Arguments arguments) {
-		return radius(argumentsOCtoCC(arguments));
+		return radius(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] breakLeaves(final Context context, final Arguments arguments) {
-		return breakLeaves(argumentsOCtoCC(arguments));
+		return breakLeaves(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] silktouch(final Context context, final Arguments arguments) {
-		return silktouch(argumentsOCtoCC(arguments));
+		return silktouch(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] tapTrees(final Context context, final Arguments arguments) {
-		return tapTrees(argumentsOCtoCC(arguments));
+		return tapTrees(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	// Common OC/CC methods
@@ -734,8 +734,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "start":

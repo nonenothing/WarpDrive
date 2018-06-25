@@ -14,8 +14,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.fml.common.Optional;
 
@@ -216,19 +214,19 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(argumentsOCtoCC(arguments));
+		return enable(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] bounds(final Context context, final Arguments arguments) {
-		return bounds(argumentsOCtoCC(arguments));
+		return bounds(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] radius(final Context context, final Arguments arguments) {
-		return radius(argumentsOCtoCC(arguments));
+		return radius(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -246,8 +244,8 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "radius":

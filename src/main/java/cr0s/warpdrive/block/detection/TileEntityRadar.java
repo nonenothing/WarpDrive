@@ -231,19 +231,19 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] radius(final Context context, final Arguments arguments) {
-		return radius(argumentsOCtoCC(arguments));
+		return radius(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] getEnergyRequired(final Context context, final Arguments arguments) {
-		return getEnergyRequired(argumentsOCtoCC(arguments));
+		return getEnergyRequired(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] getScanDuration(final Context context, final Arguments arguments) {
-		return getScanDuration(argumentsOCtoCC(arguments));
+		return getScanDuration(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -267,13 +267,13 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] getResult(final Context context, final Arguments arguments) {
-		return getResult(argumentsOCtoCC(arguments));
+		return getResult(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public void attach(final IComputerAccess computer) {
+	public void attach(@Nonnull final IComputerAccess computer) {
 		super.attach(computer);
 		if (getBlockMetadata() == 0) {
 			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.ACTIVE);
@@ -282,7 +282,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public void detach(final IComputerAccess computer) {
+	public void detach(@Nonnull final IComputerAccess computer) {
 		super.detach(computer);
 		if (connectedComputers.isEmpty()) {
 			updateBlockState(null, BlockRadar.MODE, EnumRadarMode.INACTIVE);
@@ -291,8 +291,8 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "radius":

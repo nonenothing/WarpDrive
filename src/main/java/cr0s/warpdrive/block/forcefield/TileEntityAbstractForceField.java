@@ -17,9 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
+
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
@@ -148,7 +146,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(argumentsOCtoCC(arguments));
+		return enable(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -180,8 +178,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		try {
 			switch (methodName) {

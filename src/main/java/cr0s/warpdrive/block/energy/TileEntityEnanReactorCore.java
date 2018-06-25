@@ -523,7 +523,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(argumentsOCtoCC(arguments));
+		return enable(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -542,31 +542,31 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] instabilityTarget(final Context context, final Arguments arguments) {
-		return instabilityTarget(argumentsOCtoCC(arguments));
+		return instabilityTarget(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] release(final Context context, final Arguments arguments) {
-		return release(argumentsOCtoCC(arguments));
+		return release(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] releaseRate(final Context context, final Arguments arguments) {
-		return releaseRate(argumentsOCtoCC(arguments));
+		return releaseRate(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] releaseAbove(final Context context, final Arguments arguments) {
-		return releaseAbove(argumentsOCtoCC(arguments));
+		return releaseAbove(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] stabilizerEnergy(final Context context, final Arguments arguments) {
-		return stabilizerEnergy(argumentsOCtoCC(arguments));
+		return stabilizerEnergy(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -578,11 +578,11 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
 		// computer is alive => start updating reactor
 		hold = false;
 		
-		final String methodName = getMethodName(method);
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		try {
 			switch (methodName) {

@@ -239,10 +239,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		this.moveUp = moveUp;
 		this.moveRight = moveRight;
 		markDirty();
-		if (WarpDriveConfig.LOGGING_LUA && hasWorld()) {
-			WarpDrive.logger.info(String.format("%s Movement set to %d front, %d up, %d right",
-			                                    this, this.moveFront, this.moveUp, this.moveRight));
-		}
 	}
 	
 	protected byte getRotationSteps() {
@@ -252,10 +248,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	private void setRotationSteps(final byte rotationSteps) {
 		this.rotationSteps = (byte) ((rotationSteps + 4) % 4);
 		markDirty();
-		if (WarpDriveConfig.LOGGING_LUA && hasWorld()) {
-			WarpDrive.logger.info(String.format("%s Movement set to %d rotation steps",
-			                                    this, this.rotationSteps));
-		}
 	}
 	
 	protected void synchronizeFrom(@Nonnull final TileEntityAbstractShipController shipController) {
@@ -309,10 +301,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
 				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
 				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.info(String.format("%s Positive dimensions set to front %d, right %d, up %d",
-					                                    this, argInt0, argInt1, argInt2));
-				}
 				setFront(argInt0);
 				setRight(argInt1);
 				setUp(Math.min(255 - pos.getY(), argInt2));
@@ -334,10 +322,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
 				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
 				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.info(String.format("%s Negative dimensions set to back %d, left %d, down %d",
-					                                    this, argInt0, argInt1, argInt2));
-				}
 				setBack(argInt0);
 				setLeft(argInt1);
 				setDown(Math.min(pos.getY(), argInt2));
@@ -369,9 +353,6 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);
-			if (WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.info(this + " enable(" + isEnabled + ")");
-			}
 		}
 		return new Object[] { isEnabled };
 	}
@@ -447,19 +428,19 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] shipName(final Context context, final Arguments arguments) {
-		return shipName(argumentsOCtoCC(arguments));
+		return shipName(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] dim_positive(final Context context, final Arguments arguments) {
-		return dim_positive(argumentsOCtoCC(arguments));
+		return dim_positive(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] dim_negative(final Context context, final Arguments arguments) {
-		return dim_negative(argumentsOCtoCC(arguments));
+		return dim_negative(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -471,13 +452,13 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] command(final Context context, final Arguments arguments) {
-		return command(argumentsOCtoCC(arguments));
+		return command(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(argumentsOCtoCC(arguments));
+		return enable(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -495,19 +476,19 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] movement(final Context context, final Arguments arguments) {
-		return movement(argumentsOCtoCC(arguments));
+		return movement(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] rotationSteps(final Context context, final Arguments arguments) {
-		return rotationSteps(argumentsOCtoCC(arguments));
+		return rotationSteps(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] targetName(final Context context, final Arguments arguments) {
-		return targetName(argumentsOCtoCC(arguments));
+		return targetName(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -519,8 +500,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method, arguments);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "isAssemblyValid":

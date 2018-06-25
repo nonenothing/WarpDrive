@@ -1697,13 +1697,13 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] transporterName(final Context context, final Arguments arguments) {
-		return transporterName(argumentsOCtoCC(arguments));
+		return transporterName(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] enable(final Context context, final Arguments arguments) {
-		return enable(argumentsOCtoCC(arguments));
+		return enable(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -1715,19 +1715,19 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] remoteLocation(final Context context, final Arguments arguments) {
-		return remoteLocation(argumentsOCtoCC(arguments));
+		return remoteLocation(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] lock(final Context context, final Arguments arguments) {
-		return lock(argumentsOCtoCC(arguments));
+		return lock(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] energyFactor(final Context context, final Arguments arguments) {
-		return energyFactor(argumentsOCtoCC(arguments));
+		return energyFactor(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
@@ -1745,14 +1745,14 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] energize(final Context context, final Arguments arguments) {
-		return energize(argumentsOCtoCC(arguments));
+		return energize(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	// ComputerCraft IPeripheral methods
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "beamFrequency":

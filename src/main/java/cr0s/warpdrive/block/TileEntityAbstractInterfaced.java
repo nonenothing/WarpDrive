@@ -86,20 +86,6 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		}
 	}
 	
-	protected String getMethodName(final int methodIndex) {
-		return methodsArray[methodIndex];
-	}
-	
-	protected String getMethodName(final int methodIndex, final Object[] arguments) {
-		final String methodName = methodsArray[methodIndex];
-		
-		if (WarpDrive.isDev && WarpDriveConfig.LOGGING_LUA) {
-			WarpDrive.logger.info(String.format("LUA call to %s.%s(%s)", peripheralName, methodName, Commons.format(arguments)));
-		}
-		
-		return methodName;
-	}
-	
 	private boolean assetExist(final String resourcePath) {
 		final URL url = getClass().getResource(resourcePath);
 		return (url != null);
@@ -208,7 +194,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	// Dirty cheap conversion methods
 	@Optional.Method(modid = "opencomputers")
-	protected Object[] argumentsOCtoCC(final Arguments args) {
+	protected Object[] OC_convertArgumentsAndLogCall(final Context context, final Arguments args) {
 		final Object[] arguments = new Object[args.count()];
 		int index = 0;
 		for (final Object arg : args) {
@@ -219,7 +205,24 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			}
 			index++;
 		}
+		final String methodName = "-?-";
+		if (WarpDriveConfig.LOGGING_LUA) {
+			WarpDrive.logger.info(String.format("LUA call at (%d %d %d) to %s(%s).%s(%s)",
+			                                    pos.getX(), pos.getY(), pos.getZ(),
+			                                    peripheralName, context, methodName, Commons.format(arguments)));
+		}
 		return arguments;
+	}
+	
+	@Optional.Method(modid = "computercraft")
+	protected String CC_getMethodNameAndLogCall(final int methodIndex, @Nonnull final Object[] arguments) {
+		final String methodName = methodsArray[methodIndex];
+		if (WarpDriveConfig.LOGGING_LUA) {
+			WarpDrive.logger.info(String.format("LUA call at (%d %d %d) to %s.%s(%s)",
+			                                    pos.getX(), pos.getY(), pos.getZ(),
+			                                    peripheralName, methodName, Commons.format(arguments)));
+		}
+		return methodName;
 	}
 	
 	// Declare type
@@ -300,8 +303,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "interfaced":
@@ -319,7 +322,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public void attach(final IComputerAccess computer) {
+	public void attach(@Nonnull final IComputerAccess computer) {
 		final int id = computer.getID();
 		connectedComputers.put(id, computer);
 		if (CC_hasResource && WarpDriveConfig.G_LUA_SCRIPTS != WarpDriveConfig.LUA_SCRIPTS_NONE) {
@@ -347,7 +350,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public void detach(final IComputerAccess computer) {
+	public void detach(@Nonnull final IComputerAccess computer) {
 		final int id = computer.getID();
 		connectedComputers.remove(id);
 	}

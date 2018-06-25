@@ -419,19 +419,19 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] offset(final Context context, final Arguments arguments) {
-		return offset(argumentsOCtoCC(arguments));
+		return offset(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] onlyOres(final Context context, final Arguments arguments) {
-		return onlyOres(argumentsOCtoCC(arguments));
+		return onlyOres(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	@Callback
 	@Optional.Method(modid = "opencomputers")
 	public Object[] silktouch(final Context context, final Arguments arguments) {
-		return silktouch(argumentsOCtoCC(arguments));
+		return silktouch(OC_convertArgumentsAndLogCall(context, arguments));
 	}
 	
 	// Common OC/CC methods
@@ -468,9 +468,6 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			try {
 				mineAllBlocks = ! Commons.toBool(arguments[0]);
 				markDirty();
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.info(this + " onlyOres set to " + !mineAllBlocks);
-				}
 			} catch (final Exception exception) {
 				return new Object[] { !mineAllBlocks };
 			}
@@ -483,9 +480,6 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			try {
 				layerOffset = Math.min(256, Math.abs(Commons.toInt(arguments[0])));
 				markDirty();
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.info(this + " offset set to " + layerOffset);
-				}
 			} catch (final Exception exception) {
 				return new Integer[] { layerOffset };
 			}
@@ -498,9 +492,6 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			try {
 				enableSilktouch = Commons.toBool(arguments[0]);
 				markDirty();
-				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.info(this + " silktouch set to " + enableSilktouch);
-				}
 			} catch (final Exception exception) {
 				return new Object[] { enableSilktouch };
 			}
@@ -511,8 +502,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	// ComputerCraft IPeripheral methods implementation
 	@Override
 	@Optional.Method(modid = "computercraft")
-	public Object[] callMethod(final IComputerAccess computer, final ILuaContext context, final int method, final Object[] arguments) {
-		final String methodName = getMethodName(method);
+	public Object[] callMethod(@Nonnull final IComputerAccess computer, @Nonnull final ILuaContext context, final int method, @Nonnull final Object[] arguments) {
+		final String methodName = CC_getMethodNameAndLogCall(method, arguments);
 		
 		switch (methodName) {
 		case "start":
