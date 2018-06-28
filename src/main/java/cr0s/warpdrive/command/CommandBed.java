@@ -73,11 +73,11 @@ public class CommandBed extends CommandBase {
 			final BlockPos bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.world.provider.getDimension());
 			if (bedLocation == null) {
 				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("§cTeleportation failed:\nyou need to set your bed location in %s",
-				                                                     entityPlayerMP.world.provider.getDimensionType().getName())));
+				                                                                             Commons.format(entityPlayerMP.world))));
 				if (args.length != 0) {
 					Commons.addChatMessage(commandSender, new TextComponentString(String.format("§cTeleportation failed for player %s:\nplayer needs to set his/her bed location in %s",
-					                                                    entityPlayerMP.getName(),
-					                                                    entityPlayerMP.world.provider.getDimensionType().getName())));
+					                                                                            entityPlayerMP.getName(),
+					                                                                            Commons.format(entityPlayerMP.world))));
 				}
 				continue;
 			}
@@ -85,24 +85,23 @@ public class CommandBed extends CommandBase {
 			final Block block = entityPlayerMP.world.getBlockState(bedLocation).getBlock();
 			if (!(block instanceof BlockBed)) {
 				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("§cTeleportation failed:\nyour bed is no longer there in %s",
-				                                                     entityPlayerMP.world.provider.getSaveFolder())));
+				                                                                             Commons.format(entityPlayerMP.world))));
 				if (args.length != 0) {
 					Commons.addChatMessage(commandSender, new TextComponentString(String.format("§cTeleportation failed for player %s:\nbed is no longer there in %s",
-					                                                    entityPlayerMP.getName(),
-					                                                    entityPlayerMP.world.provider.getSaveFolder())));
+					                                                                            entityPlayerMP.getName(),
+					                                                                            Commons.format(entityPlayerMP.world))));
 				}
 				continue;
 			}
 			
 			entityPlayerMP.setPositionAndUpdate(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.5D, bedLocation.getZ() + 0.5D);
 			
-			Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("Teleporting to (%d %d %d)",
-			                                                     bedLocation.getX(), bedLocation.getY(), bedLocation.getZ())));
+			Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("Teleporting to %s",
+			                                                                             Commons.format(entityPlayerMP.world, bedLocation))));
 			if (args.length != 0) {
-				Commons.addChatMessage(commandSender, new TextComponentString(String.format("Teleporting player %s to %s @ (%d %d %d)",
-				                                                    entityPlayerMP.getName(),
-				                                                    entityPlayerMP.world.provider.getSaveFolder(),
-				                                                    bedLocation.getX(), bedLocation.getY(), bedLocation.getZ())));
+				Commons.addChatMessage(commandSender, new TextComponentString(String.format("Teleporting player %s to %s",
+				                                                                            entityPlayerMP.getName(),
+				                                                                            Commons.format(entityPlayerMP.world, bedLocation))));
 			}
 		}
 	}

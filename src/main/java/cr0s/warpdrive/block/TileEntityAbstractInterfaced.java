@@ -207,8 +207,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 		}
 		final String methodName = "-?-";
 		if (WarpDriveConfig.LOGGING_LUA) {
-			WarpDrive.logger.info(String.format("LUA call at (%d %d %d) to %s(%s).%s(%s)",
-			                                    pos.getX(), pos.getY(), pos.getZ(),
+			WarpDrive.logger.info(String.format("LUA call %s to %s(%s).%s(%s)",
+			                                    Commons.format(world, pos),
 			                                    peripheralName, context, methodName, Commons.format(arguments)));
 		}
 		return arguments;
@@ -218,8 +218,8 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	protected String CC_getMethodNameAndLogCall(final int methodIndex, @Nonnull final Object[] arguments) {
 		final String methodName = methodsArray[methodIndex];
 		if (WarpDriveConfig.LOGGING_LUA) {
-			WarpDrive.logger.info(String.format("LUA call at (%d %d %d) to %s.%s(%s)",
-			                                    pos.getX(), pos.getY(), pos.getZ(),
+			WarpDrive.logger.info(String.format("LUA call %s to %s.%s(%s)",
+			                                    Commons.format(world, pos),
 			                                    peripheralName, methodName, Commons.format(arguments)));
 		}
 		return methodName;
@@ -339,10 +339,9 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 				}
 			} catch (final Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error(String.format("Failed to mount ComputerCraft scripts for %s @ %s (%d %d %d), isFirstTick %s",
+				WarpDrive.logger.error(String.format("Failed to mount ComputerCraft scripts for %s %s, isFirstTick %s",
 				                                     peripheralName,
-				                                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-				                                     pos.getX(), pos.getY(), pos.getZ(),
+				                                     Commons.format(world, pos),
 				                                     isFirstTick()));
 			}
 		}

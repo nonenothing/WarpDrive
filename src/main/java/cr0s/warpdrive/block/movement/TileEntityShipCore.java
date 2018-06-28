@@ -1194,10 +1194,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	public String toString() {
-		return String.format("%s \'%s\' @ %s (%d %d %d)",
+		return String.format("%s '%s' %s",
 		                     getClass().getSimpleName(),
 		                     shipName,
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
+		                     Commons.format(world, pos));
 	}
 }

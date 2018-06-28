@@ -334,12 +334,13 @@ public class JumpSequencer extends AbstractSequencer {
 	
 	private boolean forceSourceChunks(final StringBuilder reason) {
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Forcing source chunks in " + sourceWorld.provider.getDimensionType().getName());
+			WarpDrive.logger.info(String.format("%s Forcing source chunks in %s",
+			                                    this, Commons.format(sourceWorld)));
 		}
 		sourceWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, sourceWorld, Type.NORMAL);
 		if (sourceWorldTicket == null) {
 			reason.append(String.format("Chunkloading rejected in source world %s. Aborting.",
-			                            sourceWorld.provider.getSaveFolder()));
+			                            Commons.format(sourceWorld)));
 			return false;
 		}
 		
@@ -366,12 +367,13 @@ public class JumpSequencer extends AbstractSequencer {
 	private boolean forceTargetChunks(final StringBuilder reason) {
 		LocalProfiler.start("Jump.forceTargetChunks");
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Forcing target chunks in " + targetWorld.provider.getDimensionType().getName());
+			WarpDrive.logger.info(String.format("%s Forcing target chunks in %s",
+			                                    this, Commons.format(targetWorld)));
 		}
 		targetWorldTicket = ForgeChunkManager.requestTicket(WarpDrive.instance, targetWorld, Type.NORMAL);
 		if (targetWorldTicket == null) {
 			reason.append(String.format("Chunkloading rejected in target world %s. Aborting.",
-			                            targetWorld.provider.getSaveFolder()));
+			                            Commons.format(targetWorld)));
 			return false;
 		}
 		
@@ -581,7 +583,8 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		if (betweenWorlds && WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " From world " + sourceWorld.provider.getDimensionType().getName() + " to " + targetWorld.provider.getDimensionType().getName());
+			WarpDrive.logger.info(String.format("%s From world %s to %s",
+			                                    this, Commons.format(sourceWorld), Commons.format(targetWorld)));
 		}
 		
 		// Calculate jump vector
@@ -685,8 +688,8 @@ public class JumpSequencer extends AbstractSequencer {
 			final CelestialObject celestialObjectTarget = CelestialObjectManager.get(targetWorld, (int) aabbTarget.minX, (int) aabbTarget.minZ);
 			if (celestialObjectTarget == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.error(String.format("There's no world border defined for dimension %s (%d)",
-						targetWorld.provider.getSaveFolder(), targetWorld.provider.getDimension()));
+					WarpDrive.logger.error(String.format("There's no world border defined for %s (%d)",
+					                                     Commons.format(targetWorld), targetWorld.provider.getDimension()));
 				}
 				
 			} else {
@@ -824,8 +827,8 @@ public class JumpSequencer extends AbstractSequencer {
 			final CelestialObject celestialObject = CelestialObjectManager.getClosestChild(sourceWorld, ship.core.getX(), ship.core.getZ());
 			// anything defined?
 			if (celestialObject == null) {
-				reason.append(String.format("Unable to reach space from this location!\nThere's no celestial object defined for current dimension %s (%d).",
-				                            sourceWorld.provider.getSaveFolder(), sourceWorld.provider.getDimension()));
+				reason.append(String.format("Unable to reach space from this location!\nThere's no celestial object defined for %s (%d).",
+				                            Commons.format(sourceWorld), sourceWorld.provider.getDimension()));
 				return false;
 			}
 			
@@ -865,8 +868,8 @@ public class JumpSequencer extends AbstractSequencer {
 		case HYPERSPACE_ENTERING: {
 			// anything defined?
 			if (celestialObjectSource.parent == null) {
-				reason.append(String.format("Unable to reach hyperspace!\nThere's no parent defined for current dimension %s (%d).",
-				                            sourceWorld.provider.getSaveFolder(), sourceWorld.provider.getDimension()));
+				reason.append(String.format("Unable to reach hyperspace!\nThere's no parent defined for %s (%d).",
+				                            Commons.format(sourceWorld), sourceWorld.provider.getDimension()));
 				return false;
 			}
 			// (target world border is checked systematically after movement checks)
@@ -894,8 +897,8 @@ public class JumpSequencer extends AbstractSequencer {
 		case PLANET_TAKEOFF: {
 			// anything defined?
 			if (celestialObjectSource.parent == null) {
-				reason.append(String.format("Unable to take off!\nThere's no parent defined for current dimension %s (%d).",
-				                            sourceWorld.provider.getSaveFolder(), sourceWorld.provider.getDimension()));
+				reason.append(String.format("Unable to take off!\nThere's no parent defined for %s (%d).",
+				                            Commons.format(sourceWorld), sourceWorld.provider.getDimension()));
 				return false;
 			}
 			
@@ -1586,9 +1589,8 @@ public class JumpSequencer extends AbstractSequencer {
 			public int compare(final TileEntity o1, final TileEntity o2) {
 				if (o1.getPos().getX() == o2.getPos().getX() && o1.getPos().getY() == o2.getPos().getY() && o1.getPos().getZ() == o2.getPos().getZ()) {
 					if (WarpDriveConfig.LOGGING_JUMP) {
-						WarpDrive.logger.warn(String.format("Removing TE duplicates: detected duplicate in %s @ %d %d %d: %s vs %s",
-						                                    o1.getWorld().provider.getDimensionType().getName(),
-						                                    o1.getPos().getX(), o1.getPos().getY(), o1.getPos().getZ(),
+						WarpDrive.logger.warn(String.format("Removing TE duplicates: detected duplicate %s: %s vs %s",
+						                                    Commons.format(o1.getWorld(), o1.getPos()),
 						                                    o1, o2));
 						final NBTTagCompound nbtTagCompound1 = new NBTTagCompound();
 						o1.writeToNBT(nbtTagCompound1);
@@ -1621,10 +1623,10 @@ public class JumpSequencer extends AbstractSequencer {
 	@Override
 	public String toString() {
 		return String.format("%s/%d \'%s\' @ %s (%d %d %d) #%d",
-			getClass().getSimpleName(), hashCode(),
-			(ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
-			sourceWorld == null ? "~NULL~" : sourceWorld.provider.getSaveFolder(),
-			ship == null ? -1 : ship.core.getX(), ship == null ? -1 : ship.core.getY(), ship == null ? -1 : ship.core.getZ(),
-			ticks);
+		                     getClass().getSimpleName(), hashCode(),
+		                     (ship == null || ship.shipCore == null) ? "~NULL~" : (ship.shipCore.uuid + ":" + ship.shipCore.shipName),
+		                     Commons.format(sourceWorld),
+		                     ship == null ? -1 : ship.core.getX(), ship == null ? -1 : ship.core.getY(), ship == null ? -1 : ship.core.getZ(),
+		                     ticks);
 	}
 }

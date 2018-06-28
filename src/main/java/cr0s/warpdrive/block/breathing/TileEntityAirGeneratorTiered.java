@@ -158,14 +158,6 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		return true;
 	}
 	
-	@Override
-	public String toString() {
-		return String.format("%s @ %s (%d %d %d)",
-		                     getClass().getSimpleName(),
-		                     world == null ? "~NULL~" : world.getWorldInfo().getWorldName(),
-		                     pos.getX(), pos.getY(), pos.getZ());
-	}
-	
 	public Object[] enable(final Object[] arguments) {
 		if (arguments.length == 1 && arguments[0] != null) {
 			isEnabled = Commons.toBool(arguments[0]);

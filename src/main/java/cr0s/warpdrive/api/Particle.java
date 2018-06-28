@@ -119,9 +119,8 @@ public class Particle {
 		if (explosionStrength > 0.0F) {
 			final float amountFactor = Math.max(1.25F, amount / 1000.0F);
 			world.newExplosion(null, v3Position.x, v3Position.y, v3Position.z, explosionStrength * amountFactor, true, true);
-			WarpDrive.logger.info(String.format("Explosion in %s @ (%.1f %.1f %.1f) with strength %.3f due to %d mg of %s",
-			                                    world.provider.getSaveFolder(),
-			                                    v3Position.x, v3Position.y, v3Position.z,
+			WarpDrive.logger.info(String.format("Explosion %s with strength %.3f due to %d mg of %s",
+			                                    Commons.format(world, v3Position),
 			                                    explosionStrength * amountFactor,
 			                                    amount,
 			                                    this));

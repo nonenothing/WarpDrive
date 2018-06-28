@@ -861,8 +861,8 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		                                                   WarpDriveConfig.TRANSPORTER_ENERGIZING_ENERGY_FACTORS[4]) ) );
 		
 		if (WarpDriveConfig.LOGGING_TRANSPORTER) {
-			WarpDrive.logger.info(String.format("Transporter parameters at (%d %d %d) are range (actual %d max %d) lockStrength (actual %.5f optimal %.5f speed %.5f)",
-			                                    pos.getX(), pos.getY(), pos.getZ(),
+			WarpDrive.logger.info(String.format("Transporter parameters at %s are range (actual %d max %d) lockStrength (actual %.5f optimal %.5f speed %.5f)",
+			                                    Commons.format(world, pos),
 			                                    rangeActual, rangeMax,
 			                                    lockStrengthActual, lockStrengthOptimal, lockStrengthSpeed));
 		}
@@ -1794,11 +1794,10 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public String toString() {
-		return String.format("%s \'%s\' %s Beam %d @ %s (%d %d %d)",
+		return String.format("%s \'%s\' %s Beam %d %s",
 		                     getClass().getSimpleName(),
 		                     transporterName, uuid,
 		                     beamFrequency,
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
+		                     Commons.format(world, pos));
 	}
 }

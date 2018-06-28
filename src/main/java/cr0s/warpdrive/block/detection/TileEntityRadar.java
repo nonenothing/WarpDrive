@@ -113,11 +113,7 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 			final Vector3 vec3Position = StarMapRegistry.getUniversalCoordinates(celestialObject, pos.getX(), pos.getY(), pos.getZ());
 			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), celestialObject.getDisplayName(), vec3Position.x, vec3Position.y, vec3Position.z };
 		} else {
-			String name = world.provider.getSaveFolder();
-			if (name == null || name.isEmpty()) {
-				name = "DIM" + world.provider.getDimension();
-			}
-			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), name, pos.getX(), pos.getY(), pos.getZ() };
+			return new Object[] { pos.getX(), pos.getY(), pos.getZ(), Commons.format(world), pos.getX(), pos.getY(), pos.getZ() };
 		}
 	}
 	

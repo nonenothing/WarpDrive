@@ -152,12 +152,10 @@ public class TileEntityLaserCamera extends TileEntityLaser implements IVideoChan
 	
 	@Override
 	public String toString() {
-		return String.format("%s Beam \'%d\' Camera \'%d\' @ %s (%d %d %d)",
+		return String.format("%s Beam \'%d\' Camera \'%d\' %s",
 		                     getClass().getSimpleName(),
 		                     beamFrequency,
 		                     videoChannel,
-		                     world == null ? "~NULL~" : world.getWorldInfo().getWorldName(),
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
+		                     Commons.format(world, pos));
 	}
 }

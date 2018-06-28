@@ -56,12 +56,4 @@ public class TileEntityAcceleratorController extends TileEntityAbstractEnergy im
 	public void onBlockUpdatedInArea(final VectorI vector, final IBlockState blockState) {
 		
 	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s @ \'%s\' (%d %d %d)",
-		                     getClass().getSimpleName(),
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
-	}
 }

@@ -67,12 +67,14 @@ public class CommandDebug extends CommandBase {
 			return;
 		}
 
-		WarpDrive.logger.info("/" + getName() + " " + dim + " " + x + "," + y + "," + z + " " + block + ":" + metadata + " " + actions);
+		WarpDrive.logger.info(String.format("/%s %d (%d %d %d) %s:%d %s",
+		                                    getName(), dim, x, y, z, block, metadata, actions));
 		final World world = DimensionManager.getWorld(dim);
 		final BlockPos blockPos = new BlockPos(x, y, z);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
-			WarpDrive.logger.info("[" + getName() + "] In dimension " + world.getProviderName() + " - " + world.getWorldInfo().getWorldName()
-			                     + ", Current block is " + world.getBlockState(blockPos) + ", tile entity is " + ((tileEntity == null) ? "undefined" : "defined"));
+		WarpDrive.logger.info(String.format("[%s] %s, Current block is %s, tile entity is %s",
+		                                    getName(), Commons.format(world),
+		                                    world.getBlockState(blockPos), ((tileEntity == null) ? "undefined" : "defined")));
 		final String side = FMLCommonHandler.instance().getEffectiveSide().isClient() ? "Client" : "Server";
 
 		// I(nvalidate), V(alidate), A(set air), R(emoveEntity), P(setBlock), S(etEntity)
@@ -80,24 +82,29 @@ public class CommandDebug extends CommandBase {
 		for (final char cAction : actions.toUpperCase().toCharArray()) {
 			switch (cAction) {
 			case 'I':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": invalidating");
+				WarpDrive.logger.info(String.format("[%s] %s: invalidating",
+				                                    getName(), side));
 				if (tileEntity != null) {
 					tileEntity.invalidate();
 				}
 				break;
 			case 'V':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": validating");
+				WarpDrive.logger.info(String.format("[%s] %s: validating",
+				                                    getName(), side));
 				if (tileEntity != null) {
 					tileEntity.validate();
 				}
 				break;
 			case 'A':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": setting to Air");
+				WarpDrive.logger.info(String.format("[%s] %s: setting to Air",
+				                                    getName(), side));
 				bReturn = world.setBlockToAir(blockPos);
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": returned " + bReturn);
+				WarpDrive.logger.info(String.format("[%s] %s: returned %s",
+				                                    getName(), side, bReturn));
 				break;
 			case 'R':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": remove entity");
+				WarpDrive.logger.info(String.format("[%s] %s: remove entity",
+				                                    getName(), side));
 				world.removeTileEntity(blockPos);
 				break;
 			case '0':
@@ -108,27 +115,34 @@ public class CommandDebug extends CommandBase {
 			case '5':
 			case '6':
 			case '7':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": set block " + x + ", " + y + ", " + z + " to " + block + ":" + metadata);
+				WarpDrive.logger.info(String.format("[%s] %s: set block (%d %d %d) to %s:%s" ,
+				                                    getName(), side, x, y, z, block, metadata));
 				bReturn = world.setBlockState(blockPos, Block.getBlockById(block).getStateFromMeta(metadata), cAction - '0');
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": returned " + bReturn);
+				WarpDrive.logger.info(String.format("[%s] %s: returned %s",
+				                                    getName(), side, bReturn));
 				break;
 			case 'P':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": set block " + x + ", " + y + ", " + z + " to " + block + ":" + metadata);
+				WarpDrive.logger.info(String.format("[%s] %s: set block (%d %d %d) to %s:%s",
+				                                    getName(), side, x, y, z, block, metadata));
 				bReturn = world.setBlockState(blockPos, Block.getBlockById(block).getStateFromMeta(metadata), 2);
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": returned " + bReturn);
+				WarpDrive.logger.info(String.format("[%s] %s: returned %s",
+				                                    getName(), side, bReturn));
 				break;
 			case 'S':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": set entity");
+				WarpDrive.logger.info(String.format("[%s] %s: set entity",
+				                                    getName(), side));
 				world.setTileEntity(blockPos, tileEntity);
 				break;
 			case 'C':
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": update containing block info");
+				WarpDrive.logger.info(String.format("[%s] %s: update containing block info",
+				                                    getName(), side));
 				if (tileEntity != null) {
 					tileEntity.updateContainingBlockInfo();
 				}
 				break;
 			default:
-				WarpDrive.logger.info("[" + getName() + "] " + side + ": invalid step '" + cAction + "'");
+				WarpDrive.logger.info(String.format("[%s] %s: invalid step '%s",
+				                                    getName(), side, cAction));
 				break;
 			}
 		}

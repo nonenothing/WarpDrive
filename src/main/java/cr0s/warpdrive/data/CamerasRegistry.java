@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -29,8 +30,8 @@ public class CamerasRegistry {
 					return cam;
 				} else {
 					if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-						WarpDrive.logger.info("Removing 'dead' camera at "
-							+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ() + " (while searching)");
+						WarpDrive.logger.info(String.format("Removing 'dead' camera %s (while searching)",
+						                                    Commons.format(world, cam.position)));
 					}
 					it.remove();
 				}
@@ -57,14 +58,15 @@ public class CamerasRegistry {
 	
 	private static boolean isCamAlive(final World world, final CameraRegistryItem cam) {
 		if (world.provider.getDimension() != cam.dimensionId) {
-			WarpDrive.logger.error("Inconsistent world with camera " + world.provider.getDimension() + " vs " + cam.dimensionId);
+			WarpDrive.logger.error(String.format("Inconsistent world with camera %s: world %d vs cam %d",
+			                                     cam, world.provider.getDimension(), cam.dimensionId));
 			return false;
 		}
 		
 		if (!world.getChunkFromBlockCoords(cam.position).isLoaded()) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info("Reporting an 'unloaded' camera in dimension " + cam.dimensionId + " at "
-						+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ());
+				WarpDrive.logger.info(String.format("Reporting an 'unloaded' camera %s",
+				                                    Commons.format(world, cam.position)));
 			}
 			return false;
 		}
@@ -72,8 +74,8 @@ public class CamerasRegistry {
 		if ( block != WarpDrive.blockCamera
 		  && block != WarpDrive.blockLaserCamera ) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info("Reporting a 'dead' camera in dimension " + cam.dimensionId + " at "
-						+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ());
+				WarpDrive.logger.info(String.format("Reporting a 'dead' camera %s",
+				                                    Commons.format(world, cam.position)));
 			}
 			return false;
 		}
@@ -89,8 +91,8 @@ public class CamerasRegistry {
 			cam = it.next();
 			if (!isCamAlive(world, cam)) {
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-					WarpDrive.logger.info("Removing 'dead' camera in dimension " + cam.dimensionId + " at "
-							+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ());
+					WarpDrive.logger.info(String.format("Removing 'dead' camera %s",
+					                                    Commons.format(world, cam.position)));
 				}
 				it.remove();
 			}
@@ -103,8 +105,8 @@ public class CamerasRegistry {
 		final CameraRegistryItem cam = getCamByPosition(world, position);
 		if (cam != null) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info("Removing camera by request in dimension " + cam.dimensionId + " at "
-						+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ());
+				WarpDrive.logger.info(String.format("Removing camera by request %s",
+				                                    Commons.format(world, cam.position)));
 			}
 			registry.remove(cam);
 		}
@@ -118,22 +120,23 @@ public class CamerasRegistry {
 			final CameraRegistryItem existingCam = getCamByPosition(world, cam.position);
 			if (existingCam == null) {
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-					WarpDrive.logger.info("Adding 'live' camera at "
-							+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ()
-							+ " with video channel '" + cam.videoChannel + "'");
+					WarpDrive.logger.info(String.format("Adding 'live' camera %s with video channel %s",
+					                                    Commons.format(world, cam.position),
+					                                    cam.videoChannel));
 				}
 				registry.add(cam);
 			} else if (existingCam.videoChannel != cam.videoChannel) {
 				if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-					WarpDrive.logger.info("Updating 'live' camera at "
-							+ cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ()
-							+ " from video channel '" + existingCam.videoChannel + "' to video channel '" + cam.videoChannel + "'");
+					WarpDrive.logger.info(String.format("Updating 'live' camera %s from video channel %d to video channel %d",
+					                                    Commons.format(world, cam.position),
+					                                    existingCam.videoChannel, cam.videoChannel));
 				}
 				existingCam.videoChannel = cam.videoChannel;
 			}
 		} else {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info("Unable to update 'dead' camera at " + cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ());
+				WarpDrive.logger.info(String.format("Unable to update 'dead' camera %s",
+				                                    Commons.format(world, cam.position)));
 			}
 		}
 	}
@@ -142,10 +145,12 @@ public class CamerasRegistry {
 		if (world == null) {
 			return;
 		}
-		WarpDrive.logger.info("Cameras registry for dimension " + world.provider.getSaveFolder() + ":");
+		WarpDrive.logger.info(String.format("Cameras registry for %s:",
+		                                    Commons.format(world)));
 		
 		for (final CameraRegistryItem cam : registry) {
-			WarpDrive.logger.info("- " + cam.videoChannel + " (" + cam.position.getX() + ", " + cam.position.getY() + ", " + cam.position.getZ() + ")");
+			WarpDrive.logger.info(String.format("- %d (%d %d %d)",
+			                                    cam.videoChannel, cam.position.getX(), cam.position.getY(), cam.position.getZ()));
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
 import cr0s.warpdrive.data.CelestialObjectManager;
@@ -31,7 +32,7 @@ public class RenderOverlayLocation {
 		final int z = MathHelper.floor(entityPlayer.posZ);
 		
 		// get celestial object
-		String name = entityPlayer.world.provider.getDimensionType().getName();
+		String name = Commons.format(entityPlayer.world);
 		String description = "";
 		final CelestialObject celestialObject = CelestialObjectManager.get(entityPlayer.world, x, z);
 		if (celestialObject != null) {

@@ -1,6 +1,8 @@
 package cr0s.warpdrive.event;
 
 import com.google.common.collect.ImmutableSet;
+
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractChunkLoading;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -41,9 +43,8 @@ public class ChunkLoadingHandler implements LoadingCallback {
 			final int z = tagCompound.getInteger("posZ");
 			final TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 			if (!(tileEntity instanceof TileEntityAbstractChunkLoading)) {
-				WarpDrive.logger.error(String.format("Unable to resume chunkloading @ %s (%d %d %d): invalid tile entity %s",
-				                                     world.provider.getSaveFolder(),
-				                                     x, y, z,
+				WarpDrive.logger.error(String.format("Unable to resume chunkloading %s: invalid tile entity %s",
+				                                     Commons.format(world, x, y, z),
 				                                     tileEntity == null ? "-null-" : tileEntity));
 				ForgeChunkManager.releaseTicket(ticket);
 				continue;
@@ -52,9 +53,8 @@ public class ChunkLoadingHandler implements LoadingCallback {
 			final TileEntityAbstractChunkLoading tileEntityAbstractChunkLoading = (TileEntityAbstractChunkLoading) tileEntity;
 			final boolean shouldChunkLoad = tileEntityAbstractChunkLoading.shouldChunkLoad();
 			if (!shouldChunkLoad) {
-				WarpDrive.logger.warn(String.format("Unable to resume chunkloading @ %s (%d %d %d): chunk loader is disabled or out of power %s",
-				                                    world.provider.getSaveFolder(),
-				                                    x, y, z,
+				WarpDrive.logger.warn(String.format("Unable to resume chunkloading %s: chunk loader is disabled or out of power %s",
+				                                    Commons.format(world, x, y, z),
 				                                    tileEntity));
 				ForgeChunkManager.releaseTicket(ticket);
 				continue;
@@ -70,21 +70,20 @@ public class ChunkLoadingHandler implements LoadingCallback {
 	public static Ticket forgeTicket_requestNormal(final World world, final TileEntity tileEntity) {
 		if (ForgeChunkManager.ticketCountAvailableFor(WarpDrive.instance, world) <= 0) {
 			WarpDrive.logger.error(String.format("No ChunkLoader tickets available for %s",
-			                                     world.provider.getSaveFolder()));
+			                                     Commons.format(world)));
 			return null;
 		}
 		
 		final Ticket ticket = ForgeChunkManager.requestTicket(WarpDrive.instance, world, Type.NORMAL);
 		if (ticket == null) {
 			WarpDrive.logger.error(String.format("Failed to register ChunkLoader Ticket for %s",
-			                                     world.provider.getSaveFolder()));
+			                                     Commons.format(world)));
 			return null;
 		}
 		
 		if (WarpDriveConfig.LOGGING_CHUNK_LOADING) {
-			WarpDrive.logger.info(String.format("Forcing chunk loading @ %s (%d %d %d)",
-			                                    ticket.world.provider.getSaveFolder(),
-			                                    tileEntity.getPos().getX(), tileEntity.getPos().getY(), tileEntity.getPos().getZ()));
+			WarpDrive.logger.info(String.format("Forcing chunk loading %s",
+			                                    Commons.format(ticket.world, tileEntity.getPos())));
 		}
 		
 		final NBTTagCompound tagCompound = ticket.getModData();
@@ -109,7 +108,7 @@ public class ChunkLoadingHandler implements LoadingCallback {
 	public static void forgeTicket_addChunks(final Ticket ticket, final ChunkPos chunk) {
 		if (WarpDrive.isDev) {
 			WarpDrive.logger.info(String.format("Forcing chunk loading @ %s %s",
-			                                    ticket.world.provider.getSaveFolder(),
+			                                    Commons.format(ticket.world),
 			                                    chunk));
 		}
 		ForgeChunkManager.forceChunk(ticket, chunk);
@@ -125,16 +124,15 @@ public class ChunkLoadingHandler implements LoadingCallback {
 			final int x = tagCompound.getInteger("posX");
 			final int y = tagCompound.getInteger("posY");
 			final int z = tagCompound.getInteger("posZ");
-			WarpDrive.logger.info(String.format("Releasing chunk loading @ %s (%d %d %d)",
-			                                    ticket.world.provider.getSaveFolder(),
-			                                    x, y, z));
+			WarpDrive.logger.info(String.format("Releasing chunk loading %s",
+			                                    Commons.format(ticket.world, x, y, z)));
 		}
 		
 		final ImmutableSet<ChunkPos> chunks = ticket.getChunkList();
 		for (final ChunkPos chunk : chunks) {
 			if (WarpDrive.isDev) {
 				WarpDrive.logger.info(String.format("Releasing chunk loading @ %s %s",
-				                                    ticket.world.provider.getSaveFolder(),
+				                                    Commons.format(ticket.world),
 				                                    chunk));
 			}
 			ForgeChunkManager.unforceChunk(ticket, chunk);

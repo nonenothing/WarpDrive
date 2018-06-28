@@ -287,10 +287,9 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ %s (%d %d %d) %8d EU linked to %s %s",
+		return String.format("%s %s %8d EU linked to %s %s",
 		                     getClass().getSimpleName(),
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ(),
+		                     Commons.format(world, pos),
 		                     energy_getEnergyStored(),
 		                     nameTransporterCore, uuidTransporterCore);
 	}

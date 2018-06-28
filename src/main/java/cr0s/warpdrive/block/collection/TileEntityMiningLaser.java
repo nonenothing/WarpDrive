@@ -560,12 +560,4 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		}
 		return state;
 	}
-	
-	@Override
-	public String toString() {
-		return String.format("%s @ \'%s\' %d, %d, %d",
-		                     getClass().getSimpleName(), 
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
-	}
 }

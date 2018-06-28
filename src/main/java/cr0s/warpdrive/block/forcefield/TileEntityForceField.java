@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
@@ -130,9 +131,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 						// projector is disabled or out of power
 						world.setBlockToAir(pos);
 						if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-							WarpDrive.logger.info(String.format("Removed a force field from an offline projector @ %s (%d %d %d)", 
-							                                    world == null ? "~NULL~" : world.provider.getSaveFolder(),
-							                                    pos.getX(), pos.getY(), pos.getZ()));
+							WarpDrive.logger.info(String.format("Removed a force field from an offline projector %s",
+							                                    Commons.format(world, pos)));
 						}
 					}
 				}
@@ -144,9 +144,8 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 			if (gracePeriod_calls < 0) {
 				world.setBlockToAir(pos);
 				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
-					WarpDrive.logger.info(String.format("Removed a force field with no projector defined @ %s (%d %d %d)",
-					                                    world == null ? "~NULL~" : world.provider.getSaveFolder(),
-					                                    pos.getX(), pos.getY(), pos.getZ()));
+					WarpDrive.logger.info(String.format("Removed a force field with no projector defined %s",
+					                                    Commons.format(world, pos)));
 				}
 			}
 		}

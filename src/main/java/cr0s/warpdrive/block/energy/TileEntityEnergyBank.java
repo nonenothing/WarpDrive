@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
@@ -185,10 +186,9 @@ public class TileEntityEnergyBank extends TileEntityAbstractEnergy {
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ %s (%d %d %d) %8d",
+		return String.format("%s %s %8d",
 		                     getClass().getSimpleName(),
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ(),
+		                     Commons.format(world, pos),
 		                     energy_getEnergyStored());
 	}
 }

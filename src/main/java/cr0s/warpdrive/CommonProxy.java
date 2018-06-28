@@ -63,9 +63,8 @@ public class CommonProxy {
 			return false;
 		}
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
-			WarpDrive.logger.info("isBlockBreakCanceled by " + uuidPlayer
-			                      + " at " + blockPosSource.getX() + " " + blockPosSource.getY() + " " + blockPosSource.getZ()
-			                      + " to " + world.provider.getDimensionType().getName() + " " + blockPosEvent.getX() + " " + blockPosEvent.getY() + " " + blockPosEvent.getZ());
+			WarpDrive.logger.info(String.format("isBlockBreakCanceled by %s %s to block %s",
+			                                    uuidPlayer, Commons.format(world, blockPosSource), Commons.format(world, blockPosEvent)));
 		}
 		
 		final IBlockState blockState = world.getBlockState(blockPosEvent);
@@ -75,8 +74,8 @@ public class CommonProxy {
 				getFakePlayer(uuidPlayer, (WorldServer) world, blockPosSource));
 			MinecraftForge.EVENT_BUS.post(breakEvent);
 			if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
-				WarpDrive.logger.info("isBlockBreakCanceled player " + breakEvent.getPlayer()
-					+ " isCanceled " + breakEvent.isCanceled());
+				WarpDrive.logger.info(String.format("isBlockBreakCanceled player %s isCanceled %s",
+				                                    breakEvent.getPlayer(), breakEvent.isCanceled()));
 			}
 			return breakEvent.isCanceled();
 		}
@@ -89,10 +88,9 @@ public class CommonProxy {
 			return false;
 		}
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
-			WarpDrive.logger.info("isBlockPlaceCanceled by " + uuidPlayer
-			                      + " at " + blockPosSource.getX() + " " + blockPosSource.getY() + " " + blockPosSource.getZ()
-			                      + " to " + world.provider.getDimensionType().getName() + " " + blockPosEvent.getX() + " " + blockPosEvent.getY() + " " + blockPosEvent.getZ()
-			                      + " of " + blockState);
+			WarpDrive.logger.info(String.format("isBlockPlaceCanceled by %s %s to block %s %s",
+			                                    uuidPlayer, Commons.format(world, blockPosSource),
+			                                    Commons.format(world, blockPosEvent), blockState));
 		}
 		final BlockEvent.PlaceEvent placeEvent = new BlockEvent.PlaceEvent(
 				new BlockSnapshot(world, blockPosEvent, blockState),
@@ -102,7 +100,8 @@ public class CommonProxy {
 		
 		MinecraftForge.EVENT_BUS.post(placeEvent);
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE) {
-			WarpDrive.logger.info("isBlockPlaceCanceled player " + placeEvent.getPlayer() + " isCanceled " + placeEvent.isCanceled());
+			WarpDrive.logger.info(String.format("isBlockPlaceCanceled player %s isCanceled %s",
+			                                    placeEvent.getPlayer(), placeEvent.isCanceled()));
 		}
 		return placeEvent.isCanceled();
 	}

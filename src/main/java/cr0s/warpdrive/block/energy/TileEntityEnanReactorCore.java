@@ -746,10 +746,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public String toString() {
-		return String.format("%s %s @ %s (%d %d %d)", 
+		return String.format("%s %s %s",
 		                     getClass().getSimpleName(), 
-		                     connectedComputers == null ? "~NULL~" : connectedComputers, 
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
+		                     connectedComputers == null ? "~NULL~" : connectedComputers,
+		                     Commons.format(world, pos));
 	}
 }

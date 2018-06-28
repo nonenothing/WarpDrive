@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.movement;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
 
@@ -277,10 +278,9 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 	@Override
 	public String toString() {
 		final TileEntityShipCore tileEntityShipCore = tileEntityShipCoreWeakReference == null ? null : tileEntityShipCoreWeakReference.get();
-		return String.format("%s \'%s\' @ %s (%d %d %d)",
+		return String.format("%s \'%s\' %s",
 		                     getClass().getSimpleName(),
 		                     tileEntityShipCore == null ? "-NULL-" : tileEntityShipCore.shipName,
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
+		                     Commons.format(world, pos.getX(), pos.getY(), pos.getZ()));
 	}
 }

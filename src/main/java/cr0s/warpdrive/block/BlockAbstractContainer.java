@@ -177,8 +177,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	@Optional.Method(modid = "DefenseTech")
 	public void onEMP(final World world, final int x, final int y, final int z, final defense.api.IExplosion explosiveEMP) {
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and radius %.1f",
-			                                    world.provider.getSaveFolder(), x, y, z,
+			WarpDrive.logger.info(String.format("EMP received %s from %s with energy %d and radius %.1f",
+			                                    Commons.format(world, x, y, z),
 			                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
@@ -190,8 +190,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		} else {
 			if (!isInvalidEMPreported) {
 				isInvalidEMPreported = true;
-				WarpDrive.logger.warn(String.format("EMP received @ %s (%d %d %d) from %s with energy %d and unsupported radius %.1f",
-			                                      world.provider.getSaveFolder(), x, y, z,
+				WarpDrive.logger.warn(String.format("EMP received %s from %s with energy %d and unsupported radius %.1f",
+				                                    Commons.format(world, x, y, z),
 				                                    explosiveEMP, explosiveEMP.getEnergy(), explosiveEMP.getRadius()));
 				Commons.dumpAllThreads();
 			}

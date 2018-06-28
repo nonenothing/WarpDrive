@@ -74,9 +74,9 @@ public class BreathingManager {
 		}
 		
 		if (WarpDriveConfig.LOGGING_BREATHING) {
-			WarpDrive.logger.warn(String.format("Entity spawn denied @ %s (%d %d %d) entityId '%s'",
-			                                    entityLivingBase.world.provider.getSaveFolder(),
-			                                    x, y, z, idEntity));
+			WarpDrive.logger.warn(String.format("Entity spawn denied %s entityId '%s'",
+			                                    Commons.format(entityLivingBase.world, x, y, z),
+			                                    idEntity));
 		}
 		return false;
 	}

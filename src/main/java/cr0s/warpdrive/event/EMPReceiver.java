@@ -56,8 +56,8 @@ public class EMPReceiver implements IEMPReceiver, ICapabilityProvider {
 		}
 		
 		if (WarpDriveConfig.LOGGING_WEAPON) {
-			WarpDrive.logger.info(String.format("EMP received @ %s (%.1f %.1f %.1f) from %s with source %s and radius %.1f",
-			                                    world.provider.getSaveFolder(), x, y, z,
+			WarpDrive.logger.info(String.format("EMP received %s from %s with source %s and radius %.1f",
+			                                    Commons.format(world, x, y, z),
 			                                    blastEMP, blastEMP.getBlastSource(), blastEMP.getBlastRadius()));
 		}
 		// EMP tower = 3k Energy, 60 radius
@@ -69,8 +69,8 @@ public class EMPReceiver implements IEMPReceiver, ICapabilityProvider {
 		} else {
 			if (!isInvalidEMPReported) {
 				isInvalidEMPReported = true;
-				WarpDrive.logger.warn(String.format("EMP received @ %s (%.1f %.1f %.1f) from %s with source %s and unsupported radius %.1f",
-				                                    world.provider.getSaveFolder(), x, y, z,
+				WarpDrive.logger.warn(String.format("EMP received @ %s from %s with source %s and unsupported radius %.1f",
+				                                    Commons.format(world, x, y, z),
 				                                    blastEMP, blastEMP.getBlastSource(), blastEMP.getBlastRadius()));
 				Commons.dumpAllThreads();
 			}

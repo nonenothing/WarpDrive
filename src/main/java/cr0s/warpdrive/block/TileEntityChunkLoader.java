@@ -266,13 +266,4 @@ public class TileEntityChunkLoader extends TileEntityAbstractChunkLoading {
 		
 		return super.callMethod(computer, context, method, arguments);
 	}
-	
-	@Override
-	public String toString() {
-		return String.format(
-			"%s @ %s (%d %d %d)",
-			getClass().getSimpleName(),
-			world == null ? "~NULL~" : world.provider.getSaveFolder(),
-			pos.getX(), pos.getY(), pos.getZ());
-	}
 }

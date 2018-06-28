@@ -1,5 +1,6 @@
 package cr0s.warpdrive.world;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.Filler;
@@ -141,10 +142,9 @@ public class WorldGenStructure {
 			
 			final GenericSet<Loot> lootSet = WarpDriveConfig.LootManager.getRandomSetFromGroup(rand, group);
 			if (lootSet == null) {
-				WarpDrive.logger.warn(String.format("No LootSet found with group %s for inventory @ %s (%d %d %d): check your configuration",
+				WarpDrive.logger.warn(String.format("No LootSet found with group %s for inventory %s: check your configuration",
 				                                    group,
-				                                    world.provider.getSaveFolder(),
-				                                    x, y, z));
+				                                    Commons.format(world, x, y, z)));
 				return;
 			}
 			
@@ -168,11 +168,10 @@ public class WorldGenStructure {
 					}
 				}
 				if (!isAdded) {
-					WarpDrive.logger.info(String.format("Unable to find a valid loot from LootSet %s for inventory %s in @ %s (%d %d %d): check your configuration",
+					WarpDrive.logger.info(String.format("Unable to find a valid loot from LootSet %s for inventory %s in %s: check your configuration",
 					                                    lootSet.getFullName(),
 					                                    inventory.getName() == null ? "-null name-" : inventory.getName(),
-					                                    world.provider.getSaveFolder(),
-					                                    x, y, z));
+					                                    Commons.format(world, x, y, z)));
 				}
 			}
 		}

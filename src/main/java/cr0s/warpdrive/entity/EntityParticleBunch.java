@@ -46,7 +46,8 @@ public class EntityParticleBunch extends Entity {
 	public EntityParticleBunch(final World world) {
 		super(world);
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-			WarpDrive.logger.info(this + " created in dimension " + world.provider.getSaveFolder());
+			WarpDrive.logger.info(String.format("%s created in dimension %s",
+			                                    this, Commons.format(world)));
 		}
 	}
 	
@@ -187,10 +188,9 @@ public class EntityParticleBunch extends Entity {
 	@Nonnull
 	@Override
 	public String toString() {
-		return String.format("%s/%d @ \'%s\' %.2f %.2f %.2f",
-			getClass().getSimpleName(),
-			getEntityId(),
-			world == null ? "~NULL~" : world.provider.getSaveFolder(),
-			posX, posY, posZ);
+		return String.format("%s/%d %s",
+		                     getClass().getSimpleName(),
+		                     getEntityId(),
+		                     Commons.format(world, posX, posY, posZ));
 	}
 }

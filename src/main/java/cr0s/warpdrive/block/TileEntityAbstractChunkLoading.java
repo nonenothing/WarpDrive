@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.event.ChunkLoadingHandler;
@@ -73,9 +74,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 				final int ticketSize = ticket.getMaxChunkListDepth();
 				final ArrayList<ChunkPos> chunksToLoad = getChunksToLoad();
 				if (chunksToLoad.size() > ticketSize) {
-					WarpDrive.logger.error(String.format("Too many chunk requested for loading @ %s (%d %d %d)",
-					                                     world.provider.getSaveFolder(),
-					                                     pos.getX(), pos.getY(), pos.getZ()));
+					WarpDrive.logger.error(String.format("Too many chunk requested for loading %s",
+					                                     Commons.format(world, pos)));
 					return;
 				}
 				
@@ -161,7 +161,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		if (WarpDriveConfig.LOGGING_CHUNK_LOADING) {
 			WarpDrive.logger.info(String.format("Collecting %d chunks to be loaded @ %s from %s to %s",
 			                                    count,
-			                                    world.provider.getSaveFolder(),
+			                                    Commons.format(world),
 			                                    chunkMin, chunkMax));
 		}
 		final ArrayList<ChunkPos> chunkCoords = new ArrayList<>(count);

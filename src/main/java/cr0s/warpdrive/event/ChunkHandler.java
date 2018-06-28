@@ -46,7 +46,7 @@ public class ChunkHandler {
 			if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 				WarpDrive.logger.info(String.format("%s world %s load.",
 				                                    event.getWorld().isRemote ? "Client" : "Server",
-				                                    event.getWorld().provider.getDimensionType().getName()));
+				                                    Commons.format(event.getWorld())));
 			}
 		}
 		
@@ -64,7 +64,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk [%d, %d] generating",
 			                                    world.isRemote ? "Client" : "Server",
-			                                    world.provider.getDimensionType().getName(),
+			                                    Commons.format(world),
 			                                    chunkX, chunkZ));
 		}
 		
@@ -82,7 +82,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loading data (1)", 
 			                                    event.getWorld().isRemote ? "Client" : "Server",
-			                                    event.getWorld().provider.getDimensionType().getName(),
+			                                    Commons.format(event.getWorld()),
 			                                    event.getChunk().getPos()));
 		}
 		
@@ -97,7 +97,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s loaded (2)",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
-			                                    event.getWorld().provider.getDimensionType().getName(),
+			                                    Commons.format(event.getWorld()),
 			                                    event.getChunk().getPos()));
 		}
 		
@@ -113,7 +113,7 @@ public class ChunkHandler {
 	public void onWatchChunk(ChunkWatchEvent.Watch event) {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("World %s chunk %s watch by %s",
-			                                    event.getPlayer().world.getWorldInfo().getWorldName(),
+			                                    Commons.format(event.getPlayer().world),
 			                                    event.getChunk(),
 			                                    event.getPlayer()));
 		}
@@ -126,7 +126,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s save data",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
-			                                    event.getWorld().provider.getDimensionType().getName(),
+			                                    Commons.format(event.getWorld()),
 			                                    event.getChunk().getPos()));
 		}
 		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, false);
@@ -135,7 +135,7 @@ public class ChunkHandler {
 		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is saving data without loading it first!",
 			                                     event.getWorld().isRemote ? "Client" : "Server",
-			                                     event.getWorld().provider.getDimensionType().getName(),
+			                                     Commons.format(event.getWorld()),
 			                                     event.getChunk().getPos()));
 		}
 	}
@@ -149,7 +149,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s saved.",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
-			                                    event.getWorld().provider.getDimensionType().getName()));
+			                                    Commons.format(event.getWorld())));
 		}
 		
 		if (event.getWorld().isRemote) {
@@ -168,7 +168,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s unload",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
-			                                    event.getWorld().provider.getDimensionType().getName()));
+			                                    Commons.format(event.getWorld())));
 		}
 		
 		// get dimension data
@@ -194,7 +194,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unload",
 			                                    event.getWorld().isRemote ? "Client" : "Server",
-			                                    event.getWorld().provider.getDimensionType().getName(),
+			                                    Commons.format(event.getWorld()),
 			                                    event.getChunk().getPos()));
 		}
 		
@@ -204,7 +204,7 @@ public class ChunkHandler {
 		} else if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.error(String.format("%s world %s chunk %s is unloading without loading it first!", 
 			                                     event.getWorld().isRemote ? "Client" : "Server",
-			                                     event.getWorld().provider.getDimensionType().getName(),
+			                                     Commons.format(event.getWorld()),
 			                                     event.getChunk().getPos()));
 		}
 	}
@@ -216,7 +216,7 @@ public class ChunkHandler {
 		if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 			WarpDrive.logger.info(String.format("%s world %s chunk %s unwatch by %s",
 			                                    event.player.world.isRemote ? "Client" : "Server",
-			                                    event.player.world.provider.getSaveFolder(),
+			                                    Commons.format(event.player.world),
 			                                    event.chunk,
 			                                    event.player));
 		}
@@ -237,10 +237,9 @@ public class ChunkHandler {
 				chunkData.onBlockUpdated(x, y, z);
 			} else {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-					WarpDrive.logger.error(String.format("%s world %s block updating at (%d %d %d), while chunk isn't loaded!",
+					WarpDrive.logger.error(String.format("%s block updating %s, while chunk isn't loaded!",
 					                                     world.isRemote ? "Client" : "Server",
-					                                     world.provider.getDimensionType().getName(),
-					                                     x, y, z));
+					                                     Commons.format(world, x, y, z)));
 					Commons.dumpAllThreads();
 				}
 			}
@@ -254,9 +253,9 @@ public class ChunkHandler {
 	public static ChunkData getChunkData(final World world, final int x, final int y, final int z) {
 		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.getDimension(), x, y, z);
 		if (chunkData == null) {
-			WarpDrive.logger.error(String.format("Trying to get data from an non-loaded chunk in %s world %s @ (%d %d %d)",
+			WarpDrive.logger.error(String.format("Trying to get data from an non-loaded chunk in %s %s",
 			                                     world.isRemote ? "Client" : "Server",
-			                                     world.provider.getSaveFolder(), x, y, z));
+			                                     Commons.format(world, x, y, z)));
 			LocalProfiler.printCallStats();
 			Commons.dumpAllThreads();
 			assert(false);
@@ -345,9 +344,8 @@ public class ChunkHandler {
 		try {
 			return chunkData.getStateAir(world, x, y, z);
 		} catch (final ExceptionChunkNotLoaded exceptionChunkNotLoaded) {
-			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded @ %s (%d %d %d)",
-			                                    world.provider.getSaveFolder(),
-			                                    x, y, z));
+			WarpDrive.logger.warn(String.format("Aborting air evaluation: chunk isn't loaded %s",
+			                                    Commons.format(world, x, y, z)));
 			return null;
 		}
 	}
@@ -380,7 +378,7 @@ public class ChunkHandler {
 					if (WarpDriveConfig.LOGGING_CHUNK_HANDLER) {
 						WarpDrive.logger.info(String.format("%s world %s chunk %s is being removed from updateTick (size is %d)",
 						                                    world.isRemote ? "Client" : "Server",
-						                                    world.provider.getSaveFolder(),
+						                                    Commons.format(world),
 						                                    chunkData.getChunkCoords(),
 						                                    mapRegistryItems.size()));
 					}
@@ -391,7 +389,7 @@ public class ChunkHandler {
 		} catch (final ConcurrentModificationException exception) {
 			WarpDrive.logger.error(String.format("%s world %s had some chunks changed outside main thread? (size %d -> %d)",
 			                                    world.isRemote ? "Client" : "Server",
-			                                    world.provider.getSaveFolder(),
+			                                     Commons.format(world),
 			                                    sizeBefore, mapRegistryItems.size()));
 			exception.printStackTrace();
 			LocalProfiler.printCallStats();

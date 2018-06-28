@@ -507,9 +507,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	@Override
 	public String toString() {
-		return String.format("%s @ %s (%d %d %d)",
+		return String.format("%s %s",
 		                     getClass().getSimpleName(),
-		                     world == null ? "~NULL~" : world.provider.getSaveFolder(),
-		                     pos.getX(), pos.getY(), pos.getZ());
+		                     Commons.format(world, pos));
 	}
 }

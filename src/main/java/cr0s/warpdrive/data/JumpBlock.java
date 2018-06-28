@@ -1,5 +1,6 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
@@ -378,9 +379,8 @@ public class JumpBlock {
 		if (tileEntity != null) {
 			final Class<?> teClass = tileEntity.getClass();
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info(String.format("Refreshing clients @ %s (%d %d %d) with %s derived from %s",
-				                                    world.provider.getSaveFolder(),
-				                                    blockPos.getX(), blockPos.getY(), blockPos.getZ(), 
+				WarpDrive.logger.info(String.format("Refreshing clients %s with %s derived from %s",
+				                                    Commons.format(world, blockPos),
 				                                    teClass,
 				                                    teClass.getSuperclass()));
 			}

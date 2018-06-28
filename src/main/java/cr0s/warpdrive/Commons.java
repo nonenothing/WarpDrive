@@ -7,6 +7,8 @@ import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.world.SpaceTeleporter;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -281,6 +283,52 @@ public class Commons {
 			}
 		}
 		return result.toString();
+	}
+	
+	public static String format(final World world) {
+		if (world == null) {
+			return "~NULL~";
+		}
+		
+		// world.getProviderName() is MultiplayerChunkCache on client, ServerChunkCache on local server, (undefined method) on dedicated server
+		
+		// world.provider.getSaveFolder() is null for the Overworld, other dimensions shall define it
+		final String saveFolder = world.provider.getSaveFolder();
+		if (saveFolder == null || saveFolder.isEmpty()) {
+			final int dimension = world.provider.getDimension();
+			if (dimension != 0) {
+				assert(false);
+				return String.format("~invalid dimension %d~", dimension);
+			}
+			
+			// world.getWorldInfo().getWorldName() is MpServer on client side, or the server.properties' world name on server side
+			final String worldName = world.getWorldInfo().getWorldName();
+			if (worldName.equals("MpServer")) {
+				return "overworld";
+			}
+			return worldName;
+		}
+		return saveFolder;
+	}
+	
+	public static String format(final World world, @Nonnull final BlockPos blockPos) {
+		return format(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	}
+	
+	public static String format(final World world, final int x, final int y, final int z) {
+		return String.format("@ %s (%d %d %d)",
+		                     format(world),
+		                     x, y, z);
+	}
+	
+	public static String format(final World world, @Nonnull final Vector3 vector3) {
+		return format(world, vector3.x, vector3.y, vector3.z);
+	}
+	
+	public static String format(final World world, final double x, final double y, final double z) {
+		return String.format("@ %s (%.2f %.2f %.2f)",
+		                     format(world),
+		                     x, y, z);
 	}
 	
 	public static String sanitizeFileName(final String name) {

@@ -69,9 +69,8 @@ public class CommandDump extends CommandBase {
 		}
 		
 		// actually dump
-		WarpDrive.logger.info(String.format("Dumping content from container @ %s (%d %d %d):",
-		                                    world.provider.getDimensionType().getName(),
-		                                    x, y, z));
+		WarpDrive.logger.info(String.format("Dumping content from container %s:",
+		                                    Commons.format(world, x, y, z)));
 		for (int indexSlot = 0; indexSlot < inventory.getSizeInventory(); indexSlot++) {
 			final ItemStack itemStack = inventory.getStackInSlot(indexSlot);
 			if (itemStack != null) {
