@@ -654,8 +654,10 @@ public class Commons {
 		return tagCompound;
 	}
 	
-	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(final ICommandSender sender, final String playerNameOrSelector) {
-		final List<EntityPlayerMP> onlinePlayers = sender.getServer().getPlayerList().getPlayers();
+	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(final ICommandSender commandSender, final String playerNameOrSelector) {
+		final MinecraftServer server = commandSender.getServer();
+		assert(server != null);
+		final List<EntityPlayerMP> onlinePlayers = server.getPlayerList().getPlayers();
 		for (final EntityPlayerMP onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector)) {
 				return new EntityPlayerMP[] { onlinePlayer };
@@ -663,13 +665,13 @@ public class Commons {
 		}
 		
 		try {
-			final List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(sender, playerNameOrSelector, EntityPlayerMP.class);
+			final List<EntityPlayerMP> entityPlayerMPs_found = EntitySelector.matchEntities(commandSender, playerNameOrSelector, EntityPlayerMP.class);
 			if (!entityPlayerMPs_found.isEmpty()) {
 				return entityPlayerMPs_found.toArray(new EntityPlayerMP[0]);
 			}
 		} catch (final CommandException exception) {
 			WarpDrive.logger.error(String.format("Exception from %s with selector %s",
-			                                     sender, playerNameOrSelector));
+			                                     commandSender, playerNameOrSelector));
 		}
 		
 		return null;
