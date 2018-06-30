@@ -5,12 +5,14 @@ import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
+import cr0s.warpdrive.block.breathing.BlockAirGenerator;
 import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
+import cr0s.warpdrive.block.decoration.BlockAbstractLamp;
 import cr0s.warpdrive.block.detection.BlockMonitor;
-import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
+import cr0s.warpdrive.block.movement.BlockShipCore;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.ChunkData;
 import cr0s.warpdrive.data.StateAir;
@@ -32,8 +34,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
 		return block instanceof BlockHullSlab
 		    || block instanceof BlockAbstractBase
-		    || block instanceof BlockAbstractContainer
-		    || tileEntity instanceof TileEntityEnergyBank;
+		    || block instanceof BlockAbstractContainer;
 	}
 	
 	@Override
@@ -76,7 +77,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	
 	private static final short[] mrotDirection = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final short[] mrotHullSlab  = {  0,  1,  5,  4,  2,  3,  6,  7, 11, 10,  8,  9, 12, 13, 15, 14 };
-	private static final byte[]  rotFacing     = {  0,  1,  5,  4,  2,  3,  6,  7 };
+	// cloaking core will refresh itself
 	
 	private byte[] rotate_byteArray(final byte rotationSteps, final byte[] data) {
 		final byte[] newData = data.clone();
@@ -116,8 +117,10 @@ public class CompatWarpDrive implements IBlockTransformer {
 			}
 		}
 		
-		// Monitor and Air generator tiered
-		if (block instanceof BlockMonitor) {
+		// Monitor and lamps
+		if ( block instanceof BlockAirSource
+		  || block instanceof BlockMonitor
+		  || block instanceof BlockAbstractLamp ) {
 			switch (rotationSteps) {
 			case 1:
 				return mrotDirection[metadata];
@@ -131,8 +134,10 @@ public class CompatWarpDrive implements IBlockTransformer {
 		}
 		
 		// Force field projector
-		if ( block instanceof BlockAirGeneratorTiered
-		  || block instanceof BlockForceFieldProjector ) {
+		if ( block instanceof BlockAirGenerator
+		  || block instanceof BlockAirGeneratorTiered
+		  || block instanceof BlockForceFieldProjector
+		  || block instanceof BlockShipCore ) {
 			switch (rotationSteps) {
 			case 1:
 				return mrotDirection[metadata & 7] | (metadata & 8);
@@ -140,24 +145,6 @@ public class CompatWarpDrive implements IBlockTransformer {
 				return mrotDirection[mrotDirection[metadata & 7]] | (metadata & 8);
 			case 3:
 				return mrotDirection[mrotDirection[mrotDirection[metadata & 7]]] | (metadata & 8);
-			default:
-				return metadata;
-			}
-		}
-		
-		// Ship core
-		if (nbtTileEntity != null && nbtTileEntity.hasKey("facing")) {
-			final short facing = nbtTileEntity.getByte("facing");
-			switch (rotationSteps) {
-			case 1:
-				nbtTileEntity.setByte("facing", rotFacing[facing]);
-				return metadata;
-			case 2:
-				nbtTileEntity.setByte("facing", rotFacing[rotFacing[facing]]);
-				return metadata;
-			case 3:
-				nbtTileEntity.setByte("facing", rotFacing[rotFacing[rotFacing[facing]]]);
-				return metadata;
 			default:
 				return metadata;
 			}
