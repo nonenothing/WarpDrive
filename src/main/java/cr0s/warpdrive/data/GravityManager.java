@@ -1,8 +1,6 @@
-package cr0s.warpdrive;
+package cr0s.warpdrive.data;
 
 import cr0s.warpdrive.config.Dictionary;
-import cr0s.warpdrive.data.CelestialObject;
-import cr0s.warpdrive.data.StarMapRegistry;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -73,6 +71,11 @@ public class GravityManager {
 		}
 		
 		return gravity * OVERWORLD_ENTITY_GRAVITY;
+	}
+	
+	@SuppressWarnings("unused") // Core mod
+	public static double getNegGravityForEntity(final Entity entity) {
+		return -getGravityForEntity(entity);
 	}
 	
 	@SuppressWarnings("unused") // Core mod

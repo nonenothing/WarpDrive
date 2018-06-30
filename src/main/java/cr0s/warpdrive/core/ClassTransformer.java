@@ -35,27 +35,27 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 	public static ConcurrentSkipListMap<String, Integer> countClass = new ConcurrentSkipListMap<>();
 	public static ConcurrentHashMap<String, Long> sizeClass = new ConcurrentHashMap<>(8192);
 	
-	private static final String GRAVITY_MANAGER_CLASS = "cr0s/warpdrive/GravityManager";
+	private static final String GRAVITY_MANAGER_CLASS = "cr0s/warpdrive/data/GravityManager";
 	private static final String CLOAK_MANAGER_CLASS = "cr0s/warpdrive/data/CloakManager";
 	private boolean debugLog = false;
 	
 	public ClassTransformer() {
-		nodeMap.put("EntityLivingBase.class", "sv");
-		nodeMap.put("moveEntityWithHeading.name", "func_70612_e");
-		nodeMap.put("moveEntityWithHeading.desc", "(FF)V");
+		nodeMap.put("EntityLivingBase.class", "vn");
+		nodeMap.put("travel.name", "func_191986_a");
+		nodeMap.put("travel.desc", "(FFF)V");
 		
-		nodeMap.put("EntityItem.class", "xk");
+		nodeMap.put("EntityItem.class", "acj");
 		nodeMap.put("onUpdate.name", "func_70071_h_");
 		nodeMap.put("onUpdate.desc", "()V");
 		
-		nodeMap.put("WorldClient.class", "bjf");
-		nodeMap.put("func_147492_c.name", "func_147492_c");
-		nodeMap.put("func_147492_c.desc", "(IIILnet/minecraft/block/Block;I)Z");
-		nodeMap.put("setBlock.name", "func_147465_d");
+		nodeMap.put("WorldClient.class", "brz");
+		nodeMap.put("invalidateRegionAndSetBlock.name", "func_180503_b");
+		nodeMap.put("invalidateRegionAndSetBlock.desc", "(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;)Z");
+		nodeMap.put("setBlockState.name", "func_180501_a");
 		
-		nodeMap.put("Chunk.class", "apx");
-		nodeMap.put("fillChunk.name", "func_76607_a");
-		nodeMap.put("fillChunk.desc", "([BIIZ)V");
+		nodeMap.put("Chunk.class", "axu");
+		nodeMap.put("read.name", "func_186033_a");
+		nodeMap.put("read.desc", "(Lnet/minecraft/network/PacketBuffer;IZ)V");
 		nodeMap.put("generateHeightMap.name", "func_76590_a");
 		nodeMap.put("generateHeightMap.desc", "()V");
 	}
@@ -155,7 +155,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		final ClassReader classReader = new ClassReader(bytes);
 		classReader.accept(classNode, 0);
 		
-		final int operationCount = 1;
+		final int operationCount = 2;
 		int injectedCount = 0;
 		final Iterator methods = classNode.methods.iterator();
 		do {
@@ -166,9 +166,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			final MethodNode methodNode = (MethodNode) methods.next();
 			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
-			if ( (methodNode.name.equals(nodeMap.get("moveEntityWithHeading.name")) || methodNode.name.equals("moveEntityWithHeading"))
-			  && methodNode.desc.equals(nodeMap.get("moveEntityWithHeading.desc")) ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+			if ( (methodNode.name.equals(nodeMap.get("travel.name")) || methodNode.name.equals("travel"))
+			  && methodNode.desc.equals(nodeMap.get("travel.desc")) ) {
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -178,7 +178,20 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof LdcInsnNode) {
 						final LdcInsnNode nodeAt = (LdcInsnNode) abstractNode;
 						
-						if (nodeAt.cst.equals(0.080000000000000002D)) {
+						if (nodeAt.cst.equals(-0.080000000000000002D)) {
+							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
+							final MethodInsnNode overwriteNode = new MethodInsnNode(
+									Opcodes.INVOKESTATIC,
+									GRAVITY_MANAGER_CLASS,
+									"getNegGravityForEntity",
+									"(Lnet/minecraft/entity/Entity;)D",
+									false);
+							methodNode.instructions.insertBefore(nodeAt, beforeNode);
+							methodNode.instructions.set(nodeAt, overwriteNode);
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
+							injectedCount++;
+							
+						} else if (nodeAt.cst.equals(0.080000000000000002D)) {
 							final VarInsnNode beforeNode = new VarInsnNode(Opcodes.ALOAD, 0);
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
@@ -227,7 +240,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			
 			if ( (methodNode.name.equals(nodeMap.get("onUpdate.name")) || methodNode.name.equals("onUpdate"))
 			  && methodNode.desc.equals(nodeMap.get("onUpdate.desc")) ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -300,7 +313,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			
 			if ( (methodNode.name.equals("update"))
 			  && methodNode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)V") ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -374,7 +387,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			// Entities gravity
 			if ( (methodNode.name.equals("getGravityForEntity"))
 			  && methodNode.desc.equals("(Lnet/minecraft/entity/Entity;)D") ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -406,7 +419,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			// Items gravity
 			if ( (methodNode.name.equals("getItemGravity"))
 			  && methodNode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)D") ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -478,9 +491,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			final MethodNode methodNode = (MethodNode) methods.next();
 			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
-			if ( (methodNode.name.equals(nodeMap.get("func_147492_c.name")) || methodNode.name.equals("func_147492_c"))
-			  && methodNode.desc.equals(nodeMap.get("func_147492_c.desc")) ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+			if ( (methodNode.name.equals(nodeMap.get("invalidateRegionAndSetBlock.name")) || methodNode.name.equals("invalidateRegionAndSetBlock"))
+			  && methodNode.desc.equals(nodeMap.get("invalidateRegionAndSetBlock.desc")) ) {
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -490,12 +503,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 					if (abstractNode instanceof MethodInsnNode) {
 						final MethodInsnNode nodeAt = (MethodInsnNode) abstractNode;
 						
-						if (nodeAt.name.equals(nodeMap.get("setBlock.name")) || nodeAt.name.equals("setBlock")) {
+						if (nodeAt.name.equals(nodeMap.get("setBlockState.name")) || nodeAt.name.equals("setBlockState")) {
 							final MethodInsnNode overwriteNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
 									CLOAK_MANAGER_CLASS,
-									"onBlockChange",
-									"(IIILnet/minecraft/block/Block;II)Z",
+									"WorldClient_invalidateRegionAndSetBlock_setBlockState",
+									"(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/state/IBlockState;I)Z",
 									false);
 							methodNode.instructions.set(nodeAt, overwriteNode);
 							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
@@ -535,9 +548,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			final MethodNode methodNode = (MethodNode) methods.next();
 			if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
-			if ( (methodNode.name.equals(nodeMap.get("fillChunk.name")) || methodNode.name.equals("fillChunk"))
-			  && methodNode.desc.equals(nodeMap.get("fillChunk.desc")) ) {
-				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
+			if ( (methodNode.name.equals(nodeMap.get("read.name")) || methodNode.name.equals("read"))
+			  && methodNode.desc.equals(nodeMap.get("read.desc")) ) {
+				if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Found method to inject into: %s %s", methodNode.name, methodNode.desc)); }
 				
 				int instructionIndex = 0;
 				
@@ -553,7 +566,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 							final MethodInsnNode insertMethodNode = new MethodInsnNode(
 									Opcodes.INVOKESTATIC,
 									CLOAK_MANAGER_CLASS,
-									"onFillChunk",
+									"Chunk_read",
 									"(Lnet/minecraft/world/chunk/Chunk;)V",
 									false);
 							methodNode.instructions.insertBefore(nodeAt, insertMethodNode);

@@ -93,10 +93,10 @@ public class CloakedArea {
 			 && minZ <= entity.posZ && (maxZ + 1) > entity.posZ);
 	}
 	
-	public boolean isBlockWithinArea(final int x, final int y, final int z) {
-		return (minX <= x && (maxX + 1) > x
-			 && minY <= y && (maxY + 1) > y
-			 && minZ <= z && (maxZ + 1) > z);
+	public boolean isBlockWithinArea(final BlockPos blockPos) {
+		return (minX <= blockPos.getX() && (maxX + 1) > blockPos.getX()
+			 && minY <= blockPos.getY() && (maxY + 1) > blockPos.getY()
+			 && minZ <= blockPos.getZ() && (maxZ + 1) > blockPos.getZ());
 	}
 	
 	// Sending only if field changes: sets up or collapsing
