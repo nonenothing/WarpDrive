@@ -21,6 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CloakManager {
 	
 	private static CopyOnWriteArraySet<CloakedArea> cloaks = new CopyOnWriteArraySet<>();
+	private static CopyOnWriteArraySet<CloakedArea> cloakToRefresh = new CopyOnWriteArraySet<>();
 	
 	public CloakManager() { }
 	
@@ -95,10 +96,19 @@ public class CloakManager {
 		}
 		cloaks.add(newArea);
 		if (world.isRemote) {
-			newArea.clientCloak();
+			cloakToRefresh.add(newArea);
 		}
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
 			WarpDrive.logger.info(String.format("Cloak count is %s", cloaks.size()));
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void onClientTick() {
+		final CloakedArea[] cloakedAreas = cloakToRefresh.toArray(new CloakedArea[0]);
+		cloakToRefresh.clear();
+		for (final CloakedArea cloakedArea : cloakedAreas) {
+			cloakedArea.clientCloak();
 		}
 	}
 	

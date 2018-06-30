@@ -1,6 +1,8 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.block.decoration.BlockGas;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.network.PacketHandler;
 import cr0s.warpdrive.render.EntityFXBeam;
@@ -69,7 +71,7 @@ public class CloakedArea {
 		}
 		
 		if (tier == 1) {
-			blockStateFog = WarpDrive.blockGas.getStateFromMeta(5);
+			blockStateFog = WarpDrive.blockGas.getDefaultState().withProperty(BlockGas.COLOR, EnumGasColor.DARKNESS);
 		} else {
 			blockStateFog = Blocks.AIR.getDefaultState();
 		}
@@ -214,6 +216,7 @@ public class CloakedArea {
 	
 	@SideOnly(Side.CLIENT)
 	public void clientCloak() {
+		assert(Commons.isSafeThread());
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		
 		// Hide the blocks within area
@@ -227,8 +230,7 @@ public class CloakedArea {
 					final BlockPos blockPos = new BlockPos(x, y, z);
 					final IBlockState blockState = world.getBlockState(blockPos);
 					if (blockState.getBlock() != Blocks.AIR) {
-						// @TODO move cloaking to main thread
-						// world.setBlockState(blockPos, blockStateFog, 4);
+						world.setBlockState(blockPos, blockStateFog, 4);
 					}
 				}
 			}
