@@ -44,6 +44,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -1488,6 +1489,7 @@ public class JumpSequencer extends AbstractSequencer {
 		final VectorI offset = new VectorI((int) Math.signum(moveX), (int) Math.signum(moveY), (int) Math.signum(moveZ));
 		
 		int x, y, z;
+		MutableBlockPos mutableBlockPosSource = new MutableBlockPos(0, 0, 0);
 		BlockPos blockPosTarget;
 		final BlockPos blockPosCoreAtTarget = transformation.apply(ship.core.getX(), ship.core.getY(), ship.core.getZ());
 		IBlockState blockStateSource;
@@ -1495,8 +1497,9 @@ public class JumpSequencer extends AbstractSequencer {
 		for (y = ship.minY; y <= ship.maxY; y++) {
 			for (x = ship.minX; x <= ship.maxX; x++) {
 				for (z = ship.minZ; z <= ship.maxZ; z++) {
+					mutableBlockPosSource.setPos(x, y, z);
 					blockPosTarget = transformation.apply(x, y, z);
-					blockStateSource = sourceWorld.getBlockState(new BlockPos(x, y, z));
+					blockStateSource = sourceWorld.getBlockState(mutableBlockPosSource);
 					blockStateTarget = targetWorld.getBlockState(blockPosTarget);
 					if (Dictionary.BLOCKS_ANCHOR.contains(blockStateTarget.getBlock())) {
 						result.add(x, y, z,
@@ -1513,9 +1516,9 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if ( blockStateSource != Blocks.AIR
+					if ( blockStateSource.getBlock() != Blocks.AIR
 					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockStateSource.getBlock())
-					  && blockStateTarget != Blocks.AIR
+					  && blockStateTarget.getBlock() != Blocks.AIR
 					  && !Dictionary.BLOCKS_EXPANDABLE.contains(blockStateTarget.getBlock())) {
 						result.add(x, y, z,
 						           blockPosTarget.getX() + 0.5D + offset.x * 0.1D,
@@ -1531,7 +1534,7 @@ public class JumpSequencer extends AbstractSequencer {
 						}
 					}
 					
-					if ( blockStateSource != Blocks.AIR
+					if ( blockStateSource.getBlock() != Blocks.AIR
 					  && CommonProxy.isBlockPlaceCanceled(null, blockPosCoreAtTarget, targetWorld, blockPosTarget, blockStateSource)) {
 						result.add(x, y, z,
 						           blockPosTarget.getX(),
