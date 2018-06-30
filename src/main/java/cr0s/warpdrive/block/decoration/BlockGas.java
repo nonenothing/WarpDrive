@@ -20,6 +20,7 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -143,15 +144,29 @@ public class BlockGas extends BlockAbstractBase {
 	}
 	
 	@SuppressWarnings("deprecation")
+	@Override
+	public boolean isTranslucent(final IBlockState state) {
+		return true;
+	}
+	
+	@Nonnull
+	@SideOnly(Side.CLIENT)
+	@Override
+	public BlockRenderLayer getBlockLayer() {
+		return BlockRenderLayer.TRANSLUCENT;
+	}
+	
+	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override
 	public boolean shouldSideBeRendered(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing facing) {
 		final BlockPos blockPosSide = blockPos.offset(facing);
+		final EnumFacing opposite = facing.getOpposite();
 		final IBlockState blockStateSide = blockAccess.getBlockState(blockPosSide);
-		if (blockStateSide.getBlock().isAssociatedBlock(this)) {
-			return false;
+		if (blockStateSide.getBlock() instanceof BlockGas) {
+			return blockState.getValue(COLOR) != blockStateSide.getValue(COLOR);
 		}
-		return blockAccess.isAirBlock(blockPosSide);
+		return !blockAccess.isSideSolid(blockPosSide, opposite, false);
 	}
 	
 	@Override
