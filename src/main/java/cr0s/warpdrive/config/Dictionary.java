@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class Dictionary {
 	private static final boolean adjustResistance = false;
@@ -567,8 +568,8 @@ public class Dictionary {
 			if (message.length() > 0) {
 				message.append(", ");
 			}
-			if (object instanceof Block) {
-				message.append(((Block) object).getRegistryName());
+			if (object instanceof IForgeRegistryEntry) {
+				message.append(((IForgeRegistryEntry) object).getRegistryName());
 			} else if (object instanceof String) {
 				message.append((String) object);
 			} else {
