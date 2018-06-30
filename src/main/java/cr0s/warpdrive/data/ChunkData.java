@@ -55,7 +55,7 @@ public class ChunkData {
 	
 	public void load(final NBTTagCompound tagCompoundChunk) {
 		// check consistency
-		assert(!isLoaded);
+		assert !isLoaded;
 		
 		// detects fast reloading
 		final long time = System.currentTimeMillis();
@@ -77,7 +77,7 @@ public class ChunkData {
 		if (tagCompoundChunk.hasKey(TAG_CHUNK_MOD_DATA)) {
 			final NBTTagCompound tagCompound = tagCompoundChunk.getCompoundTag(TAG_CHUNK_MOD_DATA);
 			final int version = tagCompound.getInteger(TAG_VERSION);
-			assert (version == 0 || version == 1);
+			assert version == 0 || version == 1;
 			
 			// load from NBT data
 			if (version == 1) {
@@ -329,7 +329,7 @@ public class ChunkData {
 		// self-test for index mapping
 		if (WarpDrive.isDev) {
 			final BlockPos chunkPosition = getPositionFromDataIndex(indexData >> 12, indexData & 0x0FFF);
-			assert(chunkPosition.getX() == x && chunkPosition.getY() == y && chunkPosition.getZ() == z);
+			assert chunkPosition.getX() == x && chunkPosition.getY() == y && chunkPosition.getZ() == z;
 		}
 		// get segment
 		final int[] dataAirSegment = dataAirSegments[indexData >> 12];

@@ -596,7 +596,7 @@ public class TrajectoryPoint extends VectorI {
 				} else {
 					isInput = countLowerMagnet > 0;
 					isOutput = countHigherMagnet > 0;
-					assert(isInput || isOutput);
+					assert isInput || isOutput;
 				}
 			}
 		}
@@ -682,7 +682,7 @@ public class TrajectoryPoint extends VectorI {
 			} else if (!isLeftTurn && isRightTurn) {
 				directionForward = directionRight;
 			} else {
-				assert(isLeftTurn && isRightTurn);
+				assert isLeftTurn && isRightTurn;
 				// it's probably an input/output, in that case, magnets are all around, just pick one side to detect the direction
 				final Block blockUpRight   = world.getBlockState(new BlockPos(x + directionRight.getFrontOffsetX(), y + 1, z + directionRight.getFrontOffsetZ())).getBlock();
 				if (blockUpRight instanceof BlockElectromagnetPlain && tier != ((BlockElectromagnetPlain) blockUpRight).tier) {

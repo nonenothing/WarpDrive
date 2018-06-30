@@ -195,7 +195,7 @@ public class StateAir {
 	}
 	
 	public boolean setAirSource(final World world, final EnumFacing direction, final short pressure) {
-		assert(blockState != null);
+		assert blockState != null;
 		
 		final boolean isPlaceable = (dataAir & BLOCK_MASK) == BLOCK_AIR_PLACEABLE
 		                         || (dataAir & BLOCK_MASK) == BLOCK_AIR_FLOW
@@ -226,7 +226,7 @@ public class StateAir {
 	}
 	
 	private void updateBlockType(final World world) {
-		assert(blockState != null);
+		assert blockState != null;
 		final int typeBlock;
 		final Block block = blockState.getBlock();
 		if (blockState instanceof BlockAirFlow) {
@@ -314,7 +314,7 @@ public class StateAir {
 	public void setConcentration(final World world, final byte concentrationNew) {
 		// update world as needed
 		// any air concentration?
-		assert(concentrationNew >= 0 && concentrationNew <= CONCENTRATION_MAX);
+		assert concentrationNew >= 0 && concentrationNew <= CONCENTRATION_MAX;
 		if (concentrationNew == 0) {
 			if (isAirFlow()) {// remove air block...
 				// confirm block state
@@ -373,7 +373,7 @@ public class StateAir {
 	private void setGenerator(final short pressureNew, final EnumFacing directionNew) {
 		boolean isUpdated = false;
 		if (pressureNew != pressureGenerator) {
-			assert (pressureNew >= 0 && pressureNew <= GENERATOR_PRESSURE_MAX);
+			assert pressureNew >= 0 && pressureNew <= GENERATOR_PRESSURE_MAX;
 			
 			dataAir = (dataAir & ~GENERATOR_PRESSURE_MASK) | (pressureNew << GENERATOR_PRESSURE_SHIFT);
 			pressureGenerator = pressureNew;
@@ -387,16 +387,16 @@ public class StateAir {
 		if (isUpdated) {
 			chunkData.setDataAir(blockPos.getX(), blockPos.getY(), blockPos.getZ(), dataAir);
 		}
-		assert (pressureGenerator != 0 || directionGenerator == null);
-		assert (pressureGenerator == 0 || pressureGenerator == GENERATOR_PRESSURE_MAX || directionGenerator != null);
-		assert (pressureGenerator == 0 || directionGenerator != null);
+		assert pressureGenerator != 0 || directionGenerator == null;
+		assert pressureGenerator == 0 || pressureGenerator == GENERATOR_PRESSURE_MAX || directionGenerator != null;
+		assert pressureGenerator == 0 || directionGenerator != null;
 	}
 	protected void removeGeneratorAndCascade(final World world) throws ExceptionChunkNotLoaded {
 		removeGeneratorAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
 	}
 	private void removeGeneratorAndCascade(final World world, final int depth) throws ExceptionChunkNotLoaded {
 		if (pressureGenerator != 0) {
-			assert (directionGenerator != null);
+			assert directionGenerator != null;
 			dataAir = (dataAir & ~(GENERATOR_PRESSURE_MASK | GENERATOR_DIRECTION_MASK)) | (Commons.getOrdinal(null) << GENERATOR_DIRECTION_SHIFT);
 			pressureGenerator = 0;
 			directionGenerator = null;
@@ -417,7 +417,7 @@ public class StateAir {
 	protected void setVoid(final short pressureNew, final EnumFacing directionNew) {
 		boolean isUpdated = false;
 		if (pressureNew != pressureVoid) {
-			assert (pressureNew >= 0 && pressureNew <= VOID_PRESSURE_MAX);
+			assert pressureNew >= 0 && pressureNew <= VOID_PRESSURE_MAX;
 			
 			dataAir = (dataAir & ~VOID_PRESSURE_MASK) | (pressureNew << VOID_PRESSURE_SHIFT);
 			pressureVoid = pressureNew;
@@ -431,16 +431,16 @@ public class StateAir {
 		if (isUpdated) {
 			chunkData.setDataAir(blockPos.getX(), blockPos.getY(), blockPos.getZ(), dataAir);
 		}
-		assert (pressureVoid != 0 || directionVoid == null);
-		assert (pressureVoid == 0 || directionVoid != null);
-		assert (pressureVoid == 0 || pressureVoid == VOID_PRESSURE_MAX || directionVoid != null);
+		assert pressureVoid != 0 || directionVoid == null;
+		assert pressureVoid == 0 || directionVoid != null;
+		assert pressureVoid == 0 || pressureVoid == VOID_PRESSURE_MAX || directionVoid != null;
 	}
 	protected void removeVoidAndCascade(final World world) throws ExceptionChunkNotLoaded {
 		removeVoidAndCascade(world, WarpDriveConfig.BREATHING_VOLUME_UPDATE_DEPTH_BLOCKS);
 	}
 	private void removeVoidAndCascade(final World world, final int depth) throws ExceptionChunkNotLoaded {
 		if (pressureVoid != 0) {
-			assert (directionVoid != null);
+			assert directionVoid != null;
 			dataAir = (dataAir & ~(VOID_PRESSURE_MASK | VOID_DIRECTION_MASK)) | (Commons.getOrdinal(null) << VOID_DIRECTION_SHIFT);
 			pressureVoid = 0;
 			directionVoid = null;

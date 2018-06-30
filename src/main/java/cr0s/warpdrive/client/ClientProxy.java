@@ -94,7 +94,7 @@ public class ClientProxy extends CommonProxy {
 	public static ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final Item item = itemStack.getItem();
 		ResourceLocation resourceLocation = item.getRegistryName();
-		assert(resourceLocation != null);
+		assert resourceLocation != null;
 		if (item.getHasSubtypes()) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + itemStack.getItemDamage());
 		}
@@ -107,11 +107,11 @@ public class ClientProxy extends CommonProxy {
 		} else if (item == Items.AIR) {
 			throw new RuntimeException("Unable to ModelInitialize an air item");
 		} else if (!item.getHasSubtypes()) {
-			assert(item.getRegistryName() != null);
+			assert item.getRegistryName() != null;
 			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
 		} else {
 			NonNullList<ItemStack> listItemStacks = NonNullList.create();
-			assert(item.getCreativeTab() != null);
+			assert item.getCreativeTab() != null;
 			item.getSubItems(item.getCreativeTab(), listItemStacks);
 			for (ItemStack itemStack : listItemStacks) {
 				ModelResourceLocation modelResourceLocation; 

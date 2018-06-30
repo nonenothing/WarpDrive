@@ -126,7 +126,7 @@ public class ForceFieldRegistry {
 	}
 	
 	public static void updateInRegistry(final IBeamFrequency tileEntity) {
-		assert(tileEntity instanceof TileEntity);
+		assert tileEntity instanceof TileEntity;
 		
 		countRead++;
 		CopyOnWriteArraySet<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());
@@ -149,7 +149,7 @@ public class ForceFieldRegistry {
 	}
 	
 	public static void removeFromRegistry(final IBeamFrequency tileEntity) {
-		assert(tileEntity instanceof TileEntity);
+		assert tileEntity instanceof TileEntity;
 		
 		countRead++;
 		final Set<GlobalPosition> setGlobalPositions = registry.get(tileEntity.getBeamFrequency());

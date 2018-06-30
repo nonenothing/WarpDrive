@@ -537,7 +537,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			energyConsumed += energyToConsume;
 			energyLeft += (energyMean - energyConsumed);
 		}
-		assert(energyConsumed + energyLeft == amount_internal);
+		assert energyConsumed + energyLeft == amount_internal;
 		// then, draw remaining in no special order
 		if (energyLeft > 0) {
 			for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
@@ -547,8 +547,8 @@ public class AcceleratorSetup extends GlobalPosition {
 				energyLeft -= energyConsumed;
 			}
 		}
-		assert(energyConsumed == amount_internal);
-		assert(energyLeft == 0);
+		assert energyConsumed == amount_internal;
+		assert energyLeft == 0;
 	}
 	
 	// Pseudo-API for computers

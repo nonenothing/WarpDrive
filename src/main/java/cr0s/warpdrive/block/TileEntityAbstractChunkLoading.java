@@ -154,8 +154,8 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 			return null;
 		}
 		
-		assert(chunkMin.x <= chunkMax.x);
-		assert(chunkMin.z <= chunkMax.z);
+		assert chunkMin.x <= chunkMax.x;
+		assert chunkMin.z <= chunkMax.z;
 		
 		final int count = chunkloading_getArea();
 		if (WarpDriveConfig.LOGGING_CHUNK_LOADING) {

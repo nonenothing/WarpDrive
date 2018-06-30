@@ -297,7 +297,7 @@ public class Commons {
 		if (saveFolder == null || saveFolder.isEmpty()) {
 			final int dimension = world.provider.getDimension();
 			if (dimension != 0) {
-				assert(false);
+				assert false;
 				return String.format("~invalid dimension %d~", dimension);
 			}
 			
@@ -430,7 +430,7 @@ public class Commons {
 		if (object == null) {
 			return 0.0D;
 		}
-		assert(!(object instanceof Object[]));
+		assert !(object instanceof Object[]);
 		return Double.parseDouble(object.toString());
 	}
 	
@@ -438,7 +438,7 @@ public class Commons {
 		if (object == null) {
 			return 0.0F;
 		}
-		assert(!(object instanceof Object[]));
+		assert !(object instanceof Object[]);
 		return Float.parseFloat(object.toString());
 	}
 	
@@ -446,7 +446,7 @@ public class Commons {
 		if (object == null) {
 			 return false;
 		}
-		assert(!(object instanceof Object[]));
+		assert !(object instanceof Object[]);
 		if (object instanceof Boolean) {
 			 return ((Boolean) object);
 		}
@@ -493,8 +493,8 @@ public class Commons {
 	
 	public static double interpolate(final double[] xValues, final double[] yValues, final double xInput) {
 		if (WarpDrive.isDev) {
-			assert(xValues.length == yValues.length);
-			assert(xValues.length > 1);
+			assert xValues.length == yValues.length;
+			assert xValues.length > 1;
 		}
 		
 		// clamp to minimum
@@ -656,7 +656,7 @@ public class Commons {
 	
 	public static EntityPlayerMP[] getOnlinePlayerByNameOrSelector(final ICommandSender commandSender, final String playerNameOrSelector) {
 		final MinecraftServer server = commandSender.getServer();
-		assert(server != null);
+		assert server != null;
 		final List<EntityPlayerMP> onlinePlayers = server.getPlayerList().getPlayers();
 		for (final EntityPlayerMP onlinePlayer : onlinePlayers) {
 			if (onlinePlayer.getName().equalsIgnoreCase(playerNameOrSelector)) {
@@ -679,7 +679,7 @@ public class Commons {
 	
 	public static EntityPlayerMP getOnlinePlayerByName(final String playerName) {
 		final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
-		assert(server != null);
+		assert server != null;
 		return server.getPlayerList().getPlayerByUsername(playerName);
 	}
 	

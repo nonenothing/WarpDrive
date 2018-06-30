@@ -99,7 +99,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 		this.scanEnergyCost = scanEnergyCost / (upgradeValue != 0.0F ? upgradeValue : 1.0F);
 		this.placeEnergyCost = placeEnergyCost / (upgradeValue != 0.0F ? upgradeValue : 1.0F);
 		this.entityEffectEnergyCost = entityEffectEnergyCost / (upgradeValue != 0.0F ? upgradeValue : 1.0F);
-		assert(!comment.isEmpty());
+		assert !comment.isEmpty();
 	}
 	
 	@Nonnull

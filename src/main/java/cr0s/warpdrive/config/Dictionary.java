@@ -598,7 +598,7 @@ public class Dictionary {
 	
 	public static NBTBase writeItemsToNBT(final HashSet<Item> hashSetItem) {
 		final NBTTagList nbtTagList = new NBTTagList();
-		assert(hashSetItem != null);
+		assert hashSetItem != null;
 		for (final Item item : hashSetItem) {
 			final String registryName = item.getRegistryName().toString();
 			nbtTagList.appendTag(new NBTTagString(registryName));
@@ -607,7 +607,7 @@ public class Dictionary {
 	}
 	
 	public static HashSet<Item> readItemsFromNBT(final NBTTagList nbtTagList) {
-		assert(nbtTagList != null);
+		assert nbtTagList != null;
 		final int size = nbtTagList.tagCount();
 		final HashSet<Item> hashSetItem = new HashSet<>(Math.max(8, size));
 		

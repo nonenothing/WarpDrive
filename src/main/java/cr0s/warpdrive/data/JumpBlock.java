@@ -485,7 +485,7 @@ public class JumpBlock {
 			final NBTTagCompound tagCompoundExternals = tagCompound.getCompoundTag("externals");
 			externals = new HashMap<>();
 			for (final Object key : tagCompoundExternals.getKeySet()) {
-				assert (key instanceof String);
+				assert key instanceof String;
 				externals.put((String) key, tagCompoundExternals.getTag((String) key));
 			}
 		} else {

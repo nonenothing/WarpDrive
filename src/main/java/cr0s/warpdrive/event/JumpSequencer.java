@@ -849,7 +849,7 @@ public class JumpSequencer extends AbstractSequencer {
 			// is world available?
 			final int dimensionIdSpace = celestialObject.dimensionId;
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
-			assert(server != null);
+			assert server != null;
 			try {
 				targetWorld = server.getWorld(dimensionIdSpace);
 			} catch (Exception exception) {
@@ -878,7 +878,7 @@ public class JumpSequencer extends AbstractSequencer {
 			// is world available?
 			final int dimensionIdHyperspace = celestialObjectSource.parent.dimensionId;
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
-			assert(server != null);
+			assert server != null;
 			try {
 				targetWorld = server.getWorld(dimensionIdHyperspace);
 			} catch (Exception exception) {
@@ -919,7 +919,7 @@ public class JumpSequencer extends AbstractSequencer {
 			// is world available?
 			final int dimensionIdSpace = celestialObjectSource.parent.dimensionId;
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
-			assert(server != null);
+			assert server != null;
 			try {
 				targetWorld = server.getWorld(dimensionIdSpace);
 			} catch (Exception exception) {
@@ -966,7 +966,7 @@ public class JumpSequencer extends AbstractSequencer {
 			
 			// validate world availability
 			final MinecraftServer server = sourceWorld.getMinecraftServer();
-			assert(server != null);
+			assert server != null;
 			try {
 				targetWorld = server.getWorld(celestialObject.dimensionId);
 			} catch (Exception exception) {

@@ -32,7 +32,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
 		}
 		final ResourceLocation resourceLocation = getRegistryName();
-		assert(resourceLocation != null);
+		assert resourceLocation != null;
 		final String variant;
 		if (block instanceof BlockHullStairs) {
 			variant = "facing=east,half=bottom,shape=straight";

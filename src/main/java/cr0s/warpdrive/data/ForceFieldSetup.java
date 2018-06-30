@@ -319,7 +319,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	}
 	
 	public double applyDamage(final World world, final DamageSource damageSource, final double damageLevel) {
-		assert(damageSource != null);
+		assert damageSource != null;
 		final TileEntity tileEntity = world.getTileEntity(new BlockPos(x, y, z));
 		if (tileEntity instanceof TileEntityForceFieldProjector) {
 			final double scaledDamage = damageLevel * entityEnergyCost / 2000.0D;

@@ -449,7 +449,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			damageLeft = forceFieldSetup.applyDamage(world, DamageSource.setExplosionSource(explosion), damageLevel);
 		}
 		
-		assert(damageLeft >= 0);
+		assert damageLeft >= 0;
 		if (enableFirstHit && WarpDriveConfig.LOGGING_FORCE_FIELD) {
 			WarpDrive.logger.info(String.format("BlockForceField(%d %s) involved in explosion %s damageLevel %d damageLeft %d",
 			                                    tier, Commons.format(world, blockPos),

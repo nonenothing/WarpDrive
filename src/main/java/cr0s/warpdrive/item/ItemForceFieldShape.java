@@ -83,7 +83,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
-		assert(resourceLocation != null);
+		assert resourceLocation != null;
 		if (damage >= 0 && damage < EnumComponentType.length) {
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-" + EnumForceFieldShape.get(damage).getName());
 		}

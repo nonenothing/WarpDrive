@@ -65,7 +65,7 @@ public class PacketHandler {
 	public static void sendBeamPacket(final World world, final Vector3 v3Source, final Vector3 v3Target,
 	                                  final float red, final float green, final float blue,
 	                                  final int age, final int energy, final int radius) {
-		assert(!world.isRemote);
+		assert !world.isRemote;
 		
 		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(v3Source, v3Target, red, green, blue, age);
 		
@@ -93,7 +93,7 @@ public class PacketHandler {
 	public static void sendBeamPacketToPlayersInArea(final World world, final Vector3 source, final Vector3 target,
 	                                                 final float red, final float green, final float blue,
 	                                                 final int age, final AxisAlignedBB aabb) {
-		assert(!world.isRemote);
+		assert !world.isRemote;
 		
 		final MessageBeamEffect messageBeamEffect = new MessageBeamEffect(source, target, red, green, blue, age);
 		// Send packet to all players within cloaked area
@@ -111,7 +111,7 @@ public class PacketHandler {
 	                                           final float baseRed, final float baseGreen, final float baseBlue,
 	                                           final float fadeRed, final float fadeGreen, final float fadeBlue,
 	                                           final int radius) {
-		assert(!world.isRemote);
+		assert !world.isRemote;
 		
 		final MessageSpawnParticle messageSpawnParticle = new MessageSpawnParticle(
 			type, quantity, origin, direction, baseRed, baseGreen, baseBlue, fadeRed, fadeGreen, fadeBlue);
@@ -130,7 +130,7 @@ public class PacketHandler {
 	public static void sendTransporterEffectPacket(final World world, final GlobalPosition globalPositionLocal, final GlobalPosition globalPositionRemote, final double lockStrength,
 	                                               final Collection<MovingEntity> movingEntitiesLocal, final Collection<MovingEntity> movingEntitiesRemote,
 	                                               final int tickEnergizing, final int tickCooldown, final int radius) {
-		assert(!world.isRemote);
+		assert !world.isRemote;
 		
 		final MessageTransporterEffect messageTransporterEffectLocal = new MessageTransporterEffect(
 				true, globalPositionLocal, movingEntitiesLocal,

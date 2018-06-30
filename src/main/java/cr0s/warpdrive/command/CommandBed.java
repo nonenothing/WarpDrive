@@ -68,7 +68,7 @@ public class CommandBed extends CommandBase {
 			}
 		}
 		
-		assert (entityPlayerMPs != null);
+		assert entityPlayerMPs != null;
 		for (final EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
 			final BlockPos bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.world.provider.getDimension());
 			if (bedLocation == null) {

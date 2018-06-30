@@ -216,7 +216,7 @@ public class CloakedArea {
 	
 	@SideOnly(Side.CLIENT)
 	public void clientCloak() {
-		assert(Commons.isSafeThread());
+		assert Commons.isSafeThread();
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		
 		// Hide the blocks within area

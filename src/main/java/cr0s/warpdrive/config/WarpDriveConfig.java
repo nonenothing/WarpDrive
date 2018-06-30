@@ -947,7 +947,7 @@ public class WarpDriveConfig {
 		
 		// Air generator
 		BREATHING_MAX_ENERGY_STORED = config.get("breathing", "max_energy_stored", BREATHING_MAX_ENERGY_STORED, "Maximum energy stored").getIntList();
-		assert(BREATHING_MAX_ENERGY_STORED.length == 3);
+		assert BREATHING_MAX_ENERGY_STORED.length == 3;
 		BREATHING_MAX_ENERGY_STORED[0] = Commons.clamp(1                        , BREATHING_MAX_ENERGY_STORED[1], BREATHING_MAX_ENERGY_STORED[0]);
 		BREATHING_MAX_ENERGY_STORED[1] = Commons.clamp(BREATHING_MAX_ENERGY_STORED[0], BREATHING_MAX_ENERGY_STORED[2], BREATHING_MAX_ENERGY_STORED[1]);
 		BREATHING_MAX_ENERGY_STORED[2] = Commons.clamp(BREATHING_MAX_ENERGY_STORED[1], Integer.MAX_VALUE             , BREATHING_MAX_ENERGY_STORED[2]);
@@ -956,13 +956,13 @@ public class WarpDriveConfig {
 		                                              config.get("breathing", "energy_per_canister", BREATHING_ENERGY_PER_CANISTER, "Energy cost per air canister refilled").getInt());
 		
 		BREATHING_ENERGY_PER_NEW_AIR_BLOCK = config.get("breathing", "energy_per_new_air_block", BREATHING_ENERGY_PER_NEW_AIR_BLOCK, "Energy cost to start air distribution per open side per interval").getIntList();
-		assert(BREATHING_ENERGY_PER_NEW_AIR_BLOCK.length == 3);
+		assert BREATHING_ENERGY_PER_NEW_AIR_BLOCK.length == 3;
 		BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0] = Commons.clamp(1                               , BREATHING_MAX_ENERGY_STORED[0], BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0]);
 		BREATHING_ENERGY_PER_NEW_AIR_BLOCK[1] = Commons.clamp(BREATHING_ENERGY_PER_NEW_AIR_BLOCK[0], BREATHING_MAX_ENERGY_STORED[1], BREATHING_ENERGY_PER_NEW_AIR_BLOCK[1]);
 		BREATHING_ENERGY_PER_NEW_AIR_BLOCK[2] = Commons.clamp(BREATHING_ENERGY_PER_NEW_AIR_BLOCK[1], BREATHING_MAX_ENERGY_STORED[2], BREATHING_ENERGY_PER_NEW_AIR_BLOCK[2]);
 		
 		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK = config.get("breathing", "energy_per_existing_air_block", BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK, "Energy cost to sustain air distribution per open side per interval").getIntList();
-		assert(BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK.length == 3);
+		assert BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK.length == 3;
 		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0] = Commons.clamp(1                                    , BREATHING_MAX_ENERGY_STORED[0], BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0]);
 		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[1] = Commons.clamp(BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[0], BREATHING_MAX_ENERGY_STORED[1], BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[1]);
 		BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[2] = Commons.clamp(BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[1], BREATHING_MAX_ENERGY_STORED[2], BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[2]);
@@ -971,7 +971,7 @@ public class WarpDriveConfig {
 		                                               config.get("breathing", "air_generation_interval_ticks", BREATHING_AIR_GENERATION_TICKS, "Update speed of air generation").getInt());
 		
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS = config.get("breathing", "air_generation_range_blocks", BREATHING_AIR_GENERATION_RANGE_BLOCKS, "Maximum range of an air generator for each tier, measured in block").getIntList();
-		assert(BREATHING_AIR_GENERATION_RANGE_BLOCKS.length == 3);
+		assert BREATHING_AIR_GENERATION_RANGE_BLOCKS.length == 3;
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[0] = Commons.clamp(8                                  , BREATHING_AIR_GENERATION_RANGE_BLOCKS[1], BREATHING_AIR_GENERATION_RANGE_BLOCKS[0]);
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[1] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[0], BREATHING_AIR_GENERATION_RANGE_BLOCKS[2], BREATHING_AIR_GENERATION_RANGE_BLOCKS[1]);
 		BREATHING_AIR_GENERATION_RANGE_BLOCKS[2] = Commons.clamp(BREATHING_AIR_GENERATION_RANGE_BLOCKS[1], 256                                , BREATHING_AIR_GENERATION_RANGE_BLOCKS[2]);
@@ -1016,25 +1016,25 @@ public class WarpDriveConfig {
 		
 		// Energy bank
 		ENERGY_BANK_MAX_ENERGY_STORED = config.get("energy_bank", "max_energy_stored", ENERGY_BANK_MAX_ENERGY_STORED, "Maximum energy stored for each energy bank").getIntList();
-		assert(ENERGY_BANK_MAX_ENERGY_STORED.length == 3);
+		assert ENERGY_BANK_MAX_ENERGY_STORED.length == 3;
 		ENERGY_BANK_MAX_ENERGY_STORED[0] = Commons.clamp(                               0, ENERGY_BANK_MAX_ENERGY_STORED[1], ENERGY_BANK_MAX_ENERGY_STORED[0]);
 		ENERGY_BANK_MAX_ENERGY_STORED[1] = Commons.clamp(ENERGY_BANK_MAX_ENERGY_STORED[0], ENERGY_BANK_MAX_ENERGY_STORED[2], ENERGY_BANK_MAX_ENERGY_STORED[1]);
 		ENERGY_BANK_MAX_ENERGY_STORED[2] = Commons.clamp(ENERGY_BANK_MAX_ENERGY_STORED[1], Integer.MAX_VALUE               , ENERGY_BANK_MAX_ENERGY_STORED[2]);
 		
 		ENERGY_BANK_IC2_TIER = config.get("energy_bank", "ic2_tier", ENERGY_BANK_IC2_TIER, "IC2 energy tier for each energy bank (0 is BatBox, etc.)").getIntList();
-		assert(ENERGY_BANK_IC2_TIER.length == 3);
+		assert ENERGY_BANK_IC2_TIER.length == 3;
 		ENERGY_BANK_IC2_TIER[0] = Commons.clamp(                      0, ENERGY_BANK_IC2_TIER[1], ENERGY_BANK_IC2_TIER[0]);
 		ENERGY_BANK_IC2_TIER[1] = Commons.clamp(ENERGY_BANK_IC2_TIER[0], ENERGY_BANK_IC2_TIER[2], ENERGY_BANK_IC2_TIER[1]);
 		ENERGY_BANK_IC2_TIER[2] = Commons.clamp(ENERGY_BANK_IC2_TIER[1], Integer.MAX_VALUE      , ENERGY_BANK_IC2_TIER[2]);
 		
 		ENERGY_BANK_TRANSFER_PER_TICK = config.get("energy_bank", "transfer_per_tick", ENERGY_BANK_TRANSFER_PER_TICK, "Internal energy transferred per tick for each energy bank").getIntList();
-		assert(ENERGY_BANK_TRANSFER_PER_TICK.length == 3);
+		assert ENERGY_BANK_TRANSFER_PER_TICK.length == 3;
 		ENERGY_BANK_TRANSFER_PER_TICK[0] = Commons.clamp(                               0, ENERGY_BANK_TRANSFER_PER_TICK[1], ENERGY_BANK_TRANSFER_PER_TICK[0]);
 		ENERGY_BANK_TRANSFER_PER_TICK[1] = Commons.clamp(ENERGY_BANK_TRANSFER_PER_TICK[0], ENERGY_BANK_TRANSFER_PER_TICK[2], ENERGY_BANK_TRANSFER_PER_TICK[1]);
 		ENERGY_BANK_TRANSFER_PER_TICK[2] = Commons.clamp(ENERGY_BANK_TRANSFER_PER_TICK[1], Integer.MAX_VALUE               , ENERGY_BANK_TRANSFER_PER_TICK[2]);
 		
 		ENERGY_BANK_EFFICIENCY_PER_UPGRADE = config.get("energy_bank", "efficiency_per_upgrade", ENERGY_BANK_EFFICIENCY_PER_UPGRADE, "Energy transfer efficiency for each upgrade apply, first value is without upgrades (0.8 means 20% loss)").getDoubleList();
-		assert(ENERGY_BANK_EFFICIENCY_PER_UPGRADE.length >= 1);
+		assert ENERGY_BANK_EFFICIENCY_PER_UPGRADE.length >= 1;
 		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0] = Math.min(1.0D, Commons.clamp(                                 0.5D, ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0]));
 		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1] = Math.min(1.0D, Commons.clamp(ENERGY_BANK_EFFICIENCY_PER_UPGRADE[0], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2], ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1]));
 		ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2] = Math.min(1.0D, Commons.clamp(ENERGY_BANK_EFFICIENCY_PER_UPGRADE[1], Integer.MAX_VALUE                    , ENERGY_BANK_EFFICIENCY_PER_UPGRADE[2]));

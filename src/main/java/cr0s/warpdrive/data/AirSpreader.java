@@ -203,10 +203,10 @@ public class AirSpreader {
 			new_concentration = Math.max(0, max_concentration - 1);
 		}
 		if (WarpDrive.isDev) {
-			assert (new_concentration >= 0);
-			assert (mid_concentration >= 0);
-			assert (new_concentration <= StateAir.CONCENTRATION_MAX);
-			assert (mid_concentration <= StateAir.CONCENTRATION_MAX);
+			assert new_concentration >= 0;
+			assert mid_concentration >= 0;
+			assert new_concentration <= StateAir.CONCENTRATION_MAX;
+			assert mid_concentration <= StateAir.CONCENTRATION_MAX;
 			if (WarpDriveConfig.LOGGING_BREATHING) {
 				final StringBuilder debugConcentrations = new StringBuilder();
 				for (final EnumFacing forgeDirection : directions) {

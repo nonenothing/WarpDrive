@@ -71,7 +71,7 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		ResourceLocation resourceLocation = getRegistryName();
-		assert(resourceLocation != null);
+		assert resourceLocation != null;
 		switch (damage) {
 		case MODE_VIDEO_CHANNEL:
 			resourceLocation = new ResourceLocation(resourceLocation.getResourceDomain(), resourceLocation.getResourcePath() + "-video_channel");

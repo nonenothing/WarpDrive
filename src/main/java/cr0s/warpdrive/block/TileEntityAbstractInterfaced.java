@@ -412,7 +412,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	
 	@Optional.Method(modid = "opencomputers")
 	private void OC_constructor() {
-		assert(OC_node == null);
+		assert OC_node == null;
 		final String OC_path = "/assets/" + WarpDrive.MODID.toLowerCase() + "/lua.OpenComputers/" + peripheralName;
 		OC_hasResource = assetExist(OC_path);
 		OC_node = Network.newNode(this, Visibility.Network).withComponent(peripheralName).create();

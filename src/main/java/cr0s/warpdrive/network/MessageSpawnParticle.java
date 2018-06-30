@@ -184,7 +184,7 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 					        origin.z + 0.51D * directionFacing.getFrontOffsetZ(),
 					        directionRandomized.x, directionRandomized.y, directionRandomized.z);
 				}
-				assert(particle != null);
+				assert particle != null;
 				particle.setParticleTextureIndex(81);
 				particle.setAlphaF(0.5F);
 				break;

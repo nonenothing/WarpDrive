@@ -447,7 +447,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	protected void commandDone(final boolean success, @Nonnull final String reason) {
-		assert(success || !reason.isEmpty());
+		assert success || !reason.isEmpty();
 		super.commandDone(success, reason);
 		if (!success) {
 			messageToAllPlayersOnShip(new TextComponentString(reason));

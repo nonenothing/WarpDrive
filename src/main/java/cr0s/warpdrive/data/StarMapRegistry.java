@@ -50,7 +50,7 @@ public class StarMapRegistry {
 	
 	public void updateInRegistry(final IStarMapRegistryTileEntity tileEntity) {
 		// validate context
-		assert(tileEntity instanceof TileEntity);
+		assert tileEntity instanceof TileEntity;
 		if (!Commons.isSafeThread()) {
 			WarpDrive.logger.error(String.format("Non-threadsafe call to StarMapRegistry:updateInRegistry outside main thread, for %s",
 			                                     tileEntity));
@@ -102,7 +102,7 @@ public class StarMapRegistry {
 	}
 	
 	public void removeFromRegistry(final IStarMapRegistryTileEntity tileEntity) {
-		assert(tileEntity instanceof TileEntity);
+		assert tileEntity instanceof TileEntity;
 		
 		countRead++;
 		final Set<StarMapRegistryItem> setRegistryItems = registry.get(((TileEntity) tileEntity).getWorld().provider.getDimension());
@@ -386,7 +386,7 @@ public class StarMapRegistry {
 			return false;
 		}
 		for (final StarMapRegistryItem registryItem : setRegistryItems) {
-			assert(registryItem.dimensionId == shipCore1.getWorld().provider.getDimension());
+			assert registryItem.dimensionId == shipCore1.getWorld().provider.getDimension();
 			
 			// only check cores
 			if (registryItem.type != EnumStarMapEntryType.SHIP) {

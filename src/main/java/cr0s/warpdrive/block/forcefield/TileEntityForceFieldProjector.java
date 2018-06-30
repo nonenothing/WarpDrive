@@ -375,7 +375,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void projectForceField() {
-		assert(!world.isRemote && isCalculated());
+		assert !world.isRemote && isCalculated();
 		
 		final ForceFieldSetup forceFieldSetup = getForceFieldSetup();
 		
@@ -586,7 +586,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				
 				// remove our own force field block
 				if (blockState.getBlock() == WarpDrive.blockForceFields[tier - 1]) {
-					assert(blockState.getBlock() instanceof BlockForceField);
+					assert blockState.getBlock() instanceof BlockForceField;
 					if (((BlockForceField) blockState.getBlock()).getProjector(world, vector.getBlockPos()) == this) {
 						world.setBlockToAir(vector.getBlockPos());
 						vForceFields.remove(vector);
@@ -699,7 +699,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			return true;
 		}
 		//noinspection ConstantConditions
-		assert(found);
+		assert found;
 		
 		// check area protection
 		if (isBlockPlaceCanceled(null, world, vector.getBlockPos(), blockToPlace.getStateFromMeta(metadataToPlace))) {
@@ -728,8 +728,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 	}
 	
 	private void doTerraforming(final ForceFieldSetup forceFieldSetup, final VectorI vector, final IBlockState blockState) {
-		assert(vector != null);
-		assert(blockState != null);
+		assert vector != null;
+		assert blockState != null;
 		if (forceFieldSetup.temperatureLevel > 300.0F) {
 			
 		} else {

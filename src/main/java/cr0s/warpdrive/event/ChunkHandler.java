@@ -69,7 +69,7 @@ public class ChunkHandler {
 		}
 		
 		final ChunkData chunkData = getChunkData(world.isRemote, world.provider.getDimension(), chunkX, chunkZ, true);
-		assert(chunkData != null);
+		assert chunkData != null;
 		// (world can load a non-generated chunk, or the chunk be regenerated, so we reset only as needed)
 		if (!chunkData.isLoaded()) { 
 			chunkData.load(new NBTTagCompound());
@@ -87,7 +87,7 @@ public class ChunkHandler {
 		}
 		
 		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, true);
-		assert(chunkData != null);
+		assert chunkData != null;
 		chunkData.load(event.getData());
 	}
 	
@@ -102,7 +102,7 @@ public class ChunkHandler {
 		}
 		
 		final ChunkData chunkData = getChunkData(event.getWorld().isRemote, event.getWorld().provider.getDimension(), event.getChunk().x, event.getChunk().z, true);
-		assert(chunkData != null);
+		assert chunkData != null;
 		if (!chunkData.isLoaded()) {
 			chunkData.load(new NBTTagCompound());
 		}
@@ -258,7 +258,7 @@ public class ChunkHandler {
 			                                     Commons.format(world, x, y, z)));
 			LocalProfiler.printCallStats();
 			Commons.dumpAllThreads();
-			assert(false);
+			assert false;
 		}
 		return chunkData;
 	}
@@ -267,7 +267,7 @@ public class ChunkHandler {
 	 * Return null if chunk isn't already generated or loaded
 	 */
 	private static ChunkData getChunkData(final boolean isRemote, final int dimensionId, final int x, final int y, final int z) {
-		assert (y >= -1 && y <= 256);   // includes 1 block tolerance for mirroring
+		assert y >= -1 && y <= 256;   // includes 1 block tolerance for mirroring
 		return getChunkData(isRemote, dimensionId, x >> 4, z >> 4, false);
 	}
 	

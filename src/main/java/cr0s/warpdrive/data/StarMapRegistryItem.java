@@ -60,7 +60,7 @@ public class StarMapRegistryItem extends GlobalPosition {
 	}
 	
 	public boolean sameCoordinates(final IStarMapRegistryTileEntity tileEntity) {
-		assert(tileEntity instanceof TileEntity);
+		assert tileEntity instanceof TileEntity;
 		return dimensionId == ((TileEntity) tileEntity).getWorld().provider.getDimension()
 			&& x == ((TileEntity) tileEntity).getPos().getX()
 			&& y == ((TileEntity) tileEntity).getPos().getY()
@@ -69,9 +69,9 @@ public class StarMapRegistryItem extends GlobalPosition {
 	
 	public void update(final IStarMapRegistryTileEntity tileEntity) {
 		if (WarpDrive.isDev) {
-			assert(tileEntity instanceof TileEntity);
-			assert(type == tileEntity.getStarMapType());
-			assert(uuid.equals(tileEntity.getUUID()));
+			assert tileEntity instanceof TileEntity;
+			assert type == tileEntity.getStarMapType();
+			assert uuid.equals(tileEntity.getUUID());
 		}
 		final AxisAlignedBB aabbArea = tileEntity.getStarMapArea();
 		if (aabbArea != null) {

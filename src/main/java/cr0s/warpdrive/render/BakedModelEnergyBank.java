@@ -53,8 +53,8 @@ public class BakedModelEnergyBank implements IBakedModel, IMyBakedModel {
 	@Nonnull
 	@Override
 	public List<BakedQuad> getQuads(@Nullable final IBlockState blockState, @Nullable final EnumFacing facing, final long rand) {
-		assert(resourceLocation != null);
-		assert(bakedModelOriginal != null);
+		assert resourceLocation != null;
+		assert bakedModelOriginal != null;
 		
 		final IExtendedBlockState extendedBlockState;
 		if (blockState == null) {

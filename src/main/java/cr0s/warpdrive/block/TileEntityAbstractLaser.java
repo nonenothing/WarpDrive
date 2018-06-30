@@ -75,7 +75,7 @@ public abstract class TileEntityAbstractLaser extends TileEntityAbstractInterfac
 	}
 	
 	private void updateLaserMediumDirection() {
-		assert(laserMedium_maxCount != 0);
+		assert laserMedium_maxCount != 0;
 		
 		for (final EnumFacing facing : laserMedium_directionsValid) {
 			TileEntity tileEntity = world.getTileEntity(pos.offset(facing));
