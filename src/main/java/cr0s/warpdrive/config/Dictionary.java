@@ -3,6 +3,7 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.block.forcefield.BlockForceField;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.block.hull.BlockHullSlab;
 import cr0s.warpdrive.block.hull.BlockHullStairs;
@@ -524,7 +525,9 @@ public class Dictionary {
 			
 			// check actual values
 			if (hardness != -2.0F) {
-				if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
+				if ( hardness < 0
+				  && (!BLOCKS_ANCHOR.contains(block))
+				  && !(block instanceof BlockForceField) ) {// unbreakable block
 					WarpDrive.logger.warn(String.format("Warning: non-anchor block with unbreakable hardness %s %s (%.2f)", resourceLocation, block, hardness));
 				} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
 				         && !( block instanceof BlockAbstractBase
