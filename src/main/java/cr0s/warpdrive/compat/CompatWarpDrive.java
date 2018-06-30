@@ -5,7 +5,6 @@ import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
-import cr0s.warpdrive.block.breathing.BlockAirGenerator;
 import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
 import cr0s.warpdrive.block.decoration.BlockAbstractLamp;
@@ -134,8 +133,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 		}
 		
 		// Force field projector
-		if ( block instanceof BlockAirGenerator
-		  || block instanceof BlockAirGeneratorTiered
+		if ( block instanceof BlockAirGeneratorTiered
 		  || block instanceof BlockForceFieldProjector
 		  || block instanceof BlockShipCore ) {
 			switch (rotationSteps) {

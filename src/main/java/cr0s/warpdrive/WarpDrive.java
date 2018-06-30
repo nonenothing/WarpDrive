@@ -13,9 +13,7 @@ import cr0s.warpdrive.block.atomic.BlockParticlesCollider;
 import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellGlass;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
-import cr0s.warpdrive.block.breathing.BlockAir;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
-import cr0s.warpdrive.block.breathing.BlockAirGenerator;
 import cr0s.warpdrive.block.breathing.BlockAirGeneratorTiered;
 import cr0s.warpdrive.block.breathing.BlockAirShield;
 import cr0s.warpdrive.block.breathing.BlockAirSource;
@@ -322,11 +320,9 @@ public class WarpDrive {
 		blockShipScanner = new BlockShipScanner("block_ship_scanner");
 		
 		// breathing blocks
-		blockAir = new BlockAir("block_air");
 		blockAirFlow = new BlockAirFlow("block_air_flow");
 		blockAirSource = new BlockAirSource("block_air_source");
 		blockAirShield = new BlockAirShield("block_air_shield");
-		blockAirGenerator = new BlockAirGenerator("block_air_generator");
 		
 		blockAirGeneratorTiered = new Block[3];
 		for (byte tier = 1; tier <= 3; tier++) {
