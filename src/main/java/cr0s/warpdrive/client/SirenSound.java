@@ -48,7 +48,7 @@ public class SirenSound extends MovingSound {
         if (player.getDistance(x, y, z) > range) {
             this.volume = 0.0F;
         } else {
-            //TODO: Better distance/volume formula that has a better drop off rate.
+            // @TODO: Better distance/volume formula that has a better drop off rate.
             this.volume = 1.0F - scaleTo((float) player.getDistance(x, y, z), 0.0F, range, 0.0F, 1.0F);
         }
     }

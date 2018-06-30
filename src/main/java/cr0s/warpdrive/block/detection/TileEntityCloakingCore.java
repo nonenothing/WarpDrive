@@ -25,6 +25,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -307,11 +308,13 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		int x, y, z;
 		final int energyRequired_new;
 		int volume_new = 0;
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos(pos);
 		if (tier == 1) {// tier1 = gaz and air blocks don't count
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
 					for (z = minZ; z <= maxZ; z++) {
-						if (!world.isAirBlock(new BlockPos(x, y, z))) { // @TODO MC1.10 use mutableBlockPos
+						mutableBlockPos.setPos(x, y, z);
+						if (!world.isAirBlock(mutableBlockPos)) {
 							volume_new++;
 						} 
 					}
@@ -322,7 +325,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 			for (y = minY; y <= maxY; y++) {
 				for (x = minX; x <= maxX; x++) {
 					for (z = minZ; z <= maxZ; z++) {
-						if (world.getBlockState(new BlockPos(x, y, z)).getBlock() != Blocks.AIR) { // @TODO MC1.10 use mutableBlockPos
+						mutableBlockPos.setPos(x, y, z);
+						if (world.getBlockState(mutableBlockPos).getBlock() != Blocks.AIR) {
 							volume_new++;
 						} 
 					}

@@ -12,6 +12,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -21,6 +22,9 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -60,8 +64,8 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		return ((IBlockBase) block).getRarity(itemStack, super.getRarity(itemStack));
 	}
 	
-	public ITextComponent getStatus(final NBTTagCompound tagCompound, final IBlockState blockState) {
-		final TileEntity tileEntity = block.createTileEntity(null, blockState); // @TODO probable crash here, can't use Minecraft.getMinecraft().world on server side
+	public ITextComponent getStatus(final World world, final NBTTagCompound tagCompound, final IBlockState blockState) {
+		final TileEntity tileEntity = block.createTileEntity(world, blockState);
 		if (tileEntity instanceof TileEntityAbstractBase) {
 			if (tagCompound != null) {
 				tileEntity.readFromNBT(tagCompound);
@@ -83,6 +87,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 		return ClientProxy.getModelResourceLocation(itemStack);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
@@ -98,8 +103,16 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
 		}
 		
-		final IBlockState blockState = block.getStateFromMeta(itemStack.getMetadata());   // @TODO: integrate tooltips on tile entities
-		Commons.addTooltip(list, getStatus(itemStack.getTagCompound(), blockState).getFormattedText());
+		final IBlockState blockState;
+		if (world != null) {
+			blockState = block.getStateForPlacement(world, new BlockPos(0, -1, 0),
+			                                        EnumFacing.DOWN, 0.0F, 0.0F, 0.0F,
+			                                        itemStack.getMetadata(), Minecraft.getMinecraft().player, EnumHand.MAIN_HAND);
+		} else {
+			blockState = block.getStateFromMeta(itemStack.getMetadata());
+		}
+		
+		Commons.addTooltip(list, getStatus(world, itemStack.getTagCompound(), blockState).getFormattedText());
 	}
 	
 	@Override

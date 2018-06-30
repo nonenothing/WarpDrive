@@ -89,11 +89,6 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 		return new ModelResourceLocation(resourceLocation, "inventory");
 	}
 	
-	// @TODO MC1.10 rendering
-	//	icons[MODE_VIDEO_CHANNEL  ] = iconRegister.registerIcon("warpdrive:tool/tuning_driver-cyan");
-	//	icons[MODE_BEAM_FREQUENCY ] = iconRegister.registerIcon("warpdrive:tool/tuning_driver-purple");
-	//	icons[MODE_CONTROL_CHANNEL] = iconRegister.registerIcon("warpdrive:tool/tuning_driver-yellow");
-	
 	@Nonnull
 	@Override
 	public String getUnlocalizedName(final ItemStack itemStack) {

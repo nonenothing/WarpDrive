@@ -44,22 +44,6 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 		return celestialObjectDimension.id;
 	}
 	
-	/* @TODO MC1.10 dimension name
-	@Override
-	public String getDimensionName() {
-		updateCelestialObject();
-		if (celestialObjectDimension == null) {
-			if (isRemote) {
-				return String.format("DIM%d", getDimension());
-			} else {
-				throw new RuntimeException(String.format("Critical error: there's no celestial object defining %s dimension id %d, unable to proceed further",
-				                                         "server", getDimension()));
-			}
-		}
-		return celestialObjectDimension.id;
-	}
-	/**/
-	
 	@Override
 	public boolean canCoordinateBeSpawn(final int x, final int z) {
 		final BlockPos blockPos = world.getTopSolidOrLiquidBlock(new BlockPos(x, 0, z));

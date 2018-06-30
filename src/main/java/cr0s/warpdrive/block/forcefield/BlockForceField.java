@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.block.hull.BlockHullGlass;
 import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumPermissionNode;
@@ -32,6 +33,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -91,8 +93,21 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Nonnull
 	@Override
 	public MapColor getMapColor(final IBlockState blockState, final IBlockAccess blockAccess, final BlockPos blockPos) {
-		// @TODO: color from force field frequency
-		return super.getMapColor(blockState, blockAccess, blockPos);
+		IExtendedBlockState blockStateExtended = (IExtendedBlockState) getExtendedState(blockState, blockAccess, blockPos);
+		IBlockState blockStateCamouflage = blockStateExtended.getValue(BlockProperties.CAMOUFLAGE);
+		if (blockStateCamouflage != Blocks.AIR) {
+			try {
+				return blockStateCamouflage.getMapColor(blockAccess, blockPos);
+			} catch (final Exception exception) {
+				if (!Dictionary.BLOCKS_NOCAMOUFLAGE.contains(blockStateCamouflage.getBlock())) {
+					exception.printStackTrace();
+					WarpDrive.logger.error(String.format("Exception trying to get MapColor for %s",
+					                                     blockStateCamouflage));
+					Dictionary.BLOCKS_NOCAMOUFLAGE.add(blockStateCamouflage.getBlock());
+				}
+			}
+		}
+		return MapColor.getBlockColor(EnumDyeColor.byMetadata(blockState.getValue(FREQUENCY)));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -247,7 +262,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public AxisAlignedBB getCollisionBoundingBox(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
 		final ForceFieldSetup forceFieldSetup = getForceFieldSetup(blockAccess, blockPos);
 		if ( forceFieldSetup != null
-		  && blockAccess instanceof World ) {
+		  && blockAccess instanceof World ) {// @TODO lag when placing force field due to permission checks?
 			final List<EntityPlayer> entities = ((World) blockAccess).getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(
 				blockPos.getX(), blockPos.getY(), blockPos.getZ(),
 				blockPos.getX() + 1.0D, blockPos.getY() + 1.0D, blockPos.getZ() + 1.0D));
@@ -303,18 +318,6 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			}
 		}
 	}
-	
-	/* @TODO MC1.10 camouflage color multiplier
-	@Override
-	public int colorMultiplier(final IBlockAccess blockAccess, final BlockPos blockPos) {
-		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
-		if (tileEntity instanceof TileEntityForceField && ((TileEntityForceField)tileEntity).cache_blockStateCamouflage != null) {
-			return ((TileEntityForceField)tileEntity).cache_colorMultiplierCamouflage;
-		}
-		
-		return super.colorMultiplier(blockAccess, blockPos);
-	}
-	/**/
 	
 	@Override
 	public int getLightValue(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {

@@ -58,7 +58,7 @@ public class BakedModelEnergyBank implements IBakedModel, IMyBakedModel {
 		
 		final IExtendedBlockState extendedBlockState;
 		if (blockState == null) {
-			// @TODO: dead code until we have different blocks for each tiers to support item rendering and 1.13+ 
+			// dead code until we have different blocks for each tiers to support item rendering and 1.13+
 			if (extendedBlockStateDefault == null) {
 				extendedBlockStateDefault = ((IExtendedBlockState) WarpDrive.blockEnergyBank.getDefaultState())
 				        .withProperty(BlockEnergyBank.DOWN , EnumDisabledInputOutput.INPUT)

@@ -22,9 +22,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class BlockCloakingCore extends BlockAbstractContainer {
 	
 	public BlockCloakingCore(final String registryName) {
@@ -93,9 +90,6 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 			cloakingCore.isEnabled = !cloakingCore.isEnabled;
 			Commons.addChatMessage(entityPlayer, cloakingCore.getStatus());
 			return true;
-		// } else if (xxx) {// TODO if player has advanced tool
-			// WarpDrive.addChatMessage(entityPlayer, cloakingCore.getStatus() + "\n" + cloakingCore.getEnergyStatus());
-			// return true;
 		}
 		
 		return false;
