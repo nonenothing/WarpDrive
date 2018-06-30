@@ -25,6 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 
@@ -169,7 +170,9 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 							0.0F, 0.0F, 1.0F, age, 0, 50);
 					world.playSound(null, pos, SoundEvents.LASER_HIGH, SoundCategory.BLOCKS, 4F, 1F);
 					delayTicks = WarpDriveConfig.MINING_LASER_MINE_DELAY_TICKS;
-					currentState = STATE_MINING;
+					if (currentState == STATE_SCANNING) {// remain stopped if an hard block was encountered
+						currentState = STATE_MINING;
+					}
 					updateBlockState(blockState, BlockMiningLaser.MODE, EnumMiningLaserMode.MINING_POWERED);
 					return;
 					
@@ -282,9 +285,11 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	
 	private void scanLayer() {
 		// WarpDrive.logger.info("Scanning layer");
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos(pos);
 		IBlockState blockState;
 		for (int y = pos.getY() - 1; y > currentLayer; y --) {
-			blockState = world.getBlockState(new BlockPos(pos.getX(), y, pos.getZ()));
+			mutableBlockPos.setPos(pos.getX(), y, pos.getZ());
+			blockState = world.getBlockState(mutableBlockPos);
 			if (Dictionary.BLOCKS_STOPMINING.contains(blockState.getBlock())) {
 				stop();
 				if (WarpDriveConfig.LOGGING_COLLECTION) {
@@ -294,13 +299,13 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				return;
 			}
 		}
-
+		
+		BlockPos blockPos;
 		valuablesInLayer.clear();
 		valuableIndex = 0;
 		int radius, x, z;
 		int xMax, zMax;
 		int xMin, zMin;
-		BlockPos blockPos;
 		
 		// Search for valuable blocks
 		x = pos.getX();
@@ -373,7 +378,7 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 				}
 			}
 		}
-
+		
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
 			WarpDrive.logger.info(String.format("%s Found %s valueables",
 			                                    this, valuablesInLayer.size()));
