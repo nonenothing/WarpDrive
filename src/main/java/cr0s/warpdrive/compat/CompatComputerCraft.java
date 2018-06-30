@@ -108,12 +108,14 @@ public class CompatComputerCraft implements IBlockTransformer {
 				}
 			}
 			if (!nbtTileEntity.hasKey("dir")) {// unknown
-				WarpDrive.logger.error("Unknown ComputerCraft Peripheral block " + block + " with metadata " + metadata + " and tile entity " + nbtTileEntity);
+				WarpDrive.logger.error(String.format("Unknown ComputerCraft Peripheral block %s with metadata %d and tile entity %s",
+				                                     block, metadata, nbtTileEntity));
 				return metadata;
 			}
 			// printer or monitor have the dir tag
 		} else if (!nbtTileEntity.hasKey("dir")) {// unknown
-			WarpDrive.logger.error("Unknown ComputerCraft directional block " + block + " with metadata " + metadata + " and tile entity " + nbtTileEntity);
+			WarpDrive.logger.error(String.format("Unknown ComputerCraft directional block %s with metadata %d and tile entity %s",
+			                                     block, metadata, nbtTileEntity));
 			return metadata;
 		}
 		// turtles and others

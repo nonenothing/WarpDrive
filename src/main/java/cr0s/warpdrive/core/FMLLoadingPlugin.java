@@ -40,7 +40,8 @@ public class FMLLoadingPlugin implements IFMLLoadingPlugin, IFMLCallHook {
 		if (debugLog) {
 			logger.info("injectData:");
 			for (final Entry<String, Object> entry : data.entrySet()) {
-				logger.info("- " + entry.getKey() + " = " + entry.getValue());
+				logger.info(String.format("- %s = %s",
+				                          entry.getKey(), entry.getValue()));
 			}
 		}
 	}

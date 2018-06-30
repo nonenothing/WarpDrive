@@ -334,21 +334,21 @@ public class Dictionary {
 				final List<ItemStack> itemStacks = OreDictionary.getOres(oreName);
 				for (final ItemStack itemStack : itemStacks) {
 					BLOCKS_ORES.add(Block.getBlockFromItem(itemStack.getItem()));
-					// WarpDrive.logger.info("- added " + oreName + " to ores as " + itemStack);
+					// WarpDrive.logger.info(String.format("- added %s to ores as %s", oreName, itemStack));
 				}
 			}
 			if (lowerOreName.startsWith("log") || lowerOreName.endsWith("log") || lowerOreName.endsWith("logs")) {
 				final List<ItemStack> itemStacks = OreDictionary.getOres(oreName);
 				for (final ItemStack itemStack : itemStacks) {
 					BLOCKS_LOGS.add(Block.getBlockFromItem(itemStack.getItem()));
-					// WarpDrive.logger.info("- added " + oreName + " to logs as " + itemStack);
+					// WarpDrive.logger.info(String.format("- added %s to logs as %s", oreName, itemStack));
 				}
 			}
 			if (lowerOreName.startsWith("leave") || lowerOreName.endsWith("leave") || lowerOreName.endsWith("leaves")) {
 				final List<ItemStack> itemStacks = OreDictionary.getOres(oreName);
 				for (final ItemStack itemStack : itemStacks) {
 					BLOCKS_LEAVES.add(Block.getBlockFromItem(itemStack.getItem()));
-					// WarpDrive.logger.info("- added " + oreName + " to leaves as " + itemStack);
+					// WarpDrive.logger.info(String.format("- added %s to leaves as %s", oreName, itemStack));
 				}
 			}
 		}
@@ -370,7 +370,7 @@ public class Dictionary {
 		for (final Entry<String, String> taggedBlock : taggedBlocks.entrySet()) {
 			final Block block = Block.getBlockFromName(taggedBlock.getKey());
 			if (block == null) {
-				WarpDrive.logger.info("Ignoring missing block " + taggedBlock.getKey());
+				WarpDrive.logger.info(String.format("Ignoring missing block %s", taggedBlock.getKey()));
 				continue;
 			}
 			for (final String tag : taggedBlock.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
@@ -393,7 +393,7 @@ public class Dictionary {
 				case "NoCamouflage" : BLOCKS_NOCAMOUFLAGE.add(block); break;
 				case "NoBlink"      : BLOCKS_NOBLINK.add(block); break;
 				default:
-					WarpDrive.logger.error("Unsupported tag '" + tag + "' for block " + block);
+					WarpDrive.logger.error(String.format("Unsupported tag %s for block %s", tag, block));
 					break;
 				}
 			}
@@ -409,7 +409,7 @@ public class Dictionary {
 			final String entityId = taggedEntity.getKey();
 			/* we can't detect missing entities, since some of them are 'hacked' in
 			if (!EntityList.stringToIDMapping.containsKey(entityId)) {
-				WarpDrive.logger.info("Ignoring missing entity " + entityId);
+				WarpDrive.logger.info(String.format("Ignoring missing entity %s", entityId));
 				continue;
 			}
 			/**/
@@ -421,7 +421,7 @@ public class Dictionary {
 				case "NonLivingTarget" : ENTITIES_NONLIVINGTARGET.add(entityId); break;
 				case "LivingWithoutAir": ENTITIES_LIVING_WITHOUT_AIR.add(entityId); break;
 				default:
-					WarpDrive.logger.error("Unsupported tag '" + tag + "' for entity " + entityId);
+					WarpDrive.logger.error(String.format("Unsupported tag %s for entity %s", tag, entityId));
 					break;
 				}
 			}
@@ -435,7 +435,7 @@ public class Dictionary {
 			final String itemId = taggedItem.getKey();
 			final Item item = Item.REGISTRY.getObject(new ResourceLocation(itemId));
 			if (item == null) {
-				WarpDrive.logger.info("Ignoring missing item " + itemId);
+				WarpDrive.logger.info(String.format("Ignoring missing item %s", itemId));
 				continue;
 			}
 			for (final String tag : taggedItem.getValue().replace("\t", " ").replace(",", " ").replace("  ", " ").split(" ")) {
@@ -444,7 +444,7 @@ public class Dictionary {
 				case "NoFallDamage"   : ITEMS_NOFALLDAMAGE.add(item); break;
 				case "BreathingHelmet": ITEMS_BREATHING_HELMET.add(item); break;
 				default:
-					WarpDrive.logger.error("Unsupported tag '" + tag + "' for item " + item);
+					WarpDrive.logger.error(String.format("Unsupported tag %s for item %s", tag, item));
 					break;
 				}
 			}
@@ -457,32 +457,32 @@ public class Dictionary {
 	private static void print() {
 		// translate tagged blocks
 		WarpDrive.logger.info("Active blocks dictionary:");
-		WarpDrive.logger.info("- " + BLOCKS_ORES.size() + " ores: " + getHashMessage(BLOCKS_ORES));
-		WarpDrive.logger.info("- " + BLOCKS_SOILS.size() + " soils: " + getHashMessage(BLOCKS_SOILS));
-		WarpDrive.logger.info("- " + BLOCKS_LOGS.size() + " logs: " + getHashMessage(BLOCKS_LOGS));
-		WarpDrive.logger.info("- " + BLOCKS_LEAVES.size() + " leaves: " + getHashMessage(BLOCKS_LEAVES));
-		WarpDrive.logger.info("- " + BLOCKS_ANCHOR.size() + " anchors: " + getHashMessage(BLOCKS_ANCHOR));
-		WarpDrive.logger.info("- " + BLOCKS_NOMASS.size() + " with NoMass tag: " + getHashMessage(BLOCKS_NOMASS));
-		WarpDrive.logger.info("- " + BLOCKS_LEFTBEHIND.size() + " with LeftBehind tag: " + getHashMessage(BLOCKS_LEFTBEHIND));
-		WarpDrive.logger.info("- " + BLOCKS_EXPANDABLE.size() + " expandable: " + getHashMessage(BLOCKS_EXPANDABLE));
-		WarpDrive.logger.info("- " + BLOCKS_MINING.size() + " with Mining tag: " + getHashMessage(BLOCKS_MINING));
-		WarpDrive.logger.info("- " + BLOCKS_SKIPMINING.size() + " with SkipMining tag: " + getHashMessage(BLOCKS_SKIPMINING));
-		WarpDrive.logger.info("- " + BLOCKS_STOPMINING.size() + " with StopMining tag: " + getHashMessage(BLOCKS_STOPMINING));
-		WarpDrive.logger.info("- " + BLOCKS_PLACE.size() + " with Placement priority: " + getHashMessage(BLOCKS_PLACE));
+		WarpDrive.logger.info(String.format("- %s ores: %s"                   , BLOCKS_ORES.size(), getHashMessage(BLOCKS_ORES)));
+		WarpDrive.logger.info(String.format("- %s soils: %s"                  , BLOCKS_SOILS.size(), getHashMessage(BLOCKS_SOILS)));
+		WarpDrive.logger.info(String.format("- %s logs: %s"                   , BLOCKS_LOGS.size(), getHashMessage(BLOCKS_LOGS)));
+		WarpDrive.logger.info(String.format("- %s leaves: %s"                 , BLOCKS_LEAVES.size(), getHashMessage(BLOCKS_LEAVES)));
+		WarpDrive.logger.info(String.format("- %s anchors: %s"                , BLOCKS_ANCHOR.size(), getHashMessage(BLOCKS_ANCHOR)));
+		WarpDrive.logger.info(String.format("- %s with NoMass tag: %s"        , BLOCKS_NOMASS.size(), getHashMessage(BLOCKS_NOMASS)));
+		WarpDrive.logger.info(String.format("- %s with LeftBehind tag: %s"    , BLOCKS_LEFTBEHIND.size(), getHashMessage(BLOCKS_LEFTBEHIND)));
+		WarpDrive.logger.info(String.format("- %s expandable: %s"             , BLOCKS_EXPANDABLE.size(), getHashMessage(BLOCKS_EXPANDABLE)));
+		WarpDrive.logger.info(String.format("- %s with Mining tag: %s"        , BLOCKS_MINING.size(), getHashMessage(BLOCKS_MINING)));
+		WarpDrive.logger.info(String.format("- %s with SkipMining tag: %s"    , BLOCKS_SKIPMINING.size(), getHashMessage(BLOCKS_SKIPMINING)));
+		WarpDrive.logger.info(String.format("- %s with StopMining tag: %s"    , BLOCKS_STOPMINING.size(), getHashMessage(BLOCKS_STOPMINING)));
+		WarpDrive.logger.info(String.format("- %s with Placement priority: %s", BLOCKS_PLACE.size(), getHashMessage(BLOCKS_PLACE)));
 		
 		// translate tagged entities
 		WarpDrive.logger.info("Active entities dictionary:");
-		WarpDrive.logger.info("- " + ENTITIES_ANCHOR.size() + " anchors: " + getHashMessage(ENTITIES_ANCHOR));
-		WarpDrive.logger.info("- " + ENTITIES_NOMASS.size() + " with NoMass tag: " + getHashMessage(ENTITIES_NOMASS));
-		WarpDrive.logger.info("- " + ENTITIES_LEFTBEHIND.size() + " with LeftBehind tag: " + getHashMessage(ENTITIES_LEFTBEHIND));
-		WarpDrive.logger.info("- " + ENTITIES_NONLIVINGTARGET.size() + " with NonLivingTarget tag: " + getHashMessage(ENTITIES_NONLIVINGTARGET));
-		WarpDrive.logger.info("- " + ENTITIES_LIVING_WITHOUT_AIR.size() + " with LivingWithoutAir tag: " + getHashMessage(ENTITIES_LIVING_WITHOUT_AIR));
+		WarpDrive.logger.info(String.format("- %s anchors: %s"                  , ENTITIES_ANCHOR.size(), getHashMessage(ENTITIES_ANCHOR)));
+		WarpDrive.logger.info(String.format("- %s with NoMass tag: %s"          , ENTITIES_NOMASS.size(), getHashMessage(ENTITIES_NOMASS)));
+		WarpDrive.logger.info(String.format("- %s with LeftBehind tag: %s"      , ENTITIES_LEFTBEHIND.size(), getHashMessage(ENTITIES_LEFTBEHIND)));
+		WarpDrive.logger.info(String.format("- %s with NonLivingTarget tag: %s" , ENTITIES_NONLIVINGTARGET.size(), getHashMessage(ENTITIES_NONLIVINGTARGET)));
+		WarpDrive.logger.info(String.format("- %s with LivingWithoutAir tag: %s", ENTITIES_LIVING_WITHOUT_AIR.size(), getHashMessage(ENTITIES_LIVING_WITHOUT_AIR)));
 		
 		// translate tagged items
 		WarpDrive.logger.info("Active items dictionary:");
-		WarpDrive.logger.info("- " + ITEMS_FLYINSPACE.size() + " allowing fly in space: " + getHashMessage(ITEMS_FLYINSPACE));
-		WarpDrive.logger.info("- " + ITEMS_NOFALLDAMAGE.size() + " absorbing fall damages: " + getHashMessage(ITEMS_NOFALLDAMAGE));
-		WarpDrive.logger.info("- " + ITEMS_BREATHING_HELMET.size() + " allowing breathing air: " + getHashMessage(ITEMS_BREATHING_HELMET));
+		WarpDrive.logger.info(String.format("- %s allowing fly in space: %s" , ITEMS_FLYINSPACE.size(), getHashMessage(ITEMS_FLYINSPACE)));
+		WarpDrive.logger.info(String.format("- %s absorbing fall damages: %s", ITEMS_NOFALLDAMAGE.size(), getHashMessage(ITEMS_NOFALLDAMAGE)));
+		WarpDrive.logger.info(String.format("- %s allowing breathing air: %s", ITEMS_BREATHING_HELMET.size(), getHashMessage(ITEMS_BREATHING_HELMET)));
 	}
 	
 	private static void adjustHardnessAndResistance() {
@@ -506,7 +506,7 @@ public class Dictionary {
 		// scan blocks registry
 		for (final ResourceLocation resourceLocation : Block.REGISTRY.getKeys()) {
 			final Block block = Block.REGISTRY.getObject(resourceLocation);
-			WarpDrive.logger.debug("Checking block registry for '" + resourceLocation + "': " + block);
+			WarpDrive.logger.debug(String.format("Checking block registry for %s: %s", resourceLocation, block));
 			
 			// get hardness and blast resistance
 			float hardness = -2.0F;
@@ -516,7 +516,7 @@ public class Dictionary {
 					hardness = (float) WarpDrive.fieldBlockHardness.get(block);
 				} catch (final IllegalArgumentException | IllegalAccessException exception) {
 					exception.printStackTrace();
-					WarpDrive.logger.error("Unable to access block hardness value '" + resourceLocation + "' " + block);
+					WarpDrive.logger.error(String.format("Unable to access block hardness value %s %s", resourceLocation, block));
 				}
 			}
 			
@@ -525,7 +525,7 @@ public class Dictionary {
 			// check actual values
 			if (hardness != -2.0F) {
 				if (hardness < 0 && !(BLOCKS_ANCHOR.contains(block))) {// unbreakable block
-					WarpDrive.logger.warn("Warning: non-anchor block with unbreakable hardness '" + resourceLocation + "' " + block + " (" + hardness + ")");
+					WarpDrive.logger.warn(String.format("Warning: non-anchor block with unbreakable hardness %s %s (%.2f)", resourceLocation, block, hardness));
 				} else if ( hardness > WarpDriveConfig.HULL_HARDNESS[0]
 				         && !( block instanceof BlockAbstractBase
 				            || block instanceof BlockAbstractContainer
@@ -533,7 +533,7 @@ public class Dictionary {
 				            || block instanceof BlockHullSlab
 				            || block instanceof BlockHullStairs
 				            || BLOCKS_ANCHOR.contains(block) ) ) {
-					WarpDrive.logger.warn("Warning: non-hull block with high hardness '" + resourceLocation + "' " + block + " (" + hardness + ")");
+					WarpDrive.logger.warn(String.format("Warning: non-hull block with high hardness %s %s (%.2f)", resourceLocation, block, hardness));
 				}
 			}
 			if ( blastResistance > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]
@@ -544,11 +544,12 @@ public class Dictionary {
 			      || block instanceof BlockHullStairs
 			      || BLOCKS_ANCHOR.contains(block) ) ) {
 				block.setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0]);
-				WarpDrive.logger.warn("Warning: non-anchor block with high blast resistance '" + resourceLocation + "' " + block + " (" + hardness + ")");
+				WarpDrive.logger.warn(String.format("Warning: non-anchor block with high blast resistance %s %s (%.2f)", resourceLocation, block, hardness));
 				if (adjustResistance) {// TODO: not implemented
-					WarpDrive.logger.warn("Adjusting blast resistance of '" + resourceLocation + "' " + block + " from " + blastResistance + " to " + block.getExplosionResistance(null));
+					WarpDrive.logger.warn(String.format("Adjusting blast resistance of %s %s from %.2f to %.2f", resourceLocation, block, blastResistance, block.getExplosionResistance(null)));
 					if (block.getExplosionResistance(null) > WarpDriveConfig.HULL_BLAST_RESISTANCE[0]) {
-						WarpDrive.logger.error("Blacklisting block with high blast resistance '" + resourceLocation + "' " + block + " (" + blastResistance + ")");
+						WarpDrive.logger.error(String.format("Blacklisting block with high blast resistance %s %s (%.2f)",
+						                                     resourceLocation, block, blastResistance));
 						BLOCKS_ANCHOR.add(block);
 						BLOCKS_STOPMINING.add(block);
 					}
@@ -556,8 +557,10 @@ public class Dictionary {
 			}
 			
 			if (WarpDriveConfig.LOGGING_DICTIONARY) {
-				WarpDrive.logger.info("Block registry for '" + resourceLocation + "': Block " + block
-					+ " with hardness " + (WarpDrive.fieldBlockHardness != null ? hardness : "-") + " resistance " + block.getExplosionResistance(null));
+				WarpDrive.logger.info(String.format("Block registry for %s; Block %s with hardness %s resistance %.2f",
+				                                    resourceLocation, block,
+				                                    (WarpDrive.fieldBlockHardness != null ? String.format("%.2f", hardness) : "-"),
+				                                    block.getExplosionResistance(null)));
 			}
 		}
 	}

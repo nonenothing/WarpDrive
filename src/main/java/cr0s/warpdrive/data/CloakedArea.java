@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.network.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -99,9 +100,9 @@ public class CloakedArea {
 	}
 	
 	// Sending only if field changes: sets up or collapsing
-	public void sendCloakPacketToPlayersEx(final boolean decloak) {
+	public void sendCloakPacketToPlayersEx(final boolean isUncloaking) {
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
-			WarpDrive.logger.info("sendCloakPacketToPlayersEx " + decloak);
+			WarpDrive.logger.info(String.format("sendCloakPacketToPlayersEx %s", isUncloaking));
 		}
 		final int RADIUS = 250;
 		
@@ -117,7 +118,7 @@ public class CloakedArea {
 				final double dZ = midZ - entityPlayerMP.posZ;
 				
 				if (Math.abs(dX) < RADIUS && Math.abs(dY) < RADIUS && Math.abs(dZ) < RADIUS) {
-					if (decloak) {
+					if (isUncloaking) {
 						PacketHandler.sendCloakPacket(entityPlayerMP, this, true);
 						revealChunksToPlayer(entityPlayerMP);
 						revealEntitiesToPlayer(entityPlayerMP);
@@ -133,7 +134,8 @@ public class CloakedArea {
 		if (isEntityWithinArea(EntityPlayerMP)) {
 			if (!isPlayerListedInArea(EntityPlayerMP.getUniqueID())) {
 				if (WarpDriveConfig.LOGGING_CLOAKING) {
-					WarpDrive.logger.info(this + " Player " + EntityPlayerMP.getUniqueID() + " has entered");
+					WarpDrive.logger.info(String.format("%s Player %s has entered",
+					                                    this, EntityPlayerMP.getName()));
 				}
 				addPlayer(EntityPlayerMP.getUniqueID());
 				revealChunksToPlayer(EntityPlayerMP);
@@ -143,16 +145,20 @@ public class CloakedArea {
 		} else {
 			if (isPlayerListedInArea(EntityPlayerMP.getUniqueID())) {
 				if (WarpDriveConfig.LOGGING_CLOAKING) {
-					WarpDrive.logger.info(this + " Player " + EntityPlayerMP.getUniqueID() + " has left");
+					WarpDrive.logger.info(String.format("%s Player %s has left",
+					                                    this, EntityPlayerMP.getName()));
 				}
 				removePlayer(EntityPlayerMP.getUniqueID());
-				FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
-						.sendToAllNearExcept(
-							EntityPlayerMP,
-							EntityPlayerMP.posX, EntityPlayerMP.posY, EntityPlayerMP.posZ,
-							100,
-							EntityPlayerMP.world.provider.getDimension(),
-							PacketHandler.getPacketForThisEntity(EntityPlayerMP));
+				final Packet packetToSend = PacketHandler.getPacketForThisEntity(EntityPlayerMP);
+				if (packetToSend != null) {
+					FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList()
+					                .sendToAllNearExcept(
+							                EntityPlayerMP,
+							                EntityPlayerMP.posX, EntityPlayerMP.posY, EntityPlayerMP.posZ,
+							                100,
+							                EntityPlayerMP.world.provider.getDimension(),
+							                packetToSend);
+				}
 				PacketHandler.sendCloakPacket(EntityPlayerMP, this, false);
 			}
 		}
@@ -160,7 +166,8 @@ public class CloakedArea {
 	
 	public void revealChunksToPlayer(final EntityPlayer player) {
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
-			 WarpDrive.logger.info(this + " Revealing cloaked blocks to player " + player.getDisplayNameString());
+			 WarpDrive.logger.info(String.format("%s Revealing cloaked blocks to player %s",
+			                                     this, player.getName()));
 		}
 		final int minY_clamped = Math.max(0, minY);
 		final int maxY_clamped = Math.min(255, maxY);

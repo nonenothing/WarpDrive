@@ -89,7 +89,7 @@ public class HyperSpaceWorldProvider extends AbstractWorldProvider {
 	public int getRespawnDimension(final EntityPlayerMP entityPlayerMP) {
 		if ( entityPlayerMP == null
 		  || entityPlayerMP.world == null ) {
-			WarpDrive.logger.error("Invalid player passed to getRespawnDimension: " + entityPlayerMP);
+			WarpDrive.logger.error(String.format("Invalid player passed to getRespawnDimension: %s", entityPlayerMP));
 			return 0;
 		}
 		return StarMapRegistry.getHyperspaceDimensionId(entityPlayerMP.world, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);

@@ -78,7 +78,7 @@ public class GenericSet<E extends IXmlRepresentableUnit> implements IXmlRepresen
 						importGroups.add(importGroup);
 					}
 				} else {
-					WarpDrive.logger.warn("Ignoring import with no group definition in import element from " + getFullName());
+					WarpDrive.logger.warn(String.format("Ignoring import with no group definition in import element from %s", getFullName()));
 				}
 			}
 		}

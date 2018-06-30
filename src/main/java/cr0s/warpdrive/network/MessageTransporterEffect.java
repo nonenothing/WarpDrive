@@ -308,10 +308,10 @@ public class MessageTransporterEffect implements IMessage, IMessageHandler<Messa
 		}
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
-			WarpDrive.logger.info("Received transporter effect isTransporterRoom %s at %s towards %d entities, with %.3f lockStrength, energizing in %d ticks, cooldown for %d ticks",
+			WarpDrive.logger.info(String.format("Received transporter effect isTransporterRoom %s at %s towards %d entities, with %.3f lockStrength, energizing in %d ticks, cooldown for %d ticks",
 			                      messageTransporterEffect.isTransporterRoom, messageTransporterEffect.globalPosition,
 			                      messageTransporterEffect.idEntities.size(),
-			                      messageTransporterEffect.lockStrength, messageTransporterEffect.tickEnergizing, messageTransporterEffect.tickCooldown);
+			                      messageTransporterEffect.lockStrength, messageTransporterEffect.tickEnergizing, messageTransporterEffect.tickCooldown));
 		}
 		
 		messageTransporterEffect.handle(Minecraft.getMinecraft().world);

@@ -18,23 +18,25 @@ public abstract class XmlFileManager {
 		// (directory is created by caller, so it can copy default files if any)
 		
 		if (!dir.isDirectory()) {
-			throw new IllegalArgumentException("File path " + dir.getPath() + " must be a directory!");
+			throw new IllegalArgumentException(String.format("File path %s must be a directory!",
+			                                                 dir.getPath()));
 		}
 		
 		final File[] files = dir.listFiles((file_notUsed, name) -> name.startsWith(prefixFilename) && name.endsWith(".xml"));
 		if (files == null || files.length == 0) {
-			throw new IllegalArgumentException("File path " + dir.getPath() + " contains no " + prefixFilename + "*.xml files!");
+			throw new IllegalArgumentException(String.format("File path %s contains no %s*.xml files!",
+			                                                 dir.getPath(), prefixFilename));
 		}
 		
 		for (final File file : files) {
 			try {
-				WarpDrive.logger.info("Loading configuration file " + file.getName());
+				WarpDrive.logger.info(String.format("Loading configuration file %s", file.getName()));
 				final Document document = WarpDriveConfig.getXmlDocumentBuilder().parse(file);
 				
 				// pre-process the file
 				final String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
 				if (!result.isEmpty()) {
-					WarpDrive.logger.info("Skipping configuration file " + file.getName() + " due to " + result);
+					WarpDrive.logger.info(String.format("Skipping configuration file %s due to %s", file.getName(), result));
 					return;
 				}
 				
@@ -49,7 +51,8 @@ public abstract class XmlFileManager {
 					parseRootElement(location, element);
 				}
 			} catch (final Exception exception) {
-				WarpDrive.logger.error("Error loading file " + file.getName() + ": " + exception.getMessage());
+				WarpDrive.logger.error(String.format("Error loading file %s: %s",
+				                                     file.getName(), exception.getMessage()));
 				exception.printStackTrace();
 			}
 		}

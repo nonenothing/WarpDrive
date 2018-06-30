@@ -191,8 +191,8 @@ public class WarpDriveConfig {
 	public static boolean LOGGING_DICTIONARY = false;
 	public static boolean LOGGING_STARMAP = false;
 	public static boolean LOGGING_BREAK_PLACE = false;
-	public static boolean LOGGING_FORCEFIELD = false;
-	public static boolean LOGGING_FORCEFIELD_REGISTRY = false;
+	public static boolean LOGGING_FORCE_FIELD = false;
+	public static boolean LOGGING_FORCE_FIELD_REGISTRY = false;
 	public static boolean LOGGING_ACCELERATOR = false;
 	public static boolean LOGGING_XML_PREPROCESSOR = false;
 	public static boolean LOGGING_RENDERING = false;
@@ -498,7 +498,7 @@ public class WarpDriveConfig {
 		try {
 			final Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
 			if (item == null) {
-				WarpDrive.logger.info("Failed to get mod item for " + mod + ":" + id + "@" + meta);
+				WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
 				return null;
 			}
 			ItemStack itemStack = new ItemStack(item);
@@ -514,12 +514,12 @@ public class WarpDriveConfig {
 	
 	public static ItemStack getOreDictionaryEntry(final String ore) {
 		if (!OreDictionary.doesOreNameExist(ore)) {
-			WarpDrive.logger.info("Failed to get ore named " + ore);
+			WarpDrive.logger.info(String.format("Failed to get ore named %s", ore));
 			return new ItemStack(Blocks.FIRE);
 		}
 		final List<ItemStack> itemStacks = OreDictionary.getOres(ore);
 		if (itemStacks.isEmpty()) {
-			WarpDrive.logger.info(String.format("Failed to get item from empty ore dictionary '%s'", ore));
+			WarpDrive.logger.info(String.format("Failed to get item from empty ore dictionary %s", ore));
 			return new ItemStack(Blocks.FIRE);
 		}
 		return itemStacks.get(0);
@@ -700,8 +700,8 @@ public class WarpDriveConfig {
 		LOGGING_DICTIONARY = config.get("logging", "enable_dictionary_logs", LOGGING_DICTIONARY, "Dictionary logs, enable it to dump blocks hardness and blast resistance at boot").getBoolean(true);
 		LOGGING_STARMAP = config.get("logging", "enable_starmap_logs", LOGGING_STARMAP, "Starmap logs, enable it to dump starmap registry updates").getBoolean(false);
 		LOGGING_BREAK_PLACE = config.get("logging", "enable_break_place_logs", LOGGING_BREAK_PLACE, "Detailed break/place event logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_FORCEFIELD = config.get("logging", "enable_forcefield_logs", LOGGING_FORCEFIELD, "Detailed forcefield logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
-		LOGGING_FORCEFIELD_REGISTRY = config.get("logging", "enable_forcefield_registry_logs", LOGGING_FORCEFIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
+		LOGGING_FORCE_FIELD = config.get("logging", "enable_force_field_logs", LOGGING_FORCE_FIELD, "Detailed forcefield logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
+		LOGGING_FORCE_FIELD_REGISTRY = config.get("logging", "enable_force_field_registry_logs", LOGGING_FORCE_FIELD_REGISTRY, "ForceField registry logs, enable it to dump forcefield registry updates").getBoolean(false);
 		LOGGING_ACCELERATOR = config.get("logging", "enable_accelerator_logs", LOGGING_ACCELERATOR, "Detailed accelerator logs to help debug the mod, enable it before reporting a bug").getBoolean(false);
 		LOGGING_XML_PREPROCESSOR = config.get("logging", "enable_XML_preprocessor_logs", LOGGING_XML_PREPROCESSOR, "Save XML preprocessor results as output*.xml file, enable it to debug your XML configuration files").getBoolean(false);
 		LOGGING_RENDERING = config.get("logging", "enable_rendering_logs", LOGGING_RENDERING, "Detailed rendering logs to help debug the mod.").getBoolean(false);
@@ -1362,7 +1362,7 @@ public class WarpDriveConfig {
 			inputStream.close();
 			outputStream.close();
 		} catch (final Exception exception) {
-			WarpDrive.logger.error("Failed to unpack resource \'" + resourceName + "\' into " + destination);
+			WarpDrive.logger.error(String.format("Failed to unpack resource '%s' into '%s'", resourceName, destination));
 			exception.printStackTrace();
 		}
 	}

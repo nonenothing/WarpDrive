@@ -71,7 +71,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			return null;
 		}
 		
-		// if (debugLog) { FMLLoadingPlugin.logger.info("Checking " + name); }
+		// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Checking %s", name)); }
 		saveClassToFile(false, transformedName, bytes);
 		switch (transformedName) {
 		case "net.minecraft.entity.EntityLivingBase":
@@ -164,7 +164,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 			
 			final MethodNode methodNode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
+			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
 			if ( (methodNode.name.equals(nodeMap.get("moveEntityWithHeading.name")) || methodNode.name.equals("moveEntityWithHeading"))
 			  && methodNode.desc.equals(nodeMap.get("moveEntityWithHeading.desc")) ) {
@@ -188,7 +188,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 					}
@@ -199,12 +199,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		} while (true);
 		
 		if (injectedCount != operationCount) {
-			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
+			FMLLoadingPlugin.logger.info(String.format("Injection failed for %s (%d/%d), aborting...", classNode.name, injectedCount, operationCount));
 		} else {
 			final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
 			classNode.accept(writer);
 			bytes = writer.toByteArray();
-			FMLLoadingPlugin.logger.info("Successful injection in " + classNode.name);
+			FMLLoadingPlugin.logger.info(String.format("Successful injection in %s", classNode.name));
 		}
 		return bytes;
 	}
@@ -223,7 +223,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 			
 			final MethodNode methodNode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
+			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
 			if ( (methodNode.name.equals(nodeMap.get("onUpdate.name")) || methodNode.name.equals("onUpdate"))
 			  && methodNode.desc.equals(nodeMap.get("onUpdate.desc")) ) {
@@ -247,7 +247,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 						
@@ -261,7 +261,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 					}
@@ -272,12 +272,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		} while (true);
 		
 		if (injectedCount != operationCount) {
-			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
+			FMLLoadingPlugin.logger.info(String.format("Injection failed for %s (%d/%d), aborting...", classNode.name, injectedCount, operationCount));
 		} else {
 			final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
 			classNode.accept(writer);
 			bytes = writer.toByteArray();
-			FMLLoadingPlugin.logger.info("Successful injection in " + classNode.name);
+			FMLLoadingPlugin.logger.info(String.format("Successful injection in %s", classNode.name));
 		}
 		return bytes;
 	}
@@ -296,7 +296,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 			
 			final MethodNode methodNode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
+			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
 			if ( (methodNode.name.equals("update"))
 			  && methodNode.desc.equals("(Lnet/minecraft/entity/item/EntityItem;)V") ) {
@@ -320,7 +320,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 						
@@ -334,7 +334,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 					}
@@ -345,12 +345,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		} while (true);
 		
 		if (injectedCount != operationCount) {
-			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
+			FMLLoadingPlugin.logger.info(String.format("Injection failed for %s (%d/%d), aborting...", classNode.name, injectedCount, operationCount));
 		} else {
 			final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
 			classNode.accept(writer);
 			bytes = writer.toByteArray();
-			FMLLoadingPlugin.logger.info("Successful injection in " + classNode.name);
+			FMLLoadingPlugin.logger.info(String.format("Successful injection in %s", classNode.name));
 		}
 		return bytes;
 	}
@@ -369,7 +369,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 			
 			final MethodNode methodNode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
+			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 
 			// Entities gravity
 			if ( (methodNode.name.equals("getGravityForEntity"))
@@ -394,7 +394,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 					}
@@ -426,7 +426,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 						/*
@@ -440,7 +440,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									false);
 							methodNode.instructions.insertBefore(nodeAt, beforeNode);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 						/**/
@@ -452,12 +452,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		} while (true);
 		
 		if (injectedCount < operationCount) {// https://github.com/micdoodle8/Galacticraft/commit/d0e7e9ae932092e8a4584bac43338d2dc1bbfe23 added 2 occurrences
-			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
+			FMLLoadingPlugin.logger.info(String.format("Injection failed for %s (%d/%d), aborting...", classNode.name, injectedCount, operationCount));
 		} else {
 			final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
 			classNode.accept(writer);
 			bytes = writer.toByteArray();
-			FMLLoadingPlugin.logger.info("Successful injection in " + classNode.name);
+			FMLLoadingPlugin.logger.info(String.format("Successful injection in %s", classNode.name));
 		}
 		return bytes;
 	}
@@ -476,7 +476,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			}
 			
 			final MethodNode methodNode = (MethodNode) methods.next();
-			// if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodNode.name + " " + methodNode.desc); }
+			// if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
 			if ( (methodNode.name.equals(nodeMap.get("func_147492_c.name")) || methodNode.name.equals("func_147492_c"))
 			  && methodNode.desc.equals(nodeMap.get("func_147492_c.desc")) ) {
@@ -498,7 +498,7 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"(IIILnet/minecraft/block/Block;II)Z",
 									false);
 							methodNode.instructions.set(nodeAt, overwriteNode);
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodNode.name + " " + methodNode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 					}
@@ -509,12 +509,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		} while (true);
 		
 		if (injectedCount != operationCount) {
-			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
+			FMLLoadingPlugin.logger.info(String.format("Injection failed for %s (%d/%d), aborting...", classNode.name, injectedCount, operationCount));
 		} else {
 			final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
 			classNode.accept(writer);
 			bytes = writer.toByteArray();
-			FMLLoadingPlugin.logger.info("Successful injection in " + classNode.name);
+			FMLLoadingPlugin.logger.info(String.format("Successful injection in %s", classNode.name));
 		}
 		return bytes;
 	}
@@ -532,17 +532,17 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 				break;
 			}
 			
-			final MethodNode methodnode = (MethodNode) methods.next();
-			if (debugLog) { FMLLoadingPlugin.logger.info("- Method " + methodnode.name + " " + methodnode.desc); }
+			final MethodNode methodNode = (MethodNode) methods.next();
+			if (debugLog) { FMLLoadingPlugin.logger.info(String.format("- Method %s %s", methodNode.name, methodNode.desc)); }
 			
-			if ( (methodnode.name.equals(nodeMap.get("fillChunk.name")) || methodnode.name.equals("fillChunk"))
-			  && methodnode.desc.equals(nodeMap.get("fillChunk.desc")) ) {
+			if ( (methodNode.name.equals(nodeMap.get("fillChunk.name")) || methodNode.name.equals("fillChunk"))
+			  && methodNode.desc.equals(nodeMap.get("fillChunk.desc")) ) {
 				if (debugLog) { FMLLoadingPlugin.logger.info("Method found!"); }
 				
 				int instructionIndex = 0;
 				
-				while (instructionIndex < methodnode.instructions.size()) {
-					final AbstractInsnNode abstractNode = methodnode.instructions.get(instructionIndex);
+				while (instructionIndex < methodNode.instructions.size()) {
+					final AbstractInsnNode abstractNode = methodNode.instructions.get(instructionIndex);
 					if (debugLog) { decompile(abstractNode); }
 					
 					if (abstractNode instanceof MethodInsnNode) {
@@ -556,14 +556,14 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 									"onFillChunk",
 									"(Lnet/minecraft/world/chunk/Chunk;)V",
 									false);
-							methodnode.instructions.insertBefore(nodeAt, insertMethodNode);
+							methodNode.instructions.insertBefore(nodeAt, insertMethodNode);
 							instructionIndex++;
 							
 							final VarInsnNode insertVarNode = new VarInsnNode(Opcodes.ALOAD, 0);
-							methodnode.instructions.insertBefore(nodeAt, insertVarNode);
+							methodNode.instructions.insertBefore(nodeAt, insertVarNode);
 							instructionIndex++;
 							
-							if (debugLog) { FMLLoadingPlugin.logger.info("Injecting into " + classNode.name + "." + methodnode.name + " " + methodnode.desc); }
+							if (debugLog) { FMLLoadingPlugin.logger.info(String.format("Injecting into %s.%s %s", classNode.name, methodNode.name, methodNode.desc)); }
 							injectedCount++;
 						}
 					}
@@ -574,12 +574,12 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 		} while (true);
 		
 		if (injectedCount != operationCount) {
-			FMLLoadingPlugin.logger.info("Injection failed for " + classNode.name + " (" + injectedCount + " / " + operationCount + "), aborting...");
+			FMLLoadingPlugin.logger.info(String.format("Injection failed for %s (%d/%d), aborting...", classNode.name, injectedCount, operationCount));
 		} else {
 			final ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS); // | ClassWriter.COMPUTE_FRAMES);
 			classNode.accept(writer);
 			bytes = writer.toByteArray();
-			FMLLoadingPlugin.logger.info("Successful injection in " + classNode.name);
+			FMLLoadingPlugin.logger.info(String.format("Successful injection in %s", classNode.name));
 		}
 		return bytes;
 	}

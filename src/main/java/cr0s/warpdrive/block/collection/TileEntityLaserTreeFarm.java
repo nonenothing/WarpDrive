@@ -276,7 +276,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				// check area protection
 				if (isBlockBreakCanceled(null, world, valuable)) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
-						WarpDrive.logger.info(this + " Harvesting cancelled at (" + valuable.getX() + " " + valuable.getY() + " " + valuable.getZ() + ")");
+						WarpDrive.logger.info(String.format("%s Harvesting cancelled at (%d %d %d)", this, valuable.getX(), valuable.getY(), valuable.getZ()));
 					}
 					// done with this block
 					return;
@@ -288,7 +288,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 						final int metadata = blockStateValuable.getBlock().getMetaFromState(blockStateValuable);
 						if (metadata >= 2 && metadata <= 5) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								WarpDrive.logger.info("Tap found rubber wood wet-spot at " + valuable + " with metadata " + metadata);
+								WarpDrive.logger.info(String.format("Tap found rubber wood wet-spot at %s with metadata %d",
+								                                    valuable, metadata));
 							}
 							
 							// consume power
@@ -413,7 +414,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							plant = plantable.getPlant(world, blockPosPlant);
 						}
 						if (WarpDriveConfig.LOGGING_COLLECTION) {
-							WarpDrive.logger.info("Slot " + slotIndex + " as " + itemStack + " which plantable " + plantable + " as block " + plant);
+							WarpDrive.logger.info(String.format("Slot %d as %s which plantable %s as block %s",
+							                                    slotIndex, itemStack, plantable, plant));
 						}
 						
 						if (!blockStateSoil.getBlock().canSustainPlant(blockStateSoil, world, soil, EnumFacing.UP, plantable)) {
@@ -451,7 +453,8 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				// check area protection
 				if (isBlockPlaceCanceled(null, world, blockPosPlant, plant)) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
-						WarpDrive.logger.info(this + " Planting cancelled at (" + blockPosPlant.getX() + " " + blockPosPlant.getY() + " " + blockPosPlant.getZ() + ")");
+						WarpDrive.logger.info(String.format("%s Planting cancelled %s",
+						                                    this, Commons.format(world, blockPosPlant)));
 					}
 					// done with this block
 					return;
@@ -526,7 +529,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 						final Block block = world.getBlockState(blockPos).getBlock();
 						if (isSoil(block)) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								WarpDrive.logger.info("Found soil at " + x + " " + y + " " + z);
+								WarpDrive.logger.info(String.format("Found soil at (%d %d %d)", x, y, z));
 							}
 							soilPositions.add(blockPos);
 						}
@@ -535,7 +538,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			}
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
-			WarpDrive.logger.info("Found " + soilPositions.size() + " soils");
+			WarpDrive.logger.info(String.format("Found %d soils", soilPositions.size()));
 		}
 		return soilPositions;
 	}
@@ -558,7 +561,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 					if (isLog(block)) {
 						if (!logPositions.contains(blockPos)) {
 							if (WarpDriveConfig.LOGGING_COLLECTION) {
-								WarpDrive.logger.info("Found tree base at " + x + "," + y + "," + z);
+								WarpDrive.logger.info(String.format("Found tree base at (%d %d %d)", x, y, z));
 							}
 							logPositions.add(blockPos);
 						}
@@ -577,7 +580,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 			logPositions = Commons.getConnectedBlocks(world, logPositions, Commons.UP_DIRECTIONS, whitelist, maxLogDistance);
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
-			WarpDrive.logger.info("Found " + logPositions.size() + " valuables");
+			WarpDrive.logger.info(String.format("Found %d valuables", logPositions.size()));
 		}
 		return logPositions;
 	}

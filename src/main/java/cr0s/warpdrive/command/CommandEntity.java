@@ -88,7 +88,7 @@ public class CommandEntity extends CommandBase {
 			return;
 		}
 
-		WarpDrive.logger.info("/" + getName() + " " + radius + " '*" + filter + "*' " + kill);
+		WarpDrive.logger.info(String.format("/%s %d '*%s*' %s", getName(), radius, filter, kill));
 
 		List<Entity> entities;
 		if (radius <= 0) {

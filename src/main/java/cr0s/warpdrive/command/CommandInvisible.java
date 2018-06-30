@@ -29,12 +29,13 @@ public class CommandInvisible extends CommandBase {
 		EntityPlayer player = commandSender instanceof EntityPlayer ? (EntityPlayer) commandSender : null;
 		
 		if (args.length >= 1) {
-			WarpDrive.logger.info("/invisible: setting invisible to " + args[0]);
+			WarpDrive.logger.info(String.format("/invisible: setting invisible to %s", args[0]));
 			
 			// get an online player by name
 			final List<EntityPlayerMP> entityPlayers = server.getPlayerList().getPlayers();
 			for (final EntityPlayerMP entityPlayer : entityPlayers) {
-				if (entityPlayer.getDisplayNameString().equalsIgnoreCase(args[0])) {
+				if ( entityPlayer.getName().equalsIgnoreCase(args[0])
+				  || entityPlayer.getDisplayNameString().equalsIgnoreCase(args[0]) ) {
 					player = entityPlayer;
 				}
 			}

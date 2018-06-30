@@ -98,7 +98,7 @@ public class CloakManager {
 			newArea.clientCloak();
 		}
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
-			WarpDrive.logger.info("Cloak count is " + cloaks.size());
+			WarpDrive.logger.info(String.format("Cloak count is %s", cloaks.size()));
 		}
 	}
 	
@@ -155,7 +155,8 @@ public class CloakManager {
 	@SideOnly(Side.CLIENT)
 	public static void onFillChunk(final Chunk chunk) {
 		if (cloaks == null) {
-			// WarpDrive.logger.info("CM onFillChunk (" + chunk.xPosition + " " + chunk.zPosition + ") no cloaks");
+			WarpDrive.logger.info(String.format("CM onFillChunk (%d %d) no cloaks",
+			                                    chunk.x, chunk.z));
 			return;
 		}
 		
@@ -163,7 +164,9 @@ public class CloakManager {
 		final int chunkX_max = chunk.x * 16 + 15;
 		final int chunkZ_min = chunk.z * 16;
 		final int chunkZ_max = chunk.z * 16 + 15;
-		// WarpDrive.logger.info("CM onFillChunk (" + chunk.xPosition + " " + chunk.zPosition + ") " + cloaks.size() + " cloak(s) from (" + chunkX_min + " " + chunkZ_min + ") to (" + chunkX_max + " " + chunkZ_max + ")");
+		WarpDrive.logger.info(String.format("CM onFillChunk (%d %d) %d cloak(s) from (%d %d) to (%d %d)",
+		                                    chunk.x, chunk.z, cloaks.size(),
+		                                    chunkX_min, chunkZ_min, chunkX_max, chunkZ_max));
 		
 		for (final CloakedArea area : cloaks) {
 			if ( area.minX <= chunkX_max && area.maxX >= chunkX_min

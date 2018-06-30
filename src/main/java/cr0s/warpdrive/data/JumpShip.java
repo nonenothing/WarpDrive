@@ -204,13 +204,13 @@ public class JumpShip {
 			}
 			if (Dictionary.ENTITIES_LEFTBEHIND.contains(id)) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-					WarpDrive.logger.info("Leaving entity " + id + " behind: " + entity);
+					WarpDrive.logger.info(String.format("Leaving entity %s behind: %s", id, entity));
 				}
 				continue;
 			}
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-					WarpDrive.logger.info("Adding entity " + id + ": " + entity);
+					WarpDrive.logger.info(String.format("Adding entity %s: %s", id, entity));
 				}
 			}
 			final MovingEntity movingEntity = new MovingEntity(entity);
@@ -337,7 +337,7 @@ public class JumpShip {
 								actualVolume++;
 								
 								if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-									WarpDrive.logger.info("Block(" + x + " " + y + " " + z + ") is " + blockState);
+									WarpDrive.logger.info(String.format("Block(%d %d %d) is %s", x, y, z, blockState));
 								}
 								
 								if (!Dictionary.BLOCKS_NOMASS.contains(blockState.getBlock())) {

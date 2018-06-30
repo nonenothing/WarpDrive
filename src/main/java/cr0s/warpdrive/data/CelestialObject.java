@@ -110,7 +110,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			throw new InvalidXmlException(String.format("Celestial object %s is missing an id attribute!", location));
 		}
 		
-		WarpDrive.logger.info("- found Celestial object " + id);
+		WarpDrive.logger.info(String.format("- found Celestial object %s", id));
 		
 		// get optional parent element, defaulting to parent defined by element hierarchy
 		parentId = parentElementId;
@@ -293,7 +293,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		}
 		
 		if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-			WarpDrive.logger.info("  loaded " + this);
+			WarpDrive.logger.info(String.format("  loaded %s", this));
 		}
 		
 		return true;
@@ -343,7 +343,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				return Math.min(gravity, 1.0D);
 			}
 		} catch (final Exception exception) {
-			WarpDrive.logger.error("Invalid gravity value, expecting none, legacySpace, legacyHyperspace, normal or a positive double. Found: " + stringGravity);
+			WarpDrive.logger.error(String.format("Invalid gravity value, expecting none, legacySpace, legacyHyperspace, normal or a positive double. Found %s",
+			                                     stringGravity));
 			exception.printStackTrace();
 			return 1.0D;
 		}
@@ -352,13 +353,15 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	private void parseGenerateElement(final String location, final Element elementGenerate) throws InvalidXmlException {
 		final String group = elementGenerate.getAttribute("group");
 		if (group.isEmpty()) {
-			throw new InvalidXmlException(location + " is missing a group attribute!");
+			throw new InvalidXmlException(String.format("%s is missing a group attribute!",
+			                                            location));
 		}
 		
 		final String name = elementGenerate.getAttribute("name");
 		
 		if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-			WarpDrive.logger.info("  + found Generate " + group + ":" + name);
+			WarpDrive.logger.info(String.format("  + found Generate %s:%s",
+			                                    group, name));
 		}
 		
 		final String stringRatio = elementGenerate.getAttribute("ratio");
@@ -729,7 +732,7 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				blue = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementColor.getAttribute("blue")));
 			} catch (final Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error("Exception while parsing Color element at " + location);
+				WarpDrive.logger.error(String.format("Exception while parsing Color element at %s", location));
 				red = 0.5F;
 				green = 0.5F;
 				blue = 0.5F;

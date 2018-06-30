@@ -49,7 +49,7 @@ public class TileEntityCamera extends TileEntityAbstractInterfaced implements IV
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendVideoChannelPacket(world.provider.getDimension(), pos, videoChannel);
+				PacketHandler.sendVideoChannelPacket(world, pos, videoChannel);
 			}
 		} else {
 			registryUpdateTicks--;

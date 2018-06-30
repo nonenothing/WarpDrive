@@ -44,7 +44,7 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 			packetSendTicks--;
 			if (packetSendTicks <= 0) {
 				packetSendTicks = PACKET_SEND_INTERVAL_TICKS;
-				PacketHandler.sendVideoChannelPacket(world.provider.getDimension(), pos, videoChannel);
+				PacketHandler.sendVideoChannelPacket(world, pos, videoChannel);
 			}
 		}
 	}

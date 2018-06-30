@@ -149,7 +149,7 @@ public class Commons {
 	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {
 		final String message = textComponent.getFormattedText();
 		if (commandSender == null) {
-			WarpDrive.logger.error("Unable to send message to NULL sender: " + message);
+			WarpDrive.logger.error(String.format("Unable to send message to NULL sender: %s", message));
 			return;
 		}
 		
@@ -596,7 +596,7 @@ public class Commons {
 	
 	public static void writeNBTToFile(final String fileName, final NBTTagCompound tagCompound) {
 		if (WarpDrive.isDev) {
-			WarpDrive.logger.info("writeNBTToFile " + fileName);
+			WarpDrive.logger.info(String.format("writeNBTToFile %s" + fileName));
 		}
 		
 		try {
@@ -618,7 +618,7 @@ public class Commons {
 	
 	public static NBTTagCompound readNBTFromFile(final String fileName) {
 		if (WarpDrive.isDev) {
-			WarpDrive.logger.info("readNBTFromFile " + fileName);
+			WarpDrive.logger.info(String.format("readNBTFromFile %s", fileName));
 		}
 		
 		try {

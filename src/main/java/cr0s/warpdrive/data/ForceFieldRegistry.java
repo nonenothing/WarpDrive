@@ -29,9 +29,10 @@ public class ForceFieldRegistry {
 	
 	public static Set<TileEntity> getTileEntities(final int beamFrequency, final WorldServer worldSource, final int x, final int y, final int z) {
 		countRead++;
-		if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
+		if (WarpDriveConfig.LOGGING_FORCE_FIELD_REGISTRY) {
 			if (countRead % 1000 == 0) {
-				WarpDrive.logger.info("ForceFieldRegistry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
+				WarpDrive.logger.info(String.format("ForceFieldRegistry stats: read %d add %d remove %d => %.1f",
+				                                    countRead, countAdd, countRemove, ((float) countRead) / (countRemove + countRead + countAdd)));
 			}
 		}
 		final CopyOnWriteArraySet<GlobalPosition> setGlobalPositions = registry.get(beamFrequency);
@@ -73,7 +74,7 @@ public class ForceFieldRegistry {
 			// world isn't loaded or block no longer exist => remove from registry
 			countRemove++;
 			setGlobalPositions.remove(globalPosition);
-			if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
+			if (WarpDriveConfig.LOGGING_FORCE_FIELD_REGISTRY) {
 				printRegistry("removed");
 			}
 		}
@@ -142,7 +143,7 @@ public class ForceFieldRegistry {
 		countAdd++;
 		setGlobalPositions.add(new GlobalPosition((TileEntity) tileEntity));
 		registry.put(tileEntity.getBeamFrequency(), setGlobalPositions);
-		if (WarpDriveConfig.LOGGING_FORCEFIELD_REGISTRY) {
+		if (WarpDriveConfig.LOGGING_FORCE_FIELD_REGISTRY) {
 			printRegistry("added");
 		}
 	}
@@ -168,7 +169,8 @@ public class ForceFieldRegistry {
 	}
 	
 	public static void printRegistry(final String trigger) {
-		WarpDrive.logger.info("Force field registry (" + registry.size() + " entries after " + trigger + "):");
+		WarpDrive.logger.info(String.format("Force field registry (%d entries after %s):",
+		                                    registry.size(), trigger));
 		
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<GlobalPosition>> entry : registry.entrySet()) {
 			final StringBuilder message = new StringBuilder();

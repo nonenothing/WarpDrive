@@ -99,12 +99,14 @@ public final class EntityCamera extends EntityLivingBase {
 	public void onEntityUpdate() {
 		if (world.isRemote) {
 			if (player == null || player.isDead) {
-				WarpDrive.logger.error(this + " Player is null or dead, closing camera...");
+				WarpDrive.logger.error(String.format("%s Player is null or dead, closing camera...",
+				                                     this));
 				closeCamera();
 				return;
 			}
 			if (!ClientCameraHandler.isValidContext(world)) {
-				WarpDrive.logger.error(this + " Invalid context, closing camera...");
+				WarpDrive.logger.error(String.format("%s Invalid context, closing camera...",
+				                                     this));
 				closeCamera();
 				return;
 			}

@@ -98,7 +98,7 @@ public class JumpBlock {
 	
 	public JumpBlock(final Filler filler, final int x, final int y, final int z) {
 		if (filler.block == null) {
-			WarpDrive.logger.info("Forcing glass for invalid filler with null block at " + x + " " + y + " " + z);
+			WarpDrive.logger.info(String.format("Forcing glass for invalid filler with null block at (%d %d %d)", x, y, z));
 			filler.block = Blocks.GLASS;
 		}
 		block = filler.block;
@@ -135,7 +135,7 @@ public class JumpBlock {
 		}
 		WarpDrive.logger.error(String.format("Tile entity lost in %s",
 		                                     this));
-		return blockNBT == null ? null : (NBTTagCompound) blockNBT.copy();
+		return blockNBT == null ? null : blockNBT.copy();
 	}
 	
 	public NBTBase getExternal(final String modId) {
@@ -144,7 +144,8 @@ public class JumpBlock {
 		}
 		final NBTBase nbtExternal = externals.get(modId);
 		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Returning " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
+			WarpDrive.logger.info(String.format("Returning %s externals at (%d %d %d) %s",
+			                                    modId, x, y, z, nbtExternal));
 		}
 		if (nbtExternal == null) {
 			return null;
@@ -158,7 +159,8 @@ public class JumpBlock {
 		}
 		externals.put(modId, nbtExternal);
 		if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-			WarpDrive.logger.info("Saved " + modId + " externals at " + x + " " + y + " " + z + " " + nbtExternal);
+			WarpDrive.logger.info(String.format("Saved %s externals at (%d %d %d) %s",
+			                                    modId, x, y, z, nbtExternal));
 		}
 	}
 	
@@ -294,7 +296,7 @@ public class JumpBlock {
 				
 				if (nbtToDeploy.hasKey("mainX") && nbtToDeploy.hasKey("mainY") && nbtToDeploy.hasKey("mainZ")) {// Mekanism 6.0.4.44
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-						WarpDrive.logger.info(this + " deploy: TileEntity has mainXYZ");
+						WarpDrive.logger.info(String.format("%s deploy: TileEntity has mainXYZ", this));
 					}
 					final BlockPos mainTarget = transformation.apply(nbtToDeploy.getInteger("mainX"), nbtToDeploy.getInteger("mainY"), nbtToDeploy.getInteger("mainZ"));
 					nbtToDeploy.setInteger("mainX", mainTarget.getX());
@@ -307,7 +309,7 @@ public class JumpBlock {
 					if ( nbtScreenData.hasKey("minX") && nbtScreenData.hasKey("minY") && nbtScreenData.hasKey("minZ")
 					  && nbtScreenData.hasKey("maxX") && nbtScreenData.hasKey("maxY") && nbtScreenData.hasKey("maxZ")) {
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-							WarpDrive.logger.info(this + " deploy: TileEntity has screenData.min/maxXYZ");
+							WarpDrive.logger.info(String.format("%s deploy: TileEntity has screenData.min/maxXYZ", this));
 						}
 						final BlockPos minTarget = transformation.apply(nbtScreenData.getInteger("minX"), nbtScreenData.getInteger("minY"), nbtScreenData.getInteger("minZ"));
 						nbtScreenData.setInteger("minX", minTarget.getX());
@@ -355,8 +357,9 @@ public class JumpBlock {
 					
 					newTileEntity.markDirty();
 				} else {
-					WarpDrive.logger.error(" deploy failed to create new tile entity at " + x + " " + y + " " + z + " blockId " + block + ":" + blockMeta);
-					WarpDrive.logger.error("NBT data was " + nbtToDeploy);
+					WarpDrive.logger.error(String.format(" deploy failed to create new tile entity %s block %s:%d",
+					                                     Commons.format(targetWorld, x, y, z), block, blockMeta));
+					WarpDrive.logger.error(String.format("NBT data was %s", nbtToDeploy));
 				}
 			}
 			return target;
@@ -369,7 +372,7 @@ public class JumpBlock {
 			} catch (final Exception dropMe) {
 				coordinates = " (unknown coordinates)";
 			}
-			WarpDrive.logger.error("moveBlockSimple exception at " + coordinates);
+			WarpDrive.logger.error(String.format("moveBlockSimple exception %s", coordinates));
 		}
 		return null;
 	}
@@ -394,8 +397,9 @@ public class JumpBlock {
 						onUnloaded.invoke(tileEntity);
 						onLoaded.invoke(tileEntity);
 					} else {
-						WarpDrive.logger.error("Missing IC2 (un)loaded events for TileEntity '" + teClass.getName() + "'"
-							+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ". Please report this issue!");
+						WarpDrive.logger.error(String.format("Missing IC2 (un)loaded events for TileEntity %s %s. Please report this issue!",
+						                                     teClass.getName(),
+						                                     Commons.format(world, blockPos)));
 					}
 					
 					tileEntity.updateContainingBlockInfo();
@@ -420,7 +424,8 @@ public class JumpBlock {
 						final Method getNetworkedFields = teClass.getMethod("getNetworkedFields");
 						final List<String> fields = (List<String>) getNetworkedFields.invoke(tileEntity);
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-							WarpDrive.logger.info("Tile has " + fields.size() + " networked fields: " + fields);
+							WarpDrive.logger.info(String.format("Tile has %d networked fields: %s",
+							                                    fields.size(), fields));
 						}
 						for (final String field : fields) {
 							NetworkHelper_updateTileEntityField(tileEntity, field);
@@ -429,8 +434,8 @@ public class JumpBlock {
 						// WarpDrive.logger.info("Tile has no getNetworkedFields method");
 					} catch (final NoClassDefFoundError exception) {
 						if (WarpDriveConfig.LOGGING_JUMP) {
-							WarpDrive.logger.info("TileEntity " + teClass.getName()
-								+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + " is missing a class definition");
+							WarpDrive.logger.info(String.format("TileEntity %s %s is missing a class definition",
+							                                    teClass.getName(), Commons.format(world, blockPos)));
 							if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 								exception.printStackTrace();
 							}
@@ -438,8 +443,8 @@ public class JumpBlock {
 					}
 				}
 			} catch (final Exception exception) {
-				WarpDrive.logger.info("Exception involving TileEntity " + teClass.getName()
-					+ " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+				WarpDrive.logger.info(String.format("Exception involving TileEntity %s %s",
+				                                    teClass.getName(), Commons.format(world, blockPos)));
 				exception.printStackTrace();
 			}
 		}
@@ -449,7 +454,8 @@ public class JumpBlock {
 		block = Block.getBlockFromName(tagCompound.getString("block"));
 		if (block == null) {
 			if (WarpDriveConfig.LOGGING_BUILDING) {
-				WarpDrive.logger.warn("Ignoring unknown block " + tagCompound.getString("block") + " from tag " + tagCompound);
+				WarpDrive.logger.warn(String.format("Ignoring unknown block %s from tag %s",
+				                                    tagCompound.getString("block"), tagCompound));
 			}
 			block = Blocks.AIR;
 			return;

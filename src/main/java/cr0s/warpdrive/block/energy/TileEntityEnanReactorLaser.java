@@ -162,7 +162,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 		}
 		if (laserMedium_consumeExactly(energy, false)) {
 			if (WarpDriveConfig.LOGGING_ENERGY && WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.info("ReactorLaser on " + reactorFace + " side sending " + energy);
+				WarpDrive.logger.info(String.format("ReactorLaser on %s side sending %d", reactorFace, energy));
 			}
 			reactorCore.decreaseInstability(reactorFace, energy);
 			PacketHandler.sendBeamPacket(world, vLaser, vReactorCore, 0.1F, 0.2F, 1.0F, 25, 50, 100);
@@ -203,7 +203,8 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 			energy = Commons.toInt(arguments[0]);
 		} catch (final Exception exception) {
 			if (WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.error(this + " LUA error on stabilize(): Integer expected for 1st argument " + arguments[0]);
+				WarpDrive.logger.error(String.format("%s LUA error on stabilize(): Integer expected for 1st argument %s",
+				                                     this, arguments[0]));
 			}
 			return new Object[] { false, "Invalid integer" };
 		}

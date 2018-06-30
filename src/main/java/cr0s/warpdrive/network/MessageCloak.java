@@ -26,14 +26,14 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 	private int maxY;
 	private int maxZ;
 	private byte tier;
-	private boolean decloak;
+	private boolean isUncloaking;
 
 	@SuppressWarnings("unused")
 	public MessageCloak() {
 		// required on receiving side
 	}
 	
-	public MessageCloak(final CloakedArea area, final boolean decloak) {
+	public MessageCloak(final CloakedArea area, final boolean isUncloaking) {
 		this.coreX = area.blockPosCore.getX();
 		this.coreY = area.blockPosCore.getY();
 		this.coreZ = area.blockPosCore.getZ();
@@ -44,7 +44,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		this.maxY = area.maxY;
 		this.maxZ = area.maxZ;
 		this.tier = area.tier;
-		this.decloak = decloak;
+		this.isUncloaking = isUncloaking;
 	}
 	
 	@Override
@@ -58,7 +58,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		maxX = buffer.readInt();
 		maxY = buffer.readInt();
 		maxZ = buffer.readInt();
-		decloak = buffer.readBoolean();
+		isUncloaking = buffer.readBoolean();
 		tier = buffer.readByte();
 	}
 
@@ -73,13 +73,13 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		buffer.writeInt(maxX);
 		buffer.writeInt(maxY);
 		buffer.writeInt(maxZ);
-		buffer.writeBoolean(decloak);
+		buffer.writeBoolean(isUncloaking);
 		buffer.writeByte(tier);
 	}
 	
 	@SideOnly(Side.CLIENT)
 	private void handle(final EntityPlayerSP player) {
-		if (decloak) {
+		if (isUncloaking) {
 			// reveal the area
 			WarpDrive.cloaks.removeCloakedArea(player.world.provider.getDimension(), new BlockPos(coreX, coreY, coreZ));
 		} else { 
@@ -98,9 +98,10 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		}
 		
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
-			WarpDrive.logger.info("Received cloak packet: " + ((cloakMessage.decloak) ? "DEcloaked" : "cloaked")
-				+ "area: (" + cloakMessage.minX + " " + cloakMessage.minY + " " + cloakMessage.minZ
-				+ ") -> (" + cloakMessage.maxX + " " + cloakMessage.maxY + " " + cloakMessage.maxZ + ") tier " + cloakMessage.tier);
+			WarpDrive.logger.info(String.format("Received cloak packet: %s area (%d %d %d) -> (%d %d %d) tier %d",
+			                                    ((cloakMessage.isUncloaking) ? "UNCLOAKING" : "cloaking"),
+			                                    cloakMessage.minX, cloakMessage.minY, cloakMessage.minZ,
+			                                    cloakMessage.maxX, cloakMessage.maxY, cloakMessage.maxZ, cloakMessage.tier));
 		}
 		
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;

@@ -1,5 +1,6 @@
 package cr0s.warpdrive.render;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumCameraType;
@@ -32,7 +33,8 @@ public class ClientCameraHandler {
 		final Minecraft mc = Minecraft.getMinecraft();
 		
 		if (WarpDriveConfig.LOGGING_CAMERA) {
-			WarpDrive.logger.info("FOV is " + mc.gameSettings.fovSetting + " Sensitivity is " + mc.gameSettings.mouseSensitivity);
+			WarpDrive.logger.info(String.format("FOV is %.3f Sensitivity is %.3f",
+			                                    mc.gameSettings.fovSetting, mc.gameSettings.mouseSensitivity));
 		}
 	}
 	
@@ -65,7 +67,7 @@ public class ClientCameraHandler {
 		
 		// Update view
 		if (WarpDriveConfig.LOGGING_CAMERA) {
-			WarpDrive.logger.info("Setting viewpoint to " + entityCamera);
+			WarpDrive.logger.info(String.format("Setting viewpoint to %s", entityCamera));
 		}
 		mc.setRenderViewEntity(entityCamera);
 		mc.gameSettings.thirdPersonView = 0;
@@ -144,11 +146,13 @@ public class ClientCameraHandler {
 			return false;
 		}
 		if (!world.getBlockState(blockPosCheck1).getBlock().isAssociatedBlock(blockStateCheck1.getBlock())) {
-			WarpDrive.logger.error("checking viewpoint, found invalid block1 at (" + blockPosCheck1.getX() + " " + blockPosCheck1.getY() + " " + blockPosCheck1.getZ() + ")");
+			WarpDrive.logger.error(String.format("Checking camera viewpoint, found invalid block1 %s",
+			                                     Commons.format(world, blockPosCheck1)));
 			return false;
 		}
 		if (!world.getBlockState(blockPosCheck2).getBlock().isAssociatedBlock(blockStateCheck2.getBlock())) {
-			WarpDrive.logger.error("checking viewpoint, found invalid block2 at (" + blockPosCheck2.getX() + " " + blockPosCheck2.getY() + " " + blockPosCheck2.getZ() + ")");
+			WarpDrive.logger.error(String.format("Checking camera viewpoint, found invalid block2 %s",
+			                                     Commons.format(world, blockPosCheck2)));
 			return false;
 		}
 		return true;

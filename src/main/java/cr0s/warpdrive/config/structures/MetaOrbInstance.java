@@ -32,9 +32,11 @@ public class MetaOrbInstance extends OrbInstance {
 	@Override
 	public boolean generate(final World world, final Random random, final BlockPos blockPos) {
 		if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-			WarpDrive.logger.info("Generating MetaOrb " + structure.name + " of " + metaShell.count  + " cores with radius of " + totalThickness);
+			WarpDrive.logger.info(String.format("Generating MetaOrb %s of %d cores with radius of %d",
+			                                    structure.name, metaShell.count, totalThickness));
 		}
-		LocalProfiler.start("[AsteroidInstance] Generating MetaOrb " + structure.name + " of " + metaShell.count + " cores with radius of " + totalThickness);
+		LocalProfiler.start(String.format("[AsteroidInstance] Generating MetaOrb %s of %d cores with radius of %d",
+		                                  structure.name, metaShell.count, totalThickness));
 		
 		final int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - totalThickness - (int) metaShell.radius,
 		                        Math.max(blockPos.getY(), WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + totalThickness + (int) metaShell.radius));

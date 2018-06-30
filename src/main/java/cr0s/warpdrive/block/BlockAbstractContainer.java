@@ -135,7 +135,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		itemStack.setItemDamage(damageDropped(blockState));
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (tileEntity == null) {
-			WarpDrive.logger.error("Missing tile entity for " + this + " at " + world + " " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+			WarpDrive.logger.error(String.format("Missing tile entity for %s %s",
+			                                     this, Commons.format(world, blockPos)));
 		} else if (tileEntity instanceof TileEntityAbstractBase) {
 			final NBTTagCompound tagCompound = new NBTTagCompound();
 			((TileEntityAbstractBase) tileEntity).writeItemDropNBT(tagCompound);

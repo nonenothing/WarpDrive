@@ -74,11 +74,13 @@ public class CommandGenerate extends CommandBase {
 			final String name = (args.length > 1) ? args[1] : null;
 			switch (structure) {
 				case "ship":
-					WarpDrive.logger.info("/generate: generating NPC ship at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+					WarpDrive.logger.info(String.format("/generate: generating NPC ship %s",
+					                                    Commons.format(world, blockPos)));
 					new WorldGenSmallShip(false, true).generate(world, world.rand, blockPos);
 					break;
 				case "station":
-					WarpDrive.logger.info("/generate: generating station at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+					WarpDrive.logger.info(String.format("/generate: generating station at %s",
+					                                    Commons.format(world, blockPos)));
 					new WorldGenStation(false).generate(world, world.rand, blockPos);
 					break;
 				case "asteroid":
@@ -102,13 +104,15 @@ public class CommandGenerate extends CommandBase {
 					if (args.length != 2) {
 						Commons.addChatMessage(commandSender, new TextComponentString("Missing jumpgate name"));
 					} else {
-						WarpDrive.logger.info("/generate: creating jumpgate at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+						WarpDrive.logger.info(String.format("/generate: creating jumpgate %s",
+						                                     Commons.format(world, blockPos)));
 						blockPos = new BlockPos(blockPos.getX(), Math.min(blockPos.getY(), 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), blockPos.getZ());
 						
 						if (WarpDrive.jumpgates.addGate(args[1], blockPos)) {
 							JumpgateGenerator.generate(world, blockPos);
 						} else {
-							WarpDrive.logger.info("/generate: jumpgate '" + args[1] + "' already exists.");
+							WarpDrive.logger.info(String.format("/generate: jumpgate %s already exists.",
+							                                    args[1]));
 						}
 					}
 					break;
@@ -134,9 +138,11 @@ public class CommandGenerate extends CommandBase {
 	private void generateStructure(final ICommandSender commandSender, final String group, final String name, final World world, final BlockPos blockPos) {
 		final AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
 		if (structure == null) {
-			Commons.addChatMessage(commandSender, new TextComponentString("Invalid " + group + " '" + name + "', try one of the followings:\n" + StructureManager.getStructureNames(group)));
+			Commons.addChatMessage(commandSender, new TextComponentString(String.format("Invalid %s:%s, try one of the followings:\n%s",
+			                                                                            group, name, StructureManager.getStructureNames(group))));
 		} else {
-			WarpDrive.logger.info("/generate: Generating " + group + ":" + structure.getName() + " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+			WarpDrive.logger.info(String.format("/generate: Generating %s:%s %s",
+			                                    group, structure.getName(), Commons.format(world, blockPos)));
 			structure.generate(world, world.rand, blockPos);
 			
 			// do a weak attempt to extract player (ideally, it should be delayed after generation, but that's too complicated)

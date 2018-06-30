@@ -371,8 +371,9 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			// IC2 Reactor blowing up => block is already air
 			final IBlockState blockState = world.getBlockState(new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ));
 			final TileEntity tileEntity = world.getTileEntity(new BlockPos((int)explosionX, (int)explosionY, (int)explosionZ));
-			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
-				WarpDrive.logger.info("Block at location is " + blockState.getBlock() + " " + blockState.getBlock().getUnlocalizedName() + " with tileEntity " + tileEntity);
+			if (enableFirstHit && WarpDriveConfig.LOGGING_FORCE_FIELD) {
+				WarpDrive.logger.info(String.format("Block at location is %s %s with tileEntity %s",
+				                                    blockState.getBlock(), blockState.getBlock().getUnlocalizedName(), tileEntity));
 			}
 			// explosion with no entity and block removed, hence we can't compute the energy impact => boosting explosion resistance
 			return 2.0F * super.getExplosionResistance(entity, world, blockPos, explosionX, explosionY, explosionZ);
@@ -425,7 +426,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 			
 			default:
 				if (enableFirstHit) {
-					WarpDrive.logger.error("Unknown explosion source " + entity.getClass().toString() + " " + entity);
+					WarpDrive.logger.error(String.format("Unknown explosion source %s %s", entity.getClass().toString(), entity));
 				}
 				break;
 			}
@@ -446,10 +447,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		}
 		
 		assert(damageLeft >= 0);
-		if (enableFirstHit && WarpDriveConfig.LOGGING_FORCEFIELD) {
-			WarpDrive.logger.info( "BlockForceField(" + tier + " at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ")"
-				                 + " involved in explosion " + ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ)
-								 + (WarpDrive.isDev ? (" damageLevel " + damageLevel + " damageLeft " + damageLeft) : ""));
+		if (enableFirstHit && WarpDriveConfig.LOGGING_FORCE_FIELD) {
+			WarpDrive.logger.info(String.format("BlockForceField(%d %s) involved in explosion %s damageLevel %d damageLeft %d",
+			                                    tier, Commons.format(world, blockPos),
+			                                    ((entity != null) ? " from " + entity : " at " + explosionX + " " + explosionY + " " + explosionZ),
+			                                    damageLevel, damageLeft));
 		}
 		return super.getExplosionResistance(entity, world, blockPos, explosionX, explosionY, explosionZ);
 	}

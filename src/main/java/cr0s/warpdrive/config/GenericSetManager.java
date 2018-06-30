@@ -119,7 +119,7 @@ public class GenericSetManager<E extends IXmlRepresentableUnit> extends XmlFileM
 			for (final Entry<GenericSet<E>, ArrayList<String>> entry : genericSetsDependencies.entrySet()) {
 				WarpDrive.logger.warn(String.format("- %s %s is pending:", nameElementSet, entry.getKey()));
 				for (final String dependency : entry.getValue()) {
-					WarpDrive.logger.warn(" + " + dependency);
+					WarpDrive.logger.warn(String.format(" + %s", dependency));
 				}
 			}
 		}

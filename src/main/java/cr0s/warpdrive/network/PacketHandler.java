@@ -1,5 +1,6 @@
 package cr0s.warpdrive.network;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
@@ -156,11 +157,12 @@ public class PacketHandler {
 	}
 	
 	// Monitor/Laser/Camera updating its video channel to client side
-	public static void sendVideoChannelPacket(final int dimensionId, final BlockPos blockPos, final int videoChannel) {
+	public static void sendVideoChannelPacket(final World world, final BlockPos blockPos, final int videoChannel) {
 		final MessageVideoChannel messageVideoChannel = new MessageVideoChannel(blockPos, videoChannel);
-		simpleNetworkManager.sendToAllAround(messageVideoChannel, new TargetPoint(dimensionId, blockPos.getX(),blockPos.getY(), blockPos.getZ(), 100));
+		simpleNetworkManager.sendToAllAround(messageVideoChannel, new TargetPoint(world.provider.getDimension(), blockPos.getX(),blockPos.getY(), blockPos.getZ(), 100));
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-			WarpDrive.logger.info("Sent video channel packet (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ") video channel " + videoChannel);
+			WarpDrive.logger.info(String.format("Sent video channel packet at %s videoChannel %d",
+			                                    Commons.format(world, blockPos), videoChannel));
 		}
 	}
 	
@@ -169,22 +171,25 @@ public class PacketHandler {
 		final MessageTargeting messageTargeting = new MessageTargeting(x, y, z, yaw, pitch);
 		simpleNetworkManager.sendToServer(messageTargeting);
 		if (WarpDriveConfig.LOGGING_TARGETING) {
-			WarpDrive.logger.info("Sent targeting packet (" + x + " " + y + " " + z + ") yaw " + yaw + " pitch " + pitch);
+			WarpDrive.logger.info(String.format("Sent targeting packet (%d %d %d) yaw %.3f pitch %.3f",
+			                                    x, y, z, yaw, pitch));
 		}
 	}
 	
 	// Sending cloaking area definition (server -> client)
-	public static void sendCloakPacket(final EntityPlayerMP entityPlayerMP, final CloakedArea area, final boolean decloak) {
-		final MessageCloak messageCloak = new MessageCloak(area, decloak);
+	public static void sendCloakPacket(final EntityPlayerMP entityPlayerMP, final CloakedArea area, final boolean isUncloaking) {
+		final MessageCloak messageCloak = new MessageCloak(area, isUncloaking);
 		simpleNetworkManager.sendTo(messageCloak, entityPlayerMP);
 		if (WarpDriveConfig.LOGGING_CLOAKING) {
-			WarpDrive.logger.info("Sent cloak packet (area " + area + " decloak " + decloak + ")");
+			WarpDrive.logger.info(String.format("Sent cloak packet (area %s isUncloaking %s)",
+			                                    area, isUncloaking));
 		}
 	}
 	
 	public static void sendClientSync(final EntityPlayerMP entityPlayerMP, final CelestialObject celestialObject) {
 		if (WarpDriveConfig.LOGGING_CLIENT_SYNCHRONIZATION) {
-			WarpDrive.logger.info(String.format("PacketHandler.sendClientSync %s", entityPlayerMP));
+			WarpDrive.logger.info(String.format("PacketHandler.sendClientSync %s",
+			                                    entityPlayerMP));
 		}
 		final MessageClientSync messageClientSync = new MessageClientSync(entityPlayerMP, celestialObject);
 		simpleNetworkManager.sendTo(messageClientSync, entityPlayerMP);
@@ -207,11 +212,12 @@ public class PacketHandler {
 			final Packet packet = getPacketForThisEntity(entity);
 			if (packet == null) {
 				WarpDrive.logger.error(String.format("Unable to reveal entity %s to player %s: null packet",
-					entity, entityPlayerMP));
+				                                     entity, entityPlayerMP));
 				return;
 			}
 			if (WarpDriveConfig.LOGGING_CLOAKING) {
-				WarpDrive.logger.info("Revealing entity " + entity + " with packet " + packet);
+				WarpDrive.logger.info(String.format("Revealing entity %s with patcket %s",
+				                                    entity, packet));
 			}
 			entityPlayerMP.connection.sendPacket(packet);
 			

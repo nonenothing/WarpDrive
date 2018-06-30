@@ -186,7 +186,7 @@ public class AcceleratorSetup extends GlobalPosition {
 				break;
 			}
 		}
-		WarpDrive.logger.info("First void shell is " + firstVoidShell);
+		WarpDrive.logger.info(String.format("First void shell is %s", firstVoidShell));
 		if (firstVoidShell == null) {
 			WarpDrive.logger.warn("No void shell connection found");
 			return;
@@ -205,7 +205,7 @@ public class AcceleratorSetup extends GlobalPosition {
 			}
 		}
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-			WarpDrive.logger.info("First one is " + trajectoryPoint);
+			WarpDrive.logger.info(String.format("First one is %s", trajectoryPoint));
 		}
 		if (trajectoryPoint == null) {
 			return;
@@ -229,7 +229,7 @@ public class AcceleratorSetup extends GlobalPosition {
 				     && isInRange(trajectoryPoint)
 				     && !trajectoryAccelerator.containsKey(trajectoryPoint)) {
 					if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-						WarpDrive.logger.info("Adding accelerator " + trajectoryPoint);
+						WarpDrive.logger.info(String.format("Adding accelerator %s", trajectoryPoint));
 					}
 					final TrajectoryPoint trajectoryPointToAdd = trajectoryPoint.clone();
 					trajectoryAccelerator.put(trajectoryPointToAdd, trajectoryPointToAdd);
@@ -252,7 +252,7 @@ public class AcceleratorSetup extends GlobalPosition {
 				     && !trajectoryTransfer.containsKey(trajectoryPoint)
 				     && !trajectoryPoint.needsReevaluation()) {
 					if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-						WarpDrive.logger.info("Adding transfer " + trajectoryPoint);
+						WarpDrive.logger.info(String.format("Adding transfer %s", trajectoryPoint));
 					}
 					final TrajectoryPoint trajectoryPointToAdd = trajectoryPoint.clone();
 					trajectoryTransfer.put(trajectoryPointToAdd, trajectoryPointToAdd);
@@ -304,7 +304,7 @@ public class AcceleratorSetup extends GlobalPosition {
 				countMagnets[indexTier + 1] += 12;
 			}
 		}
-		WarpDrive.logger.info("Bounding box is " + vMin + " to " + vMax);
+		WarpDrive.logger.info(String.format("Bounding box is %s to %s", vMin, vMax));
 	}
 	
 	private void computeVectorArrays(final WorldServer world) {
@@ -368,7 +368,7 @@ public class AcceleratorSetup extends GlobalPosition {
 				if (tileEntity instanceof TileEntityEnergyBank) {
 					energyBanks.add((TileEntityEnergyBank) tileEntity);
 				} else {
-					WarpDrive.logger.error("Invalid tile entity detected for energy bank at " + vector);
+					WarpDrive.logger.error(String.format("Invalid tile entity detected for energy bank at %s", vector));
 				}
 			}
 		}

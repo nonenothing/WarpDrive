@@ -180,7 +180,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 				final int blockToDeployPerTick = Math.max(WarpDriveConfig.SS_DEPLOY_BLOCKS_PER_INTERVAL,
 				                                          Math.min(WarpDriveConfig.G_BLOCKS_PER_TICK / 4, optimumSpeed));
 				if (WarpDrive.isDev && WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info("optimumSpeed " + optimumSpeed + " blockToDeployPerTick " + blockToDeployPerTick);
+					WarpDrive.logger.info(String.format("optimumSpeed %d blockToDeployPerTick %d",
+					                                    optimumSpeed, blockToDeployPerTick));
 				}
 				sequencer.setBlocksPerTick(blockToDeployPerTick);
 				sequencer.setCaptain(playerName);
@@ -240,7 +241,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			break;
 		
 		default:
-			WarpDrive.logger.error(this + " Invalid ship scanner state, forcing to IDLE...");
+			WarpDrive.logger.error(String.format("%s Invalid ship scanner state, forcing to IDLE...",
+			                                     this));
 			setState(EnumShipScannerState.IDLE);
 			break;
 		}
@@ -478,7 +480,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 									world.newExplosion(null, x, y, z, 1, false, false);
 								}
 								if (WarpDriveConfig.LOGGING_BUILDING) {
-									WarpDrive.logger.info("Deployment collision detected at " + x + " " + y + " " + z);
+									WarpDrive.logger.info(String.format("Deployment collision detected %s", Commons.format(world, x, y, z)));
 								}
 							}
 						}

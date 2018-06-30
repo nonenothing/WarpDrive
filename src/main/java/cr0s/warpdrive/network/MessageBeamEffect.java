@@ -98,9 +98,10 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 		}
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
-			WarpDrive.logger.info("Received beam packet from " + beamEffectMessage.source + " to " + beamEffectMessage.target
-				+ " as RGB " + beamEffectMessage.red + " " + beamEffectMessage.green + " " + beamEffectMessage.blue
-				+ " age " + beamEffectMessage.age);
+			WarpDrive.logger.info(String.format("Received beam packet from %s to %s as RGB %.3f %.3f %.3f age %d",
+			                                    beamEffectMessage.source, beamEffectMessage.target,
+			                                    beamEffectMessage.red, beamEffectMessage.green, beamEffectMessage.blue,
+			                                    beamEffectMessage.age));
 		}
 		
         beamEffectMessage.handle(Minecraft.getMinecraft().world);

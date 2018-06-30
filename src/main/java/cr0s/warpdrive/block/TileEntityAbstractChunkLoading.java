@@ -34,7 +34,7 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 		
 		if ( chunkMin == null
 		  || chunkMax == null ) {
-			WarpDrive.logger.warn(this + " No chunk coordinates defined, assuming current chunk");
+			WarpDrive.logger.warn(String.format("%s No chunk coordinates defined, assuming current chunk", this));
 			chunkMin = world.getChunkFromBlockCoords(pos).getPos();
 			chunkMax = world.getChunkFromBlockCoords(pos).getPos();
 		}

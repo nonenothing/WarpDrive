@@ -1016,7 +1016,8 @@ public class JumpSequencer extends AbstractSequencer {
 			final JumpBlock jumpBlock = ship.jumpBlocks[actualIndexInShip];
 			if (jumpBlock != null) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-					WarpDrive.logger.info("Deploying from " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z + " of " + jumpBlock.block + "@" + jumpBlock.blockMeta);
+					WarpDrive.logger.info(String.format("Deploying from (%d %d %d) of %s@%d",
+					                                    jumpBlock.x, jumpBlock.y, jumpBlock.z, jumpBlock.block, jumpBlock.blockMeta));
 				}
 				if (shipMovementType == EnumShipMovementType.INSTANTIATE) {
 					jumpBlock.removeUniqueIDs();
@@ -1108,14 +1109,15 @@ public class JumpSequencer extends AbstractSequencer {
 		LocalProfiler.start("Jump.moveExternals");
 		final int blocksToMove = Math.min(blocksPerTick, ship.jumpBlocks.length - actualIndexInShip);
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Moving ship externals from " + actualIndexInShip + " / " + (ship.jumpBlocks.length - 1));
+			WarpDrive.logger.info(String.format("%s Moving ship externals from %d/%d",
+			                                    this, actualIndexInShip, ship.jumpBlocks.length - 1));
 		}
 		int index = 0;
 		while (index < blocksToMove && actualIndexInShip < ship.jumpBlocks.length) {
 			final JumpBlock jumpBlock = ship.jumpBlocks[ship.jumpBlocks.length - actualIndexInShip - 1];
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info(this + " Moving ship externals: unexpected null found at ship[" + actualIndexInShip + "]");
+					WarpDrive.logger.info(String.format("%s Moving ship externals: unexpected null found at ship[%d]", actualIndexInShip));
 				}
 				actualIndexInShip++;
 				continue;
@@ -1123,7 +1125,8 @@ public class JumpSequencer extends AbstractSequencer {
 			
 			if (jumpBlock.externals != null) {
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-					WarpDrive.logger.info("Moving externals for block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+					WarpDrive.logger.info(String.format("Moving externals for block %s@%d at (%d %d %d)",
+					                                    jumpBlock.block, jumpBlock.blockMeta, jumpBlock.x, jumpBlock.y, jumpBlock.z));
 				}
 				final TileEntity tileEntitySource = jumpBlock.getTileEntity(sourceWorld);
 				for (final Entry<String, NBTBase> external : jumpBlock.externals.entrySet()) {
@@ -1209,7 +1212,8 @@ public class JumpSequencer extends AbstractSequencer {
 		LocalProfiler.start("Jump.removeBlocks");
 		final int blocksToMove = Math.min(blocksPerTick, ship.jumpBlocks.length - actualIndexInShip);
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Removing ship blocks " + actualIndexInShip + " to " + (actualIndexInShip + blocksToMove - 1) + " / " + (ship.jumpBlocks.length - 1));
+			WarpDrive.logger.info(String.format("%s Removing ship blocks %s to %d/%d",
+			                                    this, actualIndexInShip, actualIndexInShip + blocksToMove - 1, ship.jumpBlocks.length - 1));
 		}
 		for (int index = 0; index < blocksToMove; index++) {
 			if (actualIndexInShip >= ship.jumpBlocks.length) {
@@ -1218,26 +1222,29 @@ public class JumpSequencer extends AbstractSequencer {
 			final JumpBlock jumpBlock = ship.jumpBlocks[ship.jumpBlocks.length - actualIndexInShip - 1];
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info(this + " Removing ship part: unexpected null found at ship[" + actualIndexInShip + "]");
+					WarpDrive.logger.info(String.format("%s Removing ship part: unexpected null found at ship[%d]", this, actualIndexInShip));
 				}
 				actualIndexInShip++;
 				continue;
 			}
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info("Removing block " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+				WarpDrive.logger.info(String.format("Removing block %s@%d at (%d %d %d)",
+				                                    jumpBlock.block, jumpBlock.blockMeta, jumpBlock.x, jumpBlock.y, jumpBlock.z));
 			}
 			
 			if (sourceWorld != null) {
 				if (jumpBlock.weakTileEntity != null) {
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-						WarpDrive.logger.info("Removing tile entity at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+						WarpDrive.logger.info(String.format("Removing tile entity at (%d %d %d)",
+						                                    jumpBlock.x, jumpBlock.y, jumpBlock.z));
 					}
 					sourceWorld.removeTileEntity(new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z));
 				}
 				try {
 					JumpBlock.setBlockNoLight(sourceWorld, new BlockPos(jumpBlock.x, jumpBlock.y, jumpBlock.z), Blocks.AIR.getDefaultState(), 2);
 				} catch (final Exception exception) {
-					WarpDrive.logger.info("Exception while removing " + jumpBlock.block + "@" + jumpBlock.blockMeta + " at " + jumpBlock.x + " " + jumpBlock.y + " " + jumpBlock.z);
+					WarpDrive.logger.info(String.format("Exception while removing %s@%d at (%d %d %d)",
+					                                    jumpBlock.block, jumpBlock.blockMeta, jumpBlock.x, jumpBlock.y, jumpBlock.z));
 					if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 						exception.printStackTrace();
 					}
@@ -1277,7 +1284,7 @@ public class JumpSequencer extends AbstractSequencer {
 			// targetWorld.loadedTileEntityList = removeDuplicates(targetWorld.loadedTileEntityList);
 		} catch (final Exception exception) {
 			if (WarpDriveConfig.LOGGING_JUMP) {
-				WarpDrive.logger.info("TE Duplicates removing exception: " + exception.getMessage());
+				WarpDrive.logger.info(String.format("TE Duplicates removing exception: %s", exception.getMessage()));
 				exception.printStackTrace();
 			}
 		}
@@ -1396,23 +1403,25 @@ public class JumpSequencer extends AbstractSequencer {
 		final double rx = Math.round(min.x + sourceWorld.rand.nextInt(Math.max(1, (int) (max.x - min.x))));
 		final double ry = Math.round(min.y + sourceWorld.rand.nextInt(Math.max(1, (int) (max.y - min.y))));
 		final double rz = Math.round(min.z + sourceWorld.rand.nextInt(Math.max(1, (int) (max.z - min.z))));
-		ship.messageToAllPlayersOnShip(new TextComponentString("Ship collision detected around " + (int) rx + ", " + (int) ry + ", " + (int) rz + ". Damage report pending..."));
+		ship.messageToAllPlayersOnShip(new TextComponentString(String.format("Ship collision detected around (%d %d %d). Damage report pending...",
+		                                                                     (int) rx, (int) ry, (int) rz)));
 		// randomize if too many collision points
 		final int nbExplosions = Math.min(5, collisionPoints.size());
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info("doCollisionDamage nbExplosions " + nbExplosions + "/" + collisionPoints.size());
+			WarpDrive.logger.info(String.format("doCollisionDamage nbExplosions %d/%d",
+			                                    nbExplosions, collisionPoints.size()));
 		}
 		for (int i = 0; i < nbExplosions; i++) {
 			// get location
 			final Vector3 current;
 			if (nbExplosions < collisionPoints.size()) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info("doCollisionDamage random #" + i);
+					WarpDrive.logger.info(String.format("doCollisionDamage random #%d", i));
 				}
 				current = collisionPoints.get(sourceWorld.rand.nextInt(collisionPoints.size()));
 			} else {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info("doCollisionDamage get " + i);
+					WarpDrive.logger.info(String.format("doCollisionDamage get %d", i));
 				}
 				current = collisionPoints.get(i);
 			}
@@ -1421,13 +1430,14 @@ public class JumpSequencer extends AbstractSequencer {
 			final float strength = Math.max(4.0F, collisionStrength / nbExplosions - 2.0F + 2.0F * sourceWorld.rand.nextFloat());
 			
 			(atTarget ? targetWorld : sourceWorld).newExplosion(null, current.x, current.y, current.z, strength, atTarget, atTarget);
-			WarpDrive.logger.info("Ship collision caused explosion at " + current.x + " " + current.y + " " + current.z + " with strength " + strength);
+			WarpDrive.logger.info(String.format("Ship collision caused explosion at (%.1f %.1f %.1f) with strength %.3f",
+			                                    current.x, current.y, current.z, strength));
 		}
 	}
 	
 	private void restoreEntitiesPosition() {
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Restoring entities position");
+			WarpDrive.logger.info(String.format("%s Restoring entities position", this));
 		}
 		LocalProfiler.start("Jump.restoreEntitiesPosition");
 		
@@ -1479,7 +1489,7 @@ public class JumpSequencer extends AbstractSequencer {
 			isCollision = isCollision || pisCollision;
 			reason = preason;
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info("CheckMovementResult " + sx + ", " + sy + ", " + sz + " -> " + tx + ", " + ty + ", " + tz + " " + isCollision + " '" + reason + "'");
+				WarpDrive.logger.info(String.format("CheckMovementResult (%d %d %d) -> (%d %d %d) %s '%s'", sx, sy, sz, tx, ty, tz, isCollision, reason));
 			}
 		}
 	}
@@ -1512,7 +1522,7 @@ public class JumpSequencer extends AbstractSequencer {
 						if (!fullCollisionDetails) {
 							return result;
 						} else if (WarpDriveConfig.LOGGING_JUMP) {
-							WarpDrive.logger.info("Anchor collision at " + context);
+							WarpDrive.logger.info(String.format("Anchor collision at %s", context));
 						}
 					}
 					
@@ -1530,7 +1540,7 @@ public class JumpSequencer extends AbstractSequencer {
 						if (!fullCollisionDetails) {
 							return result;
 						} else if (WarpDriveConfig.LOGGING_JUMP) {
-							WarpDrive.logger.info("Hard collision at " + context);
+							WarpDrive.logger.info(String.format("Hard collision at %s", context));
 						}
 					}
 					
@@ -1614,12 +1624,14 @@ public class JumpSequencer extends AbstractSequencer {
 	
 	@Override
 	protected void readFromNBT(final NBTTagCompound tagCompound) {
-		WarpDrive.logger.error(this + " readFromNBT()");
+		WarpDrive.logger.error(String.format("%s readFromNBT()",
+		                                     this));
 	}
 	
 	@Override
 	protected NBTTagCompound writeToNBT(final NBTTagCompound tagCompound) {
-		WarpDrive.logger.error(this + " writeToNBT()");
+		WarpDrive.logger.error(String.format("%s writeToNBT()",
+		                                     this));
 		return tagCompound;
 	}
 	

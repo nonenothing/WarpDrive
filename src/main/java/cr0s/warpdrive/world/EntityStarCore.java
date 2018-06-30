@@ -93,7 +93,7 @@ public final class EntityStarCore extends Entity {
 					entityLivingBase.attackEntityFrom(DamageSource.ON_FIRE, 9000);
 					entityLivingBase.attackEntityFrom(DamageSource.GENERIC, 9000);
 					if (!entityLivingBase.isDead) {
-						WarpDrive.logger.warn("Forcing entity death due to star proximity: " + entityLivingBase);
+						WarpDrive.logger.warn(String.format("Forcing entity death due to star proximity: %s", entityLivingBase));
 						entityLivingBase.setDead();
 					}
 				} else if (distanceSq <= BURN_RANGESQ) {

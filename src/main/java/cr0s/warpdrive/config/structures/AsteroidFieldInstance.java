@@ -87,8 +87,10 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		final int maxHeight = 70 + world.rand.nextInt(50);
 		final int y2 = Math.min(WarpDriveConfig.SPACE_GENERATOR_Y_MAX_BORDER - maxHeight,
 		                  Math.max(blockPos.getY(), WarpDriveConfig.SPACE_GENERATOR_Y_MIN_BORDER + maxHeight));
-		WarpDrive.logger.info("Generating asteroid field at (" + blockPos.getX() + " " + y2 + " " + blockPos.getZ() + ") qty " + numOfBigAsteroids + ", " + numOfSmallAsteroids + ", "
-		                      + numOfClouds + " over " + maxDistance + ", " + maxHeight + " surfacePerAsteroid " + String.format("%.1f", surfacePerAsteroid));
+		WarpDrive.logger.info(String.format("Generating asteroid field %s qty %d, %d, %d over %d, %d surfacePerAsteroid %.1f",
+		                                    Commons.format(world, blockPos.getX(), y2, blockPos.getZ()),
+		                                    numOfBigAsteroids, numOfSmallAsteroids, numOfClouds,
+		                                    maxDistance, maxHeight, surfacePerAsteroid));
 		
 		// Setting up of big asteroids
 		for (int i = 1; i <= numOfBigAsteroids; i++) {
@@ -179,7 +181,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		final int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		final int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		final int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		WarpDrive.logger.info("Generating small ship at " + x2 + " " + y2 + " " + z2);
+		WarpDrive.logger.info(String.format("Generating small ship %s",
+		                                    Commons.format(world, x2, y2, z2)));
 		new WorldGenSmallShip(world.rand.nextFloat() > 0.2F, false).generate(world, world.rand, new BlockPos(x2, y2, z2));
 	}
 	
@@ -187,7 +190,8 @@ public class AsteroidFieldInstance extends AbstractStructureInstance {
 		final int x2 = x + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		final int y2 = y + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
 		final int z2 = z + (((world.rand.nextBoolean()) ? -1 : 1) * world.rand.nextInt(jitter));
-		WarpDrive.logger.info("Generating station at " + x2 + " " + y2 + " " + z2);
+		WarpDrive.logger.info(String.format("Generating station %s",
+		                                    Commons.format(world, x2, y2, z2)));
 		new WorldGenStation(world.rand.nextBoolean()).generate(world, world.rand, new BlockPos(x2, y2, z2));
 	}
 }

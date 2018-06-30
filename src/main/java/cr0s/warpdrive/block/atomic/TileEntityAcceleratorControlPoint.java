@@ -168,7 +168,8 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 				enable = Commons.toBool(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on enable(): Boolean expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return new Object[] { isEnabled };
 			}

@@ -1,6 +1,5 @@
 package cr0s.warpdrive.compat;
 
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -119,10 +118,8 @@ public class CompatParziStarWars implements IBlockTransformer {
 		
 		if (nbtTileEntity.hasKey("facing")) {
 			final String id = nbtTileEntity.getString("id");
-			WarpDrive.logger.info("id is " + id);
-			if ( id != null
-			  && ( id.equals("teFloorLight")
-			    || id.equals("teMoistureVaporator") ) ) {
+			if ( id.equals("teFloorLight")
+			  || id.equals("teMoistureVaporator") ) {
 				final int facing = nbtTileEntity.getInteger("facing");
 				switch (rotationSteps) {
 				case 1:

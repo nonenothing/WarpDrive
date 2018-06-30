@@ -211,10 +211,10 @@ public class MessageSpawnParticle implements IMessage, IMessageHandler<MessageSp
 		}
 		
 		if (WarpDriveConfig.LOGGING_EFFECTS) {
-			WarpDrive.logger.info("Received particle effect '%s' x %d from %s towards %s as RGB %.2f %.2f %.2f fading to %.2f %.2f %.2f",
+			WarpDrive.logger.info(String.format("Received particle effect '%s' x %d from %s towards %s as RGB %.2f %.2f %.2f fading to %.2f %.2f %.2f",
 				messageSpawnParticle.type, messageSpawnParticle.quantity, messageSpawnParticle.origin, messageSpawnParticle.direction,
 				messageSpawnParticle.baseRed, messageSpawnParticle.baseGreen, messageSpawnParticle.baseBlue,
-				messageSpawnParticle.fadeRed, messageSpawnParticle.fadeGreen, messageSpawnParticle.fadeBlue);
+				messageSpawnParticle.fadeRed, messageSpawnParticle.fadeGreen, messageSpawnParticle.fadeBlue));
 		}
 		
 		messageSpawnParticle.handle(Minecraft.getMinecraft().world);

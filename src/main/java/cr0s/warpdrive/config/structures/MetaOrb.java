@@ -83,7 +83,8 @@ public class MetaOrb extends Orb {
 				
 				block = Block.getBlockFromName(stringValue);
 				if (block == null) {
-					WarpDrive.logger.warn("Skipping missing metashell core block " + stringValue + " in " + parentFullName);
+					WarpDrive.logger.warn(String.format("Skipping missing metashell core block %s in %s",
+					                                    stringValue, parentFullName));
 				} else {
 					// metadata
 					stringValue = element.getAttribute("metadata");
@@ -93,12 +94,14 @@ public class MetaOrb extends Orb {
 						try {
 							metadata = Integer.parseInt(stringValue);
 						} catch (final NumberFormatException exception) {
-							throw new InvalidXmlException("Structure " + parentFullName + " has an invalid metadata " + stringValue + ", expecting an integer");
+							throw new InvalidXmlException(String.format("Structure %s has an invalid metadata %s, expecting an integer",
+							                                            parentFullName, stringValue));
 						}
 					}
 					
 					if (metadata < 0 || metadata > 15) {
-						throw new InvalidXmlException("Structure " + parentFullName + " has an invalid metadata " + metadata + ", expecting a value between 0 and 15 included");
+						throw new InvalidXmlException(String.format("Structure %s has an invalid metadata %d, expecting a value between 0 and 15 included",
+						                                            parentFullName, metadata));
 					}
 				}
 			}
@@ -107,21 +110,25 @@ public class MetaOrb extends Orb {
 			try {
 				minCount = Integer.parseInt(element.getAttribute("minCount"));
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minCount " + element.getAttribute("minCount") + ", expecting an integer");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid minCount %s, expecting an integer",
+				                                            parentFullName, element.getAttribute("minCount")));
 			}
 			
 			if (minCount < 1) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minCount " + minCount + ", expecting greater then 0");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid minCount %d, expecting greater then 0",
+				                                            parentFullName, minCount));
 			}
 			
 			try {
 				maxCount = Integer.parseInt(element.getAttribute("maxCount"));
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid maxCount " + element.getAttribute("maxCount") + ", expecting an integer");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid maxCount %s, expecting an integer",
+				                                            parentFullName, element.getAttribute("maxCount")));
 			}
 			
 			if (maxCount < minCount) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid maxCount " + maxCount + ", expecting greater than or equal to minCount " + minCount);
+				throw new InvalidXmlException(String.format("Structure %s has an invalid maxCount %d, expecting greater than or equal to minCount %d",
+				                                            parentFullName, maxCount, minCount));
 			}
 			
 			// radius
@@ -133,11 +140,13 @@ public class MetaOrb extends Orb {
 					minRadius = Double.parseDouble(element.getAttribute("minRadius"));
 				}
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minRadius " + element.getAttribute("minRadius") + ", expecting a double");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid minRadius %s, expecting a double",
+				                                            parentFullName, element.getAttribute("minRadius")));
 			}
 			
 			if (minRadius < 0.0D || minRadius > 20.0D) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid minRadius " + minRadius + ", expecting a value between 0.0 and 20.0 included");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid minRadius %.3f, expecting a value between 0.0 and 20.0 included",
+				                                            parentFullName, minRadius));
 			}
 			
 			try {
@@ -148,11 +157,13 @@ public class MetaOrb extends Orb {
 					relativeRadius = Double.parseDouble(element.getAttribute("relativeRadius"));
 				}
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid relativeRadius " + element.getAttribute("relativeRadius") + ", expecting a double");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid relativeRadius %s, expecting a double",
+				                                            parentFullName, element.getAttribute("relativeRadius")));
 			}
 			
 			if (relativeRadius < 0.0D || relativeRadius > 2.0D) {
-				throw new InvalidXmlException("Structure " + parentFullName + " has an invalid relativeRadius " + relativeRadius + ", expecting a value between 0.0 and 2.0 included");
+				throw new InvalidXmlException(String.format("Structure %s has an invalid relativeRadius %.3f, expecting a value between 0.0 and 2.0 included",
+				                                            parentFullName, relativeRadius));
 			}
 			
 			return true;

@@ -143,7 +143,8 @@ public final class EntitySphereGen extends Entity {
 			break;
 		
 		default:
-			WarpDrive.logger.error(this + " Invalid state " + state + ". Killing entity...");
+			WarpDrive.logger.error(String.format("%s Invalid state %s. Killing entity...",
+			                                     this, state));
 			killEntity();
 			break;
 		}
@@ -194,7 +195,7 @@ public final class EntitySphereGen extends Entity {
 					
 					// Add blocks to memory
 					final OrbShell orbShell = orbInstance.getShellForSqRadius(sqRange);
-					// WarpDrive.logger.info("sqRange " + sqRange + " sqRadius " + sqRadius);
+					// WarpDrive.logger.info(String.format("sqRange %d sqRadius %d", sqRange, sqRadius));
 					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord + y, zCoord + z));
 					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord - x, yCoord + y, zCoord + z));
 					addBlock(isSurface, new JumpBlock(orbShell.getRandomUnit(rand), xCoord + x, yCoord - y, zCoord + z));
@@ -207,7 +208,8 @@ public final class EntitySphereGen extends Entity {
 			}
 		}
 		if (blocks != null && blocks.size() > pregenSize) {
-			WarpDrive.logger.warn("[EntitySphereGen] Saved " + blocks.size() + " blocks (estimated to " + pregenSize + ")");
+			WarpDrive.logger.warn(String.format("[EntitySphereGen] Saved %s blocks (estimated to %d)",
+			                                    blocks.size(), pregenSize));
 		}
 		LocalProfiler.stop();
 	}

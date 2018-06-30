@@ -53,13 +53,15 @@ public class Loot implements IXmlRepresentableUnit {
 		
 		// Check there is a block name
 		if (!element.hasAttribute("item")) {
-			throw new InvalidXmlException("Loot " + element + " is missing an item attribute!");
+			throw new InvalidXmlException(String.format("Loot %s is missing an item attribute!",
+			                                            element));
 		}
 		
 		final String nameItem = element.getAttribute("item");
 		item = Item.getByNameOrId(nameItem);
 		if (item == null) {
-			WarpDrive.logger.warn("Skipping missing item " + nameItem);
+			WarpDrive.logger.warn(String.format("Skipping missing item %s",
+			                                    nameItem));
 			return false;
 		}
 		
@@ -70,7 +72,8 @@ public class Loot implements IXmlRepresentableUnit {
 			try {
 				damage = Integer.parseInt(stringDamage);
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Invalid damage for item " + nameItem);
+				throw new InvalidXmlException(String.format("Invalid damage for item %s",
+				                                            nameItem));
 			}
 		}
 		
@@ -81,7 +84,8 @@ public class Loot implements IXmlRepresentableUnit {
 			try {
 				tagCompound = JsonToNBT.getTagFromJson(stringNBT);
 			} catch (final NBTException exception) {
-				throw new InvalidXmlException("Invalid nbt for item " + nameItem);
+				throw new InvalidXmlException(String.format("Invalid nbt for item %s",
+				                                            nameItem));
 			}
 		}
 		
@@ -92,7 +96,8 @@ public class Loot implements IXmlRepresentableUnit {
 			try {
 				quantityMin = Integer.parseInt(stringQuantityMin);
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Invalid minQuantity for item " + nameItem);
+				throw new InvalidXmlException(String.format("Invalid minQuantity for item %s",
+				                                            nameItem));
 			}
 		}
 		
@@ -103,11 +108,13 @@ public class Loot implements IXmlRepresentableUnit {
 			try {
 				quantityMax = Integer.parseInt(stringQuantityMax);
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Invalid maxQuantity for item " + nameItem);
+				throw new InvalidXmlException(String.format("Invalid maxQuantity for item %s",
+				                                            nameItem));
 			}
 		}
 		
-		name = nameItem + "@" + damage + "{" + tagCompound + "}";
+		name = String.format("%s@%d{%s}",
+		                     nameItem, damage, tagCompound);
 		
 		return true;
 	}
@@ -137,7 +144,8 @@ public class Loot implements IXmlRepresentableUnit {
 	
 	@Override
 	public String toString() {
-		return "Loot(" + item.getUnlocalizedName() + "@" + damage + ")";
+		return String.format("Loot(%s@%d)",
+		                     item.getRegistryName(), damage);
 	}
 	
 	@Override

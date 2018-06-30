@@ -72,9 +72,11 @@ public class XmlPreprocessor {
 				final Element elementChild = (Element) child;
 				final String result = checkModRequirements(elementChild);
 				if (!result.isEmpty()) {
-					WarpDrive.logger.info("Skipping " + base.getNodeName() + "/" + elementChild.getNodeName()
-							+ " " + elementChild.getAttribute("group") + elementChild.getAttribute("name") + elementChild.getAttribute("block")
-							+ " due to " + result);
+					WarpDrive.logger.info(String.format("Skipping %s/%s %s:%s %s due to %s",
+					                                    base.getNodeName(), elementChild.getNodeName(),
+					                                    elementChild.getAttribute("group"), elementChild.getAttribute("name"),
+					                                    elementChild.getAttribute("block"),
+					                                    result));
 					base.removeChild(child);
 				} else {
 					doModReqSanitation(child);
@@ -112,7 +114,8 @@ public class XmlPreprocessor {
 			// copy children with replaced variable
 			for (final String variableValue : inOptions) {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
+					WarpDrive.logger.info(String.format("Resolving for-loop with variable %s = %s",
+					                                    variableName, variableValue));
 				}
 				final NodeList allChildren = root.getChildNodes();
 				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex ++) {
@@ -126,7 +129,8 @@ public class XmlPreprocessor {
 			final String stringTo = elementFor.getAttribute("to");
 			
 			if (stringTo.isEmpty() || stringFrom.isEmpty()) {
-				throw new InvalidXmlException("For element with no 'in' attribute requires both 'from' and 'to' attributes! " + variableName);
+				throw new InvalidXmlException(String.format("For element with no 'in' attribute requires both 'from' and 'to' attributes! %s",
+				                                            variableName));
 			}
 			
 			final int intFrom;
@@ -142,7 +146,8 @@ public class XmlPreprocessor {
 			// copy children with replaced variable
 			for (int variableValue = intFrom; variableValue <= intTo; variableValue++) {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-					WarpDrive.logger.info("Resolving for-loop with variable " + variableName + " = " + variableValue);
+					WarpDrive.logger.info(String.format("Resolving for-loop with variable %s = %d",
+					                                    variableName, variableValue));
 				}
 				final NodeList allChildren = root.getChildNodes();
 				for (int childIndex = 0; childIndex < allChildren.getLength(); childIndex++) {
@@ -158,7 +163,7 @@ public class XmlPreprocessor {
 		if (WarpDriveConfig.LOGGING_XML_PREPROCESSOR) {
 			try {
 				final Transformer transformer = TransformerFactory.newInstance().newTransformer();
-				final Result output = new StreamResult(new File("output" + outputCount + ".xml"));
+				final Result output = new StreamResult(new File(String.format("output%s.xml", outputCount)));
 				final Source input = new DOMSource(root.getOwnerDocument());
 				
 				transformer.transform(input, output);

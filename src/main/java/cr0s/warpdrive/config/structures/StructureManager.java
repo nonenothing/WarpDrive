@@ -33,7 +33,8 @@ public class StructureManager extends XmlFileManager {
 		
 		for (final String group : REQUIRED_GROUPS) {
 			if (!structuresByGroup.containsKey(group)) {
-				WarpDrive.logger.error("Error: no structure defined for mandatory group " + group);
+				WarpDrive.logger.error(String.format("Error: no structure defined for mandatory group %s",
+				                                     group));
 			}
 		}
 	}
@@ -50,7 +51,7 @@ public class StructureManager extends XmlFileManager {
 			throw new InvalidXmlException(String.format("%s is missing a name attribute!", location));
 		}
 		
-		WarpDrive.logger.info("- found Structure " + group + ":" + name);
+		WarpDrive.logger.info(String.format("- found Structure %s:%s", group, name));
 		
 		final XmlRandomCollection<AbstractStructure> xmlRandomCollection = structuresByGroup.computeIfAbsent(group, k -> new XmlRandomCollection<>());
 		

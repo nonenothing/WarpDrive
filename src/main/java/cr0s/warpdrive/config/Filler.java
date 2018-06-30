@@ -1,5 +1,6 @@
 package cr0s.warpdrive.config;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IXmlRepresentableUnit;
 import cr0s.warpdrive.data.JumpBlock;
@@ -50,13 +51,15 @@ public class Filler implements IXmlRepresentableUnit {
 		
 		// Check there is a block name
 		if (!element.hasAttribute("block")) {
-			throw new InvalidXmlException("Filler " + element + " is missing a block attribute!");
+			throw new InvalidXmlException(String.format("Filler %s is missing a block attribute!",
+			                                            element));
 		}
 		
 		final String nameBlock = element.getAttribute("block");
 		block = Block.getBlockFromName(nameBlock);
 		if (block == null) {
-			WarpDrive.logger.warn("Skipping missing block " + nameBlock);
+			WarpDrive.logger.warn(String.format("Skipping missing block %s",
+			                                    nameBlock));
 			return false;
 		}
 		
@@ -67,7 +70,8 @@ public class Filler implements IXmlRepresentableUnit {
 			try {
 				metadata = Integer.parseInt(stringMetadata);
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Invalid metadata for block " + nameBlock);
+				throw new InvalidXmlException(String.format("Invalid metadata for block %s",
+				                                            nameBlock));
 			}
 		}
 		
@@ -78,7 +82,8 @@ public class Filler implements IXmlRepresentableUnit {
 			try {
 				tagCompound = JsonToNBT.getTagFromJson(stringNBT);
 			} catch (final NBTException exception) {
-				throw new InvalidXmlException("Invalid nbt for block " + nameBlock);
+				throw new InvalidXmlException(String.format("Invalid nbt for block %s",
+				                                            nameBlock));
 			}
 		}
 		
@@ -93,9 +98,9 @@ public class Filler implements IXmlRepresentableUnit {
 		if (tagCompound != null) {
 			final TileEntity tileEntity = world.getTileEntity(blockPos);
 			if (tileEntity == null) {
-				WarpDrive.logger.error("No TileEntity found for Filler %s at (%d %d %d)",
-				                       getName(),
-				                       blockPos.getX(), blockPos.getY(), blockPos.getZ() );
+				WarpDrive.logger.error(String.format("No TileEntity found for Filler %s %s",
+				                                     getName(),
+				                                     Commons.format(world, blockPos)));
 				return;
 			}
 			

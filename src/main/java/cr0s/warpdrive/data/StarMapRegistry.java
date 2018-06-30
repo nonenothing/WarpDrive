@@ -60,7 +60,8 @@ public class StarMapRegistry {
 		countRead++;
 		if (WarpDriveConfig.LOGGING_STARMAP) {
 			if (countRead % 1000 == 0) {
-				WarpDrive.logger.info("Starmap registry stats: read " + countRead + " add " + countAdd + " remove " + countRemove + " => " + ((float) countRead) / (countRemove + countRead + countAdd) + "% read");
+				WarpDrive.logger.info(String.format("Starmap registry stats: read %d add %d remove %d => %.2f%% read",
+				                                    countRead, countAdd, countRemove, ((float) countRead) / (countRemove + countRead + countAdd)));
 			}
 		}
 		
@@ -286,7 +287,8 @@ public class StarMapRegistry {
 				return Integer.parseInt(stringDimension);
 			} catch (final Exception exception) {
 				// exception.printStackTrace();
-				WarpDrive.logger.info("Invalid dimension '" + stringDimension + "', expecting integer or overworld/nether/end/theend/space/hyper/hyperspace");
+				WarpDrive.logger.info(String.format("Invalid dimension %s, expecting integer or overworld/nether/end/theend/space/hyper/hyperspace",
+				                                    stringDimension));
 			}
 		}
 		return 0;
@@ -353,7 +355,8 @@ public class StarMapRegistry {
 	}
 	
 	public void printRegistry(final String trigger) {
-		WarpDrive.logger.info("Starmap registry (" + registry.size() + " entries after " + trigger + "):");
+		WarpDrive.logger.info(String.format("Starmap registry (%s entries after %s):",
+		                                    registry.size(), trigger));
 		
 		for (final Map.Entry<Integer, CopyOnWriteArraySet<StarMapRegistryItem>> entryDimension : registry.entrySet()) {
 			final StringBuilder message = new StringBuilder();
@@ -506,8 +509,9 @@ public class StarMapRegistry {
 						if (registryItem == null) {
 							WarpDrive.logger.info("Cleaning up starmap object ~null~");
 						} else {
-							WarpDrive.logger.info("Cleaning up starmap object " + registryItem.type + " at "
-							                      + registryItem.dimensionId + " " + registryItem.x + " " + registryItem.y + " " + registryItem.z);
+							WarpDrive.logger.info(String.format("Cleaning up starmap object %s at dimension %d (%d %d %d)",
+							                                    registryItem.type,
+							                                    registryItem.dimensionId, registryItem.x, registryItem.y, registryItem.z));
 						}
 					// }
 					countRemove++;

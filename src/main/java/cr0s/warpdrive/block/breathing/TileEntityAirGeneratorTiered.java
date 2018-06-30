@@ -51,7 +51,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 			tier = ((BlockAirGeneratorTiered) block).tier;
 			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[tier - 1];
 		} else {
-			WarpDrive.logger.error("Missing block for " + this + " at " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+			WarpDrive.logger.error(String.format("Missing block for %s %s",
+			                                     this, Commons.format(world, pos)));
 		}
 	}
 	

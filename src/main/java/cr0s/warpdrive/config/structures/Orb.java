@@ -40,13 +40,13 @@ public class Orb extends AbstractStructure {
 				shellIndexOut++;
 			} catch (final InvalidXmlException exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error("Skipping invalid shell " + orbShellName);
+				WarpDrive.logger.error(String.format("Skipping invalid shell %s", orbShellName));
 			}
 		}
 		
 		final List<Element> listSchematic = XmlFileManager.getChildrenElementByTagName(element, "schematic");
 		if (listSchematic.size() > 1) {
-			WarpDrive.logger.error("Too many schematic defined, only first one will be used in structure " + getFullName());
+			WarpDrive.logger.error(String.format("Too many schematic defined, only first one will be used in structure %s", getFullName()));
 		}
 		if (listSchematic.size() > 0) {
 			schematicName = listSchematic.get(0).getAttribute("group");
@@ -79,7 +79,8 @@ public class Orb extends AbstractStructure {
 		@Override
 		public boolean loadFromXmlElement(final Element element) throws InvalidXmlException {
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-				WarpDrive.logger.info("  + found shell " + element.getAttribute("name"));
+				WarpDrive.logger.info(String.format("  + found shell %s",
+				                                    element.getAttribute("name")));
 			}
 			
 			super.loadFromXmlElement(element);
@@ -88,7 +89,8 @@ public class Orb extends AbstractStructure {
 			for (final String importGroupName : getImportGroupNames()) {
 				final GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getGenericSet(importGroupName);
 				if (fillerSet == null) {
-					WarpDrive.logger.warn("Skipping missing FillerSet " + importGroupName + " in shell " + parentFullName + ":" + name);
+					WarpDrive.logger.warn(String.format("Skipping missing FillerSet %s in shell %s:%s",
+					                                    importGroupName, parentFullName, name));
 				} else {
 					loadFrom(fillerSet);
 				}
@@ -97,7 +99,8 @@ public class Orb extends AbstractStructure {
 			// validate dynamic imports
 			for (final String importGroup : getImportGroups()) {
 				if (!WarpDriveConfig.FillerManager.doesGroupExist(importGroup)) {
-					WarpDrive.logger.warn("An invalid FillerSet group " + importGroup + " is referenced in shell " + parentFullName + ":" + name);
+					WarpDrive.logger.warn(String.format("An invalid FillerSet group %s is referenced in shell %s:%s",
+					                                    importGroup, parentFullName, name));
 				}
 			}
 			
@@ -105,17 +108,20 @@ public class Orb extends AbstractStructure {
 			try {
 				minThickness = Integer.parseInt(element.getAttribute("minThickness"));
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Invalid minThickness in shell " + name + " of structure " + parentFullName);
+				throw new InvalidXmlException(String.format("Invalid minThickness in shell %s of structure %s",
+				                                            name, parentFullName));
 			}
 			
 			try {
 				maxThickness = Integer.parseInt(element.getAttribute("maxThickness"));
 			} catch (final NumberFormatException exception) {
-				throw new InvalidXmlException("Invalid maxThickness in shell " + name + " of structure " + parentFullName);
+				throw new InvalidXmlException(String.format("Invalid maxThickness in shell %s of structure %s",
+				                                            name, parentFullName));
 			}
 			
 			if (maxThickness < minThickness) {
-				throw new InvalidXmlException("Invalid maxThickness " + maxThickness + " lower than minThickness " + minThickness + " in shell " + name + " of orb " + parentFullName);
+				throw new InvalidXmlException(String.format("Invalid maxThickness %d lower than minThickness %s in shell %s of orb %s",
+				                                            maxThickness, minThickness, name, parentFullName));
 			}
 			
 			return true;
@@ -130,21 +136,25 @@ public class Orb extends AbstractStructure {
 				for (final String importGroup : getImportGroups()) {
 					final GenericSet<Filler> fillerSet = WarpDriveConfig.FillerManager.getRandomSetFromGroup(random, importGroup);
 					if (fillerSet == null) {
-						WarpDrive.logger.info("Ignoring invalid group " + importGroup + " in shell " + name + " of structure " + parentFullName);
+						WarpDrive.logger.info(String.format("Ignoring invalid group %s in shell %s of structure %s",
+						                                    importGroup, name, parentFullName));
 						continue;
 					}
 					if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-						WarpDrive.logger.info("Filling " + parentFullName + ":" + name + " with " + importGroup + ":" + fillerSet.getName());
+						WarpDrive.logger.info(String.format("Filling %s:%s with %s:%s",
+						                                    parentFullName, name, importGroup, fillerSet.getName()));
 					}
 					orbShell.loadFrom(fillerSet);
 				}
 			} catch (final InvalidXmlException exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error("Failed to instantiate shell " + name + " from structure " + parentFullName);
+				WarpDrive.logger.error(String.format("Failed to instantiate shell %s from structure %s",
+				                                     name, parentFullName));
 			}
 			if (orbShell.isEmpty()) {
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-					WarpDrive.logger.info("Ignoring empty shell " + name + " in structure " + parentFullName + "");
+					WarpDrive.logger.info(String.format("Ignoring empty shell %s in structure %s",
+					                                    name, parentFullName));
 				}
 				return null;
 			}

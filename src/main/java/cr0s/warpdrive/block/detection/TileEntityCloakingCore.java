@@ -138,7 +138,8 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 						if (area != null) {
 							area.sendCloakPacketToPlayersEx(false); // re-cloak field
 						} else {
-							WarpDrive.logger.error("getCloakedArea1 returned null for " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+							WarpDrive.logger.error(String.format("getCloakedArea1 returned null %s",
+							                                     Commons.format(world, pos)));
 						}
 						
 					} else {// enabled, not cloaking and not able to
@@ -149,7 +150,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 				} else {// enabled & cloaking
 					if (!isValid) {// enabled, cloaking but invalid
 						if (WarpDriveConfig.LOGGING_CLOAKING) {
-							WarpDrive.logger.info(this + " Coil(s) lost, cloak field is collapsing...");
+							WarpDrive.logger.info(String.format("%s Coil(s) lost, cloak field is collapsing...", this));
 						}
 						energy_consume(energy_getEnergyStored());
 						disableCloakingField();
@@ -169,13 +170,14 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 							if (area != null) {
 								area.sendCloakPacketToPlayersEx(false); // re-cloak field
 							} else {
-								WarpDrive.logger.error("getCloakedArea2 returned null for " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+								WarpDrive.logger.error(String.format("getCloakedArea2 returned null %s",
+								                                     Commons.format(world, pos)));
 							}
 							setCoilsState(true);
 							
 						} else {// loosing power
 							if (WarpDriveConfig.LOGGING_CLOAKING) {
-								WarpDrive.logger.info(this + " Low power, cloak field is collapsing...");
+								WarpDrive.logger.info(String.format("%s Low power, cloak field is collapsing...", this));
 							}
 							disableCloakingField();
 							isRefreshNeeded = true;

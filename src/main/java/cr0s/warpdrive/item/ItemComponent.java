@@ -103,7 +103,8 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	@Override
 	public ItemStack consumeAir(final ItemStack itemStack) {
-		WarpDrive.logger.error(this + " consumeAir() with itemStack " + itemStack);
+		WarpDrive.logger.error(String.format("%s consumeAir() with itemStack %s",
+		                                     this, itemStack));
 		throw new RuntimeException("Invalid call to consumeAir() on non or empty container");
 	}
 	

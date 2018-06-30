@@ -899,12 +899,14 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				return;
 			}
 			
-			WarpDrive.logger.info("[GATE] Place found over " + (10 - numTries) + " tries.");
+			WarpDrive.logger.info(String.format("[GATE] Place found over %d tries.",
+			                                    10 - numTries));
 		}
 		
 		// Consume energy
 		if (energy_consume(shipMovementCosts.energyRequired, false)) {
-			WarpDrive.logger.info(this + " Moving ship to a place around gate '" + targetGate.name + "' (" + destX + "; " + destY + "; " + destZ + ")");
+			WarpDrive.logger.info(String.format("%s Moving ship to a place around gate '%s' (%d %d %d)",
+			                                    this, targetGate.name, destX, destY, destZ));
 			final JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
 			jump.enable();
 		} else {

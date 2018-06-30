@@ -250,7 +250,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (Dictionary.BLOCKS_STOPMINING.contains(blockState.getBlock())) {
 			stop();
 			if (WarpDriveConfig.LOGGING_COLLECTION) {
-				WarpDrive.logger.info(this + " Mining stopped by " + blockState + " at (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ")");
+				WarpDrive.logger.info(String.format("%s Mining stopped by %s %s",
+				                                    this, blockState, Commons.format(world, blockPos)));
 			}
 			return false;
 		}
@@ -263,7 +264,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		if (isBlockBreakCanceled(null, world, blockPos)) {
 			stop();
 			if (WarpDriveConfig.LOGGING_COLLECTION) {
-				WarpDrive.logger.info(this + " Mining stopped by cancelled event at (" + blockPos.getX() + " " + blockPos.getY()+ " " + blockPos.getZ() + ")");
+				WarpDrive.logger.info(String.format("%s Mining stopped by cancelled event %s",
+				                                    this, Commons.format(world, blockPos)));
 			}
 			return false;
 		}
@@ -272,7 +274,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			return true;
 		}
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
-			WarpDrive.logger.info(this + " Rejecting " + blockState + " at (" + blockPos.getX() + " " + blockPos.getY()+ " " + blockPos.getZ() + ")");
+			WarpDrive.logger.info(String.format("%s Rejecting %s %s",
+			                                    this, blockState, Commons.format(world, blockPos)));
 		}
 		return false;
 	}
@@ -285,7 +288,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 			if (Dictionary.BLOCKS_STOPMINING.contains(blockState.getBlock())) {
 				stop();
 				if (WarpDriveConfig.LOGGING_COLLECTION) {
-					WarpDrive.logger.info(this + " Mining stopped by " + blockState + " at (" + pos.getX() + " " + y + " " + pos.getZ() + ")");
+					WarpDrive.logger.info(String.format("%s Mining stopped by %s %s",
+					                                    this, blockState, Commons.format(world, pos)));
 				}
 				return;
 			}
@@ -371,7 +375,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		}
 
 		if (WarpDriveConfig.LOGGING_COLLECTION) {
-			WarpDrive.logger.info(this + " Found " + valuablesInLayer.size() + " valuables");
+			WarpDrive.logger.info(String.format("%s Found %s valueables",
+			                                    this, valuablesInLayer.size()));
 		}
 	}
 	
@@ -445,7 +450,8 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 		currentState = STATE_WARMUP;
 		currentLayer = pos.getY() - layerOffset - 1;
 		if (WarpDriveConfig.LOGGING_LUA) {
-			WarpDrive.logger.info(this + " Starting from Y " + currentLayer + " with silktouch " + enableSilktouch);
+			WarpDrive.logger.info(String.format("%s Starting from Y %d with silktouch %s",
+			                                    this, currentLayer, enableSilktouch));
 		}
 		return new Boolean[] { true };
 	}

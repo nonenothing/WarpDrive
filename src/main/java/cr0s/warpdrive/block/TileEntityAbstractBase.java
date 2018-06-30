@@ -82,7 +82,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			WarpDrive.logger.error("Exception in " + this);
+			WarpDrive.logger.error(String.format("Exception in %s", this));
 		}
 	}
 	
@@ -99,7 +99,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
-			WarpDrive.logger.error("Exception in " + this);
+			WarpDrive.logger.error(String.format("Exception in %s", this));
 		}
 	}
 	
@@ -145,7 +145,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (itemStacks != null) {
 			for (final ItemStack itemStack : itemStacks) {
 				if (itemStack.isEmpty()) {
-					WarpDrive.logger.error(this + "Invalid empty itemStack...");
+					WarpDrive.logger.error(String.format("%s Invalid empty itemStack...",
+					                                     this));
 					continue;
 				}
 				int qtyLeft = itemStack.getCount();
@@ -160,7 +161,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				}
 				if (qtyLeft > 0) {
 					if (WarpDriveConfig.LOGGING_COLLECTION) {
-						WarpDrive.logger.info(this + " Overflow detected");
+						WarpDrive.logger.info(String.format("%s Overflow detected",
+						                                    this));
 					}
 					overflow = true;
 					int transfer;
@@ -252,7 +254,8 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				Object object = getUpgradeFromString(key);
 				final int value = nbtTagCompoundUpgrades.getByte(key);
 				if (object == null) {
-					WarpDrive.logger.error("Found an unknown upgrade named '" + key + "' in " + this);
+					WarpDrive.logger.error(String.format("Found an unknown upgrade named %s in %s",
+					                                     key, this));
 					object = key;
 				}
 				installedUpgrades.put(object, value);

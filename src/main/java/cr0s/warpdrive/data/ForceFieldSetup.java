@@ -81,7 +81,7 @@ public class ForceFieldSetup extends GlobalPosition {
 		this.tier = tier;
 		this.beamFrequency = beamFrequency;
 		refresh();
-		if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+		if (WarpDriveConfig.LOGGING_FORCE_FIELD) {
 			WarpDrive.logger.info(String.format("Force field projector energy costs: startup %.3f / %d scan %.3f place %.3f entity %.3f"
 				                                    + " speeds: scan %.3f place %.3f"
 				                                    + " sustain cost: scan %.3f place %.3f",

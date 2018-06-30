@@ -201,7 +201,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 		final double speed = Math.abs(scaledValue) / (entityLevel == 0 ? 2 : entityLevel) * ForceFieldSetup.FORCEFIELD_ACCELERATION_FACTOR;
 		final Vector3 v3Motion = v3Direction.clone().scale(speed); // new Vector3(entity.motionX, entity.motionY, entity.motionZ);
 		/*
-		if (WarpDriveConfig.LOGGING_FORCEFIELD && WarpDrive.isDev) {
+		if (WarpDriveConfig.LOGGING_FORCE_FIELD && WarpDrive.isDev) {
 			WarpDrive.logger.info(this + " scaledValue " + scaledValue + " entityLevel " + entityLevel + " speed " + speed
 				                      + " entity " + v3Entity + " projector " + v3Projector + " direction " + v3Direction + " motion " + v3Motion + " entity " + entity);
 		}

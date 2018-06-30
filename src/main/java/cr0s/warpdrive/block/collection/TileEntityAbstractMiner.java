@@ -1,5 +1,6 @@
 package cr0s.warpdrive.block.collection;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -7,8 +8,6 @@ import cr0s.warpdrive.data.Vector3;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import cr0s.warpdrive.data.SoundEvents;
 
 import javax.annotation.Nonnull;
 
@@ -76,7 +75,8 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	
 	private List<ItemStack> getItemStackFromBlock(final BlockPos blockPos, final IBlockState blockState) {
 		if (blockState == null) {
-			WarpDrive.logger.error(this + " Invalid block at " + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ());
+			WarpDrive.logger.error(String.format("%s Invalid block %s",
+			                                     this, Commons.format(world, blockPos)));
 			return null;
 		}
 		if (enableSilktouch) {

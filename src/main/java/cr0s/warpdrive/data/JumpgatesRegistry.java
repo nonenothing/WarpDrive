@@ -58,7 +58,7 @@ public final class JumpgatesRegistry {
 			}
 	        
 			bufferedreader.close();
-			WarpDrive.logger.info("Loaded " + gates.size() + " jump gates.");
+			WarpDrive.logger.info(String.format("Loaded %s jump gates.", gates.size()));
 		} catch (final IOException exception) {
 			exception.printStackTrace();
 			WarpDrive.logger.error("Exception while loading jumpgates from disk");

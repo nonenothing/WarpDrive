@@ -83,10 +83,10 @@ public class CompatForgeMultipart implements IBlockTransformer {
 		                                          24, 25, 26, 27, 28, 29, 30, 31 };
 	
 	private NBTTagCompound rotate_part(final byte rotationSteps, final NBTTagCompound nbtPart) {
-		final NBTTagCompound nbtNewPart = (NBTTagCompound) nbtPart.copy();
+		final NBTTagCompound nbtNewPart = nbtPart.copy();
 		
 		if (!nbtNewPart.hasKey("id")) {
-			WarpDrive.logger.error("Ignoring ForgeMultipart with missing id: " + nbtPart);
+			WarpDrive.logger.error(String.format("Ignoring ForgeMultipart with missing id: %s", nbtPart));
 		} else {
 			final String id = nbtPart.getString("id");
 			String propertyName = null;
@@ -124,7 +124,7 @@ public class CompatForgeMultipart implements IBlockTransformer {
 					rot = rotWRCBEstate;
 					break;
 				default:
-					WarpDrive.logger.error("Ignoring part of ForgeMultipart with unknown id: " + nbtPart);
+					WarpDrive.logger.error(String.format("Ignoring part of ForgeMultipart with unknown id: ", nbtPart));
 					break;
 			}
 			// actual rotation
@@ -170,7 +170,7 @@ public class CompatForgeMultipart implements IBlockTransformer {
 			}
 			nbtTileEntity.setTag("parts", nbtNewParts);
 		} else {
-			WarpDrive.logger.error("Ignoring ForgeMultipart with no 'parts': " + nbtTileEntity);
+			WarpDrive.logger.error(String.format("Ignoring ForgeMultipart with no 'parts': ", nbtTileEntity));
 		}
 		
 		return metadata;

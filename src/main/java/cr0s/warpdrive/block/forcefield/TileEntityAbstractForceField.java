@@ -48,7 +48,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 		if (block instanceof BlockAbstractForceField) {
 			tier = ((BlockAbstractForceField) block).tier;
 		} else {
-			WarpDrive.logger.error("Missing block for " + this + " at " + world + " " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
+			WarpDrive.logger.error(String.format("Missing block for %s %s",
+			                                     this, Commons.format(world, pos)));
 		}
 		if (beamFrequency >= 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX) {
 			ForceFieldRegistry.updateInRegistry(this);
@@ -93,7 +94,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	public void setBeamFrequency(final int parBeamFrequency) {
 		if (beamFrequency != parBeamFrequency && (parBeamFrequency <= BEAM_FREQUENCY_MAX) && (parBeamFrequency > BEAM_FREQUENCY_MIN)) {
 			if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-				WarpDrive.logger.info(this + " Beam frequency set from " + beamFrequency + " to " + parBeamFrequency);
+				WarpDrive.logger.info(String.format("%s Beam frequency set from %d to %d",
+				                                    this, beamFrequency, parBeamFrequency));
 			}
 			if (hasWorld()) {
 				ForceFieldRegistry.removeFromRegistry(this);
@@ -166,7 +168,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 				enable = Commons.toBool(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on enable(): Boolean expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return new Object[] { isEnabled };
 			}

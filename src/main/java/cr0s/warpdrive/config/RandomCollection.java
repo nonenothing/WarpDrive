@@ -35,12 +35,14 @@ public class RandomCollection<E extends IStringSerializable> {
 	 **/
 	public void addWeight(final int weight, final E object) {
 		if (weight <= 0) {
-			WarpDrive.logger.warn("Weight is negative or zero, skipping " + object + " with weight " + weight);
+			WarpDrive.logger.warn(String.format("Weight is negative or zero, skipping %s with weight %d",
+			                                    object, weight));
 			return;
 		}
 		if (weightMap.containsValue(object)) {
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-				WarpDrive.logger.trace("Object already has a weight defined, skipping " + object + " with weight " + weight);
+				WarpDrive.logger.trace(String.format("Object already has a weight defined, skipping %s with weight %s",
+				                                     object, weight));
 			}
 			return;
 		}
@@ -58,19 +60,22 @@ public class RandomCollection<E extends IStringSerializable> {
 	 *            Object to add
 	 **/
 	public void addRatio(final double ratio, final E object) {
-		if (ratio <= 0 || ratio >= 1.0) {
-			WarpDrive.logger.warn("Ratio isn't in ]0, 1.0] bounds, skipping " + object + " with ratio " + ratio);
+		if (ratio <= 0.0D || ratio >= 1.0D) {
+			WarpDrive.logger.warn(String.format("Ratio isn't in ]0, 1.0] bounds, skipping %s with ratio %.3f",
+			                                    object, ratio));
 			return;
 		}
 		if (ratioMap.containsValue(object)) {
 			if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-				WarpDrive.logger.warn("Object already has a ratio defined, skipping " + object + " with ratio " + ratio);
+				WarpDrive.logger.warn(String.format("Object already has a ratio defined, skipping %s with ratio %.3f",
+				                                    object, ratio));
 			}
 			return;
 		}
 		
-		if (totalRatio + ratio > 1.0) {
-			WarpDrive.logger.warn("Total ratio is greater than 1.0, skipping " + object + " with ratio " + ratio);
+		if (totalRatio + ratio > 1.0D) {
+			WarpDrive.logger.warn(String.format("Total ratio is greater than 1.0, skipping %s with ratio %.3f",
+			                                    object, ratio));
 			return;
 		}
 		totalRatio += ratio;
@@ -88,14 +93,15 @@ public class RandomCollection<E extends IStringSerializable> {
 		if (value < totalRatio) { // hit ratio part of values
 			return ratioMap.ceilingEntry(value).getValue();
 		} else { // hit dynamic part of values, weighted ones
-			final int weight = (int)Math.round((value - totalRatio) * totalWeight);
+			final int weight = (int) Math.round((value - totalRatio) * totalWeight);
 			final Entry<Integer, E> entry = weightMap.ceilingEntry(weight);
 			/*
-			WarpDrive.logger.info("value " + String.format("%.3f", value)
-					+ " => " + entry + " totals "
-					+ totalRatio + " " + totalWeight
-					+ " " + Arrays.toString(weightMap.navigableKeySet().toArray())
-					+ " " + Arrays.toString(weightMap.values().toArray()));
+			if (WarpDrive.isDev && WarpDriveConfig.LOGGING_WORLD_GENERATION) {
+				WarpDrive.logger.info(String.format("value %.3f => %s totals %.3f %d %s %s",
+				                                    value, entry, totalRatio, totalWeight,
+				                                    Arrays.toString(weightMap.navigableKeySet().toArray()),
+				                                    Arrays.toString(weightMap.values().toArray())));
+			}
 			/**/
 			if (entry != null) {
 				return entry.getValue();
@@ -162,13 +168,12 @@ public class RandomCollection<E extends IStringSerializable> {
 			if (existing.equals(object)) {
 				// all good, nothing to do
 				if (WarpDriveConfig.LOGGING_WORLD_GENERATION) {
-					WarpDrive.logger.info("Object already exists in collection, skipping " + object.getName());
+					WarpDrive.logger.info(String.format("Object already exists in collection, skipping %s", object.getName()));
 				}
 				return;
 			} else {
-				throw new InvalidParameterException("Invalid merge of different objects with the same name " + object.getName()
-						+ "\nnew entry is " + object
-						+ "\nwhile existing entry is " + existing + "");
+				throw new InvalidParameterException(String.format("Invalid merge of different objects with the same name %s\nnew entry is %s\nwhile existing entry is %s",
+				                                                  object.getName(), object, existing));
 			}
 		}
 		

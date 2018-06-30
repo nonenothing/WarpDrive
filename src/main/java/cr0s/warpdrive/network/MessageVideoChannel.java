@@ -1,5 +1,6 @@
 package cr0s.warpdrive.network;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -51,10 +52,12 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 			if (tileEntity instanceof IVideoChannel) {
 				((IVideoChannel) tileEntity).setVideoChannel(videoChannel);
 			} else {
-				WarpDrive.logger.error("Received video channel packet: (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ") is not a valid tile entity");
+				WarpDrive.logger.error(String.format("Received video channel packet: invalid tile entity %s",
+				                                     Commons.format(world, blockPos)));
 			}
 		} else {
-			WarpDrive.logger.error("Received video channel packet: (" + blockPos.getX() + " " + blockPos.getY() + " " + blockPos.getZ() + ") has no tile entity");
+			WarpDrive.logger.error(String.format("Received video channel packet: no tile entity %s",
+			                                     Commons.format(world, blockPos)));
 		}
  	}
 	
@@ -62,16 +65,18 @@ public class MessageVideoChannel implements IMessage, IMessageHandler<MessageVid
 	@SideOnly(Side.CLIENT)
 	public IMessage onMessage(final MessageVideoChannel videoChannelMessage, final MessageContext context) {
 		// skip in case player just logged in
-		if (Minecraft.getMinecraft().world == null) {
+		final World world = Minecraft.getMinecraft().world;
+		if (world == null) {
 			WarpDrive.logger.error("WorldObj is null, ignoring video channel packet");
 			return null;
 		}
 		
 		if (WarpDriveConfig.LOGGING_VIDEO_CHANNEL) {
-			WarpDrive.logger.info("Received video channel packet: (" + videoChannelMessage.blockPos.getX() + " " + videoChannelMessage.blockPos.getY() + " " + videoChannelMessage.blockPos.getZ() + ") videoChannel '" + videoChannelMessage.videoChannel + "'");
+			WarpDrive.logger.info(String.format("Received video channel packet %s videoChannel %d",
+			                                    Commons.format(world, videoChannelMessage.blockPos), videoChannelMessage.videoChannel));
 		}
 		
-		videoChannelMessage.handle(Minecraft.getMinecraft().world);
+		videoChannelMessage.handle(world);
 		
 		return null;	// no response
 	}

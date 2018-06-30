@@ -200,15 +200,15 @@ public class WorldGenStructure {
 			
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info("At index " + index + ", skipping undefined block");
+					WarpDrive.logger.info(String.format("At index %d, skipping undefined block", index));
 				}
 			} else if (jumpBlock.block == Blocks.AIR) {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info("At index " + index + ", skipping air block");
+					WarpDrive.logger.info(String.format("At index %d, skipping air block", index));
 				}
 			} else if (Dictionary.BLOCKS_ANCHOR.contains(jumpBlock.block)) {
 				if (WarpDriveConfig.LOGGING_BUILDING) {
-					WarpDrive.logger.info("At index " + index + ", skipping anchor block " + jumpBlock.block);
+					WarpDrive.logger.info(String.format("At index %d, skipping anchor block %s", index, jumpBlock.block));
 				}
 			} else {
 				index++;
@@ -222,7 +222,8 @@ public class WorldGenStructure {
 					jumpBlock.deploy(world, transformation);
 				} else {
 					if (WarpDriveConfig.LOGGING_WORLD_GENERATION && WarpDrive.isDev) {
-						WarpDrive.logger.info("Deployment collision detected at " + (targetX + jumpBlock.x) + " " + (targetY + jumpBlock.y) + " " + (targetZ + jumpBlock.z));
+						WarpDrive.logger.info(String.format("Deployment collision detected %s",
+						                                    Commons.format(world, targetX + jumpBlock.x, targetY + jumpBlock.y, targetZ + jumpBlock.z)));
 					}
 				}
 			}

@@ -402,15 +402,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		if (globalPositionBeacon != null) {
 			final World world = globalPositionBeacon.getWorldServerIfLoaded();
 			if (world == null) {
-				WarpDrive.logger.warn("Unable to disable TransporterBeacon %s: world isn't loaded",
-				                      globalPositionBeacon);
+				WarpDrive.logger.warn(String.format("Unable to disable TransporterBeacon %s: world isn't loaded",
+				                      globalPositionBeacon));
 			} else {
 				final TileEntity tileEntity = world.getTileEntity(globalPositionBeacon.getBlockPos());
 				if (tileEntity instanceof ITransporterBeacon) {
 					((ITransporterBeacon) tileEntity).energizeDone();
 				} else {
-					WarpDrive.logger.warn("Unable to disable TransporterBeacon %s: unsupported tile entity %s",
-					                      globalPositionBeacon, tileEntity);
+					WarpDrive.logger.warn(String.format("Unable to disable TransporterBeacon %s: unsupported tile entity %s",
+					                      globalPositionBeacon, tileEntity));
 				}
 			}
 		}
@@ -575,7 +575,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		}
 		
 		if (WarpDriveConfig.LOGGING_TRANSPORTER) {
-			WarpDrive.logger.info("onBlockUpdatedInArea block " + block);
+			WarpDrive.logger.info(String.format("onBlockUpdatedInArea block %s", block));
 		}
 	}
 	

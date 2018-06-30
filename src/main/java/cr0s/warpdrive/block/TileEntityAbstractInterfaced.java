@@ -150,12 +150,14 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 			if (OC_node != null && OC_node.host() == this) {
 				OC_node.load(tagCompound.getCompoundTag("oc:node"));
 			} else if (tagCompound.hasKey("oc:node")) {
-				WarpDrive.logger.error(this + " OC node failed to construct or wrong host, ignoring NBT node data read...");
+				WarpDrive.logger.error(String.format("%s OC node failed to construct or wrong host, ignoring NBT node data read...",
+				                                     this));
 			}
 			if (OC_fileSystem != null && OC_fileSystem.node() != null) {
 				OC_fileSystem.node().load(tagCompound.getCompoundTag("oc:fs"));
 			} else if (OC_hasResource) {
-				WarpDrive.logger.error(this + " OC filesystem failed to construct or wrong node, ignoring NBT filesystem data read...");
+				WarpDrive.logger.error(String.format("%s OC filesystem failed to construct or wrong node, ignoring NBT filesystem data read...",
+				                                     this));
 			}
 		}
 	}
@@ -241,7 +243,7 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	@Override
 	public Object[] version() {
 		if (WarpDriveConfig.LOGGING_LUA) {
-			WarpDrive.logger.info("Version is " + WarpDrive.VERSION + " isDev " + WarpDrive.isDev);
+			WarpDrive.logger.info(String.format("Version is %s isDev %s", WarpDrive.VERSION, WarpDrive.isDev));
 		}
 		String[] strings = WarpDrive.VERSION.split("-");
 		if (WarpDrive.isDev) {

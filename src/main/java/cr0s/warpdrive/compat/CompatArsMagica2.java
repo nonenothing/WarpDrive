@@ -179,9 +179,9 @@ public class CompatArsMagica2 implements IBlockTransformer {
 		final BlockPos target = transformation.apply(tileEntity);
 		final TileEntity tileEntityTarget = targetWorld.getTileEntity(target);
 		if (tileEntityTarget == null) {
-			WarpDrive.logger.error("ArsMagica2 compat: No tile entity found at target location " + target + ". We might loose mana network " + nbtBase + ".");
+			WarpDrive.logger.error(String.format("ArsMagica2 compat: No tile entity found at target location %s. We might loose mana network %s.", target, nbtBase));
 		} else if (!(tileEntityTarget instanceof IPowerNode)) {
-			WarpDrive.logger.error("ArsMagica2 compat: invalid tile entity " + tileEntityTarget + " found at target location " + target + ".");
+			WarpDrive.logger.error(String.format("ArsMagica2 compat: invalid tile entity %s found at target location %s." + tileEntityTarget, target));
 		} else {
 			PowerNodeRegistry.For(targetWorld).setDataCompoundForNode((IPowerNode) tileEntityTarget, tagCompound);
 		}

@@ -184,9 +184,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		if (WarpDriveConfig.LOGGING_ENERGY) {
 			if (indexStability == 3) {
-				WarpDrive.logger.info("Instability on " + reactorFace
-					+ " decreased by " + String.format("%.1f", amountToRemove) + "/" + String.format("%.1f", PR_MAX_LASER_EFFECT)
-					+ " after consuming " + amount + "/" + PR_MAX_LASER_ENERGY + " lasersReceived is " + String.format("%.1f", lasersReceived) + " hence nospamFactor is " + nospamFactor);
+				WarpDrive.logger.info(String.format("Instability on %s decreased by %.1f/%.1f after consuming %d/%.1f laserReceived is %.1f hence nospamFactor is %.3f",
+				                                    reactorFace, amountToRemove, PR_MAX_LASER_EFFECT,
+				                                    amount, PR_MAX_LASER_ENERGY, lasersReceived, nospamFactor));
 			}
 		}
 		
@@ -205,14 +205,14 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			containedEnergy = Math.min(containedEnergy + amountToGenerate, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
 			lastGenerationRate = amountToGenerate / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS;
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("Generated " + amountToGenerate);
+				WarpDrive.logger.info(String.format("Generated %d", amountToGenerate));
 			}
 		} else {// decaying over 20s without producing power, you better have power for those lasers
 			final int amountToDecay = (int) (WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * (1.0D - stabilityOffset) * (PR_MIN_GENERATION + containedEnergy * 0.01D));
 			containedEnergy = Math.max(0, containedEnergy - amountToDecay);
 			lastGenerationRate = 0;
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("Decayed " + amountToDecay);
+				WarpDrive.logger.info(String.format("Decayed %d", amountToDecay));
 			}
 		}
 	}
@@ -372,7 +372,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				enableRequest = Commons.toBool(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on enable(): Boolean expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on enable(): Boolean expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return enable(new Object[0]);
 			}
@@ -411,7 +412,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				instabilityTargetRequested = Commons.toDouble(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on instabilityTarget(): Double expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on instabilityTarget(): Double expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return new Object[] { instabilityTarget };
 			}
@@ -429,7 +431,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				releaseRequested = Commons.toBool(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on release(): Boolean expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on release(): Boolean expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return new Object[] { releaseMode != EnumReactorReleaseMode.OFF };
 			}
@@ -449,7 +452,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				releaseRateRequested = Commons.toInt(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on releaseRate(): Integer expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on releaseRate(): Integer expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return new Object[] { releaseMode.getName(), releaseRate };
 			}
@@ -473,7 +477,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			releaseAboveRequested = Commons.toInt(arguments[0]);
 		} catch (final Exception exception) {
 			if (WarpDriveConfig.LOGGING_LUA) {
-				WarpDrive.logger.error(this + " LUA error on releaseAbove(): Integer expected for 1st argument " + arguments[0]);
+				WarpDrive.logger.error(String.format("%s LUA error on releaseAbove(): Integer expected for 1st argument %s",
+				                                     this, arguments[0]));
 			}
 			return new Object[] { releaseMode.getName(), releaseAbove };
 		}
@@ -497,7 +502,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 				stabilizerEnergyRequested = Commons.toInt(arguments[0]);
 			} catch (final Exception exception) {
 				if (WarpDriveConfig.LOGGING_LUA) {
-					WarpDrive.logger.error(this + " LUA error on stabilizerEnergy(): Integer expected for 1st argument " + arguments[0]);
+					WarpDrive.logger.error(String.format("%s LUA error on stabilizerEnergy(): Integer expected for 1st argument %s",
+					                                     this, arguments[0]));
 				}
 				return new Object[] { stabilizerEnergy };
 			}
@@ -632,18 +638,21 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		if (releaseMode == EnumReactorReleaseMode.UNLIMITED) {
 			result = Math.min(Math.max(0, containedEnergy), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("PotentialOutput Manual " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
+				WarpDrive.logger.info(String.format("PotentialOutput Manual %d RF (%d internal) capacity %d",
+				                                    result, convertRFtoInternal_floor(result), capacity));
 			}
 		} else if (releaseMode == EnumReactorReleaseMode.ABOVE) {
 			result = Math.min(Math.max(0, containedEnergy - releaseAbove), capacity);
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("PotentialOutput Above " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) capacity " + capacity);
+				WarpDrive.logger.info(String.format("PotentialOutput Above %d RF (%d internal) capacity %d",
+				                                    result, convertRFtoInternal_floor(result), capacity));
 			}
 		} else if (releaseMode == EnumReactorReleaseMode.AT_RATE) {
 			final int remainingRate = Math.max(0, releaseRate - releasedThisTick);
 			result = Math.min(Math.max(0, containedEnergy), Math.min(remainingRate, capacity));
 			if (WarpDriveConfig.LOGGING_ENERGY) {
-				WarpDrive.logger.info("PotentialOutput Rated " + result + " RF (" + convertRFtoInternal_floor(result) + " internal) remainingRate " + remainingRate + " RF/t capacity " + capacity);
+				WarpDrive.logger.info(String.format("PotentialOutput Rated %d RF (%d internal) remainingRate %d RF/t capacity %d",
+				                                    result, convertRFtoInternal_floor(result), remainingRate, capacity));
 			}
 		}
 		return (int) convertRFtoInternal_floor(result);
@@ -664,7 +673,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		releasedThisTick += energyOutput_RF;
 		releasedThisCycle += energyOutput_RF;
 		if (WarpDriveConfig.LOGGING_ENERGY) {
-			WarpDrive.logger.info("OutputDone " + energyOutput_internal + " (" + energyOutput_RF + " RF)");
+			WarpDrive.logger.info(String.format("OutputDone %d (%d RF)",
+			                                    energyOutput_internal, energyOutput_RF));
 		}
 	}
 	

@@ -35,7 +35,7 @@ public class WorldHandler {
 		final ChunkPos chunk = event.getChunk();
 		
 		// Check chunk for locating in cloaked areas
-		WarpDrive.logger.info("onChunkLoaded " + chunk.x + " " + chunk.z);
+		WarpDrive.logger.info(String.format("onChunkLoaded %d %d", chunk.x, chunk.z));
 		WarpDrive.cloaks.onChunkLoaded(event.getPlayer(), chunk.x, chunk.z);
 		
 		/*
@@ -43,7 +43,8 @@ public class WorldHandler {
 		list.add(c);
 		
 		// Send obscured chunk
-		System.out.println("[Cloak] Sending to player " + p.username + " obscured chunk at (" + chunk.x + "; " + chunk.z + ")");
+		WarpDrive.logger.info(String.format("[Cloak] Sending to player %s obscured chunk at (%d %d)",
+		                                    p, chunk.x, chunk.z));
 		((EntityPlayerMP)p).connection.sendPacketToPlayer(new Packet56MapChunks(list));
 		*/
 	}
@@ -54,7 +55,7 @@ public class WorldHandler {
 		if (event.getWorld().isRemote) {
 			return;
 		}
-		// WarpDrive.logger.info("onEntityJoinWorld " + event.entity);
+		// WarpDrive.logger.info(String.format("onEntityJoinWorld %s", event.entity));
 		if (event.getEntity() instanceof EntityLivingBase) {
 			final EntityLivingBase entityLivingBase = (EntityLivingBase) event.getEntity();
 			final int x = MathHelper.floor(entityLivingBase.posX);
@@ -99,14 +100,14 @@ public class WorldHandler {
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onClientConnectedToServer(final ClientConnectedToServerEvent event) {
-		// WarpDrive.logger.info("onClientConnectedToServer connectionType " + event.connectionType + " isLocal " + event.isLocal);
+		// WarpDrive.logger.info(String.format("onClientConnectedToServer connectionType %s isLocal %s", event.connectionType, event.isLocal));
 		WarpDrive.cloaks.onClientChangingDimension();
 	}
 	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onWorldUnload(final WorldEvent.Unload event) {
-		// WarpDrive.logger.info("onWorldUnload world " + event.getWorld());
+		// WarpDrive.logger.info(String.format("onWorldUnload world %s", Commons.format(event.getWorld()));
 		WarpDrive.cloaks.onClientChangingDimension();
 	}
 	
@@ -122,8 +123,8 @@ public class WorldHandler {
 	@SubscribeEvent
 	public void onBlockUpdated(final BlockEvent blockEvent) {
 		if (WarpDriveConfig.LOGGING_BREAK_PLACE && WarpDrive.isDev) {
-			WarpDrive.logger.info("onBlockUpdate args " + blockEvent.getState()
-			                      + " actual " + blockEvent.getWorld().getBlockState(blockEvent.getPos()));
+			WarpDrive.logger.info(String.format("onBlockUpdate args %s actual %s",
+			                                    blockEvent.getState(), blockEvent.getWorld().getBlockState(blockEvent.getPos())));
 		}
 		WarpDrive.starMap.onBlockUpdated(blockEvent.getWorld(), blockEvent.getPos(), blockEvent.getState());
 		ChunkHandler.onBlockUpdated(blockEvent.getWorld(), blockEvent.getPos().getX(), blockEvent.getPos().getY(), blockEvent.getPos().getZ());

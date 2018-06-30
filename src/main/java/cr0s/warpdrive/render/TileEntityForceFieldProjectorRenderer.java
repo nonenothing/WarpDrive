@@ -29,7 +29,7 @@ public class TileEntityForceFieldProjectorRenderer extends TileEntitySpecialRend
 		INSTANCE;
 		
 		public TextureAtlasSprite apply(ResourceLocation location) {
-			// WarpDrive.logger.info("TileEntityForceFieldProjectorRenderer texture location " + location);
+			// WarpDrive.logger.info(String.format("TileEntityForceFieldProjectorRenderer texture location %s", location));
 			return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString());
 		}
 	}
@@ -42,7 +42,7 @@ public class TileEntityForceFieldProjectorRenderer extends TileEntitySpecialRend
 			try {
 				model = ModelLoaderRegistry.getModel(resourceLocation);
 			} catch (Exception exception) {
-				WarpDrive.logger.info("getModel " + resourceLocation);
+				WarpDrive.logger.info(String.format("getModel %s", resourceLocation));
 				throw new RuntimeException(exception);
 			}
 			bakedModel = model.bake(TRSRTransformation.identity(), DefaultVertexFormats.ITEM, TextureGetter.INSTANCE);

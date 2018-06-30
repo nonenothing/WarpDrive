@@ -139,7 +139,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	private static int getDamageLevel(final ItemStack itemStack, final ParticleStack particleStack) {
 		if (!(itemStack.getItem() instanceof ItemElectromagneticCell)) {
-			WarpDrive.logger.error("Invalid ItemStack passed, expecting ItemElectromagneticCell: " + itemStack);
+			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s", itemStack));
 			return itemStack.getItemDamage();
 		}
 		if (particleStack == null || particleStack.getParticle() == null) {
@@ -259,7 +259,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
 		if (!(itemStack.getItem() instanceof  ItemElectromagneticCell)) {
-			WarpDrive.logger.error("Invalid ItemStack passed, expecting ItemElectromagneticCell: " + itemStack);
+			WarpDrive.logger.error(String.format("Invalid ItemStack passed, expecting ItemElectromagneticCell: %s", itemStack));
 			return;
 		}
 		final ItemElectromagneticCell itemElectromagneticCell = (ItemElectromagneticCell) itemStack.getItem();
