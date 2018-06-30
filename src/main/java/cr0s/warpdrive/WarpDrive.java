@@ -104,6 +104,7 @@ import cr0s.warpdrive.world.EntityStarCore;
 import cr0s.warpdrive.world.HyperSpaceWorldProvider;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.SoundEvents;
@@ -139,8 +140,10 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityEntryBuilder;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -257,6 +260,7 @@ public class WarpDrive {
 	private CommonWorldGenerator commonWorldGenerator;
 	
 	public static Field fieldBlockHardness = null;
+	public static Method methodBlock_getSilkTouch = null;
 	
 	// Client settings
 	public static final CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive(MODID.toLowerCase());
@@ -284,6 +288,7 @@ public class WarpDrive {
 		
 		// open access to Block.blockHardness
 		fieldBlockHardness = Commons.getField(Block.class, "blockHardness", "field_149782_v");
+		methodBlock_getSilkTouch = ReflectionHelper.findMethod(Block.class, "getSilkTouchDrop", "func_180643_i ", IBlockState.class);
 		
 		// common blocks
 		blockChunkLoader = new BlockChunkLoader("block_chunk_loader");
