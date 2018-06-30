@@ -232,7 +232,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		if (enumHand != EnumHand.MAIN_HAND) {
 			return true;
 		}
-		if (ClientCameraHandler.isOverlayEnabled) {
+		if ( world.isRemote
+		  && ClientCameraHandler.isOverlayEnabled ) {
 			return true;
 		}
 		
