@@ -142,6 +142,7 @@ public class WarpDriveConfig {
 	public static int G_LUA_SCRIPTS = LUA_SCRIPTS_ALL;
 	public static String G_SCHEMALOCATION = "warpDrive_schematics";
 	public static int G_BLOCKS_PER_TICK = 3500;
+	public static boolean G_ENABLE_PROTECTION_CHECKS = true;
 	
 	// Client
 	public static float CLIENT_LOCATION_SCALE = 1.0F;
@@ -613,6 +614,7 @@ public class WarpDriveConfig {
 		G_BLOCKS_PER_TICK = Commons.clamp(100, 100000,
 				config.get("general", "blocks_per_tick", G_BLOCKS_PER_TICK,
 						"Number of blocks to move per ticks, too high will cause lag spikes on ship jumping or deployment, too low may break the ship wirings").getInt());
+		G_ENABLE_PROTECTION_CHECKS = config.get("general", "enable_protection_checks", G_ENABLE_PROTECTION_CHECKS, "Enable area protection checks from other mods or plugins, disable if you use the event system exclusively").getBoolean(G_ENABLE_PROTECTION_CHECKS);
 		
 		// Client
 		CLIENT_LOCATION_SCALE = Commons.clamp(0.25F, 4.0F, (float) config.get("client", "location_scale", CLIENT_LOCATION_SCALE,

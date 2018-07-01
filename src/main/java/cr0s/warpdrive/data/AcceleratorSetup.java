@@ -186,7 +186,9 @@ public class AcceleratorSetup extends GlobalPosition {
 				break;
 			}
 		}
+		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 		WarpDrive.logger.info(String.format("First void shell is %s", firstVoidShell));
+		}
 		if (firstVoidShell == null) {
 			WarpDrive.logger.warn("No void shell connection found");
 			return;

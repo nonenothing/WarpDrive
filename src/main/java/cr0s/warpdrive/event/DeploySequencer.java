@@ -42,8 +42,8 @@ public class DeploySequencer extends JumpSequencer {
 	}
 	
 	@Override
-	public void disableAndMessage(final ITextComponent reason) {
-		super.disableAndMessage(reason);
+	public void disable(final boolean isSuccessful, final ITextComponent reason) {
+		super.disable(isSuccessful, reason);
 		callback.sequencer_finished();
 	}
 	

@@ -37,7 +37,7 @@ public abstract class XmlFileManager {
 				final String result = XmlPreprocessor.checkModRequirements(document.getDocumentElement());
 				if (!result.isEmpty()) {
 					WarpDrive.logger.info(String.format("Skipping configuration file %s due to %s", file.getName(), result));
-					return;
+					continue;
 				}
 				
 				XmlPreprocessor.doModReqSanitation(document);

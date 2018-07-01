@@ -4,9 +4,12 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IDamageReceiver;
+import cr0s.warpdrive.block.forcefield.BlockForceField;
+import cr0s.warpdrive.block.forcefield.TileEntityForceField;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -22,19 +25,25 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 import net.minecraftforge.fml.common.Optional;
 
@@ -112,13 +121,196 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		if (isEmitting) {
 			energyFromOtherBeams += amount;
 			if (WarpDriveConfig.LOGGING_WEAPON) {
-				WarpDrive.logger.info(this + " Added energy " + amount);
+				WarpDrive.logger.info(String.format("%s Added boosting energy %d for a total accumulation of %d",
+				                                    this, amount, energyFromOtherBeams));
 			}
 		} else {
 			if (WarpDriveConfig.LOGGING_WEAPON) {
-				WarpDrive.logger.info(this + " Ignored energy " + amount);
+				WarpDrive.logger.warn(String.format("%s Ignored boosting energy %d",
+				                                    this, amount));
 			}
 		}
+	}
+	
+	// loosely based on World.rayTraceBlocks
+	// - replaced byte b0 with EnumFacing
+	// - inverted 2nd flag
+	// - added force field pass through based on beamFrequency
+	// - increased max range from 200 to laser limit
+	// - code cleanup
+	public static RayTraceResult rayTraceBlocks(final World world, final Vec3d vSource, final Vec3d vTarget, final int beamFrequency,
+	                                            final boolean stopOnLiquid, final boolean checkBlockWithoutBoundingBox, final boolean returnLastUncollidableBlock) {
+		// validate parameters
+		if (Double.isNaN(vSource.x) || Double.isNaN(vSource.y) || Double.isNaN(vSource.z)) {
+			return null;
+		}
+		
+		if (Double.isNaN(vTarget.x) || Double.isNaN(vTarget.y) || Double.isNaN(vTarget.z)) {
+			return null;
+		}
+		
+		// check collision at source
+		final int xSource = MathHelper.floor(vSource.x);
+		final int ySource = MathHelper.floor(vSource.y);
+		final int zSource = MathHelper.floor(vSource.z);
+		final MutableBlockPos mutableBlockPos = new MutableBlockPos(xSource, ySource, zSource);
+		final IBlockState blockStateSource = world.getBlockState(mutableBlockPos);
+		
+		if ( (checkBlockWithoutBoundingBox || blockStateSource.getCollisionBoundingBox(world, mutableBlockPos) != Block.NULL_AABB)
+		  && blockStateSource.getBlock().canCollideCheck(blockStateSource, stopOnLiquid)) {
+			final RayTraceResult rayTraceResult = blockStateSource.collisionRayTrace(world, mutableBlockPos, vSource, vTarget);
+			if (rayTraceResult != null) {
+				return rayTraceResult;
+			}
+		}
+		
+		// loop positions along trajectory
+		final int xTarget = MathHelper.floor(vTarget.x);
+		final int yTarget = MathHelper.floor(vTarget.y);
+		final int zTarget = MathHelper.floor(vTarget.z);
+		
+		final Vector3 v3Current = new Vector3(vSource.x, vSource.y, vSource.z);
+		int xCurrent = xSource;
+		int yCurrent = ySource;
+		int zCurrent = zSource;
+		RayTraceResult rayTraceResultMissed = null;
+		
+		int countLoop = WarpDriveConfig.LASER_CANNON_RANGE_MAX * 2;
+		while (countLoop-- >= 0) {
+			// sanity check
+			if (Double.isNaN(v3Current.x) || Double.isNaN(v3Current.y) || Double.isNaN(v3Current.z)) {
+				WarpDrive.logger.error(String.format("Critical error while ray tracing blocks from %s to %s in %s",
+				                                     vSource, vTarget, Commons.format(world)));
+				return null;
+			}
+			
+			// check arrival
+			if (xCurrent == xTarget && yCurrent == yTarget && zCurrent == zTarget) {
+				return returnLastUncollidableBlock ? rayTraceResultMissed : null;
+			}
+			
+			// propose 1 block step along each axis
+			boolean hasOffsetX = true;
+			boolean hasOffsetY = true;
+			boolean hasOffsetZ = true;
+			double xProposed = 999.0D;
+			double yProposed = 999.0D;
+			double zProposed = 999.0D;
+			
+			if (xTarget > xCurrent) {
+				xProposed = xCurrent + 1.0D;
+			} else if (xTarget < xCurrent) {
+				xProposed = xCurrent + 0.0D;
+			} else {
+				hasOffsetX = false;
+			}
+			
+			if (yTarget > yCurrent) {
+				yProposed = yCurrent + 1.0D;
+			} else if (yTarget < yCurrent) {
+				yProposed = yCurrent + 0.0D;
+			} else {
+				hasOffsetY = false;
+			}
+			
+			if (zTarget > zCurrent) {
+				zProposed = zCurrent + 1.0D;
+			} else if (zTarget < zCurrent) {
+				zProposed = zCurrent + 0.0D;
+			} else {
+				hasOffsetZ = false;
+			}
+			
+			// compute normalized movement
+			double xDeltaNormalized = 999.0D;
+			double yDeltaNormalized = 999.0D;
+			double zDeltaNormalized = 999.0D;
+			final double xDeltaToTarget = vTarget.x - v3Current.x;
+			final double yDeltaToTarget = vTarget.y - v3Current.y;
+			final double zDeltaToTarget = vTarget.z - v3Current.z;
+			
+			if (hasOffsetX) {
+				xDeltaNormalized = (xProposed - v3Current.x) / xDeltaToTarget;
+				if (xDeltaNormalized == -0.0D) {
+					xDeltaNormalized = -1.0E-4D;
+				}
+			}
+			
+			if (hasOffsetY) {
+				yDeltaNormalized = (yProposed - v3Current.y) / yDeltaToTarget;
+				if (yDeltaNormalized == -0.0D) {
+					yDeltaNormalized = -1.0E-4D;
+				}
+			}
+			
+			if (hasOffsetZ) {
+				zDeltaNormalized = (zProposed - v3Current.z) / zDeltaToTarget;
+				if (zDeltaNormalized == -0.0D) {
+					zDeltaNormalized = -1.0E-4D;
+				}
+			}
+			
+			// move along shortest axis
+			final EnumFacing enumFacing;
+			if (xDeltaNormalized < yDeltaNormalized && xDeltaNormalized < zDeltaNormalized) {
+				enumFacing = xTarget > xSource ? EnumFacing.WEST : EnumFacing.EAST;
+				v3Current.x = xProposed;
+				v3Current.y = v3Current.y + yDeltaToTarget * xDeltaNormalized;
+				v3Current.z = v3Current.z + zDeltaToTarget * xDeltaNormalized;
+			} else if (yDeltaNormalized < zDeltaNormalized) {
+				enumFacing = yTarget > ySource ? EnumFacing.DOWN : EnumFacing.UP;
+				v3Current.x = v3Current.x + xDeltaToTarget * yDeltaNormalized;
+				v3Current.y = yProposed;
+				v3Current.z = v3Current.z + zDeltaToTarget * yDeltaNormalized;
+			} else {
+				enumFacing = zTarget > zSource ? EnumFacing.NORTH : EnumFacing.SOUTH;
+				v3Current.x = v3Current.x + xDeltaToTarget * zDeltaNormalized;
+				v3Current.y = v3Current.y + yDeltaToTarget * zDeltaNormalized;
+				v3Current.z = zProposed;
+			}
+			
+			// round to block position
+			xCurrent = MathHelper.floor(v3Current.x) - (enumFacing == EnumFacing.EAST ? 1 : 0);
+			yCurrent = MathHelper.floor(v3Current.y) - (enumFacing == EnumFacing.UP ? 1 : 0);
+			zCurrent = MathHelper.floor(v3Current.z) - (enumFacing == EnumFacing.SOUTH ? 1 : 0);
+			
+			// get current block
+			final IBlockState blockStateCurrent = world.getBlockState(mutableBlockPos.setPos(xCurrent, yCurrent, zCurrent));
+			
+			// allow passing through force fields with same beam frequency
+			if (blockStateCurrent.getBlock() instanceof BlockForceField) {
+				final TileEntity tileEntity = world.getTileEntity(mutableBlockPos);
+				if (tileEntity instanceof TileEntityForceField) {
+					final ForceFieldSetup forceFieldSetup = ((TileEntityForceField) tileEntity).getForceFieldSetup();
+					if (forceFieldSetup == null) {
+						// projector not loaded yet, consider it jammed by default
+						WarpDrive.logger.warn(String.format("Laser beam stopped by non-loaded force field projector at %s", tileEntity));
+					} else {
+						if (forceFieldSetup.beamFrequency == beamFrequency) {// pass-through force field
+							if (WarpDriveConfig.LOGGING_WEAPON) {
+								WarpDrive.logger.info(String.format("Laser beam passing through force field %s", tileEntity));
+							}
+							continue;
+						}
+					}
+				}
+			}
+			
+			if ( checkBlockWithoutBoundingBox
+			  || blockStateCurrent.getMaterial() == Material.PORTAL
+			  || blockStateCurrent.getCollisionBoundingBox(world, mutableBlockPos) != null) {
+				if (blockStateCurrent.getBlock().canCollideCheck(blockStateCurrent, stopOnLiquid)) {
+					final RayTraceResult rayTraceResult = blockStateCurrent.collisionRayTrace(world, mutableBlockPos, v3Current.toVec3d(), vTarget);
+					if (rayTraceResult != null) {
+						return rayTraceResult;
+					}
+				} else {
+					rayTraceResultMissed = new RayTraceResult(RayTraceResult.Type.MISS, v3Current.toVec3d(), enumFacing, mutableBlockPos);
+				}
+			}
+		}
+		
+		return returnLastUncollidableBlock ? rayTraceResultMissed : null;
 	}
 	
 	private void emitBeam(final int beamEnergy) {
@@ -153,7 +345,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		
 		// This is a scanning beam, do not deal damage to block nor entity
 		if (beamFrequency == BEAM_FREQUENCY_SCANNING) {
-			final RayTraceResult mopResult = world.rayTraceBlocks(vSource.toVec3d(), vReachPoint.toVec3d());
+			final RayTraceResult mopResult = rayTraceBlocks(world, vSource.toVec3d(), vReachPoint.toVec3d(), beamFrequency,
+			                                                false, true, false);
 			
 			scanResult_blockUnlocalizedName = null;
 			scanResult_blockMetadata = 0;
@@ -196,7 +389,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		double distanceTravelled = 0.0D; // distance traveled from beam sender to previous hit if there were any
 		for (int passedBlocks = 0; passedBlocks < beamLengthBlocks; passedBlocks++) {
 			// Get next block hit
-			final RayTraceResult blockHit = world.rayTraceBlocks(vSource.toVec3d(), vReachPoint.toVec3d());
+			final RayTraceResult blockHit = rayTraceBlocks(world, vSource.toVec3d(), vReachPoint.toVec3d(), beamFrequency,
+			                                               false, true, false);
 			double blockHitDistance = beamLengthBlocks + 0.1D;
 			if (blockHit != null) {
 				blockHitDistance = blockHit.hitVec.distanceTo(vSource.toVec3d());
@@ -300,7 +494,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			if (WarpDriveConfig.LOGGING_WEAPON) {
 				WarpDrive.logger.info(String.format("Block collision found %s with block %s of hardness %.2f",
 				                                    Commons.format(world, blockHit.getBlockPos()),
-				                                    blockState.getBlock(), hardness));
+				                                    blockState.getBlock().getRegistryName(), hardness));
 			}
 			
 			// check area protection
@@ -341,10 +535,16 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					Math.round(hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS));
 			final double absorptionChance = Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX,
 					hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS);
+			if (WarpDriveConfig.LOGGING_WEAPON) {
+				WarpDrive.logger.info(String.format("Block energy cost is %d with %.1f %% of absorption",
+				                                    energyCost, absorptionChance * 100.0D));
+			}
+			
+			// apply environmental absorption
+			energy *= getTransmittance(blockHitDistance - distanceTravelled);
 			
 			do {
 				// Consume energy
-				energy *= getTransmittance(blockHitDistance - distanceTravelled);
 				energy -= energyCost;
 				distanceTravelled = blockHitDistance;
 				vHitPoint = new Vector3(blockHit.hitVec);
@@ -381,8 +581,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			
 			// apply custom damages
 			if (blockState.getBlock() instanceof IDamageReceiver) {
-				energy = ((IDamageReceiver)blockState.getBlock()).applyDamage(blockState, world,	blockHit.getBlockPos(),
-					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
+				energy = ((IDamageReceiver) blockState.getBlock()).applyDamage(blockState, world,	blockHit.getBlockPos(),
+				                                                               WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info(String.format("IDamageReceiver damage applied, remaining energy is %d", energy));
 				}

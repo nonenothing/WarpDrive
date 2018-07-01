@@ -21,5 +21,5 @@ public interface IDamageReceiver {
 	 * Returns the remaining damage level or 0 if it was fully absorbed.
 	 */
 	int applyDamage(final IBlockState blockState, final World world, final BlockPos blockPos,
-					final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel);
+	                final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel);
 }

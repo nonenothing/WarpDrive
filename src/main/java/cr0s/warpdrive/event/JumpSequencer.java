@@ -4,8 +4,11 @@ import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.EventWarpDrive.Ship.JumpResult;
+import cr0s.warpdrive.api.EventWarpDrive.Ship.TargetCheck;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.api.computer.IShipController;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.Dictionary;
@@ -56,17 +59,25 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
+import net.minecraftforge.common.MinecraftForge;
 
 public class JumpSequencer extends AbstractSequencer {
 	
 	// Jump vector
 	protected Transformation transformation;
 	
+	// movement parameters
 	private final EnumShipMovementType shipMovementType;
 	private int moveX, moveY, moveZ;
 	private final byte rotationSteps;
 	private final String nameTarget;
+	protected final int destX;
+	protected final int destY;
+	protected final int destZ;
+	
+	// effect source
 	private Vector3 v3Source;
+	
 	private int blocksPerTick = WarpDriveConfig.G_BLOCKS_PER_TICK;
 	private static final boolean enforceEntitiesPosition = false;
 	
@@ -88,10 +99,6 @@ public class JumpSequencer extends AbstractSequencer {
 	private boolean betweenWorlds;
 	private boolean isPluginCheckDone = false;
 	private String firstAdjustmentReason = "";
-	
-	protected final int destX;
-	protected final int destY;
-	protected final int destZ;
 	
 	private long msCounter = 0;
 	private int ticks = 0;
@@ -166,24 +173,40 @@ public class JumpSequencer extends AbstractSequencer {
 		register();
 	}
 	
-	public void disableAndMessage(final ITextComponent textComponent) {
-		disable(textComponent);
+	public void disableAndMessage(final boolean isSuccessful, final ITextComponent textComponent) {
+		disable(isSuccessful, textComponent);
 		ship.messageToAllPlayersOnShip(textComponent);
 	}
-	public void disable(final ITextComponent textComponent) {
+	public void disable(final boolean isSuccessful, final ITextComponent textComponent) {
 		if (!isEnabled) {
 			return;
 		}
 		
 		isEnabled = false;
 		
+		final String formattedText = textComponent == null ? "" : textComponent.getFormattedText();
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			if (textComponent == null || textComponent.getFormattedText().isEmpty()) {
-				WarpDrive.logger.info(this + " Killing jump sequencer...");
+			if (formattedText.isEmpty()) {
+				WarpDrive.logger.info(String.format("%s Killing jump sequencer...",
+				                                    this));
 			} else {
-				WarpDrive.logger.info(this + " Killing jump sequencer... (" + textComponent.getFormattedText() + ")");
+				WarpDrive.logger.info(String.format("%s Killing jump sequencer... (%s)",
+				                                    this, formattedText));
 			}
 		}
+		
+		final JumpResult jumpResult;
+		if (!isSuccessful) {
+			jumpResult = new JumpResult(sourceWorld, ship.core,
+			                            ship.shipCore, shipMovementType.getName(), false, formattedText);
+		} else {
+			final BlockPos blockPosCoreTarget = transformation.apply(ship.core);
+			final TileEntity tileEntity = targetWorld.getTileEntity(blockPosCoreTarget);
+			final IShipController shipController = tileEntity instanceof TileEntityShipCore ? ((TileEntityShipCore) tileEntity) : null;
+			jumpResult = new JumpResult(targetWorld, blockPosCoreTarget,
+			                            shipController, shipMovementType.getName(), true, formattedText);
+		}
+		MinecraftForge.EVENT_BUS.post(jumpResult);
 		
 		releaseChunks();
 		unregister();
@@ -205,7 +228,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (ship.minY < 0 || ship.maxY > 255) {
 			final TextComponentBase msg = new TextComponentString("Invalid Y coordinate(s), check ship dimensions...");
-			disableAndMessage(msg);
+			disableAndMessage(false, msg);
 			return true;
 		}
 		
@@ -327,7 +350,7 @@ public class JumpSequencer extends AbstractSequencer {
 			
 		default:
 			final TextComponentBase msg = new TextComponentString("Invalid state, aborting jump...");
-			disableAndMessage(msg);
+			disableAndMessage(false, msg);
 			return true;
 		}
 		return true;
@@ -452,7 +475,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!forceSourceChunks(reason)) {
 			final TextComponentBase msg = new TextComponentString(reason.toString());
-			disableAndMessage(msg);
+			disableAndMessage(false, msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -470,7 +493,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!ship.save(reason)) {
 			final ITextComponent msg = new TextComponentString(reason.toString());
-			disableAndMessage(msg);
+			disableAndMessage(false, msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -489,7 +512,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!ship.checkBorders(reason)) {
 			final ITextComponent msg = new TextComponentString(reason.toString());
-			disableAndMessage(msg);
+			disableAndMessage(false, msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -565,7 +588,7 @@ public class JumpSequencer extends AbstractSequencer {
 			final boolean isTargetWorldFound = computeTargetWorld(celestialObjectSource, shipMovementType, reason);
 			if (!isTargetWorldFound) {
 				LocalProfiler.stop();
-				disableAndMessage(new TextComponentString(reason.toString()));
+				disableAndMessage(false, new TextComponentString(reason.toString()));
 				return;
 			}
 		}
@@ -578,7 +601,7 @@ public class JumpSequencer extends AbstractSequencer {
 				LocalProfiler.stop();
 				final ITextComponent message = new TextComponentString(String.format("Ship is too big for a planet (max is %d blocks while ship is %d blocks)",
 				                                 WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE, ship.actualMass));
-				disableAndMessage(message);
+				disableAndMessage(false, message);
 				return;
 			}
 		}
@@ -680,7 +703,7 @@ public class JumpSequencer extends AbstractSequencer {
 				} else {
 					msg = new TextComponentString(firstAdjustmentReason + "\nNot enough space after adjustment, jump aborted!");
 				}
-				disableAndMessage(msg);
+				disableAndMessage(false, msg);
 				LocalProfiler.stop();
 				return;
 			}
@@ -703,16 +726,17 @@ public class JumpSequencer extends AbstractSequencer {
 						(int) axisAlignedBB.minX, (int) axisAlignedBB.minY, (int) axisAlignedBB.minZ,
 						(int) axisAlignedBB.maxX, (int) axisAlignedBB.maxY, (int) axisAlignedBB.maxZ );
 					LocalProfiler.stop();
-					disableAndMessage(message);
+					disableAndMessage(false, message);
 					return;
 				}
 			}
 		}
 		if (!isPluginCheckDone) {
-			final CheckMovementResult checkMovementResult = checkCollisionAndProtection(transformation, true, "target");
+			final CheckMovementResult checkMovementResult = checkCollisionAndProtection(transformation, true,
+			                                                                            "target", new VectorI(0, 0, 0));
 			if (checkMovementResult != null) {
 				final TextComponentBase msg = new TextComponentString(checkMovementResult.reason + "\nJump aborted!");
-				disableAndMessage(msg);
+				disableAndMessage(false, msg);
 				LocalProfiler.stop();
 				return;
 			}
@@ -731,7 +755,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		if (!forceTargetChunks(reason)) {
 			final ITextComponent msg = new TextComponentString(reason.toString());
-			disableAndMessage(msg);
+			disableAndMessage(false, msg);
 			LocalProfiler.stop();
 			return;
 		}
@@ -752,7 +776,7 @@ public class JumpSequencer extends AbstractSequencer {
 			  && shipMovementType != EnumShipMovementType.RESTORE ) {
 				if (!ship.saveEntities(reason)) {
 					final ITextComponent msg = new TextComponentString(reason.toString());
-					disableAndMessage(msg);
+					disableAndMessage(false, msg);
 					LocalProfiler.stop();
 					return;
 				}
@@ -1117,7 +1141,8 @@ public class JumpSequencer extends AbstractSequencer {
 			final JumpBlock jumpBlock = ship.jumpBlocks[ship.jumpBlocks.length - actualIndexInShip - 1];
 			if (jumpBlock == null) {
 				if (WarpDriveConfig.LOGGING_JUMP) {
-					WarpDrive.logger.info(String.format("%s Moving ship externals: unexpected null found at ship[%d]", actualIndexInShip));
+					WarpDrive.logger.info(String.format("%s Moving ship externals: unexpected null found at ship[%d]",
+					                                    this, actualIndexInShip));
 				}
 				actualIndexInShip++;
 				continue;
@@ -1282,6 +1307,7 @@ public class JumpSequencer extends AbstractSequencer {
 		try {
 			// @TODO MC1.10 still leaking tile entities?
 			// targetWorld.loadedTileEntityList = removeDuplicates(targetWorld.loadedTileEntityList);
+			removeDuplicates(targetWorld.loadedTileEntityList);
 		} catch (final Exception exception) {
 			if (WarpDriveConfig.LOGGING_JUMP) {
 				WarpDrive.logger.info(String.format("TE Duplicates removing exception: %s", exception.getMessage()));
@@ -1291,7 +1317,7 @@ public class JumpSequencer extends AbstractSequencer {
 		
 		doCollisionDamage(true);
 		
-		disable(new TextComponentString("Jump done"));
+		disable(true, new TextComponentString("Jump done"));
 		final int countAfter = targetWorld.loadedTileEntityList.size();
 		if (WarpDriveConfig.LOGGING_JUMP && countBefore != countAfter) {
 			WarpDrive.logger.info(String.format("Removing TE duplicates: tileEntities in target world after jump, cleanup %d -> %d",
@@ -1489,12 +1515,14 @@ public class JumpSequencer extends AbstractSequencer {
 			isCollision = isCollision || pisCollision;
 			reason = preason;
 			if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-				WarpDrive.logger.info(String.format("CheckMovementResult (%d %d %d) -> (%d %d %d) %s '%s'", sx, sy, sz, tx, ty, tz, isCollision, reason));
+				WarpDrive.logger.info(String.format("CheckMovementResult (%.1f %.1f %.1f) -> (%.1f %.1f %.1f) %s '%s'",
+				                                    sx, sy, sz, tx, ty, tz, isCollision, reason));
 			}
 		}
 	}
 	
-	private CheckMovementResult checkCollisionAndProtection(final ITransformation transformation, final boolean fullCollisionDetails, final String context) {
+	private CheckMovementResult checkCollisionAndProtection(final ITransformation transformation, final boolean fullCollisionDetails,
+	                                                        final String context, final VectorI vMovement) {
 		final CheckMovementResult result = new CheckMovementResult();
 		final VectorI offset = new VectorI((int) Math.signum(moveX), (int) Math.signum(moveY), (int) Math.signum(moveZ));
 		
@@ -1502,6 +1530,29 @@ public class JumpSequencer extends AbstractSequencer {
 		MutableBlockPos mutableBlockPosSource = new MutableBlockPos(0, 0, 0);
 		BlockPos blockPosTarget;
 		final BlockPos blockPosCoreAtTarget = transformation.apply(ship.core.getX(), ship.core.getY(), ship.core.getZ());
+		
+		// post event allowing other mods to do their own checks
+		final BlockPos blockPosMinAtTarget = transformation.apply(ship.minX, ship.minY, ship.minZ);
+		final BlockPos blockPosMaxAtTarget = transformation.apply(ship.maxX, ship.maxY, ship.maxZ);
+		final AxisAlignedBB targetAABB = new AxisAlignedBB(
+				blockPosMinAtTarget.getX(), blockPosMinAtTarget.getY(), blockPosMinAtTarget.getZ(),
+				blockPosMaxAtTarget.getX(), blockPosMaxAtTarget.getY(), blockPosMaxAtTarget.getZ() );
+		final TargetCheck targetCheck = new TargetCheck(sourceWorld, ship.core,
+		                                                ship.shipCore, shipMovementType.getName(),
+		                                                vMovement.x, vMovement.y, vMovement.z,
+		                                                targetWorld, targetAABB);
+		MinecraftForge.EVENT_BUS.post(targetCheck);
+		if (targetCheck.isCanceled()) {
+			result.add(ship.core.getX(), ship.core.getY(), ship.core.getZ(),
+			           blockPosCoreAtTarget.getX(),
+			           blockPosCoreAtTarget.getY(),
+			           blockPosCoreAtTarget.getZ(),
+			           false,
+			           targetCheck.getReason() );
+			return result;
+		}
+		
+		// scan target location
 		IBlockState blockStateSource;
 		IBlockState blockStateTarget;
 		for (y = ship.minY; y <= ship.maxY; y++) {
@@ -1545,6 +1596,7 @@ public class JumpSequencer extends AbstractSequencer {
 					}
 					
 					if ( blockStateSource.getBlock() != Blocks.AIR
+					  && WarpDriveConfig.G_ENABLE_PROTECTION_CHECKS
 					  && CommonProxy.isBlockPlaceCanceled(null, blockPosCoreAtTarget, targetWorld, blockPosTarget, blockStateSource)) {
 						result.add(x, y, z,
 						           blockPosTarget.getX(),
@@ -1588,7 +1640,7 @@ public class JumpSequencer extends AbstractSequencer {
 		}
 		
 		final ITransformation testTransformation = new Transformation(ship, targetWorld, testMovement.x, testMovement.y, testMovement.z, rotationSteps);
-		return checkCollisionAndProtection(testTransformation, fullCollisionDetails, "ratio " + ratio + " testMovement " + testMovement);
+		return checkCollisionAndProtection(testTransformation, fullCollisionDetails, String.format("ratio %.3f movement %s", ratio, testMovement), testMovement);
 	}
 	
 	private VectorI getMovementVector(final double ratio) {

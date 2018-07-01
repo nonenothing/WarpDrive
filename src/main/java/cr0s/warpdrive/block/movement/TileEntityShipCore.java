@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.TileEntitySecurityStation;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.EventWarpDrive.Ship.PreJump;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.ShipMovementCosts;
@@ -48,6 +49,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -719,7 +721,19 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		}
 		
 		// compute movement costs
-		shipMovementCosts = new ShipMovementCosts(world, pos, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		shipMovementCosts = new ShipMovementCosts(world, pos,
+		                                          this, shipMovementType,
+		                                          shipMass, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		
+		// allow other mods to validate too
+		final PreJump preJump;
+		preJump = new PreJump(world, pos, this, shipMovementType.getName());
+		MinecraftForge.EVENT_BUS.post(preJump);
+		if (preJump.isCanceled()) {
+			reason.append(preJump.getReason());
+			return false;
+		}
+		
 		return true;
 	}
 	
@@ -732,7 +746,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		}
 		
 		// compute movement costs
-		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(world, pos, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(world, pos,
+		                                                                  this, shipMovementType,
+		                                                                  shipMass, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return shipMovementCosts.maximumDistance_blocks;
 	}
 	
@@ -744,7 +760,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		}
 		
 		// compute movement costs
-		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(world, pos, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(world, pos,
+		                                                                  this, shipMovementType,
+		                                                                  shipMass, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return shipMovementCosts.energyRequired;
 	}
 	

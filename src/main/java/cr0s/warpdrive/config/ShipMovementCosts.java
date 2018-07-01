@@ -3,6 +3,7 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.EventWarpDrive.Ship.MovementCosts;
+import cr0s.warpdrive.api.computer.IShipController;
 import cr0s.warpdrive.data.EnumShipMovementType;
 
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +21,8 @@ public class ShipMovementCosts {
 	public final int cooldown_seconds;
 	
 	public ShipMovementCosts(final World world, final BlockPos blockPos, 
-	                         final int mass, final EnumShipMovementType shipMovementType, final int distance) {
+	                         final IShipController shipController, final EnumShipMovementType shipMovementType,
+	                         final int mass, final int distance) {
 		final Factors factorsForJumpParameters = WarpDriveConfig.SHIP_MOVEMENT_COSTS_FACTORS[shipMovementType.ordinal()];
 		final int maximumDistance_blocks = Commons.clamp(0, 30000000, evaluate(mass, distance, factorsForJumpParameters.maximumDistance));
 		final int energyRequired   = Commons.clamp(0, Integer.MAX_VALUE, evaluate(mass, distance, factorsForJumpParameters.energyRequired));
@@ -30,7 +32,7 @@ public class ShipMovementCosts {
 		
 		// post event allowing other mods to adjust it
 		final MovementCosts movementCosts = new MovementCosts(world, blockPos,
-		                                                      mass, shipMovementType.getName(), distance,
+		                                                      shipController, shipMovementType.getName(), mass, distance,
 		                                                      maximumDistance_blocks, energyRequired, warmup_seconds, sickness_seconds, cooldown_seconds);
 		MinecraftForge.EVENT_BUS.post(movementCosts);
 		
@@ -52,9 +54,9 @@ public class ShipMovementCosts {
 			return Integer.MAX_VALUE;
 		}
 		final double value = factors[0]
-		                     + factors[1] * mass
-		                     + factors[2] * distance
-		                     + factors[3] * Math.log(Math.max(1.0D, mass)) * (factors[4] != 0.0D ? Math.exp(distance / factors[4]) : 1.0D);
+		                   + factors[1] * mass
+		                   + factors[2] * distance
+		                   + factors[3] * Math.log(Math.max(1.0D, mass)) * (factors[4] != 0.0D ? Math.exp(distance / factors[4]) : 1.0D);
 		return (int) Math.ceil(value);
 	}
 	
