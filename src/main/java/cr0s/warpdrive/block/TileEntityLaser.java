@@ -137,11 +137,13 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		if (isEmitting) {
 			energyFromOtherBeams += amount;
 			if (WarpDriveConfig.LOGGING_WEAPON) {
-				WarpDrive.logger.info(this + " Added energy " + amount);
+				WarpDrive.logger.info(String.format("%s Added boosting energy %d for a total accumulation of %d",
+				                                    this, amount, energyFromOtherBeams));
 			}
 		} else {
 			if (WarpDriveConfig.LOGGING_WEAPON) {
-				WarpDrive.logger.info(this + " Ignored energy " + amount);
+				WarpDrive.logger.warn(String.format("%s Ignored boosting energy %d",
+				                                    this, amount));
 			}
 		}
 	}
@@ -312,19 +314,20 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			if (WarpDrive.fieldBlockHardness != null) {
 				// WarpDrive.fieldBlockHardness.setAccessible(true);
 				try {
-					hardness = (float)WarpDrive.fieldBlockHardness.get(block);
+					hardness = (float) WarpDrive.fieldBlockHardness.get(block);
 				} catch (final IllegalArgumentException | IllegalAccessException exception) {
 					exception.printStackTrace();
 					WarpDrive.logger.error("Unable to access block hardness value of " + block);
 				}
 			}
 			if (block instanceof IDamageReceiver) {
-				hardness = ((IDamageReceiver)block).getBlockHardness(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+				hardness = ((IDamageReceiver) block).getBlockHardness(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
 					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 			}				
 			if (WarpDriveConfig.LOGGING_WEAPON) {
-				WarpDrive.logger.info("Block collision found at " + blockHit.blockX + " " + blockHit.blockY + " " + blockHit.blockZ
-						+ " with block " + block + " of hardness " + hardness);
+				WarpDrive.logger.info(String.format("Block collision found at (%d %d %d) with block %s of hardness %.2f",
+				                                    blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+				                                    block.getUnlocalizedName(), hardness));
 			}
 			
 			// check area protection
@@ -363,10 +366,16 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					Math.round(hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ENERGY_PER_BLOCK_HARDNESS));
 			final double absorptionChance = Commons.clamp(0.0D, WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_MAX,
 					hardness * WarpDriveConfig.LASER_CANNON_BLOCK_HIT_ABSORPTION_PER_BLOCK_HARDNESS);
+			if (WarpDriveConfig.LOGGING_WEAPON) {
+				WarpDrive.logger.info(String.format("Block energy cost is %d with %.1f %% of absorption",
+				                                    energyCost, absorptionChance * 100.0D));
+			}
+			
+			// apply environmental absorption
+			energy *= getTransmittance(blockHitDistance - distanceTravelled);
 			
 			do {
 				// Consume energy
-				energy *= getTransmittance(blockHitDistance - distanceTravelled);
 				energy -= energyCost;
 				distanceTravelled = blockHitDistance;
 				vHitPoint = new Vector3(blockHit.hitVec);
@@ -377,7 +386,7 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 					break;
 				}
 				if (WarpDriveConfig.LOGGING_WEAPON) {
-					WarpDrive.logger.info("Beam energy down to " + energy);
+					WarpDrive.logger.info(String.format("Beam energy down to %d", energy));
 				}
 				
 				// apply chance of absorption
@@ -403,8 +412,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 			
 			// apply custom damages
 			if (block instanceof IDamageReceiver) {
-				energy = ((IDamageReceiver)block).applyDamage(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
-					WarpDrive.damageLaser, beamFrequency, vDirection, energy);
+				energy = ((IDamageReceiver) block).applyDamage(worldObj, blockHit.blockX, blockHit.blockY, blockHit.blockZ,
+				                                               WarpDrive.damageLaser, beamFrequency, vDirection, energy);
 				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info("IDamageReceiver damage applied, remaining energy is " + energy);
 				}
