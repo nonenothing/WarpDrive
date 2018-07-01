@@ -5,11 +5,14 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.block.forcefield.BlockForceField;
+import cr0s.warpdrive.block.forcefield.TileEntityForceField;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.TileEntityLaserCamera;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.network.PacketHandler;
@@ -30,11 +33,14 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 
 import cpw.mods.fml.common.Optional;
 
@@ -148,6 +154,204 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		}
 	}
 	
+	// loosely based on World.rayTraceBlocks/func_147447_a
+	// - replaced byte b0 with EnumFacing
+	// - inverted 2nd flag
+	// - added force field pass through based on beamFrequency
+	// - increased max range from 200 to laser limit
+	// - code cleanup
+	public static MovingObjectPosition rayTraceBlocks(final World world, final Vec3 vSource, final Vec3 vTarget, final int beamFrequency,
+	                                                  final boolean checkLiquids, final boolean checkAir, final boolean doReturnMissed) {
+		// validate parameters
+		if (Double.isNaN(vSource.xCoord) || Double.isNaN(vSource.yCoord) || Double.isNaN(vSource.zCoord)) {
+			return null;
+		}
+		
+		if (Double.isNaN(vTarget.xCoord) || Double.isNaN(vTarget.yCoord) || Double.isNaN(vTarget.zCoord)) {
+			return null;
+		}
+		
+		// check collision at source
+		final int xSource = MathHelper.floor_double(vSource.xCoord);
+		final int ySource = MathHelper.floor_double(vSource.yCoord);
+		final int zSource = MathHelper.floor_double(vSource.zCoord);
+		final Block blockSource = world.getBlock(xSource, ySource, zSource);
+		final int metadataSource = world.getBlockMetadata(xSource, ySource, zSource);
+		
+		if ( (checkAir || blockSource.getCollisionBoundingBoxFromPool(world, xSource, ySource, zSource) != null)
+		  && blockSource.canCollideCheck(metadataSource, checkLiquids)) {
+			final MovingObjectPosition movingObjectPosition = blockSource.collisionRayTrace(world, xSource, ySource, zSource, vSource, vTarget);
+			
+			if (movingObjectPosition != null) {
+				return movingObjectPosition;
+			}
+		}
+		
+		// loop positions along trajectory
+		final int xTarget = MathHelper.floor_double(vTarget.xCoord);
+		final int yTarget = MathHelper.floor_double(vTarget.yCoord);
+		final int zTarget = MathHelper.floor_double(vTarget.zCoord);
+		
+		final Vec3 vCurrent = Vec3.createVectorHelper(vSource.xCoord, vSource.yCoord, vSource.zCoord);
+		int xCurrent = xSource;
+		int yCurrent = ySource;
+		int zCurrent = zSource;
+		MovingObjectPosition movingObjectPositionMissed = null;
+		
+		int countLoop = WarpDriveConfig.LASER_CANNON_RANGE_MAX * 2;
+		while (countLoop-- >= 0) {
+			// sanity check
+			if (Double.isNaN(vCurrent.xCoord) || Double.isNaN(vCurrent.yCoord) || Double.isNaN(vCurrent.zCoord)) {
+				WarpDrive.logger.error(String.format("Critical error while raytracing blocks from %s to %s in %s",
+				                                     vSource, vTarget, world.provider.getDimensionName()));
+				return null;
+			}
+			
+			// check arrival
+			if (xCurrent == xTarget && yCurrent == yTarget && zCurrent == zTarget) {
+				return doReturnMissed ? movingObjectPositionMissed : null;
+			}
+			
+			// propose 1 block step along each axis
+			boolean hasOffsetX = true;
+			boolean hasOffsetY = true;
+			boolean hasOffsetZ = true;
+			double xProposed = 999.0D;
+			double yProposed = 999.0D;
+			double zProposed = 999.0D;
+			
+			if (xTarget > xCurrent) {
+				xProposed = xCurrent + 1.0D;
+			} else if (xTarget < xCurrent) {
+				xProposed = xCurrent + 0.0D;
+			} else {
+				hasOffsetX = false;
+			}
+			
+			if (yTarget > yCurrent) {
+				yProposed = yCurrent + 1.0D;
+			} else if (yTarget < yCurrent) {
+				yProposed = yCurrent + 0.0D;
+			} else {
+				hasOffsetY = false;
+			}
+			
+			if (zTarget > zCurrent) {
+				zProposed = zCurrent + 1.0D;
+			} else if (zTarget < zCurrent) {
+				zProposed = zCurrent + 0.0D;
+			} else {
+				hasOffsetZ = false;
+			}
+			
+			// compute normalized movement
+			double xDeltaNormalized = 999.0D;
+			double yDeltaNormalized = 999.0D;
+			double zDeltaNormalized = 999.0D;
+			final double xDeltaToTarget = vTarget.xCoord - vCurrent.xCoord;
+			final double yDeltaToTarget = vTarget.yCoord - vCurrent.yCoord;
+			final double zDeltaToTarget = vTarget.zCoord - vCurrent.zCoord;
+			
+			if (hasOffsetX) {
+				xDeltaNormalized = (xProposed - vCurrent.xCoord) / xDeltaToTarget;
+			}
+			
+			if (hasOffsetY) {
+				yDeltaNormalized = (yProposed - vCurrent.yCoord) / yDeltaToTarget;
+			}
+			
+			if (hasOffsetZ) {
+				zDeltaNormalized = (zProposed - vCurrent.zCoord) / zDeltaToTarget;
+			}
+			
+			// move along shortest axis
+			final EnumFacing facing;
+			if (xDeltaNormalized < yDeltaNormalized && xDeltaNormalized < zDeltaNormalized) {
+				if (xTarget > xCurrent) {
+					facing = EnumFacing.WEST;
+				} else {
+					facing = EnumFacing.EAST;
+				}
+				
+				vCurrent.xCoord = xProposed;
+				vCurrent.yCoord += yDeltaToTarget * xDeltaNormalized;
+				vCurrent.zCoord += zDeltaToTarget * xDeltaNormalized;
+			} else if (yDeltaNormalized < zDeltaNormalized) {
+				if (yTarget > yCurrent) {
+					facing = EnumFacing.UP;
+				} else {
+					facing = EnumFacing.DOWN;
+				}
+				
+				vCurrent.xCoord += xDeltaToTarget * yDeltaNormalized;
+				vCurrent.yCoord = yProposed;
+				vCurrent.zCoord += zDeltaToTarget * yDeltaNormalized;
+			} else {
+				if (zTarget > zCurrent) {
+					facing = EnumFacing.SOUTH;
+				} else {
+					facing = EnumFacing.NORTH;
+				}
+				
+				vCurrent.xCoord += xDeltaToTarget * zDeltaNormalized;
+				vCurrent.yCoord += yDeltaToTarget * zDeltaNormalized;
+				vCurrent.zCoord = zProposed;
+			}
+			
+			// round to block position
+			xCurrent = MathHelper.floor_double(vCurrent.xCoord);
+			if (facing == EnumFacing.EAST) {
+				xCurrent--;
+			}
+			
+			yCurrent = MathHelper.floor_double(vCurrent.yCoord);
+			if (facing == EnumFacing.DOWN) {
+				yCurrent--;
+			}
+			
+			zCurrent = MathHelper.floor_double(vCurrent.zCoord);
+			if (facing == EnumFacing.NORTH) {
+				zCurrent--;
+			}
+			
+			// get current block
+			final Block blockCurrent = world.getBlock(xCurrent, yCurrent, zCurrent);
+			final int metadataCurrent = world.getBlockMetadata(xCurrent, yCurrent, zCurrent);
+			
+			// allow passing through force fields with same beam frequency
+			if (blockCurrent instanceof BlockForceField) {
+				final TileEntity tileEntity = world.getTileEntity(xCurrent, yCurrent, zCurrent);
+				if (tileEntity instanceof TileEntityForceField) {
+					final ForceFieldSetup forceFieldSetup = ((TileEntityForceField) tileEntity).getForceFieldSetup();
+					if (forceFieldSetup == null) {
+						// projector not loaded yet, consider it jammed by default
+						WarpDrive.logger.warn(String.format("Laser beam stopped by non-loaded force field projector at %s", tileEntity));
+					} else {
+						if (forceFieldSetup.beamFrequency == beamFrequency) {// pass-through force field
+							if (WarpDriveConfig.LOGGING_WEAPON) {
+								WarpDrive.logger.info(String.format("Laser beam passing through force field %s", tileEntity));
+							}
+							continue;
+						}
+					}
+				}
+			}
+			
+			if (checkAir || blockCurrent.getCollisionBoundingBoxFromPool(world, xCurrent, yCurrent, zCurrent) != null) {
+				if (blockCurrent.canCollideCheck(metadataCurrent, checkLiquids)) {
+					final MovingObjectPosition movingObjectPosition = blockCurrent.collisionRayTrace(world, xCurrent, yCurrent, zCurrent, vCurrent, vTarget);
+					if (movingObjectPosition != null) {
+						return movingObjectPosition;
+					}
+				} else {
+					movingObjectPositionMissed = new MovingObjectPosition(xCurrent, yCurrent, zCurrent, facing.ordinal(), vCurrent, false);
+				}
+			}
+		}
+		
+		return doReturnMissed ? movingObjectPositionMissed : null;
+	}
+	
 	private void emitBeam(final int beamEnergy) {
 		int energy = beamEnergy;
 		
@@ -180,7 +384,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		
 		// This is a scanning beam, do not deal damage to block nor entity
 		if (beamFrequency == BEAM_FREQUENCY_SCANNING) {
-			final MovingObjectPosition mopResult = worldObj.rayTraceBlocks(vSource.toVec3(), vReachPoint.toVec3());
+			final MovingObjectPosition mopResult = rayTraceBlocks(worldObj, vSource.toVec3(), vReachPoint.toVec3(), beamFrequency,
+			                                                      false, true, false);
 			
 			scanResult_blockUnlocalizedName = null;
 			scanResult_blockMetadata = 0;
@@ -224,7 +429,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 		double distanceTravelled = 0.0D; // distance traveled from beam sender to previous hit if there were any
 		for (int passedBlocks = 0; passedBlocks < beamLengthBlocks; passedBlocks++) {
 			// Get next block hit
-			final MovingObjectPosition blockHit = worldObj.rayTraceBlocks(vSource.toVec3(), vReachPoint.toVec3());
+			final MovingObjectPosition blockHit = rayTraceBlocks(worldObj, vSource.toVec3(), vReachPoint.toVec3(), beamFrequency,
+			                                                     false, true, false);
 			double blockHitDistance = beamLengthBlocks + 0.1D;
 			if (blockHit != null) {
 				blockHitDistance = blockHit.hitVec.distanceTo(vSource.toVec3());
