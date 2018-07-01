@@ -176,7 +176,7 @@ public class StateAir {
 			if (isVoid) {
 				setVoid((short) VOID_PRESSURE_MAX, EnumFacing.UP);
 			} else if (pressureVoid == VOID_PRESSURE_MAX) {
-				setVoid((short) 0, EnumFacing.DOWN);
+				setVoid((short) 0, null);
 			}
 		}
 		// (propagation is done when spreading air itself)
