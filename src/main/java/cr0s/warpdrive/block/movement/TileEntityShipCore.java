@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.EventWarpDrive.Ship.PreJump;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.Dictionary;
@@ -41,6 +42,7 @@ import net.minecraft.util.Vec3;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ForgeDirection;
 
 public class TileEntityShipCore extends TileEntityAbstractEnergy implements IStarMapRegistryTileEntity {
@@ -125,12 +127,7 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 			return;
 		}
 		
-		TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference == null ? null : tileEntityShipControllerWeakReference.get();
-		if ( tileEntityShipController != null
-		  && tileEntityShipController.isInvalid() ) {
-			tileEntityShipControllerWeakReference = null;
-			tileEntityShipController = null;
-		}
+		TileEntityShipController tileEntityShipController = getShipController();
 		
 		// Always cooldown
 		if (cooldownTime_ticks > 0) {
@@ -408,6 +405,16 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		default:
 			break;
 		}
+	}
+	
+	public TileEntityShipController getShipController() {
+		TileEntityShipController tileEntityShipController = tileEntityShipControllerWeakReference == null ? null : tileEntityShipControllerWeakReference.get();
+		if ( tileEntityShipController != null
+		  && tileEntityShipController.isInvalid() ) {
+			tileEntityShipControllerWeakReference = null;
+			tileEntityShipController = null;
+		}
+		return tileEntityShipController;
 	}
 	
 	public boolean isOffline() {
@@ -783,7 +790,19 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		// compute movement costs
-		shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord,
+		                                          tileEntityShipController, shipMovementType,
+		                                          shipMass, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		
+		// allow other mods to validate too
+		final PreJump preJump;
+		preJump = new PreJump(worldObj, xCoord, yCoord, zCoord, getShipController(), shipMovementType.getName());
+		MinecraftForge.EVENT_BUS.post(preJump);
+		if (preJump.isCanceled()) {
+			reason.append(preJump.getReason());
+			return false;
+		}
+		
 		return true;
 	}
 	
@@ -796,7 +815,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		// compute movement costs
-		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord,
+		                                                                  tileEntityShipController, shipMovementType,
+		                                                                  shipMass, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return shipMovementCosts.maximumDistance_blocks;
 	}
 	
@@ -808,7 +829,9 @@ public class TileEntityShipCore extends TileEntityAbstractEnergy implements ISta
 		}
 		
 		// compute movement costs
-		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord, shipMass, shipMovementType, (int) Math.ceil(Math.sqrt(distanceSquared)));
+		final ShipMovementCosts shipMovementCosts = new ShipMovementCosts(worldObj, xCoord, yCoord, zCoord,
+		                                                                  tileEntityShipController, shipMovementType,
+		                                                                  shipMass, (int) Math.ceil(Math.sqrt(distanceSquared)));
 		return shipMovementCosts.energyRequired;
 	}
 	

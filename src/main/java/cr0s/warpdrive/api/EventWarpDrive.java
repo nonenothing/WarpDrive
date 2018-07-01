@@ -1,5 +1,8 @@
 package cr0s.warpdrive.api;
 
+import cr0s.warpdrive.api.computer.IShipController;
+
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
 import cpw.mods.fml.common.eventhandler.Cancelable;
@@ -19,27 +22,31 @@ public abstract class EventWarpDrive extends Event {
 		public final int yCurrent;
 		public final int zCurrent;
 		
-		// ship stats
-		public final int mass;
+		// ship access
+		public final IShipController shipController;
 		
-		// movement description
-		public final String jumpType;
-		public final int distance;
+		// movement description, see EnumShipMovementType
+		public final String movementType;
 		
 		public Ship(final World world, final int x, final int y, final int z,
-		            final int mass, final String jumpType, final int distance) {
+		            final IShipController shipController, final String movementType) {
 			super();
 			
 			this.worldCurrent = world;
 			this.xCurrent = x;
 			this.yCurrent = y;
 			this.zCurrent = z;
-			this.mass = mass;
-			this.jumpType = jumpType;
-			this.distance = distance;
+			
+			this.shipController = shipController;
+			
+			this.movementType = movementType;
 		}
 		
+		// event used to update movement costs for display or an actual jump
 		public static class MovementCosts extends Ship {
+			
+			public final int mass;
+			public final int distance;
 			
 			// original values for reference
 			public final int warmup_seconds_initial;
@@ -56,13 +63,18 @@ public abstract class EventWarpDrive extends Event {
 			private int cooldown_seconds;
 			
 			public MovementCosts(final World world, final int x, final int y, final int z,
-			                     final int mass, final String jumpType, final int distance,
+			                     final IShipController shipController, final String movementType,
+			                     final int mass,
+			                     final int distance,
 			                     final int maximumDistance_blocks,
 			                     final int energyRequired,
 			                     final int warmup_seconds,
 			                     final int sickness_seconds,
 			                     final int cooldown_seconds) {
-				super(world, x, y, z, mass, jumpType, distance);
+				super(world, x, y, z, shipController, movementType);
+				
+				this.mass = mass;
+				this.distance = distance;
 				
 				this.warmup_seconds_initial = warmup_seconds;
 				this.warmup_seconds = warmup_seconds;
@@ -117,6 +129,7 @@ public abstract class EventWarpDrive extends Event {
 			}
 		}
 		
+		// event for canceling a jump by broad permissions, called prior to jump @TODO not implemented
 		@Cancelable
 		public static class PreJump extends Ship {
 			
@@ -124,8 +137,8 @@ public abstract class EventWarpDrive extends Event {
 			private final StringBuilder reason;
 			
 			public PreJump(final World world, final int x, final int y, final int z,
-			               final int mass, final String jumpType, final int distance) {
-				super(world, x, y, z, mass, jumpType, distance);
+			               final IShipController shipController, final String movementType) {
+				super(world, x, y, z, shipController, movementType);
 				
 				this.reason = new StringBuilder();
 			}
@@ -142,11 +155,63 @@ public abstract class EventWarpDrive extends Event {
 			}
 		}
 		
-		public static class PostJump extends Ship {
+		// event for checking collision at target location, called during jump until a valid location is found
+		@Cancelable
+		public static class TargetCheck extends Ship {
 			
-			public PostJump(final World world, final int x, final int y, final int z, 
-			                final int mass, final String jumpType, final int distance) {
-				super(world, x, y, z, mass, jumpType, distance);
+			// movement vector
+			public final int moveX;
+			public final int moveY;
+			public final int moveZ;
+			
+			// target position
+			public final World worldTarget;
+			public final AxisAlignedBB aabbTarget;
+			
+			// cancellation message
+			private final StringBuilder reason;
+			
+			public TargetCheck(final World worldCurrent, final int x, final int y, final int z,
+			                   final IShipController shipController, final String movementType,
+			                   final int moveX, final int moveY, final int moveZ,
+			                   final World worldTarget, final AxisAlignedBB aabbTarget) {
+				super(worldCurrent, x, y, z, shipController, movementType);
+				
+				this.moveX = moveX;
+				this.moveY = moveY;
+				this.moveZ = moveZ;
+				
+				this.worldTarget = worldTarget;
+				this.aabbTarget = aabbTarget;
+				
+				this.reason = new StringBuilder();
+			}
+			
+			public String getReason() {
+				return reason.toString();
+			}
+			
+			public void appendReason(final String reasonAdded) {
+				if (reason.length() > 0) {
+					reason.append("\n");
+				}
+				reason.append(reasonAdded);
+			}
+		}
+		
+		// event reporting when a jump is cancelled or successful
+		public static class JumpResult extends Ship {
+			
+			public final boolean isSuccessful;
+			public final String reason;
+			
+			public JumpResult(final World world, final int x, final int y, final int z,
+			                  final IShipController shipController, final String jumpType,
+			                  final boolean isSuccessful, final String reason) {
+				super(world, x, y, z, shipController, jumpType);
+				
+				this.isSuccessful = isSuccessful;
+				this.reason = reason;
 			}
 		}
 	}

@@ -39,8 +39,8 @@ public class DeploySequencer extends JumpSequencer {
 	}
 	
 	@Override
-	public void disable(final String reason) {
-		super.disable(reason);
+	public void disable(final boolean isSuccessful, final String reason) {
+		super.disable(isSuccessful, reason);
 		callback.sequencer_finished();
 	}
 	
