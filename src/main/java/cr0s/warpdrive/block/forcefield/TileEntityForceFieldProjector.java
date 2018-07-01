@@ -210,7 +210,7 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 			}
 			
 			if (damagesEnergyCost > 0.0D) {
-				if (WarpDriveConfig.LOGGING_FORCEFIELD) {
+				if (WarpDriveConfig.LOGGING_WEAPON) {
 					WarpDrive.logger.info(String.format("%s damages received, energy lost: %.6f", toString(), damagesEnergyCost));
 				}
 				consumeEnergy(damagesEnergyCost, false);
