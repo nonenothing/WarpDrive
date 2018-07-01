@@ -266,7 +266,7 @@ tile.warpdrive.energy.energy_bank.0.tooltip=创造子空间电容
 tile.warpdrive.energy.energy_bank.1.name=基础子空间电容
 tile.warpdrive.energy.energy_bank.2.name=先进子空间电容
 tile.warpdrive.energy.energy_bank.3.name=卓越子空间电容
-tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2反应堆激光监控器
+tile.warpdrive.energy.ic2_reactor_laser_cooler.name=IC2 Reactor Laser Cooler
 
 tile.warpdrive.forcefield.block1.name=基础力场方块
 tile.warpdrive.forcefield.block2.name=先进力场方块
@@ -680,8 +680,8 @@ warpdrive.cloaking_core.disabled=伪装被禁用
 warpdrive.cloaking_core.low_power=§c伪装失效，我们需要更多的能量.
 warpdrive.cloaking_core.cloaking=一个层级 %1$d 伪装目前覆盖 %2$d方块!
 
-warpdrive.ic2_reactor_laser_monitor.no_reactor=未发现反应堆!
-warpdrive.ic2_reactor_laser_monitor.reactor_found=Reactor connected on %1$s.
+warpdrive.ic2_reactor_laser_cooler.no_reactor=未发现反应堆!
+warpdrive.ic2_reactor_laser_cooler.reactor_found=Reactor connected on %1$s.
 
 warpdrive.transporter.status=从 (%1$.0f %2$.0f %3$.0f) 到 (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

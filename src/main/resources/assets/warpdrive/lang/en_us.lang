@@ -269,7 +269,7 @@ tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subspace Capacitor
 tile.warpdrive.energy.energy_bank.1.name=Basic Subspace Capacitor
 tile.warpdrive.energy.energy_bank.2.name=Advanced Subspace Capacitor
 tile.warpdrive.energy.energy_bank.3.name=Superior Subspace Capacitor
-tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reactor Laser Monitor
+tile.warpdrive.energy.ic2_reactor_laser_cooler.name=IC2 Reactor Laser Cooler
 
 tile.warpdrive.forcefield.block1.name=Basic Force Field Block
 tile.warpdrive.forcefield.block2.name=Advanced Force Field Block
@@ -683,8 +683,8 @@ warpdrive.cloaking_core.disabled=Cloak is disabled
 warpdrive.cloaking_core.low_power=§cCloak is down, we need more power Captain!
 warpdrive.cloaking_core.cloaking=A tier %1$d cloak is currently covering %2$d blocks!
 
-warpdrive.ic2_reactor_laser_monitor.no_reactor=No reactor found!
-warpdrive.ic2_reactor_laser_monitor.reactor_found=Reactor connected on %1$s.
+warpdrive.ic2_reactor_laser_cooler.no_reactor=No reactor found!
+warpdrive.ic2_reactor_laser_cooler.reactor_found=Reactor connected on %1$s.
 
 warpdrive.transporter.status=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

@@ -36,7 +36,7 @@ import cr0s.warpdrive.block.detection.BlockWarpIsolation;
 import cr0s.warpdrive.block.energy.BlockEnanReactorCore;
 import cr0s.warpdrive.block.energy.BlockEnanReactorLaser;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
-import cr0s.warpdrive.block.energy.BlockIC2reactorLaserMonitor;
+import cr0s.warpdrive.block.energy.BlockIC2reactorLaserCooler;
 import cr0s.warpdrive.block.forcefield.BlockForceField;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldProjector;
 import cr0s.warpdrive.block.forcefield.BlockForceFieldRelay;
@@ -196,7 +196,7 @@ public class WarpDrive {
 	public static Block blockTransporterCore;
 	public static Block blockTransporterContainment;
 	public static Block blockTransporterScanner;
-	public static Block blockIC2reactorLaserMonitor;
+	public static Block blockIC2reactorLaserCooler;
 	public static Block blockEnanReactorCore;
 	public static Block blockEnanReactorLaser;
 	public static Block blockEnergyBank;
@@ -357,7 +357,7 @@ public class WarpDrive {
 		blockEnergyBank = new BlockEnergyBank("block_subspace_capacitor");
 		
 		if (WarpDriveConfig.isIndustrialCraft2Loaded) {
-			blockIC2reactorLaserMonitor = new BlockIC2reactorLaserMonitor("block_ic2_reactor_laser_monitor");
+			blockIC2reactorLaserCooler = new BlockIC2reactorLaserCooler("block_ic2_reactor_laser_cooler");
 			itemIC2reactorLaserFocus = new ItemIC2reactorLaserFocus("item_ic2_reactor_laser_focus");
 		}
 		
@@ -620,7 +620,7 @@ public class WarpDrive {
 						mapping.remap(itemIC2reactorLaserFocus);
 						break;
 					case "WarpDrive:reactorMonitor":
-						mapping.remap(Item.getItemFromBlock(blockIC2reactorLaserMonitor));
+						mapping.remap(Item.getItemFromBlock(blockIC2reactorLaserCooler));
 						break;
 					case "WarpDrive:scannerBlock":
 						mapping.remap(Item.getItemFromBlock(blockShipScanner));
@@ -716,7 +716,7 @@ public class WarpDrive {
 						mapping.remap(blockRadar);
 						break;
 					case "WarpDrive:reactorMonitor":
-						mapping.remap(blockIC2reactorLaserMonitor);
+						mapping.remap(blockIC2reactorLaserCooler);
 						break;
 					case "WarpDrive:scannerBlock":
 						mapping.remap(blockShipScanner);

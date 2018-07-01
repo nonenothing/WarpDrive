@@ -18,11 +18,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class BlockIC2reactorLaserMonitor extends BlockAbstractContainer {
+public class BlockIC2reactorLaserCooler extends BlockAbstractContainer {
 	
-	public BlockIC2reactorLaserMonitor(final String registryName) {
+	public BlockIC2reactorLaserCooler(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.energy.ic2_reactor_laser_monitor");
+		setUnlocalizedName("warpdrive.energy.ic2_reactor_laser_cooler");
 		registerTileEntity(TileEntityIC2reactorLaserMonitor.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(blockState.getBaseState()

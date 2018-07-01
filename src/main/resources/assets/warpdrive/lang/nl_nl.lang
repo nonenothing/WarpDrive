@@ -266,7 +266,7 @@ tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subruimte Condensator
 tile.warpdrive.energy.energy_bank.1.name=Normale Subruimte Condensator
 tile.warpdrive.energy.energy_bank.2.name=Geavanceerde Subruimte Condensator
 tile.warpdrive.energy.energy_bank.3.name=Superieure Subruimte Condensator
-tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reactor Laser Monitor
+tile.warpdrive.energy.ic2_reactor_laser_cooler.name=IC2 Reactor Laser Cooler
 
 tile.warpdrive.forcefield.block1.name=Normale Krachtvelds-blok
 tile.warpdrive.forcefield.block2.name=Geavanceerde Krachtvelds-blok
@@ -679,8 +679,8 @@ warpdrive.cloaking_core.disabled=Dekmantelveld is uitgeschakeld
 warpdrive.cloaking_core.low_power=§cDekmantelveld is uit, We hebben meer stroom nodig kapitein!
 warpdrive.cloaking_core.cloaking=Een Niveau %1$d dekmantelveld bedekt huidig %2$d blokken!
 
-warpdrive.ic2_reactor_laser_monitor.no_reactor=Geen reactor gevonden!
-warpdrive.ic2_reactor_laser_monitor.reactor_found=Reactor connected on %1$s.
+warpdrive.ic2_reactor_laser_cooler.no_reactor=Geen reactor gevonden!
+warpdrive.ic2_reactor_laser_cooler.reactor_found=Reactor connected on %1$s.
 
 warpdrive.transporter.status=Van (%1$.0f %2$.0f %3$.0f) naar (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

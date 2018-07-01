@@ -269,7 +269,7 @@ tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subspace Capacitor
 tile.warpdrive.energy.energy_bank.1.name=Basic Subspace Capacitor
 tile.warpdrive.energy.energy_bank.2.name=Advanced Subspace Capacitor
 tile.warpdrive.energy.energy_bank.3.name=Superior Subspace Capacitor
-tile.warpdrive.energy.ic2_reactor_laser_monitor.name=Лазерный монитор реактора IC2
+tile.warpdrive.energy.ic2_reactor_laser_cooler.name=IC2 Reactor Laser Cooler
 
 tile.warpdrive.forcefield.block1.name=Basic Force Field Block
 tile.warpdrive.forcefield.block2.name=Advanced Force Field Block
@@ -683,8 +683,8 @@ warpdrive.cloaking_core.disabled=Маскировка выключена
 warpdrive.cloaking_core.low_power=§cМаскировка выключилась, нужно больше энергии, капитан!
 warpdrive.cloaking_core.cloaking=Маскировка %1$d уровня покрывает %2$d блоков.
 
-warpdrive.ic2_reactor_laser_monitor.no_reactor=Реактор не найден!
-warpdrive.ic2_reactor_laser_monitor.reactor_found=Reactor connected on %1$s.
+warpdrive.ic2_reactor_laser_cooler.no_reactor=Реактор не найден!
+warpdrive.ic2_reactor_laser_cooler.reactor_found=Reactor connected on %1$s.
 
 warpdrive.transporter.status=Из (%1$.0f %2$.0f %3$.0f) в (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

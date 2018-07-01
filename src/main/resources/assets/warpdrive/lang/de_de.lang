@@ -271,7 +271,7 @@ tile.warpdrive.energy.energy_bank.0.tooltip=Kreativ Subraum Kondensator
 tile.warpdrive.energy.energy_bank.1.name=Standard Subraum Kondensator
 tile.warpdrive.energy.energy_bank.2.name=Weiterentwickelter Subraum Kondensator
 tile.warpdrive.energy.energy_bank.3.name=Überlegener Subraum Kondensator
-tile.warpdrive.energy.ic2_reactor_laser_monitor.name=IC2 Reaktor Laser Monitor
+tile.warpdrive.energy.ic2_reactor_laser_cooler.name=IC2 Reaktor Laser Cooler
 
 tile.warpdrive.forcefield.block1.name=Standard Kraftfeld
 tile.warpdrive.forcefield.block2.name=Weiterentwickeltes Kraftfeld
@@ -685,8 +685,8 @@ warpdrive.cloaking_core.disabled=Tarnfeld ist deaktiviert!
 warpdrive.cloaking_core.low_power=§cTarnfeld ist ausgefallen, wir brauchen mehr Energie, Captain!
 warpdrive.cloaking_core.cloaking=Ein Stufe %1$d Tarnfeld überdeckt jetzt %2$d Blöcke!
 
-warpdrive.ic2_reactor_laser_monitor.no_reactor=Kein Reaktor gefunden!
-warpdrive.ic2_reactor_laser_monitor.reactor_found=Reactor connected on %1$s.
+warpdrive.ic2_reactor_laser_cooler.no_reactor=Kein Reaktor gefunden!
+warpdrive.ic2_reactor_laser_cooler.reactor_found=Reactor connected on %1$s.
 
 warpdrive.transporter.status=Von (%1$.0f %2$.0f %3$.0f) zu (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked

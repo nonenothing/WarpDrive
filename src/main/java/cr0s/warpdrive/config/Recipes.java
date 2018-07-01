@@ -1000,14 +1000,14 @@ public class Recipes {
 					'd', itemStackReactorCoolant2));
 			
 			WarpDrive.register(new ShapedOreRecipe(groupMachines,
-			                                       new ItemStack(WarpDrive.blockIC2reactorLaserMonitor), false, "gCp", "lme", "gCc",
-					'l', ItemComponent.getItemStack(EnumComponentType.LENS),
-					'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
-					'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
-					'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
-					'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
-					'g', "paneGlassColorless",
-					'm', itemStackMachineCasings[1]));
+			                                       new ItemStack(WarpDrive.blockIC2reactorLaserCooler), false, "gCp", "lme", "gCc",
+			                                       'l', ItemComponent.getItemStack(EnumComponentType.LENS),
+			                                       'e', ItemComponent.getItemStack(EnumComponentType.EMERALD_CRYSTAL),
+			                                       'C', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
+			                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE),
+			                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE),
+			                                       'g', "paneGlassColorless",
+			                                       'm', itemStackMachineCasings[1]));
 		}
 		
 		// Cloaking core is 3 Cloaking coils, 4 iridium blocks, 1 ship controller, 1 power interface

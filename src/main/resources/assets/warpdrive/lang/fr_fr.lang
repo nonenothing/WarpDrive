@@ -269,7 +269,7 @@ tile.warpdrive.energy.energy_bank.0.tooltip=Condensateur subspatial creatif
 tile.warpdrive.energy.energy_bank.1.name=Condensateur subspatial élémentaire
 tile.warpdrive.energy.energy_bank.2.name=Condensateur subspatial avancé
 tile.warpdrive.energy.energy_bank.3.name=Condensateur subspatial supérieur
-tile.warpdrive.energy.ic2_reactor_laser_monitor.name=Laser de monitoring pour réacteur IC2
+tile.warpdrive.energy.ic2_reactor_laser_cooler.name=Laser de refroidissement pour réacteur IC2
 
 tile.warpdrive.forcefield.block1.name=Bloc de champ de force élémentaire
 tile.warpdrive.forcefield.block2.name=Bloc de champ de force avancé
@@ -683,8 +683,8 @@ warpdrive.cloaking_core.disabled=Le champ d'invisibilité est désactivé
 warpdrive.cloaking_core.low_power=§cLe champ d'invisibilité est en panne. Il nous faut plus d'énergie, Capitaine!
 warpdrive.cloaking_core.cloaking=Un champ de niveau %1$d couvre actuellement %2$d blocs!
 
-warpdrive.ic2_reactor_laser_monitor.no_reactor=Pas de réacteur IC2 trouvé!
-warpdrive.ic2_reactor_laser_monitor.reactor_found=Réacteur connecté au %1$s.
+warpdrive.ic2_reactor_laser_cooler.no_reactor=Pas de réacteur IC2 trouvé!
+warpdrive.ic2_reactor_laser_cooler.reactor_found=Réacteur connecté au %1$s.
 
 warpdrive.transporter.status=De (%1$.0f %2$.0f %3$.0f) à (%4$.0f %5$.0f %6$.0f)
 warpdrive.transporter_beacon.status.invalid=§cNo transporter room linked
