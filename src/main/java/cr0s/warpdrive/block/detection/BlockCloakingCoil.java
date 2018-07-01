@@ -48,24 +48,24 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	@Nonnull
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
-		boolean isActive = (metadata & 7) != 0;
-		boolean isOuter = (metadata & 7) > 1;
+		// 15 = not used
+		// 8-14 = active
+		// 7 = not used
+		// 1-6 = outer facing
+		// 0 = inner
+		final boolean isActive = (metadata & 8) != 0;
+		final boolean isOuter = (metadata & 7) > 0;
 		return getDefaultState()
 				.withProperty(BlockProperties.ACTIVE, isActive)
 				.withProperty(OUTER, isOuter)
-				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.getFront(metadata & 7 - 1) : EnumFacing.UP);
+				.withProperty(BlockProperties.FACING, isOuter ? EnumFacing.getFront((metadata & 7) - 1) : EnumFacing.UP);
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
-		if (!blockState.getValue(BlockProperties.ACTIVE)) {
-			return 0;
-		}
-		if (!blockState.getValue(OUTER)) {
-			return 1;
-		}
-		return 2 + blockState.getValue(BlockProperties.FACING).ordinal();
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 8 : 0)
+		     + (blockState.getValue(OUTER) ? 1 + blockState.getValue(BlockProperties.FACING).ordinal() : 0);
 	}
 	
 	public static void setBlockState(@Nonnull final World world, @Nonnull final BlockPos blockPos, final boolean isActive, final boolean isOuter, final EnumFacing enumFacing) {
