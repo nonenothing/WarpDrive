@@ -63,7 +63,7 @@ public class CommandDebug extends CommandBase
 		WarpDrive.logger.info("/" + getCommandName() + " " + dim + " " + x + "," + y + "," + z + " " + block + ":" + metadata + " " + actions);
 		final World worldObj = DimensionManager.getWorld(dim);
 		final TileEntity te = worldObj.getTileEntity(x, y, z);
-		WarpDrive.logger.info("[" + getCommandName() + "] In dimension " + worldObj.getProviderName() + " - " + worldObj.getWorldInfo().getWorldName() + ", Current block is "
+		WarpDrive.logger.info("[" + getCommandName() + "] In dimension " + worldObj.getWorldInfo().getWorldName() + ", Current block is "
 				+ worldObj.getBlock(x, y, z) + ":" + worldObj.getBlockMetadata(x, y, z) + ", tile entity is " + ((te == null) ? "undefined" : "defined"));
 		final String side = FMLCommonHandler.instance().getEffectiveSide().isClient() ? "Client" : "Server";
 
