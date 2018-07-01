@@ -169,6 +169,24 @@ jar {
     destinationDir = file 'output'
 }
 
+task signJar(type: SignJar) {
+    onlyIf { // Skip the task if our secret data isn't available
+        project.hasProperty('keyStore')
+    }
+    dependsOn reobfJar
+    
+    if (project.hasProperty('keyStore')) { // This needs to be a path to the keystore file
+        keyStore = project.keyStore
+        alias = project.alias
+        storePass = project.storePass
+        keyPass = project.keyPass
+        inputFile = jar.archivePath
+        outputFile = jar.archivePath
+    }
+}
+
+build.dependsOn signJar
+
 idea {
     module {
         inheritOutputDirs = true

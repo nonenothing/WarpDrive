@@ -165,7 +165,8 @@ import javax.annotation.Nullable;
                   + "after:appliedenergistics;"
                   + "after:enderio;"
                   + "after:defensetech;"
-                  + "after:icbmclassic;"
+                  + "after:icbmclassic;",
+     certificateFingerprint = "f7be6b40743c6a8205df86c5e57547d578605d8a"
 )
 public class WarpDrive {
 	public static final String MODID = "warpdrive";

@@ -20,3 +20,7 @@ dependencies
 
 *.DS_Store
 classes
+
+gradle\.properties
+LemADEC\.jks
+LemADEC\.jks\.old
