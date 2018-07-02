@@ -76,7 +76,7 @@ public class TileEntitySecurityStation extends TileEntityAbstractInterfaced impl
 	@Override
 	public ITextComponent getStatus() {
 		return super.getStatus()
-		            .appendSibling(new TextComponentTranslation("warpdrive.ship.attached_players",
+		            .appendSibling(new TextComponentTranslation("warpdrive.security_station.guide.registered_players",
 		                                                        getAttachedPlayersList()));
 	}
 	
@@ -87,8 +87,7 @@ public class TileEntitySecurityStation extends TileEntityAbstractInterfaced impl
 			if (entityPlayer.getName().equals(name)) {
 				players.remove(i);
 				return Commons.getChatPrefix(getBlockType())
-				              .appendSibling(new TextComponentTranslation("warpdrive.ship.player_detached",
-				                                                          "-",  // @TODO named block
+				              .appendSibling(new TextComponentTranslation("warpdrive.security_station.guide.player_unregistered",
 				                                                          getAttachedPlayersList()));
 			}
 		}
@@ -96,8 +95,7 @@ public class TileEntitySecurityStation extends TileEntityAbstractInterfaced impl
 		entityPlayer.attackEntityFrom(DamageSource.GENERIC, 1);
 		players.add(entityPlayer.getName());
 		return Commons.getChatPrefix(getBlockType())
-		              .appendSibling(new TextComponentTranslation("warpdrive.ship.player_attached",
-		                                                          "-",  // @TODO named block
+		              .appendSibling(new TextComponentTranslation("warpdrive.security_station.guide.player_registered",
 		                                                          getAttachedPlayersList()));
 	}
 	

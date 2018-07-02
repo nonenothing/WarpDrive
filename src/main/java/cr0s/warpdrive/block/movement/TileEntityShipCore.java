@@ -155,7 +155,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 					final int seconds = ticksCooldown / 20;
 					if (!isCooldownReported || (seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
 						isCooldownReported = true;
-						messageToAllPlayersOnShip(new TextComponentTranslation("Ship core is cooling down... %d s to go...",
+						messageToAllPlayersOnShip(new TextComponentTranslation("warpdrive.ship.guide.cooling_countdown",
 						                                                       seconds));
 					}
 				}
@@ -275,8 +275,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				commandCurrent = command;
 				stateCurrent = EnumShipCoreState.ONLINE;
 				if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-					WarpDrive.logger.info(String.format("%s state IDLE -> ONLINE",
-					                                    this));
+//					WarpDrive.logger.info(String.format("%s state IDLE -> ONLINE",
+//					                                    this));
 				}
 			}
 			break;
@@ -302,7 +302,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 					break;
 				}
 				
-				messageToAllPlayersOnShip(new TextComponentTranslation("Running pre-jump checklist..."));
+				messageToAllPlayersOnShip(new TextComponentTranslation("warpdrive.ship.guide.pre_jumping"));
 				
 				// update ship spatial parameters
 				if (!isValid) {
@@ -376,7 +376,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				  || (seconds >= 60 && (seconds % 15 == 0))
 				  || (seconds <  60 && seconds > 30 && (seconds % 10 == 0)) ) {
 					isWarmupReported = true;
-					messageToAllPlayersOnShip(new TextComponentTranslation("Ship core is warming up... %s s to go...",
+					messageToAllPlayersOnShip(new TextComponentTranslation("warpdrive.ship.guide.warming_up",
 					                                                       seconds));
 				}
 			}
@@ -464,8 +464,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	public void messageToAllPlayersOnShip(final ITextComponent textComponent) {
 		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
 		final List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-		final ITextComponent messageFormatted = new TextComponentString("[" + (!shipName.isEmpty() ? shipName : "ShipCore") + "] ")
-		                                             .appendSibling(textComponent);
+		final ITextComponent messageFormatted = Commons.getChatPrefix(!shipName.isEmpty() ? shipName : "ShipCore")
+		                                               .appendSibling(textComponent);
 		
 		WarpDrive.logger.info(String.format("%s messageToAllPlayersOnShip: %s",
 		                                    this, textComponent.getFormattedText()));
@@ -610,14 +610,14 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		if (entityPlayer.world != this.world) {
 			distance += 256;
 			if (!WarpDriveConfig.SHIP_SUMMON_ACROSS_DIMENSIONS) {
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("%1$s is in a different dimension, too far away to be summoned",
-				                                                       entityPlayer.getDisplayName())
+				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.teleportation.guide.different_dimension",
+				                                                                  entityPlayer.getDisplayName())
 						                                     .setStyle(Commons.styleWarning));
 				return;
 			}
 		}
 		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
-			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("You are to far away to be summoned aboard '%1$s' (max. is %2$s m)",
+			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.teleportation.guide.out_of_range",
 			                                                                  shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE)
 					                                     .setStyle(Commons.styleWarning));
 			return;
@@ -652,8 +652,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				return;
 			}
 		}
-		final ITextComponent message = new TextComponentTranslation("No safe spot found to summon player %1$s",
-		                                                    entityPlayer.getDisplayName())
+		final ITextComponent message = new TextComponentTranslation("warpdrive.teleportation.guide.no_safe_spot",
+		                                                            entityPlayer.getDisplayName())
 				                       .setStyle(Commons.styleWarning);
 		messageToAllPlayersOnShip(message);
 		Commons.addChatMessage(entityPlayer, message);
@@ -928,7 +928,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 			final JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
 			jump.enable();
 		} else {
-			messageToAllPlayersOnShip(new TextComponentTranslation("Insufficient energy level"));
+			messageToAllPlayersOnShip(new TextComponentTranslation("warpdrive.ship.guide.insufficient_energy"));
 		}
 	}
 	
@@ -963,8 +963,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				
 				final StringBuilder reason = new StringBuilder();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
-					commandDone(false, new TextComponentString(String.format("Ship is too small (%d/%d).\nInsufficient ship mass to engage alcubierre drive.\nIncrease your mass or use a jumpgate to reach or exit hyperspace.",
-					                                                         shipMass, WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE)).getFormattedText());
+					commandDone(false, new TextComponentTranslation("warpdrive.ship.guide.too_small_for_hyperspace",
+					                                                shipMass, WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE).getFormattedText());
 					return;
 				}
 			}
