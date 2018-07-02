@@ -16,7 +16,7 @@ public class CompatEvilCraft implements IBlockTransformer {
 	
 	public static void register() {
 		try {
-			classBlockConfigurableBlockContainer = Class.forName("evilcraft.core.config.configurable.ConfigurableBlockContainer");
+			classBlockConfigurableBlockContainer = Class.forName("org.cyclops.cyclopscore.config.configurable.ConfigurableBlockContainer");
 			WarpDriveConfig.registerBlockTransformer("evilcraft", new CompatEvilCraft());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();

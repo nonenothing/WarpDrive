@@ -14,9 +14,7 @@ import net.minecraftforge.common.util.Constants;
 
 public class CompatThaumcraft implements IBlockTransformer {
 	
-	private static Class<?> classBlockArcaneDoor;
 	private static Class<?> classBlockChestHungry;
-	private static Class<?> classBlockEssentiaReservoir;
 	private static Class<?> classBlockJar;
 	private static Class<?> classBlockMetalDevice;
 	private static Class<?> classBlockMirror;
@@ -26,15 +24,13 @@ public class CompatThaumcraft implements IBlockTransformer {
 	
 	public static void register() {
 		try {
-			classBlockArcaneDoor = Class.forName("thaumcraft.common.blocks.BlockArcaneDoor");
-			classBlockChestHungry = Class.forName("thaumcraft.common.blocks.BlockChestHungry");
-			classBlockEssentiaReservoir = Class.forName("thaumcraft.common.blocks.BlockEssentiaReservoir");
-			classBlockJar = Class.forName("thaumcraft.common.blocks.BlockJar");
-			classBlockMetalDevice = Class.forName("thaumcraft.common.blocks.BlockMetalDevice");
-			classBlockMirror = Class.forName("thaumcraft.common.blocks.BlockMirror");
-			classBlockTable = Class.forName("thaumcraft.common.blocks.BlockTable");
-			classBlockTube = Class.forName("thaumcraft.common.blocks.BlockTube");
-			classBlockWoodenDevice = Class.forName("thaumcraft.common.blocks.BlockWoodenDevice");
+			classBlockChestHungry = Class.forName("thaumcraft.common.blocks.devices.BlockHungryChest");
+			classBlockJar = Class.forName("thaumcraft.common.blocks.essentia.BlockJar");
+			classBlockMetalDevice = Class.forName("thaumcraft.common.blocks.BlockMetalDevice"); // @TODO MC1.12
+			classBlockMirror = Class.forName("thaumcraft.common.blocks.devices.BlockMirror");
+			classBlockTable = Class.forName("thaumcraft.common.blocks.basic.BlockTable");
+			classBlockTube = Class.forName("thaumcraft.common.blocks.essentia.BlockTube");
+			classBlockWoodenDevice = Class.forName("thaumcraft.common.blocks.BlockWoodenDevice"); // @TODO MC1.12
 			WarpDriveConfig.registerBlockTransformer("thaumcraft", new CompatThaumcraft());
 		} catch(final ClassNotFoundException exception) {
 			exception.printStackTrace();
@@ -43,9 +39,7 @@ public class CompatThaumcraft implements IBlockTransformer {
 	
 	@Override
 	public boolean isApplicable(final Block block, final int metadata, final TileEntity tileEntity) {
-		return classBlockArcaneDoor.isInstance(block)
-			|| classBlockChestHungry.isInstance(block)
-			|| classBlockEssentiaReservoir.isInstance(block)
+		return classBlockChestHungry.isInstance(block)
 			|| classBlockJar.isInstance(block)
 			|| classBlockMetalDevice.isInstance(block)
 			|| classBlockMirror.isInstance(block)
@@ -76,9 +70,7 @@ public class CompatThaumcraft implements IBlockTransformer {
 	// Not rotating: arcane workbench, deconstruction table, crystals, candles, crucible, alchemical centrifuge
 	
 	// Transformation handling required:
-	// Tile arcane door: (metadata) 0 1 2 3 / 8						mrotArcaneDoor	thaumcraft.common.blocks.BlockArcaneDoor
 	// Tile Hungry chest: (metadata) 2 5 3 4						mrotHungryChest	thaumcraft.common.blocks.BlockChestHungry
-	// Tile essentia reservoir: face (byte) 0 / 1 / 2 5 3 4			rotForgeByte	thaumcraft.common.blocks.BlockEssentiaReservoir
 	// Tile jar: facing (byte) 2 5 3 4								rotForgeByte	thaumcraft.common.blocks.BlockJar
 	// Tile vis relay: orientation (short) 0 / 1 / 2 5 3 4			rotForgeShort	thaumcraft.common.blocks.BlockMetalDevice
 	// Tile arcane lamp: orientation (int) 2 5 3 4					rotForgeInt		thaumcraft.common.blocks.BlockMetalDevice
@@ -93,7 +85,6 @@ public class CompatThaumcraft implements IBlockTransformer {
 	// Tile banner: facing (byte) 0 4 8 12							rotBanner		thaumcraft.common.blocks.BlockWoodenDevice
 	
 	// -----------------------------------------    {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
-	private static final int[]   mrotArcaneDoor   = {  1,  2,  3,  0,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final int[]   mrotHungryChest  = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
 	private static final int[]   mrotMirror       = {  0,  1,  5,  4,  2,  3,  6,  7, 11, 10,  8,  9, 12, 13, 14, 15 };
 	private static final int[]   mrotTable        = {  1,  0,  5,  4,  2,  3,  9,  8,  6,  7, 10, 11, 12, 13, 14, 15 };
@@ -106,18 +97,6 @@ public class CompatThaumcraft implements IBlockTransformer {
 	public int rotate(final Block block, final int metadata, final NBTTagCompound nbtTileEntity, final ITransformation transformation) {
 		final byte rotationSteps = transformation.getRotationSteps();
 		
-		if (classBlockArcaneDoor.isInstance(block)) {
-			switch (rotationSteps) {
-			case 1:
-				return mrotArcaneDoor[metadata];
-			case 2:
-				return mrotArcaneDoor[mrotArcaneDoor[metadata]];
-			case 3:
-				return mrotArcaneDoor[mrotArcaneDoor[mrotArcaneDoor[metadata]]];
-			default:
-				return metadata;
-			}
-		}
 		if (classBlockChestHungry.isInstance(block)) {
 			switch (rotationSteps) {
 			case 1:
@@ -128,24 +107,6 @@ public class CompatThaumcraft implements IBlockTransformer {
 				return mrotHungryChest[mrotHungryChest[mrotHungryChest[metadata]]];
 			default:
 				return metadata;
-			}
-		}
-		if (classBlockEssentiaReservoir.isInstance(block)) {
-			if (nbtTileEntity.hasKey("face")) {
-				final short direction = nbtTileEntity.getByte("face");
-				switch (rotationSteps) {
-				case 1:
-					nbtTileEntity.setByte("face", rotForgeByte[direction]);
-					return metadata;
-				case 2:
-					nbtTileEntity.setByte("face", rotForgeByte[rotForgeByte[direction]]);
-					return metadata;
-				case 3:
-					nbtTileEntity.setByte("face", rotForgeByte[rotForgeByte[rotForgeByte[direction]]]);
-					return metadata;
-				default:
-					return metadata;
-				}
 			}
 		}
 		if (classBlockJar.isInstance(block)) {

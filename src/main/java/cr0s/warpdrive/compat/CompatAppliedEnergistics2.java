@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	
 	private static Class<?> classAEBaseBlock;
-	private static Class<?> classBlockQuartzTorch;
+	private static Class<?> classBlockQuartzFixture;
 	private static Class<?> classBlockCableBus;
 	private static Class<?> classBlockQuantumLinkChamber;
 	private static Class<?> classTileQuantumBridge;
@@ -30,7 +30,7 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	public static void register() {
 		try {
 			classAEBaseBlock = Class.forName("appeng.block.AEBaseBlock");
-			classBlockQuartzTorch = Class.forName("appeng.block.misc.BlockQuartzTorch");
+			classBlockQuartzFixture = Class.forName("appeng.block.misc.BlockQuartzFixture");
 			classBlockCableBus = Class.forName("appeng.block.networking.BlockCableBus");
 			classBlockQuantumLinkChamber = Class.forName("appeng.block.qnb.BlockQuantumLinkChamber");
 			classTileQuantumBridge = Class.forName("appeng.tile.qnb.TileQuantumBridge");
@@ -79,7 +79,7 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 		// nothing to do
 	}
 	
-	private static final byte[] mrotQuartzTorch = {  0,  1,  5,  4,  2,  3,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15 };
+	private static final byte[] mrotQuartzFixture = { 0, 1, 5, 4, 2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 	private static final Map<String, String> rotSideNames;
 	private static final Map<String, String> rotTagSuffix;
 	static {
@@ -105,14 +105,14 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 			return metadata;
 		}
 		
-		if (classBlockQuartzTorch.isInstance(block)) {
+		if (classBlockQuartzFixture.isInstance(block)) {
 			switch (rotationSteps) {
 			case 1:
-				return mrotQuartzTorch[metadata];
+				return mrotQuartzFixture[metadata];
 			case 2:
-				return mrotQuartzTorch[mrotQuartzTorch[metadata]];
+				return mrotQuartzFixture[mrotQuartzFixture[metadata]];
 			case 3:
-				return mrotQuartzTorch[mrotQuartzTorch[mrotQuartzTorch[metadata]]];
+				return mrotQuartzFixture[mrotQuartzFixture[mrotQuartzFixture[metadata]]];
 			default:
 				return metadata;
 			}
