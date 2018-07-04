@@ -9,16 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import mcp.MethodsReturnNonnullByDefault;
-
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
@@ -26,15 +25,21 @@ import net.minecraftforge.common.DimensionManager;
 
 import javax.annotation.Nonnull;
 
-@MethodsReturnNonnullByDefault
-public class CommandEntity extends CommandBase {
+public class CommandEntity extends AbstractCommand {
 	
 	private static final List<String> entitiesNoRemoval = Arrays.asList(
-			"item.EntityItemFrame_" 
+			"item.EntityItemFrame_",
+			"item.EntityPainting_"
 			);
 	private static final List<String> entitiesNoCount = Arrays.asList(
-			"item.EntityItemFrame_" 
+			"item.EntityItemFrame_",
+			"item.EntityPainting_"
 			);
+	
+	private static final Style styleFound  = new Style().setColor(TextFormatting.WHITE);
+	private static final Style styleNumber = new Style().setColor(TextFormatting.WHITE);
+	private static final Style styleFactor = new Style().setColor(TextFormatting.DARK_GRAY);
+	private static final Style styleName   = new Style().setColor(TextFormatting.LIGHT_PURPLE);
 	
 	@Override
 	public String getName() {
@@ -95,14 +100,10 @@ public class CommandEntity extends CommandBase {
 			final World world;
 			if (commandSender instanceof EntityPlayerMP) {
 				world = ((EntityPlayerMP) commandSender).world;
-			} else if (radius <= 0) {
-				world = DimensionManager.getWorld(0);
 			} else {
-				Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
-				return;
+				world = DimensionManager.getWorld(0);
 			}
-			entities = new ArrayList<>();
-			entities.addAll(world.loadedEntityList);
+			entities = new ArrayList<>(world.loadedEntityList);
 		} else {
 			if (!(commandSender instanceof EntityPlayerMP)) {
 				Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
@@ -111,87 +112,93 @@ public class CommandEntity extends CommandBase {
 			final EntityPlayerMP entityPlayer = (EntityPlayerMP) commandSender;
 			entities = entityPlayer.world.getEntitiesWithinAABBExcludingEntity(entityPlayer, new AxisAlignedBB(
 					Math.floor(entityPlayer.posX    ), Math.floor(entityPlayer.posY    ), Math.floor(entityPlayer.posZ    ),
-					Math.floor(entityPlayer.posX + 1), Math.floor(entityPlayer.posY + 1), Math.floor(entityPlayer.posZ + 1)).expand(radius, radius, radius));
+					Math.floor(entityPlayer.posX + 1), Math.floor(entityPlayer.posY + 1), Math.floor(entityPlayer.posZ + 1)).grow(radius, radius, radius));
 		}
 		final HashMap<String, Integer> counts = new HashMap<>(entities.size());
 		int count = 0;
-		for (final Object object : entities) {
-			if (object instanceof Entity) {
-				String name = object.getClass().getCanonicalName();
-				if (name == null) {
-					name = "-null-";
+		for (final Entity entity : entities) {
+			String name = entity.getClass().getCanonicalName();
+			if (name == null) {
+				name = "-null-";
+			} else {
+				name = name.replaceAll("net\\.minecraft\\.entity\\.", "") + "_";
+			}
+			if (filter.isEmpty() && !entitiesNoCount.isEmpty()) {
+				boolean isCountable = true;
+				for (final String entityNoCount : entitiesNoCount) {
+					if (name.contains(entityNoCount)) {
+						isCountable = false;
+						break;
+					}
+				}
+				if (!isCountable) {
+					continue;
+				}
+			}
+			if (filter.isEmpty() || name.contains(filter)) {
+				// update statistics
+				count++;
+				if (!counts.containsKey(name)) {
+					counts.put(name, 1);
 				} else {
-					name = name.replaceAll("net\\.minecraft\\.entity\\.", "") + "_";
+					counts.put(name, counts.get(name) + 1);
 				}
-				if (filter.isEmpty() && !entitiesNoCount.isEmpty()) {
-					boolean isCountable = true;
-					for (final String entityNoCount : entitiesNoCount) {
-						if (name.contains(entityNoCount)) {
-							isCountable = false;
-							break;
-						}
-					}
-					if (!isCountable) {
-						continue;
-					}
-				}
-				if (filter.isEmpty() || name.contains(filter)) {
-					// update statistics
-					count++;
-					if (!counts.containsKey(name)) {
-						counts.put(name, 1);
-					} else {
-						counts.put(name, counts.get(name) + 1);
-					}
-					if (!filter.isEmpty()) {
-						ITextComponent textComponent = new TextComponentString("Found " + object);
-						textComponent.getStyle().setColor(TextFormatting.RED);
+				if (!filter.isEmpty()) {
+					if (count == 1) {
+						final ITextComponent textComponent = new TextComponentTranslation("warpdrive.command.found_title", entity).setStyle(styleFound);
 						Commons.addChatMessage(commandSender, textComponent);
 					}
-					// remove entity
-					if (kill && !((Entity) object).isEntityInvulnerable(WarpDrive.damageAsphyxia)) {
-						if (!entitiesNoRemoval.isEmpty()) {
-							boolean isRemovable = true;
-							for (final String entityNoRemoval : entitiesNoRemoval) {
-								if (name.contains(entityNoRemoval)) {
-									isRemovable = false;
-									break;
-								}
-							}
-							if (!isRemovable) {
-								continue;
+					final ITextComponent textComponent = new TextComponentTranslation("warpdrive.command.found_line", entity).setStyle(styleFound);
+					Commons.addChatMessage(commandSender, textComponent);
+				}
+				// remove entity
+				if (kill && !entity.isEntityInvulnerable(WarpDrive.damageAsphyxia)) {
+					if (!entitiesNoRemoval.isEmpty()) {
+						boolean isRemovable = true;
+						for (final String entityNoRemoval : entitiesNoRemoval) {
+							if (name.contains(entityNoRemoval)) {
+								isRemovable = false;
+								break;
 							}
 						}
-						((Entity) object).setDead();
+						if (!isRemovable) {
+							continue;
+						}
 					}
+					entity.setDead();
 				}
 			}
 		}
 		if (count == 0) {
-			ITextComponent textComponent = new TextComponentString("No matching entities found within " + radius + " blocks");
-			textComponent.getStyle().setColor(TextFormatting.RED);
+			final ITextComponent textComponent = new TextComponentTranslation("warpdrive.command.no_matching_entity", radius).setStyle(Commons.styleWarning);
 			Commons.addChatMessage(commandSender, textComponent);
 			return;
 		}
 		
-		ITextComponent textComponent = new TextComponentString(count + " matching entities within " + radius + " blocks:");
-		textComponent.getStyle().setColor(TextFormatting.GOLD);
+		ITextComponent textComponent = new TextComponentTranslation("warpdrive.command.x_matching_entities", count, radius).setStyle(Commons.styleCorrect);
 		Commons.addChatMessage(commandSender, textComponent);
 		if (counts.size() < 10) {
 			for (final Entry<String, Integer> entry : counts.entrySet()) {
-				textComponent = new TextComponentString(entry.getValue().toString() + "§8x§d" + entry.getKey());
+				textComponent = new TextComponentString(entry.getValue().toString()).setStyle(styleNumber)
+						                .appendSibling(new TextComponentString("x").setStyle(styleFactor))
+						                .appendSibling(new TextComponentString(entry.getKey()).setStyle(styleName));
 				textComponent.getStyle().setColor(TextFormatting.WHITE);
 				Commons.addChatMessage(commandSender, textComponent);
 			}
 		} else {
-			String message = "";
+			textComponent = new TextComponentString("");
+			boolean isFirst = true;
 			for (final Entry<String, Integer> entry : counts.entrySet()) {
-				if (!message.isEmpty()) {
-					message += "§8" + ", ";
+				if (isFirst) {
+					isFirst = false;
+				} else {
+					textComponent.appendSibling(new TextComponentString(", ").setStyle(styleFactor));
 				}
-				message += "§f" + entry.getValue() + "§8x§d" + entry.getKey();
+				textComponent.appendSibling(new TextComponentString(entry.getValue().toString()).setStyle(styleNumber))
+				             .appendSibling(new TextComponentString("x").setStyle(styleFactor))
+				             .appendSibling(new TextComponentString(entry.getKey()).setStyle(styleName));
 			}
-			Commons.addChatMessage(commandSender, new TextComponentString(message));
+			Commons.addChatMessage(commandSender, textComponent);
 		}
 	}
 }

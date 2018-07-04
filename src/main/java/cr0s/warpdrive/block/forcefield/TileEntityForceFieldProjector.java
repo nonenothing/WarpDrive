@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IForceFieldShape;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
@@ -50,9 +51,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.Fluid;
@@ -269,8 +267,8 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 				if (guideTicks <= 0) {
 					guideTicks = PROJECTOR_GUIDE_UPDATE_TICKS;
 					
-					final ITextComponent msg = Commons.getChatPrefix(getBlockType())
-					    .appendSibling(new TextComponentTranslation("warpdrive.forcefield.guide.low_power"));
+					final WarpDriveText msg = Commons.getChatPrefix(getBlockType());
+					msg.appendSibling(new WarpDriveText(Commons.styleWarning, "warpdrive.force_field.guide.low_power"));
 					
 					final AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - 10, pos.getY() - 10, pos.getZ() - 10, pos.getX() + 10, pos.getY() + 10, pos.getZ() + 10);
 					final List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
@@ -1014,25 +1012,24 @@ public class TileEntityForceFieldProjector extends TileEntityAbstractForceField 
 		return false;
 	}
 	
-	private ITextComponent getShapeStatus() {
+	private WarpDriveText getShapeStatus() {
 		final EnumForceFieldShape enumForceFieldShape = getShape();
-		final ITextComponent displayName = new TextComponentTranslation("warpdrive.forcefield.shape.status_line." + enumForceFieldShape.getName());
+		final WarpDriveText displayName = new WarpDriveText(null, "warpdrive.force_field.shape.status_line." + enumForceFieldShape.getName());
 		if (enumForceFieldShape == EnumForceFieldShape.NONE) {
-			return new TextComponentTranslation("warpdrive.forcefield.shape.status_line.none", 
-				displayName);
+			return new WarpDriveText(null, "warpdrive.force_field.shape.status_line.none",
+			                         displayName);
 		} else if (isDoubleSided) {
-			return new TextComponentTranslation("warpdrive.forcefield.shape.status_line.double",
-				displayName);
+			return new WarpDriveText(null, "warpdrive.force_field.shape.status_line.double",
+			                         displayName);
 		} else {
-			return new TextComponentTranslation("warpdrive.forcefield.shape.status_line.single", 
-				displayName);
+			return new WarpDriveText(null, "warpdrive.force_field.shape.status_line.single",
+			                         displayName);
 		}
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
-		return super.getStatus()
-			.appendSibling(new TextComponentString("\n")).appendSibling(getShapeStatus());
+	public WarpDriveText getStatus() {
+		return super.getStatus().append(getShapeStatus());
 	}
 	
 	@Override

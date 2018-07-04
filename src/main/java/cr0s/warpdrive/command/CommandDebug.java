@@ -6,10 +6,7 @@ import cr0s.warpdrive.data.StarMapRegistry;
 
 import javax.annotation.Nonnull;
 
-import mcp.MethodsReturnNonnullByDefault;
-
 import net.minecraft.block.Block;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
@@ -20,8 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-@MethodsReturnNonnullByDefault
-public class CommandDebug extends CommandBase {
+public class CommandDebug extends AbstractCommand {
 	
 	@Override
 	public String getName()

@@ -1,7 +1,9 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,13 +49,13 @@ public class CompatAppliedEnergistics2 implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final WarpDriveText reason) {
 		if (classBlockQuantumLinkChamber.isInstance(block)) {
 			if (classTileQuantumBridge.isInstance(tileEntity)) {
 				try {
 					final Object object = methodTileQuantumBridge_getQEFrequency.invoke(tileEntity);
 					if (((Long)object) != 0L) {
-						reason.append("Quantum field interference detected!");
+						reason.append(Commons.styleWarning, "warpdrive.compat.guide.quantum_field_interference");
 						return false;
 					} else {
 						return true;

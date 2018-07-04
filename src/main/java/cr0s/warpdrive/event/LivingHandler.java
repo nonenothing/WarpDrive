@@ -25,7 +25,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -81,16 +81,16 @@ public class LivingHandler {
 			  && entityLivingBase instanceof EntityPlayer
 			  && entityLivingBase.ticksExisted % 40 == 0) {
 				Commons.addChatMessage( entityLivingBase,
-					new TextComponentString(String.format("§cProximity alert: world border is only %d m away!", 
-				                                     (int) Math.sqrt(Math.abs(distanceSquared)))) );
+					new TextComponentTranslation("warpdrive.world_border.in_range",
+					                             (int) Math.sqrt(Math.abs(distanceSquared))).setStyle(Commons.styleWarning) );
 			}
 		} else {
 			if (entityLivingBase instanceof EntityPlayerMP) {
 				if (((EntityPlayerMP) entityLivingBase).capabilities.isCreativeMode) {
 					if (entityLivingBase.ticksExisted % 100 == 0) {
 						Commons.addChatMessage( entityLivingBase,
-							new TextComponentString(String.format("§cYou're %d m outside the world border...", 
-						                                     (int) Math.sqrt(Math.abs(distanceSquared)))) );
+							new TextComponentTranslation("warpdrive.world_border.outside",
+							                             (int) Math.sqrt(Math.abs(distanceSquared))).setStyle(Commons.styleWarning) );
 					}
 					return;
 				}
@@ -110,7 +110,7 @@ public class LivingHandler {
 			// spam chat if it's a player
 			if (entityLivingBase instanceof EntityPlayer && !entityLivingBase.isDead && entityLivingBase.deathTime <= 0) {
 				Commons.addChatMessage( entityLivingBase,
-					new TextComponentString("§4You've reached the world border...") );
+					new TextComponentTranslation("warpdrive.world_border.reached").setStyle(Commons.styleWarning));
 			}
 			
 			// delay damage for 'fast moving' players

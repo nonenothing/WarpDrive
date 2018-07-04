@@ -3,6 +3,7 @@ package cr0s.warpdrive.data;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockTransformer;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -50,10 +51,11 @@ public class JumpShip {
 	public JumpShip() {
 	}
 	
-	public static JumpShip createFromFile(final String fileName, final StringBuilder reason) {
+	public static JumpShip createFromFile(final String fileName, final WarpDriveText reason) {
 		final NBTTagCompound schematic = Commons.readNBTFromFile(WarpDriveConfig.G_SCHEMALOCATION + "/" + fileName + ".schematic");
 		if (schematic == null) {
-			reason.append(String.format("Schematic not found or unknown error reading it: '%s'.", fileName));
+			reason.append(Commons.styleWarning, "warpdrive.ship.guide.schematic_not_found",
+			              fileName);
 			return null;
 		}
 		
@@ -153,17 +155,16 @@ public class JumpShip {
 		return jumpShip;
 	}
 	
-	public void messageToAllPlayersOnShip(final ITextComponent textComponent) {
-		final ITextComponent messageFormatted = new TextComponentString("["
-						+ ((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName : "ShipCore") + "] ")
+	public void messageToAllPlayersOnShip(final WarpDriveText textComponent) {
+		final ITextComponent messageFormatted = new TextComponentString((shipCore != null && !shipCore.shipName.isEmpty()) ? shipCore.shipName + " " : "ShipCore ").setStyle(Commons.styleHeader)
 						.appendSibling(textComponent);
 		if (entitiesOnShip == null) {
 			// entities not saved yet, get them now
-			final StringBuilder reason = new StringBuilder();
+			final WarpDriveText reason = new WarpDriveText();
 			saveEntities(reason);
 		}
 		
-		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent);
+		WarpDrive.logger.info(this + " messageToAllPlayersOnShip: " + textComponent.getUnformattedText());
 		for (final MovingEntity movingEntity : entitiesOnShip) {
 			final Entity entity = movingEntity.getEntity();
 			if (entity instanceof EntityPlayer) {
@@ -172,12 +173,13 @@ public class JumpShip {
 		}
 	}
 	
-	public boolean saveEntities(final StringBuilder reason) {
+	public boolean saveEntities(final WarpDriveText reason) {
 		boolean isSuccess = true;
 		entitiesOnShip = new ArrayList<>();
 		
 		if (world == null) {
-			reason.append("Invalid call to saveEntities, please report it to mod author");
+			WarpDrive.logger.error("Invalid call to saveEntities, please report it to mod author: world is null");
+			reason.append(Commons.styleWarning, "warpdrive.error.internal_check_console");
 			return false;
 		}
 		
@@ -192,12 +194,9 @@ public class JumpShip {
 			
 			final String id = EntityList.getEntityString(entity);
 			if (Dictionary.ENTITIES_ANCHOR.contains(id)) {
-				if (reason.length() > 0) {
-					reason.append("\n");
-				}
-				reason.append(String.format("Anchor entity %s detected at (%d %d %d), aborting jump...",
-				                            id,
-				                            Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ)));
+				reason.append(Commons.styleWarning, "warpdrive.ship.guide.anchor_entity_detected",
+				              id,
+				              Math.round(entity.posX), Math.round(entity.posY), Math.round(entity.posZ));
 				isSuccess = false;
 				// we need to continue so players are added so they can see the message...
 				continue;
@@ -251,7 +250,7 @@ public class JumpShip {
 			                 Commons.format(world, core));
 	}
 	
-	public boolean checkBorders(final StringBuilder reason) {
+	public boolean checkBorders(final WarpDriveText reason) {
 		// Abort jump if blocks with TE are connecting to the ship (avoid crash when splitting multi-blocks)
 		for (int x = minX - 1; x <= maxX + 1; x++) {
 			final boolean xBorder = (x == minX - 1) || (x == maxX + 1);
@@ -287,9 +286,10 @@ public class JumpShip {
 						continue;
 					}
 					
-					reason.append(String.format("Ship snagged by %s at (%d %d %d). Sneak right click the ship core to see your ship dimensions, then update your ship dimensions.",
-					                            blockState.getBlock().getLocalizedName(),
-					                            x, y, z));
+					reason.append(Commons.styleWarning, "warpdrive.ship.guide.ship_snagged1",
+					              blockState.getBlock().getLocalizedName(),
+					              x, y, z);
+					reason.append(Commons.styleCommand, "warpdrive.ship.guide.ship_snagged2");
 					world.createExplosion(null, x, y, z, Math.min(4F * 30, 4F * (jumpBlocks.length / 50)), false);
 					return false;
 				}
@@ -302,7 +302,7 @@ public class JumpShip {
 	/**
 	 * Saving ship to memory
 	 */
-	public boolean save(final StringBuilder reason) {
+	public boolean save(final WarpDriveText reason) {
 		BlockPos blockPos = new BlockPos(0, -1, 0);
 		try {
 			final int estimatedVolume = (maxX - minX + 1) * (maxY - minY + 1) * (maxZ - minZ + 1);
@@ -337,7 +337,8 @@ public class JumpShip {
 								actualVolume++;
 								
 								if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
-									WarpDrive.logger.info(String.format("Block(%d %d %d) is %s", x, y, z, blockState));
+									WarpDrive.logger.info(String.format("Block(%d %d %d) is %s",
+									                                    x, y, z, blockState));
 								}
 								
 								if (!Dictionary.BLOCKS_NOMASS.contains(blockState.getBlock())) {
@@ -346,9 +347,9 @@ public class JumpShip {
 								
 								// Stop on non-movable blocks
 								if (Dictionary.BLOCKS_ANCHOR.contains(blockState.getBlock())) {
-									reason.append(String.format("Jump aborted by on-board anchor block %s at (%d %d %d).",
-									                            blockState.getBlock().getLocalizedName(),
-									                            x, y, z));
+									reason.append(Commons.styleWarning, "warpdrive.ship.guide.anchor_block_detected",
+									              blockState.getBlock().getLocalizedName(),
+									              x, y, z);
 									return false;
 								}
 								
@@ -360,12 +361,9 @@ public class JumpShip {
 										final IBlockTransformer blockTransformer = WarpDriveConfig.blockTransformers.get(external.getKey());
 										if (blockTransformer != null) {
 											if (!blockTransformer.isJumpReady(jumpBlock.block, jumpBlock.blockMeta, tileEntity, reason)) {
-												if (reason.length() > 0) {
-													reason.append("\n");
-												}
-												reason.append(String.format("Jump aborted by on-board block %s at (%d %d %d).",
-												                            jumpBlock.block.getLocalizedName(),
-												                            jumpBlock.x, jumpBlock.y, jumpBlock.z));
+												reason.append(Commons.styleWarning, "warpdrive.ship.guide.block_not_ready_for_jump",
+												              jumpBlock.block.getLocalizedName(),
+												              jumpBlock.x, jumpBlock.y, jumpBlock.z);
 												return false;
 											}
 										}
@@ -401,15 +399,16 @@ public class JumpShip {
 			actualMass = newMass;
 		} catch (final Exception exception) {
 			exception.printStackTrace();
-			final String msg = String.format("Exception while saving ship, probably a corrupted block at (%d %d %d).",
-			                                 blockPos.getX(), blockPos.getY(), blockPos.getZ());
-			WarpDrive.logger.error(msg);
-			reason.append(msg);
+			final WarpDriveText textComponent = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.corrupted_block",
+			                                                      Commons.format(world, blockPos));
+			WarpDrive.logger.error(textComponent.getUnformattedText());
+			reason.appendSibling(textComponent);
 			return false;
 		}
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Ship saved as " + jumpBlocks.length + " blocks");
+			WarpDrive.logger.info(String.format("%s Ship saved as %d blocks",
+			                                    this, jumpBlocks.length));
 		}
 		return true;
 	}

@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
@@ -26,9 +27,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fml.common.Optional;
 
@@ -58,7 +56,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	private int maxZ = 0;
 	
 	private boolean isValid = false;
-	private ITextComponent messageValidityIssues = new TextComponentString("");
+	private WarpDriveText textValidityIssues = new WarpDriveText();
 	private boolean isCloaking = false;
 	private int volume = 0;
 	private int energyRequired = 0;
@@ -432,16 +430,16 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 		// build status message
 		final float integrity = countIntegrity / 13.0F; 
 		if (messageInnerCoils.length() > 0 && messageOuterCoils.length() > 0) {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missing_channeling_and_projecting_coils",
-					Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils).setStyle(Commons.styleWarning);
+			textValidityIssues = new WarpDriveText(Commons.styleWarning, "warpdrive.cloaking_core.missing_channeling_and_projecting_coils",
+			                                       Math.round(100.0F * integrity), messageInnerCoils, messageOuterCoils);
 		} else if (messageInnerCoils.length() > 0) {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missing_channeling_coils",
-			        Math.round(100.0F * integrity), messageInnerCoils).setStyle(Commons.styleWarning);
+			textValidityIssues = new WarpDriveText(Commons.styleWarning, "warpdrive.cloaking_core.missing_channeling_coils",
+			                                       Math.round(100.0F * integrity), messageInnerCoils);
 		} else if (messageOuterCoils.length() > 0) {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.missing_projecting_coils",
-					Math.round(100.0F * integrity), messageOuterCoils).setStyle(Commons.styleWarning);
+			textValidityIssues = new WarpDriveText(Commons.styleWarning, "warpdrive.cloaking_core.missing_projecting_coils",
+			                                       Math.round(100.0F * integrity), messageOuterCoils);
 		} else {
-			messageValidityIssues = new TextComponentTranslation("warpdrive.cloaking_core.valid").setStyle(Commons.styleCorrect);
+			textValidityIssues = new WarpDriveText(Commons.styleCorrect, "warpdrive.cloaking_core.valid");
 		}
 		
 		// Update cloaking field parameters defined by coils
@@ -457,29 +455,28 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	@Override
-	public ITextComponent getStatusHeader() {
+	public WarpDriveText getStatusHeader() {
 		if (world == null) {
 			return super.getStatusHeader();
 		}
 		
-		final ITextComponent textStatus;
+		final WarpDriveText textStatus;
 		if (!isValid) {
-			textStatus = messageValidityIssues;
+			textStatus = textValidityIssues;
 		} else if (!isEnabled) {
-			textStatus = new TextComponentTranslation("warpdrive.cloaking_core.disabled",
+			textStatus = new WarpDriveText(null, "warpdrive.cloaking_core.disabled",
 					tier,
 					volume);
 		} else if (!isCloaking) {
-			textStatus = new TextComponentTranslation("warpdrive.cloaking_core.low_power",
+			textStatus = new WarpDriveText(Commons.styleWarning, "warpdrive.cloaking_core.low_power",
 					tier,
 					volume);
 		} else {
-			textStatus = new TextComponentTranslation("warpdrive.cloaking_core.cloaking",
-			                                                 tier,
-			                                                 volume);
+			textStatus = new WarpDriveText(Commons.styleCorrect, "warpdrive.cloaking_core.cloaking",
+			                               tier,
+			                               volume);
 		}
-		return super.getStatusHeader()
-		    .appendSibling(new TextComponentString("\n")).appendSibling(textStatus);
+		return super.getStatusHeader().append(textStatus);
 	}
 	
 	// Common OC/CC methods
@@ -502,7 +499,7 @@ public class TileEntityCloakingCore extends TileEntityAbstractEnergy {
 	}
 	
 	public Object[] isAssemblyValid() {
-		return new Object[] { isValid, Commons.removeFormatting(messageValidityIssues.getUnformattedText()) };
+		return new Object[] { isValid, Commons.removeFormatting(textValidityIssues.getUnformattedText()) };
 	}
 	
 	public Object[] enable(final Object[] arguments) {

@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -23,9 +24,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 
 import net.minecraftforge.fml.common.Optional;
@@ -195,22 +193,22 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 	}
 	
 	// TileEntityAbstractBase overrides
-	private ITextComponent getSignatureStatus() {
+	private WarpDriveText getSignatureStatus() {
 		if (uuidTransporterCore == null) {
-			return new TextComponentTranslation("warpdrive.transporter_beacon.status.invalid");
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.transporter_signature.status_line.invalid");
 		}
-		return new TextComponentTranslation("warpdrive.transporter_beacon.status.valid",
-		                                    nameTransporterCore, uuidTransporterCore);
+		return new WarpDriveText(Commons.styleCorrect, "warpdrive.transporter_signature.status_line.valid",
+		                         nameTransporterCore, uuidTransporterCore);
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
-		final ITextComponent textSignatureStatus = getSignatureStatus();
+	public WarpDriveText getStatus() {
+		final WarpDriveText textSignatureStatus = getSignatureStatus();
 		if (textSignatureStatus.getUnformattedText().isEmpty()) {
 			return super.getStatus();
 		} else {
 			return super.getStatus()
-			            .appendSibling(new TextComponentString("\n")).appendSibling(textSignatureStatus);
+			            .append(textSignatureStatus);
 		}
 	}
 	

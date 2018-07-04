@@ -10,20 +10,18 @@ import cr0s.warpdrive.world.SpaceTeleporter;
 
 import javax.annotation.Nonnull;
 
-import mcp.MethodsReturnNonnullByDefault;
-
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 
-@MethodsReturnNonnullByDefault
-public class CommandSpace extends CommandBase {
+public class CommandSpace extends AbstractCommand {
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 2;
@@ -36,8 +34,6 @@ public class CommandSpace extends CommandBase {
 	
 	@Override
 	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
-		if (commandSender == null) { return; } 
-		
 		// set defaults
 		int dimensionIdTarget = Integer.MAX_VALUE;
 		
@@ -63,7 +59,7 @@ public class CommandSpace extends CommandBase {
 			} else if (commandSender instanceof EntityPlayer) {
 				dimensionIdTarget = StarMapRegistry.getDimensionId(args[0], (EntityPlayer) commandSender);
 			} else {
-				Commons.addChatMessage(commandSender, new TextComponentString("§c/space: player not found '" + args[0] + "'"));
+				Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.player_not_found", args[0]).setStyle(Commons.styleWarning)));
 				return;
 			}
 			
@@ -72,19 +68,19 @@ public class CommandSpace extends CommandBase {
 			if (entityPlayerMPs_found != null) {
 				entityPlayerMPs = entityPlayerMPs_found;
 			} else {
-				Commons.addChatMessage(commandSender, new TextComponentString("§c/space: player not found '" + args[0] + "'"));
+				Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.player_not_found", args[0]).setStyle(Commons.styleWarning)));
 				return;
 			}
 			dimensionIdTarget = StarMapRegistry.getDimensionId(args[1], entityPlayerMPs[0]);
 			
 		} else {
-			Commons.addChatMessage(commandSender, new TextComponentString("§c/space: too many arguments " + args.length));
+			Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.too_many_arguments", args.length).setStyle(Commons.styleWarning)));
 			return;
 		}
 		
 		// check player
 		if (entityPlayerMPs == null || entityPlayerMPs.length <= 0) {
-			Commons.addChatMessage(commandSender, new TextComponentString("§c/space: undefined player"));
+			Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.player_not_found", args[0]).setStyle(Commons.styleWarning)));
 			return;
 		}
 		
@@ -96,9 +92,9 @@ public class CommandSpace extends CommandBase {
 			final CelestialObject celestialObjectCurrent = CelestialObjectManager.get(entityPlayerMP.world, (int) entityPlayerMP.posX, (int) entityPlayerMP.posZ);
 			if (dimensionIdTarget == Integer.MAX_VALUE) {
 				if (celestialObjectCurrent == null) {
-					Commons.addChatMessage(commandSender, new TextComponentString(
-						String.format("§c/space: player %s is in unknown dimension %d.\n§bTry specifying an explicit target dimension instead.",
-							    entityPlayerMP.getName(), entityPlayerMP.world.provider.getDimension()) ));
+					Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.player_in_unknown_dimension",
+					                                                                                             entityPlayerMP.getName(), entityPlayerMP.world.provider.getDimension()).setStyle(Commons.styleWarning)));
+					Commons.addChatMessage(commandSender, new TextComponentTranslation("warpdrive.command.specify_explicit_dimension").setStyle(Commons.styleCorrect));
 					continue;
 				}
 				if ( celestialObjectCurrent.isSpace()
@@ -108,9 +104,9 @@ public class CommandSpace extends CommandBase {
 					if (celestialObjectChild == null) {
 						dimensionIdTarget = 0;
 					} else if (celestialObjectChild.isVirtual()) {
-						Commons.addChatMessage(commandSender, new TextComponentString(
-							String.format("§c/space: player %s can't go to %s.\n§cThis is a virtual celestial object.\n§bTry specifying an explicit target dimension instead.",
-								entityPlayerMP.getName(), celestialObjectChild.getDisplayName()) ));
+						Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.player_can_t_go_virtual",
+						                                                                                             entityPlayerMP.getName(), celestialObjectChild.getDisplayName()).setStyle(Commons.styleWarning) ));
+						Commons.addChatMessage(commandSender, new TextComponentTranslation("warpdrive.command.specify_explicit_dimension").setStyle(Commons.styleCorrect));
 						continue;
 					} else {
 						dimensionIdTarget = celestialObjectChild.dimensionId;
@@ -169,19 +165,20 @@ public class CommandSpace extends CommandBase {
 			// get target world
 			final WorldServer worldTarget = server.getWorld(dimensionIdTarget);
 			if (worldTarget == null) {
-				Commons.addChatMessage(commandSender, new TextComponentString("§c/space: undefined dimension '" + dimensionIdTarget + "'"));
+				Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.undefined_dimension",
+				                                                                                             dimensionIdTarget).setStyle(Commons.styleWarning)));
 				continue;
 			}
 			
 			// inform player
-			final String message = String.format("§aTeleporting player %s to %s (%d)",
-			                                     entityPlayerMP.getName(),
-			                                     Commons.format(worldTarget), dimensionIdTarget);
-			Commons.addChatMessage(commandSender, new TextComponentString(message));
-			WarpDrive.logger.info(message);
+			final ITextComponent textComponent = new TextComponentTranslation("warpdrive.command.teleporting_player_x_to_y",
+			                                             entityPlayerMP.getName(),
+			                                             Commons.format(worldTarget)).setStyle(Commons.styleCorrect);
+			Commons.addChatMessage(commandSender, textComponent);
+			WarpDrive.logger.info(textComponent.getUnformattedText());
 			if (commandSender != entityPlayerMP) {
-				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("%s is teleporting you to %s (%d)",
-				                                                                             commandSender.getName(), Commons.format(worldTarget), dimensionIdTarget)));
+				Commons.addChatMessage(entityPlayerMP, new TextComponentTranslation("warpdrive.command.teleporting_by_x_to_y",
+				                                                                    commandSender.getName(), Commons.format(worldTarget), dimensionIdTarget).setStyle(Commons.styleCorrect));
 			}
 			
 			// find a good spot

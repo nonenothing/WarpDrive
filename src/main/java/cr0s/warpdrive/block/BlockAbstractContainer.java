@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
@@ -32,7 +33,6 @@ import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -274,7 +274,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 				
 				if (enumComponentType == null) {
 					// no more upgrades to dismount
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.no_upgrade_to_dismount"));
+					Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning, "warpdrive.upgrade.result.no_upgrade_to_dismount"));
 					return true;
 				}
 				
@@ -288,7 +288,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 				
 				tileEntityAbstractBase.dismountUpgrade(enumComponentType);
 				// upgrade dismounted
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.dismounted", enumComponentType.name()));
+				Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleCorrect, "warpdrive.upgrade.result.dismounted",
+				                                                       enumComponentType.name()));
 				return true;
 			}
 			
@@ -303,13 +304,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			// validate type
 			if (tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType) <= 0) {
 				// invalid upgrade type
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.invalid_upgrade"));
+				Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning,"warpdrive.upgrade.result.invalid_upgrade"));
 				return true;
 			}
 			if (!tileEntityAbstractBase.canUpgrade(enumComponentType)) {
 				// too many upgrades
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.too_many_upgrades",
-				                                                                             tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType)));
+				Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning,"warpdrive.upgrade.result.too_many_upgrades",
+				                                                       tileEntityAbstractBase.getUpgradeMaxCount(enumComponentType)));
 				return true;
 			}
 			
@@ -317,7 +318,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 				// validate quantity
 				if (itemStackHeld.getCount() < 1) {
 					// not enough upgrade items
-					Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.not_enough_upgrades"));
+					Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning, "warpdrive.upgrade.result.not_enough_upgrades"));
 					return true;
 				}
 				
@@ -328,7 +329,8 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			// mount the new upgrade item
 			tileEntityAbstractBase.mountUpgrade(enumComponentType);
 			// upgrade mounted
-			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.upgrade.result.mounted", enumComponentType.name()));
+			Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleCorrect, "warpdrive.upgrade.result.mounted",
+			                                                       enumComponentType.name()));
 			return true;
 		}
 		

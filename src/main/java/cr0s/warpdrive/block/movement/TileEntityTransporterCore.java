@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IItemTransporterBeacon;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.api.computer.ITransporterCore;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
@@ -67,9 +68,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -481,16 +479,15 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 	}
 	
 	@Override
-	public ITextComponent getStatusHeader() {
+	public WarpDriveText getStatusHeader() {
 		if ( globalPositionLocal == null
 		  || globalPositionRemote == null ) {
 			return super.getStatusHeader();
 		}
 		return super.getStatusHeader()
-		            .appendSibling(new TextComponentString("\n"))
-		            .appendSibling(new TextComponentTranslation("warpdrive.transporter.status",
-		                                                        globalPositionLocal.x, globalPositionLocal.y, globalPositionLocal.z,
-		                                                        globalPositionRemote.x, globalPositionRemote.y, globalPositionRemote.z));
+		            .append(null, "warpdrive.transporter.status_line.from_to",
+		                    globalPositionLocal.x, globalPositionLocal.y, globalPositionLocal.z,
+		                    globalPositionRemote.x, globalPositionRemote.y, globalPositionRemote.z);
 	}
 	
 	@Override

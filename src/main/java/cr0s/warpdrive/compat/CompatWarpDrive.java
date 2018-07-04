@@ -2,6 +2,7 @@ package cr0s.warpdrive.compat;
 
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.block.breathing.BlockAirFlow;
@@ -37,7 +38,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final WarpDriveText reason) {
 		return true;
 	}
 	

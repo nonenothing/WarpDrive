@@ -4,6 +4,7 @@ import cr0s.warpdrive.api.computer.IShipController;
 
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -130,23 +131,20 @@ public abstract class EventWarpDrive extends Event {
 		public static class PreJump extends Ship {
 			
 			// cancellation message
-			private final StringBuilder reason;
+			private final WarpDriveText reason;
 			
 			public PreJump(final World world, final BlockPos blockPos,
 			               final IShipController shipController, final String movementType) {
 				super(world, blockPos, shipController, movementType);
 				
-				this.reason = new StringBuilder();
+				this.reason = new WarpDriveText();
 			}
 			
-			public String getReason() {
-				return reason.toString();
+			public WarpDriveText getReason() {
+				return reason;
 			}
 			
-			public void appendReason(final String reasonAdded) {
-				if (reason.length() > 0) {
-					reason.append("\n");
-				}
+			public void appendReason(final ITextComponent reasonAdded) {
 				reason.append(reasonAdded);
 			}
 		}
@@ -165,7 +163,7 @@ public abstract class EventWarpDrive extends Event {
 			public final AxisAlignedBB aabbTarget;
 			
 			// cancellation message
-			private final StringBuilder reason;
+			private final WarpDriveText reason;
 			
 			public TargetCheck(final World worldCurrent, final BlockPos blockPos,
 			                   final IShipController shipController, final String movementType,
@@ -180,17 +178,14 @@ public abstract class EventWarpDrive extends Event {
 				this.worldTarget = worldTarget;
 				this.aabbTarget = aabbTarget;
 				
-				this.reason = new StringBuilder();
+				this.reason = new WarpDriveText();
 			}
 			
-			public String getReason() {
-				return reason.toString();
+			public WarpDriveText getReason() {
+				return reason;
 			}
 			
-			public void appendReason(final String reasonAdded) {
-				if (reason.length() > 0) {
-					reason.append("\n");
-				}
+			public void appendReason(final ITextComponent reasonAdded) {
 				reason.append(reasonAdded);
 			}
 		}
@@ -203,11 +198,11 @@ public abstract class EventWarpDrive extends Event {
 			
 			public JumpResult(final World world, final BlockPos blockPos,
 			                  final IShipController shipController, final String jumpType,
-			                  final boolean isSuccessful, final String reason) {
+			                  final boolean isSuccessful, final ITextComponent reason) {
 				super(world, blockPos, shipController, jumpType);
 				
 				this.isSuccessful = isSuccessful;
-				this.reason = reason;
+				this.reason = reason == null ? "" : reason.getFormattedText();
 			}
 		}
 	}

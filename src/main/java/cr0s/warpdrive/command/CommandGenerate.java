@@ -8,22 +8,21 @@ import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.world.JumpgateGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
 import cr0s.warpdrive.world.WorldGenStation;
-import mcp.MethodsReturnNonnullByDefault;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-@MethodsReturnNonnullByDefault
-public class CommandGenerate extends CommandBase {
+public class CommandGenerate extends AbstractCommand {
 	
+	@Nonnull
 	@Override
 	public String getName() {
 		return "generate";
@@ -34,6 +33,7 @@ public class CommandGenerate extends CommandBase {
 		return 2;
 	}
 	
+	@Nonnull
 	@Override
 	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/" + getName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
@@ -46,7 +46,7 @@ public class CommandGenerate extends CommandBase {
 		
 		//noinspection ConstantConditions
 		if (world == null || blockPos == null) {
-			Commons.addChatMessage(commandSender, new TextComponentString("* generate: unknown world or coordinates, probably an invalid command sender in action here."));
+			Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.invalid_location").setStyle(Commons.styleWarning)));
 			return;
 		}
 		
@@ -66,7 +66,7 @@ public class CommandGenerate extends CommandBase {
 		
 		// Reject command, if player is not in space
 		if (!CelestialObjectManager.isInSpace(world, blockPos.getX(), blockPos.getZ()) && (!"ship".equals(structure))) {
-			Commons.addChatMessage(commandSender, new TextComponentString("* generate: this structure is only allowed in space!"));
+			Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("warpdrive.command.only_in_space").setStyle(Commons.styleWarning)));
 			return;
 		}
 		
@@ -102,7 +102,7 @@ public class CommandGenerate extends CommandBase {
 					break;
 				case "jumpgate":
 					if (args.length != 2) {
-						Commons.addChatMessage(commandSender, new TextComponentString("Missing jumpgate name"));
+						Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentString("Missing jumpgate name").setStyle(Commons.styleWarning)));
 					} else {
 						WarpDrive.logger.info(String.format("/generate: creating jumpgate %s",
 						                                     Commons.format(world, blockPos)));
@@ -138,8 +138,8 @@ public class CommandGenerate extends CommandBase {
 	private void generateStructure(final ICommandSender commandSender, final String group, final String name, final World world, final BlockPos blockPos) {
 		final AbstractStructure structure = StructureManager.getStructure(world.rand, group, name);
 		if (structure == null) {
-			Commons.addChatMessage(commandSender, new TextComponentString(String.format("Invalid %s:%s, try one of the followings:\n%s",
-			                                                                            group, name, StructureManager.getStructureNames(group))));
+			Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentTranslation("Invalid %1$s:%2$s, try one of the followings:\n%3$s",
+			                                                                                             group, name, StructureManager.getStructureNames(group)).setStyle(Commons.styleWarning)));
 		} else {
 			WarpDrive.logger.info(String.format("/generate: Generating %s:%s %s",
 			                                    group, structure.getName(), Commons.format(world, blockPos)));

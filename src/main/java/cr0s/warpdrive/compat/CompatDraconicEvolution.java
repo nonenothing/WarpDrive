@@ -1,7 +1,9 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import net.minecraft.block.Block;
@@ -41,10 +43,10 @@ public class CompatDraconicEvolution implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final WarpDriveText reason) {
 		if ( classBlockDraconiumBlock.isInstance(block)
 		  && metadata == 1) {
-			reason.append("Ender resurrection anchor detected!");
+			reason.append(Commons.styleWarning, "warpdrive.compat.guide.ender_resurrection_ritual");
 			return false;
 		}
 		return true;

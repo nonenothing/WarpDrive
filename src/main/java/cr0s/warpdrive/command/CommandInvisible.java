@@ -5,15 +5,12 @@ import cr0s.warpdrive.WarpDrive;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 
-@MethodsReturnNonnullByDefault
-public class CommandInvisible extends CommandBase {
+public class CommandInvisible extends AbstractCommand {
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 4;

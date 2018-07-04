@@ -2,6 +2,7 @@ package cr0s.warpdrive.world;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.Filler;
 import cr0s.warpdrive.config.GenericSet;
@@ -38,7 +39,7 @@ public class WorldGenStructure {
 		// hull plain and glass are linked by same name
 		final GenericSet<Filler> fillerSetHull_plain = WarpDriveConfig.FillerManager.getRandomSetFromGroup(rand, "hull_plain");
 		if (fillerSetHull_plain == null) {
-			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+			WarpDrive.logger.warn(String.format("No FillerSet found within group %s during world generation: check your configuration",
 			                                    "hull_plain"));
 			fillerHullPlain = new Filler();
 			fillerHullPlain.block = Blocks.STONE;
@@ -50,7 +51,7 @@ public class WorldGenStructure {
 			final String nameFillerGlass = "hull_glass:" + fillerSetHull_plain.getName();
 			final GenericSet<Filler> fillerSetHull_glass = WarpDriveConfig.FillerManager.getGenericSet(nameFillerGlass);
 			if (fillerSetHull_glass == null) {
-				WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+				WarpDrive.logger.warn(String.format("No FillerSet %s found during world generation: check your configuration",
 				                                    nameFillerGlass));
 				fillerHullGlass = new Filler();
 				fillerHullGlass.block = Blocks.GLASS;
@@ -62,7 +63,7 @@ public class WorldGenStructure {
 		// solarPanel and wiring are linked by same name
 		final GenericSet<Filler> fillerSetSolarPanel = WarpDriveConfig.FillerManager.getRandomSetFromGroup(rand, "ship_solarPanel");
 		if (fillerSetSolarPanel == null) {
-			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+			WarpDrive.logger.warn(String.format("No FillerSet found within group %s during world generation: check your configuration",
 			                                    "ship_solarPanel"));
 			fillerSolarPanel = new Filler();
 			fillerSolarPanel.block = Blocks.SANDSTONE;
@@ -74,7 +75,7 @@ public class WorldGenStructure {
 			final String nameFillerWiring = "ship_wiring:" + fillerSetSolarPanel.getName();
 			final GenericSet<Filler> fillerSetWiring = WarpDriveConfig.FillerManager.getGenericSet(nameFillerWiring);
 			if (fillerSetWiring == null) {
-				WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+				WarpDrive.logger.warn(String.format("No FillerSet found within group %s during world generation: check your configuration",
 				                                    nameFillerWiring));
 				fillerWiring = new Filler();
 				fillerWiring.block = Blocks.OAK_FENCE;
@@ -86,7 +87,7 @@ public class WorldGenStructure {
 		// propulsion is on it's own
 		final GenericSet<Filler> fillerSetPropulsion = WarpDriveConfig.FillerManager.getRandomSetFromGroup(rand, "ship_propulsion");
 		if (fillerSetPropulsion == null) {
-			WarpDrive.logger.warn(String.format("No FillerSet found with group %s during world generation: check your configuration",
+			WarpDrive.logger.warn(String.format("No FillerSet found within group %s during world generation: check your configuration",
 			                                    "ship_propulsion"));
 			fillerPropulsion = new Filler();
 			fillerPropulsion.block = Blocks.LOG;
@@ -178,7 +179,7 @@ public class WorldGenStructure {
 	}
 	
 	public void generateFromFile(final World world, final String filename, final int targetX, final int targetY, final int targetZ, final byte rotationSteps) {
-		final StringBuilder reason = new StringBuilder();
+		final WarpDriveText reason = new WarpDriveText();
 		final JumpShip jumpShip = JumpShip.createFromFile(filename, reason);
 		if (jumpShip == null) {
 			WarpDrive.logger.error(String.format("%s Failed to read schematic %s: %s", this, filename, reason.toString()));

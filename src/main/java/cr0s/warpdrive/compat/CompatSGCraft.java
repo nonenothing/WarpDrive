@@ -1,7 +1,9 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,13 +44,13 @@ public class CompatSGCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final WarpDriveText reason) {
 		if (classSGBaseTE.isInstance(tileEntity)) {
 			try {
 				final Object object = methodSGBaseTE_sgStateDescription.invoke(tileEntity);
 				final String state = (String)object;
 				if (!state.equalsIgnoreCase("Idle")) {
-					reason.append(String.format("Stargate is active (%s)!", state));
+					reason.append(Commons.styleWarning, "warpdrive.compat.guide.stargate_is_active", state);
 					return false;
 				}
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {

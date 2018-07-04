@@ -35,7 +35,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	public ItemForceFieldShape(final String registryName) {
 		super(registryName);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.forcefield.shape");
+		setUnlocalizedName("warpdrive.force_field.shape");
 		
 		itemStackCache = new ItemStack[EnumForceFieldShape.length];
 	}
@@ -103,6 +103,6 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 		
 		Commons.addTooltip(list, "\n");
 		
-		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.shape.tooltip.usage").getFormattedText());
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.force_field.shape.tooltip.usage").getFormattedText());
 	}
 }

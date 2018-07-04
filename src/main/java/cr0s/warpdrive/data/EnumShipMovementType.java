@@ -1,5 +1,9 @@
 package cr0s.warpdrive.data;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
+
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 
@@ -71,7 +75,7 @@ public enum EnumShipMovementType implements IStringSerializable {
 	public String getDescription() { return description; }
 	
 	public static EnumShipMovementType compute(final World worldSource, final int xCurrent, final int yMin, final int yMax, final int zCurrent,
-	                                           final EnumShipCommand command, final int yMove, final StringBuilder reason) {
+	                                           final EnumShipCommand command, final int yMove, final WarpDriveText reason) {
 		
 		if (command == EnumShipCommand.GATE) {
 			return GATE_ACTIVATING;
@@ -88,7 +92,7 @@ public enum EnumShipMovementType implements IStringSerializable {
 			} else if (isInSpace) {
 				return HYPERSPACE_ENTERING;
 			}
-			reason.append("Unable to reach hyperspace from a planet");
+			reason.append(Commons.styleWarning, "warpdrive.ship.guide.unable_to_reach_hyperspace_from_planet");
 			return null;
 			
 		case MANUAL:
@@ -120,7 +124,9 @@ public enum EnumShipMovementType implements IStringSerializable {
 		}
 		
 		// invalid command?
-		reason.append(String.format("Invalid command '%s'", command));
+		WarpDrive.logger.error(String.format("Invalid command '%s'",
+		                                     command));
+		reason.append(Commons.styleWarning, "warpdrive.error.internal_check_console");
 		return null;
 	}
 }

@@ -6,6 +6,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.api.IVideoChannel;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CameraRegistryItem;
 
@@ -31,9 +32,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -293,18 +291,18 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	// status
-	protected ITextComponent getUpgradeStatus() {
+	protected WarpDriveText getUpgradeStatus() {
 		final String strUpgrades = getUpgradesAsString();
 		if (strUpgrades.isEmpty()) {
-			return new TextComponentTranslation("warpdrive.upgrade.status_line.none",
-				strUpgrades);
+			return new WarpDriveText(Commons.styleCorrect, "warpdrive.upgrade.status_line.none",
+			                         strUpgrades);
 		} else {
-			return new TextComponentTranslation("warpdrive.upgrade.status_line.valid",
-				strUpgrades);
+			return new WarpDriveText(Commons.styleCorrect, "warpdrive.upgrade.status_line.valid",
+			                         strUpgrades);
 		}
 	}
 	
-	protected ITextComponent getStatusPrefix() {
+	protected WarpDriveText getStatusPrefix() {
 		if (world != null) {
 			final Item item = Item.getItemFromBlock(getBlockType());
 			if (item != Items.AIR) {
@@ -312,53 +310,51 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 				return Commons.getChatPrefix(itemStack);
 			}
 		}
-		return new TextComponentString("");
+		return new WarpDriveText();
 	}
 	
-	protected ITextComponent getBeamFrequencyStatus(final int beamFrequency) {
+	protected WarpDriveText getBeamFrequencyStatus(final int beamFrequency) {
 		if (beamFrequency == -1) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.status_line.undefined");
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.beam_frequency.status_line.undefined");
 		} else if (beamFrequency < 0) {
-			return new TextComponentTranslation("warpdrive.beam_frequency.status_line.invalid", beamFrequency);
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.beam_frequency.status_line.invalid", beamFrequency);
 		} else {
-			return new TextComponentTranslation("warpdrive.beam_frequency.status_line.valid", beamFrequency);
+			return new WarpDriveText(Commons.styleCorrect, "warpdrive.beam_frequency.status_line.valid", beamFrequency);
 		}
 	}
 	
-	protected ITextComponent getVideoChannelStatus(final int videoChannel) {
+	protected WarpDriveText getVideoChannelStatus(final int videoChannel) {
 		if (videoChannel == -1) {
-			return new TextComponentTranslation("warpdrive.video_channel.status_line.undefined");
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.video_channel.status_line.undefined");
 		} else if (videoChannel < 0) {
-			return new TextComponentTranslation("warpdrive.video_channel.status_line.invalid", videoChannel).setStyle(Commons.styleWarning);
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.video_channel.status_line.invalid", videoChannel);
 		} else {
 			final CameraRegistryItem camera = WarpDrive.cameras.getCameraByVideoChannel(world, videoChannel);
 			if (camera == null) {
-				return new TextComponentTranslation("warpdrive.video_channel.status_line.not_loaded", videoChannel).setStyle(Commons.styleWarning);
+				return new WarpDriveText(Commons.styleWarning, "warpdrive.video_channel.status_line.not_loaded", videoChannel);
 			} else if (camera.isTileEntity(this)) {
-				return new TextComponentTranslation("warpdrive.video_channel.status_line.valid", videoChannel);
+				return new WarpDriveText(Commons.styleCorrect, "warpdrive.video_channel.status_line.valid_self", videoChannel);
 			} else {
-				return new TextComponentTranslation("warpdrive.video_channel.status_line.validCamera",
-				                                    videoChannel,
-				                                    camera.position.getX(),
-				                                    camera.position.getY(),
-				                                    camera.position.getZ());
+				return new WarpDriveText(Commons.styleCorrect, "warpdrive.video_channel.status_line.valid_other",
+				                         videoChannel,
+				                         Commons.format(world, camera.position) );
 			}
 		}
 	}
 	
-	public ITextComponent getStatusHeader() {
-		return new TextComponentString("");
+	public WarpDriveText getStatusHeader() {
+		return new WarpDriveText();
 	}
 	
-	public ITextComponent getStatus() {
-		final ITextComponent message = getStatusPrefix().appendSibling( getStatusHeader() );
+	public WarpDriveText getStatus() {
+		final WarpDriveText message = getStatusPrefix();
+		message.appendSibling( getStatusHeader() );
 		
 		if (this instanceof IBeamFrequency) {
 			// only show in item form or from server side
 			if ( world == null
 			  || !world.isRemote ) {
-				message.appendSibling(new TextComponentString("\n"))
-				       .appendSibling( getBeamFrequencyStatus(((IBeamFrequency) this).getBeamFrequency()) );
+				message.append( getBeamFrequencyStatus(((IBeamFrequency) this).getBeamFrequency()) );
 			}
 		}
 		
@@ -366,14 +362,12 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 			// only show in item form or from client side
 			if ( world == null
 			  || world.isRemote ) {
-				message.appendSibling(new TextComponentString("\n"))
-				       .appendSibling( getVideoChannelStatus(((IVideoChannel) this).getVideoChannel()) );
+				message.append( getVideoChannelStatus(((IVideoChannel) this).getVideoChannel()) );
 			}
 		}
 		
 		if (isUpgradeable()) {
-			message.appendSibling(new TextComponentString("\n"))
-			       .appendSibling( getUpgradeStatus() );
+			message.append( getUpgradeStatus() );
 		}
 		
 		return message;

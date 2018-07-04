@@ -2,6 +2,7 @@ package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import cofh.redstoneflux.api.IEnergyHandler;
@@ -24,9 +25,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Optional;
 
@@ -158,23 +156,22 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 		energyStored_internal -= amount_internal;
 	}
 	
-	private ITextComponent getEnergyStatus() {
+	private WarpDriveText getEnergyStatus() {
 		if (energy_getMaxStorage() == 0) {
-			return new TextComponentString("");
+			return new WarpDriveText();
 		}
-		return new TextComponentTranslation("warpdrive.energy.status_line",
+		return new WarpDriveText(null, "warpdrive.energy.status_line",
 			Commons.format((long) convertInternalToEU_floor(energy_getEnergyStored())),
 			Commons.format((long) convertInternalToEU_floor(energy_getMaxStorage())) );
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
-		final ITextComponent textEnergyStatus = getEnergyStatus();
+	public WarpDriveText getStatus() {
+		final WarpDriveText textEnergyStatus = getEnergyStatus();
 		if (textEnergyStatus.getUnformattedText().isEmpty()) {
 			return super.getStatus();
 		} else {
-			return super.getStatus()
-				.appendSibling(new TextComponentString("\n")).appendSibling(textEnergyStatus);
+			return super.getStatus().append(textEnergyStatus);
 		}
 	}
 	

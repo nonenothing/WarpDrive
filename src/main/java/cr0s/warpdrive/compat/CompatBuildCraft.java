@@ -1,7 +1,9 @@
 package cr0s.warpdrive.compat;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IBlockTransformer;
 import cr0s.warpdrive.api.ITransformation;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.Collections;
@@ -13,6 +15,7 @@ import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 public class CompatBuildCraft implements IBlockTransformer {
@@ -43,17 +46,20 @@ public class CompatBuildCraft implements IBlockTransformer {
 	}
 	
 	@Override
-	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final StringBuilder reason) {
+	public boolean isJumpReady(final Block block, final int metadata, final TileEntity tileEntity, final WarpDriveText reason) {
 		if (classTileEntityQuarry.isInstance(tileEntity)) {
-			reason.append("Quarry detected on board!");
+			reason.append(Commons.styleWarning, "warpdrive.compat.guide.block_detected_on_board",
+			              new TextComponentTranslation(block.getUnlocalizedName()));
 			return false;
 		}
 		if (classTileEntityFiller.isInstance(tileEntity)) {
-			reason.append("Filler detected on board!");
+			reason.append(Commons.styleWarning, "warpdrive.compat.guide.block_detected_on_board",
+			              new TextComponentTranslation(block.getUnlocalizedName()));
 			return false;
 		}
 		if (classTileEntityZonePlanner.isInstance(tileEntity)) {
-			reason.append("Zone Planner detected on board!");
+			reason.append(Commons.styleWarning, "warpdrive.compat.guide.block_detected_on_board",
+			              new TextComponentTranslation(block.getUnlocalizedName()));
 			return false;
 		}
 		return true;
@@ -188,6 +194,7 @@ public class CompatBuildCraft implements IBlockTransformer {
 				final String keyNew = rotPipeNames.get(keyOld);
 				if (keyNew != null) {
 					final NBTBase nbtBase = nbtTileEntity.getTag(keyOld);
+					assert nbtBase != null;
 					tagsNew.setTag(keyNew, nbtBase);
 					nbtTileEntity.removeTag(keyOld);
 					
@@ -211,10 +218,12 @@ public class CompatBuildCraft implements IBlockTransformer {
 					}
 				}
 			}
-			@SuppressWarnings("unchecked")
+			
 			final Set<String> keysNew = tagsNew.getKeySet();
 			for (final String keyNew : keysNew) {
-				nbtTileEntity.setTag(keyNew, tagsNew.getTag(keyNew));
+				final NBTBase nbtBase = tagsNew.getTag(keyNew);
+				assert nbtBase != null;
+				nbtTileEntity.setTag(keyNew, nbtBase);
 			}
 			
 			switch (rotationSteps) {

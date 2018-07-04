@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.IShipController;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -167,7 +168,7 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 		}
 	}
 	
-	protected void commandDone(final boolean success, final String reason) {
+	protected void commandDone(final boolean success, final WarpDriveText reason) {
 		isEnabled = false;
 		command = EnumShipCommand.IDLE;
 	}

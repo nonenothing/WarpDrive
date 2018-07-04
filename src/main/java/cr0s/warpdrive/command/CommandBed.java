@@ -1,10 +1,10 @@
 package cr0s.warpdrive.command;
 
 import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.api.WarpDriveText;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -13,7 +13,7 @@ import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
 
-public class CommandBed extends CommandBase {
+public class CommandBed extends AbstractCommand {
 	
 	@Override
 	public int getRequiredPermissionLevel() {
@@ -28,8 +28,6 @@ public class CommandBed extends CommandBase {
 	
 	@Override
 	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
-		if (commandSender == null) { return; }
-		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
 		EntityPlayerMP[] entityPlayerMPs = null;
@@ -38,8 +36,7 @@ public class CommandBed extends CommandBase {
 				entityPlayerMPs = new EntityPlayerMP[1];
 				entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
 			} else {
-				Commons.addChatMessage(commandSender, new TextComponentString(String.format("§c/%s: use as a player or provide a player name",
-				                                                    getName())));
+				Commons.addChatMessage(commandSender, getPrefix().appendSibling(new WarpDriveText(Commons.styleWarning, "warpdrive.command.player_required")));
 				return;
 			}
 			
@@ -62,8 +59,8 @@ public class CommandBed extends CommandBase {
 				entityPlayerMPs = new EntityPlayerMP[1];
 				entityPlayerMPs[0] = (EntityPlayerMP) commandSender;
 			} else {
-				Commons.addChatMessage(commandSender, new TextComponentString(String.format("§c/%s: player not found '%s'",
-				                                                    getName(), args[0])));
+				Commons.addChatMessage(commandSender, new WarpDriveText(Commons.styleWarning, "warpdrive.command.player_not_found",
+				                                                        args[0] ));
 				return;
 			}
 		}
@@ -72,36 +69,39 @@ public class CommandBed extends CommandBase {
 		for (final EntityPlayerMP entityPlayerMP : entityPlayerMPs) {
 			final BlockPos bedLocation = entityPlayerMP.getBedLocation(entityPlayerMP.world.provider.getDimension());
 			if (bedLocation == null) {
-				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("§cTeleportation failed:\nyou need to set your bed location in %s",
-				                                                                             Commons.format(entityPlayerMP.world))));
+				Commons.addChatMessage(entityPlayerMP, new WarpDriveText(Commons.styleWarning, "warpdrive.command.no_bed_to_teleport_to_self",
+				                                                         Commons.format(entityPlayerMP.world) ));
 				if (args.length != 0) {
-					Commons.addChatMessage(commandSender, new TextComponentString(String.format("§cTeleportation failed for player %s:\nplayer needs to set his/her bed location in %s",
-					                                                                            entityPlayerMP.getName(),
-					                                                                            Commons.format(entityPlayerMP.world))));
+					Commons.addChatMessage(commandSender, new WarpDriveText(Commons.styleWarning, "warpdrive.command.no_bed_to_teleport_to_other",
+					                                                        entityPlayerMP.getName(),
+					                                                        Commons.format(entityPlayerMP.world) ));
 				}
 				continue;
 			}
 			
 			final Block block = entityPlayerMP.world.getBlockState(bedLocation).getBlock();
 			if (!(block instanceof BlockBed)) {
-				Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("§cTeleportation failed:\nyour bed is no longer there in %s",
-				                                                                             Commons.format(entityPlayerMP.world))));
+				Commons.addChatMessage(entityPlayerMP, new WarpDriveText(Commons.styleWarning, "warpdrive.command.lost_bed_can_t_teleport_self",
+				                                                         Commons.format(entityPlayerMP.world) ));
 				if (args.length != 0) {
-					Commons.addChatMessage(commandSender, new TextComponentString(String.format("§cTeleportation failed for player %s:\nbed is no longer there in %s",
-					                                                                            entityPlayerMP.getName(),
-					                                                                            Commons.format(entityPlayerMP.world))));
+					Commons.addChatMessage(commandSender, new WarpDriveText(Commons.styleWarning, "warpdrive.command.lost_bed_can_t_teleport_other",
+					                                                        entityPlayerMP.getName(),
+					                                                        Commons.format(entityPlayerMP.world) ));
 				}
 				continue;
 			}
 			
 			entityPlayerMP.setPositionAndUpdate(bedLocation.getX() + 0.5D, bedLocation.getY() + 0.5D, bedLocation.getZ() + 0.5D);
 			
-			Commons.addChatMessage(entityPlayerMP, new TextComponentString(String.format("Teleporting to %s",
-			                                                                             Commons.format(entityPlayerMP.world, bedLocation))));
-			if (args.length != 0) {
-				Commons.addChatMessage(commandSender, new TextComponentString(String.format("Teleporting player %s to %s",
-				                                                                            entityPlayerMP.getName(),
-				                                                                            Commons.format(entityPlayerMP.world, bedLocation))));
+			if (args.length == 0) {
+				Commons.addChatMessage(entityPlayerMP, new WarpDriveText(Commons.styleCorrect, "warpdrive.command.teleporting_to_x",
+				                                                         Commons.format(entityPlayerMP.world, bedLocation) ));
+			} else {
+				Commons.addChatMessage(entityPlayerMP, new WarpDriveText(Commons.styleCorrect, "warpdrive.command.teleporting_by_x_to_y",
+				                                                         Commons.format(entityPlayerMP.world, bedLocation) ));
+				Commons.addChatMessage(commandSender, new WarpDriveText(Commons.styleCorrect, "warpdrive.command.teleporting_player_x_to_y",
+				                                                        entityPlayerMP.getName(),
+				                                                        Commons.format(entityPlayerMP.world, bedLocation) ));
 			}
 		}
 	}

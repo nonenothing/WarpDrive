@@ -3,14 +3,13 @@ package cr0s.warpdrive.command;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nonnull;
 
-public class CommandFind extends CommandBase {
+public class CommandFind extends AbstractCommand {
 	
 	@Override
 	public int getRequiredPermissionLevel() {
@@ -25,8 +24,6 @@ public class CommandFind extends CommandBase {
 	
 	@Override
 	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
-		if (commandSender == null) { return; }
-		
 		// parse arguments
 		//noinspection StatementWithEmptyBody
 		String nameToken = "";

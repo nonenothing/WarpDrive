@@ -1,10 +1,12 @@
 package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.energy.BlockEnergyBank;
 import cr0s.warpdrive.data.SoundEvents;
 
@@ -28,7 +30,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -144,9 +145,9 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
 			
 		} else {
-			Commons.addChatMessage(entityPlayer, new TextComponentString("Error: invalid state, please contact the mod authors"
-					+ "\nof " + itemStackHeld
-					+ "\nand " + tileEntity));
+			WarpDrive.logger.error(String.format("Invalid state, please contact the mod authors\nof %s %s\nand %s",
+			                                     itemStackHeld, itemStackHeld.getItem().getRegistryName(), tileEntity));
+			Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning, "warpdrive.error.internal_check_console"));
 		}
 		return EnumActionResult.SUCCESS;
 	}

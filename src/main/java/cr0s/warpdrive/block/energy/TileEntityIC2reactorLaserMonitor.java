@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block.energy;
 
+import cr0s.warpdrive.Commons;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
@@ -21,8 +23,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 
 import net.minecraftforge.fluids.BlockFluidBase;
@@ -185,18 +185,18 @@ public class TileEntityIC2reactorLaserMonitor extends TileEntityAbstractLaser {
 	
 	@Override
 	@Optional.Method(modid = "ic2")
-	public ITextComponent getStatus() {
+	public WarpDriveText getStatus() {
 		if (world == null) {
 			return super.getStatus();
 		}
 		
 		if (facing != null) {
 			return super.getStatus() 
-					.appendSibling(new TextComponentTranslation("warpdrive.ic2_reactor_laser_cooler.reactor_found",
-						facing.name().toLowerCase()));
+					.append(Commons.styleCorrect, "warpdrive.ic2_reactor_laser_cooler.reactor_found",
+					        facing.name().toLowerCase());
 		} else {
 			return super.getStatus()
-					.appendSibling(new TextComponentTranslation("warpdrive.ic2_reactor_laser_cooler.no_reactor"));
+					.append(Commons.styleWarning, "warpdrive.ic2_reactor_laser_cooler.no_reactor");
 		}
 	}
 }

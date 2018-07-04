@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.collection;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumLaserTreeFarmMode;
@@ -31,8 +32,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 
 import net.minecraftforge.common.IPlantable;
 import net.minecraftforge.fml.common.Optional;
@@ -768,45 +767,55 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public ITextComponent getStatusHeader() {
+	public WarpDriveText getStatusHeader() {
 		final int energy = laserMedium_getEnergyStored();
-		String state = "IDLE (not farming)";
+		WarpDriveText textState = new WarpDriveText(Commons.styleWarning, "warpdrive.error.internal_check_console");
 		if (currentState == STATE_IDLE) {
-			state = "IDLE (not farming)";
+			textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.idle");
 		} else if (currentState == STATE_WARMUP) {
-			state = "Warming up...";
+			textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.warming_up");
 		} else if (currentState == STATE_SCAN) {
 			if (breakLeaves) {
-				state = "Scanning all";
+				textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.scanning_all");
 			} else {
-				state = "Scanning logs";
+				textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.scanning_logs");
 			}
 		} else if (currentState == STATE_HARVEST) {
-			if (breakLeaves) {
-				state = "Harvesting all";
+			if (!enableSilktouch) {
+				if (breakLeaves) {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.harvesting_all");
+				} else {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.harvesting_logs");
+				}
 			} else {
-				state = "Harvesting logs";
-			}
-			if (enableSilktouch) {
-				state = state + " with silktouch";
+				if (breakLeaves) {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.harvesting_all_with_silktouch");
+				} else {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.harvesting_logs_with_silktouch");
+				}
 			}
 		} else if (currentState == STATE_TAP) {
-			if (breakLeaves) {
-				state = "Tapping trees, harvesting all";
+			if (!enableSilktouch) {
+				if (breakLeaves) {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.tapping_all");
+				} else {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.tapping_logs");
+				}
 			} else {
-				state = "Tapping trees, harvesting logs";
-			}
-			if (enableSilktouch) {
-				state = state + " with silktouch";
+				if (breakLeaves) {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.tapping_all_with_silktouch");
+				} else {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.tapping_logs_with_silktouch");
+				}
 			}
 		} else if (currentState == STATE_PLANT) {
-			state = "Planting trees";
+			textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.laser_tree_farm.status_line.planting");
 		}
 		if (energy <= 0) {
-			state = state + " - Out of energy";
+			textState.appendSibling(new WarpDriveText(Commons.styleWarning, "warpdrive.mining_laser.status_line._insufficient_energy"));
 		} else if (((currentState == STATE_SCAN) || (currentState == STATE_HARVEST) || (currentState == STATE_TAP)) && !isPowered) {
-			state = state + " - Not enough power";
+			textState.appendSibling(new WarpDriveText(Commons.styleWarning, "warpdrive.mining_laser.status_line._insufficient_energy"));
 		}
-		return new TextComponentString(state);
+		return textState;
 	}
 }

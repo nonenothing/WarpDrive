@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.building;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ISequencerCallbacks;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.block.movement.BlockShipCore;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
@@ -46,7 +47,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
@@ -249,7 +249,6 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	private TileEntityShipCore searchShipCore() {
-		final StringBuilder reason = new StringBuilder();
 		TileEntityShipCore tileEntityShipCore = null;
 		
 		// Search for ship cores above
@@ -272,7 +271,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		return tileEntityShipCore;
 	}
 	
-	private boolean saveShipToSchematic(final String fileName, final StringBuilder reason) {
+	private boolean saveShipToSchematic(final String fileName, final WarpDriveText reason) {
 		if (!shipCore.isValid()) {
 			return false;
 		}
@@ -282,7 +281,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		final int size = width * length * height;
 		
 		if (width <= 0 || length <= 0 || height <= 0) {
-			reason.append("Invalid ship dimensions, nothing to scan");
+			reason.append(Commons.styleWarning, "warpdrive.scanner.guide.invalid_ship_dimensions");
 			return false;
 		}
 		
@@ -379,7 +378,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	}
 	
 	// Begins ship scan
-	private boolean scanShip(final StringBuilder reason) {
+	private boolean scanShip(final WarpDriveText reason) {
 		// Enable scanner
 		setState(EnumShipScannerState.SCANNING);
 		final File file = new File(WarpDriveConfig.G_SCHEMALOCATION);
@@ -400,13 +399,13 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (!saveShipToSchematic(WarpDriveConfig.G_SCHEMALOCATION + "/" + schematicFileName + ".schematic", reason)) {
 			return false;
 		}
-		reason.append(schematicFileName);
+		reason.appendSibling(new TextComponentString(schematicFileName));
 		return true;
 	}
 	
 	// Returns error code and reason string
 	private int deployShip(final String fileName, final int offsetX, final int offsetY, final int offsetZ,
-	                       final byte rotationSteps, final boolean isForced, final StringBuilder reason) {
+	                       final byte rotationSteps, final boolean isForced, final WarpDriveText reason) {
 		targetX = pos.getX() + offsetX;
 		targetY = pos.getY() + offsetY;
 		targetZ = pos.getZ() + offsetZ;
@@ -419,7 +418,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		
 		blocksToDeployCount = jumpShip.jumpBlocks.length;
 		if (WarpDriveConfig.LOGGING_BUILDING) {
-			WarpDrive.logger.info(String.format("[ShipScanner] Loaded %d blocks to deploy", blocksToDeployCount));
+			WarpDrive.logger.info(String.format("%s Loaded %d blocks to deploy",
+			                                    this, blocksToDeployCount));
 		}
 		
 		// Validate context
@@ -431,7 +431,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			final double distance = MathHelper.sqrt(dX * dX + dY * dY + dZ * dZ);
 			
 			if (distance > WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS) {
-				reason.append(String.format("§cCannot deploy ship more than %d blocks away from scanner.", WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS));
+				reason.append(Commons.styleWarning, "warpdrive.builder.guide.deploying_out_of_range",
+				              WarpDriveConfig.SS_MAX_DEPLOY_RADIUS_BLOCKS);
 				return 5;
 			}
 			
@@ -480,14 +481,16 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 									world.newExplosion(null, x, y, z, 1, false, false);
 								}
 								if (WarpDriveConfig.LOGGING_BUILDING) {
-									WarpDrive.logger.info(String.format("Deployment collision detected %s", Commons.format(world, x, y, z)));
+									WarpDrive.logger.info(String.format("Deployment collision detected %s",
+									                                    Commons.format(world, x, y, z)));
 								}
 							}
 						}
 					}
 				}
 				if (occupiedBlockCount > 0) {
-					reason.append(String.format("§cDeployment area occupied with %d blocks. Can't deploy ship.", occupiedBlockCount));
+					reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_occupied_by_blocks",
+					              occupiedBlockCount);
 					return 2;
 				}
 			}
@@ -498,12 +501,13 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		
 		isShipToken = isForced;
 		setState(EnumShipScannerState.DEPLOYING);
-		reason.append(String.format("Deploying ship '%s'...", fileName));
+		reason.append(Commons.styleCorrect, "warpdrive.builder.guide.deploying_ship",
+		              fileName);
 		return 3;
 	}
 	
 	private static boolean isShipCoreClear(final World world, final BlockPos blockPos,
-	                                       final String nameRequestingPlayer, final StringBuilder reason) {
+	                                       final String nameRequestingPlayer, final WarpDriveText reason) {
 		final IBlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock().isAir(blockState, world, blockPos)) {
 			return true;
@@ -512,17 +516,18 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (!(blockState.getBlock() instanceof BlockShipCore)) {
 			world.newExplosion(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(),
 			                   1, false, false);
-			reason.append(String.format("§cDeployment area occupied by %s.\nCan't deploy new ship at (%d %d %d)",
-			                            blockState.getBlock().getLocalizedName(),
-			                            blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+			reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_occupied_by_block",
+			              blockState.getBlock().getLocalizedName(),
+			              blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			return false;
 		}
 		
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
 		if (!(tileEntity instanceof TileEntityShipCore)) {
-			reason.append(String.format("§cDeployment area occupied with invalid tile entity %s for ship core.\nContact an admin for help at (%d %d %d)",
-			                            tileEntity,
-			                            blockPos.getX(), blockPos.getY(), blockPos.getZ()));
+			reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_corrupted_tile_entity",
+			              tileEntity);
+			reason.append(Commons.styleCommand, "warpdrive.builder.guide.contact_an_admin",
+			              Commons.format(world, blockPos));
 			WarpDrive.logger.error(reason.toString());
 			world.newExplosion(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(),
 			                   1, false, false);
@@ -532,13 +537,15 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		final TileEntityShipCore tileEntityShipCore = (TileEntityShipCore) tileEntity;
 		final String namePlayersAboard = tileEntityShipCore.getAllPlayersInArea();
 		if (!namePlayersAboard.isEmpty()) {
-			reason.append(String.format("§cDeployment area occupied by active crew %s.\n§6Please wait or use another deployment spot",
-			                            namePlayersAboard));
+			reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_with_active_crew",
+			              namePlayersAboard);
+			reason.append(Commons.styleCommand, "warpdrive.builder.guide.wait_your_turn");
 			return false;
 		}
 		
 		if (tileEntityShipCore.isBusy()) {
-			reason.append("§cDeployment area is busy.\n§6Please try again in a few seconds.");
+			reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_is_busy");
+			reason.append(Commons.styleCommand, "warpdrive.builder.guide.wait_your_turn");
 			return false;
 		}
 		
@@ -548,13 +555,15 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		
 		if (nameOnlineCrew.equals(nameRequestingPlayer)) {
-			reason.append(String.format("§cDeployment area occupied by your ship, captain %s!\n§2Come back inside and use the computer to jump away!",
-			                            nameOnlineCrew));
+			reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_occupied_by_your_ship1",
+			              nameOnlineCrew);
+			reason.append(Commons.styleCommand, "warpdrive.builder.guide.deployment_area_occupied_by_your_ship2");
 			return false;
 		}
 		
-		reason.append(String.format("§cDeployment area occupied with ship owned by %s.\n§6Contact that player or use another deployment spot",
-		                            nameOnlineCrew));
+		reason.append(Commons.styleWarning, "warpdrive.builder.guide.deployment_area_occupied_by_online_player1",
+		              nameOnlineCrew);
+		reason.append(Commons.styleCommand, "warpdrive.builder.guide.deployment_area_occupied_by_online_player2");
 		return false;
 		
 	}
@@ -654,9 +663,9 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		if (shipCore == null) {
 			return new Object[] { false, 1, "Ship-Core not found" };
 		}
-		final StringBuilder reason = new StringBuilder();
+		final WarpDriveText reason = new WarpDriveText();
 		final boolean success = scanShip(reason);
-		return new Object[] { success, 3, reason.toString() };
+		return new Object[] { success, 3, reason.getUnformattedText() };
 	}
 	
 	private Object[] filename() {
@@ -686,20 +695,20 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			return new Object[] { 0, "Specified schematic file was not found!" };
 		}
 		
-		final StringBuilder reason = new StringBuilder();
+		final WarpDriveText reason = new WarpDriveText();
 		final int result = deployShip(fileName, x, y, z, rotationSteps, false, reason);
 		
 		// don't force captain when deploying from LUA
 		playerName = null;
 		/*
-		final EntityPlayer entityPlayer = world.getClosestPlayer(xCoord, yCoord, zCoord, 8);
+		final EntityPlayer entityPlayer = world.getClosestPlayer(pos, 8);
 		if (entityPlayer != null) {
 			playerName = entityPlayer.getCommandSenderName();
 		} else {
 			playerName = "";
 		}
 		/**/
-		return new Object[] { result, reason.toString() };
+		return new Object[] { result, reason.getUnformattedText() };
 	}
 	
 	private Object[] state() {
@@ -769,8 +778,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		if (entityPlayers.size() > 1) {
 			for (final EntityPlayer entityPlayer : entityPlayers) {
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("Too many players detected: please stand in the beam one at a time.")
-					.setStyle(Commons.styleWarning));
+				Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning, "warpdrive.builder.guide.too_many_players"));
 				shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS;
 			}
 			shipToken_idPlayer = null;
@@ -791,7 +799,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		}
 		if ( itemStack == null
 		  || slotIndex >= entityPlayer.inventory.getSizeInventory() ) {
-			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("Please come back once you've a Ship token."));
+			Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning, "warpdrive.builder.guide.no_ship_token"));
 			shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_PRECONDITION_TICKS;
 			shipToken_idPlayer = null;
 			return;
@@ -803,13 +811,13 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 			shipToken_idPlayer = entityPlayer.getUniqueID();
 			shipToken_countWarmup = SHIP_TOKEN_PLAYER_WARMUP_PERIODS + 1;
 			shipToken_nameSchematic = ItemShipToken.getSchematicName(itemStack);
-			Commons.addChatMessage(entityPlayer, new TextComponentString(String.format("Ship token '%1$s' detected!", shipToken_nameSchematic))
-			                                        .setStyle(Commons.styleHeader));
+			Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleCorrect, "warpdrive.builder.guide.ship_token_detected",
+			                                                       shipToken_nameSchematic));
 		}
 		shipToken_countWarmup--;
 		if (shipToken_countWarmup > 0) {
-			Commons.addChatMessage(entityPlayer, new TextComponentString(String.format("Stand by for ship materialization in %2$d...",
-			                                                                           shipToken_nameSchematic, shipToken_countWarmup)));
+			Commons.addChatMessage(entityPlayer, new WarpDriveText(null, "warpdrive.builder.guide.ship_materialization_countdown",
+			                                                       shipToken_nameSchematic, shipToken_countWarmup));
 			return;
 		}
 		// warmup done
@@ -817,15 +825,17 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		playerName = entityPlayer.getName();
 		
 		// try deploying
-		final StringBuilder reason = new StringBuilder();
-		deployShip(ItemShipToken.getSchematicName(itemStack), targetX - pos.getX(), targetY - pos.getY(), targetZ - pos.getZ(), rotationSteps, true, reason);
+		final WarpDriveText reason = new WarpDriveText();
+		deployShip(ItemShipToken.getSchematicName(itemStack),
+		           targetX - pos.getX(), targetY - pos.getY(), targetZ - pos.getZ(), rotationSteps,
+		           true, reason);
 		if (enumShipScannerState == EnumShipScannerState.IDLE) {
 			// failed
-			Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(Commons.styleWarning));
+			Commons.addChatMessage(entityPlayer, reason);
 			shipToken_nextUpdate_ticks = SHIP_TOKEN_UPDATE_DELAY_FAILED_DEPLOY_TICKS;
 			return;
 		}
-		Commons.addChatMessage(entityPlayer, new TextComponentString(reason.toString()).setStyle(Commons.styleHeader));
+		Commons.addChatMessage(entityPlayer, reason);
 		
 		// success => remove token
 		if (!entityPlayer.capabilities.isCreativeMode) {

@@ -3,6 +3,7 @@ package cr0s.warpdrive.event;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ISequencerCallbacks;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.JumpShip;
@@ -10,8 +11,6 @@ import cr0s.warpdrive.data.JumpShip;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 public class DeploySequencer extends JumpSequencer {
@@ -42,7 +41,7 @@ public class DeploySequencer extends JumpSequencer {
 	}
 	
 	@Override
-	public void disable(final boolean isSuccessful, final ITextComponent reason) {
+	public void disable(final boolean isSuccessful, final WarpDriveText reason) {
 		super.disable(isSuccessful, reason);
 		callback.sequencer_finished();
 	}
@@ -55,7 +54,7 @@ public class DeploySequencer extends JumpSequencer {
 			// Warn owner if deployment done but wait next tick for teleportation
 			final EntityPlayerMP entityPlayerMP = Commons.getOnlinePlayerByName(playerName);
 			if (entityPlayerMP != null) {
-				Commons.addChatMessage(entityPlayerMP, new TextComponentString("Ship deployed. Teleporting captain to the main deck"));
+				Commons.addChatMessage(entityPlayerMP, new WarpDriveText(Commons.styleCorrect, "warpdrive.builder.guide.ship_deployed"));
 			}
 		}
 	}
@@ -69,7 +68,7 @@ public class DeploySequencer extends JumpSequencer {
 				if (tileEntity instanceof TileEntityShipCore) {
 					final boolean isSuccess = ((TileEntityShipCore) tileEntity).summonOwnerOnDeploy(entityPlayerMP);
 					if (isSuccess) {
-						Commons.addChatMessage(entityPlayerMP, new TextComponentString("§6" + "Welcome aboard captain. Use the computer to get moving..."));
+						Commons.addChatMessage(entityPlayerMP, new WarpDriveText(Commons.styleCorrect, "warpdrive.builder.guide.welcome_aboard"));
 					} else {
 						WarpDrive.logger.warn(String.format("Failed to assign new captain %s",
 						                                    playerName));

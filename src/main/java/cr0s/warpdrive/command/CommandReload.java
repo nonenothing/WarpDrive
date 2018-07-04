@@ -5,12 +5,11 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 
-public class CommandReload extends CommandBase {
+public class CommandReload extends AbstractCommand {
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 2;
@@ -25,7 +24,8 @@ public class CommandReload extends CommandBase {
 	@Override
 	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] params) {
 		WarpDriveConfig.reload(server);
-		Commons.addChatMessage(commandSender, new TextComponentString("§aWarpDrive configuration has been reloaded.\n§cUse at your own risk!"));
+		Commons.addChatMessage(commandSender, new TextComponentTranslation("warpdrive.command.configuration_reloaded").setStyle(Commons.styleCorrect));
+		Commons.addChatMessage(commandSender, new TextComponentTranslation("warpdrive.command.liability_warning").setStyle(Commons.styleWarning));
 	}
 	
 	@Nonnull

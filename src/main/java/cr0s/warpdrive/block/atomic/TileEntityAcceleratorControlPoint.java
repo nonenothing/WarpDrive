@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.atomic;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IControlChannel;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -14,8 +15,6 @@ import li.cil.oc.api.machine.Context;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nonnull;
@@ -83,20 +82,20 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		}
 	}
 	
-	private ITextComponent getControlChannelStatus() {
+	private WarpDriveText getControlChannelStatus() {
 		if (controlChannel == -1) {
-			return new TextComponentTranslation("warpdrive.control_channel.status_line.undefined");
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.control_channel.status_line.undefined");
 		} else if (controlChannel < CONTROL_CHANNEL_MIN || controlChannel > CONTROL_CHANNEL_MAX) {
-			return new TextComponentTranslation("warpdrive.control_channel.status_line.invalid", controlChannel);
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.control_channel.status_line.invalid", controlChannel);
 		} else {
-			return new TextComponentTranslation("warpdrive.control_channel.status_line.valid", controlChannel);
+			return new WarpDriveText(Commons.styleCorrect, "warpdrive.control_channel.status_line.valid", controlChannel);
 		}
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
+	public WarpDriveText getStatus() {
 		return super.getStatus()
-		       .appendSibling(getControlChannelStatus());
+		       .append(getControlChannelStatus());
 	}
 	
 	@Override

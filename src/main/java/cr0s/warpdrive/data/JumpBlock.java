@@ -337,6 +337,7 @@ public class JumpBlock {
 				} else if (block == WarpDriveConfig.CC_Computer || block == WarpDriveConfig.CC_peripheral
 						|| block == WarpDriveConfig.CCT_Turtle || block == WarpDriveConfig.CCT_Expanded || block == WarpDriveConfig.CCT_Advanced) {
 					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
+					assert newTileEntity != null;
 					newTileEntity.invalidate();
 					
 				}
@@ -422,6 +423,7 @@ public class JumpBlock {
 				} else {// IC2 extensions without network optimization (transferring all fields) 
 					try {
 						final Method getNetworkedFields = teClass.getMethod("getNetworkedFields");
+						@SuppressWarnings("unchecked")
 						final List<String> fields = (List<String>) getNetworkedFields.invoke(tileEntity);
 						if (WarpDriveConfig.LOGGING_JUMPBLOCKS) {
 							WarpDrive.logger.info(String.format("Tile has %d networked fields: %s",

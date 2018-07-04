@@ -1,5 +1,6 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ISecurityStation;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 
@@ -17,8 +18,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
@@ -74,29 +73,31 @@ public class TileEntitySecurityStation extends TileEntityAbstractInterfaced impl
 	}
 	
 	@Override
-	public ITextComponent getStatus() {
+	public WarpDriveText getStatus() {
 		return super.getStatus()
-		            .appendSibling(new TextComponentTranslation("warpdrive.security_station.guide.registered_players",
-		                                                        getAttachedPlayersList()));
+		            .append(null, "warpdrive.security_station.guide.registered_players",
+		                    getAttachedPlayersList());
 	}
 	
-	public ITextComponent attachPlayer(final EntityPlayer entityPlayer) {
+	public WarpDriveText attachPlayer(final EntityPlayer entityPlayer) {
 		for (int i = 0; i < players.size(); i++) {
 			final String name = players.get(i);
 			
 			if (entityPlayer.getName().equals(name)) {
 				players.remove(i);
-				return Commons.getChatPrefix(getBlockType())
-				              .appendSibling(new TextComponentTranslation("warpdrive.security_station.guide.player_unregistered",
-				                                                          getAttachedPlayersList()));
+				WarpDriveText text = Commons.getChatPrefix(getBlockType());
+				text.appendSibling(new WarpDriveText(Commons.styleCorrect, "warpdrive.security_station.guide.player_unregistered",
+				                                     getAttachedPlayersList()));
+				return text;
 			}
 		}
 		
 		entityPlayer.attackEntityFrom(DamageSource.GENERIC, 1);
 		players.add(entityPlayer.getName());
-		return Commons.getChatPrefix(getBlockType())
-		              .appendSibling(new TextComponentTranslation("warpdrive.security_station.guide.player_registered",
-		                                                          getAttachedPlayersList()));
+		WarpDriveText text = Commons.getChatPrefix(getBlockType());
+		text.appendSibling(new WarpDriveText(Commons.styleCorrect, "warpdrive.security_station.guide.player_registered",
+		                                     getAttachedPlayersList()));
+		return text;
 	}
 	
 	protected String getAttachedPlayersList() {

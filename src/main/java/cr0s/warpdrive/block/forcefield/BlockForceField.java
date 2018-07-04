@@ -72,7 +72,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	public BlockForceField(final String registryName, final byte tier) {
 		super(registryName, tier, Material.GLASS);
 		setSoundType(SoundType.CLOTH);
-		setUnlocalizedName("warpdrive.forcefield.block" + tier);
+		setUnlocalizedName("warpdrive.force_field.block" + tier);
 		setBlockUnbreakable();
 		
 		setDefaultState(getDefaultState()

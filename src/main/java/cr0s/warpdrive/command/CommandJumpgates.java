@@ -5,16 +5,12 @@ import cr0s.warpdrive.WarpDrive;
 
 import javax.annotation.Nonnull;
 
-import mcp.MethodsReturnNonnullByDefault;
-
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
-@MethodsReturnNonnullByDefault
-public class CommandJumpgates extends CommandBase {
+public class CommandJumpgates extends AbstractCommand {
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 4;

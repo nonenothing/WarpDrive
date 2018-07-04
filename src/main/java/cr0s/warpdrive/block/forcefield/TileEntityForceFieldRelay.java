@@ -1,7 +1,9 @@
 package cr0s.warpdrive.block.forcefield;
 
+import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
 import cr0s.warpdrive.data.ForceFieldSetup;
 
@@ -9,7 +11,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nonnull;
@@ -41,15 +42,15 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	}
 	
 	@Override
-	protected ITextComponent getUpgradeStatus() {
+	protected WarpDriveText getUpgradeStatus() {
 		final EnumForceFieldUpgrade enumForceFieldUpgrade = getUpgrade();
-		final ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.forcefield.upgrade.status_line." + enumForceFieldUpgrade.getName());
+		final ITextComponent strDisplayName = new TextComponentTranslation("warpdrive.force_field.upgrade.status_line." + enumForceFieldUpgrade.getName());
 		if (enumForceFieldUpgrade == EnumForceFieldUpgrade.NONE) {
-			return new TextComponentTranslation("warpdrive.upgrade.status_line.none",
-				strDisplayName);
+			return new WarpDriveText(null,"warpdrive.upgrade.status_line.none",
+			                         strDisplayName);
 		} else {
-			return new TextComponentTranslation("warpdrive.upgrade.status_line.valid",
-				strDisplayName);
+			return new WarpDriveText(Commons.styleCorrect,"warpdrive.upgrade.status_line.valid",
+			                         strDisplayName);
 		}
 	}
 	

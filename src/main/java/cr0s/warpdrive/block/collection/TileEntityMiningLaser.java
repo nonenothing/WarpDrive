@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.collection;
 
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
@@ -26,8 +27,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fml.common.Optional;
@@ -541,34 +540,39 @@ public class TileEntityMiningLaser extends TileEntityAbstractMiner {
 	}
 	
 	@Override
-	public ITextComponent getStatusHeader() {
+	public WarpDriveText getStatusHeader() {
 		final int energy = laserMedium_getEnergyStored();
-		ITextComponent state = new TextComponentTranslation("IDLE (not mining)");
+		WarpDriveText textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.error.internal_check_console");
 		if (currentState == STATE_IDLE) {
-			state = new TextComponentTranslation("IDLE (not mining)");
+			textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.idle");
 		} else if (currentState == STATE_WARMUP) {
-			state = new TextComponentTranslation("Warming up...");
+			textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.warming_up");
 		} else if (currentState == STATE_SCANNING) {
 			if (mineAllBlocks) {
-				state = new TextComponentTranslation("Scanning all");
+				textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.scanning_all");
 			} else {
-				state = new TextComponentTranslation("Scanning ores");
+				textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.scanning_ores");
 			}
 		} else if (currentState == STATE_MINING) {
-			if (mineAllBlocks) {
-				state = new TextComponentTranslation("Mining all");
+			if (!enableSilktouch) {
+				if (mineAllBlocks) {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.mining_all");
+				} else {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.mining_ores");
+				}
 			} else {
-				state = new TextComponentTranslation("Mining ores");
-			}
-			if (enableSilktouch) {
-				state.appendSibling(new TextComponentTranslation(" with silktouch"));
+				if (mineAllBlocks) {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.mining_all_with_silktouch");
+				} else {
+					textState = new WarpDriveText(Commons.styleCorrect, "warpdrive.mining_laser.status_line.mining_ores_with_silktouch");
+				}
 			}
 		}
 		if (energy <= 0) {
-			state.appendSibling(new TextComponentTranslation(" - Out of energy"));
+			textState.appendSibling(new WarpDriveText(Commons.styleWarning, "warpdrive.mining_laser.status_line._insufficient_energy"));
 		} else if (((currentState == STATE_SCANNING) || (currentState == STATE_MINING)) && !enoughPower) {
-			state.appendSibling(new TextComponentTranslation(" - Not enough power"));
+			textState.appendSibling(new WarpDriveText(Commons.styleWarning, "warpdrive.mining_laser.status_line._insufficient_energy"));
 		}
-		return state;
+		return textState;
 	}
 }

@@ -25,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -144,8 +145,14 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		  && entityPlayer.isSneaking() ) {
 			final boolean isEnabledOld = tileEntityTransporterBeacon.enable(new Object[] { })[0];
 			final boolean isEnabledNew = tileEntityTransporterBeacon.enable(new Object[] { !isEnabledOld })[0];
-			if (isEnabledOld == !isEnabledNew) {
-				Commons.addChatMessage(entityPlayer, new TextComponentString("Toggle success!"));
+			if (isEnabledOld != isEnabledNew) {
+				if (isEnabledNew) {
+					Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(this)
+					                                            .appendSibling(new TextComponentTranslation("warpdrive.is_enabled.set.enabled")));
+				} else {
+					Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(this)
+					                                            .appendSibling(new TextComponentTranslation("warpdrive.is_enabled.set.disabled")));
+				}
 			}
 			return true;
 		}

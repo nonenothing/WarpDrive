@@ -1,5 +1,6 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
@@ -132,18 +133,16 @@ public class Commons {
 	public static Style styleCorrect = new Style().setColor(TextFormatting.GREEN);
 	public static Style styleWarning = new Style().setColor(TextFormatting.RED);
 	
-	public static ITextComponent getChatPrefix(final Block block) {
+	public static WarpDriveText getChatPrefix(final Block block) {
 		return getChatPrefix(block.getUnlocalizedName() + ".name");
 	}
 	
-	public static ITextComponent getChatPrefix(final ItemStack itemStack) {
+	public static WarpDriveText getChatPrefix(final ItemStack itemStack) {
 		return getChatPrefix(itemStack.getUnlocalizedName() + ".name");
 	}
 	
-	public static ITextComponent getChatPrefix(final String translationKey) {
-		return new TextComponentString("")
-		    .appendSibling(new TextComponentTranslation("warpdrive.guide.prefix", new TextComponentTranslation(translationKey))
-		        .setStyle(styleHeader));
+	public static WarpDriveText getChatPrefix(final String translationKey) {
+		return new WarpDriveText(styleHeader, "warpdrive.guide.prefix", new TextComponentTranslation(translationKey));
 	}
 	
 	public static void addChatMessage(final ICommandSender commandSender, final ITextComponent textComponent) {

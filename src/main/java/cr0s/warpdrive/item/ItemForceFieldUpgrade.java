@@ -35,7 +35,7 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 	public ItemForceFieldUpgrade(final String registryName) {
 		super(registryName);
 		setHasSubtypes(true);
-		setUnlocalizedName("warpdrive.forcefield.upgrade");
+		setUnlocalizedName("warpdrive.force_field.upgrade");
 		
 		itemStackCache = new ItemStack[EnumForceFieldUpgrade.length];
 	}
@@ -105,11 +105,11 @@ public class ItemForceFieldUpgrade extends ItemAbstractBase {
 		
 		final EnumForceFieldUpgrade forceFieldUpgrade = EnumForceFieldUpgrade.get(itemStack.getItemDamage());
 		if (forceFieldUpgrade.maxCountOnProjector > 0) {
-			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.projector").getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.force_field.upgrade.tooltip.usage.projector").getFormattedText());
 		}
 		if (forceFieldUpgrade.maxCountOnRelay > 0) {
-			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.relay").getFormattedText());
+			Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.force_field.upgrade.tooltip.usage.relay").getFormattedText());
 		}
-		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.forcefield.upgrade.tooltip.usage.dismount").getFormattedText());
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.force_field.upgrade.tooltip.usage.dismount").getFormattedText());
 	}
 }

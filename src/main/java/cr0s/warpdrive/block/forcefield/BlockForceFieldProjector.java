@@ -61,7 +61,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	
 	public BlockForceFieldProjector(final String registryName, final byte tier) {
 		super(registryName, tier, Material.IRON);
-		setUnlocalizedName("warpdrive.forcefield.projector" + tier);
+		setUnlocalizedName("warpdrive.force_field.projector" + tier);
 		
 		setDefaultState(getDefaultState()
 				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
