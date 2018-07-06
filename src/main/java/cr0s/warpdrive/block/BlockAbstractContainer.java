@@ -87,6 +87,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		ClientProxy.modelInitialisation(item);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Nonnull
 	@Override
 	public EnumBlockRenderType getRenderType(final IBlockState state) {

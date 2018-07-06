@@ -609,6 +609,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		tagCompound.setInteger("targetZ", targetZ);
 		tagCompound.setByte("rotationSteps", rotationSteps);
 		if (blockCamouflage != null) {
+			assert blockCamouflage.getRegistryName() != null;
 			tagCompound.setString("camouflageBlock", blockCamouflage.getRegistryName().toString());
 			tagCompound.setByte("camouflageMeta", (byte) metadataCamouflage);
 			tagCompound.setInteger("camouflageColorMultiplier",  colorMultiplierCamouflage);
