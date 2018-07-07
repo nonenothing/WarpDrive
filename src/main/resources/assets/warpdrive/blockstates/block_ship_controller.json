@@ -4,8 +4,8 @@
 		"model": "minecraft:cube_bottom_top",
 		"textures": {
 			"side"  : "warpdrive:blocks/movement/ship_controller-side_inactive",
-			"bottom": "warpdrive:blocks/movement/ship_controller-bottom",
-			"top"   : "warpdrive:blocks/movement/ship_controller-top"
+			"bottom": "warpdrive:blocks/movement/ship_controller-top_bottom",
+			"top"   : "warpdrive:blocks/movement/ship_controller-top_bottom"
 		},
 		"transform": "forge:default-block"
 	},

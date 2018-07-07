@@ -198,6 +198,7 @@ tile.warpdrive.passive.highly_advanced_machine.name=高級機床
 tile.warpdrive.machines.chunk_loader.name=方塊裝載器
 tile.warpdrive.machines.laser.name=鐳射
 tile.warpdrive.machines.laser_medium.name=鐳射單元 (粒子加速器)
+tile.warpdrive.machines.security_station.name=Security Station
 
 tile.warpdrive.atomic.accelerator_controller.name=Accelerator Controller
 tile.warpdrive.atomic.accelerator_controller.tooltip=Controls one or more particle accelerators.\nShall be placed next to an electromagnet.

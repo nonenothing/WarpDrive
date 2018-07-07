@@ -201,6 +201,7 @@ tile.warpdrive.passive.highly_advanced_machine.name=Bloc de machine hyper avanc�
 tile.warpdrive.machines.chunk_loader.name=Chargeur de chunk
 tile.warpdrive.machines.laser.name=Laser
 tile.warpdrive.machines.laser_medium.name=Milieu amplificateur
+tile.warpdrive.machines.security_station.name=Station de sécurité
 
 tile.warpdrive.atomic.accelerator_controller.name=Controlleur d'accélérateurs
 tile.warpdrive.atomic.accelerator_controller.tooltip=Contrôle un ou plusieurs accélérateurs de particules.\nDoit être placé à coté d'un électroaimant.

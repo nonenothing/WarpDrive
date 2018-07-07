@@ -198,6 +198,7 @@ tile.warpdrive.passive.highly_advanced_machine.name=高新机械块
 tile.warpdrive.machines.chunk_loader.name=区块加载器
 tile.warpdrive.machines.laser.name=激光
 tile.warpdrive.machines.laser_medium.name=激光介质(粒子助推器)
+tile.warpdrive.machines.security_station.name=Security Station
 
 tile.warpdrive.atomic.accelerator_controller.name=加速器操纵仪
 tile.warpdrive.atomic.accelerator_controller.tooltip=操纵一或多个粒子加速器.\n需要连接电磁体.

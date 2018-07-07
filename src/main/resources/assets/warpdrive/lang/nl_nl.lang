@@ -198,6 +198,7 @@ tile.warpdrive.passive.highly_advanced_machine.name=Heel geavanceerd machineblok
 tile.warpdrive.machines.chunk_loader.name=Chunk-lader
 tile.warpdrive.machines.laser.name=Laser
 tile.warpdrive.machines.laser_medium.name=Deeltjesversneller
+tile.warpdrive.machines.security_station.name=Security Station
 
 tile.warpdrive.atomic.accelerator_controller.name=Versnellers-regelaar
 tile.warpdrive.atomic.accelerator_controller.tooltip=Regelt één of meer deeltjesversnellers.\nMoet naast een elektromagneet worden geplaats.

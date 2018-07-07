@@ -203,6 +203,7 @@ tile.warpdrive.passive.highly_advanced_machine.name=Stark weiterentwickelter Mas
 tile.warpdrive.machines.chunk_loader.name=Chunk Loader
 tile.warpdrive.machines.laser.name=Laser
 tile.warpdrive.machines.laser_medium.name=Medium Laser (Teilchenbeschleuniger)
+tile.warpdrive.machines.security_station.name=Security Station
 
 tile.warpdrive.atomic.accelerator_controller.name=Beschleunigungsregler
 tile.warpdrive.atomic.accelerator_controller.tooltip=Regelt einen oder mehrere Teilchenbeschleuniger.\nSollte neben einem Elektromagnet platziert werden.

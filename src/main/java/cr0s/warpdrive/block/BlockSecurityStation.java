@@ -3,7 +3,6 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.TileEntitySecurityStation;
 import cr0s.warpdrive.WarpDrive;
-import cr0s.warpdrive.block.movement.TileEntityShipController;
 
 import javax.annotation.Nonnull;
 
@@ -22,7 +21,7 @@ public class BlockSecurityStation extends BlockAbstractContainer {
 	
 	public BlockSecurityStation(final String registryName) {
 		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.movement.ship_controller");
+		setUnlocalizedName("warpdrive.machines.security_station");
 		
 		setDefaultState(getDefaultState());
 		registerTileEntity(TileEntitySecurityStation.class, new ResourceLocation(WarpDrive.MODID, registryName));
@@ -31,7 +30,7 @@ public class BlockSecurityStation extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipController();
+		return new TileEntitySecurityStation();
 	}
 	
 	@Override

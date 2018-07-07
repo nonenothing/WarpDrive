@@ -4,6 +4,7 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.BlockChunkLoader;
 import cr0s.warpdrive.block.BlockLaser;
 import cr0s.warpdrive.block.BlockLaserMedium;
+import cr0s.warpdrive.block.BlockSecurityStation;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.BlockAcceleratorController;
 import cr0s.warpdrive.block.atomic.BlockChiller;
@@ -219,6 +220,7 @@ public class WarpDrive {
 	public static Block[] blockForceFields;
 	public static Block[] blockForceFieldProjectors;
 	public static Block[] blockForceFieldRelays;
+	public static Block blockSecurityStation;
 	public static Block blockAcceleratorController;
 	public static Block blockAcceleratorControlPoint;
 	public static Block blockParticlesCollider;
@@ -376,9 +378,7 @@ public class WarpDrive {
 			blockForceFieldProjectors[index] = new BlockForceFieldProjector("block_projector" + tier, tier);
 			blockForceFieldRelays[index] = new BlockForceFieldRelay("block_force_field_relay" + tier, tier);
 		}
-		/* @TODO security station
-		blockSecurityStation = new BlockSecurityStation("blockSecurityStation");
-		*/
+		blockSecurityStation = new BlockSecurityStation("block_security_station");
 		itemForceFieldShape = new ItemForceFieldShape("item_force_field_shape");
 		itemForceFieldUpgrade = new ItemForceFieldUpgrade("item_force_field_upgrade");
 		

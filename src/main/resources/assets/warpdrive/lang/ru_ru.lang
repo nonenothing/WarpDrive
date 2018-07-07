@@ -201,6 +201,7 @@ tile.warpdrive.passive.highly_advanced_machine.name=Высокотехнолог
 tile.warpdrive.machines.chunk_loader.name=Загрузчик чанков
 tile.warpdrive.machines.laser.name=Лазер
 tile.warpdrive.machines.laser_medium.name=Лазерный излучатель (Ускоритель частиц)
+tile.warpdrive.machines.security_station.name=Security Station
 
 tile.warpdrive.atomic.accelerator_controller.name=Accelerator Controller
 tile.warpdrive.atomic.accelerator_controller.tooltip=Controls one or more particle accelerators.\nShall be placed next to an electromagnet.
