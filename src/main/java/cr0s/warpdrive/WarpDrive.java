@@ -56,6 +56,8 @@ import cr0s.warpdrive.block.passive.BlockHighlyAdvancedMachine;
 import cr0s.warpdrive.block.passive.BlockIridium;
 import cr0s.warpdrive.block.weapon.BlockLaserCamera;
 import cr0s.warpdrive.block.weapon.BlockWeaponController;
+import cr0s.warpdrive.client.CreativeTabHull;
+import cr0s.warpdrive.client.CreativeTabMain;
 import cr0s.warpdrive.command.CommandDebug;
 import cr0s.warpdrive.command.CommandDump;
 import cr0s.warpdrive.command.CommandEntity;
@@ -265,7 +267,8 @@ public class WarpDrive {
 	public static Method methodBlock_getSilkTouch = null;
 	
 	// Client settings
-	public static final CreativeTabs creativeTabWarpDrive = new CreativeTabWarpDrive(MODID.toLowerCase());
+	public static final CreativeTabs creativeTabMain = new CreativeTabMain(MODID.toLowerCase() + ".main");
+	public static final CreativeTabs creativeTabHull = new CreativeTabHull(MODID.toLowerCase() + ".hull");
 	
 	@Instance(WarpDrive.MODID)
 	public static WarpDrive instance;

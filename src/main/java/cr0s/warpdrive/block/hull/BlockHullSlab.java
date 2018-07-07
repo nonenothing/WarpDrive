@@ -68,7 +68,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 		setSoundType(SoundType.METAL);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setCreativeTab(WarpDrive.creativeTabHull);
 		setUnlocalizedName("warpdrive.hull" + tier + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHullSlab(this));

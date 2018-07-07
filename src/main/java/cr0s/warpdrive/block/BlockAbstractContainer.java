@@ -59,7 +59,7 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setCreativeTab(WarpDrive.creativeTabMain);
 		setRegistryName(registryName);
 		WarpDrive.register(this);
 		

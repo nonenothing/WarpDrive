@@ -34,7 +34,7 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 		super(blockStateHull);
 		this.blockStateHull = blockStateHull;
 		this.tier = tier;
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setCreativeTab(WarpDrive.creativeTabHull);
 		setUnlocalizedName("warpdrive.hull" + tier + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));

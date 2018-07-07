@@ -14,7 +14,8 @@ death.attack.warpdrive.teleportation.player=%1$s wurde durch %2$s beim teleporti
 death.attack.warpdrive.warm=%1$s verglühte
 death.attack.warpdrive.warm.player=%1$s wurde von %2$s gebruzelt
 
-itemGroup.warpdrive=WarpDrive
+itemGroup.warpdrive.hull=WarpDrive (hull)
+itemGroup.warpdrive.main=WarpDrive (main)
 
 item.warpdrive.component.malformed.name=Fehlerhaftes Item
 item.warpdrive.component.emerald_crystal.name=Smaragdkristall

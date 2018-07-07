@@ -4,12 +4,10 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 
 import java.util.List;
+import java.util.Random;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -28,9 +26,13 @@ public class ItemShipToken extends ItemAbstractBase {
 		super(registryName);
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.tool.ship_token");
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setCreativeTab(WarpDrive.creativeTabMain);
 		
 		itemStackCache = new ItemStack[VALID_METADATAS.length];
+	}
+	
+	public static ItemStack getItemStack(final Random random) {
+		return getItemStack(VALID_METADATAS[random.nextInt(VALID_METADATAS.length)]);
 	}
 	
 	public static ItemStack getItemStack(final int metadataWanted) {

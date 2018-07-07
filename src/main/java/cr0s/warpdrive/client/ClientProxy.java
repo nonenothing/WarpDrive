@@ -38,9 +38,6 @@ public class ClientProxy extends CommonProxy {
 	public void onForgeInitialisation() {
 		super.onForgeInitialisation();
 		
-		// creative tab
-		WarpDrive.creativeTabWarpDrive.setBackgroundImageName("items.png");
-		
 		// event handlers
 		MinecraftForge.EVENT_BUS.register(new ClientHandler());
 		

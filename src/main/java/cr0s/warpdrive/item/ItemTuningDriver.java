@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -48,7 +47,7 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	public ItemTuningDriver(final String registryName) {
 		super(registryName);
 		setMaxDamage(0);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setCreativeTab(WarpDrive.creativeTabMain);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.tool.tuning_driver");
 		setFull3D();

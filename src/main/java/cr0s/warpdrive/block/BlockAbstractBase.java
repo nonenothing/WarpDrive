@@ -34,11 +34,9 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
-		if (registryName != null) {
-			setRegistryName(registryName);
-			WarpDrive.register(this);
-		}
+		setCreativeTab(WarpDrive.creativeTabMain);
+		setRegistryName(registryName);
+		WarpDrive.register(this);
 	}
 	
 	@Nullable
@@ -89,7 +87,7 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	}
 	
 	@Override
-	public boolean rotateBlock(final World world, @Nonnull final BlockPos blockPos, final EnumFacing axis) {
+	public boolean rotateBlock(final World world, @Nonnull final BlockPos blockPos, @Nonnull final EnumFacing axis) {
 		// already handled by vanilla
 		return super.rotateBlock(world, blockPos, axis);
 	}

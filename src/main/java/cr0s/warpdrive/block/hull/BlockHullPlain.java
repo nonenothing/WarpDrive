@@ -8,6 +8,7 @@ import cr0s.warpdrive.data.EnumHullPlainType;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.material.EnumPushReaction;
@@ -17,6 +18,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.NonNullList;
@@ -33,15 +35,20 @@ public class BlockHullPlain extends BlockAbstractBase implements IDamageReceiver
 	final EnumHullPlainType enumHullPlainType;
 	
 	public BlockHullPlain(final String registryName, final byte tier, final EnumHullPlainType enumHullPlainType) {
-		super(null, Material.ROCK);
+		super(registryName, Material.ROCK);
 		this.tier = tier;
 		this.enumHullPlainType = enumHullPlainType;
 		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
 		setUnlocalizedName("warpdrive.hull" + tier + ".plain.");
 		setDefaultState(blockState.getBaseState().withProperty(BlockColored.COLOR, EnumDyeColor.WHITE));
-		setRegistryName(registryName);
-		WarpDrive.register(this, new ItemBlockHull(this));
+		setCreativeTab(WarpDrive.creativeTabHull);
+	}
+	
+	@Nullable
+	@Override
+	public ItemBlock createItemBlock() {
+		return new ItemBlockHull(this);
 	}
 	
 	@SuppressWarnings("deprecation")

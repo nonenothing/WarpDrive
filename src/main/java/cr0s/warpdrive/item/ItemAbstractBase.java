@@ -26,7 +26,7 @@ public class ItemAbstractBase extends Item implements IItemBase {
 	public ItemAbstractBase(final String registryName) {
 		super();
 		setRegistryName(registryName);
-		setCreativeTab(WarpDrive.creativeTabWarpDrive);
+		setCreativeTab(WarpDrive.creativeTabMain);
 		WarpDrive.register(this);
 	}
 	
