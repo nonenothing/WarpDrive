@@ -429,77 +429,63 @@ public class WarpDriveConfig {
 	public static final double ACCELERATOR_THRESHOLD_DEFAULT = 0.95D;
 	public static int ACCELERATOR_MAX_PARTICLE_BUNCHES = 20;
 	
-	public static Block getModBlock(final String mod, final String id) {
+	@Nonnull
+	public static Block getBlockOrFire(@Nonnull final String registryName) {
 		try {
-			return Block.REGISTRY.getObject(new ResourceLocation(mod, id));
+			return Block.REGISTRY.getObject(new ResourceLocation(registryName));
 		} catch (final Exception exception) {
-			WarpDrive.logger.info(String.format("Failed to get mod block for %s:%s", mod, id));
+			WarpDrive.logger.info(String.format("Failed to get mod block for %s",
+			                                    registryName));
 			exception.printStackTrace();
 		}
 		return Blocks.FIRE;
 	}
 	
-	public static ItemStack getModItemStack(final String mod, final String id, final int meta, final String stringNBT) {
-		final ItemStack itemStack = getModItemStackOrNull(mod, id, meta);
-		if (itemStack == null) {
+	@Nonnull
+	public static ItemStack getItemStackOrFire(@Nonnull final String registryName, final int meta, final String stringNBT) {
+		final Object object = getOreOrItemStackOrNull(registryName, meta);
+		if (!(object instanceof ItemStack)) {
 			return new ItemStack(Blocks.FIRE);
+		}
+		final ItemStack itemStack = (ItemStack) object;
+		if (stringNBT == null || stringNBT.isEmpty()) {
+			return itemStack;
 		}
 		try {
 			final NBTTagCompound tagCompound = JsonToNBT.getTagFromJson(stringNBT);
 			itemStack.setTagCompound(tagCompound);
 		} catch (final NBTException exception) {
 			exception.printStackTrace();
-			WarpDrive.logger.error(String.format("Invalid NBT for %s:%s@%d %s",
-			                                     mod, id, meta, stringNBT));
+			WarpDrive.logger.error(String.format("Invalid NBT for %s@%d %s",
+			                                     registryName, meta, stringNBT));
 			return new ItemStack(Blocks.FIRE);
 		}
 		return itemStack;
 	}
 	
-	public static ItemStack getModItemStack(final String mod, final String id, final int meta) {
-		final ItemStack itemStack = getModItemStackOrNull(mod, id, meta);
-		if (itemStack != null) {
-			return itemStack;
-		}
-		return new ItemStack(Blocks.FIRE);
+	@Nonnull
+	public static ItemStack getItemStackOrFire(@Nonnull final String registryName, final int meta) {
+		return getItemStackOrFire(registryName, meta, "");
 	}
 	
-	public static ItemStack getModItemStack(final String mod1, final String id1, final int meta1,
-	                                        final String mod2, final String id2, final int meta2) {
-		ItemStack itemStack = getModItemStackOrNull(mod1, id1, meta1);
-		if (itemStack != null) {
-			return itemStack;
+	private static Object getOreOrItemStackOrNull(final String registryName, final int meta) {
+		assert registryName.contains(":");
+		
+		if (registryName.startsWith("ore:")) {
+			final String ore = registryName.substring(4);
+			if (OreDictionary.doesOreNameExist(ore) && !OreDictionary.getOres(ore).isEmpty()) {
+				return ore;
+			}
+			WarpDrive.logger.info(String.format("Failed to get ore dictionary entry %s",
+			                                    ore));
+			return null;
 		}
-		itemStack = getModItemStackOrNull(mod2, id2, meta2);
-		if (itemStack != null) {
-			return itemStack;
-		}
-		return new ItemStack(Blocks.FIRE);
-	}
-	
-	public static ItemStack getModItemStack(final String mod1, final String id1, final int meta1,
-	                                        final String mod2, final String id2, final int meta2,
-	                                        final String mod3, final String id3, final int meta3) {
-		ItemStack itemStack = getModItemStackOrNull(mod1, id1, meta1);
-		if (itemStack != null) {
-			return itemStack;
-		}
-		itemStack = getModItemStackOrNull(mod2, id2, meta2);
-		if (itemStack != null) {
-			return itemStack;
-		}
-		itemStack = getModItemStackOrNull(mod3, id3, meta3);
-		if (itemStack != null) {
-			return itemStack;
-		}
-		return new ItemStack(Blocks.FIRE);
-	}
-	
-	private static ItemStack getModItemStackOrNull(final String mod, final String id, final int meta) {
+		
 		try {
-			final Item item = Item.REGISTRY.getObject(new ResourceLocation(mod + ":" + id));
+			final Item item = Item.REGISTRY.getObject(new ResourceLocation(registryName));
 			if (item == null) {
-				WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
+				WarpDrive.logger.info(String.format("Failed to get mod item for %s@%d",
+				                                    registryName, meta));
 				return null;
 			}
 			ItemStack itemStack = new ItemStack(item);
@@ -508,9 +494,37 @@ public class WarpDriveConfig {
 			}
 			return itemStack;
 		} catch (final Exception exception) {
-			WarpDrive.logger.info(String.format("Failed to get mod item for %s:%s@%d", mod, id, meta));
+			WarpDrive.logger.info(String.format("Failed to get mod item for %s@%d",
+			                                    registryName, meta));
 			return null;
 		}
+	}
+	
+	public static Object getOreOrItemStack(final String registryName1, final int meta1,
+	                                       Object... args) {
+		// always validate parameters in dev space
+		assert args.length % 2 == 0;
+		for (int index = 0; index < args.length; index += 2) {
+			assert args[index    ] instanceof String;
+			assert ((String) args[index]).contains(":");
+			assert args[index + 1] instanceof Integer;
+		}
+		
+		// try the first one
+		Object object = getOreOrItemStackOrNull(registryName1, meta1);
+		if (object != null) {
+			return object;
+		}
+		
+		// try the next ones
+		for (int index = 0; index < args.length; index += 2) {
+			object = getOreOrItemStackOrNull((String) args[index], (Integer) args[index + 1]);
+			if (object != null) {
+				return object;
+			}
+		}
+		
+		return new ItemStack(Blocks.FIRE);
 	}
 	
 	public static ItemStack getOreDictionaryEntry(final String ore) {
@@ -1255,11 +1269,11 @@ public class WarpDriveConfig {
 	
 	private static void loadIC2() {
 		try {
-			IC2_emptyCell = getModItemStack("ic2", "itemCellEmpty", -1);
-			IC2_compressedAir = getModItemStack("ic2", "itemCellEmpty", 5);
+			IC2_emptyCell = getItemStackOrFire("ic2:fluid_cell", 0);
+			IC2_compressedAir = getItemStackOrFire("ic2:fluid_cell", 0, "{Fluid:{FluidName:\"ic2air\",Amount:1000}}");
 			
-			IC2_rubberWood = getModBlock("ic2", "blockRubWood");
-			IC2_Resin = getModItemStack("ic2", "itemHarz", -1);
+			IC2_rubberWood = getBlockOrFire("ic2:rubber_wood");
+			IC2_Resin = getItemStackOrFire("ic2:misc_resource", 4);
 		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading IndustrialCraft2 classes");
 			exception.printStackTrace();
@@ -1268,11 +1282,11 @@ public class WarpDriveConfig {
 	
 	private static void loadCC() {
 		try {
-			CC_Computer = getModBlock("computercraft", "CC-Computer");
-			CC_peripheral = getModBlock("computercraft", "CC-Peripheral");
-			CCT_Turtle = getModBlock("computercraft", "CC-Turtle");
-			CCT_Expanded = getModBlock("computercraft", "CC-TurtleExpanded");
-			CCT_Advanced = getModBlock("computercraft", "CC-TurtleAdvanced");
+			CC_Computer   = getBlockOrFire("computercraft:CC-Computer");
+			CC_peripheral = getBlockOrFire("computercraft:CC-Peripheral");
+			CCT_Turtle    = getBlockOrFire("computercraft:CC-Turtle");
+			CCT_Expanded  = getBlockOrFire("computercraft:CC-TurtleExpanded");
+			CCT_Advanced  = getBlockOrFire("computercraft:CC-TurtleAdvanced");
 		} catch (final Exception exception) {
 			WarpDrive.logger.error("Error loading ComputerCraft classes");
 			exception.printStackTrace();

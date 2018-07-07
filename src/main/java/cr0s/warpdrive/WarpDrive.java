@@ -472,16 +472,12 @@ public class WarpDrive {
 		
 		WarpDriveConfig.onFMLInitialization();
 		
-		Recipes.initOreDictionary();
-		
 		// world generation
 		commonWorldGenerator = new CommonWorldGenerator();
 		GameRegistry.registerWorldGenerator(commonWorldGenerator, 0);
 		
 		dimensionTypeSpace = DimensionType.register("space", "_space", WarpDriveConfig.G_SPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
 		dimensionTypeHyperSpace = DimensionType.register("hyperspace", "_hyperspace", WarpDriveConfig.G_HYPERSPACE_PROVIDER_ID, HyperSpaceWorldProvider.class, true);
-		
-		Recipes.initDynamic();
 		
 		// Registers
 		starMap = new StarMapRegistry();
@@ -940,6 +936,11 @@ public class WarpDrive {
 	@SubscribeEvent
 	public void onRegisterRecipes(final RegistryEvent.Register<IRecipe> event) {
 		WarpDrive.logger.debug(String.format("Registering %s", event.getName()));
+		
+		Recipes.initOreDictionary();
+		
+		Recipes.initDynamic();
+		
 		for (final IRecipe recipe : recipes) {
 			event.getRegistry().register(recipe);
 		}
