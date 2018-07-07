@@ -67,7 +67,9 @@ public class ClassTransformer implements net.minecraft.launchwrapper.IClassTrans
 			return bytes;
 		}
 		if (bytes == null) {
-			FMLLoadingPlugin.logger.trace(String.format("bytes is null, transformation cancelled for %s", name));
+			if (debugLog) {
+				FMLLoadingPlugin.logger.trace(String.format("bytes is null, transformation cancelled for %s", name));
+			}
 			return null;
 		}
 		
