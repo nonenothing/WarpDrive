@@ -1178,7 +1178,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		if (isValid) {
 			return new Object[] { true, "ok" };
 		}
-		return new Object[] { false, reasonInvalid };
+		return new Object[] { false, reasonInvalid.getUnformattedText() };
 	}
 	
 	@Override

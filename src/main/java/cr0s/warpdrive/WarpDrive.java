@@ -295,7 +295,7 @@ public class WarpDrive {
 		
 		// open access to Block.blockHardness
 		fieldBlockHardness = Commons.getField(Block.class, "blockHardness", "field_149782_v");
-		methodBlock_getSilkTouch = ReflectionHelper.findMethod(Block.class, "getSilkTouchDrop", "func_180643_i ", IBlockState.class);
+		methodBlock_getSilkTouch = ReflectionHelper.findMethod(Block.class, "getSilkTouchDrop", "func_180643_i", IBlockState.class);
 		
 		// common blocks
 		blockChunkLoader = new BlockChunkLoader("block_chunk_loader");
