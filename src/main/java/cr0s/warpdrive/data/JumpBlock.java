@@ -334,16 +334,25 @@ public class JumpBlock {
 					isForgeMultipart = true;
 					newTileEntity = (TileEntity) CompatForgeMultipart.methodMultipartHelper_createTileFromNBT.invoke(null, targetWorld, nbtToDeploy);
 					
-				} else if (block == WarpDriveConfig.CC_Computer || block == WarpDriveConfig.CC_peripheral
-						|| block == WarpDriveConfig.CCT_Turtle || block == WarpDriveConfig.CCT_Expanded || block == WarpDriveConfig.CCT_Advanced) {
-					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
-					assert newTileEntity != null;
-					newTileEntity.invalidate();
-					
 				}
 				
 				if (newTileEntity == null) {
 					newTileEntity = TileEntity.create(targetWorld, nbtToDeploy);
+					if (newTileEntity == null) {
+						WarpDrive.logger.error(String.format("%s deploy failed to create new tile entity %s block %s:%d",
+						                                     this, Commons.format(targetWorld, x, y, z), block, blockMeta));
+						WarpDrive.logger.error(String.format("NBT data was %s",
+						                                     nbtToDeploy));
+					}
+				}
+				
+				if ( newTileEntity != null
+				  && ( block == WarpDriveConfig.CC_Computer
+				    || block == WarpDriveConfig.CC_peripheral
+				    || block == WarpDriveConfig.CCT_Turtle
+				    || block == WarpDriveConfig.CCT_Expanded
+				    || block == WarpDriveConfig.CCT_Advanced ) ) {
+					newTileEntity.invalidate();
 				}
 				
 				if (newTileEntity != null) {
@@ -357,10 +366,6 @@ public class JumpBlock {
 					}
 					
 					newTileEntity.markDirty();
-				} else {
-					WarpDrive.logger.error(String.format(" deploy failed to create new tile entity %s block %s:%d",
-					                                     Commons.format(targetWorld, x, y, z), block, blockMeta));
-					WarpDrive.logger.error(String.format("NBT data was %s", nbtToDeploy));
 				}
 			}
 			return target;
