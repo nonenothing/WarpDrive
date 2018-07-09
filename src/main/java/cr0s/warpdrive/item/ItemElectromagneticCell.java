@@ -24,6 +24,9 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class ItemElectromagneticCell extends ItemAbstractBase implements IParticleContainerItem {
 	
 	private static final String AMOUNT_TO_CONSUME_TAG = "amountToConsume";
@@ -254,6 +257,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);

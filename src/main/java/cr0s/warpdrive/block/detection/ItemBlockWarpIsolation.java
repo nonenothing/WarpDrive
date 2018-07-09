@@ -14,6 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class ItemBlockWarpIsolation extends ItemBlockAbstractBase {
 	
 	public ItemBlockWarpIsolation(final Block block) {
@@ -24,6 +27,7 @@ public class ItemBlockWarpIsolation extends ItemBlockAbstractBase {
 	// Item overrides
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);

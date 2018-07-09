@@ -17,6 +17,9 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
 public class ItemShipToken extends ItemAbstractBase {	
 	
 	private static ItemStack[] itemStackCache;
@@ -96,6 +99,7 @@ public class ItemShipToken extends ItemAbstractBase {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);

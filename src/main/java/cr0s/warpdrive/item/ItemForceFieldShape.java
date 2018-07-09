@@ -97,6 +97,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	}
 	
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void addInformation(@Nonnull final ItemStack itemStack, @Nullable World world,
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
