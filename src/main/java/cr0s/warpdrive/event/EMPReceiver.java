@@ -93,6 +93,7 @@ public class EMPReceiver implements IEMPReceiver, ICapabilityProvider {
 	@Nullable
 	@Override
 	@Optional.Method(modid = "icbmclassic")
+	@SuppressWarnings("unchecked")
 	public <T> T getCapability(@Nonnull final Capability<T> capability, @Nullable final EnumFacing facing) {
 		return capability == CapabilityEMP.EMP ? (T) this : null;
 	}

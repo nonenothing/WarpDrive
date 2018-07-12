@@ -47,7 +47,15 @@ public class LocalProfiler {
 	}
 	
 	public static void printCallStats() {
+		if  (!WarpDriveConfig.LOGGING_PROFILING_THREAD_SAFETY) {
+			WarpDrive.logger.info("Consider enabling thread safety profiling to get more details next time");
+			return;
+		}
 		WarpDrive.logger.info("Dumping chunk stats:");
+		if (stats.isEmpty()) {
+			WarpDrive.logger.info("-none-");
+			return;
+		}
 		for (final Entry<String, Integer> entryStat : stats.entrySet()) {
 			WarpDrive.logger.info(String.format("%10d x %s",
 			                                    entryStat.getValue(),

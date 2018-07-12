@@ -359,14 +359,17 @@ public class ChunkHandler {
 			return;
 		}
 		int countLoaded = 0;
+		int countRemoved = 0;
 		final long timeForRemoval = System.currentTimeMillis() - CHUNK_HANDLER_UNLOADED_CHUNK_MAX_AGE_MS;
 		final long timeForThrottle = System.currentTimeMillis() + 200;
 		final long sizeBefore = mapRegistryItems.size();
+		long indexCurrent = 0L;
 		
 		try {
 			
 			for (final Iterator<Entry<Long, ChunkData>> entryIterator = mapRegistryItems.entrySet().iterator(); entryIterator.hasNext(); ) {
 				final Map.Entry<Long, ChunkData> entryChunkData = entryIterator.next();
+				indexCurrent = entryChunkData.getKey();
 				final ChunkData chunkData = entryChunkData.getValue();
 				// update loaded chunks, remove old unloaded chunks
 				if (chunkData.isLoaded()) {
@@ -383,14 +386,16 @@ public class ChunkHandler {
 						                                    mapRegistryItems.size()));
 					}
 					entryIterator.remove();
+					countRemoved++;
 				}
 			}
 			
 		} catch (final ConcurrentModificationException exception) {
-			WarpDrive.logger.error(String.format("%s world %s had some chunks changed outside main thread? (size %d -> %d)",
-			                                    world.isRemote ? "Client" : "Server",
+			WarpDrive.logger.error(String.format("%s world %s had some chunks changed outside main thread? (size %d -> %d, loaded %d, removed %d, index 0x%X x %d z %d)",
+			                                     world.isRemote ? "Client" : "Server",
 			                                     Commons.format(world),
-			                                    sizeBefore, mapRegistryItems.size()));
+			                                     sizeBefore, mapRegistryItems.size(), countLoaded, countRemoved,
+			                                     indexCurrent, indexCurrent & 0xFFFFFFFFL, (indexCurrent >> 32) & 0xFFFFFFFFL));
 			exception.printStackTrace();
 			LocalProfiler.printCallStats();
 		}
