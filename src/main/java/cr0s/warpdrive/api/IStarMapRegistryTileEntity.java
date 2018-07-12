@@ -25,7 +25,7 @@ public interface IStarMapRegistryTileEntity {
 	// isolation rate from radars
 	double getIsolationRate();
 	
-	// name to remove for Friend-or-Foe
+	// name to report for Friend-or-Foe
 	String getStarMapName();
 	
 	// report an update in the area

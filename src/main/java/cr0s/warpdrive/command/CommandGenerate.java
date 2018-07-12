@@ -5,7 +5,6 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.structures.AbstractStructure;
 import cr0s.warpdrive.config.structures.StructureManager;
 import cr0s.warpdrive.data.CelestialObjectManager;
-import cr0s.warpdrive.world.JumpgateGenerator;
 import cr0s.warpdrive.world.WorldGenSmallShip;
 import cr0s.warpdrive.world.WorldGenStation;
 
@@ -36,7 +35,7 @@ public class CommandGenerate extends AbstractCommand {
 	@Nonnull
 	@Override
 	public String getUsage(@Nonnull final ICommandSender commandSender) {
-		return "/" + getName() + " <structure>\nPossible structures: moon, ship, asteroid, astfield, gascloud, star <class>, jumpgate <name>";
+		return "/" + getName() + " <structure>\nPossible structures: moon, ship <name>, asteroid, astfield, gascloud, star <class>";
 	}
 	
 	@Override
@@ -99,22 +98,6 @@ public class CommandGenerate extends AbstractCommand {
 					break;
 				case "star":
 					generateStructure(commandSender, StructureManager.GROUP_STARS, name, world, blockPos);
-					break;
-				case "jumpgate":
-					if (args.length != 2) {
-						Commons.addChatMessage(commandSender, getPrefix().appendSibling(new TextComponentString("Missing jumpgate name").setStyle(Commons.styleWarning)));
-					} else {
-						WarpDrive.logger.info(String.format("/generate: creating jumpgate %s",
-						                                     Commons.format(world, blockPos)));
-						blockPos = new BlockPos(blockPos.getX(), Math.min(blockPos.getY(), 255 - JumpgateGenerator.GATE_SIZE_HALF - 1), blockPos.getZ());
-						
-						if (WarpDrive.jumpgates.addGate(args[1], blockPos)) {
-							JumpgateGenerator.generate(world, blockPos);
-						} else {
-							WarpDrive.logger.info(String.format("/generate: jumpgate %s already exists.",
-							                                    args[1]));
-						}
-					}
 					break;
 				default:
 					Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));

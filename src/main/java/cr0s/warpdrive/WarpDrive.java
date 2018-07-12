@@ -66,7 +66,6 @@ import cr0s.warpdrive.command.CommandFind;
 import cr0s.warpdrive.command.CommandGenerate;
 import cr0s.warpdrive.command.CommandBed;
 import cr0s.warpdrive.command.CommandInvisible;
-import cr0s.warpdrive.command.CommandJumpgates;
 import cr0s.warpdrive.command.CommandReload;
 import cr0s.warpdrive.command.CommandSpace;
 import cr0s.warpdrive.config.Recipes;
@@ -82,7 +81,6 @@ import cr0s.warpdrive.data.CamerasRegistry;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.CloakManager;
 import cr0s.warpdrive.data.EnumHullPlainType;
-import cr0s.warpdrive.data.JumpgatesRegistry;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.entity.EntityParticleBunch;
 import cr0s.warpdrive.event.ChunkHandler;
@@ -278,7 +276,6 @@ public class WarpDrive {
 	public static CommonProxy proxy;
 	
 	public static StarMapRegistry starMap;
-	public static JumpgatesRegistry jumpgates;
 	public static CloakManager cloaks;
 	public static CamerasRegistry cameras;
 	
@@ -481,7 +478,6 @@ public class WarpDrive {
 		
 		// Registers
 		starMap = new StarMapRegistry();
-		jumpgates = new JumpgatesRegistry();
 		cloaks = new CloakManager();
 		cameras = new CamerasRegistry();
 		
@@ -524,7 +520,6 @@ public class WarpDrive {
 		event.registerServerCommand(new CommandGenerate());
 		event.registerServerCommand(new CommandBed());
 		event.registerServerCommand(new CommandInvisible());
-		event.registerServerCommand(new CommandJumpgates());
 		event.registerServerCommand(new CommandReload());
 		event.registerServerCommand(new CommandSpace());
 	}

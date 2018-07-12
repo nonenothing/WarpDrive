@@ -1,5 +1,6 @@
 package cr0s.warpdrive;
 
+import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
@@ -30,6 +31,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -741,6 +743,23 @@ public class Commons {
 	public static void hideItemStack(final ItemStack itemStack) {
 		if (WarpDriveConfig.isNotEnoughItemsLoaded) {
 			NEI_hideItemStack(itemStack);
+		}
+	}
+	
+	public static void messageToAllPlayersInArea(final IStarMapRegistryTileEntity tileEntity, final WarpDriveText textComponent) {
+		assert tileEntity instanceof TileEntity;
+		final AxisAlignedBB starMapArea = tileEntity.getStarMapArea();
+		final ITextComponent messageFormatted = Commons.getChatPrefix(tileEntity.getStarMapName())
+		                                               .appendSibling(textComponent);
+		
+		WarpDrive.logger.info(String.format("%s messageToAllPlayersOnShip: %s",
+		                                    tileEntity, textComponent.getFormattedText()));
+		for (final EntityPlayer entityPlayer : ((TileEntity) tileEntity).getWorld().playerEntities) {
+			if (!entityPlayer.getEntityBoundingBox().intersects(starMapArea)) {
+				continue;
+			}
+			
+			Commons.addChatMessage(entityPlayer, messageFormatted);
 		}
 	}
 	

@@ -93,6 +93,9 @@ public class StarMapRegistryItem extends GlobalPosition {
 		       && minZ <= blockPos.getZ() && blockPos.getZ() <= maxZ;
 	}
 	
+	public AxisAlignedBB getArea() {
+		return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+	}
 	
 	public StarMapRegistryItem(final NBTTagCompound tagCompound) {
 		super(tagCompound);

@@ -9,7 +9,7 @@ public enum EnumStarMapEntryType implements IStringSerializable {
 	
 	UNDEFINED  (0, "-undefined-", true ),
 	SHIP       (1, "ship"       , true ), // a ship core
-	JUMPGATE   (2, "jumpgate"   , true ), // a jump gate
+	JUMP_GATE  (2, "jump_gate"  , true ), // a jump gate
 	PLANET     (3, "planet"     , true ), // a planet (a transition plane allowing to move to another dimension)
 	STAR       (4, "star"       , true ), // a star
 	STRUCTURE  (5, "structure"  , true ), // a structure from WorldGeneration (moon, asteroid field, etc.)

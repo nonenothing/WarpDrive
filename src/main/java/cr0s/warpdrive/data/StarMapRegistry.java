@@ -122,6 +122,25 @@ public class StarMapRegistry {
 		// not found => ignore it
 	}
 	
+	public StarMapRegistryItem getByName(final EnumStarMapEntryType enumStarMapEntryType, final String name) {
+		for (final Integer dimensionId : registry.keySet()) {
+			final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(dimensionId);
+			if (setStarMapRegistryItems == null) {
+				continue;
+			}
+			
+			for (final StarMapRegistryItem starMapRegistryItem : setStarMapRegistryItems) {
+				if ( enumStarMapEntryType == null
+				  || starMapRegistryItem.type == enumStarMapEntryType ) {
+					if (starMapRegistryItem.name.equals(name)) {
+						return starMapRegistryItem;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	public StarMapRegistryItem getByUUID(final EnumStarMapEntryType enumStarMapEntryType, final UUID uuid) {
 		for (final Integer dimensionId : registry.keySet()) {
 			final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(dimensionId);
@@ -202,6 +221,34 @@ public class StarMapRegistry {
 			return resultContains.toString();
 		}
 		return String.format("No ship found with name '%s'", nameShip);
+	}
+	
+	public StarMapRegistryItem findNearest(final EnumStarMapEntryType enumStarMapEntryType, final World world, final BlockPos blockPos) {
+		final CopyOnWriteArraySet<StarMapRegistryItem> setStarMapRegistryItems = registry.get(world.provider.getDimension());
+		if (setStarMapRegistryItems == null) {
+			return null;
+		}
+		
+		double distanceSquared_min = Double.MAX_VALUE;
+		StarMapRegistryItem result = null;
+		for (final StarMapRegistryItem starMapRegistryItem : setStarMapRegistryItems) {
+			if ( enumStarMapEntryType != null
+			  && starMapRegistryItem.type != enumStarMapEntryType ) {
+				continue;
+			}
+			
+			final double dX = starMapRegistryItem.x - blockPos.getX();
+			final double dY = starMapRegistryItem.y - blockPos.getY();
+			final double dZ = starMapRegistryItem.z - blockPos.getZ();
+			final double distanceSquared = dX * dX + dY * dY + dZ * dZ;
+			
+			if ( distanceSquared < distanceSquared_min) {
+				distanceSquared_min = distanceSquared;
+				result = starMapRegistryItem;
+			}
+		}
+		
+		return result;
 	}
 	
 	public void onBlockUpdated(final World world, final BlockPos blockPos, final IBlockState blockState) {
@@ -483,7 +530,7 @@ public class StarMapRegistry {
 					case SHIP:
 						isValid = block == WarpDrive.blockShipCore && tileEntity != null && !tileEntity.isInvalid();
 						break;
-					case JUMPGATE:
+					case JUMP_GATE:
 						break;
 					case PLANET:
 						break;

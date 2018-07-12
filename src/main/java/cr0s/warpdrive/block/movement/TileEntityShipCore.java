@@ -14,9 +14,9 @@ import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumShipCommand;
 import cr0s.warpdrive.data.EnumShipCoreState;
 import cr0s.warpdrive.data.EnumShipMovementType;
-import cr0s.warpdrive.data.Jumpgate;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
 import cr0s.warpdrive.data.SoundEvents;
+import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
 import cr0s.warpdrive.event.JumpSequencer;
@@ -156,8 +156,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 					final int seconds = ticksCooldown / 20;
 					if (!isCooldownReported || (seconds < 5) || ((seconds < 30) && (seconds % 5 == 0)) || (seconds % 10 == 0)) {
 						isCooldownReported = true;
-						messageToAllPlayersOnShip(new WarpDriveText(null, "warpdrive.ship.guide.cooling_countdown",
-						                                            seconds));
+						Commons.messageToAllPlayersInArea(this, new WarpDriveText(null, "warpdrive.ship.guide.cooling_countdown",
+						                                                          seconds));
 					}
 				}
 			}
@@ -303,7 +303,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 					break;
 				}
 				
-				messageToAllPlayersOnShip(new WarpDriveText(null, "warpdrive.ship.guide.pre_jumping"));
+				Commons.messageToAllPlayersInArea(this, new WarpDriveText(null, "warpdrive.ship.guide.pre_jumping"));
 				
 				// update ship spatial parameters
 				if (!isValid) {
@@ -377,8 +377,8 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				  || (seconds >= 60 && (seconds % 15 == 0))
 				  || (seconds <  60 && seconds > 30 && (seconds % 10 == 0)) ) {
 					isWarmupReported = true;
-					messageToAllPlayersOnShip(new WarpDriveText(null, "warpdrive.ship.guide.warming_up",
-					                                            seconds));
+					Commons.messageToAllPlayersInArea(this, new WarpDriveText(null, "warpdrive.ship.guide.warming_up",
+					                                                          seconds));
 				}
 			}
 			
@@ -453,30 +453,13 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		assert success || !reason.getUnformattedText().isEmpty();
 		super.commandDone(success, reason);
 		if (!success) {
-			messageToAllPlayersOnShip(reason);
+			Commons.messageToAllPlayersInArea(this, reason);
 		}
 		// @TODO implement remote controllers
 	}
 	
 	protected boolean refreshLink(final TileEntityShipController tileEntityShipController) {
 		return false; // @TODO implement remote controllers
-	}
-	
-	public void messageToAllPlayersOnShip(final WarpDriveText textComponent) {
-		final AxisAlignedBB axisalignedbb = new AxisAlignedBB(minX, minY, minZ, maxX + 0.99D, maxY + 0.99D, maxZ + 0.99D);
-		final List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(null, axisalignedbb);
-		final ITextComponent messageFormatted = Commons.getChatPrefix(!shipName.isEmpty() ? shipName : "ShipCore")
-		                                                  .appendSibling(textComponent);
-		
-		WarpDrive.logger.info(String.format("%s messageToAllPlayersOnShip: %s",
-		                                    this, textComponent.getFormattedText()));
-		for (final Entity entity : list) {
-			if (!(entity instanceof EntityPlayer)) {
-				continue;
-			}
-			
-			Commons.addChatMessage(entity, messageFormatted);
-		}
 	}
 	
 	public String getAllPlayersInArea() {
@@ -655,7 +638,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		}
 		final WarpDriveText message = new WarpDriveText(Commons.styleWarning, "warpdrive.teleportation.guide.no_safe_spot",
 		                                                entityPlayer.getDisplayName());
-		messageToAllPlayersOnShip(message);
+		Commons.messageToAllPlayersInArea(this, message);
 		Commons.addChatMessage(entityPlayer, message);
 	}
 	
@@ -767,10 +750,11 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	}
 	
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	private boolean isShipInJumpgate(final Jumpgate jumpgate, final WarpDriveText reason) {
-		final AxisAlignedBB aabb = jumpgate.getGateAABB();
+	private boolean isShipInJumpgate(final StarMapRegistryItem jumpGate, final WarpDriveText reason) {
+		assert jumpGate.type == EnumStarMapEntryType.JUMP_GATE;
+		final AxisAlignedBB aabb = jumpGate.getArea();
 		if (WarpDriveConfig.LOGGING_JUMP) {
-			WarpDrive.logger.info(this + " Jumpgate " + jumpgate.name + " AABB is " + aabb);
+			WarpDrive.logger.info(this + " Jumpgate " + jumpGate.name + " AABB is " + aabb);
 		}
 		int countBlocksInside = 0;
 		int countBlocksTotal = 0;
@@ -809,17 +793,18 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		
 		if (WarpDriveConfig.LOGGING_JUMP) {
 			if (shipMass != countBlocksTotal) {
-				WarpDrive.logger.info(this + " Ship mass has changed from " + shipMass + " to " + countBlocksTotal + " blocks");
+				WarpDrive.logger.warn(String.format("%s Ship mass has changed from %d to %d blocks",
+				                                    this, shipMass, countBlocksTotal));
 			}
-			WarpDrive.logger.info(this + "Ship has " + countBlocksInside + " / " + shipMass + " blocks (" + percent + "%) in jumpgate '" + jumpgate.name + "'");
+			WarpDrive.logger.info(String.format("%s Ship has %d / %d blocks (%.1f %%) in jump gate '%s'",
+			                                    this, countBlocksInside, shipMass, percent, jumpGate.name));
 		}
 		
 		// At least 80% of ship must be inside jumpgate
 		if (percent > 80F) {
 			return true;
 		} else if (percent <= 0.001) {
-			reason.append(Commons.styleWarning, "warpdrive.ship.guide.jumpgate_is_too_far",
-			              jumpgate.toNiceString());
+			reason.append(Commons.styleWarning, "warpdrive.ship.guide.jumpgate_is_too_far");
 			return false;
 		} else {
 			reason.append(Commons.styleWarning, "warpdrive.ship.guide.jumpgate_partially_entered",
@@ -870,25 +855,25 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	private void doGateJump() {
 		// Search nearest jump-gate
 		final String targetName = getTargetName();
-		final Jumpgate targetGate = WarpDrive.jumpgates.findGateByName(targetName);
+		final StarMapRegistryItem jumpGate_target = WarpDrive.starMap.getByName(EnumStarMapEntryType.JUMP_GATE, targetName);
 		
-		if (targetGate == null) {
+		if (jumpGate_target == null) {
 			commandDone(false, new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.jumpgate_not_defined",
 			                                     targetName));
 			return;
 		}
 		
 		// Now make jump to a beacon
-		final int gateX = targetGate.xCoord;
-		final int gateY = targetGate.yCoord;
-		final int gateZ = targetGate.zCoord;
+		final int gateX = jumpGate_target.x;
+		final int gateY = jumpGate_target.y;
+		final int gateZ = jumpGate_target.z;
 		int destX = gateX;
 		int destY = gateY;
 		int destZ = gateZ;
-		final Jumpgate nearestGate = WarpDrive.jumpgates.findNearestGate(pos);
+		final StarMapRegistryItem jumpGate_nearest = WarpDrive.starMap.findNearest(EnumStarMapEntryType.JUMP_GATE, world, pos);
 		
 		final WarpDriveText reason = new WarpDriveText();
-		if (!isShipInJumpgate(nearestGate, reason)) {
+		if (!isShipInJumpgate(jumpGate_nearest, reason)) {
 			commandDone(false, reason);
 			return;
 		}
@@ -925,12 +910,12 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		// Consume energy
 		if (energy_consume(shipMovementCosts.energyRequired, false)) {
 			WarpDrive.logger.info(String.format("%s Moving ship to a place around gate '%s' (%d %d %d)",
-			                                    this, targetGate.name, destX, destY, destZ));
+			                                    this, jumpGate_target.name, destX, destY, destZ));
 			final JumpSequencer jump = new JumpSequencer(this, EnumShipMovementType.GATE_ACTIVATING, targetName, 0, 0, 0, (byte) 0, destX, destY, destZ);
 			jump.enable();
 		} else {
-			messageToAllPlayersOnShip(new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.insufficient_energy",
-			                                            energy_getEnergyStored(), shipMovementCosts.energyRequired));
+			Commons.messageToAllPlayersInArea(this, new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.insufficient_energy",
+			                                                          energy_getEnergyStored(), shipMovementCosts.energyRequired));
 		}
 	}
 	
@@ -957,12 +942,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 			
 			// Check ship size for hyper-space jump
 			if (shipMass < WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE) {
-				Jumpgate nearestGate = null;
-				if (WarpDrive.jumpgates == null) {
-					WarpDrive.logger.warn(this + " WarpDrive.jumpGates is NULL!");
-				} else {
-					nearestGate = WarpDrive.jumpgates.findNearestGate(pos);
-				}
+				final StarMapRegistryItem nearestGate = WarpDrive.starMap.findNearest(EnumStarMapEntryType.JUMP_GATE, world, pos);
 				
 				final WarpDriveText reason = new WarpDriveText();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
@@ -1149,7 +1129,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	public AxisAlignedBB getStarMapArea() {
-		return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+		return new AxisAlignedBB(minX, minY, minZ, maxX + 1.0D, maxY + 1.0D, maxZ + 1.0D);
 	}
 	
 	@Override
@@ -1164,7 +1144,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	public String getStarMapName() {
-		return shipName;
+		return shipName.isEmpty() ? "ShipCore" : shipName;
 	}
 	
 	@Override
