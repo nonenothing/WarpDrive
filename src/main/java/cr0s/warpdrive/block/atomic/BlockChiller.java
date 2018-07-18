@@ -30,7 +30,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	public BlockChiller(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier);
 		
-		setUnlocalizedName("warpdrive.atomic.chiller" + enumTier);
+		setUnlocalizedName("warpdrive.atomic.chiller." + enumTier.getName());
 	}
 	
 	@Override

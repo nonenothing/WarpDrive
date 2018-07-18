@@ -1,8 +1,11 @@
 package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.api.IAirContainerItem;
+import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumAirTankTier;
 
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
@@ -10,16 +13,15 @@ import javax.annotation.Nonnull;
 
 public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 	
-	private final static int[] capacities = { 20, 32, 64, 128 };
-	protected byte tier;
+	protected EnumAirTankTier enumAirTankTier;
 	
-	public ItemAirTank(final byte tier, final String registryName) {
+	public ItemAirTank(final String registryName, final EnumAirTankTier enumAirTankTier) {
 		super(registryName);
 		
-		this.tier = tier;
-		setMaxDamage(capacities[tier]);
+		this.enumAirTankTier = enumAirTankTier;
+		setMaxDamage(WarpDriveConfig.BREATHING_AIR_TANK_CAPACITY_BY_TIER[enumAirTankTier.getIndex()]);
 		setMaxStackSize(1);
-		setUnlocalizedName("warpdrive.breathing.air_tank" + tier);
+		setUnlocalizedName("warpdrive.breathing.air_tank." + enumAirTankTier.getName());
 	}
 	
 	//	icons[ 0] = iconRegister.registerIcon("warpdrive:breathing/air_canister");
@@ -57,6 +59,12 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 		}
 		list.add(new ItemStack(this, 1, 0));
 		list.add(new ItemStack(this, 1, getMaxDamage()));
+	}
+	
+	@Nonnull
+	@Override
+	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
+		return enumAirTankTier.getRarity();
 	}
 	
 	@Override
@@ -102,7 +110,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 		  || itemStack.getItem() != this ) {
 			return 0;
 		}
-		return 300;
+		return WarpDriveConfig.BREATHING_AIR_TANK_BREATH_DURATION_TICKS;
 	}
 	
 	@Override

@@ -22,7 +22,7 @@ public class BlockShipController extends BlockAbstractContainer {
 	public BlockShipController(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.ship_controller" + enumTier.getIndex());
+		setUnlocalizedName("warpdrive.movement.ship_controller." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(COMMAND, EnumShipCommand.OFFLINE)

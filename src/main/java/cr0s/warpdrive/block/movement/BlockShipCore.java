@@ -35,7 +35,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	public BlockShipCore(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.ship_core" + enumTier.getIndex());
+		setUnlocalizedName("warpdrive.movement.ship_core." + enumTier.getName());
 		registerTileEntity(TileEntityShipCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()

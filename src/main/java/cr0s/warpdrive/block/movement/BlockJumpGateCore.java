@@ -16,7 +16,7 @@ public class BlockJumpGateCore extends BlockAbstractContainer {
 	public BlockJumpGateCore(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.movement.jump_gate_core" + enumTier.getIndex());
+		setUnlocalizedName("warpdrive.movement.jump_gate_core." + enumTier.getName());
 		registerTileEntity(TileEntityShipCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	

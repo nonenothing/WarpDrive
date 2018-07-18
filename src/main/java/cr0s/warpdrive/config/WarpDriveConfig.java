@@ -339,7 +339,7 @@ public class WarpDriveConfig {
 	public static int      CLOAKING_TIER2_ENERGY_PER_BLOCK = 128;
 	public static int      CLOAKING_FIELD_REFRESH_INTERVAL_SECONDS = 3;
 	
-	// Air generator
+	// Breathing
 	public static int      BREATHING_ENERGY_PER_CANISTER = 200;
 	public static int[]    BREATHING_ENERGY_PER_NEW_AIR_BLOCK_BY_TIER = { 0, 12, 180, 2610 };
 	public static int[]    BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK_BY_TIER = { 0, 4, 60, 870 };
@@ -350,6 +350,9 @@ public class WarpDriveConfig {
 	public static int      BREATHING_AIR_SIMULATION_DELAY_TICKS = 30;
 	public static final boolean BREATHING_AIR_BLOCK_DEBUG = false;
 	public static boolean  BREATHING_AIR_AT_ENTITY_DEBUG = false;
+	
+	public static int      BREATHING_AIR_TANK_BREATH_DURATION_TICKS = 300;
+	public static int[]    BREATHING_AIR_TANK_CAPACITY_BY_TIER = { 20, 32, 64, 128 };
 	
 	// IC2 Reactor cooler
 	public static int      IC2_REACTOR_MAX_HEAT_STORED = 30000;
@@ -1010,6 +1013,11 @@ public class WarpDriveConfig {
 		BREATHING_AIR_SIMULATION_DELAY_TICKS = Commons.clamp(1, 90,
 				config.get("breathing", "simulation_delay_ticks", BREATHING_AIR_SIMULATION_DELAY_TICKS, "Minimum delay between consecutive air propagation updates of the same block.").getInt());
 		BREATHING_AIR_AT_ENTITY_DEBUG = config.get("breathing", "enable_air_at_entity_debug", BREATHING_AIR_AT_ENTITY_DEBUG, "Spam creative players with air status around them, use at your own risk.").getBoolean(false);
+		
+		BREATHING_AIR_TANK_BREATH_DURATION_TICKS = Commons.clamp(100, 1200,
+				config.get("breathing", "air_tank_breath_duration_ticks", BREATHING_AIR_TANK_BREATH_DURATION_TICKS, "Duration of a single breath cycle measured in ticks.").getInt());
+		BREATHING_AIR_TANK_CAPACITY_BY_TIER = config.get("breathing", "air_tank_capacity_by_tier", BREATHING_AIR_TANK_CAPACITY_BY_TIER, "Number of breaths cycles available in a air tank, by tier (canister, normal, advanced, superior).").getIntList();
+		clampByTier(8, 32767, BREATHING_AIR_TANK_CAPACITY_BY_TIER); // Warning: this is hack since we're using a different tier system
 		
 		// IC2 Reactor cooler
 		IC2_REACTOR_MAX_HEAT_STORED = Commons.clamp(1, 32767,

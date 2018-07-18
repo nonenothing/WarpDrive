@@ -37,7 +37,7 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
 		setLightLevel(10.0F / 15.0F);
 		setSoundType(SoundType.GLASS);
-		setUnlocalizedName("warpdrive.hull" + enumTier.getIndex() + ".omnipanel.");
+		setUnlocalizedName("warpdrive.hull." + enumTier.getName() + ".omnipanel.");
 		setDefaultState(blockState.getBaseState().withProperty(BlockColored.COLOR, EnumDyeColor.WHITE));
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));

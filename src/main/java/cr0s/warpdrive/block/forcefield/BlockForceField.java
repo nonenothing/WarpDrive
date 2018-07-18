@@ -74,7 +74,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		super(registryName, enumTier, Material.GLASS);
 		
 		setSoundType(SoundType.CLOTH);
-		setUnlocalizedName("warpdrive.force_field.block" + enumTier.getIndex());
+		setUnlocalizedName("warpdrive.force_field.block." + enumTier.getName());
 		setBlockUnbreakable();
 		
 		setDefaultState(getDefaultState()

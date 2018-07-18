@@ -30,7 +30,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	public BlockAirGeneratorTiered(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
 		
-		setUnlocalizedName("warpdrive.breathing.air_generator" + enumTier.getIndex());
+		setUnlocalizedName("warpdrive.breathing.air_generator." + enumTier.getName());
 		registerTileEntity(TileEntityAirGeneratorTiered.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
