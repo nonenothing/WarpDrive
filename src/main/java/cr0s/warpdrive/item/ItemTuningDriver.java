@@ -363,7 +363,7 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 			break;
 		}
 		
-		tooltip += "\n" + new TextComponentTranslation("item.warpdrive.tool.tuning_driver.tooltip.usage");
+		tooltip += "\n" + new TextComponentTranslation("item.warpdrive.tool.tuning_driver.tooltip.usage").getFormattedText();
 		
 		Commons.addTooltip(list, tooltip);
 	}
