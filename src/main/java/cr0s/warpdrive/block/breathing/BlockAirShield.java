@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.block.BlockAbstractOmnipanel;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,8 +14,9 @@ import net.minecraft.world.IBlockAccess;
 
 public class BlockAirShield extends BlockAbstractOmnipanel {
 	
-	public BlockAirShield(final String registryName) {
-		super(registryName, Material.CLOTH);
+	public BlockAirShield(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.CLOTH);
+		
 		setUnlocalizedName("warpdrive.breathing.air_shield");
 	}
 	

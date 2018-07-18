@@ -6,6 +6,7 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.StateAir;
 import cr0s.warpdrive.event.ChunkHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -27,15 +28,15 @@ import net.minecraftforge.fml.common.Optional;
 public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 	
 	// persistent properties
-	protected byte tier = -1;
+	protected EnumTier enumTier = null;
 	private boolean isEnabled = true;
 	
 	// computed properties
 	private int maxEnergyStored = 0;
 	private int cooldownTicks = 0;
 	
-	public TileEntityAirGeneratorTiered() {
-		super();
+	public TileEntityAirGeneratorTiered(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveAirGenerator";
 		addMethods(new String[] {
@@ -48,8 +49,8 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		super.onFirstUpdateTick();
 		final Block block = getBlockType();
 		if (block instanceof BlockAirGeneratorTiered) {
-			tier = ((BlockAirGeneratorTiered) block).tier;
-			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED[tier - 1];
+			enumTier = ((BlockAirGeneratorTiered) block).getTier(null);
+			maxEnergyStored = WarpDriveConfig.BREATHING_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()];
 		} else {
 			WarpDrive.logger.error(String.format("Missing block for %s %s",
 			                                     this, Commons.format(world, pos)));
@@ -117,9 +118,10 @@ public class TileEntityAirGeneratorTiered extends TileEntityAbstractEnergy {
 		}
 		
 		if (isEnabled) {
-			final int energy_cost = !stateAir.isAirSource() ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK[tier - 1] : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK[tier - 1];
+			final int energy_cost = !stateAir.isAirSource() ? WarpDriveConfig.BREATHING_ENERGY_PER_NEW_AIR_BLOCK_BY_TIER[enumTier.getIndex()]
+			                                                : WarpDriveConfig.BREATHING_ENERGY_PER_EXISTING_AIR_BLOCK_BY_TIER[enumTier.getIndex()];
 			if (energy_consume(energy_cost, true)) {// enough energy
-				final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS[tier - 1] - 1);
+				final short range = (short) (WarpDriveConfig.BREATHING_AIR_GENERATION_RANGE_BLOCKS_BY_TIER[enumTier.getIndex()] - 1);
 				stateAir.setAirSource(world, direction, range);
 				energy_consume(energy_cost, false);
 				return true;

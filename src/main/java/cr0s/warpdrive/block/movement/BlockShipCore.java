@@ -6,6 +6,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.item.ItemComponent;
 
@@ -29,14 +30,12 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class BlockShipCore extends BlockAbstractContainer {
 	
-	public BlockShipCore(final String registryName) {
-		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.movement.ship_core");
+	public BlockShipCore(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.movement.ship_core" + enumTier.getIndex());
 		registerTileEntity(TileEntityShipCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
@@ -69,7 +68,7 @@ public class BlockShipCore extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipCore();
+		return new TileEntityShipCore(enumTier);
 	}
 	
 	@Override

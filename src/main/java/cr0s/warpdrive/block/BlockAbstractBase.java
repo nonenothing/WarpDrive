@@ -21,6 +21,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
@@ -29,8 +30,12 @@ import net.minecraft.world.World;
 
 public abstract class BlockAbstractBase extends Block implements IBlockBase {
 	
-	protected BlockAbstractBase(final String registryName, final Material material) {
+	protected final EnumTier enumTier;
+	
+	protected BlockAbstractBase(final String registryName, final EnumTier enumTier, final Material material) {
 		super(material);
+		
+		this.enumTier = enumTier;
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
@@ -92,19 +97,14 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		return super.rotateBlock(world, blockPos, axis);
 	}
 	
+	@Nonnull
 	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return 1;
+	public EnumTier getTier(final ItemStack itemStack) {
+		return enumTier;
 	}
 	
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		switch (getTier(itemStack)) {
-		case 0:  return EnumRarity.EPIC;
-		case 1:  return EnumRarity.COMMON;
-		case 2:  return EnumRarity.UNCOMMON;
-		case 3:  return EnumRarity.RARE;
-		default: return rarity;
-		}
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		return getTier(itemStack).getRarity();
 	}
 }

@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
@@ -27,15 +28,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageReceiver {
 	
-	protected final byte tier;
+	protected final EnumTier enumTier;
 	private final IBlockState blockStateHull;
 	
-	public BlockHullStairs(final String registryName, final IBlockState blockStateHull, final byte tier) {
+	public BlockHullStairs(final String registryName, final EnumTier enumTier, final IBlockState blockStateHull) {
 		super(blockStateHull);
+		
 		this.blockStateHull = blockStateHull;
-		this.tier = tier;
+		this.enumTier = enumTier;
 		setCreativeTab(WarpDrive.creativeTabHull);
-		setUnlocalizedName("warpdrive.hull" + tier + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
+		setUnlocalizedName("warpdrive.hull" + enumTier.getIndex() + ".stairs." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));
 	}
@@ -47,20 +49,15 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 		return EnumPushReaction.BLOCK;
 	}
 	
+	@Nonnull
 	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return tier;
+	public EnumTier getTier(final ItemStack itemStack) {
+		return enumTier;
 	}
 	
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		switch (getTier(itemStack)) {
-		case 0:	return EnumRarity.EPIC;
-		case 1:	return EnumRarity.COMMON;
-		case 2:	return EnumRarity.UNCOMMON;
-		case 3:	return EnumRarity.RARE;
-		default: return rarity;
-		}
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		return enumTier.getRarity();
 	}
 	
 	@Nullable
@@ -80,7 +77,7 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
-		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+		return WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()];
 	}
 	
 	@Override
@@ -89,10 +86,10 @@ public class BlockHullStairs extends BlockStairs implements IBlockBase, IDamageR
 		if (damageLevel <= 0) {
 			return 0;
 		}
-		if (tier == 1) {
+		if (enumTier == EnumTier.BASIC) {
 			world.setBlockToAir(blockPos);
 		} else {
-			world.setBlockState(blockPos, WarpDrive.blockHulls_stairs[tier - 2][blockStateHull.getBlock().getMetaFromState(blockStateHull)]
+			world.setBlockState(blockPos, WarpDrive.blockHulls_stairs[enumTier.getIndex() - 1][blockStateHull.getBlock().getMetaFromState(blockStateHull)]
 			                              .getDefaultState()
 			                              .withProperty(FACING, blockState.getValue(FACING)), 2);
 		}

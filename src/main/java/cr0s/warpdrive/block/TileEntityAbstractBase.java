@@ -4,11 +4,13 @@ import cr0s.warpdrive.CommonProxy;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
+import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IBlockUpdateDetector;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CameraRegistryItem;
+import cr0s.warpdrive.data.EnumTier;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,11 +41,31 @@ import javax.annotation.Nullable;
 
 public abstract class TileEntityAbstractBase extends TileEntity implements IBlockUpdateDetector, ITickable {
 	
+	// persistent properties
+	// (none)
+	
+	// computer properties
 	private boolean isFirstTick = true;
 	private boolean isDirty = false;
 	
+	protected EnumTier enumTier;
+	
+	public TileEntityAbstractBase(final EnumTier enumTier) {
+		super();
+		
+		this.enumTier = enumTier;
+	}
+	
 	protected void onFirstUpdateTick() {
 		// No operation
+		final Block block = getBlockType();
+		if (block instanceof IBlockBase) {
+			enumTier = ((IBlockBase) block).getTier(ItemStack.EMPTY);
+		} else {
+			WarpDrive.logger.error(String.format("Invalid block for %s %s: %s",
+			                                     this, Commons.format(world, pos), block));
+			enumTier = EnumTier.BASIC;
+		}
 	}
 	
 	@Override

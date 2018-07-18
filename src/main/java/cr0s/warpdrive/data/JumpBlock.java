@@ -635,13 +635,15 @@ public class JumpBlock {
 	}
 	
 	public void fillEnergyStorage() {
-		if (block == WarpDrive.blockShipCore) {
-			blockNBT.setLong("energy", WarpDriveConfig.SHIP_MAX_ENERGY_STORED);
-		}
-		if (block == WarpDrive.blockEnergyBank) {
-			final byte tier = blockNBT.getByte("tier");
-			if (tier > 0) {
-				blockNBT.setLong("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
+		if (block instanceof IBlockBase) {
+			final EnumTier enumTier = ((IBlockBase) block).getTier(null);
+			if (enumTier != EnumTier.CREATIVE) {
+				if (block instanceof BlockShipCore) {
+					blockNBT.setLong("energy", WarpDriveConfig.SHIP_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()]);
+				}
+				if (block instanceof BlockCapacitor) {
+					blockNBT.setLong("energy", WarpDriveConfig.CAPACITOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()]);
+				}
 			}
 		}
 	}

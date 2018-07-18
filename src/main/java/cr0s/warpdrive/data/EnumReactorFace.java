@@ -21,7 +21,7 @@ public enum EnumReactorFace implements IStringSerializable {
 	BASIC_EAST_AIR   (EnumTier.BASIC, -1, "east_air" , EnumFacing.EAST , -1,  0,  0, null            ),
 	BASIC_WEST_AIR   (EnumTier.BASIC, -1, "west_air" , EnumFacing.WEST ,  1,  0,  0, null            );
 	
-	public final EnumTier tier;
+	public final EnumTier enumTier;
 	public final int indexStability;
 	public final String name;
 	public final EnumFacing facing;
@@ -48,7 +48,7 @@ public enum EnumReactorFace implements IStringSerializable {
 		}
 		for (final EnumReactorFace reactorFace : values()) {
 			if (reactorFace.indexStability >= 0) {
-				tierLasers.get(reactorFace.tier).add(reactorFace);
+				tierLasers.get(reactorFace.enumTier).add(reactorFace);
 			}
 		}
 		for (final Entry<EnumTier, ArrayList<EnumReactorFace>> entry : tierLasers.entrySet()) {
@@ -56,10 +56,10 @@ public enum EnumReactorFace implements IStringSerializable {
 		}
 	}
 	
-	EnumReactorFace(final EnumTier tier, final int indexStability, final String name,
+	EnumReactorFace(final EnumTier enumTier, final int indexStability, final String name,
 	                final EnumFacing facing, final int x, final int y, final int z,
 	                final EnumFacing propertyLaser) {
-		this.tier = tier;
+		this.enumTier = enumTier;
 		this.indexStability = indexStability;
 		this.name = name;
 		this.facing = facing;

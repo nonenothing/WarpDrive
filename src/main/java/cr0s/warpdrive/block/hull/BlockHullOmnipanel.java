@@ -7,6 +7,7 @@ import cr0s.warpdrive.config.WarpDriveConfig;
 
 import javax.annotation.Nonnull;
 
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.Vector3;
 import net.minecraft.block.BlockColored;
 import net.minecraft.block.SoundType;
@@ -29,16 +30,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamageReceiver {
 	
-	final byte tier;
-	
-	public BlockHullOmnipanel(final String registryName, final byte tier) {
-		super(null, Material.GLASS);
-		this.tier = tier;
-		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
-		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
+	public BlockHullOmnipanel(final String registryName, final EnumTier enumTier) {
+		super(null, enumTier, Material.GLASS);
+		
+		setHardness(WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()]);
+		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
 		setLightLevel(10.0F / 15.0F);
 		setSoundType(SoundType.GLASS);
-		setUnlocalizedName("warpdrive.hull" + tier + ".omnipanel.");
+		setUnlocalizedName("warpdrive.hull" + enumTier.getIndex() + ".omnipanel.");
 		setDefaultState(blockState.getBaseState().withProperty(BlockColored.COLOR, EnumDyeColor.WHITE));
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));
@@ -90,15 +89,10 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 	}
 	
 	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return tier;
-	}
-	
-	@Override
 	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
-		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+		return WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()];
 	}
 	
 	@Override
@@ -107,10 +101,10 @@ public class BlockHullOmnipanel extends BlockAbstractOmnipanel implements IDamag
 		if (damageLevel <= 0) {
 			return 0;
 		}
-		if (tier == 1) {
+		if (enumTier == EnumTier.BASIC) {
 			world.setBlockToAir(blockPos);
 		} else {
-			world.setBlockState(blockPos, WarpDrive.blockHulls_omnipanel[tier - 2]
+			world.setBlockState(blockPos, WarpDrive.blockHulls_omnipanel[enumTier.getIndex() - 1]
 			                              .getDefaultState()
 			                              .withProperty(BlockColored.COLOR, blockState.getValue(BlockColored.COLOR)), 2);
 		}

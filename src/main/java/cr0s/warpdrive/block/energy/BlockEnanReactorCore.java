@@ -3,11 +3,11 @@ package cr0s.warpdrive.block.energy;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumReactorFace;
+import cr0s.warpdrive.data.EnumTier;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -23,9 +23,10 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	public static final PropertyInteger ENERGY = PropertyInteger.create("energy", 0, 3);
 	public static final PropertyInteger INSTABILITY = PropertyInteger.create("stability", 0, 3);
 	
-	public BlockEnanReactorCore(final String registryName) {
-		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.energy.enan_reactor_core");
+	public BlockEnanReactorCore(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.energy.enan_reactor_core" + enumTier.getIndex());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(ENERGY, 0)
@@ -57,7 +58,7 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityEnanReactorCore();
+		return new TileEntityEnanReactorCore(enumTier);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -77,11 +78,5 @@ public class BlockEnanReactorCore extends BlockAbstractContainer {
 				}
 			}
 		}
-	}
-	
-	@Override
-
-	public byte getTier(final ItemStack itemStack) {
-		return 3;
 	}
 }

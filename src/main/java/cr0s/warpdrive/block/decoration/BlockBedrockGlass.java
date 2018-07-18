@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.decoration;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -11,9 +12,7 @@ import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -25,8 +24,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockBedrockGlass extends BlockAbstractBase {
 	
-	public BlockBedrockGlass(final String registryName) {
-		super(registryName, Material.FIRE);
+	public BlockBedrockGlass(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.FIRE);
+		
 		setHardness(0.0F);
 		setBlockUnbreakable();
 		setResistance(6000000.0F);
@@ -109,10 +109,5 @@ public class BlockBedrockGlass extends BlockAbstractBase {
 	@Override
 	public boolean isCollidable() {
 		return true;
-	}
-	
-	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		return EnumRarity.EPIC;
 	}
 }

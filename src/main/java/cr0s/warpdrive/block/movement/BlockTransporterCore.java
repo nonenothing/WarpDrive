@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.EnumTransporterState;
 
 import javax.annotation.Nonnull;
@@ -18,8 +19,9 @@ public class BlockTransporterCore extends BlockAbstractContainer {
 	
 	public static final PropertyEnum<EnumTransporterState> VARIANT = PropertyEnum.create("variant", EnumTransporterState.class);
 	
-	public BlockTransporterCore(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockTransporterCore(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.movement.transporter_core");
 		
 		setDefaultState(getDefaultState()
@@ -31,7 +33,7 @@ public class BlockTransporterCore extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityTransporterCore();
+		return new TileEntityTransporterCore(enumTier);
 	}
 	
 	@Nonnull

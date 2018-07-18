@@ -1,20 +1,16 @@
 package cr0s.warpdrive.block.passive;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.data.EnumTier;
+
 import net.minecraft.block.material.Material;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemStack;
 
 public class BlockHighlyAdvancedMachine extends BlockAbstractBase {
 	
-	public BlockHighlyAdvancedMachine(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockHighlyAdvancedMachine(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setHardness(5.0F);
 		setUnlocalizedName("warpdrive.passive.highly_advanced_machine");
-	}
-	
-	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		return EnumRarity.COMMON;
 	}
 }

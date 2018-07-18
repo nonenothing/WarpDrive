@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.energy;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.EnumValidPowered;
 
 import net.minecraft.block.material.Material;
@@ -20,8 +21,9 @@ import javax.annotation.Nonnull;
 
 public class BlockIC2reactorLaserCooler extends BlockAbstractContainer {
 	
-	public BlockIC2reactorLaserCooler(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockIC2reactorLaserCooler(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.energy.ic2_reactor_laser_cooler");
 		registerTileEntity(TileEntityIC2reactorLaserMonitor.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
@@ -56,7 +58,7 @@ public class BlockIC2reactorLaserCooler extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world,final  int metadata) {
-		return new TileEntityIC2reactorLaserMonitor();
+		return new TileEntityIC2reactorLaserMonitor(enumTier);
 	}
 	
 	@Override

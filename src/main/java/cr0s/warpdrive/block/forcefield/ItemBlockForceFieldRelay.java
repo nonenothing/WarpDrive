@@ -8,6 +8,7 @@ public class ItemBlockForceFieldRelay extends ItemBlockAbstractBase {
 	
 	public ItemBlockForceFieldRelay(final Block block) {
 		super(block);
+		
 		setMaxDamage(0);
 		setHasSubtypes(false);
 	}

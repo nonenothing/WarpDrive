@@ -49,8 +49,9 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	private int registryUpdateTicks = 0;
 	
 	
-	public TileEntityJumpGateCore() {
-		super();
+	public TileEntityJumpGateCore(final EnumTier enumTier) {
+		super(enumTier);
+		
 		peripheralName = "warpdriveJumpGate";
 		// addMethods(new String[] {});
 		// CC_scripts = Collections.singletonList("startup");
@@ -273,12 +274,13 @@ public class TileEntityJumpGateCore extends TileEntityAbstractInterfaced impleme
 	public Object[] area(final Object[] arguments) {
 		try {
 			if (arguments != null && arguments.length == 6) {
-				final int minX_new = Commons.clamp(pos.getX() - WarpDriveConfig.SHIP_MAX_SIDE_SIZE, pos.getX() + WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
-				final int minY_new = Commons.clamp(pos.getY() - WarpDriveConfig.SHIP_MAX_SIDE_SIZE, pos.getY() + WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
-				final int minZ_new = Commons.clamp(pos.getZ() - WarpDriveConfig.SHIP_MAX_SIDE_SIZE, pos.getZ() + WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
-				final int maxX_new = Commons.clamp(pos.getX() - WarpDriveConfig.SHIP_MAX_SIDE_SIZE, pos.getX() + WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[3])));
-				final int maxY_new = Commons.clamp(pos.getY() - WarpDriveConfig.SHIP_MAX_SIDE_SIZE, pos.getY() + WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[4])));
-				final int maxZ_new = Commons.clamp(pos.getZ() - WarpDriveConfig.SHIP_MAX_SIDE_SIZE, pos.getZ() + WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[5])));
+				final int sizeMax = WarpDriveConfig.JUMP_GATE_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()];
+				final int minX_new = Commons.clamp(pos.getX() - sizeMax, pos.getX() + sizeMax, Math.abs(Commons.toInt(arguments[0])));
+				final int minY_new = Commons.clamp(pos.getY() - sizeMax, pos.getY() + sizeMax, Math.abs(Commons.toInt(arguments[1])));
+				final int minZ_new = Commons.clamp(pos.getZ() - sizeMax, pos.getZ() + sizeMax, Math.abs(Commons.toInt(arguments[2])));
+				final int maxX_new = Commons.clamp(pos.getX() - sizeMax, pos.getX() + sizeMax, Math.abs(Commons.toInt(arguments[3])));
+				final int maxY_new = Commons.clamp(pos.getY() - sizeMax, pos.getY() + sizeMax, Math.abs(Commons.toInt(arguments[4])));
+				final int maxZ_new = Commons.clamp(pos.getZ() - sizeMax, pos.getZ() + sizeMax, Math.abs(Commons.toInt(arguments[5])));
 				if ( minX_new != minX
 				  || minY_new != minY
 				  || minZ_new != minZ

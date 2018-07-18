@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -24,8 +25,9 @@ import net.minecraft.world.World;
 
 public class BlockCloakingCore extends BlockAbstractContainer {
 	
-	public BlockCloakingCore(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockCloakingCore(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.detection.cloaking_core");
 		registerTileEntity(TileEntityCloakingCore.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
@@ -54,12 +56,7 @@ public class BlockCloakingCore extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityCloakingCore();
-	}
-	
-	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return 3;
+		return new TileEntityCloakingCore(enumTier);
 	}
 	
 	@Override

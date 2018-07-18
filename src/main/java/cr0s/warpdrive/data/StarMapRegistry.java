@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.LocalProfiler;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IStarMapRegistryTileEntity;
+import cr0s.warpdrive.block.movement.BlockShipCore;
 import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
@@ -528,7 +529,7 @@ public class StarMapRegistry {
 					case UNDEFINED:
 						break;
 					case SHIP:
-						isValid = block == WarpDrive.blockShipCore && tileEntity != null && !tileEntity.isInvalid();
+						isValid = block instanceof BlockShipCore && tileEntity != null && !tileEntity.isInvalid();
 						break;
 					case JUMP_GATE:
 						break;

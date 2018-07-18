@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldRegistry;
 import cr0s.warpdrive.data.Vector3;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -13,7 +14,6 @@ import li.cil.oc.api.machine.Arguments;
 import li.cil.oc.api.machine.Callback;
 import li.cil.oc.api.machine.Context;
 
-import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -25,7 +25,6 @@ import javax.annotation.Nonnull;
 public class TileEntityAbstractForceField extends TileEntityAbstractEnergy implements IBeamFrequency {
 	
 	// persistent properties
-	protected byte tier = -1;
 	protected int beamFrequency = -1;
 	public boolean isEnabled = true;
 	protected boolean isConnected = false;
@@ -33,8 +32,8 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	// computed properties
 	protected Vector3 vRGB;
 	
-	public TileEntityAbstractForceField() {
-		super();
+	public TileEntityAbstractForceField(final EnumTier enumTier) {
+		super(enumTier);
 		
 		addMethods(new String[] {
 			"enable",
@@ -44,13 +43,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	
 	@Override
 	protected void onFirstUpdateTick() {
-		final Block block = getBlockType();
-		if (block instanceof BlockAbstractForceField) {
-			tier = ((BlockAbstractForceField) block).tier;
-		} else {
-			WarpDrive.logger.error(String.format("Missing block for %s %s",
-			                                     this, Commons.format(world, pos)));
-		}
+		super.onFirstUpdateTick();
 		if (beamFrequency >= 0 && beamFrequency <= IBeamFrequency.BEAM_FREQUENCY_MAX) {
 			ForceFieldRegistry.updateInRegistry(this);
 		}
@@ -112,7 +105,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Override
 		public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
-		tier = tagCompound.getByte("tier");
+		
 		setBeamFrequency(tagCompound.getInteger(BEAM_FREQUENCY_TAG));
 		isEnabled = !tagCompound.hasKey("isEnabled") || tagCompound.getBoolean("isEnabled");
 		isConnected = tagCompound.getBoolean("isConnected");
@@ -122,7 +115,7 @@ public class TileEntityAbstractForceField extends TileEntityAbstractEnergy imple
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
-		tagCompound.setByte("tier", tier);
+		
 		tagCompound.setInteger(BEAM_FREQUENCY_TAG, beamFrequency);
 		tagCompound.setBoolean("isEnabled", isEnabled);
 		tagCompound.setBoolean("isConnected", isConnected);

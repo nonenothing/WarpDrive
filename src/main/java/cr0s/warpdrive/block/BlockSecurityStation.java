@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.TileEntitySecurityStation;
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -19,8 +20,9 @@ import net.minecraft.world.World;
 
 public class BlockSecurityStation extends BlockAbstractContainer {
 	
-	public BlockSecurityStation(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockSecurityStation(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.machines.security_station");
 		
 		setDefaultState(getDefaultState());
@@ -30,7 +32,7 @@ public class BlockSecurityStation extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntitySecurityStation();
+		return new TileEntitySecurityStation(enumTier);
 	}
 	
 	@Override

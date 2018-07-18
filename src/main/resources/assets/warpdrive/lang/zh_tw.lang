@@ -303,8 +303,8 @@ tile.warpdrive.movement.transporter_containment.name=Transporter Containment
 tile.warpdrive.movement.transporter_core.name=運輸
 tile.warpdrive.movement.transporter_scanner.name=Transporter Scanner
 
-tile.warpdrive.weapon.LaserCamera.name=鐳射&攝像機
-tile.warpdrive.weapon.WeaponController.name=火控系統
+tile.warpdrive.weapon.laser_camera.name=鐳射&攝像機
+tile.warpdrive.weapon.weapon_controller.name=火控系統
 
 
 
@@ -778,9 +778,11 @@ warpdrive.ship.guide.insufficient_energy=Insufficient energy to jump! Core is cu
 warpdrive.ship.guide.warp_field_overlapping=Warp field intersects with other ship's field. Disable the other ship core to jump.
 warpdrive.ship.guide.cloaking_field_overlapping=Core is inside a cloaking field. Aborting. Disable cloaking field to jump!
 warpdrive.ship.guide.pre_jump_success=Ok
-warpdrive.ship.guide.too_large_side=Ship is too big (max is %1$d per side)
-warpdrive.ship.guide.too_much_mass_for_planet=Ship is too big for a planet (max is %1$d blocks while ship mass is %2$d blocks)
-warpdrive.ship.guide.insufficient_mass_for_hyperspace=Ship is too small (%1$d/%1$d).\nInsufficient ship mass to engage Alcubierre drive.\nIncrease your mass or use a jumpgate to reach or exit hyperspace.
+warpdrive.ship.guide.too_large_side_for_tier=Ship is too large for its category (max is %1$d per side)\nUpgrade your ship core or reduce your span!
+warpdrive.ship.guide.too_much_mass_for_planet=Ship is too big for a planet (max is %1$d blocks while ship mass is %2$d blocks).\nReduce your mass!
+warpdrive.ship.guide.insufficient_mass_for_tier=Ship is too small for its category (%2$d < %1$d).\nDowngrade your ship core or increase your mass!
+warpdrive.ship.guide.too_much_mass_for_tier=Ship is too big for its category (%2$d > %1$d).\nUpgrade your ship core or reduce your mass!
+warpdrive.ship.guide.insufficient_mass_for_hyperspace=Ship is too small to engage Alcubierre drive (%1$d/%2$d).\nIncrease your mass to reach hyperspace.
 warpdrive.ship.guide.jumpgate_is_too_far=Ship is not inside a jumpgate. Jump rejected.
 warpdrive.ship.guide.jumpgate_partially_entered=Ship is only %.1f%% inside a jumpgate. Sorry, we'll loose too much crew as is, jump rejected.
 warpdrive.ship.guide.jumpgate_not_defined=Destination jumpgate '%1$s' is unknown. Check jumpgate name.
@@ -833,8 +835,6 @@ warpdrive.ship.guide.schematic_not_found=Schematic not found or unknown error re
 warpdrive.ship.status_line.cooling=%1$d s 升降梯的冷卻中。
 warpdrive.ship.status_line.isolation=%1$d 主動隔離塊由 %2$s%% 吸收。
 
-warpdrive.teleportation.guide.different_dimension=%1$s is in a different dimension, too far away to be summoned
-warpdrive.teleportation.guide.out_of_range=You are to far away to be summoned aboard '%1$s' (max. is %2$s m)
 warpdrive.teleportation.guide.no_safe_spot=No safe spot found to summon player %1$s
 
 warpdrive.transporter.status_line.from_to=From (%1$.0f %2$.0f %3$.0f) to (%4$.0f %5$.0f %6$.0f)

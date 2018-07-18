@@ -7,6 +7,7 @@ import cr0s.warpdrive.api.computer.IShipController;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumShipCommand;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.VectorI;
 
 import dan200.computercraft.api.lua.ILuaContext;
@@ -37,8 +38,8 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	protected boolean isEnabled = false;
 	protected String nameTarget = "";
 	
-	public TileEntityAbstractShipController() {
-		super();
+	public TileEntityAbstractShipController(final EnumTier enumTier) {
+		super(enumTier);
 		
 		// (abstract) peripheralName = "xxx";
 		addMethods(new String[] {
@@ -299,9 +300,9 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	public Object[] dim_positive(final Object[] arguments) {
 		try {
 			if (arguments != null && arguments.length == 3) {
-				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
-				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
-				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
+				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()], Math.abs(Commons.toInt(arguments[0])));
+				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()], Math.abs(Commons.toInt(arguments[1])));
+				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()], Math.abs(Commons.toInt(arguments[2])));
 				setFront(argInt0);
 				setRight(argInt1);
 				setUp(Math.min(255 - pos.getY(), argInt2));
@@ -320,9 +321,9 @@ public abstract class TileEntityAbstractShipController extends TileEntityAbstrac
 	public Object[] dim_negative(final Object[] arguments) {
 		try {
 			if (arguments != null && arguments.length == 3) {
-				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[0])));
-				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[1])));
-				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_MAX_SIDE_SIZE, Math.abs(Commons.toInt(arguments[2])));
+				final int argInt0 = Commons.clamp(0, WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()], Math.abs(Commons.toInt(arguments[0])));
+				final int argInt1 = Commons.clamp(0, WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()], Math.abs(Commons.toInt(arguments[1])));
+				final int argInt2 = Commons.clamp(0, WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()], Math.abs(Commons.toInt(arguments[2])));
 				setBack(argInt0);
 				setLeft(argInt1);
 				setDown(Math.min(pos.getY(), argInt2));

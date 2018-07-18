@@ -5,7 +5,6 @@ import cr0s.warpdrive.Commons;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -16,15 +15,15 @@ import net.minecraft.world.World;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
 public class BlockShipScanner extends BlockAbstractContainer {
 	
-	public static int passCurrent;
-	
-	public BlockShipScanner(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockShipScanner(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.building.ship_scanner");
 		registerTileEntity(TileEntityShipScanner.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
@@ -59,15 +58,7 @@ public class BlockShipScanner extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipScanner();
-	}
-	
-	@Override
-	public byte getTier(final ItemStack itemStack) {
-		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
-			return 1;
-		}
-		return 0;
+		return new TileEntityShipScanner(enumTier);
 	}
 	
 	@Override

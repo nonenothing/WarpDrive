@@ -16,6 +16,7 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	
 	public ItemBlockForceFieldProjector(final Block block) {
 		super(block);
+		
 		setMaxDamage(0);
 		setHasSubtypes(true);
 	}
@@ -24,9 +25,9 @@ public class ItemBlockForceFieldProjector extends ItemBlockAbstractBase {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
-		final int damage = itemStack.getItemDamage();
 		final ResourceLocation resourceLocation = getRegistryName();
-		String stringVariant = "inventory";
+		assert resourceLocation != null;
+		final String stringVariant = "inventory";
 /*		if (itemStack.hasTagCompound() && itemStack.getTagCompound() != null) {
 			final NBTTagCompound tagCompound = itemStack.getTagCompound();
 			stringVariant = "facing=" + (tagCompound.getBoolean("isDoubleSided") ? "east" : "north")

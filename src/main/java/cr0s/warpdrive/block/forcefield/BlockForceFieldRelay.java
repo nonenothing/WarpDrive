@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.forcefield;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 
 import javax.annotation.Nonnull;
@@ -25,16 +26,14 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class BlockForceFieldRelay extends BlockAbstractForceField {
 	
 	public static final PropertyEnum<EnumForceFieldUpgrade> UPGRADE = PropertyEnum.create("upgrade", EnumForceFieldUpgrade.class);
 	
-	public BlockForceFieldRelay(final String registryName, final byte tier) {
-		super(registryName, tier, Material.IRON);
-		setUnlocalizedName("warpdrive.force_field.relay" + tier);
+	public BlockForceFieldRelay(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.force_field.relay" + enumTier.getIndex());
 		
 		setDefaultState(getDefaultState().withProperty(UPGRADE, EnumForceFieldUpgrade.NONE));
 		registerTileEntity(TileEntityForceFieldRelay.class, new ResourceLocation(WarpDrive.MODID, registryName));
@@ -84,7 +83,7 @@ public class BlockForceFieldRelay extends BlockAbstractForceField {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceFieldRelay();
+		return new TileEntityForceFieldRelay(enumTier);
 	}
 	
 	@Override

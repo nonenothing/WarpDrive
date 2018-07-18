@@ -9,6 +9,7 @@ import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumComponentType;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.item.ItemComponent;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.render.ClientCameraHandler;
@@ -52,10 +53,13 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 	private static HashSet<Class> tileEntityRegistered = new HashSet<>(64);
 	private static boolean isInvalidEMPreported = false;
 	
+	protected EnumTier enumTier;
 	protected boolean hasSubBlocks = false;
 	
-	protected BlockAbstractContainer(final String registryName, final Material material) {
+	protected BlockAbstractContainer(final String registryName, final EnumTier enumTier, final Material material) {
 		super(material);
+		
+		this.enumTier = enumTier;
 		setHardness(5.0F);
 		setResistance(6.0F * 5 / 3);
 		setSoundType(SoundType.METAL);
@@ -211,20 +215,15 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 		}
 	}
 	
+	@Nonnull
 	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return 1;
+	public EnumTier getTier(final ItemStack itemStack) {
+		return enumTier;
 	}
 	
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		switch (getTier(itemStack)) {
-			case 0:	return EnumRarity.EPIC;
-			case 1:	return EnumRarity.COMMON;
-			case 2:	return EnumRarity.UNCOMMON;
-			case 3:	return EnumRarity.RARE;
-			default: return rarity;
-		}
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		return getTier(itemStack).getRarity();
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.Vector3;
 
 import java.lang.reflect.InvocationTargetException;
@@ -36,8 +37,8 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 	// pre-computation
 	protected Vector3        laserOutput = null;
 	
-	public TileEntityAbstractMiner() {
-		super();
+	public TileEntityAbstractMiner(final EnumTier enumTier) {
+		super(enumTier);
 	}
 	
 	@Override

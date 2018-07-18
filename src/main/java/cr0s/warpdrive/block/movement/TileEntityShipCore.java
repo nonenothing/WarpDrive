@@ -15,6 +15,7 @@ import cr0s.warpdrive.data.EnumShipCommand;
 import cr0s.warpdrive.data.EnumShipCoreState;
 import cr0s.warpdrive.data.EnumShipMovementType;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.Vector3;
@@ -102,8 +103,9 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	private int isolationUpdateTicks = 0;
 	
 	
-	public TileEntityShipCore() {
-		super();
+	public TileEntityShipCore(final EnumTier enumTier) {
+		super(enumTier);
+		
 		peripheralName = "warpdriveShipCore";
 		// addMethods(new String[] {});
 		CC_scripts = Collections.singletonList("startup");
@@ -245,20 +247,49 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 				}
 				
 				final String playerName = entity.getName();
-				for (final String nameUnlimited : WarpDriveConfig.SHIP_VOLUME_UNLIMITED_PLAYERNAMES) {
+				for (final String nameUnlimited : WarpDriveConfig.SHIP_MASS_UNLIMITED_PLAYER_NAMES) {
 					isUnlimited = isUnlimited || nameUnlimited.equals(playerName);
 				}
 			}
-			if ( !isUnlimited
-			  && shipMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE
-			  && CelestialObjectManager.isPlanet(world, pos.getX(), pos.getZ()) ) {
-				reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.too_much_mass_for_planet",
-				                                  WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE, shipMass);
-				isValid = false;
-				if (isEnabled) {
-					commandDone(false, reasonInvalid);
+			if (!isUnlimited) {
+				if ( shipMass > WarpDriveConfig.SHIP_MASS_MAX_ON_PLANET_SURFACE
+				  && CelestialObjectManager.isPlanet(world, pos.getX(), pos.getZ()) ) {
+					reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.too_much_mass_for_planet",
+					                                  WarpDriveConfig.SHIP_MASS_MAX_ON_PLANET_SURFACE, shipMass);
+					isValid = false;
+					if (isEnabled) {
+						commandDone(false, reasonInvalid);
+					}
+					return;
 				}
-				return;
+				if ( shipMass < WarpDriveConfig.SHIP_MASS_MIN_FOR_HYPERSPACE
+				  && CelestialObjectManager.isInHyperspace(world, pos.getX(), pos.getZ()) ) {
+					reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.insufficient_mass_for_hyperspace",
+					                                  WarpDriveConfig.SHIP_MASS_MIN_FOR_HYPERSPACE, shipMass);
+					isValid = false;
+					if (isEnabled) {
+						commandDone(false, reasonInvalid);
+					}
+					return;
+				}
+				if (shipMass < WarpDriveConfig.SHIP_MASS_MIN_BY_TIER[enumTier.getIndex()]) {
+					reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.insufficient_mass_for_tier",
+					                                  WarpDriveConfig.SHIP_MASS_MIN_BY_TIER[enumTier.getIndex()], shipMass);
+					isValid = false;
+					if (isEnabled) {
+						commandDone(false, reasonInvalid);
+					}
+					return;
+				}
+				if (shipMass > WarpDriveConfig.SHIP_MASS_MAX_BY_TIER[enumTier.getIndex()]) {
+					reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.too_much_mass_for_tier",
+					                                  WarpDriveConfig.SHIP_MASS_MAX_BY_TIER[enumTier.getIndex()], shipMass);
+					isValid = false;
+					if (isEnabled) {
+						commandDone(false, reasonInvalid);
+					}
+					return;
+				}
 			}
 		}
 		
@@ -589,24 +620,6 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		new VectorI(2, 0, 1), new VectorI(2, 0, -1), new VectorI(-1, 0, 1), new VectorI(-1, 0, -1),
 		new VectorI(1, 0, 1), new VectorI(1, 0, -1), new VectorI( 0, 0, 1), new VectorI( 0, 0, -1) };
 	private void summonPlayer(final EntityPlayerMP entityPlayer) {
-		// validate distance
-		double distance = Math.sqrt(new VectorI(entityPlayer).distance2To(this));
-		if (entityPlayer.world != this.world) {
-			distance += 256;
-			if (!WarpDriveConfig.SHIP_SUMMON_ACROSS_DIMENSIONS) {
-				Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.teleportation.guide.different_dimension",
-				                                                                  entityPlayer.getDisplayName())
-						                                     .setStyle(Commons.styleWarning));
-				return;
-			}
-		}
-		if (WarpDriveConfig.SHIP_SUMMON_MAX_RANGE >= 0 && distance > WarpDriveConfig.SHIP_SUMMON_MAX_RANGE) {
-			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.teleportation.guide.out_of_range",
-			                                                                  shipName, WarpDriveConfig.SHIP_SUMMON_MAX_RANGE)
-					                                     .setStyle(Commons.styleWarning));
-			return;
-		}
-		
 		// find a free spot
 		final BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(pos);
 		for (final VectorI vOffset : SUMMON_OFFSETS) {
@@ -682,11 +695,11 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 		markDirty();
 		
 		// validate ship side constrains
-		if ( (getBack() + getFront()) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE
-		  || (getLeft() + getRight()) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE
-		  || (getDown() + getUp()   ) > WarpDriveConfig.SHIP_MAX_SIDE_SIZE ) {
-			reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.too_large_side",
-			                                  WarpDriveConfig.SHIP_MAX_SIDE_SIZE);
+		if ( (getBack() + getFront()) > WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()]
+		  || (getLeft() + getRight()) > WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()]
+		  || (getDown() + getUp()   ) > WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()] ) {
+			reasonInvalid = new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.too_large_side_for_tier",
+			                                  WarpDriveConfig.SHIP_SIZE_MAX_PER_SIDE_BY_TIER[enumTier.getIndex()]);
 			isValid = false;
 			return;
 		}
@@ -941,13 +954,13 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 			WarpDrive.logger.info(this + " Performing hyperdrive jump of " + shipInfo);
 			
 			// Check ship size for hyper-space jump
-			if (shipMass < WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE) {
+			if (shipMass < WarpDriveConfig.SHIP_MASS_MIN_FOR_HYPERSPACE) {
 				final StarMapRegistryItem nearestGate = WarpDrive.starMap.findNearest(EnumStarMapEntryType.JUMP_GATE, world, pos);
 				
 				final WarpDriveText reason = new WarpDriveText();
 				if (nearestGate == null || !isShipInJumpgate(nearestGate, reason)) {
 					commandDone(false, new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.insufficient_mass_for_hyperspace",
-					                                     shipMass, WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE));
+					                                     shipMass, WarpDriveConfig.SHIP_MASS_MIN_FOR_HYPERSPACE));
 					return;
 				}
 			}
@@ -1034,7 +1047,7 @@ public class TileEntityShipCore extends TileEntityAbstractShipController impleme
 	
 	@Override
 	public int energy_getMaxStorage() {
-		return WarpDriveConfig.SHIP_MAX_ENERGY_STORED;
+		return WarpDriveConfig.SHIP_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()];
 	}
 	
 	@Override

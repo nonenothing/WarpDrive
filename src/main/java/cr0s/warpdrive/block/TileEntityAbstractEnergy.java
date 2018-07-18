@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 
 import cofh.redstoneflux.api.IEnergyHandler;
 import cofh.redstoneflux.api.IEnergyProvider;
@@ -54,8 +55,9 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	
 	private Object[] cofhEnergyReceivers;
 	
-	public TileEntityAbstractEnergy() {
-		super();
+	public TileEntityAbstractEnergy(final EnumTier enumTier) {
+		super(enumTier);
+		
 		if (WarpDriveConfig.isCoFHCoreLoaded) {
 			CoFH_initialiseAPI();
 		}

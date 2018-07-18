@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.hull;
 
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -18,6 +19,7 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	
 	ItemBlockHull(final Block block) {
 		super(block);
+		
 		setMaxDamage(0);
 		setHasSubtypes(true);
 	}
@@ -29,7 +31,8 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > 15) {
-			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s",
+			                                                 damage, itemStack.getItem()));
 		}
 		final ResourceLocation resourceLocation = getRegistryName();
 		assert resourceLocation != null;
@@ -51,22 +54,16 @@ public class ItemBlockHull extends ItemBlockAbstractBase {
 		return getUnlocalizedName() + EnumDyeColor.byMetadata( itemStack.getItemDamage() ).getUnlocalizedName();
 	}
 	
-	private byte getTier(final ItemStack itemStack) {
+	private EnumTier getTier(final ItemStack itemStack) {
 		if (block instanceof IBlockBase) {
 			return ((IBlockBase) block).getTier(itemStack);
 		}
-		return 1;
+		return EnumTier.BASIC;
 	}
 	
 	@Nonnull
 	@Override
 	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
-		switch (getTier(itemStack)) {
-			case 0:	return EnumRarity.EPIC;
-			case 1:	return EnumRarity.COMMON;
-			case 2:	return EnumRarity.UNCOMMON;
-			case 3:	return EnumRarity.RARE;
-			default: return EnumRarity.COMMON;
-		}
+		return getTier(itemStack).getRarity();
 	}
 }

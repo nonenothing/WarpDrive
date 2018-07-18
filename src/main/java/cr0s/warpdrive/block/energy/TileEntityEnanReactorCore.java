@@ -73,8 +73,9 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	private long releasedThisCycle = 0; // amount of energy released during current cycle
 	private long releasedLastCycle = 0;
 	
-	public TileEntityEnanReactorCore() {
-		super();
+	public TileEntityEnanReactorCore(final EnumTier enumTier) {
+		super(enumTier);
+		
 		peripheralName = "warpdriveEnanReactorCore";
 		addMethods(new String[] {
 			"enable",
@@ -142,9 +143,10 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			final int indexStability = reactorFace.indexStability;
 			if (containedEnergy > WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * PR_MIN_GENERATION * 100) {
 				final double amountToIncrease = WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS
-						* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((world.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.1));
+						* Math.max(PR_MIN_INSTABILITY, PR_MAX_INSTABILITY * Math.pow((world.rand.nextDouble() * containedEnergy) / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()], 0.1));
 				if (WarpDriveConfig.LOGGING_ENERGY) {
-					WarpDrive.logger.info(String.format("increaseInstability %.5f", amountToIncrease));
+					WarpDrive.logger.info(String.format("increaseInstability %.5f",
+					                                    amountToIncrease));
 				}
 				instabilityValues[indexStability] += amountToIncrease;
 			} else {
@@ -201,8 +203,8 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		
 		if (isEnabled) {// producing, instability increases output, you want to take the risk
 			final int amountToGenerate = (int) Math.ceil(WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS * (0.5D + stabilityOffset)
-					* (PR_MIN_GENERATION + PR_MAX_GENERATION * Math.pow(containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, 0.6D)));
-			containedEnergy = Math.min(containedEnergy + amountToGenerate, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
+					* (PR_MIN_GENERATION + PR_MAX_GENERATION * Math.pow(containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()], 0.6D)));
+			containedEnergy = Math.min(containedEnergy + amountToGenerate, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()]);
 			lastGenerationRate = amountToGenerate / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS;
 			if (WarpDriveConfig.LOGGING_ENERGY) {
 				WarpDrive.logger.info(String.format("Generated %d", amountToGenerate));
@@ -266,7 +268,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	private void explode() {
 		// remove blocks randomly up to x blocks around (breaking whatever protection is there)
-		final double normalizedEnergy = containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED;
+		final double normalizedEnergy = containedEnergy / (double) WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()];
 		final int radius = (int) Math.round(PR_MAX_EXPLOSION_RADIUS * Math.pow(normalizedEnergy, 0.125));
 		final double chanceOfRemoval = PR_MAX_EXPLOSION_REMOVAL_CHANCE * Math.pow(normalizedEnergy, 0.125);
 		if (WarpDriveConfig.LOGGING_ENERGY) {
@@ -311,7 +313,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 			}
 		}
 		final int instabilityNibble = (int) Math.max(0, Math.min(3, Math.round(maxInstability / 25.0D)));
-		final int energyNibble = (int) Math.max(0, Math.min(3, Math.round(4.0D * containedEnergy / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED)));
+		final int energyNibble = (int) Math.max(0, Math.min(3, Math.round(4.0D * containedEnergy / WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()])));
 		
 		final IBlockState blockStateNew = getBlockType().getDefaultState()
 		                                                .withProperty(BlockEnanReactorCore.ENERGY, energyNibble)
@@ -330,7 +332,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 		// first check if we have the required 'air' blocks
 		boolean isValid = true;
 		for (final EnumReactorFace reactorFace : EnumReactorFace.values()) {
-			if (reactorFace.tier != tier) {
+			if (reactorFace.enumTier != tier) {
 				continue;
 			}
 			if (reactorFace.indexStability < 0) {
@@ -389,7 +391,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public Object[] energy() {
-		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED, releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
+		return new Object[] { containedEnergy, WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()], releasedLastCycle / WarpDriveConfig.ENAN_REACTOR_UPDATE_INTERVAL_TICKS };
 	}
 	
 	@Override
@@ -685,7 +687,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	
 	@Override
 	public int energy_getMaxStorage() {
-		return (int) convertRFtoInternal_floor(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED);
+		return (int) convertRFtoInternal_floor(WarpDriveConfig.ENAN_REACTOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()]);
 	}
 	
 	// Forge overrides

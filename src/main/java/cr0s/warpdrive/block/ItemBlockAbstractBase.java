@@ -4,6 +4,7 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IItemBase;
 import cr0s.warpdrive.client.ClientProxy;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,6 +40,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	// As such, we can't use block properties from constructor
 	public ItemBlockAbstractBase(final Block block) {
 		super(block);
+		
 		setUnlocalizedName(block.getUnlocalizedName());
 	}
 	
@@ -61,10 +63,12 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	@Nonnull
 	@Override
 	public EnumRarity getRarity(@Nonnull final ItemStack itemStack) {
+		final EnumRarity enumRarityDefault = super.getRarity(itemStack);
 		if ( !(block instanceof IBlockBase) ) {
-			return super.getRarity(itemStack);
+			return enumRarityDefault;
 		}
-		return ((IBlockBase) block).getRarity(itemStack, super.getRarity(itemStack));
+		final EnumRarity enumRarityStack = ((IBlockBase) block).getRarity(itemStack);
+		return enumRarityStack.ordinal() > enumRarityDefault.ordinal() ? enumRarityStack : enumRarityDefault;
 	}
 	
 	public ITextComponent getStatus(final World world, final NBTTagCompound tagCompound, final IBlockState blockState) {
@@ -97,18 +101,27 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		final String tooltipName1 = getUnlocalizedName(itemStack) + ".tooltip";
-		if (I18n.hasKey(tooltipName1)) {
-			Commons.addTooltip(list, new TextComponentTranslation(tooltipName1).getFormattedText());
+		final String tooltipItemStack = getUnlocalizedName(itemStack) + ".tooltip";
+		if (I18n.hasKey(tooltipItemStack)) {
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipItemStack).getFormattedText());
 		}
 		
-		final String tooltipName2 = getUnlocalizedName() + ".tooltip";
-		if ((!tooltipName1.equals(tooltipName2)) && I18n.hasKey(tooltipName2)) {
-			Commons.addTooltip(list, new TextComponentTranslation(tooltipName2).getFormattedText());
+		final String tooltipName = getUnlocalizedName() + ".tooltip";
+		if ((!tooltipItemStack.equals(tooltipName)) && I18n.hasKey(tooltipName)) {
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipName).getFormattedText());
+		}
+		
+		String tooltipNameWithoutTier = tooltipName;
+		for (final EnumTier enumTier : EnumTier.values()) {
+			tooltipNameWithoutTier = tooltipNameWithoutTier.replace("." + enumTier.getName(), "");
+		}
+		if ((!tooltipNameWithoutTier.equals(tooltipItemStack)) && I18n.hasKey(tooltipNameWithoutTier)) {
+			Commons.addTooltip(list, new TextComponentTranslation(tooltipNameWithoutTier).getFormattedText());
 		}
 		
 		final IBlockState blockState;
 		if (world != null) {
+			assert Minecraft.getMinecraft().player != null;
 			blockState = block.getStateForPlacement(world, new BlockPos(0, -1, 0),
 			                                        EnumFacing.DOWN, 0.0F, 0.0F, 0.0F,
 			                                        itemStack.getMetadata(), Minecraft.getMinecraft().player, EnumHand.MAIN_HAND);

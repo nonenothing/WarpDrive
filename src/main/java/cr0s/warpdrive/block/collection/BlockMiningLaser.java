@@ -4,6 +4,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 
 import cr0s.warpdrive.data.EnumMiningLaserMode;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -15,15 +16,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
 public class BlockMiningLaser extends BlockAbstractContainer {
 	
 	public static final PropertyEnum<EnumMiningLaserMode> MODE = PropertyEnum.create("mode", EnumMiningLaserMode.class);
 	
-	public BlockMiningLaser(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockMiningLaser(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.collection.mining_laser");
 		registerTileEntity(TileEntityMiningLaser.class, new ResourceLocation(WarpDrive.MODID, registryName));
 
@@ -52,6 +51,6 @@ public class BlockMiningLaser extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityMiningLaser();
+		return new TileEntityMiningLaser(enumTier);
 	}
 }

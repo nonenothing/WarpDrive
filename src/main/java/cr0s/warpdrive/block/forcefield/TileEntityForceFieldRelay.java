@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IForceFieldUpgrade;
 import cr0s.warpdrive.api.IForceFieldUpgradeEffector;
 import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldSetup;
 
 import net.minecraft.nbt.NBTTagCompound;
@@ -20,8 +21,8 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	// persistent properties
 	private EnumForceFieldUpgrade upgrade = EnumForceFieldUpgrade.NONE;
 	
-	public TileEntityForceFieldRelay() {
-		super();
+	public TileEntityForceFieldRelay(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveForceFieldRelay";
 	}
@@ -89,6 +90,6 @@ public class TileEntityForceFieldRelay extends TileEntityAbstractForceField impl
 	
 	@Override
 	public float getUpgradeValue() {
-		return isEnabled ? getUpgrade().getUpgradeValue() * (1.0F + (tier - 1) * ForceFieldSetup.FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_RELAY_TIER) : 0.0F;
+		return isEnabled ? getUpgrade().getUpgradeValue() * (1.0F + (enumTier.getIndex() - 1) * ForceFieldSetup.FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_RELAY_TIER) : 0.0F;
 	}
 }

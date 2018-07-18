@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block.atomic;
 
+import cr0s.warpdrive.data.EnumTier;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -12,9 +14,10 @@ import javax.annotation.Nonnull;
 public class BlockElectromagnetGlass extends BlockElectromagnetPlain {
 	
 	
-	public BlockElectromagnetGlass(final String registryName, final byte tier) {
-		super(registryName, tier);
-		setUnlocalizedName("warpdrive.atomic.electromagnet" + tier + ".glass");
+	public BlockElectromagnetGlass(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
+		
+		setUnlocalizedName("warpdrive.atomic.electromagnet" + enumTier.getIndex() + ".glass");
 	}
 	
 	@SuppressWarnings("deprecation")

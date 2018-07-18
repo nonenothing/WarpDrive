@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.computer.ILift;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumLiftMode;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -44,8 +45,8 @@ public class TileEntityLift extends TileEntityAbstractEnergy implements ILift {
 	private boolean isValid = false;
 	private int firstUncoveredY;
 	
-	public TileEntityLift() {
-		super();
+	public TileEntityLift(final EnumTier enumTier) {
+		super(enumTier);
 		IC2_sinkTier = 2;
 		IC2_sourceTier = 2;
 		peripheralName = "warpdriveLift";

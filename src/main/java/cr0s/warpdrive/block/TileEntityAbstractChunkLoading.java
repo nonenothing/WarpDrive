@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.event.ChunkLoadingHandler;
 
 import javax.annotation.Nonnull;
@@ -23,6 +24,10 @@ public abstract class TileEntityAbstractChunkLoading extends TileEntityAbstractE
 	private Ticket ticket = null;
 	private boolean isRefreshNeeded = true;
 	protected boolean areChunksLoaded = false;
+	
+	TileEntityAbstractChunkLoading(final EnumTier enumTier) {
+		super(enumTier);
+	}
 	
 	@Override
 	protected void onFirstUpdateTick() {

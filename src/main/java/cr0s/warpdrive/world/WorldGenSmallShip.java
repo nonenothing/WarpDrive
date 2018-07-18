@@ -276,7 +276,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 9, y + 5, z + 12);
 		genStructure.setHullPlain(world, x + 9, y + 6, z + 3);
 		if (!isCorrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 9, y + 6, z + 7), WarpDrive.blockAirGenerator.getDefaultState(), 2);
+			world.setBlockState(new BlockPos(x + 9, y + 6, z + 7), WarpDrive.blockAirGeneratorTiered[1].getDefaultState(), 2);
 		}
 		genStructure.setHullPlain(world, x + 9, y + 6, z + 11);
 		genStructure.setHullPlain(world, x + 9, y + 7, z + 4);
@@ -353,7 +353,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 11, y + 5, z + 2);
 		genStructure.setHullGlass(world, x + 11, y + 5, z + 6);
 		if (!isCorrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 11, y + 5, z + 7), WarpDrive.blockShipController.getDefaultState());
+			world.setBlockState(new BlockPos(x + 11, y + 5, z + 7), WarpDrive.blockShipController[0].getDefaultState());
 		}
 		genStructure.setHullGlass(world, x + 11, y + 5, z + 8);
 		genStructure.setHullGlass(world, x + 11, y + 5, z + 12);
@@ -416,7 +416,7 @@ public class WorldGenSmallShip extends WorldGenerator {
 		genStructure.setHullGlass(world, x + 12, y + 5, z + 2);
 		genStructure.setHullGlass(world, x + 12, y + 5, z + 6);
 		if (!isCorrupted || rand.nextBoolean()) {
-			world.setBlockState(new BlockPos(x + 12, y + 5, z + 7), WarpDrive.blockShipCore.getDefaultState());
+			world.setBlockState(new BlockPos(x + 12, y + 5, z + 7), WarpDrive.blockShipCore[0].getDefaultState());
 			if (isCreative) {// fill with energy
 				TileEntity tileEntity = world.getTileEntity(new BlockPos(x + 12, y + 5, z + 7));
 				if (tileEntity instanceof TileEntityAbstractEnergy) {

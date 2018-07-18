@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
@@ -32,16 +33,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageReceiver {
 	
-	private final byte tier;
+	private final EnumTier enumTier;
 	
-	public BlockHullGlass(final String registryName, final byte tier) {
+	public BlockHullGlass(final String registryName, final EnumTier enumTier) {
 		super(Material.GLASS);
-		this.tier = tier;
-		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
-		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
+		
+		this.enumTier = enumTier;
+		setHardness(WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()]);
+		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
 		setSoundType(SoundType.GLASS);
 		setCreativeTab(WarpDrive.creativeTabHull);
-		setUnlocalizedName("warpdrive.hull" + tier + ".glass.");
+		setUnlocalizedName("warpdrive.hull" + enumTier.getIndex() + ".glass.");
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHull(this));
 		
@@ -61,20 +63,15 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 		return false;
 	}
 	
+	@Nonnull
 	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return tier;
+	public EnumTier getTier(final ItemStack itemStack) {
+		return enumTier;
 	}
 	
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		switch (getTier(itemStack)) {
-		case 0:	return EnumRarity.EPIC;
-		case 1:	return EnumRarity.COMMON;
-		case 2:	return EnumRarity.UNCOMMON;
-		case 3:	return EnumRarity.RARE;
-		default: return rarity;
-		}
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		return getTier(itemStack).getRarity();
 	}
 	
 	@Nullable
@@ -125,7 +122,7 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
-		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+		return WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()];
 	}
 	
 	@Override
@@ -134,10 +131,10 @@ public class BlockHullGlass extends BlockColored implements IBlockBase, IDamageR
 		if (damageLevel <= 0) {
 			return 0;
 		}
-		if (tier == 1) {
+		if (enumTier == EnumTier.BASIC) {
 			world.setBlockToAir(blockPos);
 		} else {
-			world.setBlockState(blockPos, WarpDrive.blockHulls_glass[tier - 2]
+			world.setBlockState(blockPos, WarpDrive.blockHulls_glass[enumTier.getIndex() - 1]
 			                              .getDefaultState()
 			                              .withProperty(COLOR, blockState.getValue(COLOR)), 2);
 		}

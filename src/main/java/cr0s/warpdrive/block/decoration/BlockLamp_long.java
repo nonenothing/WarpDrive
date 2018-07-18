@@ -1,6 +1,8 @@
 package cr0s.warpdrive.block.decoration;
 
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -17,8 +19,8 @@ public class BlockLamp_long extends BlockAbstractLamp {
 	private static final AxisAlignedBB AABB_WEST  = new AxisAlignedBB(0.80D, 0.32D, 0.00D, 1.00D, 0.68D, 1.00D);
 	private static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.00D, 0.32D, 0.00D, 0.20D, 0.68D, 1.00D);
 	
-	public BlockLamp_long(final String registryName) {
-		super(registryName, "warpdrive.decoration.lamp_long");
+	public BlockLamp_long(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, "warpdrive.decoration.lamp_long");
 	}
 	
 	@Nonnull

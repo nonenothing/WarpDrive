@@ -120,15 +120,15 @@ public class TrajectoryPoint extends VectorI {
 		
 		// check main magnets
 		if (blockUp instanceof BlockElectromagnetPlain && blockDown instanceof BlockElectromagnetPlain) {
-			final int tierUp = ((BlockElectromagnetPlain) blockUp).tier;
-			if (tierUp == ((BlockElectromagnetPlain) blockDown).tier) {
+			final int tierUp = ((BlockElectromagnetPlain) blockUp).enumTier.getIndex();
+			if (tierUp == ((BlockElectromagnetPlain) blockDown).enumTier.getIndex()) {
 				tier = tier == 0 || tier == tierUp ? tierUp : -1;
 				typeNew |= MAGNETS_VERTICAL;
 			}
 		}
 		if (blockLeft instanceof BlockElectromagnetPlain && blockRight instanceof BlockElectromagnetPlain) {
-			final int tierLeft = ((BlockElectromagnetPlain) blockLeft).tier;
-			if (tierLeft == ((BlockElectromagnetPlain) blockRight).tier) {
+			final int tierLeft = ((BlockElectromagnetPlain) blockLeft).enumTier.getIndex();
+			if (tierLeft == ((BlockElectromagnetPlain) blockRight).enumTier.getIndex()) {
 				tier = tier == 0 || tier == tierLeft ? tierLeft : -1;
 				typeNew |= MAGNETS_HORIZONTAL;
 			}
@@ -308,8 +308,8 @@ public class TrajectoryPoint extends VectorI {
 		// (up and down magnets should have same tier, but different from current one)
 		boolean hasVerticalMagnets = false;
 		if (blockUp instanceof BlockElectromagnetPlain && blockDown instanceof BlockElectromagnetPlain) {
-			final int tierUp = ((BlockElectromagnetPlain) blockUp).tier;
-			if (tierUp == ((BlockElectromagnetPlain) blockDown).tier) {
+			final int tierUp = ((BlockElectromagnetPlain) blockUp).enumTier.getIndex();
+			if (tierUp == ((BlockElectromagnetPlain) blockDown).enumTier.getIndex()) {
 				hasVerticalMagnets = tier == tierUp;
 			}
 		}
@@ -539,7 +539,7 @@ public class TrajectoryPoint extends VectorI {
 							y + offsetY,
 							z + offsetZ)).getBlock();
 						if (blockCheck instanceof BlockElectromagnetPlain) {
-							final int tierCheck = ((BlockElectromagnetPlain) blockCheck).tier;
+							final int tierCheck = ((BlockElectromagnetPlain) blockCheck).enumTier.getIndex();
 							if (tierCheck == tierMain) {
 								countMainMagnet++;
 							} else if (tierCheck > tierMain) {
@@ -552,7 +552,7 @@ public class TrajectoryPoint extends VectorI {
 						} else if (blockCheck instanceof BlockParticlesCollider) {
 							countCollider++;
 						} else if (blockCheck instanceof BlockParticlesInjector) {
-							final int tierCheck = ((BlockParticlesInjector) blockCheck).tier;
+							final int tierCheck = ((BlockParticlesInjector) blockCheck).enumTier.getIndex();
 							if (tierCheck == tierMain) {
 								countMainMagnet++;
 							}
@@ -652,10 +652,10 @@ public class TrajectoryPoint extends VectorI {
 					y,
 					z - directionMain.getFrontOffsetZ() + directionRight.getFrontOffsetZ())).getBlock();
 				if ( tier > 0
-				  && blockForwardLeft   instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockForwardLeft  ).tier
-				  && blockForwardRight  instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockForwardRight ).tier
-				  && blockBackwardLeft  instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockBackwardLeft ).tier
-				  && blockBackwardRight instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockBackwardRight).tier
+				  && blockForwardLeft   instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockForwardLeft  ).enumTier.getIndex()
+				  && blockForwardRight  instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockForwardRight ).enumTier.getIndex()
+				  && blockBackwardLeft  instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockBackwardLeft ).enumTier.getIndex()
+				  && blockBackwardRight instanceof BlockElectromagnetPlain && tier == ((BlockElectromagnetPlain) blockBackwardRight).enumTier.getIndex()
 				  && ((typeNew & MAGNETS_VERTICAL) == MAGNETS_VERTICAL) ) {
 					// also validate the sided magnet
 					isTurning = (isForward   || blockForward instanceof BlockElectromagnetPlain || blockForward instanceof BlockParticlesInjector)
@@ -685,7 +685,7 @@ public class TrajectoryPoint extends VectorI {
 				assert isLeftTurn && isRightTurn;
 				// it's probably an input/output, in that case, magnets are all around, just pick one side to detect the direction
 				final Block blockUpRight   = world.getBlockState(new BlockPos(x + directionRight.getFrontOffsetX(), y + 1, z + directionRight.getFrontOffsetZ())).getBlock();
-				if (blockUpRight instanceof BlockElectromagnetPlain && tier != ((BlockElectromagnetPlain) blockUpRight).tier) {
+				if (blockUpRight instanceof BlockElectromagnetPlain && tier != ((BlockElectromagnetPlain) blockUpRight).enumTier.getIndex()) {
 					directionForward = directionLeft;
 				} else {
 					directionForward = directionRight;

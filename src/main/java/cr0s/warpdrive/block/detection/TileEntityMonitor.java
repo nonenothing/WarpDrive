@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.peripheral.IComputerAccess;
@@ -27,8 +28,8 @@ public class TileEntityMonitor extends TileEntityAbstractInterfaced implements I
 	private static final int PACKET_SEND_INTERVAL_TICKS = 60 * 20;
 	private int packetSendTicks = 10;
 	
-	public TileEntityMonitor() {
-		super();
+	public TileEntityMonitor(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveMonitor";
 		addMethods(new String[] {

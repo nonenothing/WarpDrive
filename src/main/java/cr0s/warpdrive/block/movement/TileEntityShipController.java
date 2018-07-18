@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
@@ -26,8 +27,8 @@ public class TileEntityShipController extends TileEntityAbstractShipController {
 	
 	private WeakReference<TileEntityShipCore> tileEntityShipCoreWeakReference = null;
 	
-	public TileEntityShipController() {
-		super();
+	public TileEntityShipController(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveShipController";
 		// addMethods(new String[] {});

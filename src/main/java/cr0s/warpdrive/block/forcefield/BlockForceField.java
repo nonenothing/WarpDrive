@@ -9,6 +9,7 @@ import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumPermissionNode;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.data.VectorI;
@@ -69,10 +70,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	public static final PropertyInteger FREQUENCY = PropertyInteger.create("frequency", 0, 15);
 	
-	public BlockForceField(final String registryName, final byte tier) {
-		super(registryName, tier, Material.GLASS);
+	public BlockForceField(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.GLASS);
+		
 		setSoundType(SoundType.CLOTH);
-		setUnlocalizedName("warpdrive.force_field.block" + tier);
+		setUnlocalizedName("warpdrive.force_field.block" + enumTier.getIndex());
 		setBlockUnbreakable();
 		
 		setDefaultState(getDefaultState()
@@ -159,7 +161,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceField();
+		return new TileEntityForceField(enumTier);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -170,8 +172,10 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 		
 		// register camouflage
 		for (final Integer integer : FREQUENCY.getAllowedValues()) {
+			final ResourceLocation registryName = getRegistryName();
+			assert registryName != null;
 			final String variant = String.format("%s=%d", FREQUENCY.getName(), integer);
-			ModelBakeEventHandler.registerBakedModel(new ModelResourceLocation(getRegistryName(), variant), BakedModelCamouflage.class);
+			ModelBakeEventHandler.registerBakedModel(new ModelResourceLocation(registryName, variant), BakedModelCamouflage.class);
 		}
 	}
 	
@@ -330,11 +334,11 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	}
 	
 	private void downgrade(final World world, final BlockPos blockPos) {
-		if (tier > 1) {
+		if (enumTier.getIndex() > 1) {
 			final TileEntityForceFieldProjector tileEntityForceFieldProjector = getProjector(world, blockPos);
 			final IBlockState blockState = world.getBlockState(blockPos);
 			final int frequency = blockState.getValue(FREQUENCY);
-			world.setBlockState(blockPos, WarpDrive.blockForceFields[tier - 2].getDefaultState().withProperty(FREQUENCY, (frequency + 1) % 16), 2);
+			world.setBlockState(blockPos, WarpDrive.blockForceFields[enumTier.getIndex() - 1].getDefaultState().withProperty(FREQUENCY, (frequency + 1) % 16), 2);
 			if (tileEntityForceFieldProjector != null) {
 				final TileEntity tileEntity = world.getTileEntity(blockPos);
 				if (tileEntity instanceof TileEntityForceField) {
@@ -473,7 +477,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	
 	@Override
 	public void onEMP(final World world, final BlockPos blockPos, final float efficiency) {
-		if (efficiency * (1.0F - 0.20F * (tier - 1)) > world.rand.nextFloat()) {
+		if (efficiency * (1.0F - 0.20F * (enumTier.getIndex() - 1)) > world.rand.nextFloat()) {
 			downgrade(world, blockPos);
 		}
 		// already handled => no ancestor call
@@ -489,7 +493,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@Override
 	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
-		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+		return WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()];
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.movement;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.EnumShipCommand;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -18,9 +19,10 @@ public class BlockShipController extends BlockAbstractContainer {
 	
 	public static final PropertyEnum<EnumShipCommand> COMMAND = PropertyEnum.create("command", EnumShipCommand.class);
 	
-	public BlockShipController(final String registryName) {
-		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.movement.ship_controller");
+	public BlockShipController(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.movement.ship_controller" + enumTier.getIndex());
 		
 		setDefaultState(getDefaultState()
 				                .withProperty(COMMAND, EnumShipCommand.OFFLINE)
@@ -50,6 +52,6 @@ public class BlockShipController extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityShipController();
+		return new TileEntityShipController(enumTier);
 	}
 }

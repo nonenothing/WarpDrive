@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -9,8 +10,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.EnumRarity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,8 +26,9 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 	
 	public static final PropertyBool OUTER = PropertyBool.create("outer");
 	
-	public BlockCloakingCoil(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockCloakingCoil(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setHardness(3.5F);
 		setUnlocalizedName("warpdrive.detection.cloaking_coil");
 		
@@ -77,10 +77,5 @@ public class BlockCloakingCoil extends BlockAbstractBase {
 		if (blockStateActual.getBlock().getMetaFromState(blockStateActual) != blockStateActual.getBlock().getMetaFromState(blockStateNew)) {
 			world.setBlockState(blockPos, blockStateNew);
 		}
-	}
-	
-	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		return EnumRarity.COMMON;
 	}
 }

@@ -2,6 +2,7 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -12,8 +13,9 @@ import net.minecraft.world.World;
 
 public class BlockCamera extends BlockAbstractContainer {
 	
-	public BlockCamera(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockCamera(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.detection.camera");
 		registerTileEntity(TileEntityCamera.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
@@ -21,6 +23,6 @@ public class BlockCamera extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityCamera();
+		return new TileEntityCamera(enumTier);
 	}
 }

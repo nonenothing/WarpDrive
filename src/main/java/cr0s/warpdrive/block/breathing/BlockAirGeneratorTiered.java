@@ -6,6 +6,7 @@ import cr0s.warpdrive.api.IAirContainerItem;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -26,12 +27,10 @@ import net.minecraft.world.World;
 
 public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	
-	protected byte tier;
-	
-	public BlockAirGeneratorTiered(final String registryName, final byte tier) {
-		super(registryName, Material.IRON);
-		this.tier = tier;
-		setUnlocalizedName("warpdrive.breathing.air_generator" + tier);
+	public BlockAirGeneratorTiered(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.breathing.air_generator" + enumTier.getIndex());
 		registerTileEntity(TileEntityAirGeneratorTiered.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState()
@@ -62,12 +61,7 @@ public class BlockAirGeneratorTiered extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityAirGeneratorTiered();
-	}
-	
-	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return tier;
+		return new TileEntityAirGeneratorTiered(enumTier);
 	}
 	
 	@Override

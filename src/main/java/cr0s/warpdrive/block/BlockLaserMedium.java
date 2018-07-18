@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -16,9 +17,10 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	
 	public static final PropertyInteger LEVEL = PropertyInteger.create("level", 0, 7);
 	
-	public BlockLaserMedium(final String registryName) {
-		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.machines.laser_medium");
+	public BlockLaserMedium(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.machines.laser_medium" + enumTier.getIndex());
 		registerTileEntity(TileEntityLaserMedium.class, new ResourceLocation(WarpDrive.MODID, registryName));
 		
 		setDefaultState(getDefaultState().withProperty(LEVEL, 0));
@@ -46,6 +48,6 @@ public class BlockLaserMedium extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityLaserMedium();
+		return new TileEntityLaserMedium(enumTier);
 	}
 }

@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.breathing;
 
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
@@ -10,8 +11,8 @@ import net.minecraft.util.EnumFacing;
 
 public class BlockAirSource extends BlockAbstractAir {
 	
-	public BlockAirSource(final String registryName) {
-		super(registryName);
+	public BlockAirSource(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
 		
 		setDefaultState(getDefaultState().withProperty(BlockProperties.FACING, EnumFacing.DOWN));
 	}

@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block;
 
+import cr0s.warpdrive.data.EnumTier;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -46,8 +48,8 @@ public abstract class BlockAbstractOmnipanel extends BlockAbstractBase {
 	protected static AxisAlignedBB AABB_XP = new AxisAlignedBB(CENTER_MIN, CENTER_MIN, CENTER_MIN, 1.0F, CENTER_MAX, CENTER_MAX);
 	
 	
-	public BlockAbstractOmnipanel(final String registryName, final Material material) {
-		super(registryName, material);
+	public BlockAbstractOmnipanel(final String registryName, final EnumTier enumTier, final Material material) {
+		super(registryName, enumTier, material);
 	}
 	
 	@Override

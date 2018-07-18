@@ -6,6 +6,7 @@ import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.VectorI;
 
@@ -31,9 +32,14 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	// number of projectors check ignored before self-destruction
 	private int gracePeriod_calls = 3;
 	
+	TileEntityForceField(final EnumTier enumTier) {
+		super(enumTier);
+	}
+	
 	@Override
 	public void readFromNBT(final NBTTagCompound tagCompound) {
 		super.readFromNBT(tagCompound);
+		
 		if (tagCompound.hasKey("projector")) {// are we server side and is it a valid force field block?
 			vProjector = VectorI.createFromNBT(tagCompound.getCompoundTag("projector"));
 			cache_beamFrequency = tagCompound.getInteger(IBeamFrequency.BEAM_FREQUENCY_TAG);
@@ -69,6 +75,7 @@ public class TileEntityForceField extends TileEntityAbstractBase {
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
+		
 		if (vProjector != null) {
 			tagCompound.setTag("projector", vProjector.writeToNBT(new NBTTagCompound()));
 			tagCompound.setInteger(IBeamFrequency.BEAM_FREQUENCY_TAG, cache_beamFrequency);

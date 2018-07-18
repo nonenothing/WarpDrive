@@ -5,6 +5,7 @@ import cr0s.warpdrive.api.IBlockBase;
 import cr0s.warpdrive.api.IDamageReceiver;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.Vector3;
 
 import javax.annotation.Nonnull;
@@ -58,18 +59,19 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	
 	public static final PropertyEnum<EnumVariant> VARIANT = PropertyEnum.create("variant", EnumVariant.class);
 	
-	final byte tier;
+	final EnumTier enumTier;
 	private final IBlockState blockStateHull;
 	
-	public BlockHullSlab(final String registryName, final IBlockState blockStateHull, final byte tier) {
+	public BlockHullSlab(final String registryName, final EnumTier enumTier, final IBlockState blockStateHull) {
 		super(Material.ROCK);
-		this.tier = tier;
+		
+		this.enumTier = enumTier;
 		this.blockStateHull = blockStateHull;
-		setHardness(WarpDriveConfig.HULL_HARDNESS[tier - 1]);
-		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[tier - 1] * 5 / 3);
+		setHardness(WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()]);
+		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[enumTier.getIndex()] * 5 / 3);
 		setSoundType(SoundType.METAL);
 		setCreativeTab(WarpDrive.creativeTabHull);
-		setUnlocalizedName("warpdrive.hull" + tier + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
+		setUnlocalizedName("warpdrive.hull" + enumTier.getIndex() + ".slab." + EnumDyeColor.byMetadata(blockStateHull.getBlock().getMetaFromState(blockStateHull)).getUnlocalizedName());
 		setRegistryName(registryName);
 		WarpDrive.register(this, new ItemBlockHullSlab(this));
 		
@@ -291,20 +293,15 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		return blockStateHull.getMapColor(blockAccess, blockPos);
 	}
 	
+	@Nonnull
 	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return tier;
+	public EnumTier getTier(final ItemStack itemStack) {
+		return enumTier;
 	}
 	
 	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		switch (getTier(itemStack)) {
-		case 0:	return EnumRarity.EPIC;
-		case 1:	return EnumRarity.COMMON;
-		case 2:	return EnumRarity.UNCOMMON;
-		case 3:	return EnumRarity.RARE;
-		default: return rarity;
-		}
+	public EnumRarity getRarity(final ItemStack itemStack) {
+		return enumTier.getRarity();
 	}
 	
 	@Nullable
@@ -324,7 +321,7 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 	public float getBlockHardness(final IBlockState blockState, final World world, final BlockPos blockPos,
 	                              final DamageSource damageSource, final int damageParameter, final Vector3 damageDirection, final int damageLevel) {
 		// TODO: adjust hardness to damage type/color
-		return WarpDriveConfig.HULL_HARDNESS[tier - 1];
+		return WarpDriveConfig.HULL_HARDNESS[enumTier.getIndex()];
 	}
 	
 	@Override
@@ -333,10 +330,10 @@ public class BlockHullSlab extends BlockSlab implements IBlockBase, IDamageRecei
 		if (damageLevel <= 0) {
 			return 0;
 		}
-		if (tier == 1) {
+		if (enumTier == EnumTier.BASIC) {
 			world.setBlockToAir(blockPos);
 		} else {
-			world.setBlockState(blockPos, WarpDrive.blockHulls_slab[tier - 2][blockStateHull.getBlock().getMetaFromState(blockStateHull)]
+			world.setBlockState(blockPos, WarpDrive.blockHulls_slab[enumTier.getIndex() - 1][blockStateHull.getBlock().getMetaFromState(blockStateHull)]
 			                              .getDefaultState()
 			                              .withProperty(VARIANT, blockState.getValue(VARIANT)), 2);
 		}

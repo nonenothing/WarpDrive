@@ -3,6 +3,7 @@ package cr0s.warpdrive.block;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.VectorI;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -63,8 +64,9 @@ public abstract class TileEntityAbstractInterfaced extends TileEntityAbstractBas
 	// ComputerCraft specific properties
 	protected final HashMap<Integer, IComputerAccess> connectedComputers = new HashMap<>();
 	
-	public TileEntityAbstractInterfaced() {
-		super();
+	public TileEntityAbstractInterfaced(final EnumTier enumTier) {
+		super(enumTier);
+		
 		addMethods(new String[] {
 				"interfaced",
 				"position",

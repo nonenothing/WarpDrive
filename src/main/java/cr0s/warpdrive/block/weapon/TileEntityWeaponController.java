@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.weapon;
 
 import cr0s.warpdrive.block.TileEntityAbstractInterfaced;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -9,8 +10,8 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class TileEntityWeaponController extends TileEntityAbstractInterfaced {
 	
-	public TileEntityWeaponController() {
-		super();
+	public TileEntityWeaponController(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveWeaponController";
 		addMethods(new String[] {

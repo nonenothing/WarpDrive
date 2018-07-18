@@ -6,6 +6,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.data.EnumTransporterBeaconState;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -41,8 +42,9 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	
 	public static final PropertyEnum<EnumTransporterBeaconState> VARIANT = PropertyEnum.create("variant", EnumTransporterBeaconState.class);
 	
-	public BlockTransporterBeacon(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockTransporterBeacon(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setHardness(0.5F);
 		setUnlocalizedName("warpdrive.movement.transporter_beacon");
 		
@@ -117,7 +119,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityTransporterBeacon();
+		return new TileEntityTransporterBeacon(enumTier);
 	}
 	
 	@Override

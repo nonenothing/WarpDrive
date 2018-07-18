@@ -10,6 +10,7 @@ import cr0s.warpdrive.block.movement.TileEntityShipCore;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumShipScannerState;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.JumpBlock;
 import cr0s.warpdrive.data.JumpShip;
 import cr0s.warpdrive.data.SoundEvents;
@@ -80,8 +81,8 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 	private JumpShip jumpShip;
 	private int blocksToDeployCount;
 	
-	public TileEntityShipScanner() {
-		super();
+	public TileEntityShipScanner(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveShipScanner";
 		addMethods(new String[] {
@@ -255,7 +256,7 @@ public class TileEntityShipScanner extends TileEntityAbstractInterfaced implemen
 		BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos(pos);
 		for (int newY = pos.getY() + 1; newY <= 255; newY++) {
 			mutableBlockPos.setY(newY);
-			if (world.getBlockState(mutableBlockPos).getBlock().isAssociatedBlock(WarpDrive.blockShipCore)) { // found ship core above
+			if (world.getBlockState(mutableBlockPos).getBlock() instanceof BlockShipCore) { // found ship core above
 				tileEntityShipCore = (TileEntityShipCore) world.getTileEntity(mutableBlockPos);
 				
 				if (tileEntityShipCore != null) {

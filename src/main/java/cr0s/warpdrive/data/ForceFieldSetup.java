@@ -41,7 +41,7 @@ public class ForceFieldSetup extends GlobalPosition {
 	private static final double FORCEFIELD_TAU_FACTOR_ENTITY_COST = - Math.log(ForceFieldSetup.FORCEFIELD_MAX_FACTOR_ENTITY_COST);
 	
 	public final int beamFrequency;
-	public final byte tier;
+	public final EnumTier enumTier;
 	public final Set<TileEntityForceFieldProjector> projectors = new HashSet<>();
 	private IBlockState blockStateCamouflage;
 	private int colorMultiplierCamouflage;
@@ -76,9 +76,10 @@ public class ForceFieldSetup extends GlobalPosition {
 	public IForceFieldShape shapeProvider;
 	public boolean isDoubleSided = true;
 	
-	public ForceFieldSetup(final int dimensionId, final BlockPos blockPos, final byte tier, final int beamFrequency) {
+	public ForceFieldSetup(final int dimensionId, final BlockPos blockPos, final EnumTier enumTier, final int beamFrequency) {
 		super(dimensionId, blockPos);
-		this.tier = tier;
+		
+		this.enumTier = enumTier;
 		this.beamFrequency = beamFrequency;
 		refresh();
 		if (WarpDriveConfig.LOGGING_FORCE_FIELD) {
@@ -163,7 +164,7 @@ public class ForceFieldSetup extends GlobalPosition {
 									currentValue = 0.0F;
 								}
 								float addedValue = ((IForceFieldUpgrade)entry.getKey()).getUpgradeValue() * entry.getValue();
-								addedValue *= 1 + (tier - 1) * FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_PROJECTOR_TIER;
+								addedValue *= 1 + (enumTier.getIndex() - 1) * FORCEFIELD_UPGRADE_BOOST_FACTOR_PER_PROJECTOR_TIER;
 								upgradeValues.put(upgradeEffector, currentValue + addedValue);
 							}
 						}
@@ -217,14 +218,14 @@ public class ForceFieldSetup extends GlobalPosition {
 		// set default coefficients, depending on projector
 		scanSpeed = FORCEFIELD_BASE_SCAN_SPEED_BLOCKS_PER_SECOND * (isDoubleSided ? 2.1F : 1.0F);
 		placeSpeed = FORCEFIELD_BASE_PLACE_SPEED_BLOCKS_PER_SECOND * (isDoubleSided ? 2.1F : 1.0F);
-		startupEnergyCost = 60.0F + 20.0F * tier;
-		scanEnergyCost = 0.4F + 0.4F * tier;
-		placeEnergyCost = 3.0F + 3.0F * tier;
+		startupEnergyCost = 60.0F + 20.0F * (enumTier.getIndex() - 1);
+		scanEnergyCost = 0.4F + 0.4F * (enumTier.getIndex() - 1);
+		placeEnergyCost = 3.0F + 3.0F * (enumTier.getIndex() - 1);
 		entityEnergyCost = 2.0F;
 		if (isDoubleSided) {
 			scanSpeed *= 2.1F;
 			placeSpeed *= 2.1F;
-			startupEnergyCost += 20.0F * tier;
+			startupEnergyCost += 20.0F * (enumTier.getIndex() - 1);
 			scanEnergyCost *= 0.45F;
 			placeEnergyCost *= 0.45F;
 			entityEnergyCost *= 0.45F;

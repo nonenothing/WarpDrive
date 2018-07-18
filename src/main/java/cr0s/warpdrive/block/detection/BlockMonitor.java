@@ -5,6 +5,7 @@ import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.block.BlockAbstractRotatingContainer;
 import cr0s.warpdrive.data.CameraRegistryItem;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.render.ClientCameraHandler;
 
 import javax.annotation.Nonnull;
@@ -23,8 +24,9 @@ import net.minecraft.world.World;
 
 public class BlockMonitor extends BlockAbstractRotatingContainer {
 	
-	public BlockMonitor(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockMonitor(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.detection.monitor");
 		registerTileEntity(TileEntityMonitor.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
@@ -32,7 +34,7 @@ public class BlockMonitor extends BlockAbstractRotatingContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityMonitor();
+		return new TileEntityMonitor(enumTier);
 	}
 
 	@Override

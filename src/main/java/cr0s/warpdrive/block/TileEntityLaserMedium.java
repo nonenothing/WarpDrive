@@ -1,18 +1,26 @@
 package cr0s.warpdrive.block;
 
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	
-	private int ticks = 0;
+	private static final int BLOCKSTATE_REFRESH_PERIOD_TICKS = 20;
 	
-	public TileEntityLaserMedium() {
+	// persistent properties
+	// (none)
+	
+	// computed properties
+	private int ticks = BLOCKSTATE_REFRESH_PERIOD_TICKS;
+	
+	public TileEntityLaserMedium(final EnumTier enumTier) {
+		super(enumTier);
+		
 		peripheralName = "warpdriveLaserMedium";
 		OC_enable = false;
 	}
@@ -25,15 +33,12 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 			return;
 		}
 		
-		ticks++;
-		if (ticks > 20) {
-			ticks = 0;
+		ticks--;
+		if (ticks < 0) {
+			ticks = BLOCKSTATE_REFRESH_PERIOD_TICKS;
 			
 			final int level = Math.max(0, Math.min(7, Math.round((energy_getEnergyStored() * 8) / energy_getMaxStorage())));
-			final IBlockState blockState = world.getBlockState(pos);
-			if (blockState.getValue(BlockLaserMedium.LEVEL) != level) {
-				updateBlockState(blockState, BlockLaserMedium.LEVEL, level);
-			}
+			updateBlockState(null, BlockLaserMedium.LEVEL, level);
 		}
 	}
 	
@@ -51,7 +56,7 @@ public class TileEntityLaserMedium extends TileEntityAbstractEnergy {
 	// IEnergySink methods implementation
 	@Override
 	public int energy_getMaxStorage() {
-		return WarpDriveConfig.LASER_MEDIUM_MAX_ENERGY_STORED;
+		return WarpDriveConfig.LASER_MEDIUM_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()];
 	}
 	
 	@Override

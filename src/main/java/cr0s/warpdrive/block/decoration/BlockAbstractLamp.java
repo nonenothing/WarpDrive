@@ -4,21 +4,20 @@ import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
+
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,8 +28,9 @@ import javax.annotation.Nullable;
 
 public class BlockAbstractLamp extends BlockAbstractBase {
 	
-	BlockAbstractLamp(final String registryName, final String unlocalizedName) {
-		super(registryName, Material.ROCK);
+	BlockAbstractLamp(final String registryName, final EnumTier enumTier, final String unlocalizedName) {
+		super(registryName, enumTier, Material.ROCK);
+		
 		setHardness(WarpDriveConfig.HULL_HARDNESS[0]);
 		setResistance(WarpDriveConfig.HULL_BLAST_RESISTANCE[0] * 5 / 3);
 		setSoundType(SoundType.METAL);
@@ -59,11 +59,6 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
-	}
-	
-	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		return EnumRarity.COMMON;
 	}
 	
 	@SideOnly(Side.CLIENT)

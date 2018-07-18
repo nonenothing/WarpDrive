@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.atomic;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
@@ -26,9 +27,10 @@ public class BlockChiller extends BlockAbstractAccelerator {
 	
 	private static final float BOUNDING_TOLERANCE = 0.05F;
 	
-	public BlockChiller(final String registryName, final byte tier) {
-		super(registryName, tier);
-		setUnlocalizedName("warpdrive.atomic.chiller" + tier);
+	public BlockChiller(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
+		
+		setUnlocalizedName("warpdrive.atomic.chiller" + enumTier);
 	}
 	
 	@Override
@@ -85,7 +87,7 @@ public class BlockChiller extends BlockAbstractAccelerator {
 		if (!entity.isImmuneToFire()) {
 			entity.setFire(1);
 		}
-		entity.attackEntityFrom(WarpDrive.damageWarm, 1 + tier);
+		entity.attackEntityFrom(WarpDrive.damageWarm, 1 + enumTier.getIndex());
 		
 		final Vector3 v3Entity = new Vector3(entity);
 		final Vector3 v3Chiller = new Vector3(blockPos.getX() + 0.5D, blockPos.getY() + 0.5D, blockPos.getZ() + 0.5D);

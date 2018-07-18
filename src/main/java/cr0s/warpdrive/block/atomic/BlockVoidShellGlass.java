@@ -1,5 +1,7 @@
 package cr0s.warpdrive.block.atomic;
 
+import cr0s.warpdrive.data.EnumTier;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
@@ -12,8 +14,9 @@ import javax.annotation.Nonnull;
 
 public class BlockVoidShellGlass extends BlockVoidShellPlain {
 	
-	public BlockVoidShellGlass(final String registryName) {
-		super(registryName);
+	public BlockVoidShellGlass(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier);
+		
 		setUnlocalizedName("warpdrive.atomic.void_shell_glass");
 	}
 	

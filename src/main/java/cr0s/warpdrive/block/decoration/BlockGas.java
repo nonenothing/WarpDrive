@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.decoration;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.data.EnumGasColor;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,7 +17,6 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -35,8 +35,9 @@ public class BlockGas extends BlockAbstractBase {
 	
 	public static final PropertyEnum<EnumGasColor> COLOR = PropertyEnum.create("color", EnumGasColor.class);
 	
-	public BlockGas(final String registryName) {
-		super(registryName, Material.FIRE);
+	public BlockGas(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.FIRE);
+		
 		setHardness(0.0F);
 		setUnlocalizedName("warpdrive.decoration.gas");
 		
@@ -180,10 +181,5 @@ public class BlockGas extends BlockAbstractBase {
 		if (CelestialObjectManager.hasAtmosphere(world, blockPos.getX(), blockPos.getZ())) {
 			world.setBlockToAir(blockPos);
 		}
-	}
-	
-	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		return EnumRarity.COMMON;
 	}
 }

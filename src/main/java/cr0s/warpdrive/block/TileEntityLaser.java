@@ -9,6 +9,7 @@ import cr0s.warpdrive.block.forcefield.TileEntityForceField;
 import cr0s.warpdrive.config.Dictionary;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObjectManager;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.ForceFieldSetup;
 import cr0s.warpdrive.data.SoundEvents;
 import cr0s.warpdrive.data.Vector3;
@@ -74,8 +75,8 @@ public class TileEntityLaser extends TileEntityAbstractLaser implements IBeamFre
 	private int scanResult_blockMetadata = 0;
 	private float scanResult_blockResistance = -2;
 	
-	public TileEntityLaser() {
-		super();
+	public TileEntityLaser(final EnumTier enumTier) {
+		super(enumTier);
 		
 		peripheralName = "warpdriveLaser";
 		addMethods(new String[] {

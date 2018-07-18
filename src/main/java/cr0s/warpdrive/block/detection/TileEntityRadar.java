@@ -6,6 +6,7 @@ import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.data.CelestialObjectManager;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.CelestialObject;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.RadarEcho;
 import cr0s.warpdrive.data.StarMapRegistry;
 import cr0s.warpdrive.data.Vector3;
@@ -37,8 +38,9 @@ public class TileEntityRadar extends TileEntityAbstractEnergy {
 	private int scanningDuration_ticks = 0;
 	private int scanning_ticks = 0;
 	
-	public TileEntityRadar() {
-		super();
+	public TileEntityRadar(final EnumTier enumTier) {
+		super(enumTier);
+		
 		peripheralName = "warpdriveRadar";
 		addMethods(new String[] {
 				"radius",

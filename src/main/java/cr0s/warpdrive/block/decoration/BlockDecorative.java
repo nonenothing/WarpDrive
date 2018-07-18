@@ -7,12 +7,12 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
 import cr0s.warpdrive.WarpDrive;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,8 +22,9 @@ public class BlockDecorative extends BlockAbstractBase {
 	public static final PropertyEnum<EnumDecorativeType> TYPE = PropertyEnum.create("type", EnumDecorativeType.class);
 	private static ItemStack[] itemStackCache;
 	
-	public BlockDecorative(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockDecorative(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setHardness(1.5f);
 		setUnlocalizedName("warpdrive.decoration.decorative.");
 		
@@ -48,11 +49,6 @@ public class BlockDecorative extends BlockAbstractBase {
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
 		return blockState.getValue(TYPE).ordinal();
-	}
-	
-	@Override
-	public EnumRarity getRarity(final ItemStack itemStack, final EnumRarity rarity) {
-		return EnumRarity.COMMON;
 	}
 	
 	@Nullable

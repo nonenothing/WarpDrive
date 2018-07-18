@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.energy;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.data.BlockProperties;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.EnumValidPowered;
 
 import net.minecraft.block.material.Material;
@@ -20,8 +21,9 @@ import javax.annotation.Nonnull;
 
 public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	
-	public BlockEnanReactorLaser(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockEnanReactorLaser(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setResistance(60.0F * 5 / 3);
 		setUnlocalizedName("warpdrive.energy.enan_reactor_laser");
 		registerTileEntity(TileEntityEnanReactorLaser.class, new ResourceLocation(WarpDrive.MODID, registryName));
@@ -56,7 +58,7 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityEnanReactorLaser();
+		return new TileEntityEnanReactorLaser(enumTier);
 	}
 	
 	@Override
@@ -66,10 +68,5 @@ public class BlockEnanReactorLaser extends BlockAbstractContainer {
 		world.setBlockState(blockPos, blockState
 		                              .withProperty(BlockProperties.FACING, EnumFacing.NORTH)
 		                              .withProperty(BlockProperties.VALID_POWERED, EnumValidPowered.INVALID));
-	}
-	
-	@Override
-	public byte getTier(final ItemStack itemStack) {
-		return 3;
 	}
 }

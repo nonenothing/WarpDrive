@@ -591,10 +591,10 @@ public class JumpSequencer extends AbstractSequencer {
 		if ( ( sourceWorld != null
 		    && CelestialObjectManager.isPlanet(sourceWorld, ship.core.getX(), ship.core.getZ()) )
 		  || CelestialObjectManager.isPlanet(targetWorld, ship.core.getX() + moveX, ship.core.getZ() + moveZ) ) {
-			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE) {
+			if (!ship.isUnlimited() && ship.actualMass > WarpDriveConfig.SHIP_MASS_MAX_ON_PLANET_SURFACE) {
 				LocalProfiler.stop();
 				disableAndMessage(false, new WarpDriveText(Commons.styleWarning, "warpdrive.ship.guide.too_much_mass_for_planet",
-				                                           WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE, ship.actualMass));
+				                                           WarpDriveConfig.SHIP_MASS_MAX_ON_PLANET_SURFACE, ship.actualMass));
 				return;
 			}
 		}
@@ -1351,8 +1351,8 @@ public class JumpSequencer extends AbstractSequencer {
 				 * Endercrystal = 6
 				 */
 				final float massCorrection = 0.5F
-						+ (float) Math.sqrt(Math.min(1.0D, Math.max(0.0D, ship.shipCore.shipMass - WarpDriveConfig.SHIP_VOLUME_MAX_ON_PLANET_SURFACE)
-								/ WarpDriveConfig.SHIP_VOLUME_MIN_FOR_HYPERSPACE));
+						+ (float) Math.sqrt(Math.min(1.0D, Math.max(0.0D, ship.shipCore.shipMass - WarpDriveConfig.SHIP_MASS_MAX_ON_PLANET_SURFACE)
+								/ WarpDriveConfig.SHIP_MASS_MIN_FOR_HYPERSPACE));
 				collisionDetected = true;
 				collisionStrength = (4.0F + blowPoints - WarpDriveConfig.SHIP_COLLISION_TOLERANCE_BLOCKS) * massCorrection;
 				collisionAtSource = result.atSource;

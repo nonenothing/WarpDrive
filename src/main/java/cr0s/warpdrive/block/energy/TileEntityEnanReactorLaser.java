@@ -6,6 +6,7 @@ import cr0s.warpdrive.api.computer.IEnanReactorLaser;
 import cr0s.warpdrive.block.TileEntityAbstractLaser;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumReactorFace;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.Vector3;
 import cr0s.warpdrive.network.PacketHandler;
 import dan200.computercraft.api.lua.ILuaContext;
@@ -35,8 +36,8 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 	private Vector3 vReactorCore;
 	private WeakReference<TileEntityEnanReactorCore> weakReactorCore;
 	
-	public TileEntityEnanReactorLaser() {
-		super();
+	public TileEntityEnanReactorLaser(final EnumTier enumTier) {
+		super(enumTier);
 		
 		addMethods(new String[] {
 				"hasReactor",
@@ -213,7 +214,7 @@ public class TileEntityEnanReactorLaser extends TileEntityAbstractLaser implemen
 	
 	@Override
 	public Object[] side() {
-		return new Object[] { reactorFace.indexStability, reactorFace.tier.getName(), reactorFace.getName() };
+		return new Object[] { reactorFace.indexStability, reactorFace.enumTier.getName(), reactorFace.getName() };
 	}
 	
 	// OpenComputers callback methods

@@ -7,6 +7,7 @@ import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumForceFieldShape;
 import cr0s.warpdrive.data.EnumForceFieldState;
 import cr0s.warpdrive.data.EnumForceFieldUpgrade;
+import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.render.TileEntityForceFieldProjectorRenderer;
@@ -59,9 +60,10 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	private static final AxisAlignedBB AABB_WEST  = new AxisAlignedBB(0.27D, 0.00D, 0.00D, 0.73D, 1.00D, 1.00D);
 	private static final AxisAlignedBB AABB_EAST  = new AxisAlignedBB(0.27D, 0.00D, 0.00D, 0.73D, 1.00D, 1.00D);
 	
-	public BlockForceFieldProjector(final String registryName, final byte tier) {
-		super(registryName, tier, Material.IRON);
-		setUnlocalizedName("warpdrive.force_field.projector" + tier);
+	public BlockForceFieldProjector(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.force_field.projector" + enumTier.getIndex());
 		
 		setDefaultState(getDefaultState()
 				.withProperty(BlockProperties.FACING, EnumFacing.NORTH)
@@ -172,7 +174,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityForceFieldProjector();
+		return new TileEntityForceFieldProjector(enumTier);
 	}
 	
 	@SideOnly(Side.CLIENT)

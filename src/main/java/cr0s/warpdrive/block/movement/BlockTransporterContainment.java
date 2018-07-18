@@ -1,6 +1,7 @@
 package cr0s.warpdrive.block.movement;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,14 +12,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 
 public class BlockTransporterContainment extends BlockAbstractBase {
 	
 	protected static final AxisAlignedBB AABB_HALF_DOWN   = new AxisAlignedBB(0.00D, 0.00D, 0.00D, 1.00D, 0.50D, 1.00D);
 	
-	public BlockTransporterContainment(final String registryName) {
-		super(registryName, Material.IRON);
+	public BlockTransporterContainment(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
 		setUnlocalizedName("warpdrive.movement.transporter_containment");
 	}
 	

@@ -3,6 +3,7 @@ package cr0s.warpdrive.block.breathing;
 import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.block.BlockAbstractBase;
 import cr0s.warpdrive.config.WarpDriveConfig;
+import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,8 +33,9 @@ public abstract class BlockAbstractAir extends BlockAbstractBase {
 	
 	public static final PropertyInteger CONCENTRATION = PropertyInteger.create("concentration", 0, 15);
 	
-	BlockAbstractAir(final String registryName) {
-		super(registryName, Material.FIRE);
+	BlockAbstractAir(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.FIRE);
+		
 		setHardness(0.0F);
 		setUnlocalizedName("warpdrive.breathing.air");
 	}
