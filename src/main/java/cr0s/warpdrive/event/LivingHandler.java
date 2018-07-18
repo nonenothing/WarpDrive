@@ -270,7 +270,7 @@ public class LivingHandler {
 		// check for equipment with NOFALLDAMAGE tag
 		for (EntityEquipmentSlot entityEquipmentSlot : EntityEquipmentSlot.values()) {
 			final ItemStack itemStackInSlot = entityLivingBase.getItemStackFromSlot(entityEquipmentSlot);
-			if (itemStackInSlot != null) {
+			if (!itemStackInSlot.isEmpty()) {
 				if (Dictionary.ITEMS_NOFALLDAMAGE.contains(itemStackInSlot.getItem())) {
 					event.setCanceled(true); // Don't damage entity
 					if (WarpDrive.isDev && entityLivingBase instanceof EntityPlayerMP) {
