@@ -286,12 +286,6 @@ public class JumpBlock {
 			final IBlockState blockState = block.getStateFromMeta(newBlockMeta);
 			setBlockNoLight(targetWorld, target, blockState, 2);
 			
-			// Re-schedule air blocks update
-			if (block == WarpDrive.blockAir) {
-				targetWorld.notifyBlockUpdate(target, blockState, blockState, 3);
-				targetWorld.scheduleBlockUpdate(target, block, 40 + targetWorld.rand.nextInt(20), 0);
-			}
-			
 			if (nbtToDeploy != null) {
 				nbtToDeploy.setInteger("x", target.getX());
 				nbtToDeploy.setInteger("y", target.getY());

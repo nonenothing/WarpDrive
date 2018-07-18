@@ -56,7 +56,7 @@ public class BreathingManager {
 	}
 	
 	public static boolean isAirBlock(final Block block) {
-		return block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow;
+		return block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow;
 	}
 	
 	public static boolean onLivingJoinEvent(final EntityLivingBase entityLivingBase, final int x, final int y, final int z) {
@@ -97,7 +97,7 @@ public class BreathingManager {
 			final VectorI vPosition = new VectorI(x + vOffset.x, y + vOffset.y, z + vOffset.z);
 			blockState = vPosition.getBlockState(entityLivingBase.world);
 			block = blockState.getBlock();
-			if (block == WarpDrive.blockAir || block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
+			if (block == WarpDrive.blockAirSource || block == WarpDrive.blockAirFlow) {
 				vAirBlock = vPosition;
 				break;
 			} else if (block != Blocks.AIR) {
@@ -118,13 +118,6 @@ public class BreathingManager {
 				entity_airBlock.put(uuidEntity, AIR_BLOCK_TICKS);
 			} else if (air <= 1) {// time elapsed => consume air block
 				entity_airBlock.put(uuidEntity, AIR_BLOCK_TICKS);
-				
-				if (block == WarpDrive.blockAir) {
-					final int metadata = blockState.getBlock().getMetaFromState(blockState);
-					if (metadata > 0 && metadata < 15) {
-						entityLivingBase.world.setBlockState(vAirBlock.getBlockPos(), WarpDrive.blockAir.getStateFromMeta(metadata - 1), 2);
-					}
-				}
 			} else {
 				entity_airBlock.put(uuidEntity, air - 1);
 			}
