@@ -6,7 +6,7 @@ import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.api.computer.ITransporterBeacon;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTransporterBeaconState;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.StarMapRegistryItem;
 import cr0s.warpdrive.data.EnumStarMapEntryType;
@@ -19,6 +19,7 @@ import li.cil.oc.api.machine.Context;
 import javax.annotation.Nonnull;
 import java.util.UUID;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -99,12 +100,10 @@ public class TileEntityTransporterBeacon extends TileEntityAbstractEnergy implem
 		}
 		
 		// report updated status
-		final EnumTransporterBeaconState enumTransporterBeaconState = isDeployed
-		                                                              ? (isActive ? EnumTransporterBeaconState.DEPLOYED_ACTIVE : EnumTransporterBeaconState.DEPLOYED_INACTIVE)
-		                                                              : (isActive ? EnumTransporterBeaconState.PACKED_ACTIVE : EnumTransporterBeaconState.PACKED_INACTIVE);
-		final int metadataNew = enumTransporterBeaconState.getMetadata();
-		
-		updateMetadata(metadataNew);
+		final IBlockState blockState_actual = world.getBlockState(pos);
+		updateBlockState(blockState_actual,
+		                 blockState_actual.withProperty(BlockProperties.ACTIVE, isActive)
+		                                  .withProperty(BlockTransporterBeacon.DEPLOYED, isDeployed));
 	}
 	
 	private boolean pingTransporter() {

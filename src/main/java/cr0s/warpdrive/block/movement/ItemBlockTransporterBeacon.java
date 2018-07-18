@@ -7,7 +7,6 @@ import cr0s.warpdrive.api.computer.ITransporterCore;
 import cr0s.warpdrive.block.ItemBlockAbstractBase;
 import cr0s.warpdrive.block.TileEntityAbstractEnergy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.EnumTransporterBeaconState;
 
 import javax.annotation.Nonnull;
 
@@ -135,8 +134,7 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 	private static ItemStack updateDamage(final ItemStack itemStack, final int energy, final boolean isActive) {
 		final int maxDamage = itemStack.getMaxDamage();
 		final int metadataEnergy = maxDamage - maxDamage * energy / WarpDriveConfig.TRANSPORTER_BEACON_MAX_ENERGY_STORED;
-		final EnumTransporterBeaconState enumTransporterBeaconState = isActive ? EnumTransporterBeaconState.PACKED_ACTIVE : EnumTransporterBeaconState.PACKED_INACTIVE;
-		final int metadataNew = (metadataEnergy & ~0x7) + enumTransporterBeaconState.getMetadata();
+		final int metadataNew = (metadataEnergy & ~0x3) + (isActive ? 2 : 0);
 		if (metadataNew != itemStack.getItemDamage()) {
 			itemStack.setItemDamage(metadataNew);
 			return itemStack;
@@ -171,7 +169,7 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 				updateDamage(itemStackNew, energy, true);
 				((EntityPlayer) entity).inventory.setInventorySlotContents(indexSlot, itemStackNew);
 				
-			} else if (itemStack.getItemDamage() != EnumTransporterBeaconState.PACKED_INACTIVE.getMetadata()) {
+			} else if (itemStack.getItemDamage() != 0) {// (still shows with energy but has none)
 				final ItemStack itemStackNew = updateDamage(itemStack, energy, false);
 				if (itemStackNew != null) {
 					((EntityPlayer) entity).inventory.setInventorySlotContents(indexSlot, itemStackNew);

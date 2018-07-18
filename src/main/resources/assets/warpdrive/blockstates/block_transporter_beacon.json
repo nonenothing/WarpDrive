@@ -1,20 +1,25 @@
 {
 	"forge_marker": 1,
 	"defaults": {
-		"model": "minecraft:normal_torch",
-		"textures": {
-			"torch"  : "warpdrive:blocks/movement/transporter_beacon-deployed_active"
-		},
 		"transform": "forge:default-block"
 	},
 	"variants": {
 		"normal": [{}],
-		"inventory": [{}],
-		"variant": {
-			"packed_inactive"   : { "textures": { "torch"  : "warpdrive:blocks/movement/transporter_beacon-packed_inactive"   } },
-			"packed_active"     : { "textures": { "torch"  : "warpdrive:blocks/movement/transporter_beacon-packed_active"     } },
-			"deployed_inactive" : { "textures": { "torch"  : "warpdrive:blocks/movement/transporter_beacon-deployed_inactive" } },
-			"deployed_active"   : { "textures": { "torch"  : "warpdrive:blocks/movement/transporter_beacon-deployed_active"   } }
-		}
+		"inventory": { "model": "minecraft:normal_torch", "textures": {
+				"torch" : "warpdrive:blocks/movement/transporter_beacon-deployed_active"
+			} },
+		
+		"active=false,deployed=false": { "model": "minecraft:normal_torch", "textures": {
+				"torch" : "warpdrive:blocks/movement/transporter_beacon-packed_inactive"
+			} },
+		"active=true,deployed=false" : { "model": "minecraft:normal_torch", "textures": {
+				"torch" : "warpdrive:blocks/movement/transporter_beacon-packed_active"
+			} },
+		"active=false,deployed=true" : { "model": "minecraft:normal_torch", "textures": {
+				"torch" : "warpdrive:blocks/movement/transporter_beacon-deployed_inactive"
+			} },
+		"active=true,deployed=true"  : { "model": "minecraft:normal_torch", "textures": {
+				"torch" : "warpdrive:blocks/movement/transporter_beacon-deployed_active"
+			} }
 	}
 }

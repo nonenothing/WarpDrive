@@ -5,14 +5,14 @@ import cr0s.warpdrive.Commons;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.client.ClientProxy;
-import cr0s.warpdrive.data.EnumTransporterBeaconState;
+import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +25,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -40,7 +39,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	private static final AxisAlignedBB AABB_BEACON = new AxisAlignedBB(0.5D - BOUNDING_RADIUS, 0.0D, 0.5D - BOUNDING_RADIUS,
 	                                                                   0.5D + BOUNDING_RADIUS, BOUNDING_HEIGHT, 0.5D + BOUNDING_RADIUS);
 	
-	public static final PropertyEnum<EnumTransporterBeaconState> VARIANT = PropertyEnum.create("variant", EnumTransporterBeaconState.class);
+	public static final PropertyBool DEPLOYED = PropertyBool.create("deployed");
 	
 	public BlockTransporterBeacon(final String registryName, final EnumTier enumTier) {
 		super(registryName, enumTier, Material.IRON);
@@ -49,7 +48,8 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 		setUnlocalizedName("warpdrive.movement.transporter_beacon");
 		
 		setDefaultState(getDefaultState()
-				                .withProperty(VARIANT, EnumTransporterBeaconState.PACKED_INACTIVE)
+				                .withProperty(BlockProperties.ACTIVE, false)
+				                .withProperty(DEPLOYED, false)
 		               );
 		registerTileEntity(TileEntityTransporterBeacon.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
@@ -63,7 +63,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, VARIANT);
+		return new BlockStateContainer(this, BlockProperties.ACTIVE, DEPLOYED);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -71,12 +71,14 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
 		return getDefaultState()
-				       .withProperty(VARIANT, EnumTransporterBeaconState.get(metadata & 0x3));
+				       .withProperty(BlockProperties.ACTIVE, (metadata & 0x2) != 0)
+				       .withProperty(DEPLOYED, (metadata & 0x1) != 0);
 	}
 	
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
-		return blockState.getValue(VARIANT).getMetadata();
+		return (blockState.getValue(BlockProperties.ACTIVE) ? 2 : 0)
+		     + (blockState.getValue(DEPLOYED) ? 1 : 0);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -110,9 +112,8 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	
 	@Override
 	public int getLightValue(@Nonnull final IBlockState blockState, final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos) {
-		final EnumTransporterBeaconState enumTransporterBeaconState = blockState.getValue(VARIANT);
-		return enumTransporterBeaconState == EnumTransporterBeaconState.PACKED_ACTIVE
-		    || enumTransporterBeaconState == EnumTransporterBeaconState.DEPLOYED_ACTIVE ? 6 : 0;
+		final boolean isActive = blockState.getValue(BlockProperties.ACTIVE);
+		return isActive ? 6 : 0;
 	}
 	
 	@Nonnull

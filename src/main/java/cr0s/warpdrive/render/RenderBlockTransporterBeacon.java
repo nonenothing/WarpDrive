@@ -28,10 +28,8 @@ public class RenderBlockTransporterBeacon implements ISimpleBlockRenderingHandle
 			return;
 		}
 		
-		final EnumTransporterBeaconState enumTransporterBeaconState = EnumTransporterBeaconState.get(metadata & 0x7);
-		if (enumTransporterBeaconState == null) {
-			return;
-		}
+		final isActive = (metadata & 0x2) != 0;
+		final isDeployed = (metadata & 0x1) != 0;
 		
 		final IIcon icon = RenderBlocks.getInstance().getBlockIconFromSideAndMetadata(block, 0, enumTransporterBeaconState.getMetadata());
 		
@@ -49,7 +47,7 @@ public class RenderBlockTransporterBeacon implements ISimpleBlockRenderingHandle
 		// (transformation already done by caller)
 		
 		tessellator.startDrawingQuads();
-		renderTransporterBeacon(tessellator, 0.0D, 0.0D, 0.0D, enumTransporterBeaconState, icon);
+		renderTransporterBeacon(tessellator, 0.0D, 0.0D, 0.0D, isActive, isDeployed, icon);
 		tessellator.draw();
 		
 		GL11.glEnable(GL11.GL_LIGHTING);
@@ -82,7 +80,7 @@ public class RenderBlockTransporterBeacon implements ISimpleBlockRenderingHandle
 	
 	private void renderTransporterBeacon(final Tessellator tessellator,
 	                                     final double x, final double y, final double z,
-	                                     final EnumTransporterBeaconState enumTransporterBeaconState,
+	                                     final boolean isActive, final boolean isDeployed,
 	                                     final IIcon icon) {
 		final Tessellator tessellator = Tessellator.instance;
 		
