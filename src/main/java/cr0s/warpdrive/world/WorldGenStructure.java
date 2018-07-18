@@ -33,6 +33,8 @@ public class WorldGenStructure {
 	private final Filler fillerPropulsion;
 	
 	public WorldGenStructure(final boolean corrupted, final Random rand) {
+		super();
+		
 		this.corrupted = corrupted;
 		this.rand = rand;
 		

@@ -18,6 +18,8 @@ import javax.annotation.Nonnull;
 public class HyperSpaceWorldProvider extends AbstractWorldProvider {
 	
 	public HyperSpaceWorldProvider() {
+		super();
+		
 		biomeProvider  = new BiomeProviderSingle(WarpDrive.biomeSpace);
 		nether = true;
 	}

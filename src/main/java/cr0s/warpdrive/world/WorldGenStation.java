@@ -12,6 +12,8 @@ public class WorldGenStation extends WorldGenerator {
 	private final boolean corrupted;
 
 	public WorldGenStation(final boolean corrupted) {
+		super();
+		
 		this.corrupted = corrupted;
 	}
 

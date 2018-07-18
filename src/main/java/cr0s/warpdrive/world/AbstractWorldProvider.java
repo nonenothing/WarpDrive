@@ -23,6 +23,10 @@ public abstract class AbstractWorldProvider extends WorldProvider {
 	protected CelestialObject celestialObjectDimension = null;
 	protected boolean isRemote;
 	
+	AbstractWorldProvider() {
+		super();
+	}
+	
 	protected void updateCelestialObject() throws RuntimeException {
 		if (getDimension() == 0) {
 			throw new RuntimeException("Critical error: you can't use a WorldProvider before settings its dimension id!");

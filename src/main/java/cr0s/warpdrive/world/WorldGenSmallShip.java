@@ -24,6 +24,8 @@ public class WorldGenSmallShip extends WorldGenerator {
 	private final boolean isCreative;
 	
 	public WorldGenSmallShip(final boolean isCorrupted, final boolean isCreative) {
+		super();
+		
 		this.isCorrupted = isCorrupted;
 		this.isCreative = isCreative;
 	}

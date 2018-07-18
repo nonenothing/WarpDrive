@@ -18,6 +18,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SpaceWorldProvider extends AbstractWorldProvider {
 	
 	public SpaceWorldProvider() {
+		super();
+		
 		biomeProvider = new BiomeProviderSingle(WarpDrive.biomeSpace);
 		nether = false;
 	}
