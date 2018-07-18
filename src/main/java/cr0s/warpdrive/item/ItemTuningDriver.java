@@ -46,6 +46,7 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 	
 	public ItemTuningDriver(final String registryName) {
 		super(registryName);
+		
 		setMaxDamage(0);
 		setCreativeTab(WarpDrive.creativeTabMain);
 		setMaxStackSize(1);
@@ -108,6 +109,7 @@ public class ItemTuningDriver extends ItemAbstractBase implements IWarpTool {
 			return -1;
 		}
 		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		assert tagCompound != null;
 		if (tagCompound.hasKey(IVideoChannel.VIDEO_CHANNEL_TAG)) {
 			return tagCompound.getInteger(IVideoChannel.VIDEO_CHANNEL_TAG);
 		}

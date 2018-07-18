@@ -6,13 +6,14 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumLaserTreeFarmMode implements IStringSerializable {
-	INACTIVE			("inactive"),
-	FARMING_LOW_POWER	("farming_low_power"),
-	FARMING_POWERED		("farming_powered"),
-	SCANNING_LOW_POWER	("scanning_low_power"),
-	SCANNING_POWERED	("scanning_powered"),
-	PLANTING_LOW_POWER	("planting_low_power"),
-	PLANTING_POWERED	("planting_powered");
+	
+	INACTIVE            ("inactive"),
+	FARMING_LOW_POWER   ("farming_low_power"),
+	FARMING_POWERED     ("farming_powered"),
+	SCANNING_LOW_POWER  ("scanning_low_power"),
+	SCANNING_POWERED    ("scanning_powered"),
+	PLANTING_LOW_POWER  ("planting_low_power"),
+	PLANTING_POWERED    ("planting_powered");
 	
 	private final String unlocalizedName;
 	

@@ -23,6 +23,7 @@ public class SpaceChunkProvider extends ChunkGeneratorOverworld {
 	
 	public SpaceChunkProvider(final World world, final long seed) {
 		super(world, seed, false, null);
+		
 		rand = new Random(seed);
 		this.world = world;
 	}

@@ -105,6 +105,7 @@ public class MessageCloak implements IMessage, IMessageHandler<MessageCloak, IMe
 		}
 		
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
+		assert player != null;
 		if ( cloakMessage.minX <= player.posX && (cloakMessage.maxX + 1) > player.posX
 		  && cloakMessage.minY <= player.posY && (cloakMessage.maxY + 1) > player.posY
 		  && cloakMessage.minZ <= player.posZ && (cloakMessage.maxZ + 1) > player.posZ) {

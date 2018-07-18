@@ -26,7 +26,7 @@ public class CommandFind extends AbstractCommand {
 	public void execute(@Nonnull final MinecraftServer server, @Nonnull final ICommandSender commandSender, @Nonnull final String[] args) {
 		// parse arguments
 		//noinspection StatementWithEmptyBody
-		String nameToken = "";
+		String nameToken;
 		if (args.length == 0) {
 			Commons.addChatMessage(commandSender, new TextComponentString(getUsage(commandSender)));
 			return;

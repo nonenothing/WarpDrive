@@ -6,6 +6,7 @@ import java.util.HashMap;
 import net.minecraft.util.IStringSerializable;
 
 public enum EnumDisabledInputOutput implements IStringSerializable {
+	
 	DISABLED ("disabled",  0),
 	INPUT    ("input"   ,  1),
 	OUTPUT   ("output"  ,  2);

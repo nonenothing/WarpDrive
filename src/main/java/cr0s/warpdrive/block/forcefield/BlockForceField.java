@@ -167,8 +167,7 @@ public class BlockForceField extends BlockAbstractForceField implements IDamageR
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		final Item item = Item.getItemFromBlock(this);
-		ClientProxy.modelInitialisation(item);
+		super.modelInitialisation();
 		
 		// register camouflage
 		for (final Integer integer : FREQUENCY.getAllowedValues()) {

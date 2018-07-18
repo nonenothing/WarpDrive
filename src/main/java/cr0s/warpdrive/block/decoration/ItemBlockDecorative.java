@@ -15,6 +15,7 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	
 	public ItemBlockDecorative(final Block block) {
 		super(block);
+		
 		setHasSubtypes(true);
 	}
 	
@@ -24,10 +25,13 @@ public class ItemBlockDecorative extends ItemBlockAbstractBase {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > EnumDecorativeType.length) {
-			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s",
+			                                                 damage, itemStack.getItem()));
 		}
-		ResourceLocation resourceLocation = getRegistryName();
-		final String variant = String.format("type=%s", EnumDecorativeType.get( itemStack.getItemDamage() ).getName());
+		final ResourceLocation resourceLocation = getRegistryName();
+		assert resourceLocation != null;
+		final String variant = String.format("type=%s",
+		                                     EnumDecorativeType.get( itemStack.getItemDamage() ).getName());
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 	

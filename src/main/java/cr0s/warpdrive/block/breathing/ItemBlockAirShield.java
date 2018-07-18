@@ -13,6 +13,7 @@ public class ItemBlockAirShield extends ItemBlockAbstractBase {
 	
 	public ItemBlockAirShield(final Block block) {
 		super(block);
+		
 		setHasSubtypes(true);
 	}
 	

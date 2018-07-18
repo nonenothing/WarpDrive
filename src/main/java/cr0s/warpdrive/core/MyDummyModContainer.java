@@ -14,8 +14,10 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class MyDummyModContainer extends DummyModContainer {
+	
 	public MyDummyModContainer() {
 		super(new ModMetadata());
+		
 		final ModMetadata meta = getMetadata();
 		meta.modId = "WarpDriveCore";
 		meta.name = "WarpDriveCore";

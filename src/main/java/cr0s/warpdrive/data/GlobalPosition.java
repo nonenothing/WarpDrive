@@ -12,6 +12,7 @@ import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 
 public class GlobalPosition {
+	
 	public final int dimensionId;
 	public final int x, y, z;
 	

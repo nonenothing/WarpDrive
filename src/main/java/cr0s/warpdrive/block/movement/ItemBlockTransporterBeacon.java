@@ -32,14 +32,9 @@ public class ItemBlockTransporterBeacon extends ItemBlockAbstractBase implements
 	
 	public ItemBlockTransporterBeacon(final Block block) {
 		super(block);
+		
 		setMaxStackSize(1);
 		setMaxDamage(100 * 8);
-	}
-	
-	@Nonnull
-	@Override
-	public String getUnlocalizedName(final ItemStack itemstack) {
-		return getUnlocalizedName();
 	}
 	
 	private static String getTransporterName(final ItemStack itemStack) {

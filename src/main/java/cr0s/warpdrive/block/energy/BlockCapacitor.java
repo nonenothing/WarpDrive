@@ -152,8 +152,7 @@ public class BlockCapacitor extends BlockAbstractContainer implements IExplosion
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		final Item item = Item.getItemFromBlock(this);
-		ClientProxy.modelInitialisation(item);
+		super.modelInitialisation();
 		
 		// register (smart) baked model
 		final ResourceLocation registryName = getRegistryName();

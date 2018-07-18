@@ -15,6 +15,7 @@ public class SpaceTeleporter extends Teleporter {
 	
 	public SpaceTeleporter(final WorldServer worldServer, final int orientation, final int x, final int y, final int z) {
 		super(worldServer);
+		
 		this.orientation = orientation;
 		this.x = x;
 		this.y = y;

@@ -109,11 +109,11 @@ public class ClientCameraHandler {
 	}
 	
 	public static void zoom() {
-		final Minecraft mc = Minecraft.getMinecraft();
-		
 		zoomIndex = (zoomIndex + 1) % 4;
 		refreshViewPoint();
 		if (WarpDriveConfig.LOGGING_CAMERA) {
+			final Minecraft mc = Minecraft.getMinecraft();
+			assert mc.player != null;
 			mc.player.sendChatMessage("changed to fovSetting " + mc.gameSettings.fovSetting + " mouseSensitivity " + mc.gameSettings.mouseSensitivity);
 		}
 	}

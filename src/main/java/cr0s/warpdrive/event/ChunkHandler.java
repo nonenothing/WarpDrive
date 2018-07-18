@@ -230,6 +230,7 @@ public class ChunkHandler {
 		updateTick(event.world);
 	}
 	
+	@SuppressWarnings("ConstantConditions")
 	public static void onBlockUpdated(final World world, final int x, final int y, final int z) {
 		if (!world.isRemote) {
 			final ChunkData chunkData = getChunkData(world, x, y, z);

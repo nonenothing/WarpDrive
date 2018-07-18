@@ -23,6 +23,7 @@ public class ItemBlockHullSlab extends ItemBlockHull {
 	
 	public ItemBlockHullSlab(final Block blockSlab) {
 		super(blockSlab);
+		
 		this.blockSlab = blockSlab;
 	}
 	

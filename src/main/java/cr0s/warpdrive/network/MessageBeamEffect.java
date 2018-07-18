@@ -38,19 +38,6 @@ public class MessageBeamEffect implements IMessage, IMessageHandler<MessageBeamE
 		this.age = age;
 	}
 	
-	public MessageBeamEffect(
-		final double sourceX, final double sourceY, final double sourceZ,
-		final double targetX, final double targetY, final double targetZ,
-		final float red, final float green, final float blue,
-		final int age, final int energy) {
-		this.source = new Vector3(sourceX, sourceY, sourceZ);
-		this.target = new Vector3(targetX, targetY, targetZ);
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-		this.age = age;
-	}
-
 	@Override
 	public void fromBytes(final ByteBuf buffer) {
 		double x = buffer.readDouble();

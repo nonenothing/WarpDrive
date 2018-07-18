@@ -10,6 +10,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class CommandReload extends AbstractCommand {
+	
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 2;

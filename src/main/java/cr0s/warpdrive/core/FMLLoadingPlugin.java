@@ -15,6 +15,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 @IFMLLoadingPlugin.TransformerExclusions(value = "cr0s.warpdrive.core.")
 @IFMLLoadingPlugin.SortingIndex(value = 1001) // > 1000 to work with srg names
 public class FMLLoadingPlugin implements IFMLLoadingPlugin, IFMLCallHook {
+	
 	public static File location;
 	public static final Logger logger = LogManager.getLogger("WarpDriveCore");
 	private boolean debugLog = false;

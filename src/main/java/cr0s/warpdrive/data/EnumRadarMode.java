@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumRadarMode implements IStringSerializable {
+	
 	INACTIVE			("inactive"),
 	ACTIVE				("active"),
 	SCANNING			("scanning");

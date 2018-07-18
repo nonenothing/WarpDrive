@@ -17,6 +17,7 @@ public class WarpDriveText extends TextComponentBase {
 	
 	public WarpDriveText(@Nullable final Style style, @Nonnull final String translationKey, final Object... args) {
 		super();
+		
 		ITextComponent textComponent = new TextComponentTranslation(translationKey, args);
 		if (style != null) {
 			textComponent.setStyle(style);

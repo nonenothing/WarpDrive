@@ -155,7 +155,8 @@ public class EntityFXRegistry {
 	}
 	
 	private static void printRegistry(final String trigger) {
-		WarpDrive.logger.info(String.format("AbstractEntityFX REGISTRY (%d entries after %d):", REGISTRY.size(), trigger));
+		WarpDrive.logger.info(String.format("AbstractEntityFX REGISTRY (%d entries after %s):",
+		                                    REGISTRY.size(), trigger));
 		
 		for (final Entry<Integer, CopyOnWriteArraySet<WeakReference<AbstractEntityFX>>> entryRegistryItems : REGISTRY.entrySet()) {
 			final StringBuilder message = new StringBuilder();

@@ -6,18 +6,19 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumGasColor implements IStringSerializable {
-	BLUE				("blue"),
-	RED					("red"),
-	GREEN				("green"),
-	YELLOW				("yellow"),
-	DARK				("dark"),
-	DARKNESS			("darkness"),
-	WHITE				("white"),
-	MILK				("milk"),
-	ORANGE				("orange"),
-	SIREN				("siren"),
-	GRAY				("gray"),
-	VIOLET				("violet");
+	
+	BLUE      ("blue"),
+	RED	      ("red"),
+	GREEN     ("green"),
+	YELLOW    ("yellow"),
+	DARK      ("dark"),
+	DARKNESS  ("darkness"),
+	WHITE	  ("white"),
+	MILK      ("milk"),
+	ORANGE    ("orange"),
+	SIREN     ("siren"),
+	GRAY      ("gray"),
+	VIOLET    ("violet");
 	
 	private final String unlocalizedName;
 	

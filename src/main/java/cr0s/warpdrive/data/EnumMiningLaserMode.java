@@ -6,11 +6,12 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumMiningLaserMode implements IStringSerializable {
-	INACTIVE			("inactive"),
-	SCANNING_LOW_POWER	("scanning_low_power"),
-	SCANNING_POWERED	("scanning_powered"),
-	MINING_LOW_POWER	("mining_low_power"),
-	MINING_POWERED		("mining_powered");
+	
+	INACTIVE                    ("inactive"),
+	SCANNING_LOW_POWER          ("scanning_low_power"),
+	SCANNING_POWERED            ("scanning_powered"),
+	MINING_LOW_POWER            ("mining_low_power"),
+	MINING_POWERED              ("mining_powered");
 	
 	private final String unlocalizedName;
 	

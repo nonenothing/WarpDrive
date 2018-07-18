@@ -17,6 +17,7 @@ public class ItemWarpArmor extends ItemArmor implements IBreathingHelmet {
 	
 	public ItemWarpArmor(final String registryName, final ArmorMaterial armorMaterial, final int renderIndex, final EntityEquipmentSlot entityEquipmentSlot) {
 		super(armorMaterial, renderIndex, entityEquipmentSlot);
+		
 		setUnlocalizedName("warpdrive.armor." + suffixes[entityEquipmentSlot.getIndex()]);
 		setRegistryName(registryName);
 		setCreativeTab(WarpDrive.creativeTabMain);

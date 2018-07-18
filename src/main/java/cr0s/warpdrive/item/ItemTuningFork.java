@@ -1,12 +1,10 @@
 package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.Commons;
-import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IBeamFrequency;
 import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
-import cr0s.warpdrive.api.WarpDriveText;
 import cr0s.warpdrive.block.energy.BlockCapacitor;
 import cr0s.warpdrive.data.SoundEvents;
 
@@ -41,6 +39,7 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	
 	public ItemTuningFork(final String registryName) {
 		super(registryName);
+		
 		setMaxDamage(0);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.tool.tuning_fork");
@@ -137,17 +136,13 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 				getControlChannel(itemStackHeld)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
 			
-		} else if (hasBeamFrequency) {
+		} else {
+			// assert hasBeamFrequency;
 			((IBeamFrequency)tileEntity).setBeamFrequency(getBeamFrequency(itemStackHeld));
 			Commons.addChatMessage(entityPlayer, new TextComponentTranslation("warpdrive.beam_frequency.set",
 					tileEntity.getBlockType().getLocalizedName(),
 					getBeamFrequency(itemStackHeld)));
 			world.playSound(entityPlayer.posX, entityPlayer.posY, entityPlayer.posZ, SoundEvents.DING, SoundCategory.PLAYERS, 0.1F, 1F, false);
-			
-		} else {
-			WarpDrive.logger.error(String.format("Invalid state, please contact the mod authors\nof %s %s\nand %s",
-			                                     itemStackHeld, itemStackHeld.getItem().getRegistryName(), tileEntity));
-			Commons.addChatMessage(entityPlayer, new WarpDriveText(Commons.styleWarning, "warpdrive.error.internal_check_console"));
 		}
 		return EnumActionResult.SUCCESS;
 	}

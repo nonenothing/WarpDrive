@@ -25,6 +25,7 @@ public class EntityFXBoundingBox extends Particle {
 	public EntityFXBoundingBox(final World world, final Vector3 position, final Vector3 min, final Vector3 max,
 	                           final float red, final float green, final float blue, final int age) {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
+		
 		this.setRBGColorF(red, green, blue);
 		this.setSize(0.02F, 0.02F);
 		this.canCollide = false;

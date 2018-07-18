@@ -43,12 +43,14 @@ public class StructureManager extends XmlFileManager {
 	protected void parseRootElement(final String location, final Element elementStructure) throws InvalidXmlException, SAXException, IOException {
 		final String group = elementStructure.getAttribute("group");
 		if (group.isEmpty()) {
-			throw new InvalidXmlException(String.format("%s is missing a group attribute!", location));
+			throw new InvalidXmlException(String.format("%s is missing a group attribute!",
+			                                            location));
 		}
 		
 		final String name = elementStructure.getAttribute("name");
 		if (name.isEmpty()) {
-			throw new InvalidXmlException(String.format("%s is missing a name attribute!", location));
+			throw new InvalidXmlException(String.format("%s is missing a name attribute!",
+			                                            location));
 		}
 		
 		WarpDrive.logger.info(String.format("- found Structure %s:%s", group, name));

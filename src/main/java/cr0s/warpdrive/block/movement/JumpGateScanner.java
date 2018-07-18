@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.IBlockAccess;
 
 class JumpGateScanner {
+	
 	// inputs
 	private IBlockAccess blockAccess;
 	private int minX, minY, minZ;

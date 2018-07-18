@@ -641,7 +641,8 @@ public class Commons {
 	
 	public static void writeNBTToFile(final String fileName, final NBTTagCompound tagCompound) {
 		if (WarpDrive.isDev) {
-			WarpDrive.logger.info(String.format("writeNBTToFile %s" + fileName));
+			WarpDrive.logger.info(String.format("writeNBTToFile %s",
+			                                    fileName));
 		}
 		
 		try {

@@ -23,9 +23,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-
 public final class EntityCamera extends EntityLivingBase {
 	// entity coordinates (x, y, z) are dynamically changed by player
 	
@@ -55,6 +52,7 @@ public final class EntityCamera extends EntityLivingBase {
 	
 	public EntityCamera(final World world, final int x, final int y, final int z, final EntityPlayer player) {
 		super(world);
+		
 		posX = x;
 		posY = y;
 		posZ = z;

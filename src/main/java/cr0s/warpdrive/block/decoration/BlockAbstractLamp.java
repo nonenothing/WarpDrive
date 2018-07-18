@@ -61,13 +61,6 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 		return blockState.getValue(BlockProperties.FACING).getIndex();
 	}
 	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void modelInitialisation() {
-		Item item = Item.getItemFromBlock(this);
-		ClientProxy.modelInitialisation(item);
-	}
-	
 	@SuppressWarnings("deprecation")
 	@SideOnly(Side.CLIENT)
 	@Override

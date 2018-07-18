@@ -6,6 +6,7 @@ public class DamageWarm extends DamageSource {
 
 	public DamageWarm() {
 		super("warpdrive.warm");
+		
 		setDamageBypassesArmor();
 		setDamageIsAbsolute();
 	}

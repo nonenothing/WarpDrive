@@ -147,6 +147,9 @@ public class CloakManager {
 	@SuppressWarnings("unused") // Core mod
 	@SideOnly(Side.CLIENT)
 	public static boolean WorldClient_invalidateRegionAndSetBlock_setBlockState(final BlockPos blockPos, final IBlockState blockState, final int flags) {
+		final World world = Minecraft.getMinecraft().world;
+		assert world != null;
+		
 		if (blockState.getBlock() != Blocks.AIR) {
 			for (final CloakedArea area : cloaks) {
 				if (area.isBlockWithinArea(blockPos)) {
@@ -157,12 +160,12 @@ public class CloakManager {
 						if (WarpDrive.isDev && WarpDriveConfig.LOGGING_CLOAKING) {
 							WarpDrive.logger.info("CloakManager player is outside");
 						}
-						return Minecraft.getMinecraft().world.setBlockState(blockPos, area.blockStateFog, flags);
+						return world.setBlockState(blockPos, area.blockStateFog, flags);
 					}
 				}
 			}
 		}
-		return Minecraft.getMinecraft().world.setBlockState(blockPos, blockState, flags);
+		return world.setBlockState(blockPos, blockState, flags);
 	}
 	
 	@SuppressWarnings("unused") // Core mod

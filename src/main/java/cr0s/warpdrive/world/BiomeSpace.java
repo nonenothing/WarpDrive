@@ -6,6 +6,7 @@ public class BiomeSpace extends Biome {
 	
     public BiomeSpace(final BiomeProperties biomeProperties) {
         super(biomeProperties);
+        
         this.decorator.treesPerChunk = 0;
         //this.temperature = 1F;
         this.decorator.flowersPerChunk = 0;

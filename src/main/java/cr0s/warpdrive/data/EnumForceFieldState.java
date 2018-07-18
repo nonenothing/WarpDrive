@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 
 public enum EnumForceFieldState implements IStringSerializable {
+	
 	NOT_CONNECTED           ("not_connected"        ,  0.1F ),
 	CONNECTED_NOT_POWERED   ("connected_not_powered",  0.5F ),
 	CONNECTED_OFFLINE       ("connected_offline"    ,  2.5F ),

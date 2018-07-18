@@ -218,6 +218,7 @@ public class CloakedArea {
 	public void clientCloak() {
 		assert Commons.isSafeThread();
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
+		assert player != null;
 		
 		// Hide the blocks within area
 		if (WarpDriveConfig.LOGGING_CLOAKING) { WarpDrive.logger.info("Refreshing cloaked blocks..."); }
@@ -249,6 +250,7 @@ public class CloakedArea {
 	@SideOnly(Side.CLIENT)
 	public void clientDecloak() {
 		final World world = Minecraft.getMinecraft().world;
+		assert world != null;
 		world.markBlockRangeForRenderUpdate(
 			minX - 1, Math.max(  0, minY - 1), minZ - 1,
 			maxX + 1, Math.min(255, maxY + 1), maxZ + 1);

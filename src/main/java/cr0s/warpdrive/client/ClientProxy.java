@@ -83,7 +83,8 @@ public class ClientProxy extends CommonProxy {
 		} else if (object == null) {
 			WarpDrive.logger.info("Ignoring null object ModelInitialisation...");
 		} else {
-			throw new RuntimeException("Invalid object " + object);
+			throw new RuntimeException(String.format("Invalid object %s",
+			                                         object));
 		}
 	}
 	
@@ -110,7 +111,7 @@ public class ClientProxy extends CommonProxy {
 			NonNullList<ItemStack> listItemStacks = NonNullList.create();
 			assert item.getCreativeTab() != null;
 			item.getSubItems(item.getCreativeTab(), listItemStacks);
-			for (ItemStack itemStack : listItemStacks) {
+			for (final ItemStack itemStack : listItemStacks) {
 				ModelResourceLocation modelResourceLocation; 
 				if (item instanceof IItemBase) {
 					modelResourceLocation = ((IItemBase) item).getModelResourceLocation(itemStack);

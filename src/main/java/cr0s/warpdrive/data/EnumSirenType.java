@@ -6,6 +6,7 @@ import java.util.HashMap;
 import net.minecraft.util.IStringSerializable;
 
 public enum EnumSirenType implements IStringSerializable {
+	
 	INDUSTRIAL("industrial", 0),
 	RAID      ("raid"      , 4);
 	

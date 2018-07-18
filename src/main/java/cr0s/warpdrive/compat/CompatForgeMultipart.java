@@ -27,10 +27,10 @@ public class CompatForgeMultipart implements IBlockTransformer {
 	
 	public static boolean register() {
 		try {
-			final Class forgeMultipart_helper = Class.forName("codechicken.multipart.MultipartHelper");
+			final Class<?> forgeMultipart_helper = Class.forName("codechicken.multipart.MultipartHelper");
 			methodMultipartHelper_createTileFromNBT = forgeMultipart_helper.getDeclaredMethod("createTileFromNBT", World.class, NBTTagCompound.class);
 			methodMultipartHelper_sendDescPacket = forgeMultipart_helper.getDeclaredMethod("sendDescPacket", World.class, TileEntity.class);
-			final Class forgeMultipart_tileMultipart = Class.forName("codechicken.multipart.TileMultipart");
+			final Class<?> forgeMultipart_tileMultipart = Class.forName("codechicken.multipart.TileMultipart");
 			methodTileMultipart_onChunkLoad = forgeMultipart_tileMultipart.getDeclaredMethod("onChunkLoad");
 			
 			classBlockMultipart = Class.forName("codechicken.multipart.BlockMultipart");
@@ -125,7 +125,8 @@ public class CompatForgeMultipart implements IBlockTransformer {
 					rot = rotWRCBEstate;
 					break;
 				default:
-					WarpDrive.logger.error(String.format("Ignoring part of ForgeMultipart with unknown id: ", nbtPart));
+					WarpDrive.logger.error(String.format("Ignoring part of ForgeMultipart with unknown id: %d",
+					                                     nbtPart));
 					break;
 			}
 			// actual rotation
@@ -171,7 +172,8 @@ public class CompatForgeMultipart implements IBlockTransformer {
 			}
 			nbtTileEntity.setTag("parts", nbtNewParts);
 		} else {
-			WarpDrive.logger.error(String.format("Ignoring ForgeMultipart with no 'parts': ", nbtTileEntity));
+			WarpDrive.logger.error(String.format("Ignoring ForgeMultipart with no 'parts': %d",
+			                                     nbtTileEntity));
 		}
 		
 		return metadata;

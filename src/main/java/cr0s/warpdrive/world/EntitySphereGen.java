@@ -46,6 +46,7 @@ import net.minecraft.world.World;
 
  */
 public final class EntitySphereGen extends Entity {
+	
 	public int xCoord;
 	public int yCoord;
 	public int zCoord;
@@ -77,6 +78,7 @@ public final class EntitySphereGen extends Entity {
 	public EntitySphereGen(final World world, final int x, final int y, final int z,
 	                       final OrbInstance orbInstance, final boolean replace) {
 		super(world);
+		
 		this.xCoord = x;
 		this.posX = x;
 		this.yCoord = y;

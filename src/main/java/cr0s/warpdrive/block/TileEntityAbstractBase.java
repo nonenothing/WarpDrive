@@ -88,21 +88,21 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	public void onBlockUpdateDetected() {
 	}
 	
-	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, IProperty<T> property, V value) {
+	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, final IProperty<T> property, final V value) {
 		IBlockState blockState = blockState_in;
 		if (blockState == null) {
 			blockState = world.getBlockState(pos);
 		}
-		try {
-			if (property != null) {
-				blockState = blockState.withProperty(property, value);
+		if (property != null) {
+			if (!blockState.getProperties().containsKey(property)) {
+				WarpDrive.logger.error(String.format("Unable to update block state due to missing property in %s: %s calling updateBlockState(%s, %s, %s)",
+				                                     blockState.getBlock(), this, blockState_in, property, value));
+				return;
 			}
-			if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
-				world.setBlockState(pos, blockState, 2);
-			}
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			WarpDrive.logger.error(String.format("Exception in %s", this));
+			blockState = blockState.withProperty(property, value);
+		}
+		if (getBlockMetadata() != blockState.getBlock().getMetaFromState(blockState)) {
+			world.setBlockState(pos, blockState, 2);
 		}
 	}
 	
@@ -111,15 +111,19 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 		if (blockState_old == null) {
 			blockState_old = world.getBlockState(pos);
 		}
-		try {
-			final int metadata_old = blockState_old.getBlock().getMetaFromState(blockState_old);
-			final int metadata_new = blockState_new.getBlock().getMetaFromState(blockState_new);
-			if (metadata_old != metadata_new) {
-				world.setBlockState(pos, blockState_new, 2);
-			}
-		} catch (Exception exception) {
-			exception.printStackTrace();
-			WarpDrive.logger.error(String.format("Exception in %s", this));
+		
+		final Block block_old = blockState_old.getBlock();
+		final Block block_new = blockState_new.getBlock();
+		if (block_new != block_old) {
+			WarpDrive.logger.error(String.format("Unable to update block state from %s to %s: %s calling updateBlockState(%s, %s)",
+			                                     block_old, block_new, this, blockState_in, blockState_new));
+			return;
+		}
+		
+		final int metadata_old = block_old.getMetaFromState(blockState_old);
+		final int metadata_new = block_new.getMetaFromState(blockState_new);
+		if (metadata_old != metadata_new) {
+			world.setBlockState(pos, blockState_new, 2);
 		}
 	}
 	
@@ -145,7 +149,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	}
 	
 	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState blockStateOld, @Nonnull IBlockState blockStateNew) {
+	public boolean shouldRefresh(final World world, final BlockPos pos, @Nonnull final IBlockState blockStateOld, @Nonnull final IBlockState blockStateNew) {
 		return blockStateOld.getBlock() != blockStateNew.getBlock();
 	}
 	

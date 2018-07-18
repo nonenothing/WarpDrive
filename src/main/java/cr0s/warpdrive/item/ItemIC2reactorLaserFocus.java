@@ -20,6 +20,7 @@ public class ItemIC2reactorLaserFocus extends ItemAbstractBase implements IReact
 	
 	public ItemIC2reactorLaserFocus(final String registryName) {
 		super(registryName);
+		
 		setMaxDamage(WarpDriveConfig.IC2_REACTOR_MAX_HEAT_STORED);
 		setUnlocalizedName("warpdrive.energy.IC2reactorLaserFocus");
 	}

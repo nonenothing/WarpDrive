@@ -22,11 +22,13 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.WorldServer;
 
 public class CommandSpace extends AbstractCommand {
+	
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 2;
 	}
 	
+	@Nonnull
 	@Override
 	public String getName() {
 		return "space";
@@ -209,6 +211,7 @@ public class CommandSpace extends AbstractCommand {
 		}
 	}
 	
+	@Nonnull
 	@Override
 	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/space (<playerName>) ([overworld|nether|end|theend|space|hyper|hyperspace|<dimensionId>])";

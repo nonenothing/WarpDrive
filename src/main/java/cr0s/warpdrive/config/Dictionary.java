@@ -84,7 +84,7 @@ public class Dictionary {
 					+ "- SkipMining: this block is ignored from mining (default: bedrock).\n"
 					+ "- StopMining: this block will prevent mining through it (default: command/creative, bedrock, force fields).\n"
 					+ "- PlaceEarliest: this block will be removed last and placed first (default: ship hull and projectors).\n"
-					+ "- PlaceEarlier: this block will be placed fairly soon (default: forcefield blocks).\n"
+					+ "- PlaceEarlier: this block will be placed fairly soon (default: force field blocks).\n"
 					+ "- PlaceNormal: this block will be removed and placed with non-tile entities.\n"
 					+ "- PlaceLater: this block will be placed fairly late (default: IC2 Reactor core).\n"
 					+ "- PlaceLatest: this block will be removed first and placed last (default: IC2 Reactor chamber).\n"

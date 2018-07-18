@@ -29,11 +29,11 @@ public abstract class AbstractStructureInstance extends WorldGenerator {
 				}
 				value = Double.parseDouble(entry.getValue());
 			} catch (final NumberFormatException exception) {
-				throw new RuntimeException("Invalid expression '" + entry.getValue() + "'"
-						+ (stringValue.equalsIgnoreCase(entry.getValue()) ? "" : " in '" + entry.getValue() + "'")
-						+ " for variable " + entry.getKey()
-						+ " in deployable structure " + structure.name
-						+ ": a numeric value is expected. Check the related XML configuration file...");
+				throw new RuntimeException(String.format("Invalid expression '%s'%s for variable %s in deployable structure %s: a numeric value is expected. Check the related XML configuration file...",
+				                                         entry.getValue(),
+				                                         (stringValue.equalsIgnoreCase(entry.getValue()) ? "" : " in '" + entry.getValue() + "'"),
+				                                         entry.getKey(),
+				                                         structure.name));
 			}
 			
 			variables.put(entry.getKey(), value);

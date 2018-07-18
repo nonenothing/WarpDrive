@@ -82,8 +82,7 @@ public class BlockTransporterBeacon extends BlockAbstractContainer {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		final Item item = Item.getItemFromBlock(this);
-		ClientProxy.modelInitialisation(item);
+		super.modelInitialisation();
 		
 		// Bind our TESR to our tile entity
 		// @TODO ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTransporterBeacon.class, new TileEntityForceFieldProjectorRenderer());

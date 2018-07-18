@@ -22,6 +22,7 @@ import net.minecraft.util.EnumFacing;
 
 @SuppressWarnings("WeakerAccess")
 public class Vector3 implements Cloneable {
+	
 	public double x;
 	public double y;
 	public double z;

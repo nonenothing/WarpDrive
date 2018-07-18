@@ -6,6 +6,7 @@ public class DamageLaser extends DamageSource {
 
 	public DamageLaser() {
 		super("warpdrive.laser");
+		
 		setDamageBypassesArmor();
 		setDamageIsAbsolute();
 	}

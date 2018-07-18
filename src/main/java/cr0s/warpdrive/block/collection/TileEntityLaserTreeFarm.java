@@ -294,8 +294,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							}
 							
 							// consume power
-							final int energyCost = TREE_FARM_ENERGY_PER_WET_SPOT;
-							isPowered = laserMedium_consumeExactly(energyCost, false);
+							isPowered = laserMedium_consumeExactly(TREE_FARM_ENERGY_PER_WET_SPOT, false);
 							if (!isPowered) {
 								delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 								updateBlockState(blockState, BlockLaserTreeFarm.MODE, EnumLaserTreeFarmMode.FARMING_LOW_POWER);
@@ -410,7 +409,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 							final Block block = itemBlock.getBlock();
 							plant = block.getStateForPlacement(world, blockPosPlant, EnumFacing.UP,
 							                                   0.5F, 0.0F, 0.5F, metadata,
-							                                   null, EnumHand.MAIN_HAND);
+							                                   null, EnumHand.MAIN_HAND); // @TODO use fake player to place sapling
 						} else {
 							plant = plantable.getPlant(world, blockPosPlant);
 						}
@@ -462,8 +461,7 @@ public class TileEntityLaserTreeFarm extends TileEntityAbstractMiner {
 				}
 				
 				// consume power
-				final int energyCost = TREE_FARM_ENERGY_PER_SAPLING;
-				isPowered = laserMedium_consumeExactly(energyCost, false);
+				isPowered = laserMedium_consumeExactly(TREE_FARM_ENERGY_PER_SAPLING, false);
 				if (!isPowered) {
 					delayTargetTicks = TREE_FARM_LOW_POWER_DELAY_TICKS;
 					updateBlockState(blockState, BlockLaserTreeFarm.MODE, EnumLaserTreeFarmMode.PLANTING_LOW_POWER);

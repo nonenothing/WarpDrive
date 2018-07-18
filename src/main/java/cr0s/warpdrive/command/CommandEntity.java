@@ -41,6 +41,7 @@ public class CommandEntity extends AbstractCommand {
 	private static final Style styleFactor = new Style().setColor(TextFormatting.DARK_GRAY);
 	private static final Style styleName   = new Style().setColor(TextFormatting.LIGHT_PURPLE);
 	
+	@Nonnull
 	@Override
 	public String getName() {
 		return "wentity";
@@ -51,6 +52,7 @@ public class CommandEntity extends AbstractCommand {
 		return 2;
 	}
 	
+	@Nonnull
 	@Override
 	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/" + getName() + " <radius> <filter> <kill?>"

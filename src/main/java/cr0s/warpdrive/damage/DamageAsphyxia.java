@@ -6,6 +6,7 @@ public class DamageAsphyxia extends DamageSource {
 
 	public DamageAsphyxia() {
 		super("warpdrive.asphyxia");
+		
 		setDamageBypassesArmor();
 		setDamageIsAbsolute();
 	}

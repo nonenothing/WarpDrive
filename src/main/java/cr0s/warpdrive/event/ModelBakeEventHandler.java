@@ -45,7 +45,7 @@ public class ModelBakeEventHandler {
 				bakedModelNew = entry.getValue().newInstance();
 				bakedModelNew.setResourceLocation(entry.getKey());
 				bakedModelNew.setOriginalBakedModel(bakedModelExisting);
-			} catch (Exception exception) {
+			} catch (final Exception exception) {
 				exception.printStackTrace();
 				WarpDrive.logger.error(String.format("Failed to instantiate bake model calls for %s, using class %s",
 				                                     entry.getKey(), entry.getValue()));

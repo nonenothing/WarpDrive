@@ -15,6 +15,7 @@ public class ItemBlockGas extends ItemBlockAbstractBase {
 	
 	public ItemBlockGas(final Block block) {
 		super(block);
+		
 		setHasSubtypes(true);
 	}
 	
@@ -24,10 +25,13 @@ public class ItemBlockGas extends ItemBlockAbstractBase {
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {
 		final int damage = itemStack.getItemDamage();
 		if (damage < 0 || damage > EnumGasColor.length) {
-			throw new IllegalArgumentException(String.format("Invalid damage %d for %s", damage, itemStack.getItem()));
+			throw new IllegalArgumentException(String.format("Invalid damage %d for %s",
+			                                                 damage, itemStack.getItem()));
 		}
-		ResourceLocation resourceLocation = getRegistryName();
-		String variant = String.format("color=%s", EnumGasColor.get( itemStack.getItemDamage() ).getUnlocalizedName());
+		final ResourceLocation resourceLocation = getRegistryName();
+		assert resourceLocation != null;
+		final String variant = String.format("color=%s",
+		                                     EnumGasColor.get( itemStack.getItemDamage() ).getUnlocalizedName());
 		return new ModelResourceLocation(resourceLocation, variant);
 	}
 }

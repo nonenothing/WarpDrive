@@ -11,11 +11,13 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 
 public class CommandInvisible extends AbstractCommand {
+	
 	@Override
 	public int getRequiredPermissionLevel() {
 		return 4;
 	}
-
+	
+	@Nonnull
 	@Override
 	public String getName() {
 		return "invisible";
@@ -46,6 +48,7 @@ public class CommandInvisible extends AbstractCommand {
 		player.setInvisible(!player.isInvisible());
 	}
 	
+	@Nonnull
 	@Override
 	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/invisible [player]";

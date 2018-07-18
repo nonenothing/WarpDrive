@@ -33,6 +33,7 @@ public class ItemElectromagneticCell extends ItemAbstractBase implements IPartic
 	
 	public ItemElectromagneticCell(final String registryName) {
 		super(registryName);
+		
 		setMaxDamage(0);
 		setMaxStackSize(1);
 		setUnlocalizedName("warpdrive.atomic.electromagnetic_cell");

@@ -9,11 +9,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import javax.annotation.Nonnull;
 
 public interface IItemBase {
-    
-    // wrapper for Forge ItemExpireEvent
-    void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack);
-    
-    @Nonnull
-    @SideOnly(Side.CLIENT)
-    ModelResourceLocation getModelResourceLocation(final ItemStack itemStack);
+	
+	// wrapper for Forge ItemExpireEvent
+	void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack);
+	
+	@Nonnull
+	@SideOnly(Side.CLIENT)
+	ModelResourceLocation getModelResourceLocation(final ItemStack itemStack);
+	
+	void modelInitialisation();
 }

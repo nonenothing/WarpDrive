@@ -217,7 +217,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 			entity.fallDistance = 0.0F;
 			entity.addVelocity(v3Motion.x, v3Motion.y, v3Motion.z);
 			
-			// pass through forcefield
+			// pass through force field
 			if (distanceCollision <= distanceEntity) {
 				if (entity instanceof EntityLivingBase) {
 					entity.setPositionAndUpdate(
@@ -250,7 +250,7 @@ public enum EnumForceFieldUpgrade implements IStringSerializable, IForceFieldUpg
 			entity.fallDistance = 0.0F;
 			entity.addVelocity(v3Motion.x, v3Motion.y, v3Motion.z);
 			
-			// pass through forcefield
+			// pass through force field
 			if (distanceCollision >= distanceEntity) {
 				if (entity instanceof EntityLivingBase) {
 					entity.setPositionAndUpdate(

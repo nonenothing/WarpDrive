@@ -1488,6 +1488,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 		if ( tagCompound.hasKey("scanners", Constants.NBT.TAG_LIST)
 		  && tagCompound.hasKey("containments", Constants.NBT.TAG_LIST)) {
 			final NBTTagList tagListScanners = (NBTTagList) tagCompound.getTag("scanners");
+			assert tagListScanners != null;
 			final ArrayList<BlockPos> vScanners = new ArrayList<>(tagListScanners.tagCount());
 			for (int indexScanner = 0; indexScanner < tagListScanners.tagCount(); indexScanner++) {
 				final BlockPos vScanner = Commons.createBlockPosFromNBT(tagListScanners.getCompoundTagAt(indexScanner));
@@ -1495,6 +1496,7 @@ public class TileEntityTransporterCore extends TileEntityAbstractEnergy implemen
 			}
 			
 			final NBTTagList tagListContainments = (NBTTagList) tagCompound.getTag("containments");
+			assert tagListContainments != null;
 			final ArrayList<BlockPos> vContainments = new ArrayList<>(tagListContainments.tagCount());
 			for (int indexContainment = 0; indexContainment < tagListContainments.tagCount(); indexContainment++) {
 				final BlockPos vContainment = Commons.createBlockPosFromNBT(tagListContainments.getCompoundTagAt(indexContainment));

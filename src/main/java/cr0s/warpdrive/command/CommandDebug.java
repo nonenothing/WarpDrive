@@ -19,6 +19,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class CommandDebug extends AbstractCommand {
 	
+	@Nonnull
 	@Override
 	public String getName()
 	{
@@ -30,10 +31,10 @@ public class CommandDebug extends AbstractCommand {
 	{
 		return 2;
 	}
-
+	
+	@Nonnull
 	@Override
-	public String getUsage(@Nonnull final ICommandSender commandSender)
-	{
+	public String getUsage(@Nonnull final ICommandSender commandSender) {
 		return "/" + getName() + " <dimension> <x> <y> <z> <blockId> <Metadata> <action><action>...\n"
 				+ "dimension: 0/world, 2/space, 3/hyperspace\n"
 				+ "coordinates: x,y,z\n"

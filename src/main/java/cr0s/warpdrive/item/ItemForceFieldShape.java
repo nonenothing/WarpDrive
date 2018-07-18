@@ -34,6 +34,7 @@ public class ItemForceFieldShape extends ItemAbstractBase {
 	
 	public ItemForceFieldShape(final String registryName) {
 		super(registryName);
+		
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.force_field.shape");
 		

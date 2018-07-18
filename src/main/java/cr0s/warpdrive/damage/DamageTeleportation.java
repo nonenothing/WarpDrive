@@ -6,6 +6,7 @@ public class DamageTeleportation extends DamageSource {
 	
 	public DamageTeleportation() {
 		super("warpdrive.teleportation");
+		
 		setDamageBypassesArmor();
 	}
 	

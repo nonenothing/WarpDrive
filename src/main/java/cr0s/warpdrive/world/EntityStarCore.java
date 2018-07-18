@@ -36,6 +36,7 @@ public final class EntityStarCore extends Entity {
 	
 	public EntityStarCore(final World world, final int x, final int y, final int z, final int radius) {
 		super(world);
+		
 		this.xCoord = x;
 		this.posX = x;
 		this.yCoord = y;

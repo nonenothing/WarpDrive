@@ -30,7 +30,8 @@ public class MetaOrb extends Orb {
 		
 		final List<Element> listMetaShells = XmlFileManager.getChildrenElementByTagName(element, "metaShell");
 		if (listMetaShells.size() > 1) {
-			throw new InvalidXmlException("Too many metaShell defined in structure " + getFullName() + ". Maximum is 1.");
+			throw new InvalidXmlException(String.format("Too many metaShell defined in structure %s. Maximum is 1.",
+			                                            getFullName()));
 		}
 		if (listMetaShells.size() == 1) {
 			metaShell = new MetaShell(getFullName());

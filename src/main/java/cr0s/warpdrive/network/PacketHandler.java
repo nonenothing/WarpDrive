@@ -77,9 +77,7 @@ public class PacketHandler {
 			final List<EntityPlayerMP> playerEntityList = world.getMinecraftServer().getPlayerList().getPlayers();
 			final int dimensionId = world.provider.getDimension();
 			final int radius_square = radius * radius;
-			for (int index = 0; index < playerEntityList.size(); index++) {
-				final EntityPlayerMP entityPlayerMP = playerEntityList.get(index);
-				
+			for (final EntityPlayerMP entityPlayerMP : playerEntityList) {
 				if (entityPlayerMP.dimension == dimensionId) {
 					if ( v3Source.distanceTo_square(entityPlayerMP) < radius_square
 					  || v3Target.distanceTo_square(entityPlayerMP) < radius_square ) {
@@ -142,9 +140,7 @@ public class PacketHandler {
 		// check both ends to send packet
 		final List<EntityPlayerMP> playerEntityList = world.getMinecraftServer().getPlayerList().getPlayers();
 		final int radius_square = radius * radius;
-		for (int index = 0; index < playerEntityList.size(); index++) {
-			final EntityPlayerMP entityPlayerMP = playerEntityList.get(index);
-			
+		for (final EntityPlayerMP entityPlayerMP : playerEntityList) {
 			if ( globalPositionLocal != null
 			  && globalPositionLocal.distance2To(entityPlayerMP) < radius_square ) {
 				simpleNetworkManager.sendTo(messageTransporterEffectLocal, entityPlayerMP);
@@ -209,6 +205,11 @@ public class PacketHandler {
 	
 	public static void revealEntityToPlayer(final Entity entity, final EntityPlayerMP entityPlayerMP) {
 		try {
+			if (entityPlayerMP.connection == null) {
+				WarpDrive.logger.warn(String.format("Unable to reveal entity %s to player %s: no connection",
+				                                    entity, entityPlayerMP));
+				return;
+			}
 			final Packet packet = getPacketForThisEntity(entity);
 			if (packet == null) {
 				WarpDrive.logger.error(String.format("Unable to reveal entity %s to player %s: null packet",

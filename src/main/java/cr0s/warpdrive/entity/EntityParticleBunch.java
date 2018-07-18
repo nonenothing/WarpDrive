@@ -45,6 +45,7 @@ public class EntityParticleBunch extends Entity {
 	
 	public EntityParticleBunch(final World world) {
 		super(world);
+		
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
 			WarpDrive.logger.info(String.format("%s created in dimension %s",
 			                                    this, Commons.format(world)));
@@ -53,6 +54,7 @@ public class EntityParticleBunch extends Entity {
 	
 	public EntityParticleBunch(final World world, final double x, final double y, final double z) {
 		super(world);
+		
 		this.posX = x + 0.5D;
 		this.posY = y + 0.5D;
 		this.posZ = z + 0.5D;

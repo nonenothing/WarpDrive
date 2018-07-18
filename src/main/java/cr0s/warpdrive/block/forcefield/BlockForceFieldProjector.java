@@ -118,8 +118,7 @@ public class BlockForceFieldProjector extends BlockAbstractForceField {
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void modelInitialisation() {
-		final Item item = Item.getItemFromBlock(this);
-		ClientProxy.modelInitialisation(item);
+		super.modelInitialisation();
 		
 		// Bind our TESR to our tile entity
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityForceFieldProjector.class, new TileEntityForceFieldProjectorRenderer());

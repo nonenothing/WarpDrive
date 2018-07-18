@@ -31,6 +31,7 @@ public class EntityFXEnergizing extends AbstractEntityFX {
 	                          final float red, final float green, final float blue,
 	                          final int age, final float radius) {
 		super(world, position.x, position.y, position.z, 0.0D, 0.0D, 0.0D);
+		
 		setRBGColorF(red, green, blue);
 		setSize(0.02F, 0.02F);
 		canCollide = false;

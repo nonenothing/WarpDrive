@@ -22,6 +22,7 @@ public class EntityFXDot extends AbstractEntityFX {
 	                   final Vector3 v3Motion, final Vector3 v3Acceleration, final double friction,
 	                   final int age) {
 		super(world, v3Position.x, v3Position.y, v3Position.z, 0.0D, 0.0D, 0.0D);
+		
 		this.setSize(0.02F, 0.02F);
 		this.canCollide = false;
 		this.motionX = v3Motion.x;

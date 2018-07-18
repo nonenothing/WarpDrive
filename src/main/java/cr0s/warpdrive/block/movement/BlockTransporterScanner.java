@@ -66,6 +66,7 @@ public class BlockTransporterScanner extends BlockAbstractBase {
 		return false;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean isSideSolid(final IBlockState blockState, @Nonnull final IBlockAccess blockAccess, @Nonnull final BlockPos blockPos, final EnumFacing side) {
 		return side == EnumFacing.DOWN;

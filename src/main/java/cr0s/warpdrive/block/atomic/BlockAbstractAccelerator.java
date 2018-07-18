@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityLiving.SpawnPlacementType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public class BlockAbstractAccelerator extends BlockAbstractBase implements IBlockBase {
+public abstract class BlockAbstractAccelerator extends BlockAbstractBase implements IBlockBase {
 	
 	public final EnumTier enumTier;
 	

@@ -107,16 +107,19 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		// get identity
 		id = elementCelestialObject.getAttribute("id");
 		if (id.isEmpty()) {
-			throw new InvalidXmlException(String.format("Celestial object %s is missing an id attribute!", location));
+			throw new InvalidXmlException(String.format("Celestial object %s is missing an id attribute!",
+			                                            location));
 		}
 		
-		WarpDrive.logger.info(String.format("- found Celestial object %s", id));
+		WarpDrive.logger.info(String.format("- found Celestial object %s",
+		                                    id));
 		
 		// get optional parent element, defaulting to parent defined by element hierarchy
 		parentId = parentElementId;
 		final List<Element> listParents = XmlFileManager.getChildrenElementByTagName(elementCelestialObject,"parent");
 		if (listParents.size() > 1) {
-			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one parent element", id));
+			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one parent element",
+			                                            id));
 		}
 		if (listParents.size() == 1) {
 			final Element elementParent = listParents.get(0);
@@ -130,7 +133,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			// get required center element
 			final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementParent, "center");
 			if (listElements.size() != 1) {
-				throw new InvalidXmlException(String.format("Celestial object %s parent requires exactly one center element", id));
+				throw new InvalidXmlException(String.format("Celestial object %s parent requires exactly one center element",
+				                                            id));
 			}
 			final Element elementCenter = listElements.get(0);
 			parentCenterX = Integer.parseInt(elementCenter.getAttribute("x"));
@@ -141,7 +145,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		{
 			final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "size");
 			if (listElements.size() != 1) {
-				throw new InvalidXmlException(String.format("Celestial object %s requires exactly one size element", id));
+				throw new InvalidXmlException(String.format("Celestial object %s requires exactly one size element",
+				                                            id));
 			}
 			final Element elementSize = listElements.get(0);
 			borderRadiusX = Integer.parseInt(elementSize.getAttribute("x")) / 2;
@@ -152,7 +157,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		{
 			final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "name");
 			if (listElements.size() > 1) {
-				throw new InvalidXmlException(String.format("Celestial object %s can only have up to one name element", id));
+				throw new InvalidXmlException(String.format("Celestial object %s can only have up to one name element",
+				                                            id));
 			}
 			if (listElements.size() == 1) {
 				final Element elementName = listElements.get(0);
@@ -166,7 +172,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		{
 			final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "description");
 			if (listElements.size() > 1) {
-				throw new InvalidXmlException(String.format("Celestial object %s can only have up to one description element", id));
+				throw new InvalidXmlException(String.format("Celestial object %s can only have up to one description element",
+				                                            id));
 			}
 			if (listElements.size() == 1) {
 				final Element elementName = listElements.get(0);
@@ -180,7 +187,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		{
 			final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "nbt");
 			if (listElements.size() > 1) {
-				throw new InvalidXmlException(String.format("Celestial object %s can only have up to one nbt element", id));
+				throw new InvalidXmlException(String.format("Celestial object %s can only have up to one nbt element",
+				                                            id));
 			}
 			tagCompound = null;
 			if (listElements.size() == 1) {
@@ -190,7 +198,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 					try {
 						tagCompound = (NBTTagCompound) JsonToNBT.getTagFromJson(stringNBT);
 					} catch (final NBTException exception) {
-						throw new InvalidXmlException(String.format("Invalid nbt for Celestial object %s", id));
+						throw new InvalidXmlException(String.format("Invalid nbt for Celestial object %s",
+						                                            id));
 					}
 				}
 			}
@@ -199,7 +208,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		// get optional dimension element
 		final List<Element> listDimensions = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "dimension");
 		if (listDimensions.size() > 1) {
-			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one dimension element", id));
+			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one dimension element",
+			                                            id));
 		}
 		if (listDimensions.size() == 0) {
 			isVirtual = true;
@@ -223,7 +233,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			{
 				final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementDimension, "provider");
 				if (listElements.size() > 1) {
-					throw new InvalidXmlException(String.format("Celestial object %s dimension can only have up to one provider element", id));
+					throw new InvalidXmlException(String.format("Celestial object %s dimension can only have up to one provider element",
+					                                            id));
 				}
 				if (listElements.size() == 1) {
 					final Element element = listElements.get(0);
@@ -236,7 +247,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			// get required center element
 			final List<Element> listCenters = XmlFileManager.getChildrenElementByTagName(elementDimension, "center");
 			if (listCenters.size() != 1) {
-				throw new InvalidXmlException(String.format("Celestial object %s dimension requires exactly one center element", id));
+				throw new InvalidXmlException(String.format("Celestial object %s dimension requires exactly one center element",
+				                                            id));
 			}
 			final Element elementCenter = listCenters.get(0);
 			dimensionCenterX = Integer.parseInt(elementCenter.getAttribute("x"));
@@ -249,7 +261,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 			final List<Element> listGenerates = XmlFileManager.getChildrenElementByTagName(elementDimension, "generate");
 			for (int indexElement = 0; indexElement < listGenerates.size(); indexElement++) {
 				final Element elementGenerate = listGenerates.get(indexElement);
-				final String locationGenerate = String.format("Celestial object %s generate %d/%d", id, indexElement + 1, listGenerates.size());
+				final String locationGenerate = String.format("Celestial object %s generate %d/%d",
+				                                              id, indexElement + 1, listGenerates.size());
 				parseGenerateElement(locationGenerate, elementGenerate);
 			}
 			
@@ -260,7 +273,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 		// get optional skybox element
 		final List<Element> listSkyboxes = XmlFileManager.getChildrenElementByTagName(elementCelestialObject, "skybox");
 		if (listSkyboxes.size() > 1) {
-			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one skybox element", id));
+			throw new InvalidXmlException(String.format("Celestial object %s can only have up to one skybox element",
+			                                            id));
 		}
 		if (listSkyboxes.isEmpty()) {
 			backgroundColor = new ColorData(0.0F      , 0.0F       , 0.0F );
@@ -302,7 +316,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	private float getFloat(final String locationParent, final Element elementParent, final String tagName, final float value) throws InvalidXmlException {
 		final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementParent, tagName);
 		if (listElements.size() > 1) {
-			throw new InvalidXmlException(String.format("%s can only have up to one %s element", locationParent, tagName));
+			throw new InvalidXmlException(String.format("%s can only have up to one %s element",
+			                                            locationParent, tagName));
 		}
 		if (listElements.isEmpty()) {
 			return value;
@@ -317,7 +332,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 	private ColorData getColorData(final String locationParent, final Element elementParent, final String tagName, final float red, final float green, final float blue) throws InvalidXmlException {
 		final List<Element> listElements = XmlFileManager.getChildrenElementByTagName(elementParent, tagName);
 		if (listElements.size() > 1) {
-			throw new InvalidXmlException(String.format("%s can only have up to one %s element", locationParent, tagName));
+			throw new InvalidXmlException(String.format("%s can only have up to one %s element",
+			                                            locationParent, tagName));
 		}
 		if (listElements.isEmpty()) {
 			return new ColorData(red, green, blue);
@@ -777,7 +793,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 				alpha = Commons.clamp(0.0F, 1.0F, Float.parseFloat(elementRender.getAttribute("alpha")));
 			} catch (final Exception exception) {
 				exception.printStackTrace();
-				WarpDrive.logger.error(String.format("Exception while parsing Render element RGBA attributes at %s", location));
+				WarpDrive.logger.error(String.format("Exception while parsing Render element RGBA attributes at %s",
+				                                     location));
 				red = 0.5F;
 				green = 0.5F;
 				blue = 0.5F;
@@ -799,7 +816,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 					try {
 						periodU = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(stringPeriodU));
 					} catch (final NumberFormatException exception) {
-						throw new InvalidXmlException(String.format("Invalid periodU attribute '%s' at %s", stringPeriodU, location));
+						throw new InvalidXmlException(String.format("Invalid periodU attribute '%s' at %s",
+						                                            stringPeriodU, location));
 					}
 				}
 				
@@ -809,7 +827,8 @@ public class CelestialObject implements Cloneable, IStringSerializable, ICelesti
 					try {
 						periodV = Commons.clampMantisse(0.001D, 1000000.0D, Double.parseDouble(stringPeriodV));
 					} catch (final NumberFormatException exception) {
-						throw new InvalidXmlException(String.format("Invalid periodV attribute '%s' at %s", stringPeriodV, location));
+						throw new InvalidXmlException(String.format("Invalid periodV attribute '%s' at %s",
+						                                            stringPeriodV, location));
 					}
 				}
 				

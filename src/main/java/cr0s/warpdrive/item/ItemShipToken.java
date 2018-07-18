@@ -27,6 +27,7 @@ public class ItemShipToken extends ItemAbstractBase {
 	
 	public ItemShipToken(final String registryName) {
 		super(registryName);
+		
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.tool.ship_token");
 		setCreativeTab(WarpDrive.creativeTabMain);
@@ -95,6 +96,7 @@ public class ItemShipToken extends ItemAbstractBase {
 			itemStack.setTagCompound(new NBTTagCompound());
 		}
 		final NBTTagCompound tagCompound = itemStack.getTagCompound();
+		assert tagCompound != null;
 		tagCompound.setString("shipName", schematicName);
 	}
 	
@@ -104,6 +106,7 @@ public class ItemShipToken extends ItemAbstractBase {
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.tool.ship_token.tooltip.usage", getSchematicName(itemStack)).getFormattedText());
+		Commons.addTooltip(list, new TextComponentTranslation("item.warpdrive.tool.ship_token.tooltip.usage",
+		                                                      getSchematicName(itemStack)).getFormattedText());
 	}
 }

@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class SirenSound extends MovingSound {
+    
     float range;
     float x, y, z;
     

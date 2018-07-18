@@ -252,16 +252,17 @@ public class Recipes {
 			if (WarpDriveConfig.isComputerCraftLoaded) {
 				redstoneOrModem = WarpDriveConfig.getItemStackOrFire("computercraft:cable", 1); // Wired modem
 			}
-			// if (OreDictionary.doesOreNameExist("circuitPrimitive") && !OreDictionary.getOres("circuitPrimitive").isEmpty()) { // Gregtech
+			
 			Object oreCircuitOrHeavyPressurePlate = Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE;
 			int outputFactor = 1;
 			if (OreDictionary.doesOreNameExist("oc:materialCU") && !OreDictionary.getOres("oc:materialCU").isEmpty()) {
 				oreCircuitOrHeavyPressurePlate = "oc:materialCU";	// Control circuit is 5 redstone, 5 gold ingot, 3 paper
 				outputFactor = 2;
-			} else if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustrialCraft2
+			} else if (OreDictionary.doesOreNameExist("circuitBasic") && !OreDictionary.getOres("circuitBasic").isEmpty()) {// comes with IndustrialCraft2, GregTech, ICBM-Classic
 				oreCircuitOrHeavyPressurePlate = "circuitBasic";
 				outputFactor = 2;
 			}
+			
 			String oreSlimeOrTinOrLead = "slimeball";
 			// Computer interface: double output with Soldering alloy
 			if (OreDictionary.doesOreNameExist("ingotSolderingAlloy") && !OreDictionary.getOres("ingotSolderingAlloy").isEmpty()) {
@@ -1232,7 +1233,7 @@ public class Recipes {
         
 		// Warp helmet
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       new ItemStack(WarpDrive.itemWarpArmor[3]), false, "ggg", "gig", "wcw",
+		                                       WarpDrive.itemWarpArmor[3], false, "ggg", "gig", "wcw",
 		                                       'i', Items.IRON_HELMET,
 		                                       'w', Blocks.WOOL,
 		                                       'g', "blockGlass",
@@ -1240,7 +1241,7 @@ public class Recipes {
 		
 		// Warp chestplate
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       new ItemStack(WarpDrive.itemWarpArmor[2]), false, "gcg", "wiw", "GmG",
+		                                       WarpDrive.itemWarpArmor[2], false, "gcg", "wiw", "GmG",
 		                                       'i', Items.IRON_CHESTPLATE,
 		                                       'w', Blocks.WOOL,
 		                                       'g', "blockHull3_glass",
@@ -1250,7 +1251,7 @@ public class Recipes {
 		
 		// Warp Leggings
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       new ItemStack(WarpDrive.itemWarpArmor[1]), false, "gig", "m m", "w w",
+		                                       WarpDrive.itemWarpArmor[1], false, "gig", "m m", "w w",
 		                                       'i', Items.IRON_LEGGINGS,
 		                                       'm', ItemComponent.getItemStack(EnumComponentType.MOTOR),
 		                                       'w', Blocks.WOOL,
@@ -1258,7 +1259,7 @@ public class Recipes {
 		
 		// Warp boots
 		WarpDrive.register(new ShapedOreRecipe(groupTools,
-		                                       new ItemStack(WarpDrive.itemWarpArmor[0]), false, "wiw", "r r", "   ",
+		                                       WarpDrive.itemWarpArmor[0], false, "wiw", "r r", "   ",
 		                                       'i', Items.IRON_BOOTS,
 		                                       'w', Blocks.WOOL,
 		                                       'r', rubberOrLeather));

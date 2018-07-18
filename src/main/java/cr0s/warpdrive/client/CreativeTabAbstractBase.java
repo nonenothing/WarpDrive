@@ -15,6 +15,7 @@ public abstract class CreativeTabAbstractBase extends CreativeTabs {
 	
 	public CreativeTabAbstractBase(final String label, final long period) {
 		super(label);
+		
 		this.period = period;
 	}
 	

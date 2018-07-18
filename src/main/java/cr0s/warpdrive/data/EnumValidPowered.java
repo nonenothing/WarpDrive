@@ -6,6 +6,7 @@ import java.util.HashMap;
 import net.minecraft.util.IStringSerializable;
 
 public enum EnumValidPowered implements IStringSerializable {
+	
 	INVALID("invalid", 6),
 	VALID  ("valid"  , 0),
 	POWERED("powered", 8);

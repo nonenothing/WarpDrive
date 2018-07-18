@@ -15,6 +15,7 @@ public class ItemAirTank extends ItemAbstractBase implements IAirContainerItem {
 	
 	public ItemAirTank(final byte tier, final String registryName) {
 		super(registryName);
+		
 		this.tier = tier;
 		setMaxDamage(capacities[tier]);
 		setMaxStackSize(1);
