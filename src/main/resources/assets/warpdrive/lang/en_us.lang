@@ -254,16 +254,6 @@ tile.warpdrive.detection.radar.name=Radar
 tile.warpdrive.detection.warp_isolation.name=Warp-field Isolation Block
 tile.warpdrive.detection.warp_isolation.tooltip.usage=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
-tile.warpdrive.detection.siren.tooltip=Triggered by redstone
-tile.warpdrive.detection.siren0.name=Industrial Siren
-tile.warpdrive.detection.siren0.tooltip=Sounds an Industrial alarm up to 32 m away.
-tile.warpdrive.detection.siren4.name=Basic Air Raid Siren
-tile.warpdrive.detection.siren4.tooltip=Sounds an Air raid alarm up to 32 m away.
-tile.warpdrive.detection.siren5.name=Advanced Air Raid Siren
-tile.warpdrive.detection.siren5.tooltip=Sounds an Air raid alarm up to 64 m away.
-tile.warpdrive.detection.siren6.name=Superior Air Raid Siren
-tile.warpdrive.detection.siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
-
 tile.warpdrive.detection.siren_industrial.basic.name=Basic Industrial Siren
 tile.warpdrive.detection.siren_industrial.advanced.name=Advanced Industrial Siren
 tile.warpdrive.detection.siren_industrial.superior.name=Superior Industrial Siren

@@ -252,7 +252,7 @@ tile.warpdrive.detection.cloaking_core.name=Noyau d'invisibilité
 tile.warpdrive.detection.monitor.name=Moniteur
 tile.warpdrive.detection.radar.name=Radar
 tile.warpdrive.detection.warp_isolation.name=Bloc d'isolation de champ de Warp
-tile.warpdrive.detection.warp_isolation.formatted_tooltip=Placer jusqu'à %5$d m par rapport au coeur de vaisseau\nUtilise %1$d à %3$d blocs d'isolation pour absorber %2$d %% à %4$d %% des ondes radar
+tile.warpdrive.detection.warp_isolation.tooltip.usage=Placer jusqu'à %5$d m par rapport au coeur de vaisseau\nUtilise %1$d à %3$d blocs d'isolation pour absorber %2$d %% à %4$d %% des ondes radar
 
 tile.warpdrive.detection.siren_industrial.basic.name=Sirène industrielle basique
 tile.warpdrive.detection.siren_industrial.advanced.name=Sirène industrielle avancée

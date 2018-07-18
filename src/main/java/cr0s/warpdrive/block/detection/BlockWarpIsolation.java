@@ -12,7 +12,6 @@ import java.util.List;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -35,7 +34,7 @@ public class BlockWarpIsolation extends BlockAbstractBase {
 	                           @Nonnull final List<String> list, @Nullable final ITooltipFlag advancedItemTooltips) {
 		super.addInformation(itemStack, world, list, advancedItemTooltips);
 		
-		Commons.addTooltip(list, new TextComponentTranslation(getUnlocalizedName() + ".formatted_tooltip",
+		Commons.addTooltip(list, new TextComponentTranslation(getUnlocalizedName() + ".tooltip.usage",
 		                                                      WarpDriveConfig.RADAR_MIN_ISOLATION_BLOCKS,
 		                                                      Math.round(WarpDriveConfig.RADAR_MIN_ISOLATION_EFFECT * 100.0D),
 		                                                      WarpDriveConfig.RADAR_MAX_ISOLATION_BLOCKS,

@@ -249,7 +249,7 @@ tile.warpdrive.detection.cloaking_core.name=隐形核心
 tile.warpdrive.detection.monitor.name=监控器
 tile.warpdrive.detection.radar.name=雷达
 tile.warpdrive.detection.warp_isolation.name=曲率领域隔离方块
-tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
+tile.warpdrive.detection.warp_isolation.tooltip.usage=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
 tile.warpdrive.detection.siren_industrial.basic.name=Basic Industrial Siren / 工业警报器
 tile.warpdrive.detection.siren_industrial.advanced.name=Advanced Industrial Siren / 工业警报器
