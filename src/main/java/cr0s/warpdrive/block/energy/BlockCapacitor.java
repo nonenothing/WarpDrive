@@ -6,11 +6,11 @@ import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.block.BlockAbstractContainer;
 import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
-import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumDisabledInputOutput;
 import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.event.ModelBakeEventHandler;
-import cr0s.warpdrive.render.BakedModelEnergyBank;
+import cr0s.warpdrive.render.BakedModelCapacitor;
+
 import ic2.api.energy.tile.IExplosionPowerOverride;
 
 import javax.annotation.Nonnull;
@@ -49,34 +49,33 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @Optional.InterfaceList({
 	@Optional.Interface(iface = "ic2.api.energy.tile.IExplosionPowerOverride", modid = "ic2")
 })
-public class BlockEnergyBank extends BlockAbstractContainer implements IExplosionPowerOverride {
+public class BlockCapacitor extends BlockAbstractContainer implements IExplosionPowerOverride {
 	
 	public static final IProperty<EnumDisabledInputOutput> CONFIG = PropertyEnum.create("config", EnumDisabledInputOutput.class);
 	
-	public static final IUnlistedProperty<EnumDisabledInputOutput> DOWN = Properties.toUnlisted(PropertyEnum.create("down", EnumDisabledInputOutput.class));
-	public static final IUnlistedProperty<EnumDisabledInputOutput> UP = Properties.toUnlisted(PropertyEnum.create("up", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> DOWN  = Properties.toUnlisted(PropertyEnum.create("down", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> UP    = Properties.toUnlisted(PropertyEnum.create("up", EnumDisabledInputOutput.class));
 	public static final IUnlistedProperty<EnumDisabledInputOutput> NORTH = Properties.toUnlisted(PropertyEnum.create("north", EnumDisabledInputOutput.class));
 	public static final IUnlistedProperty<EnumDisabledInputOutput> SOUTH = Properties.toUnlisted(PropertyEnum.create("south", EnumDisabledInputOutput.class));
-	public static final IUnlistedProperty<EnumDisabledInputOutput> WEST = Properties.toUnlisted(PropertyEnum.create("west", EnumDisabledInputOutput.class));
-	public static final IUnlistedProperty<EnumDisabledInputOutput> EAST = Properties.toUnlisted(PropertyEnum.create("east", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> WEST  = Properties.toUnlisted(PropertyEnum.create("west", EnumDisabledInputOutput.class));
+	public static final IUnlistedProperty<EnumDisabledInputOutput> EAST  = Properties.toUnlisted(PropertyEnum.create("east", EnumDisabledInputOutput.class));
 	
-	public BlockEnergyBank(final String registryName) {
-		super(registryName, Material.IRON);
-		setUnlocalizedName("warpdrive.energy.energy_bank.");
-		hasSubBlocks = true;
+	public BlockCapacitor(final String registryName, final EnumTier enumTier) {
+		super(registryName, enumTier, Material.IRON);
+		
+		setUnlocalizedName("warpdrive.energy.capacitor." + enumTier.getName());
 		
 		setDefaultState(getDefaultState()
-				                .withProperty(BlockProperties.TIER, EnumTier.BASIC)
 				                .withProperty(CONFIG, EnumDisabledInputOutput.DISABLED)
 		               );
-		registerTileEntity(TileEntityEnergyBank.class, new ResourceLocation(WarpDrive.MODID, registryName));
+		registerTileEntity(TileEntityCapacitor.class, new ResourceLocation(WarpDrive.MODID, registryName));
 	}
 	
 	@Nonnull
 	@Override
 	protected BlockStateContainer createBlockState() {
 		return new ExtendedBlockState(this,
-		                              new IProperty[] { BlockProperties.TIER, CONFIG },
+		                              new IProperty[] { CONFIG },
 		                              new IUnlistedProperty[] { DOWN, UP, NORTH, SOUTH, WEST, EAST });
 	}
 	
@@ -84,13 +83,12 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@Nonnull
 	@Override
 	public IBlockState getStateFromMeta(final int metadata) {
-		return getDefaultState()
-				       .withProperty(BlockProperties.TIER, EnumTier.get(metadata % 4));
+		return getDefaultState();
 	}
 	
 	@Override
 	public int getMetaFromState(final IBlockState blockState) {
-		return blockState.getValue(BlockProperties.TIER).getIndex();
+		return 0;
 	}
 	
 	@Nonnull
@@ -100,17 +98,17 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 			return blockState;
 		}
 		final TileEntity tileEntity = blockAccess.getTileEntity(blockPos);
-		if (!(tileEntity instanceof TileEntityEnergyBank)) {
+		if (!(tileEntity instanceof TileEntityCapacitor)) {
 			return blockState;
 		}
-		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
+		final TileEntityCapacitor tileEntityCapacitor = (TileEntityCapacitor) tileEntity;
 		return ((IExtendedBlockState) blockState)
-				       .withProperty(DOWN , tileEntityEnergyBank.getMode(EnumFacing.DOWN ))
-				       .withProperty(UP   , tileEntityEnergyBank.getMode(EnumFacing.UP   ))
-				       .withProperty(NORTH, tileEntityEnergyBank.getMode(EnumFacing.NORTH))
-				       .withProperty(SOUTH, tileEntityEnergyBank.getMode(EnumFacing.SOUTH))
-				       .withProperty(WEST , tileEntityEnergyBank.getMode(EnumFacing.WEST ))
-				       .withProperty(EAST , tileEntityEnergyBank.getMode(EnumFacing.EAST ));
+				       .withProperty(DOWN , tileEntityCapacitor.getMode(EnumFacing.DOWN ))
+				       .withProperty(UP   , tileEntityCapacitor.getMode(EnumFacing.UP   ))
+				       .withProperty(NORTH, tileEntityCapacitor.getMode(EnumFacing.NORTH))
+				       .withProperty(SOUTH, tileEntityCapacitor.getMode(EnumFacing.SOUTH))
+				       .withProperty(WEST , tileEntityCapacitor.getMode(EnumFacing.WEST ))
+				       .withProperty(EAST , tileEntityCapacitor.getMode(EnumFacing.EAST ));
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -123,13 +121,13 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@Nonnull
 	@Override
 	public TileEntity createNewTileEntity(@Nonnull final World world, final int metadata) {
-		return new TileEntityEnergyBank((byte) (metadata % 4));
+		return new TileEntityCapacitor(enumTier);
 	}
 	
 	@Nullable
 	@Override
 	public ItemBlock createItemBlock() {
-		return new ItemBlockEnergyBank(this);
+		return new ItemBlockCapacitor(this);
 	}
 	
 	@Override
@@ -140,17 +138,14 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubBlocks(final CreativeTabs creativeTab, final NonNullList<ItemStack> list) {
-		for (byte tier = 0; tier < 4; tier++) {
-			ItemStack itemStack = new ItemStack(this, 1, tier);
+		ItemStack itemStack = new ItemStack(this, 1, 0);
+		list.add(itemStack);
+		if (enumTier != EnumTier.CREATIVE) {
+			itemStack = new ItemStack(this, 1, 0);
+			final NBTTagCompound tagCompound = new NBTTagCompound();
+			tagCompound.setInteger("energy", WarpDriveConfig.CAPACITOR_MAX_ENERGY_STORED_BY_TIER[enumTier.getIndex()]);
+			itemStack.setTagCompound(tagCompound);
 			list.add(itemStack);
-			if (tier > 0) {
-				itemStack = new ItemStack(this, 1, tier);
-				final NBTTagCompound tagCompound = new NBTTagCompound();
-				tagCompound.setByte("tier", tier);
-				tagCompound.setInteger("energy", WarpDriveConfig.ENERGY_BANK_MAX_ENERGY_STORED[tier - 1]);
-				itemStack.setTagCompound(tagCompound);
-				list.add(itemStack);
-			}
 		}
 	}
 	
@@ -161,27 +156,12 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		ClientProxy.modelInitialisation(item);
 		
 		// register (smart) baked model
+		final ResourceLocation registryName = getRegistryName();
+		assert registryName != null;
 		for (final EnumDisabledInputOutput enumDisabledInputOutput : CONFIG.getAllowedValues()) {
-			for (final EnumTier enumTier : BlockProperties.TIER.getAllowedValues()) {
-				final String variant = String.format("%s=%s,%s=%s",
-				                                     CONFIG.getName(), enumDisabledInputOutput,
-				                                     BlockProperties.TIER.getName(), enumTier);
-				ModelBakeEventHandler.registerBakedModel(new ModelResourceLocation(getRegistryName(), variant), BakedModelEnergyBank.class);
-			}
-		}
-	}
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public byte getTier(final ItemStack itemStack) {
-		if (itemStack == null || itemStack.getItem() != Item.getItemFromBlock(this)) {
-			return 1;
-		}
-		final NBTTagCompound tagCompound = itemStack.getTagCompound();
-		if (tagCompound != null && tagCompound.hasKey("tier")) {
-			return tagCompound.getByte("tier");
-		} else {
-			return (byte) itemStack.getItemDamage();
+			final String variant = String.format("%s=%s",
+			                                     CONFIG.getName(), enumDisabledInputOutput);
+			ModelBakeEventHandler.registerBakedModel(new ModelResourceLocation(registryName, variant), BakedModelCapacitor.class);
 		}
 	}
 	
@@ -192,7 +172,7 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 	}
 	
 	@Override
-	public float getExplosionPower(int tier, float defaultPower) {
+	public float getExplosionPower(final int tier, final float defaultPower) {
 		return defaultPower;
 	}
 	
@@ -211,20 +191,20 @@ public class BlockEnergyBank extends BlockAbstractContainer implements IExplosio
 		// get context
 		final ItemStack itemStackHeld = entityPlayer.getHeldItem(enumHand);
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (!(tileEntity instanceof TileEntityEnergyBank)) {
+		if (!(tileEntity instanceof TileEntityCapacitor)) {
 			return false;
 		}
-		final TileEntityEnergyBank tileEntityEnergyBank = (TileEntityEnergyBank) tileEntity;
+		final TileEntityCapacitor tileEntityCapacitor = (TileEntityCapacitor) tileEntity;
 		
 		if ( !itemStackHeld.isEmpty()
 		  && itemStackHeld.getItem() instanceof IWarpTool ) {
 			if (entityPlayer.isSneaking()) {
-				tileEntityEnergyBank.setMode(enumFacing, tileEntityEnergyBank.getMode(enumFacing).getPrevious());
+				tileEntityCapacitor.setMode(enumFacing, tileEntityCapacitor.getMode(enumFacing).getPrevious());
 			} else {
-				tileEntityEnergyBank.setMode(enumFacing, tileEntityEnergyBank.getMode(enumFacing).getNext());
+				tileEntityCapacitor.setMode(enumFacing, tileEntityCapacitor.getMode(enumFacing).getNext());
 			}
 			final ItemStack itemStack = new ItemStack(Item.getItemFromBlock(this), 1, getMetaFromState(blockState));
-			switch (tileEntityEnergyBank.getMode(enumFacing)) {
+			switch (tileEntityCapacitor.getMode(enumFacing)) {
 			case INPUT:
 				Commons.addChatMessage(entityPlayer, Commons.getChatPrefix(itemStack)
 				                                            .appendSibling(new TextComponentTranslation("warpdrive.energy.side.changed_to_input", enumFacing.name())));

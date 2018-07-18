@@ -2,17 +2,15 @@ package cr0s.warpdrive.item;
 
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.IAirContainerItem;
-import cr0s.warpdrive.block.energy.BlockEnergyBank;
+import cr0s.warpdrive.block.energy.BlockCapacitor;
 import cr0s.warpdrive.data.EnumComponentType;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -27,6 +25,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	
 	public ItemComponent(final String registryName) {
 		super(registryName);
+		
 		setHasSubtypes(true);
 		setUnlocalizedName("warpdrive.component.malformed");
 		
@@ -137,7 +136,7 @@ public class ItemComponent extends ItemAbstractBase implements IAirContainerItem
 	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess world, final BlockPos blockPos, final EntityPlayer player) {
 		final Block block = world.getBlockState(blockPos).getBlock();
 		
-		return block instanceof BlockEnergyBank
+		return block instanceof BlockCapacitor
 		    || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 }

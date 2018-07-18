@@ -246,6 +246,9 @@ public class WarpDriveConfig {
 	public static double   RADAR_MIN_ISOLATION_EFFECT = 0.12;
 	public static double   RADAR_MAX_ISOLATION_EFFECT = 1.00;
 	
+	// Siren
+	public static float[]  SIREN_RANGE_BLOCKS_BY_TIER = { 0.0F, 32.0F, 64.0F, 128.0F };
+	
 	// Ship Scanner
 	public static int      SS_MAX_DEPLOY_RADIUS_BLOCKS = 50;
 	public static int      SS_SEARCH_INTERVAL_TICKS = 20;
@@ -1042,19 +1045,19 @@ public class WarpDriveConfig {
 				config.get("enantiomorphic_reactor", "max_lasers", ENAN_REACTOR_MAX_LASERS_PER_SECOND, "Maximum number of stabilisation laser shots per seconds before loosing efficiency").getInt());
 		
 		// Subspace capacitor
-		CAPACITOR_MAX_ENERGY_STORED_BY_TIER = config.get("subspace_capacitor", "max_energy_stored_by_tier", CAPACITOR_MAX_ENERGY_STORED_BY_TIER, "Maximum energy stored for each subspace capacitor tier").getIntList();
+		CAPACITOR_MAX_ENERGY_STORED_BY_TIER = config.get("capacitor", "max_energy_stored_by_tier", CAPACITOR_MAX_ENERGY_STORED_BY_TIER, "Maximum energy stored for each subspace capacitor tier").getIntList();
 		clampByTier(0, Integer.MAX_VALUE, CAPACITOR_MAX_ENERGY_STORED_BY_TIER);
 		
-		CAPACITOR_IC2_SINK_TIER_BY_TIER = config.get("subspace_capacitor", "ic2_sink_tier_by_tier", CAPACITOR_IC2_SINK_TIER_BY_TIER, "IC2 energy sink tier (0 is BatBox, etc.) for each subspace capacitor tier").getIntList();
+		CAPACITOR_IC2_SINK_TIER_BY_TIER = config.get("capacitor", "ic2_sink_tier_by_tier", CAPACITOR_IC2_SINK_TIER_BY_TIER, "IC2 energy sink tier (0 is BatBox, etc.) for each subspace capacitor tier").getIntList();
 		clampByTier(0, Integer.MAX_VALUE, CAPACITOR_IC2_SINK_TIER_BY_TIER);
 		
-		CAPACITOR_IC2_SOURCE_TIER_BY_TIER = config.get("subspace_capacitor", "ic2_source_tier_by_tier", CAPACITOR_IC2_SOURCE_TIER_BY_TIER, "IC2 energy source tier (0 is BatBox, etc.) for each subspace capacitor tier").getIntList();
+		CAPACITOR_IC2_SOURCE_TIER_BY_TIER = config.get("capacitor", "ic2_source_tier_by_tier", CAPACITOR_IC2_SOURCE_TIER_BY_TIER, "IC2 energy source tier (0 is BatBox, etc.) for each subspace capacitor tier").getIntList();
 		clampByTier(0, Integer.MAX_VALUE, CAPACITOR_IC2_SOURCE_TIER_BY_TIER);
 		
-		CAPACITOR_TRANSFER_PER_TICK_BY_TIER = config.get("subspace_capacitor", "transfer_per_tick_by_tier", CAPACITOR_TRANSFER_PER_TICK_BY_TIER, "Internal energy transferred per tick for each subspace capacitor tier").getIntList();
+		CAPACITOR_TRANSFER_PER_TICK_BY_TIER = config.get("capacitor", "transfer_per_tick_by_tier", CAPACITOR_TRANSFER_PER_TICK_BY_TIER, "Internal energy transferred per tick for each subspace capacitor tier").getIntList();
 		clampByTier(0, Integer.MAX_VALUE, CAPACITOR_TRANSFER_PER_TICK_BY_TIER);
 		
-		CAPACITOR_EFFICIENCY_PER_UPGRADE = config.get("subspace_capacitor", "efficiency_per_upgrade", CAPACITOR_EFFICIENCY_PER_UPGRADE, "Energy transfer efficiency for each upgrade apply, first value is without upgrades (0.8 means 20% loss)").getDoubleList();
+		CAPACITOR_EFFICIENCY_PER_UPGRADE = config.get("capacitor", "efficiency_per_upgrade", CAPACITOR_EFFICIENCY_PER_UPGRADE, "Energy transfer efficiency for each upgrade apply, first value is without upgrades (0.8 means 20% loss)").getDoubleList();
 		assert CAPACITOR_EFFICIENCY_PER_UPGRADE.length >= 1;
 		CAPACITOR_EFFICIENCY_PER_UPGRADE[0] = Math.min(1.0D, Commons.clamp(                               0.5D, CAPACITOR_EFFICIENCY_PER_UPGRADE[1], CAPACITOR_EFFICIENCY_PER_UPGRADE[0]));
 		CAPACITOR_EFFICIENCY_PER_UPGRADE[1] = Math.min(1.0D, Commons.clamp(CAPACITOR_EFFICIENCY_PER_UPGRADE[0], CAPACITOR_EFFICIENCY_PER_UPGRADE[2], CAPACITOR_EFFICIENCY_PER_UPGRADE[1]));

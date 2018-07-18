@@ -7,7 +7,7 @@ import cr0s.warpdrive.api.IControlChannel;
 import cr0s.warpdrive.api.IVideoChannel;
 import cr0s.warpdrive.api.IWarpTool;
 import cr0s.warpdrive.api.WarpDriveText;
-import cr0s.warpdrive.block.energy.BlockEnergyBank;
+import cr0s.warpdrive.block.energy.BlockCapacitor;
 import cr0s.warpdrive.data.SoundEvents;
 
 import javax.annotation.Nonnull;
@@ -155,7 +155,7 @@ public class ItemTuningFork extends ItemAbstractBase implements IWarpTool {
 	@Override
 	public boolean doesSneakBypassUse(final ItemStack itemStack, final IBlockAccess world, final BlockPos blockPos, final EntityPlayer player) {
 		final Block block = world.getBlockState(blockPos).getBlock();
-		return block instanceof BlockEnergyBank || super.doesSneakBypassUse(itemStack, world, blockPos, player);
+		return block instanceof BlockCapacitor || super.doesSneakBypassUse(itemStack, world, blockPos, player);
 	}
 	
 	@Override

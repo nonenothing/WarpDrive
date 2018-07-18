@@ -3,7 +3,6 @@ package cr0s.warpdrive.config;
 import cr0s.warpdrive.WarpDrive;
 import cr0s.warpdrive.api.ParticleRegistry;
 import cr0s.warpdrive.block.decoration.BlockDecorative;
-import cr0s.warpdrive.block.detection.BlockSiren;
 import cr0s.warpdrive.data.EnumComponentType;
 import cr0s.warpdrive.data.EnumDecorativeType;
 import cr0s.warpdrive.data.EnumForceFieldShape;
@@ -15,7 +14,6 @@ import cr0s.warpdrive.item.ItemForceFieldShape;
 import cr0s.warpdrive.item.ItemForceFieldUpgrade;
 import cr0s.warpdrive.item.ItemTuningDriver;
 
-import java.util.List;
 import java.util.Map.Entry;
 
 import net.minecraft.item.EnumDyeColor;
@@ -1117,35 +1115,35 @@ public class Recipes {
 		                                       'g', "paneGlassColorless",
 		                                       'h', "blockHull2_plain"));
 		
-		// Basic Energy bank is 1 Capacitive crystal + 1 Power interface + 3 paper + 4 iron bars 
+		// Basic subspace capacitor is 1 Capacitive crystal + 1 Power interface + 3 paper + 4 iron bars
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnergyBank, 1, 1), false, "iPi", "pcp", "ipi",
+		                                       new ItemStack(WarpDrive.blockCapacitor[1]), false, "iPi", "pcp", "ipi",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 		                                       'i', ironBars,
 		                                       'p', Items.PAPER,
 		                                       'P', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
 		
-		// Advanced Energy bank is 4 Basic energy bank + 1 Power interface 
+		// Advanced subspace capacitor is 4 Basic subspace capacitor + 1 Power interface
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnergyBank, 1, 2), false, " c ", "cpc", " c ",
-		                                       'c', new ItemStack(WarpDrive.blockEnergyBank, 1, 1),
+		                                       new ItemStack(WarpDrive.blockCapacitor[2]), false, " c ", "cpc", " c ",
+		                                       'c', new ItemStack(WarpDrive.blockCapacitor[1]),
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
 		// or 4 Capacitive crystal + 1 Gold ingot + 4 Power interface
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnergyBank, 1, 2), false, "pcp", "cgc", "pcp",
+		                                       new ItemStack(WarpDrive.blockCapacitor[2]), false, "pcp", "cgc", "pcp",
 		                                       'c', ItemComponent.getItemStack(EnumComponentType.CAPACITIVE_CRYSTAL),
 		                                       'g', "ingotGold",
 		                                       'p', ItemComponent.getItemStack(EnumComponentType.POWER_INTERFACE) ));
 		
-		// Superior Energy bank is 4 Advanced energy bank + 1 Ender tuned crystal + 4 Iron ingot 
+		// Superior subspace capacitor is 4 Advanced subspace capacitor + 1 Ender tuned crystal + 4 Iron ingot
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockEnergyBank, 1, 3), false, "ici", "cec", "ici",
-		                                       'c', new ItemStack(WarpDrive.blockEnergyBank, 1, 2),
+		                                       new ItemStack(WarpDrive.blockCapacitor[3]), false, "ici", "cec", "ici",
+		                                       'c', new ItemStack(WarpDrive.blockCapacitor[2]),
 		                                       'i', "ingotIron",
 		                                       'e', ItemComponent.getItemStack(EnumComponentType.ENDER_CRYSTAL) ));
 		// or 4 Capacitive crystal block + 1 Superconductor + 4 Iron ingot
 		/*
-		WarpDrive.register(new ShapedOreRecipe(new ItemStack(WarpDrive.blockEnergyBank, 1, 3), false, "ici", "csc", "ici",
+		WarpDrive.register(new ShapedOreRecipe(new ItemStack(WarpDrive.blockCapacitor, 1, 3), false, "ici", "csc", "ici",
 		                                       'c', @TODO MC1.10 Capacitive crystal block,
 		                                       'i', "ingotIron",
 		                                       's', ItemComponent.getItemStack(EnumComponentType.SUPERCONDUCTOR) ));
@@ -1306,23 +1304,34 @@ public class Recipes {
 		
 		// Sirens
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_INDUSTRIAL), "ICI", "ICI", "NRN",
-		                                       'I', "plankWood",
-		                                       'C', "ingotIron",
+		                                       WarpDrive.blockSirenIndustrial[1], "pip", "pip", "NcN",
+		                                       'p', "plankWood",
+		                                       'i', "ingotIron",
 		                                       'N', new ItemStack(Blocks.NOTEBLOCK, 1),
-		                                       'R', "dustRedstone"));
+		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_BASIC), " I ", "ISI", " I ",
-		                                       'I', "ingotIron",
-		                                       'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_INDUSTRIAL)));
-		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED), " I ", "ISI", " I ",
+		                                       WarpDrive.blockSirenIndustrial[2], " I ", "ISI", " I ",
 		                                       'I', "ingotGold",
-		                                       'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_BASIC)));
+		                                       'S', WarpDrive.blockSirenIndustrial[1]));
 		WarpDrive.register(new ShapedOreRecipe(groupMachines,
-		                                       new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_SUPERIOR), " I ", "ISI", " I ",
+		                                       WarpDrive.blockSirenIndustrial[3], " I ", "ISI", " I ",
 		                                       'I', "gemDiamond",
-		                                       'S', new ItemStack(WarpDrive.blockSiren, 1, BlockSiren.METADATA_TYPE_RAID + BlockSiren.METADATA_RANGE_ADVANCED)));
+		                                       'S', WarpDrive.blockSirenIndustrial[2]));
+		
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       WarpDrive.blockSirenMilitary[1], "ipi", "ipi", "NcN",
+		                                       'p', "plankWood",
+		                                       'i', "ingotIron",
+		                                       'N', new ItemStack(Blocks.NOTEBLOCK, 1),
+		                                       'c', ItemComponent.getItemStack(EnumComponentType.COMPUTER_INTERFACE)));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       WarpDrive.blockSirenMilitary[2], " I ", "ISI", " I ",
+		                                       'I', "ingotGold",
+		                                       'S', WarpDrive.blockSirenMilitary[1]));
+		WarpDrive.register(new ShapedOreRecipe(groupMachines,
+		                                       WarpDrive.blockSirenMilitary[3], " I ", "ISI", " I ",
+		                                       'I', "gemDiamond",
+		                                       'S', WarpDrive.blockSirenMilitary[2]));
 		
 		// iron or steel
 		Object ingotIronOrSteel = "ingotIron";

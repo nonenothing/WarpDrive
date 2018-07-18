@@ -2,9 +2,11 @@ package cr0s.warpdrive.block.detection;
 
 import cr0s.warpdrive.block.TileEntityAbstractBase;
 import cr0s.warpdrive.client.SirenSound;
+import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.EnumTier;
 import cr0s.warpdrive.data.SoundEvents;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -12,12 +14,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntitySiren extends TileEntityAbstractBase {
 	
-	public enum SirenState {
+	public enum EnumSirenState {
 		STARTING, STARTED, STOPPING, STOPPED
 	}
 	
-	private SirenState state = SirenState.STOPPED;
-	private boolean isRaidSiren = false;
+	// persistent properties
+	// (none)
+	
+	// computed properties
+	private EnumSirenState state = EnumSirenState.STOPPED;
+	private boolean isIndustrial = false;
 	private float range = 0.0F;
 	private int timeToLastUpdate = 0;
 	
@@ -31,8 +37,11 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	@Override
 	protected void onFirstUpdateTick() {
 		super.onFirstUpdateTick();
-		range = BlockSiren.getRange(getBlockMetadata());
-		isRaidSiren = BlockSiren.getIsRaid(getBlockMetadata());
+		
+		range = WarpDriveConfig.SIREN_RANGE_BLOCKS_BY_TIER[enumTier.getIndex()];
+		
+		final IBlockState blockState = world.getBlockState(pos);
+		isIndustrial = ((BlockSiren) blockState.getBlock()).getIsIndustrial();
 	}
 	
 	@Override
@@ -62,26 +71,26 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 		switch (this.state) {
 			case STOPPED:
 				if (this.isPlaying()) {
-					this.state = SirenState.STOPPING;
+					this.state = EnumSirenState.STOPPING;
 				}
 				if (this.isPowered()) {
-					this.state = SirenState.STARTING;
+					this.state = EnumSirenState.STARTING;
 				}
 				break;
             
 			case STARTING:
 				if (this.startSound()) {
-					this.state = SirenState.STARTED;
+					this.state = EnumSirenState.STARTED;
 				} else {
-					this.state = SirenState.STOPPING;
+					this.state = EnumSirenState.STOPPING;
 				}
 				break;
             
 			case STARTED:
 				if (!this.isPowered()) {
-					this.state = SirenState.STOPPING;
+					this.state = EnumSirenState.STOPPING;
 				} else if (!this.isPlaying()) {
-					this.state = SirenState.STARTING;
+					this.state = EnumSirenState.STARTING;
 				}
 				break;
             
@@ -89,15 +98,15 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 				if (this.isPlaying()) {
 					this.stopSound();
 				} else {
-					this.state = SirenState.STOPPED;
+					this.state = EnumSirenState.STOPPED;
 				}
 				break;
             
 			default:
 				if (this.isPlaying()) {
-					this.state = SirenState.STOPPING;
+					this.state = EnumSirenState.STOPPING;
 				} else {
-					this.state = SirenState.STOPPED;
+					this.state = EnumSirenState.STOPPED;
 				}
 				break;
 		}
@@ -124,7 +133,7 @@ public class TileEntitySiren extends TileEntityAbstractBase {
 	// Create a new SirenSound object that the siren will use.
 	@SideOnly(Side.CLIENT)
 	private void setSound() {
-		sound = new SirenSound(isRaidSiren ? SoundEvents.SIREN_RAID : SoundEvents.SIREN_INDUSTRIAL, range, pos.getX(), pos.getY(), pos.getZ());
+		sound = new SirenSound(isIndustrial ? SoundEvents.SIREN_INDUSTRIAL : SoundEvents.SIREN_RAID, range, pos.getX(), pos.getY(), pos.getZ());
 	}
     
 	// Forces the siren to start playing its sound;

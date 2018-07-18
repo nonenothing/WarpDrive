@@ -13,8 +13,8 @@ import cr0s.warpdrive.block.atomic.BlockParticlesInjector;
 import cr0s.warpdrive.block.atomic.BlockVoidShellPlain;
 import cr0s.warpdrive.block.atomic.TileEntityAcceleratorControlPoint;
 import cr0s.warpdrive.block.atomic.TileEntityParticlesInjector;
-import cr0s.warpdrive.block.energy.BlockEnergyBank;
-import cr0s.warpdrive.block.energy.TileEntityEnergyBank;
+import cr0s.warpdrive.block.energy.BlockCapacitor;
+import cr0s.warpdrive.block.energy.TileEntityCapacitor;
 import cr0s.warpdrive.config.WarpDriveConfig;
 
 import java.util.ArrayList;
@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -49,8 +50,8 @@ public class AcceleratorSetup extends GlobalPosition {
 	private int[] countChillers = new int[3];
 	private final HashMap<VectorI, Integer> controlPoints = new HashMap<>();
 	
-	public final HashMap<VectorI, Byte> chillers = new HashMap<>();
-	public final Set<TileEntityEnergyBank> energyBanks = new HashSet<>();
+	public final HashSet<VectorI> setChillers = new HashSet<>();
+	public final Set<TileEntityCapacitor> setCapacitors = new HashSet<>();
 	public final int energy_maxStorage;
 	public final Set<VectorI> setJammed = new HashSet<>();
 	public final TreeMap<Integer, VectorI> mapInjectors = new TreeMap<>();
@@ -77,17 +78,18 @@ public class AcceleratorSetup extends GlobalPosition {
 	
 	public AcceleratorSetup(final int dimensionId, final int x, final int y, final int z) {
 		super(dimensionId, x, y, z);
+		
 		LocalProfiler.start(String.format("[AcceleratorSetup] Scanning @ DIM%d (%d %d %d)", dimensionId, x, y, z));
 		
 		refresh();
 		
 		// cache energy stats
-		if (energyBanks.isEmpty()) {
+		if (setCapacitors.isEmpty()) {
 			energy_maxStorage = 0;
 		} else {
 			int maxStorage = 0;
-			for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
-				maxStorage += tileEntityEnergyBank.energy_getMaxStorage();
+			for (final TileEntityCapacitor tileEntityCapacitor : setCapacitors) {
+				maxStorage += tileEntityCapacitor.energy_getMaxStorage();
 			}
 			energy_maxStorage = maxStorage;
 		}
@@ -100,16 +102,16 @@ public class AcceleratorSetup extends GlobalPosition {
 		}
 		
 		if (WarpDriveConfig.LOGGING_ACCELERATOR) {
-			WarpDrive.logger.info(String.format("Accelerator length: %d + %d including %d + %d + %d magnets, %d chillers and %d energy banks"
+			WarpDrive.logger.info(String.format("Accelerator length: %d + %d including %d + %d + %d magnets, %d chillers and %d capacitors"
 											  + " cooldown: %.3f %.3f %.3f /t %.3f EU/t"
 											  + " sustain: %.3f %.3f %.3f EU/t"
 											  + " acceleration: %.3f /particle",
 			        trajectoryAccelerator == null ? -1 : trajectoryAccelerator.size(), trajectoryTransfer == null ? -1 : trajectoryTransfer.size(),
-					countMagnets[0], countMagnets[1], countMagnets[2], chillers.size(), energyBanks.size(),
-					temperatures_cooling_K_perTick[0], temperatures_cooling_K_perTick[1], temperatures_cooling_K_perTick[2],
-					temperature_coolingEnergyCost_perTick,
-					temperatures_sustainEnergyCost_perTick[0], temperatures_sustainEnergyCost_perTick[1], temperatures_sustainEnergyCost_perTick[2],
-					particleEnergy_energyCost_perTick));
+			                                    countMagnets[0], countMagnets[1], countMagnets[2], setChillers.size(), setCapacitors.size(),
+			                                    temperatures_cooling_K_perTick[0], temperatures_cooling_K_perTick[1], temperatures_cooling_K_perTick[2],
+			                                    temperature_coolingEnergyCost_perTick,
+			                                    temperatures_sustainEnergyCost_perTick[0], temperatures_sustainEnergyCost_perTick[1], temperatures_sustainEnergyCost_perTick[2],
+			                                    particleEnergy_energyCost_perTick));
 		}
 		
 		LocalProfiler.stop();
@@ -363,14 +365,15 @@ public class AcceleratorSetup extends GlobalPosition {
 			    vCenter.z + ((indexCorner & 1) != 0 ? directionLeft.getFrontOffsetZ() : directionRight.getFrontOffsetZ()));
 			final Block block = vector.getBlock(world);
 			if (block instanceof BlockChiller) {
-				chillers.put(vector, ((BlockChiller)block).tier);
-				countChillers[((BlockChiller)block).tier - 1]++;
-			} else if (block instanceof BlockEnergyBank) {
+				final EnumTier enumTier = ((BlockChiller) block).getTier(ItemStack.EMPTY);
+				setChillers.add(vector);
+				countChillers[enumTier.getIndex() - 1]++;
+			} else if (block instanceof BlockCapacitor) {
 				final TileEntity tileEntity = vector.getTileEntity(world);
-				if (tileEntity instanceof TileEntityEnergyBank) {
-					energyBanks.add((TileEntityEnergyBank) tileEntity);
+				if (tileEntity instanceof TileEntityCapacitor) {
+					setCapacitors.add((TileEntityCapacitor) tileEntity);
 				} else {
-					WarpDrive.logger.error(String.format("Invalid tile entity detected for energy bank at %s", vector));
+					WarpDrive.logger.error(String.format("Invalid tile entity detected for subspace capacitor at %s", vector));
 				}
 			}
 		}
@@ -380,9 +383,9 @@ public class AcceleratorSetup extends GlobalPosition {
 		if (trajectoryAccelerator == null) {
 			return 0;
 		}
-		return trajectoryAccelerator.size() + trajectoryTransfer.size() + energyBanks.size() + controlPoints.size()
-		     + countMagnets[0] + countMagnets[1] + countMagnets[2]
-		     + countChillers[0] + countChillers[1] + countChillers[2];
+		return trajectoryAccelerator.size() + trajectoryTransfer.size() + setCapacitors.size() + controlPoints.size()
+		       + countMagnets[0] + countMagnets[1] + countMagnets[2]
+		       + countChillers[0] + countChillers[1] + countChillers[2];
 	}
 	
 	public boolean isMajorChange(final AcceleratorSetup acceleratorSetup) {
@@ -405,7 +408,7 @@ public class AcceleratorSetup extends GlobalPosition {
 		boolean checkCornerConnection = false;
 		// check explicit inclusions
 		if (block instanceof BlockChiller) {
-			if (chillers.containsKey(vector)) {
+			if (setChillers.contains(vector)) {
 				return true;
 			}
 			checkCornerConnection = true;
@@ -429,10 +432,10 @@ public class AcceleratorSetup extends GlobalPosition {
 		} else if (block instanceof BlockAcceleratorControlPoint) {
 			checkRangedConnection = true;
 			
-		} else if (block instanceof BlockEnergyBank) {
+		} else if (block instanceof BlockCapacitor) {
 			final TileEntity tileEntity = vector.getTileEntity(world);
-			if (tileEntity instanceof TileEntityEnergyBank) {
-				if (energyBanks.contains(tileEntity)) {
+			if (tileEntity instanceof TileEntityCapacitor) {
+				if (setCapacitors.contains(tileEntity)) {
 					return true;
 				}
 			}
@@ -499,8 +502,8 @@ public class AcceleratorSetup extends GlobalPosition {
 		if (trajectoryAccelerator == null) {
 			return false;
 		}
-		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
-			if (tileEntityEnergyBank.isInvalid()) {
+		for (final TileEntityCapacitor tileEntityCapacitor : setCapacitors) {
+			if (tileEntityCapacitor.isInvalid()) {
 				return false;
 			}
 		}
@@ -510,16 +513,16 @@ public class AcceleratorSetup extends GlobalPosition {
 	// Pseudo-API for energy
 	public int energy_getEnergyStored() {
 		int energyStored = 0;
-		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
-			energyStored += tileEntityEnergyBank.energy_getEnergyStored();
+		for (final TileEntityCapacitor tileEntityCapacitor : setCapacitors) {
+			energyStored += tileEntityCapacitor.energy_getEnergyStored();
 		}
 		return energyStored;
 	}
 	
 	public int energy_getPotentialOutput() {
 		long potentialOutput = 0;
-		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
-			potentialOutput = Math.min(potentialOutput + tileEntityEnergyBank.energy_getPotentialOutput(), Integer.MAX_VALUE);
+		for (final TileEntityCapacitor tileEntityCapacitor : setCapacitors) {
+			potentialOutput = Math.min(potentialOutput + tileEntityCapacitor.energy_getPotentialOutput(), Integer.MAX_VALUE);
 		}
 		return (int) potentialOutput;
 	}
@@ -530,21 +533,21 @@ public class AcceleratorSetup extends GlobalPosition {
 	
 	public void energy_consume(final int amount_internal) {
 		// first, draw average from all
-		final int energyMean = amount_internal / energyBanks.size();
+		final int energyMean = amount_internal / setCapacitors.size();
 		int energyConsumed = 0;
-		int energyLeft = amount_internal - energyMean * energyBanks.size();
-		for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
-			final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyMean + energyLeft);
-			tileEntityEnergyBank.energy_consume(energyToConsume);
+		int energyLeft = amount_internal - energyMean * setCapacitors.size();
+		for (final TileEntityCapacitor tileEntityCapacitor : setCapacitors) {
+			final int energyToConsume = Math.min(tileEntityCapacitor.energy_getPotentialOutput(), energyMean + energyLeft);
+			tileEntityCapacitor.energy_consume(energyToConsume);
 			energyConsumed += energyToConsume;
 			energyLeft += (energyMean - energyConsumed);
 		}
 		assert energyConsumed + energyLeft == amount_internal;
 		// then, draw remaining in no special order
 		if (energyLeft > 0) {
-			for (final TileEntityEnergyBank tileEntityEnergyBank : energyBanks) {
-				final int energyToConsume = Math.min(tileEntityEnergyBank.energy_getPotentialOutput(), energyLeft);
-				tileEntityEnergyBank.energy_consume(energyToConsume);
+			for (final TileEntityCapacitor tileEntityCapacitor : setCapacitors) {
+				final int energyToConsume = Math.min(tileEntityCapacitor.energy_getPotentialOutput(), energyLeft);
+				tileEntityCapacitor.energy_consume(energyToConsume);
 				energyConsumed += energyToConsume;
 				energyLeft -= energyConsumed;
 			}

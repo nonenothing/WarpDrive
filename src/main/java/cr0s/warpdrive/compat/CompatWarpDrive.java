@@ -149,7 +149,7 @@ public class CompatWarpDrive implements IBlockTransformer {
 			}
 		}
 		
-		// Energy bank sides
+		// subspace capacitor sides
 		if (nbtTileEntity != null && nbtTileEntity.hasKey("modeSide")) {
 			nbtTileEntity.setByteArray("modeSide", rotate_byteArray(rotationSteps, nbtTileEntity.getByteArray("modeSide")));
 		}

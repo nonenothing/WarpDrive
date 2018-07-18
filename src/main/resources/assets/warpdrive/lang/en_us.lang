@@ -252,7 +252,7 @@ tile.warpdrive.detection.cloaking_core.name=Cloaking Core
 tile.warpdrive.detection.monitor.name=Monitor
 tile.warpdrive.detection.radar.name=Radar
 tile.warpdrive.detection.warp_isolation.name=Warp-field Isolation Block
-tile.warpdrive.detection.warp_isolation.formatted_tooltip=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
+tile.warpdrive.detection.warp_isolation.tooltip.usage=Place up to %5$d m away from a ship core\nUsing %1$d to %3$d isolation blocks will absorb %2$d %% to %4$d %% of radar waves
 
 tile.warpdrive.detection.siren.tooltip=Triggered by redstone
 tile.warpdrive.detection.siren0.name=Industrial Siren
@@ -264,13 +264,24 @@ tile.warpdrive.detection.siren5.tooltip=Sounds an Air raid alarm up to 64 m away
 tile.warpdrive.detection.siren6.name=Superior Air Raid Siren
 tile.warpdrive.detection.siren6.tooltip=Sounds an Air raid alarm up to 128 m away.
 
+tile.warpdrive.detection.siren_industrial.basic.name=Basic Industrial Siren
+tile.warpdrive.detection.siren_industrial.advanced.name=Advanced Industrial Siren
+tile.warpdrive.detection.siren_industrial.superior.name=Superior Industrial Siren
+tile.warpdrive.detection.siren_industrial.tooltip=Triggered by redstone
+tile.warpdrive.detection.siren_industrial.tooltip.usage=Sounds an alarm up to %1$d m away.
+tile.warpdrive.detection.siren_military.basic.name=Basic Air Raid Siren
+tile.warpdrive.detection.siren_military.advanced.name=Advanced Air Raid Siren
+tile.warpdrive.detection.siren_military.superior.name=Superior Air Raid Siren
+tile.warpdrive.detection.siren_military.tooltip=Triggered by redstone
+tile.warpdrive.detection.siren_military.tooltip.usage=Sounds an alarm up to %1$d m away.
+
 tile.warpdrive.energy.enan_reactor_core.name=Enantiomorphic Reactor Core
 tile.warpdrive.energy.enan_reactor_laser.name=Enantiomorphic Reactor Stabilization Laser
-tile.warpdrive.energy.energy_bank.0.name=Zero-Point Module
-tile.warpdrive.energy.energy_bank.0.tooltip=Creative Subspace Capacitor
-tile.warpdrive.energy.energy_bank.1.name=Basic Subspace Capacitor
-tile.warpdrive.energy.energy_bank.2.name=Advanced Subspace Capacitor
-tile.warpdrive.energy.energy_bank.3.name=Superior Subspace Capacitor
+tile.warpdrive.energy.capacitor.creative.name=Zero-Point Module
+tile.warpdrive.energy.capacitor.creative.tooltip=Creative Subspace Capacitor
+tile.warpdrive.energy.capacitor.basic.name=Basic Subspace Capacitor
+tile.warpdrive.energy.capacitor.advanced.name=Advanced Subspace Capacitor
+tile.warpdrive.energy.capacitor.superior.name=Superior Subspace Capacitor
 tile.warpdrive.energy.ic2_reactor_laser_cooler.name=IC2 Reactor Laser Cooler
 
 tile.warpdrive.force_field.block1.name=Basic Force Field Block
