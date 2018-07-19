@@ -56,8 +56,8 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 		final Item item = Item.getItemFromBlock(this);
 		ClientProxy.modelInitialisation(item);
 		
-		// Force a single model through through a custom state mapper
 		/*
+		// Force a single model through a custom state mapper
 		final StateMapperBase stateMapperBase = new StateMapperBase() {
 			@Nonnull
 			@Override
@@ -66,10 +66,8 @@ public abstract class BlockAbstractBase extends Block implements IBlockBase {
 			}
 		};
 		ModelLoader.setCustomStateMapper(this, stateMapperBase);
-		/**/
 		
 		// Bind our TESR to our tile entity
-		/*
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityXXXX.class, new TileEntityXXXRenderer());
 		/**/
 	}

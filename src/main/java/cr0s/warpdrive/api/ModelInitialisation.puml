@@ -1,0 +1,128 @@
+@startuml
+participant Forge #cyan
+participant WarpDrive
+participant IBlockBase
+participant IItemBase
+participant ClientProxy
+participant ModelLoader #cyan
+participant ClientRegistry #cyan
+
+Forge -[#blue]> WarpDrive: FMLPreInitializationEvent
+activate WarpDrive
+
+loop blocks and items
+    WarpDrive ->o IBlockBase: new
+    activate IBlockBase
+    IBlockBase -> WarpDrive: register(block)
+    WarpDrive -> WarpDrive: register(item)
+    IBlockBase <-- WarpDrive
+    IBlockBase -> IBlockBase: registerTileEntity
+
+    WarpDrive <-- IBlockBase
+    deactivate IBlockBase
+
+
+    WarpDrive ->o IItemBase: new
+    activate IItemBase
+    IItemBase -> WarpDrive: register(item)
+    IItemBase <-- WarpDrive
+
+    WarpDrive <-- IItemBase
+    deactivate IItemBase
+end
+
+Forge <-[#blue]- WarpDrive
+deactivate WarpDrive
+
+Forge -[#blue]> WarpDrive: RegistryEvent.Register<Block>
+activate WarpDrive
+loop blocks
+    WarpDrive -[#blue]> Forge: register(block)
+    WarpDrive <-[#blue]- Forge
+end
+Forge <-[#blue]- WarpDrive
+deactivate WarpDrive
+
+Forge -[#blue]> WarpDrive: RegistryEvent.Register<Item>
+activate WarpDrive
+loop items
+    WarpDrive -[#blue]> Forge: register(item)
+    WarpDrive <-[#blue]- Forge
+    WarpDrive -> ClientProxy: onModelInitialisation(item)
+    activate ClientProxy
+    ClientProxy -> IItemBase: modelInitialisation()
+    activate IItemBase
+    IItemBase -> ClientProxy: modelInitialisation(item)
+    activate ClientProxy
+    loop sub items
+        ClientProxy -[#blue]> ModelLoader: setCustomModelResourceLocation
+        ClientProxy <-[#blue]- ModelLoader
+    end
+    IItemBase <-- ClientProxy
+    deactivate ClientProxy
+
+    IItemBase -> IItemBase: (custom init)
+    ClientProxy <-- IItemBase
+    deactivate IItemBase
+
+    WarpDrive <- ClientProxy: onModelInitialisation(item)
+    deactivate ClientProxy
+end
+
+loop blocks
+    WarpDrive -> ClientProxy: onModelInitialisation(block)
+    activate ClientProxy
+    ClientProxy -> IBlockBase: modelInitialisation(block)
+    activate IBlockBase
+    IBlockBase -> ClientProxy: modelInitialisation(itemBlock)
+    activate ClientProxy
+    loop sub items
+        ClientProxy -[#blue]> ModelLoader: setCustomModelResourceLocation
+        ClientProxy <-[#blue]- ModelLoader
+    end
+    IBlockBase <-- ClientProxy
+    deactivate ClientProxy
+
+    IBlockBase -[#blue]> ModelLoader: setCustomStateMapper
+    activate ModelLoader
+    IBlockBase <-[#blue]- ModelLoader
+    deactivate ModelLoader
+
+    IBlockBase -[#blue]> ClientRegistry: bindTileEntitySpecialRenderer
+    activate ClientRegistry
+    IBlockBase <-[#blue]- ClientRegistry
+    deactivate ClientRegistry
+
+
+    IBlockBase -> ModelBakeEventHandler: registerBakedModel(IMyBakedModel)
+    activate ModelBakeEventHandler
+    IBlockBase <-- ModelBakeEventHandler
+    deactivate ModelBakeEventHandler
+
+    ClientProxy <-- IBlockBase
+    deactivate IBlockBase
+
+    WarpDrive <-- ClientProxy: onModelInitialisation(block)
+    deactivate ClientProxy
+end
+
+Forge <-[#blue]- WarpDrive
+deactivate WarpDrive
+
+Forge -[#blue]> ModelBakeEventHandler: ModelBakeEvent
+activate ModelBakeEventHandler
+loop bakedModels
+    ModelBakeEventHandler ->o IMyBakedModel: new
+    ModelBakeEventHandler -> IMyBakedModel: setResourceLocation()
+    activate IMyBakedModel
+    ModelBakeEventHandler <-- IMyBakedModel
+    deactivate IMyBakedModel
+    ModelBakeEventHandler -> IMyBakedModel: setOriginalBakedModel(IBakedModel)
+    activate IMyBakedModel
+    ModelBakeEventHandler <-- IMyBakedModel
+    deactivate IMyBakedModel
+end
+Forge <-[#blue]- ModelBakeEventHandler
+deactivate ModelBakeEventHandler
+
+@enduml

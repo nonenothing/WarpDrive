@@ -13,9 +13,10 @@ public interface IItemBase {
 	// wrapper for Forge ItemExpireEvent
 	void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack);
 	
+	@SideOnly(Side.CLIENT)
+	void modelInitialisation();
+	
 	@Nonnull
 	@SideOnly(Side.CLIENT)
 	ModelResourceLocation getModelResourceLocation(final ItemStack itemStack);
-	
-	void modelInitialisation();
 }

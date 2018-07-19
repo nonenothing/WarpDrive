@@ -10,9 +10,7 @@ import cr0s.warpdrive.render.*;
 
 import javax.annotation.Nonnull;
 
-import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -75,15 +73,12 @@ public class ClientProxy extends CommonProxy {
 	public void onModelInitialisation(final Object object) {
 		if (object instanceof IBlockBase) {
 			((IBlockBase) object).modelInitialisation();
-		} else if (object instanceof Block) {
-			final Item item = Item.getItemFromBlock((Block) object);
-			modelInitialisation(item);
-		} else if (object instanceof Item) {
-			modelInitialisation((Item) object);
-		} else if (object == null) {
-			WarpDrive.logger.info("Ignoring null object ModelInitialisation...");
+			
+		} else if (object instanceof IItemBase) {
+			((IItemBase) object).modelInitialisation();
+			
 		} else {
-			throw new RuntimeException(String.format("Invalid object %s",
+			throw new RuntimeException(String.format("Unsupported object, expecting an IBlockBase or IItemBase instance: %s",
 			                                         object));
 		}
 	}
@@ -100,24 +95,21 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	public static void modelInitialisation(final Item item) {
-		if (item == null) {
-			throw new RuntimeException("Unable to ModelInitialize a null item");
-		} else if (item == Items.AIR) {
-			throw new RuntimeException("Unable to ModelInitialize an air item");
-		} else if (!item.getHasSubtypes()) {
+		if (!(item instanceof IItemBase)) {
+			throw new RuntimeException(String.format("Unable to item, expecting an IItemBase instance: %s",
+			                                         item));
+		}
+		
+		if (!item.getHasSubtypes()) {
 			assert item.getRegistryName() != null;
 			ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
+			
 		} else {
 			NonNullList<ItemStack> listItemStacks = NonNullList.create();
 			assert item.getCreativeTab() != null;
 			item.getSubItems(item.getCreativeTab(), listItemStacks);
 			for (final ItemStack itemStack : listItemStacks) {
-				ModelResourceLocation modelResourceLocation; 
-				if (item instanceof IItemBase) {
-					modelResourceLocation = ((IItemBase) item).getModelResourceLocation(itemStack);
-				} else {
-					modelResourceLocation = getModelResourceLocation(itemStack);
-				}
+				final ModelResourceLocation modelResourceLocation = ((IItemBase) item).getModelResourceLocation(itemStack);
 				ModelLoader.setCustomModelResourceLocation(item, itemStack.getMetadata(), modelResourceLocation);
 			}
 		}

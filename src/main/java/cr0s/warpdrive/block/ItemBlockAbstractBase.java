@@ -88,6 +88,13 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	public void onEntityExpireEvent(EntityItem entityItem, ItemStack itemStack) {
 	}
 	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		ClientProxy.modelInitialisation(this);
+	}
+	
+	@SideOnly(Side.CLIENT)
 	@Nonnull
 	@Override
 	public ModelResourceLocation getModelResourceLocation(final ItemStack itemStack) {

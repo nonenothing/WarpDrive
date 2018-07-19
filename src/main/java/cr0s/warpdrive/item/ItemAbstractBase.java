@@ -35,6 +35,12 @@ public class ItemAbstractBase extends Item implements IItemBase {
 	public void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack) {
 	}
 	
+	@SideOnly(Side.CLIENT)
+	@Override
+	public void modelInitialisation() {
+		ClientProxy.modelInitialisation(this);
+	}
+	
 	@Override
 	@Nonnull
 	@SideOnly(Side.CLIENT)
