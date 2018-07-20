@@ -99,7 +99,9 @@ public abstract class TileEntityAbstractMiner extends TileEntityAbstractLaser {
 				exception.printStackTrace();
 			}
 			if (isSilkHarvestable) {
-				itemStackDrops.add(blockState.getBlock().getSilkTouchDrop(blockState));
+				// intended code if AccessTransformer was working with gradlew:
+				// itemStackDrops.add(blockState.getBlock().getSilkTouchDrop(blockState));
+				
 				ItemStack itemStackDrop;
 				try {
 					itemStackDrop = (ItemStack) WarpDrive.methodBlock_getSilkTouch.invoke(blockState.getBlock(), blockState);

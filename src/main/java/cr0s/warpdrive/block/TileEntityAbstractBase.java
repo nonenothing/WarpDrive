@@ -44,7 +44,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	// persistent properties
 	// (none)
 	
-	// computer properties
+	// computed properties
 	private boolean isFirstTick = true;
 	private boolean isDirty = false;
 	
@@ -92,6 +92,7 @@ public abstract class TileEntityAbstractBase extends TileEntity implements IBloc
 	
 	@Override
 	public void onBlockUpdateDetected() {
+		assert Commons.isSafeThread();
 	}
 	
 	protected <T extends Comparable<T>, V extends T> void updateBlockState(final IBlockState blockState_in, final IProperty<T> property, final V value) {

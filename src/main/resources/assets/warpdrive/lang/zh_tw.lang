@@ -185,11 +185,14 @@ item.warpdrive.tool.tuning_fork.black.name=黑色調音叉
 item.warpdrive.tool.tuning_fork.tooltip.usage=§b右鍵單擊一個方塊§7 以調整其水晶\n§b潛行§7 以調節交替水晶
 
 
+tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 tile.warpdrive.decoration.decorative.energized.name=通電方塊
 tile.warpdrive.decoration.decorative.network.name=網絡方塊
 tile.warpdrive.decoration.decorative.plain.name=戰機方塊
 tile.warpdrive.decoration.gas.name=氣體方塊
-tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
+tile.warpdrive.decoration.lamp_bubble.name=Bubble Lamp
+tile.warpdrive.decoration.lamp_flat.name=Flat Lamp
+tile.warpdrive.decoration.lamp_long.name=Long Lamp
 
 
 tile.warpdrive.passive.iridium_block.name=銥塊

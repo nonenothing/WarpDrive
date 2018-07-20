@@ -1,7 +1,6 @@
 package cr0s.warpdrive.block.decoration;
 
 import cr0s.warpdrive.block.BlockAbstractBase;
-import cr0s.warpdrive.client.ClientProxy;
 import cr0s.warpdrive.config.WarpDriveConfig;
 import cr0s.warpdrive.data.BlockProperties;
 import cr0s.warpdrive.data.EnumTier;
@@ -11,7 +10,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
@@ -76,15 +74,13 @@ public class BlockAbstractLamp extends BlockAbstractBase {
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isOpaqueCube(final IBlockState state)
-	{
+	public boolean isOpaqueCube(final IBlockState state) {
 		return false;
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean isFullCube(final IBlockState state)
-	{
+	public boolean isFullCube(final IBlockState state) {
 		return false;
 	}
 	

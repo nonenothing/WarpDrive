@@ -3,7 +3,7 @@
 	"defaults": {
 		"model": "minecraft:cube_all",
 		"textures": {
-			"all": "warpdrive:blocks/component/iridium"
+			"all": "warpdrive:blocks/passive/iridium"
 		},
 		"transform": "forge:default-block"
 	},

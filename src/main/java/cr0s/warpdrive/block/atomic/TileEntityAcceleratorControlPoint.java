@@ -86,9 +86,11 @@ public class TileEntityAcceleratorControlPoint extends TileEntityAbstractInterfa
 		if (controlChannel == -1) {
 			return new WarpDriveText(Commons.styleWarning, "warpdrive.control_channel.status_line.undefined");
 		} else if (controlChannel < CONTROL_CHANNEL_MIN || controlChannel > CONTROL_CHANNEL_MAX) {
-			return new WarpDriveText(Commons.styleWarning, "warpdrive.control_channel.status_line.invalid", controlChannel);
+			return new WarpDriveText(Commons.styleWarning, "warpdrive.control_channel.status_line.invalid",
+			                         controlChannel);
 		} else {
-			return new WarpDriveText(Commons.styleCorrect, "warpdrive.control_channel.status_line.valid", controlChannel);
+			return new WarpDriveText(Commons.styleCorrect, "warpdrive.control_channel.status_line.valid",
+			                         controlChannel);
 		}
 	}
 	

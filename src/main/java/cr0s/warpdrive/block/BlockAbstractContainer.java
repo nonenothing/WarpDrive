@@ -105,8 +105,10 @@ public abstract class BlockAbstractContainer extends BlockContainer implements I
 			world.setBlockState(blockPos, blockState.withProperty(BlockProperties.FACING, enumFacing));
 		}
 		
+		// set inherited properties
 		final TileEntity tileEntity = world.getTileEntity(blockPos);
-		if (tileEntity != null && itemStack.getTagCompound() != null) {
+		assert tileEntity instanceof TileEntityAbstractBase;
+		if (itemStack.getTagCompound() != null) {
 			final NBTTagCompound tagCompound = itemStack.getTagCompound().copy();
 			tagCompound.setInteger("x", blockPos.getX());
 			tagCompound.setInteger("y", blockPos.getY());

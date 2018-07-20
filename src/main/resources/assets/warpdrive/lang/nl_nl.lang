@@ -185,11 +185,14 @@ item.warpdrive.tool.tuning_fork.black.name=Zwarte Afstemmingsvork
 item.warpdrive.tool.tuning_fork.tooltip.usage=§bRechts-klik op een blok§7 om zijn kristal af te stemmen\n§bbuk§7 om zijn andere kristallen af te stemmen
 
 
+tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
 tile.warpdrive.decoration.decorative.energized.name=Geactiveerd Blok
 tile.warpdrive.decoration.decorative.network.name=Netwerk Blok
 tile.warpdrive.decoration.decorative.plain.name=Oppervlaksblok
 tile.warpdrive.decoration.gas.name=Gasblok
-tile.warpdrive.decoration.bedrock_glass.name=Bedrock Glass
+tile.warpdrive.decoration.lamp_bubble.name=Bubble Lamp
+tile.warpdrive.decoration.lamp_flat.name=Flat Lamp
+tile.warpdrive.decoration.lamp_long.name=Long Lamp
 
 
 tile.warpdrive.passive.iridium_block.name=Iridium Blok

@@ -695,6 +695,7 @@ public class TileEntityEnanReactorCore extends TileEntityAbstractEnergy implemen
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
+		
 		tagCompound.setInteger("tier", tier.ordinal());
 		
 		tagCompound.setBoolean("isEnabled", isEnabled);

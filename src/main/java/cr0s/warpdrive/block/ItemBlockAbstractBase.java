@@ -21,7 +21,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.EnumRarity;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -73,12 +72,12 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	
 	public ITextComponent getStatus(final World world, @Nonnull final ItemStack itemStack) {
 		final IBlockState blockState;
-		if (world != null) {
+		if (world != null) {// in-game
 			assert Minecraft.getMinecraft().player != null;
 			blockState = block.getStateForPlacement(world, new BlockPos(0, -1, 0),
 			                                        EnumFacing.DOWN, 0.0F, 0.0F, 0.0F,
 			                                        itemStack.getMetadata(), Minecraft.getMinecraft().player, EnumHand.MAIN_HAND);
-		} else {
+		} else {// search tree
 			blockState = block.getStateFromMeta(itemStack.getMetadata());
 		}
 		
@@ -92,7 +91,7 @@ public class ItemBlockAbstractBase extends ItemBlock implements IItemBase {
 	}
 	
 	@Override
-	public void onEntityExpireEvent(EntityItem entityItem, ItemStack itemStack) {
+	public void onEntityExpireEvent(final EntityItem entityItem, final ItemStack itemStack) {
 	}
 	
 	@SideOnly(Side.CLIENT)

@@ -467,6 +467,7 @@ public abstract class TileEntityAbstractEnergy extends TileEntityAbstractInterfa
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
 		tagCompound = super.writeToNBT(tagCompound);
+		
 		tagCompound.setLong(ENERGY_TAG, energy_getEnergyStored());
 		return tagCompound;
 	}

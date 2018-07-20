@@ -3,7 +3,7 @@
 	"defaults": {
 		"model": "minecraft:cube_all",
 		"textures": {
-			"all": "warpdrive:blocks/component/highly_advanced_machine"
+			"all": "warpdrive:blocks/passive/highly_advanced_machine"
 		},
 		"transform": "forge:default-block"
 	},
